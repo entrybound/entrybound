@@ -188,7 +188,13 @@ pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> 
 
 /// Opens and fully verifies canonical bootstrap ECF bytes.
 pub fn open(bytes: &[u8]) -> Result<OpenedArchive> {
+    open_with_policy(bytes, crate::archive::bootstrap_resource_policy())
+}
+
+/// Opens and fully verifies bytes while enforcing caller-owned resource limits.
+pub fn open_with_policy(bytes: &[u8], policy: ResourceBudget) -> Result<OpenedArchive> {
     let preamble = decode_preamble(bytes)?;
+    enforce_caller_policy(preamble.budget, policy)?;
     let footer = decode_footer(bytes, &preamble)?;
     if preamble.footer_hint != footer.offset {
         return Err(noncanonical(
@@ -342,6 +348,30 @@ pub fn open(bytes: &[u8]) -> Result<OpenedArchive> {
 /// Verifies native bytes without hiding which guarantees were checked.
 pub fn verify(bytes: &[u8]) -> Result<VerificationReport> {
     Ok(open(bytes)?.report)
+}
+
+/// Verifies native bytes under explicit caller-owned resource limits.
+pub fn verify_with_policy(bytes: &[u8], policy: ResourceBudget) -> Result<VerificationReport> {
+    Ok(open_with_policy(bytes, policy)?.report)
+}
+
+fn enforce_caller_policy(declared: ResourceBudget, policy: ResourceBudget) -> Result<()> {
+    let exceeded = declared.entry_count > policy.entry_count
+        || declared.total_logical_bytes > policy.total_logical_bytes
+        || declared.max_single_entry_logical_bytes > policy.max_single_entry_logical_bytes
+        || declared.max_expansion_ratio_milli > policy.max_expansion_ratio_milli
+        || declared.chunk_count > policy.chunk_count
+        || declared.max_path_depth > policy.max_path_depth
+        || declared.max_metadata_bytes > policy.max_metadata_bytes
+        || declared.max_key_derivation_cost > policy.max_key_derivation_cost;
+    if exceeded {
+        return Err(Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::ResourceLimit,
+            "archive resource declaration exceeds caller policy",
+        ));
+    }
+    Ok(())
 }
 
 fn normalize_descriptor(archive: &mut Archive) -> Result<()> {

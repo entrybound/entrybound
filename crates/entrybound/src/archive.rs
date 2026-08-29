@@ -1,9 +1,33 @@
 //! Archive-operation policy boundaries.
 //!
-//! Packing, opening, verification, and extraction will be implemented here;
-//! callers construct policy and archive bytes never mutate it.
+//! Callers construct policy and archive bytes never mutate it.
 
 use crate::eam::ResourceBudget;
+
+mod filesystem;
+mod inspection;
+
+pub use filesystem::{
+    ExtractionReport, PackOptions, default_pack_output, default_unpack_destination, pack_directory,
+    unpack,
+};
+pub use inspection::{ArchiveInspection, ListedEntry, PlanInspection, inspect, list};
+
+/// Explicit, deliberately generous limits for the experimental bootstrap CLI.
+/// Applications should construct narrower limits for their own environment.
+#[must_use]
+pub const fn bootstrap_resource_policy() -> ResourceBudget {
+    ResourceBudget {
+        entry_count: 1_000_000,
+        total_logical_bytes: 64 * 1024 * 1024 * 1024,
+        max_single_entry_logical_bytes: 16 * 1024 * 1024 * 1024,
+        max_expansion_ratio_milli: 1_000,
+        chunk_count: 4_000_000,
+        max_path_depth: 1_024,
+        max_metadata_bytes: 1024 * 1024 * 1024,
+        max_key_derivation_cost: 0,
+    }
+}
 
 /// Caller-owned handling for an extraction collision.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -49,7 +73,7 @@ impl ExtractionPolicy {
 
 impl Default for ExtractionPolicy {
     fn default() -> Self {
-        Self::new(CollisionPolicy::Refuse, ResourceBudget::default())
+        Self::new(CollisionPolicy::Refuse, bootstrap_resource_policy())
     }
 }
 

@@ -75,6 +75,8 @@ pub enum ReasonCode {
     InputNotDirectory,
     ExtractionCollision,
     ExtractionContainmentUnavailable,
+    CommandUsage,
+    CommandNotImplemented,
     Io,
 }
 
@@ -120,6 +122,8 @@ impl ReasonCode {
             Self::InputNotDirectory => "EB_INPUT_NOT_DIRECTORY",
             Self::ExtractionCollision => "EB_EXTRACT_COLLISION",
             Self::ExtractionContainmentUnavailable => "EB_EXTRACT_CONTAINMENT_UNAVAILABLE",
+            Self::CommandUsage => "EB_CLI_USAGE",
+            Self::CommandNotImplemented => "EB_CLI_NOT_IMPLEMENTED",
             Self::Io => "EB_IO",
         }
     }

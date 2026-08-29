@@ -10,7 +10,7 @@ mod records;
 
 pub use container::{
     EncodedArchive, IndexStatus, OpenedArchive, VerificationReport, WriteOptions, encode, open,
-    verify,
+    open_with_policy, verify, verify_with_policy,
 };
 
 /// Candidate Entrybound magic selected by the architecture specification.

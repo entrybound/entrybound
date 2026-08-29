@@ -28,19 +28,51 @@ establishes:
   section structure, plaintext content, Entry identities, LAI, PCR, AUX, and
   exact-byte PCI;
 - optional Index validation and rebuilding from authoritative CHUNK_DATA.
+- deterministic filesystem packing for UTF-8 directory and regular-file
+  trees, including bounded same-handle source-change detection;
+- capability-relative, component-at-a-time extraction with exclusive file and
+  directory creation, collision refusal, and pre-materialization verification;
+- working `pack`, `unpack`, `list`, `inspect`, and `verify` CLI commands;
+- capture and restoration of `core.mtime` and, on Unix, `core.executable`, with
+  an in-band FidelityReport for metadata the bootstrap does not preserve;
+- caller-owned resource limits enforced against the archive declaration before
+  authoritative records are decoded.
 
-The native functionality is currently exposed through the `entrybound` Rust
-library. The CLI entry point still reports archive commands as unsupported
-instead of pretending filesystem workflows exist.
+## Native bootstrap workflow
+
+```sh
+cargo run -p entrybound-cli -- pack ./example example.eb
+cargo run -p entrybound-cli -- verify example.eb
+cargo run -p entrybound-cli -- list example.eb
+cargo run -p entrybound-cli -- inspect example.eb
+cargo run -p entrybound-cli -- unpack example.eb ./restored
+```
+
+`pack` uses `<input-name>.eb` when its output is omitted. `unpack` uses the
+archive path without its extension when its destination is omitted. Archive
+output files and extracted entries are created exclusively; existing objects
+are refused.
 
 ## Deliberately not implemented
 
-Filesystem pack and unpack, and CLI list/inspect/verify, are not implemented
-yet. There is also no legacy ZIP/tar/7z import, STREAM layout, encryption,
-signing, advanced compression, intelligent planning, content-defined chunking,
-symlink or special-file support, hardlink metadata, ACLs, xattrs,
-platform-specific metadata, mounting, recovery, language bindings, Go
-compatibility layer, or FFI.
+This slice is STORE-only, uses deterministic fixed 1 MiB chunking, and writes
+only unencrypted Complete INDEXED archives. It supports UTF-8 directory names,
+directories, and regular files. It deliberately rejects symlinks and special
+files. There is no legacy ZIP/tar/7z import, STREAM layout, encryption,
+signing, intelligent planning, content-defined chunking, hardlink metadata,
+ACLs, xattrs, ownership, platform-specific extended metadata, mounting,
+recovery, language bindings, Go compatibility layer, or FFI.
+
+Extraction is rooted in a held capability directory and resolves every
+LogicalPath component relative to that handle. The current implementation uses
+`cap-std`'s sandboxed filesystem API on Linux, macOS, FreeBSD, and Windows and
+reports this confinement mode. Only collision policy `Refuse` is implemented.
+
+The CLI's explicit bootstrap resource defaults are 1,000,000 entries, 64 GiB
+total logical bytes, 16 GiB per file, 4,000,000 chunks, path depth 1,024, and
+1 GiB of manifest/metadata bytes. These are compatibility limits, not claims
+that every machine can safely process archives of those sizes; embedders can
+and should supply narrower caller-owned limits.
 
 ## Build and use
 
@@ -62,5 +94,6 @@ cargo test -p entrybound -p entrybound-cli
 ```
 
 See [the bootstrap format note](docs/format-v0.md) for the canonical encoding
-and identity choices, and [CONTRIBUTING.md](CONTRIBUTING.md) for development
-conventions.
+and identity choices, [the filesystem bootstrap note](docs/filesystem-bootstrap.md)
+for capture, confinement, and policy behavior, and
+[CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.
