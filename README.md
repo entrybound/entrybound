@@ -14,7 +14,8 @@ establishes:
 
 - the `entrybound` library package, with separate EAM, ECF, identity,
   diagnostics, and archive-operation modules;
-- the thin `entrybound-cli` binary package;
+- the thin `entrybound-cli` package, producing the canonical `ebound`
+  executable and an `entrybound` compatibility alias;
 - typed EAM foundations for directories, regular files, ContentObjects,
   content-addressed Chunks, TransformPlans, metadata, FidelityReport, and a
   non-authoritative Index;
@@ -41,11 +42,11 @@ establishes:
 ## Native bootstrap workflow
 
 ```sh
-cargo run -p entrybound-cli -- pack ./example example.eb
-cargo run -p entrybound-cli -- verify example.eb
-cargo run -p entrybound-cli -- list example.eb
-cargo run -p entrybound-cli -- inspect example.eb
-cargo run -p entrybound-cli -- unpack example.eb ./restored
+ebound pack ./example example.eb
+ebound verify example.eb
+ebound list example.eb
+ebound inspect example.eb
+ebound unpack example.eb ./restored
 ```
 
 `pack` uses `<input-name>.eb` when its output is omitted. `unpack` uses the
@@ -80,9 +81,13 @@ Install a stable Rust toolchain with rustfmt and Clippy. The workspace declares
 its toolchain and minimum supported Rust version.
 
 ```sh
-cargo build -p entrybound-cli
-cargo run -p entrybound-cli -- --help
+cargo build -p entrybound-cli --bin ebound
+cargo run -p entrybound-cli --bin ebound -- --help
+cargo install --path crates/entrybound-cli --bin ebound
 ```
+
+`entrybound` is also built as a compatibility alias backed by the same CLI
+implementation. New scripts and documentation should use `ebound`.
 
 ## Targeted checks
 

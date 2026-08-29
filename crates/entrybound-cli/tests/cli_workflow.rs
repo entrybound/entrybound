@@ -59,11 +59,23 @@ fn malformed_archive_prints_stable_diagnostic_and_fails() {
     assert!(!stderr.contains("Diagnostic {"));
 }
 
+#[test]
+fn entrybound_alias_uses_the_same_cli_implementation() {
+    let primary = command_with(env!("CARGO_BIN_EXE_ebound"), ["--help"]);
+    let alias = command_with(env!("CARGO_BIN_EXE_entrybound"), ["--help"]);
+    assert_success(&primary);
+    assert_success(&alias);
+    assert_eq!(primary.stdout, alias.stdout);
+    assert_eq!(primary.stderr, alias.stderr);
+    assert!(String::from_utf8_lossy(&primary.stdout).contains("ebound pack"));
+}
+
 fn command<const N: usize>(arguments: [&str; N]) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_entrybound"))
-        .args(arguments)
-        .output()
-        .unwrap()
+    command_with(env!("CARGO_BIN_EXE_ebound"), arguments)
+}
+
+fn command_with<const N: usize>(executable: &str, arguments: [&str; N]) -> Output {
+    Command::new(executable).args(arguments).output().unwrap()
 }
 
 fn assert_success(output: &Output) {

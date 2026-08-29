@@ -14,6 +14,7 @@ cargo fmt --all --check
 cargo check -p entrybound -p entrybound-cli
 cargo clippy -p entrybound -p entrybound-cli --all-targets -- -D warnings
 cargo test -p entrybound
+cargo run -p entrybound-cli --bin ebound -- --help
 ```
 
 The core crate uses RustCrypto's `sha2` for SHA-256 and `cap-std` for
@@ -22,6 +23,10 @@ concrete format or implementation need. Keep the CLI crate thin: semantic
 rules belong in `entrybound::eam`, format rules in `entrybound::ecf`, identity
 rules in `entrybound::identity`, and filesystem workflows and caller-owned
 resource policy in `entrybound::archive`.
+
+The primary executable is `ebound`. The `entrybound` executable is a thin
+compatibility alias; both call the shared implementation in the
+`entrybound-cli` package library. Do not duplicate command logic between them.
 
 Filesystem tests must use generated trees. Extraction changes need collision,
 containment, preflight-integrity, and resource-policy tests; do not add opaque

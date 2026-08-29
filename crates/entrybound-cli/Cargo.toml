@@ -5,10 +5,19 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 repository.workspace = true
+autobins = false
+
+[lib]
+name = "entrybound_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ebound"
+path = "src/main.rs"
 
 [[bin]]
 name = "entrybound"
-path = "src/main.rs"
+path = "src/bin/entrybound.rs"
 
 [dependencies]
 entrybound = { path = "../entrybound" }
