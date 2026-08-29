@@ -1,0 +1,17 @@
+[package]
+name = "entrybound-cli"
+description = "Command-line interface for Entrybound"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "entrybound"
+path = "src/main.rs"
+
+[dependencies]
+entrybound = { path = "../entrybound" }
+
+[lints]
+workspace = true
