@@ -9,6 +9,7 @@ use super::{
     CHUNK_FRAME_HEADER_LEN, FOOTER_LEN, FORMAT_NAMESPACE, FormatVersion, MAGIC, PREAMBLE_LEN,
     SECTION_HEADER_LEN, SectionKind,
 };
+use crate::codec::{aggregate_decode_requirements, decode_payload, encode_payload, validate_plans};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     Archive, ArchiveDescriptor, ArchiveRole, Chunk, ChunkLocation, ContentStore,
@@ -16,8 +17,7 @@ use crate::eam::{
     ResourceBudget, TransformPlan,
 };
 use crate::identity::{
-    IdentitySet, STORE_CODEC_IDENTIFIER, STORE_PLAN_ID, STORE_PLAN_IDENTIFIER,
-    apply_native_identities, physical_container_identity, sha256_exact,
+    IdentitySet, apply_native_identities, physical_container_identity, sha256_exact,
 };
 
 const SECTION_MAGIC: [u8; 4] = *b"EBS1";
@@ -84,9 +84,12 @@ pub struct OpenedArchive {
 /// Serializes a validated EAM as canonical unencrypted Complete INDEXED ECF.
 pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> {
     input.validate()?;
-    validate_store_plan(&input.transform_plans)?;
+    validate_plans(&input.transform_plans)?;
     let (mut archive, roots) = apply_native_identities(input)?;
-    normalize_descriptor(&mut archive)?;
+    let plans_payload = encode_transform_plans(&archive.transform_plans)?;
+    let (chunk_payload, relative_index) =
+        encode_chunks(&archive.content_store.chunks, &archive.transform_plans)?;
+    normalize_descriptor(&mut archive, &relative_index)?;
 
     let descriptor_payload = encode_descriptor(&DescriptorBody {
         namespace: FORMAT_NAMESPACE.to_owned(),
@@ -98,8 +101,6 @@ pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> 
         pcr: roots.pcr.0,
         aux: roots.aux.0,
     })?;
-    let plans_payload = encode_transform_plans(&archive.transform_plans)?;
-    let (chunk_payload, relative_index) = encode_chunks(&archive.content_store.chunks)?;
     let manifest_payload = encode_manifest(&archive.entry_set, &archive.content_store.objects)?;
     let fidelity_payload = encode_fidelity(&archive.fidelity)?;
 
@@ -188,13 +189,27 @@ pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> 
 
 /// Opens and fully verifies canonical bootstrap ECF bytes.
 pub fn open(bytes: &[u8]) -> Result<OpenedArchive> {
-    open_with_policy(bytes, crate::archive::bootstrap_resource_policy())
+    open_with_limits(
+        bytes,
+        crate::archive::bootstrap_resource_policy(),
+        crate::archive::bootstrap_decode_policy(),
+    )
 }
 
 /// Opens and fully verifies bytes while enforcing caller-owned resource limits.
 pub fn open_with_policy(bytes: &[u8], policy: ResourceBudget) -> Result<OpenedArchive> {
+    open_with_limits(bytes, policy, crate::archive::bootstrap_decode_policy())
+}
+
+/// Opens and verifies bytes under explicit size and decoder-memory limits.
+pub fn open_with_limits(
+    bytes: &[u8],
+    policy: ResourceBudget,
+    decode_policy: DecodeRequirements,
+) -> Result<OpenedArchive> {
     let preamble = decode_preamble(bytes)?;
     enforce_caller_policy(preamble.budget, policy)?;
+    enforce_decode_policy(preamble.decode, decode_policy)?;
     let footer = decode_footer(bytes, &preamble)?;
     if preamble.footer_hint != footer.offset {
         return Err(noncanonical(
@@ -236,6 +251,8 @@ pub fn open_with_policy(bytes: &[u8], policy: ResourceBudget) -> Result<OpenedAr
             .offset
             .checked_add(SECTION_HEADER_LEN)
             .ok_or_else(|| resource("chunk payload offset overflow"))?,
+        &plans,
+        preamble.budget,
     )?;
     let (entries, objects) = decode_manifest(manifest_section.payload)?;
     let fidelity = decode_fidelity(fidelity_section.payload)?;
@@ -272,7 +289,12 @@ pub fn open_with_policy(bytes: &[u8], policy: ResourceBudget) -> Result<OpenedAr
         index,
     };
     archive.validate()?;
-    validate_actuals(&archive, &footer, u64_len(manifest_section.payload)?)?;
+    validate_actuals(
+        &archive,
+        &footer,
+        u64_len(manifest_section.payload)?,
+        &rebuilt_index,
+    )?;
 
     let stored_entries = archive
         .entry_set
@@ -355,6 +377,15 @@ pub fn verify_with_policy(bytes: &[u8], policy: ResourceBudget) -> Result<Verifi
     Ok(open_with_policy(bytes, policy)?.report)
 }
 
+/// Verifies native bytes under explicit size and decoder-memory limits.
+pub fn verify_with_limits(
+    bytes: &[u8],
+    policy: ResourceBudget,
+    decode_policy: DecodeRequirements,
+) -> Result<VerificationReport> {
+    Ok(open_with_limits(bytes, policy, decode_policy)?.report)
+}
+
 fn enforce_caller_policy(declared: ResourceBudget, policy: ResourceBudget) -> Result<()> {
     let exceeded = declared.entry_count > policy.entry_count
         || declared.total_logical_bytes > policy.total_logical_bytes
@@ -374,7 +405,24 @@ fn enforce_caller_policy(declared: ResourceBudget, policy: ResourceBudget) -> Re
     Ok(())
 }
 
-fn normalize_descriptor(archive: &mut Archive) -> Result<()> {
+fn enforce_decode_policy(declared: DecodeRequirements, policy: DecodeRequirements) -> Result<()> {
+    if declared.window_bytes > policy.window_bytes
+        || declared.working_set_bytes > policy.working_set_bytes
+        || declared.flags & !policy.flags != 0
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::ResourceLimit,
+            "archive decoder requirements exceed caller policy",
+        ));
+    }
+    Ok(())
+}
+
+fn normalize_descriptor(
+    archive: &mut Archive,
+    relative_index: &BTreeMap<Digest, ChunkLocation>,
+) -> Result<()> {
     archive.descriptor.format_major = FormatVersion::BOOTSTRAP.major;
     archive.descriptor.format_minor = FormatVersion::BOOTSTRAP.minor;
     archive.descriptor.format_namespace = FORMAT_NAMESPACE.to_owned();
@@ -382,18 +430,23 @@ fn normalize_descriptor(archive: &mut Archive) -> Result<()> {
     archive.descriptor.layout = Layout::Indexed;
     archive.descriptor.role = ArchiveRole::Complete;
     archive.descriptor.budget_declared = true;
-    archive.descriptor.decode = DecodeRequirements::default();
+    archive.descriptor.decode = aggregate_decode_requirements(&archive.transform_plans);
     archive.descriptor.identity_profile = IdentityProfile::IdentityV1;
     archive.descriptor.digest_algorithm = DigestAlgorithm::Sha256;
-    archive.descriptor.planner_id = STORE_PLAN_IDENTIFIER.to_owned();
+    if archive.descriptor.planner_id.is_empty() {
+        return Err(noncanonical("descriptor planner_id must be non-empty"));
+    }
     if archive.descriptor.chunker_id.is_empty() {
         return Err(noncanonical("descriptor chunker_id must be non-empty"));
     }
-    archive.descriptor.budget = derived_budget(archive)?;
+    archive.descriptor.budget = derived_budget(archive, relative_index)?;
     Ok(())
 }
 
-fn derived_budget(archive: &Archive) -> Result<ResourceBudget> {
+fn derived_budget(
+    archive: &Archive,
+    relative_index: &BTreeMap<Digest, ChunkLocation>,
+) -> Result<ResourceBudget> {
     let mut max_single = 0_u64;
     for object in archive.content_store.objects.values() {
         let size = object.chunks.iter().try_fold(0_u64, |total, chunk_ref| {
@@ -424,7 +477,10 @@ fn derived_budget(archive: &Archive) -> Result<ResourceBudget> {
             .map_err(|_| resource("entry count exceeds u64"))?,
         total_logical_bytes: archive.total_logical_size()?,
         max_single_entry_logical_bytes: max_single,
-        max_expansion_ratio_milli: 1000,
+        max_expansion_ratio_milli: maximum_expansion_ratio(
+            &archive.content_store.chunks,
+            relative_index,
+        )?,
         chunk_count: u64::try_from(archive.content_store.chunks.len())
             .map_err(|_| resource("Chunk count exceeds u64"))?,
         max_path_depth: u64::try_from(max_path_depth)
@@ -434,52 +490,70 @@ fn derived_budget(archive: &Archive) -> Result<ResourceBudget> {
     })
 }
 
-fn validate_store_plan(plans: &[TransformPlan]) -> Result<()> {
-    if plans.len() != 1
-        || plans[0].plan_id != STORE_PLAN_ID
-        || plans[0].identifier != STORE_PLAN_IDENTIFIER
-        || plans[0].codec != STORE_CODEC_IDENTIFIER
-        || !plans[0].transforms.is_empty()
-        || !plans[0].codec_params.is_empty()
-        || plans[0].dictionary.is_some()
-        || plans[0].decode != DecodeRequirements::default()
-    {
-        return Err(Diagnostic::new(
-            OutcomeClass::Unsupported,
-            ReasonCode::UnknownTransformPlan,
-            "bootstrap writer supports only bootstrap-store-v1",
-        ));
+fn maximum_expansion_ratio(
+    chunks: &BTreeMap<Digest, Chunk>,
+    index: &BTreeMap<Digest, ChunkLocation>,
+) -> Result<u64> {
+    let mut maximum = 1_000_u64;
+    for (chunk_id, chunk) in chunks {
+        let stored_len = index
+            .get(chunk_id)
+            .ok_or_else(|| structure("encoded Chunk is absent from the rebuilt Index"))?
+            .stored_len;
+        maximum = maximum.max(expansion_ratio(chunk.logical_len, stored_len)?);
     }
-    Ok(())
+    Ok(maximum)
+}
+
+fn expansion_ratio(logical_len: u64, stored_len: u64) -> Result<u64> {
+    if stored_len == 0 {
+        return if logical_len == 0 {
+            Ok(0)
+        } else {
+            Err(structure("non-empty Chunk has a zero stored length"))
+        };
+    }
+    let numerator = u128::from(logical_len)
+        .checked_mul(1_000)
+        .and_then(|value| value.checked_add(u128::from(stored_len) - 1))
+        .ok_or_else(|| resource("expansion-ratio calculation overflow"))?;
+    u64::try_from(numerator / u128::from(stored_len))
+        .map_err(|_| resource("expansion ratio exceeds u64"))
 }
 
 fn encode_chunks(
     chunks: &BTreeMap<Digest, Chunk>,
+    plans: &[TransformPlan],
 ) -> Result<(Vec<u8>, BTreeMap<Digest, ChunkLocation>)> {
+    let plans = plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
     let mut payload = Vec::new();
     let mut index = BTreeMap::new();
     for chunk in chunks.values() {
-        if chunk.plan_ref != STORE_PLAN_ID || chunk.logical_len != u64_len(&chunk.plaintext)? {
-            return Err(structure(
-                "STORE Chunk has inconsistent plan or logical length",
-            ));
+        if chunk.logical_len != u64_len(&chunk.plaintext)? {
+            return Err(structure("Chunk has an inconsistent logical length"));
         }
+        let plan = plans.get(&chunk.plan_ref).ok_or_else(|| {
+            Diagnostic::new(
+                OutcomeClass::Unsupported,
+                ReasonCode::UnknownTransformPlan,
+                format!("Chunk {} uses plan {}", chunk.chunk_id, chunk.plan_ref),
+            )
+        })?;
+        let stored = encode_payload(plan, &chunk.plaintext)?;
+        let stored_len = u64_len(&stored)?;
         let offset = u64_len(&payload)?;
         payload.extend_from_slice(&CHUNK_MAGIC);
         payload.extend_from_slice(&SECTION_VERSION.to_be_bytes());
         payload.extend_from_slice(&0_u16.to_be_bytes());
-        payload.extend_from_slice(&chunk.logical_len.to_be_bytes());
+        payload.extend_from_slice(&stored_len.to_be_bytes());
         payload.extend_from_slice(chunk.chunk_id.as_bytes());
         payload.extend_from_slice(&chunk.logical_len.to_be_bytes());
         payload.extend_from_slice(&chunk.plan_ref.to_be_bytes());
-        payload.extend_from_slice(&chunk.plaintext);
-        index.insert(
-            chunk.chunk_id,
-            ChunkLocation {
-                offset,
-                stored_len: chunk.logical_len,
-            },
-        );
+        payload.extend_from_slice(&stored);
+        index.insert(chunk.chunk_id, ChunkLocation { offset, stored_len });
     }
     Ok((payload, index))
 }
@@ -487,7 +561,13 @@ fn encode_chunks(
 fn decode_chunks(
     payload: &[u8],
     absolute_payload_offset: u64,
+    plans: &[TransformPlan],
+    declared_budget: ResourceBudget,
 ) -> Result<(BTreeMap<Digest, Chunk>, BTreeMap<Digest, ChunkLocation>)> {
+    let plans = plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
     let mut chunks = BTreeMap::new();
     let mut index = BTreeMap::new();
     let mut cursor = 0_usize;
@@ -516,15 +596,26 @@ fn decode_chunks(
             ));
         }
         previous = Some(chunk_id);
-        if plan_ref != STORE_PLAN_ID {
-            return Err(Diagnostic::new(
+        let plan = plans.get(&plan_ref).ok_or_else(|| {
+            Diagnostic::new(
                 OutcomeClass::Unsupported,
                 ReasonCode::UnknownTransformPlan,
                 format!("Chunk {chunk_id} uses plan {plan_ref}"),
+            )
+        })?;
+        if logical_len > declared_budget.max_single_entry_logical_bytes {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::ResourceLimit,
+                format!("Chunk {chunk_id} exceeds the archive's declared logical bound"),
             ));
         }
-        if stored_len != logical_len {
-            return Err(structure("STORE stored length must equal logical length"));
+        if expansion_ratio(logical_len, stored_len)? > declared_budget.max_expansion_ratio_milli {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::ResourceLimit,
+                format!("Chunk {chunk_id} exceeds the archive's declared expansion bound"),
+            ));
         }
         let data_start = cursor
             .checked_add(header_len)
@@ -535,8 +626,8 @@ fn decode_chunks(
         if data_end > payload.len() {
             return Err(structure("Chunk stored length exceeds CHUNK_DATA"));
         }
-        let plaintext = &payload[data_start..data_end];
-        if sha256_exact(plaintext) != chunk_id {
+        let plaintext = decode_payload(plan, &payload[data_start..data_end], logical_len)?;
+        if sha256_exact(&plaintext) != chunk_id {
             return Err(integrity(
                 ReasonCode::ChunkDigestMismatch,
                 format!("Chunk {chunk_id}"),
@@ -559,10 +650,17 @@ fn decode_chunks(
                 chunk_id,
                 logical_len,
                 plan_ref,
-                plaintext: plaintext.into(),
+                plaintext: plaintext.into_boxed_slice(),
             },
         );
         cursor = data_end;
+        if u64::try_from(chunks.len()).unwrap_or(u64::MAX) > declared_budget.chunk_count {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::ResourceLimit,
+                "decoded Chunk count exceeds the archive declaration",
+            ));
+        }
     }
     Ok((chunks, index))
 }
@@ -983,7 +1081,12 @@ fn required_section<'a>(
         .ok_or_else(|| structure(format!("missing required {:?} section", kind)))
 }
 
-fn validate_actuals(archive: &Archive, footer: &Footer, manifest_len: u64) -> Result<()> {
+fn validate_actuals(
+    archive: &Archive,
+    footer: &Footer,
+    manifest_len: u64,
+    rebuilt_index: &BTreeMap<Digest, ChunkLocation>,
+) -> Result<()> {
     let entry_count =
         u64::try_from(archive.entry_set.len()).map_err(|_| resource("entry count exceeds u64"))?;
     let total_logical = archive.total_logical_size()?;
@@ -1013,6 +1116,8 @@ fn validate_actuals(archive: &Archive, footer: &Footer, manifest_len: u64) -> Re
         .into_iter()
         .max()
         .unwrap_or(0);
+    let expansion = maximum_expansion_ratio(&archive.content_store.chunks, rebuilt_index)?;
+    let decode = aggregate_decode_requirements(&archive.transform_plans);
     if entry_count > budget.entry_count
         || total_logical > budget.total_logical_bytes
         || max_single > budget.max_single_entry_logical_bytes
@@ -1027,9 +1132,9 @@ fn validate_actuals(archive: &Archive, footer: &Footer, manifest_len: u64) -> Re
             .unwrap_or(0)
             > budget.max_path_depth
         || manifest_len > budget.max_metadata_bytes
-        || (total_logical != 0 && budget.max_expansion_ratio_milli < 1000)
+        || expansion > budget.max_expansion_ratio_milli
         || budget.max_key_derivation_cost != 0
-        || archive.descriptor.decode != DecodeRequirements::default()
+        || archive.descriptor.decode != decode
     {
         return Err(Diagnostic::new(
             OutcomeClass::Corrupt,

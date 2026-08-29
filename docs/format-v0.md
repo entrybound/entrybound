@@ -53,10 +53,20 @@ references. Entry records carry the sole path/kind/content/metadata authority.
 
 ## Transform and chunking
 
-`bootstrap-store-v1` is a real TransformPlan record using the registered local
-`store/v1` codec and no transforms. The deterministic bootstrap fixture builder
-uses fixed 1 MiB plaintext chunks. These are implementation choices for the
-first vertical slice, not future format doctrine.
+`bootstrap-store-v1` remains a byte-preserving TransformPlan using `store/v1`.
+Planner v1 may also record `zstandard/v1` plans whose identifiers are
+`zstandard-v1-level-{level}-window-20`. Their closed 12-byte parameter value is
+`"ZP01" | level:i32be | window_log:u8 | checksum:u8 |
+content_size:u8 | dictionary_id:u8`. Planner v1 requires window log 20,
+checksum 0, content size 1, dictionary ID 0, no dictionary, and no preceding
+transforms. Readers reject any other parameter shape rather than consulting
+codec defaults.
+
+The Rust writer uses `zstd` 0.13.3 with optional default features disabled and
+sets all represented encoder parameters explicitly. Zstandard plans declare a
+1 MiB decoder window and 4 MiB working set. The deterministic bootstrap builder
+continues to use fixed 1 MiB plaintext Chunks. Codec selection and chunking are
+physical choices, not Entry semantics. See [planner-v1.md](planner-v1.md).
 
 ## Digests
 
@@ -102,7 +112,7 @@ Sections occur exactly once and in this order: DESCRIPTOR (1), TRANSFORM_PLANS
 (6). Unknown, missing, duplicate, or reordered authoritative sections are not
 canonical.
 
-CHUNK_DATA is a sequence of digest-ordered STORE frames:
+CHUNK_DATA is a sequence of digest-ordered plan-driven frames:
 
 ```text
 "EBCH" | version:u16 | flags:u16 | stored_length:u64

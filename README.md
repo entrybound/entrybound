@@ -29,11 +29,16 @@ establishes:
   section structure, plaintext content, Entry identities, LAI, PCR, AUX, and
   exact-byte PCI;
 - optional Index validation and rebuilding from authoritative CHUNK_DATA.
+- deterministic creation-time compression planning with frozen `fast-v1`,
+  `balanced-v1`, `dense-v1`, and `extreme-v1` policies;
+- operational per-Chunk STORE and Zstandard TransformPlans, with declared and
+  caller-enforced decoder-memory requirements;
 - deterministic filesystem packing for UTF-8 directory and regular-file
   trees, including bounded same-handle source-change detection;
 - capability-relative, component-at-a-time extraction with exclusive file and
   directory creation, collision refusal, and pre-materialization verification;
-- working `pack`, `unpack`, `list`, `inspect`, and `verify` CLI commands;
+- working `pack`, `unpack`, `list`, `inspect`, `verify`, and compression
+  `explain` CLI commands;
 - capture and restoration of `core.mtime` and, on Unix, `core.executable`, with
   an in-band FidelityReport for metadata the bootstrap does not preserve;
 - caller-owned resource limits enforced against the archive declaration before
@@ -43,26 +48,33 @@ establishes:
 
 ```sh
 ebound pack ./example example.eb
+ebound pack ./example example-fast.eb --profile fast
+ebound pack ./example example-dense.eb --profile dense
+ebound pack ./example example-extreme.eb --profile extreme
 ebound verify example.eb
 ebound list example.eb
 ebound inspect example.eb
+ebound explain example.eb
 ebound unpack example.eb ./restored
 ```
 
 `pack` uses `<input-name>.eb` when its output is omitted. `unpack` uses the
 archive path without its extension when its destination is omitted. Archive
 output files and extracted entries are created exclusively; existing objects
-are refused.
+are refused. `balanced` is the default creation profile. Profiles affect
+packing only; every archive records the TransformPlans needed for
+self-describing decompression.
 
 ## Deliberately not implemented
 
-This slice is STORE-only, uses deterministic fixed 1 MiB chunking, and writes
-only unencrypted Complete INDEXED archives. It supports UTF-8 directory names,
-directories, and regular files. It deliberately rejects symlinks and special
-files. There is no legacy ZIP/tar/7z import, STREAM layout, encryption,
-signing, intelligent planning, content-defined chunking, hardlink metadata,
-ACLs, xattrs, ownership, platform-specific extended metadata, mounting,
-recovery, language bindings, Go compatibility layer, or FFI.
+This slice chooses STORE or Zstandard independently for each deterministic
+fixed 1 MiB Chunk and writes only unencrypted Complete INDEXED archives. It
+supports UTF-8 directory names, directories, and regular files. It deliberately
+rejects symlinks and special files. There is no legacy ZIP/tar/7z import,
+STREAM layout, encryption, signing, content-defined chunking, similarity or
+dictionary planning, additional codecs, reconstructive transforms, hardlink
+metadata, ACLs, xattrs, ownership, platform-specific extended metadata,
+mounting, recovery, language bindings, Go compatibility layer, or FFI.
 
 Extraction is rooted in a held capability directory and resolves every
 LogicalPath component relative to that handle. The current implementation uses
@@ -71,9 +83,10 @@ reports this confinement mode. Only collision policy `Refuse` is implemented.
 
 The CLI's explicit bootstrap resource defaults are 1,000,000 entries, 64 GiB
 total logical bytes, 16 GiB per file, 4,000,000 chunks, path depth 1,024, and
-1 GiB of manifest/metadata bytes. These are compatibility limits, not claims
-that every machine can safely process archives of those sizes; embedders can
-and should supply narrower caller-owned limits.
+1 GiB of manifest/metadata bytes. Decoder policy permits the planner-v1 1 MiB
+Zstandard window and declared 4 MiB working set. These are compatibility
+limits, not claims that every machine can safely process archives of those
+sizes; embedders can and should supply narrower caller-owned limits.
 
 ## Build and use
 
@@ -100,5 +113,7 @@ cargo test -p entrybound -p entrybound-cli
 
 See [the bootstrap format note](docs/format-v0.md) for the canonical encoding
 and identity choices, [the filesystem bootstrap note](docs/filesystem-bootstrap.md)
-for capture, confinement, and policy behavior, and
+for capture, confinement, and policy behavior,
+[the planner-v1 note](docs/planner-v1.md) for frozen profiles and the
+minimum-gain rule, and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

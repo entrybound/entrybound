@@ -7,7 +7,6 @@ use crate::eam::{
     LogicalPath, MetadataItem, MetadataName, MetadataSet, PathComponent, PathEncoding,
     Restorability, Timestamp, TimestampPrecision, TransformPlan,
 };
-use crate::identity::{STORE_CODEC_IDENTIFIER, STORE_PLAN_ID, STORE_PLAN_IDENTIFIER};
 
 pub(super) const RECORD_DESCRIPTOR: u16 = 1;
 pub(super) const RECORD_TRANSFORM_PLAN: u16 = 2;
@@ -107,6 +106,7 @@ pub(super) fn encode_transform_plans(plans: &[TransformPlan]) -> Result<Vec<u8>>
 pub(super) fn decode_transform_plans(bytes: &[u8]) -> Result<Box<[TransformPlan]>> {
     let records = decode_record_stream(bytes)?;
     let mut plans = Vec::with_capacity(records.len());
+    let mut previous = None;
     for record in records {
         if record.kind != RECORD_TRANSFORM_PLAN {
             return Err(noncanonical("TRANSFORM_PLANS contains a non-plan record"));
@@ -122,8 +122,15 @@ pub(super) fn decode_transform_plans(bytes: &[u8]) -> Result<Box<[TransformPlan]
                     .map_err(|_| noncanonical("transform identifier is not UTF-8"))
             })
             .collect::<Result<Vec<_>>>()?;
+        let plan_id = record.field(1)?.as_u64()?;
+        if previous.is_some_and(|id| id >= plan_id) {
+            return Err(noncanonical(
+                "TransformPlans must be strictly ordered by plan_id",
+            ));
+        }
+        previous = Some(plan_id);
         plans.push(TransformPlan {
-            plan_id: record.field(1)?.as_u64()?,
+            plan_id,
             identifier: record.field(2)?.as_utf8()?.to_owned(),
             transforms: transforms.into_boxed_slice(),
             codec: record.field(4)?.as_utf8()?.to_owned(),
@@ -139,22 +146,8 @@ pub(super) fn decode_transform_plans(bytes: &[u8]) -> Result<Box<[TransformPlan]
             },
         });
     }
-    if plans.len() != 1
-        || plans[0].plan_id != STORE_PLAN_ID
-        || plans[0].identifier != STORE_PLAN_IDENTIFIER
-        || !plans[0].transforms.is_empty()
-        || plans[0].codec != STORE_CODEC_IDENTIFIER
-        || !plans[0].codec_params.is_empty()
-        || plans[0].dictionary.is_some()
-        || plans[0].decode != crate::eam::DecodeRequirements::default()
-    {
-        return Err(Diagnostic::new(
-            OutcomeClass::Unsupported,
-            ReasonCode::UnknownTransformPlan,
-            "bootstrap archives require exactly bootstrap-store-v1",
-        ));
-    }
     let plans = plans.into_boxed_slice();
+    crate::codec::validate_plans(&plans)?;
     if encode_transform_plans(&plans)? != bytes {
         return Err(noncanonical("TransformPlan records are not canonical"));
     }

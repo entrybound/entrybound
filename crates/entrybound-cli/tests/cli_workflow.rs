@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
 
 #[test]
-fn all_five_native_commands_operate_on_real_archives() {
+fn all_native_commands_operate_on_real_archives() {
     let fixture = Fixture::new();
     let source = fixture.path.join("source");
     let archive = fixture.path.join("fixture.eb");
@@ -15,6 +15,12 @@ fn all_five_native_commands_operate_on_real_archives() {
     fs::create_dir(source.join("nested")).unwrap();
     fs::create_dir(source.join("empty-dir")).unwrap();
     fs::write(source.join("nested/hello.txt"), b"hello from the CLI\n").unwrap();
+    fs::write(source.join("compressible.bin"), vec![b'x'; 128 * 1024]).unwrap();
+    fs::write(
+        source.join("incompressible.bin"),
+        deterministic_noise(128 * 1024),
+    )
+    .unwrap();
     fs::write(source.join("empty"), []).unwrap();
 
     let pack = command(["pack", path(&source), path(&archive)]);
@@ -35,8 +41,17 @@ fn all_five_native_commands_operate_on_real_archives() {
     assert_success(&inspect);
     let inspection = String::from_utf8_lossy(&inspect.stdout);
     assert!(inspection.contains("format: ecf/bootstrap-v1"));
-    assert!(inspection.contains("planner: bootstrap-store-v1"));
+    assert!(inspection.contains("planner: balanced-v1"));
+    assert!(inspection.contains("codec usage: store/v1"));
+    assert!(inspection.contains("codec usage: zstandard/v1"));
     assert!(inspection.contains("index: present and valid"));
+
+    let explain = command(["explain", path(&archive)]);
+    assert_success(&explain);
+    let explanation = String::from_utf8_lossy(&explain.stdout);
+    assert!(explanation.contains("planner: balanced-v1"));
+    assert!(explanation.contains("Zstandard: chunks="));
+    assert!(explanation.contains("physical Chunk-payload savings:"));
 
     let unpack = command(["unpack", path(&archive), path(&restored)]);
     assert_success(&unpack);
@@ -45,6 +60,26 @@ fn all_five_native_commands_operate_on_real_archives() {
         b"hello from the CLI\n"
     );
     assert!(restored.join("empty-dir").is_dir());
+}
+
+#[test]
+fn pack_help_and_profile_option_are_available_only_at_creation() {
+    let help = command(["pack", "--help"]);
+    assert_success(&help);
+    assert!(String::from_utf8_lossy(&help.stdout).contains("--profile"));
+
+    let fixture = Fixture::new();
+    let source = fixture.path.join("source");
+    let archive = fixture.path.join("dense.eb");
+    fs::create_dir(&source).unwrap();
+    fs::write(source.join("data"), vec![0_u8; 4096]).unwrap();
+    let output = command(["pack", path(&source), path(&archive), "--profile", "dense"]);
+    assert_success(&output);
+    assert!(String::from_utf8_lossy(&output.stdout).contains("planner dense-v1"));
+
+    let error = command(["verify", path(&archive), "--profile", "fast"]);
+    assert!(!error.status.success());
+    assert!(String::from_utf8_lossy(&error.stderr).contains("EB_CLI_USAGE"));
 }
 
 #[test]
@@ -85,6 +120,18 @@ fn assert_success(output: &Output) {
         String::from_utf8_lossy(&output.stdout),
         String::from_utf8_lossy(&output.stderr)
     );
+}
+
+fn deterministic_noise(len: usize) -> Vec<u8> {
+    let mut state = 0xbb67_ae85_84ca_a73b_u64;
+    (0..len)
+        .map(|_| {
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            state as u8
+        })
+        .collect()
 }
 
 fn path(value: &std::path::Path) -> &str {

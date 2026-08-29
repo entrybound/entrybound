@@ -7,24 +7,34 @@ use std::process::ExitCode;
 
 use entrybound::archive::{
     ConfinementMode, ExtractionPolicy, PackOptions, default_pack_output,
-    default_unpack_destination, inspect, list, pack_directory, unpack,
+    default_unpack_destination, explain as compression_explain, inspect, list, pack_directory,
+    unpack,
 };
 use entrybound::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use entrybound::eam::{ArchiveRole, EntryKind, Layout};
 use entrybound::ecf::{IndexStatus, open, verify};
+use entrybound::planner::CompressionProfile;
 
 const HELP: &str = "\
 Entrybound (experimental native bootstrap)\n\
 \n\
 Usage:\n\
-  ebound pack <input-directory> [output.eb]\n\
+  ebound pack <input-directory> [output.eb] [--profile fast|balanced|dense|extreme]\n\
   ebound unpack <archive.eb> [destination]\n\
   ebound list <archive.eb>\n\
   ebound inspect <archive.eb>\n\
   ebound verify <archive.eb>\n\
+  ebound explain <archive.eb>\n\
 \n\
 This build supports unencrypted Complete INDEXED archives with directories,\n\
-regular files, fixed 1 MiB chunking, and STORE only.\n";
+regular files, fixed 1 MiB chunking, and per-Chunk STORE/Zstandard planning.\n\
+The default creation profile is balanced; decoding is self-describing.\n";
+
+const PACK_HELP: &str = "\
+Usage: ebound pack <input-directory> [output.eb] [--profile fast|balanced|dense|extreme]\n\
+\n\
+Creates a deterministic native .eb archive. The default profile is balanced.\n\
+Profiles are creation-time policy only; archives record their TransformPlans.\n";
 
 fn run(arguments: impl IntoIterator<Item = OsString>) -> Result<()> {
     let mut arguments = arguments.into_iter();
@@ -47,6 +57,7 @@ fn run(arguments: impl IntoIterator<Item = OsString>) -> Result<()> {
         "list" => command_list(arguments.collect()),
         "inspect" => command_inspect(arguments.collect()),
         "verify" => command_verify(arguments.collect()),
+        "explain" => command_explain(arguments.collect()),
         other => Err(Diagnostic::new(
             OutcomeClass::Unsupported,
             ReasonCode::CommandNotImplemented,
@@ -56,15 +67,52 @@ fn run(arguments: impl IntoIterator<Item = OsString>) -> Result<()> {
 }
 
 fn command_pack(arguments: Vec<OsString>) -> Result<()> {
-    if !(1..=2).contains(&arguments.len()) {
-        return Err(usage("pack requires <input-directory> [output.eb]"));
+    if arguments.len() == 1 && matches!(arguments[0].to_str(), Some("--help" | "-h")) {
+        print!("{PACK_HELP}");
+        return Ok(());
     }
-    let input = PathBuf::from(&arguments[0]);
-    let output = arguments
+    let mut positionals = Vec::new();
+    let mut profile = None;
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        let value = &arguments[cursor];
+        if value == "--profile" {
+            if profile.is_some() {
+                return Err(usage("pack accepts --profile only once"));
+            }
+            cursor += 1;
+            let selected = arguments
+                .get(cursor)
+                .and_then(|value| value.to_str())
+                .ok_or_else(|| usage("--profile requires a UTF-8 profile name"))?;
+            profile = Some(selected.parse::<CompressionProfile>()?);
+        } else if value.to_string_lossy().starts_with("--") {
+            return Err(usage(format!(
+                "pack does not recognize option '{}'",
+                value.to_string_lossy()
+            )));
+        } else {
+            positionals.push(value.clone());
+        }
+        cursor += 1;
+    }
+    if !(1..=2).contains(&positionals.len()) {
+        return Err(usage(
+            "pack requires <input-directory> [output.eb] and an optional --profile",
+        ));
+    }
+    let input = PathBuf::from(&positionals[0]);
+    let output = positionals
         .get(1)
         .map(PathBuf::from)
         .unwrap_or_else(|| default_pack_output(&input));
-    let encoded = pack_directory(&input, PackOptions::default())?;
+    let encoded = pack_directory(
+        &input,
+        PackOptions {
+            profile: profile.unwrap_or_default(),
+            ..PackOptions::default()
+        },
+    )?;
     write_exclusive(&output, &encoded.bytes)?;
     println!(
         "OK packed {} entries into {}",
@@ -75,6 +123,7 @@ fn command_pack(arguments: Vec<OsString>) -> Result<()> {
     println!("PCR {}", encoded.identities.pcr.0);
     println!("AUX {}", encoded.identities.aux.0);
     println!("PCI {}", encoded.identities.pci.0);
+    println!("planner {}", encoded.archive.descriptor.planner_id);
     Ok(())
 }
 
@@ -155,7 +204,21 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
     println!("planner: {}", view.planner_id);
     println!("chunker: {}", view.chunker_id);
     for plan in view.plans {
-        println!("transform plan: {} (codec {})", plan.identifier, plan.codec);
+        println!(
+            "transform plan: id={} {} (codec {}; window={}, working-set={}, flags={:#x})",
+            plan.plan_id,
+            plan.identifier,
+            plan.codec,
+            plan.decode.window_bytes,
+            plan.decode.working_set_bytes,
+            plan.decode.flags
+        );
+    }
+    for usage in view.codec_usage {
+        println!(
+            "codec usage: {} chunks={}, logical-bytes={}, stored-bytes={}",
+            usage.codec, usage.chunk_count, usage.logical_bytes, usage.stored_bytes
+        );
     }
     println!("LAI: {}", view.identities.lai.0);
     println!("PCR: {}", view.identities.pcr.0);
@@ -183,11 +246,45 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
         budget.max_metadata_bytes
     );
     println!(
-        "decode requirements: STORE; window={}, working-set={}, flags={:#x}, kdf-cost={}",
+        "aggregate decode requirements: window={}, working-set={}, flags={:#x}, kdf-cost={}",
         view.decode_requirements.window_bytes,
         view.decode_requirements.working_set_bytes,
         view.decode_requirements.flags,
         budget.max_key_derivation_cost
+    );
+    Ok(())
+}
+
+fn command_explain(arguments: Vec<OsString>) -> Result<()> {
+    let archive = one_path("explain", arguments)?;
+    let bytes = read(&archive)?;
+    let opened = open(&bytes)?;
+    let explanation = compression_explain(&opened)?;
+    println!("planner: {}", explanation.planner_id);
+    println!("total logical bytes: {}", explanation.total_logical_bytes);
+    println!(
+        "unique plaintext Chunk bytes: {}",
+        explanation.total_plaintext_chunk_bytes
+    );
+    println!(
+        "stored Chunk bytes: {}",
+        explanation.total_stored_chunk_bytes
+    );
+    println!(
+        "STORE: chunks={}, logical-bytes={}, stored-bytes={}",
+        explanation.store_chunk_count,
+        explanation.store_logical_bytes,
+        explanation.store_stored_bytes
+    );
+    println!(
+        "Zstandard: chunks={}, logical-bytes={}, stored-bytes={}",
+        explanation.zstandard_chunk_count,
+        explanation.zstandard_logical_bytes,
+        explanation.zstandard_stored_bytes
+    );
+    println!(
+        "physical Chunk-payload savings: {} bytes",
+        explanation.physical_savings_bytes
     );
     Ok(())
 }

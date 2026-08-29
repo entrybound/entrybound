@@ -41,9 +41,10 @@ fn filesystem_round_trip_is_deterministic_and_complete() {
     }));
     let view = inspect(&opened).unwrap();
     assert_eq!(view.entry_count as usize, listed.len());
-    assert_eq!(view.planner_id, "bootstrap-store-v1");
+    assert_eq!(view.planner_id, "balanced-v1");
     assert_eq!(view.chunker_id, "fixed-1mib/v1");
-    assert_eq!(view.plans[0].codec, "store/v1");
+    assert!(view.plans.iter().any(|plan| plan.codec == "store/v1"));
+    assert!(view.plans.iter().any(|plan| plan.codec == "zstandard/v1"));
 
     let duplicate_files = opened
         .archive

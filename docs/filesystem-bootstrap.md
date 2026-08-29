@@ -16,8 +16,10 @@ The bootstrap captures `core.mtime` and captures `core.executable` on Unix.
 Platforms without a portable executable bit declare that class unavailable.
 The FidelityReport also declares ACLs, xattrs, ownership, hardlink identity,
 platform-specific metadata, and symlink/special-file semantics unavailable.
-Files use fixed 1 MiB chunks and the existing `bootstrap-store-v1`
-TransformPlan.
+Files use fixed 1 MiB chunks. The creation-only planner selects an explicit
+STORE or Zstandard TransformPlan for each unique plaintext Chunk; the reader
+uses only those recorded plans. `balanced-v1` is the default. Profiles are
+documented in [planner-v1.md](planner-v1.md).
 
 Extraction fully opens, verifies, and enforces caller resource policy before it
 creates the destination root. It holds that root as a `cap-std` `Dir`, resolves
@@ -32,4 +34,6 @@ logical bytes, 16 GiB for one file, 4,000,000 distinct Chunks, path depth 1,024,
 and 1 GiB for the manifest/metadata bound. A declaration above caller policy is
 `POLICY_REFUSED`; decoded actuals above the archive's own declaration are
 corruption. Applications embedding the library should choose limits suitable
-for their environment.
+for their environment. Zstandard archives additionally declare a 1 MiB decoder
+window and 4 MiB working-set requirement. The bootstrap caller policy enforces
+both before section decoding and can be narrowed by an embedding application.

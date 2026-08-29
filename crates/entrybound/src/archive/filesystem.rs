@@ -16,13 +16,11 @@ use crate::eam::{
     Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, DecodeRequirements, Digest,
     DigestAlgorithm, Entry, EntryData, EntryIdentity, EntrySet, FeatureSet, FidelityIssue,
     FidelityReport, IdentityProfile, Index, Layout, LogicalPath, MetadataItem, MetadataSet,
-    ResourceBudget, Timestamp, TimestampPrecision, TransformPlan,
+    ResourceBudget, Timestamp, TimestampPrecision,
 };
-use crate::ecf::{EncodedArchive, WriteOptions, encode, open_with_policy};
-use crate::identity::{
-    BOOTSTRAP_CHUNK_SIZE, STORE_CODEC_IDENTIFIER, STORE_PLAN_ID, STORE_PLAN_IDENTIFIER,
-    build_content,
-};
+use crate::ecf::{EncodedArchive, WriteOptions, encode, open_with_limits};
+use crate::identity::{BOOTSTRAP_CHUNK_SIZE, build_content};
+use crate::planner::{CompressionProfile, UNPLANNED_PLAN_ID, plan_archive};
 
 const BOOTSTRAP_CHUNKER: &str = "fixed-1mib/v1";
 
@@ -32,6 +30,8 @@ pub struct PackOptions {
     /// Number of fresh-handle retries after the initial capture attempt.
     pub source_retries: usize,
     pub include_index: bool,
+    /// Creation-time policy. It is resolved into recorded TransformPlans.
+    pub profile: CompressionProfile,
 }
 
 impl Default for PackOptions {
@@ -39,6 +39,7 @@ impl Default for PackOptions {
         Self {
             source_retries: 2,
             include_index: true,
+            profile: CompressionProfile::Balanced,
         }
     }
 }
@@ -88,7 +89,7 @@ pub fn pack_directory(input: &Path, options: PackOptions) -> Result<EncodedArchi
     })?;
     let mut scan = Scan::default();
     scan_directory(&root, &[], options.source_retries, &mut scan)?;
-    let archive = scan.finish()?;
+    let archive = scan.finish(options.profile)?;
     encode(
         &archive,
         WriteOptions {
@@ -134,7 +135,7 @@ pub fn unpack(
             "the bootstrap extractor supports only collision refusal",
         ));
     }
-    let opened = open_with_policy(bytes, policy.budget())?;
+    let opened = open_with_limits(bytes, policy.budget(), policy.decode())?;
 
     match std::fs::create_dir(destination) {
         Ok(()) => {}
@@ -255,8 +256,8 @@ struct Scan {
 }
 
 impl Scan {
-    fn finish(self) -> Result<Archive> {
-        Ok(Archive {
+    fn finish(self, profile: CompressionProfile) -> Result<Archive> {
+        let mut archive = Archive {
             descriptor: ArchiveDescriptor {
                 format_major: 0,
                 format_minor: 1,
@@ -269,7 +270,7 @@ impl Scan {
                 decode: DecodeRequirements::default(),
                 identity_profile: IdentityProfile::IdentityV1,
                 digest_algorithm: DigestAlgorithm::Sha256,
-                planner_id: STORE_PLAN_IDENTIFIER.to_owned(),
+                planner_id: profile.planner_id().to_owned(),
                 chunker_id: BOOTSTRAP_CHUNKER.to_owned(),
                 lai: Digest::ZERO,
                 pcr: Digest::ZERO,
@@ -281,19 +282,12 @@ impl Scan {
                 objects: self.objects,
                 chunks: self.chunks,
             },
-            transform_plans: vec![TransformPlan {
-                plan_id: STORE_PLAN_ID,
-                identifier: STORE_PLAN_IDENTIFIER.to_owned(),
-                transforms: Box::default(),
-                codec: STORE_CODEC_IDENTIFIER.to_owned(),
-                codec_params: Box::default(),
-                dictionary: None,
-                decode: DecodeRequirements::default(),
-            }]
-            .into_boxed_slice(),
+            transform_plans: Box::default(),
             fidelity: bootstrap_fidelity(),
             index: Index::default(),
-        })
+        };
+        plan_archive(&mut archive, profile)?;
+        Ok(archive)
     }
 }
 
@@ -338,7 +332,8 @@ fn scan_directory(
         } else if file_type.is_file() {
             let (plaintext, metadata) =
                 capture_entry_with_probe(&source_entry, retries, |_| Ok(false))?;
-            let (object, chunks) = build_content(&plaintext, BOOTSTRAP_CHUNK_SIZE, STORE_PLAN_ID)?;
+            let (object, chunks) =
+                build_content(&plaintext, BOOTSTRAP_CHUNK_SIZE, UNPLANNED_PLAN_ID)?;
             let digest = object.logical_digest;
             scan.objects.entry(digest).or_insert(object);
             scan.chunks.extend(chunks);

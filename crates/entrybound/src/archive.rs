@@ -2,7 +2,7 @@
 //!
 //! Callers construct policy and archive bytes never mutate it.
 
-use crate::eam::ResourceBudget;
+use crate::eam::{DecodeRequirements, ResourceBudget};
 
 mod filesystem;
 mod inspection;
@@ -11,7 +11,10 @@ pub use filesystem::{
     ExtractionReport, PackOptions, default_pack_output, default_unpack_destination, pack_directory,
     unpack,
 };
-pub use inspection::{ArchiveInspection, ListedEntry, PlanInspection, inspect, list};
+pub use inspection::{
+    ArchiveInspection, CodecUsage, CompressionExplanation, ListedEntry, PlanInspection, explain,
+    inspect, list,
+};
 
 /// Explicit, deliberately generous limits for the experimental bootstrap CLI.
 /// Applications should construct narrower limits for their own environment.
@@ -21,11 +24,24 @@ pub const fn bootstrap_resource_policy() -> ResourceBudget {
         entry_count: 1_000_000,
         total_logical_bytes: 64 * 1024 * 1024 * 1024,
         max_single_entry_logical_bytes: 16 * 1024 * 1024 * 1024,
-        max_expansion_ratio_milli: 1_000,
+        max_expansion_ratio_milli: 64_000_000,
         chunk_count: 4_000_000,
         max_path_depth: 1_024,
         max_metadata_bytes: 1024 * 1024 * 1024,
         max_key_derivation_cost: 0,
+    }
+}
+
+/// Decoder memory ceilings used by the experimental CLI.
+///
+/// Planner v1 emits a 1 MiB Zstandard window and declares a conservative
+/// 4 MiB working set. Applications may provide narrower caller-owned policy.
+#[must_use]
+pub const fn bootstrap_decode_policy() -> DecodeRequirements {
+    DecodeRequirements {
+        window_bytes: 1024 * 1024,
+        working_set_bytes: 4 * 1024 * 1024,
+        flags: 0,
     }
 }
 
@@ -51,13 +67,32 @@ pub enum ConfinementMode {
 pub struct ExtractionPolicy {
     collision: CollisionPolicy,
     budget: ResourceBudget,
+    decode: DecodeRequirements,
 }
 
 impl ExtractionPolicy {
     /// Constructs policy without consulting archive-controlled data.
     #[must_use]
     pub const fn new(collision: CollisionPolicy, budget: ResourceBudget) -> Self {
-        Self { collision, budget }
+        Self {
+            collision,
+            budget,
+            decode: bootstrap_decode_policy(),
+        }
+    }
+
+    /// Constructs policy with explicit archive-size and decoder-memory limits.
+    #[must_use]
+    pub const fn new_with_decode(
+        collision: CollisionPolicy,
+        budget: ResourceBudget,
+        decode: DecodeRequirements,
+    ) -> Self {
+        Self {
+            collision,
+            budget,
+            decode,
+        }
     }
 
     #[must_use]
@@ -68,6 +103,11 @@ impl ExtractionPolicy {
     #[must_use]
     pub const fn budget(self) -> ResourceBudget {
         self.budget
+    }
+
+    #[must_use]
+    pub const fn decode(self) -> DecodeRequirements {
+        self.decode
     }
 }
 

@@ -10,7 +10,7 @@ mod records;
 
 pub use container::{
     EncodedArchive, IndexStatus, OpenedArchive, VerificationReport, WriteOptions, encode, open,
-    open_with_policy, verify, verify_with_policy,
+    open_with_limits, open_with_policy, verify, verify_with_limits, verify_with_policy,
 };
 
 /// Candidate Entrybound magic selected by the architecture specification.
@@ -25,7 +25,7 @@ pub const FOOTER_LEN: u64 = 128;
 /// Fixed section-header width.
 pub const SECTION_HEADER_LEN: u64 = 64;
 
-/// Fixed plaintext STORE chunk-frame header width.
+/// Fixed plan-driven Chunk-frame header width.
 pub const CHUNK_FRAME_HEADER_LEN: u64 = 64;
 
 /// Versioned namespace for the experimental encoding.
