@@ -16,8 +16,9 @@ cargo clippy -p entrybound -p entrybound-cli --all-targets -- -D warnings
 cargo test -p entrybound
 ```
 
-The workspace currently uses no third-party Rust crates. Keep the CLI crate
-thin: semantic rules belong in `entrybound::eam`, format rules in
+The core crate currently uses RustCrypto's `sha2` for SHA-256; additional
+dependencies require a concrete format or implementation need. Keep the CLI
+crate thin: semantic rules belong in `entrybound::eam`, format rules in
 `entrybound::ecf`, identity rules in `entrybound::identity`, and filesystem
 workflows in `entrybound::archive`.
 

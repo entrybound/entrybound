@@ -22,19 +22,25 @@ establishes:
   duplicate-path, `.` and `..`, and file-prefix invariant checks;
 - distinct LAI, PCR, AUX, and PCI types, stable diagnostic classes/reason
   codes, and a caller-owned extraction-policy boundary.
+- deterministic canonical serialization of validated in-memory EAM into
+  unencrypted Complete INDEXED `.eb` bytes;
+- native reopen and verification covering canonical encoding, container and
+  section structure, plaintext content, Entry identities, LAI, PCR, AUX, and
+  exact-byte PCI;
+- optional Index validation and rebuilding from authoritative CHUNK_DATA.
 
-This language-standardization slice does not yet serialize or open `.eb`
-archives. The CLI entry point exists and reports unfinished archive commands as
-unsupported instead of pretending they work.
+The native functionality is currently exposed through the `entrybound` Rust
+library. The CLI entry point still reports archive commands as unsupported
+instead of pretending filesystem workflows exist.
 
 ## Deliberately not implemented
 
-The native writer, reader, pack, unpack, list, inspect, and verify operations
-are not implemented yet. There is also no legacy ZIP/tar/7z import, STREAM
-layout, encryption, signing, advanced compression, intelligent planning,
-content-defined chunking, symlink or special-file support, hardlink metadata,
-ACLs, xattrs, platform-specific metadata, mounting, recovery, language
-bindings, Go compatibility layer, or FFI.
+Filesystem pack and unpack, and CLI list/inspect/verify, are not implemented
+yet. There is also no legacy ZIP/tar/7z import, STREAM layout, encryption,
+signing, advanced compression, intelligent planning, content-defined chunking,
+symlink or special-file support, hardlink metadata, ACLs, xattrs,
+platform-specific metadata, mounting, recovery, language bindings, Go
+compatibility layer, or FFI.
 
 ## Build and use
 

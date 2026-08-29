@@ -5,6 +5,7 @@
 //! this library rather than a second implementation of archive semantics.
 
 pub mod archive;
+mod canonical;
 pub mod diagnostics;
 pub mod eam;
 pub mod ecf;
