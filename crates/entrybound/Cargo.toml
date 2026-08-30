@@ -12,4 +12,4 @@ workspace = true
 [dependencies]
 cap-std = "4.0.3"
 sha2 = "0.11.0"
-zstd = { version = "=0.13.3", default-features = false }
+zstd = { version = "=0.13.3", default-features = false, features = ["zdict_builder"] }

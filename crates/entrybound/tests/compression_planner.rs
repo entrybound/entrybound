@@ -97,7 +97,7 @@ fn planner_selects_codecs_per_chunk_and_round_trips_exactly() {
     }
 
     let explanation = explain(&opened).unwrap();
-    assert_eq!(explanation.planner_id, "balanced-v2");
+    assert_eq!(explanation.planner_id, "balanced-v3");
     assert!(explanation.physical_savings_bytes > 0);
 }
 
@@ -169,7 +169,15 @@ fn decoder_requirements_are_refused_before_decompression() {
     fs::create_dir(&source).unwrap();
     fs::write(source.join("content"), vec![0_u8; 128 * 1024]).unwrap();
     let encoded = pack(&source, CompressionProfile::Balanced);
-    assert_eq!(encoded.archive.descriptor.decode, bootstrap_decode_policy());
+    assert_eq!(encoded.archive.descriptor.decode.window_bytes, 1024 * 1024);
+    assert_eq!(
+        encoded.archive.descriptor.decode.working_set_bytes,
+        4 * 1024 * 1024
+    );
+    assert!(
+        encoded.archive.descriptor.decode.working_set_bytes
+            <= bootstrap_decode_policy().working_set_bytes
+    );
 
     let error = open_with_limits(
         &encoded.bytes,
@@ -211,14 +219,14 @@ fn compressed_payload_and_plan_corruption_have_typed_failures() {
     let encoded = pack(&source, CompressionProfile::Balanced);
 
     let mut damaged_payload = encoded.bytes.clone();
-    let (_, chunk_data) = locate_section(&damaged_payload, 3);
-    damaged_payload[chunk_data.start + 64] ^= 0xff;
-    rehash_section(&mut damaged_payload, 3);
+    let (_, chunk_data) = locate_section(&damaged_payload, 5);
+    damaged_payload[chunk_data.start + 96] ^= 0xff;
+    rehash_section(&mut damaged_payload, 5);
     let error = verify(&damaged_payload).unwrap_err();
     assert_eq!(error.code(), ReasonCode::DecompressionFailed);
 
     let mut wrong_logical_length = encoded.bytes.clone();
-    let (_, chunk_data) = locate_section(&wrong_logical_length, 3);
+    let (_, chunk_data) = locate_section(&wrong_logical_length, 5);
     let declared = u64::from_be_bytes(
         wrong_logical_length[chunk_data.start + 48..chunk_data.start + 56]
             .try_into()
@@ -230,7 +238,7 @@ fn compressed_payload_and_plan_corruption_have_typed_failures() {
     let expansion = u64::from_be_bytes(wrong_logical_length[120..128].try_into().unwrap());
     wrong_logical_length[120..128].copy_from_slice(&(expansion + 1_000).to_be_bytes());
     rehash_preamble(&mut wrong_logical_length);
-    rehash_section(&mut wrong_logical_length, 3);
+    rehash_section(&mut wrong_logical_length, 5);
     let error = verify(&wrong_logical_length).unwrap_err();
     assert_eq!(error.code(), ReasonCode::DecompressedLengthMismatch);
 

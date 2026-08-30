@@ -27,6 +27,9 @@ implementation need. Keep the CLI crate thin: semantic rules belong in
 `entrybound::identity`, creation-time codec selection in
 `entrybound::planner`, operational codec dispatch below ECF, and filesystem
 workflows and caller-owned resource policy in `entrybound::archive`.
+Deterministic similarity feature extraction belongs in
+`entrybound::similarity`; Dictionary/ChunkGroup candidate selection remains in
+the creation-only planner.
 
 The primary executable is `ebound`. The `entrybound` executable is a thin
 compatibility alias; both call the shared implementation in the
@@ -46,6 +49,13 @@ its table-generation formula, boundary masks, and min/target/max parameters.
 Never change those in place. Creation-time chunking belongs in
 `entrybound::chunker`; EAM and ECF consume only resulting ordered Chunk
 references. Exact dedup equality is the plaintext SHA-256 Chunk identity.
+
+Planner v3 also freezes `bottom-k-shingle-v1`, per-profile cohort bounds,
+dictionary sample ordering/caps, trainer construction identifiers, dictionary
+and lookback candidate levels, the strict cohort gain rule, and bounded access
+calculation. Changing any of those requires a new planner/similarity version.
+ChunkGroup membership authority belongs only on `Chunk.group_ref`; never add a
+duplicated authoritative member list.
 
 Generated conformance inputs belong in tests as format-building code, not as
 opaque binary fixtures. Each negative case must assert a stable reason code.

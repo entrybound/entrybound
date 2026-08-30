@@ -1,6 +1,7 @@
 # Normalized CDC and exact deduplication
 
-Status: frozen creation-time behavior for planner v2. Decoders do not implement
+Status: frozen creation-time behavior introduced by planner v2 and inherited
+unchanged by planner v3. Decoders do not implement
 or invoke the chunker; they consume the ordered Chunk references recorded in
 each ContentObject.
 
@@ -49,7 +50,8 @@ gear-norm-v1/min-{bytes}/target-{bytes}/max-{bytes}
 
 ## Planner v2 policies
 
-Public CLI profile names now create these frozen planner IDs and CDC policies:
+The frozen v2 planner IDs use these CDC policies. Current v3 policies reuse the
+same ordered candidates without altering any `gear-norm-v1` parameter set:
 
 | Planner | Candidate policies (minimum / target / maximum) | Selection |
 |---|---|---|
@@ -97,6 +99,7 @@ logical lengths, so no ECF wire change was required. Historical
 `fixed-1mib/v1` and `*-v1` archives continue to open and verify without
 reinterpretation.
 
-This slice does not implement similarity clustering, similarity hashes,
-dictionaries, chunk reordering, chunk groups/lookback, STREAM layout,
-cross-archive deduplication, or keyed/encrypted boundaries.
+Planner v3 adds similarity clustering, optional physical reordering,
+Dictionaries, and bounded ChunkGroups without changing this chunker. See
+[cross-file-compression-v1.md](cross-file-compression-v1.md). STREAM layout,
+cross-archive deduplication, and keyed/encrypted boundaries remain unsupported.

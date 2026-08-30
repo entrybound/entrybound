@@ -7,6 +7,8 @@ use crate::eam::{
 };
 use crate::ecf::{FORMAT_NAMESPACE, FormatVersion, IndexStatus, OpenedArchive};
 use crate::identity::IdentitySet;
+use crate::planner::{CompressionProfile, independent_encoded_len};
+use crate::similarity::cluster;
 
 /// One canonical entry prepared for a user-facing listing.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -22,6 +24,7 @@ pub struct PlanInspection {
     pub plan_id: u64,
     pub identifier: String,
     pub codec: String,
+    pub dictionary: Option<crate::eam::Digest>,
     pub decode: DecodeRequirements,
 }
 
@@ -47,6 +50,20 @@ pub struct ChunkStatistics {
     pub maximum_chunk_bytes: u64,
 }
 
+/// Dictionary/group presence and bounded random-access costs.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CrossFileInspection {
+    pub feature_present: bool,
+    pub dictionary_count: u64,
+    pub dictionary_bytes: u64,
+    pub dictionary_backed_chunks: u64,
+    pub chunk_group_count: u64,
+    pub maximum_lookback: u32,
+    pub worst_random_access_chunks: u32,
+    pub worst_random_access_bytes: u64,
+    pub every_chunk_independently_decodable: bool,
+}
+
 /// First observable compression summary, derived without an audit-trail record.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompressionExplanation {
@@ -63,6 +80,15 @@ pub struct CompressionExplanation {
     pub zstandard_logical_bytes: u64,
     pub zstandard_stored_bytes: u64,
     pub physical_savings_bytes: i128,
+    pub ordinary_codec_savings_bytes: i128,
+    pub shared_dictionary_savings_bytes: i128,
+    pub bounded_lookback_savings_bytes: i128,
+    pub dictionary_storage_bytes: u64,
+    pub similarity_cohort_count: u64,
+    pub similarity_cohort_chunks: u64,
+    pub similarity_cohort_logical_bytes: u64,
+    pub independent_similarity_cohort_count: u64,
+    pub independent_cohort_reason: Option<String>,
 }
 
 /// Stable library-level information used by the thin `inspect` command.
@@ -80,6 +106,7 @@ pub struct ArchiveInspection {
     pub plans: Vec<PlanInspection>,
     pub codec_usage: Vec<CodecUsage>,
     pub chunks: ChunkStatistics,
+    pub cross_file: CrossFileInspection,
     pub identities: IdentitySet,
     pub index_status: IndexStatus,
     pub fidelity: FidelityReport,
@@ -113,6 +140,7 @@ pub fn list(archive: &Archive) -> Result<Vec<ListedEntry>> {
 pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
     let archive = &opened.archive;
     let chunks = chunk_statistics(archive)?;
+    let cross_file = cross_file_statistics(archive)?;
     Ok(ArchiveInspection {
         format_namespace: FORMAT_NAMESPACE.to_owned(),
         version: FormatVersion {
@@ -134,11 +162,13 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
                 plan_id: plan.plan_id,
                 identifier: plan.identifier.clone(),
                 codec: plan.codec.clone(),
+                dictionary: plan.dictionary,
                 decode: plan.decode,
             })
             .collect(),
         codec_usage: codec_usage(opened)?,
         chunks,
+        cross_file,
         identities: opened.report.identities,
         index_status: opened.report.index_status,
         fidelity: archive.fidelity.clone(),
@@ -163,6 +193,17 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
     let store = usage.iter().find(|item| item.codec == "store/v1");
     let zstandard = usage.iter().find(|item| item.codec == "zstandard/v1");
     let chunks = chunk_statistics(&opened.archive)?;
+    let (
+        ordinary_codec_savings_bytes,
+        shared_dictionary_savings_bytes,
+        bounded_lookback_savings_bytes,
+    ) = separated_codec_savings(opened)?;
+    let (
+        similarity_cohort_count,
+        similarity_cohort_chunks,
+        similarity_cohort_logical_bytes,
+        independent_similarity_cohort_count,
+    ) = similarity_statistics(&opened.archive)?;
     Ok(CompressionExplanation {
         planner_id: opened.archive.descriptor.planner_id.clone(),
         total_logical_bytes: opened.archive.total_logical_size()?,
@@ -178,7 +219,166 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
         codec_usage: usage,
         physical_savings_bytes: i128::from(total_plaintext_chunk_bytes)
             - i128::from(total_stored_chunk_bytes),
+        ordinary_codec_savings_bytes,
+        shared_dictionary_savings_bytes,
+        bounded_lookback_savings_bytes,
+        dictionary_storage_bytes: opened
+            .archive
+            .content_store
+            .dictionaries
+            .values()
+            .try_fold(0_u64, |total, dictionary| {
+                total
+                    .checked_add(u64::try_from(dictionary.bytes.len()).map_err(|_| {
+                        resource("Dictionary length exceeds u64")
+                    })?)
+                    .ok_or_else(|| resource("Dictionary byte total exceeds u64"))
+            })?,
+        similarity_cohort_count,
+        similarity_cohort_chunks,
+        similarity_cohort_logical_bytes,
+        independent_similarity_cohort_count,
+        independent_cohort_reason: (independent_similarity_cohort_count != 0).then(|| {
+            "independent encoding won because dictionary/lookback training was unavailable or complete cost did not clear the frozen gain threshold".to_owned()
+        }),
     })
+}
+
+fn cross_file_statistics(archive: &Archive) -> Result<CrossFileInspection> {
+    let plans = archive
+        .transform_plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
+    let dictionary_backed_chunks = archive
+        .content_store
+        .chunks
+        .values()
+        .filter(|chunk| plans[&chunk.plan_ref].dictionary.is_some())
+        .count();
+    let dictionary_bytes =
+        archive
+            .content_store
+            .dictionaries
+            .values()
+            .try_fold(0_u64, |total, dictionary| {
+                total
+                    .checked_add(
+                        u64::try_from(dictionary.bytes.len())
+                            .map_err(|_| resource("Dictionary length exceeds u64"))?,
+                    )
+                    .ok_or_else(|| resource("Dictionary byte total exceeds u64"))
+            })?;
+    let maximum_lookback = archive
+        .content_store
+        .chunk_groups
+        .values()
+        .map(|group| group.max_lookback)
+        .max()
+        .unwrap_or(0);
+    Ok(CrossFileInspection {
+        feature_present: archive.descriptor.features.incompat
+            & crate::ecf::FEATURE_CROSS_FILE_COMPRESSION_V1
+            != 0,
+        dictionary_count: u64::try_from(archive.content_store.dictionaries.len())
+            .map_err(|_| resource("Dictionary count exceeds u64"))?,
+        dictionary_bytes,
+        dictionary_backed_chunks: u64::try_from(dictionary_backed_chunks)
+            .map_err(|_| resource("dictionary-backed Chunk count exceeds u64"))?,
+        chunk_group_count: u64::try_from(archive.content_store.chunk_groups.len())
+            .map_err(|_| resource("ChunkGroup count exceeds u64"))?,
+        maximum_lookback,
+        worst_random_access_chunks: maximum_lookback,
+        worst_random_access_bytes: archive
+            .content_store
+            .chunk_groups
+            .values()
+            .map(|group| group.max_preceding_bytes)
+            .max()
+            .unwrap_or(0),
+        every_chunk_independently_decodable: archive.content_store.chunk_groups.is_empty(),
+    })
+}
+
+fn separated_codec_savings(opened: &OpenedArchive) -> Result<(i128, i128, i128)> {
+    let archive = &opened.archive;
+    let profile = CompressionProfile::from_planner_id(&archive.descriptor.planner_id);
+    let plans = archive
+        .transform_plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
+    let mut ordinary = 0_i128;
+    let mut dictionary = 0_i128;
+    let mut lookback = 0_i128;
+    for (chunk_id, chunk) in &archive.content_store.chunks {
+        let stored = archive.index.chunks[chunk_id].stored_len;
+        let baseline = match profile {
+            Some(profile) => independent_encoded_len(profile, &chunk.plaintext)?,
+            None => chunk.plaintext.len(),
+        };
+        let baseline = i128::try_from(baseline)
+            .map_err(|_| resource("independent payload length exceeds i128"))?;
+        match crate::codec::plan_mode(plans[&chunk.plan_ref])? {
+            crate::codec::PlanMode::Independent => {
+                if plans[&chunk.plan_ref].codec == "zstandard/v1" {
+                    ordinary += i128::from(chunk.logical_len) - i128::from(stored);
+                }
+            }
+            crate::codec::PlanMode::Dictionary(_) => {
+                ordinary += i128::from(chunk.logical_len) - baseline;
+                dictionary += baseline - i128::from(stored);
+            }
+            crate::codec::PlanMode::Prefix { .. } => {
+                ordinary += i128::from(chunk.logical_len) - baseline;
+                lookback += baseline - i128::from(stored);
+            }
+        }
+    }
+    Ok((ordinary, dictionary, lookback))
+}
+
+fn similarity_statistics(archive: &Archive) -> Result<(u64, u64, u64, u64)> {
+    let Some(profile) = CompressionProfile::from_planner_id(&archive.descriptor.planner_id) else {
+        return Ok((0, 0, 0, 0));
+    };
+    if !archive.descriptor.planner_id.ends_with("-v3") {
+        return Ok((0, 0, 0, 0));
+    }
+    let cohorts = cluster(&archive.content_store.chunks, profile.similarity_policy());
+    let plans = archive
+        .transform_plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
+    let independent = cohorts
+        .iter()
+        .filter(|cohort| {
+            cohort.chunks.iter().all(|chunk_id| {
+                let chunk = &archive.content_store.chunks[chunk_id];
+                plans[&chunk.plan_ref].dictionary.is_none() && chunk.group_ref.is_none()
+            })
+        })
+        .count();
+    let cohort_chunks = cohorts.iter().try_fold(0_u64, |total, cohort| {
+        total
+            .checked_add(
+                u64::try_from(cohort.chunks.len())
+                    .map_err(|_| resource("cohort Chunk count exceeds u64"))?,
+            )
+            .ok_or_else(|| resource("cohort Chunk total exceeds u64"))
+    })?;
+    let cohort_bytes = cohorts.iter().try_fold(0_u64, |total, cohort| {
+        total
+            .checked_add(cohort.logical_bytes)
+            .ok_or_else(|| resource("cohort logical byte total exceeds u64"))
+    })?;
+    Ok((
+        u64::try_from(cohorts.len()).map_err(|_| resource("cohort count exceeds u64"))?,
+        cohort_chunks,
+        cohort_bytes,
+        u64::try_from(independent).map_err(|_| resource("independent cohort count exceeds u64"))?,
+    ))
 }
 
 fn chunk_statistics(archive: &Archive) -> Result<ChunkStatistics> {

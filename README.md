@@ -29,13 +29,15 @@ establishes:
   section structure, plaintext content, Entry identities, LAI, PCR, AUX, and
   exact-byte PCI;
 - optional Index validation and rebuilding from authoritative CHUNK_DATA.
-- deterministic creation-time compression planning with frozen `fast-v1`,
-  `balanced-v1`, `dense-v1`, and `extreme-v1` compatibility behavior and new
-  CDC-aware `fast-v2`, `balanced-v2`, `dense-v2`, and `extreme-v2` policies;
+- deterministic creation-time compression planning with historical v1/v2
+  compatibility and current `fast-v3`, `balanced-v3`, `dense-v3`, and
+  `extreme-v3` policies;
 - normalized Gear-hash content-defined chunking with versioned min/target/max
   parameters and archive-wide exact plaintext Chunk deduplication;
 - operational per-Chunk STORE and Zstandard TransformPlans, with declared and
   caller-enforced decoder-memory requirements;
+- deterministic binary similarity cohorts, cost-qualified shared Zstandard
+  dictionaries, and explicitly bounded ChunkGroups for dense/extreme packing;
 - deterministic filesystem packing for UTF-8 directory and regular-file
   trees, including bounded same-handle source-change detection;
 - capability-relative, component-at-a-time extraction with exclusive file and
@@ -71,14 +73,15 @@ self-describing decompression.
 ## Deliberately not implemented
 
 This slice uses deterministic normalized content-defined chunking, stores each
-exact plaintext Chunk once, chooses STORE or Zstandard independently per unique
-Chunk, and writes only unencrypted Complete INDEXED archives. It supports UTF-8
-directory names, directories, and regular files. It deliberately rejects
-symlinks and special files. There is no legacy ZIP/tar/7z import, STREAM layout,
-encryption, signing, similarity clustering, dictionaries, chunk groups or
-lookback, additional codecs, reconstructive transforms, hardlink metadata,
-ACLs, xattrs, ownership, platform-specific extended metadata, mounting,
-recovery, language bindings, Go compatibility layer, or FFI.
+exact plaintext Chunk once, and chooses independent, shared-dictionary, or
+bounded-lookback STORE/Zstandard representations only when complete physical
+cost improves. It writes only unencrypted Complete INDEXED archives. It
+supports UTF-8 directory names, directories, and regular files, and deliberately
+rejects symlinks and special files. There is no legacy ZIP/tar/7z import,
+STREAM layout, encryption, signing, additional codecs, content-specific
+parsers, unbounded solid compression, reconstructive transforms, hardlink
+metadata, ACLs, xattrs, ownership, platform-specific extended metadata,
+mounting, recovery, language bindings, Go compatibility layer, or FFI.
 
 Extraction is rooted in a held capability directory and resolves every
 LogicalPath component relative to that handle. The current implementation uses
@@ -88,7 +91,8 @@ reports this confinement mode. Only collision policy `Refuse` is implemented.
 The CLI's explicit bootstrap resource defaults are 1,000,000 entries, 64 GiB
 total logical bytes, 16 GiB per file, 4,000,000 chunks, path depth 1,024, and
 1 GiB of manifest/metadata bytes. Decoder policy permits the current 1 MiB
-Zstandard window and declared 4 MiB working set. These are compatibility
+Zstandard window and 64 MiB aggregate working set, including stored dictionary
+and bounded-group access requirements. These are compatibility
 limits, not claims that every machine can safely process archives of those
 sizes; embedders can and should supply narrower caller-owned limits.
 
@@ -120,5 +124,7 @@ and identity choices, [the filesystem bootstrap note](docs/filesystem-bootstrap.
 for capture, confinement, and policy behavior,
 [the planner-v1 note](docs/planner-v1.md) for frozen profiles and the
 minimum-gain rule, [the CDC/deduplication note](docs/chunking-v1.md) for v2
-chunking policies and exact physical sharing, and
+chunking policies and exact physical sharing,
+[the cross-file compression note](docs/cross-file-compression-v1.md) for v3
+similarity, Dictionary, and bounded ChunkGroup behavior, and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

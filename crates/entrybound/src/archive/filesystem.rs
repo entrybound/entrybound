@@ -21,7 +21,7 @@ use crate::eam::{
 };
 use crate::ecf::{EncodedArchive, WriteOptions, encode, open_with_limits};
 use crate::identity::{build_content_from_ranges, sha256_exact};
-use crate::planner::{CompressionProfile, UNPLANNED_PLAN_ID, plan_archive_v2};
+use crate::planner::{CompressionProfile, UNPLANNED_PLAN_ID, plan_archive_v3};
 
 /// Bounded source-consistency and writer options for filesystem packing.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -321,12 +321,22 @@ impl Scan {
                 pci: None,
             },
             entry_set: EntrySet::new(self.entries)?,
-            content_store: ContentStore { objects, chunks },
+            content_store: ContentStore {
+                physical_order: chunks
+                    .keys()
+                    .copied()
+                    .collect::<Vec<_>>()
+                    .into_boxed_slice(),
+                objects,
+                chunks,
+                dictionaries: BTreeMap::new(),
+                chunk_groups: BTreeMap::new(),
+            },
             transform_plans: Box::default(),
             fidelity: bootstrap_fidelity(),
             index: Index::default(),
         };
-        plan_archive_v2(&mut archive, profile)?;
+        plan_archive_v3(&mut archive, profile)?;
         Ok(archive)
     }
 }

@@ -12,8 +12,8 @@ pub use filesystem::{
     unpack,
 };
 pub use inspection::{
-    ArchiveInspection, ChunkStatistics, CodecUsage, CompressionExplanation, ListedEntry,
-    PlanInspection, explain, inspect, list,
+    ArchiveInspection, ChunkStatistics, CodecUsage, CompressionExplanation, CrossFileInspection,
+    ListedEntry, PlanInspection, explain, inspect, list,
 };
 
 /// Explicit, deliberately generous limits for the experimental bootstrap CLI.
@@ -34,13 +34,14 @@ pub const fn bootstrap_resource_policy() -> ResourceBudget {
 
 /// Decoder memory ceilings used by the experimental CLI.
 ///
-/// Planner v1 emits a 1 MiB Zstandard window and declares a conservative
-/// 4 MiB working set. Applications may provide narrower caller-owned policy.
+/// V3 archives add stored Dictionary residency and bounded group access bytes
+/// to the 4 MiB Zstandard working set. Applications may provide narrower
+/// caller-owned policy.
 #[must_use]
 pub const fn bootstrap_decode_policy() -> DecodeRequirements {
     DecodeRequirements {
         window_bytes: 1024 * 1024,
-        working_set_bytes: 4 * 1024 * 1024,
+        working_set_bytes: 64 * 1024 * 1024,
         flags: 0,
     }
 }

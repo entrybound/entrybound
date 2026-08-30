@@ -380,20 +380,46 @@ pub struct ContentObject {
     pub chunks: Box<[ChunkRef]>,
 }
 
-/// The independently decodable physical unit.
+/// One plaintext-addressed physical unit. A group reference, when present,
+/// declares a bounded dependency on preceding same-group CHUNK_DATA frames.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Chunk {
     pub chunk_id: Digest,
     pub logical_len: u64,
     pub plan_ref: u64,
+    pub group_ref: Option<Digest>,
     pub plaintext: Box<[u8]>,
 }
 
-/// Authoritative ContentObjects and Chunks, keyed by plaintext identity.
+/// A first-class shared codec dictionary, addressed by its exact bytes.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Dictionary {
+    pub dictionary_id: Digest,
+    pub codec: String,
+    pub format: String,
+    pub construction: String,
+    pub bytes: Box<[u8]>,
+}
+
+/// Bounded physical dependency declaration. Membership exists only through
+/// `Chunk::group_ref`; the CHUNK_DATA order supplies preceding-member order.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ChunkGroup {
+    pub group_id: Digest,
+    pub max_lookback: u32,
+    pub max_preceding_bytes: u64,
+}
+
+/// Authoritative content plus its creation-time physical layout plan.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct ContentStore {
     pub objects: BTreeMap<Digest, ContentObject>,
     pub chunks: BTreeMap<Digest, Chunk>,
+    pub dictionaries: BTreeMap<Digest, Dictionary>,
+    pub chunk_groups: BTreeMap<Digest, ChunkGroup>,
+    /// Exact CHUNK_DATA frame order. It is physical only and never changes
+    /// ContentObject reference order or any logical identity.
+    pub physical_order: Box<[Digest]>,
 }
 
 /// Decode resources declared by a TransformPlan or aggregate descriptor.

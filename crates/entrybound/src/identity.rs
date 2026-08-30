@@ -132,6 +132,7 @@ pub fn build_content_from_ranges(
                     chunk_id,
                     logical_len,
                     plan_ref,
+                    group_ref: None,
                     plaintext: bytes.into(),
                 });
             }

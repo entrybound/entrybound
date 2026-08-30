@@ -1,7 +1,8 @@
 # Compression planner v1
 
 Status: frozen codec-selection behavior retained for historical fixed-chunk
-archives and inherited unchanged by the CDC-aware v2 policies.
+archives and inherited unchanged by the CDC-aware v2 and cross-file-aware v3
+policies for their independent baseline candidates.
 
 The planner accepts validated plaintext Chunks and one public profile. It emits
 explicit TransformPlans and per-Chunk plan references before ECF serialization.
@@ -42,12 +43,19 @@ Zstandard plans use codec identifier `zstandard/v1`, a 1 MiB window, content
 size in the frame, no checksum, no dictionary identifier, and no long-distance
 matching. The decoder enforces the plan's 1 MiB window and the archive declares
 a conservative 4 MiB working-set requirement. STORE remains `store/v1` and has
-zero decoder-memory declaration.
+zero decoder-memory declaration. Planner v3 aggregate working-set declarations
+may additionally include stored Dictionary bytes and bounded-group access.
 
 LAI, ContentObject logical digests, and AUX exclude creation policy and codec
 parameters. Under `ecf/bootstrap-v1`, PCR deliberately binds plaintext Chunk
 organization and the chunker but excludes TransformPlans, so changing only the
 codec profile while retaining fixed chunking preserves PCR too. Current public
-profiles create `*-v2` archives and may select different CDC policies, in which
-case PCR changes. PCI hashes every exact container byte and therefore captures
-planner, plan, chunking, and encoded-payload differences.
+v2 and v3 profiles may select different CDC policies, in which case PCR
+changes. PCI hashes every exact container byte and therefore captures planner,
+plan, chunking, and encoded-payload differences.
+
+Current public profiles create `*-v3` archives. They preserve this independent
+selection behavior, then compare complete-cost Dictionary and, for dense or
+extreme, bounded ChunkGroup candidates. See
+[cross-file-compression-v1.md](cross-file-compression-v1.md). No v1 or v2
+planner behavior was redefined.

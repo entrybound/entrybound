@@ -17,13 +17,17 @@ Platforms without a portable executable bit declare that class unavailable.
 The FidelityReport also declares ACLs, xattrs, ownership, hardlink identity,
 platform-specific metadata, and symlink/special-file semantics unavailable.
 New files use normalized Gear-hash content-defined chunking. The default
-`balanced-v2` policy uses 128 KiB minimum, 512 KiB target, and 2 MiB maximum
+`balanced-v3` policy uses 128 KiB minimum, 512 KiB target, and 2 MiB maximum
 Chunks. Exact SHA-256 Chunk deduplication is archive-wide, after which the
-creation-only planner selects an explicit STORE or Zstandard TransformPlan once
-for each unique plaintext Chunk. The reader uses only recorded plans and Chunk
-references. Historical `fixed-1mib/v1` archives remain readable. Policies are
+creation-only planner performs deterministic similarity analysis and compares
+independent STORE/Zstandard with complete-cost shared-dictionary candidates.
+Dense and extreme may also select bounded ChunkGroups; balanced never uses
+lookback. Each unique plaintext Chunk is encoded once. The reader uses only
+recorded plans, Dictionaries, groups, and Chunk references. Historical
+`fixed-1mib/v1` and v2 archives remain readable. Policies are
 documented in [chunking-v1.md](chunking-v1.md) and
-[planner-v1.md](planner-v1.md).
+[planner-v1.md](planner-v1.md), with cross-file behavior in
+[cross-file-compression-v1.md](cross-file-compression-v1.md).
 
 Extraction fully opens, verifies, and enforces caller resource policy before it
 creates the destination root. It holds that root as a `cap-std` `Dir`, resolves
@@ -39,5 +43,7 @@ and 1 GiB for the manifest/metadata bound. A declaration above caller policy is
 `POLICY_REFUSED`; decoded actuals above the archive's own declaration are
 corruption. Applications embedding the library should choose limits suitable
 for their environment. Zstandard archives additionally declare a 1 MiB decoder
-window and 4 MiB working-set requirement. The bootstrap caller policy enforces
-both before section decoding and can be narrowed by an embedding application.
+window and an aggregate working-set requirement covering codec state, stored
+Dictionaries, and maximum bounded-group access. The CLI permits up to 64 MiB.
+The bootstrap caller policy enforces both before section decoding and can be
+narrowed by an embedding application.

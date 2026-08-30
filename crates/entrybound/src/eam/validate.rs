@@ -1,7 +1,10 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use super::{Archive, ArchiveRole, ContentRef, Entry, EntryData, EntryKind, EntrySet, Layout};
+use super::{
+    Archive, ArchiveRole, ContentRef, Digest, Entry, EntryData, EntryKind, EntrySet, Layout,
+};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
+use crate::identity::sha256_exact;
 
 impl EntrySet {
     /// Sorts enumeration-independent input into canonical order and validates P4/P6.
@@ -89,6 +92,84 @@ impl Archive {
                 "TransformPlan identifiers must be unique",
             ));
         }
+        let referenced_dictionaries = self
+            .transform_plans
+            .iter()
+            .filter_map(|plan| plan.dictionary)
+            .collect::<BTreeSet<_>>();
+        for dictionary_id in &referenced_dictionaries {
+            if !self.content_store.dictionaries.contains_key(dictionary_id) {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::UnknownDictionary,
+                    dictionary_id.to_string(),
+                ));
+            }
+        }
+        if referenced_dictionaries.len() != self.content_store.dictionaries.len() {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::DuplicateSemanticDeclaration,
+                "every stored Dictionary must be referenced by a TransformPlan",
+            ));
+        }
+
+        let physical = self
+            .content_store
+            .physical_order
+            .iter()
+            .copied()
+            .collect::<BTreeSet<_>>();
+        if physical.len() != self.content_store.physical_order.len()
+            || physical.len() != self.content_store.chunks.len()
+            || physical
+                != self
+                    .content_store
+                    .chunks
+                    .keys()
+                    .copied()
+                    .collect::<BTreeSet<_>>()
+        {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidGroupOrdering,
+                "physical Chunk order must contain every unique Chunk exactly once",
+            ));
+        }
+
+        for (digest, dictionary) in &self.content_store.dictionaries {
+            if digest != &dictionary.dictionary_id {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::DuplicateSemanticDeclaration,
+                    "Dictionary map key differs from its authoritative dictionary_id",
+                ));
+            }
+            if sha256_exact(&dictionary.bytes) != dictionary.dictionary_id {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Corrupt,
+                    ReasonCode::DictionaryDigestMismatch,
+                    dictionary.dictionary_id.to_string(),
+                ));
+            }
+        }
+
+        for (digest, group) in &self.content_store.chunk_groups {
+            if digest != &group.group_id || group.group_id == Digest::ZERO {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::DuplicateSemanticDeclaration,
+                    "ChunkGroup map key and non-zero authoritative group_id must agree",
+                ));
+            }
+            if group.max_lookback == 0 {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::LookbackViolation,
+                    "stored ChunkGroups must declare non-zero bounded lookback",
+                ));
+            }
+        }
 
         for (digest, chunk) in &self.content_store.chunks {
             if digest != &chunk.chunk_id {
@@ -112,7 +193,18 @@ impl Archive {
                     format!("chunk {digest} references plan {}", chunk.plan_ref),
                 ));
             }
+            if let Some(group_id) = chunk.group_ref
+                && !self.content_store.chunk_groups.contains_key(&group_id)
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidGroupReference,
+                    format!("chunk {digest} references unknown group {group_id}"),
+                ));
+            }
         }
+
+        self.validate_group_access_costs()?;
 
         for (digest, object) in &self.content_store.objects {
             if digest != &object.logical_digest {
@@ -143,6 +235,81 @@ impl Archive {
                     OutcomeClass::Nonconforming,
                     ReasonCode::UnknownContentObject,
                     entry.path().to_string(),
+                ));
+            }
+        }
+        Ok(())
+    }
+
+    fn validate_group_access_costs(&self) -> Result<()> {
+        let mut positions = BTreeMap::<Digest, Vec<usize>>::new();
+        for (position, chunk_id) in self.content_store.physical_order.iter().enumerate() {
+            if let Some(group_id) = self.content_store.chunks[chunk_id].group_ref {
+                positions.entry(group_id).or_default().push(position);
+            }
+        }
+        if positions.len() != self.content_store.chunk_groups.len() {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidGroupReference,
+                "every declared ChunkGroup must have physical Chunk members",
+            ));
+        }
+        for (group_id, member_positions) in positions {
+            if member_positions.len() < 2
+                || member_positions
+                    .windows(2)
+                    .any(|pair| pair[1] != pair[0] + 1)
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidGroupOrdering,
+                    format!("ChunkGroup {group_id} must contain one contiguous physical run"),
+                ));
+            }
+            let group = &self.content_store.chunk_groups[&group_id];
+            let lookback = usize::try_from(group.max_lookback).map_err(|_| {
+                Diagnostic::new(
+                    OutcomeClass::PolicyRefused,
+                    ReasonCode::ResourceLimit,
+                    "ChunkGroup lookback exceeds usize",
+                )
+            })?;
+            let mut maximum = 0_u64;
+            for (member_index, position) in member_positions.iter().enumerate() {
+                let first = member_index.saturating_sub(lookback);
+                let preceding = member_positions[first..member_index].iter().try_fold(
+                    0_u64,
+                    |total, preceding_position| {
+                        let chunk_id = self.content_store.physical_order[*preceding_position];
+                        total
+                            .checked_add(self.content_store.chunks[&chunk_id].logical_len)
+                            .ok_or_else(|| {
+                                Diagnostic::new(
+                                    OutcomeClass::PolicyRefused,
+                                    ReasonCode::ResourceLimit,
+                                    "ChunkGroup access byte count exceeds u64",
+                                )
+                            })
+                    },
+                )?;
+                maximum = maximum.max(preceding);
+                if *position != member_positions[0] + member_index {
+                    return Err(Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::InvalidGroupOrdering,
+                        group_id.to_string(),
+                    ));
+                }
+            }
+            if maximum != group.max_preceding_bytes {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Corrupt,
+                    ReasonCode::AccessCostMismatch,
+                    format!(
+                        "ChunkGroup {group_id} declares {} preceding bytes but requires {maximum}",
+                        group.max_preceding_bytes
+                    ),
                 ));
             }
         }

@@ -3,9 +3,9 @@ use std::collections::BTreeMap;
 use crate::canonical::{Record, RecordBuilder, decode_record, decode_record_stream};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
-    Criticality, Digest, Entry, EntryData, EntryIdentity, EntrySet, FidelityIssue, FidelityReport,
-    LogicalPath, MetadataItem, MetadataName, MetadataSet, PathComponent, PathEncoding,
-    Restorability, Timestamp, TimestampPrecision, TransformPlan,
+    ChunkGroup, Criticality, Dictionary, Digest, Entry, EntryData, EntryIdentity, EntrySet,
+    FidelityIssue, FidelityReport, LogicalPath, MetadataItem, MetadataName, MetadataSet,
+    PathComponent, PathEncoding, Restorability, Timestamp, TimestampPrecision, TransformPlan,
 };
 
 pub(super) const RECORD_DESCRIPTOR: u16 = 1;
@@ -18,6 +18,8 @@ const RECORD_PATH_COMPONENT: u16 = 7;
 const RECORD_METADATA_ITEM: u16 = 8;
 const RECORD_TIMESTAMP: u16 = 9;
 const RECORD_FIDELITY_ISSUE: u16 = 10;
+pub(super) const RECORD_DICTIONARY: u16 = 11;
+pub(super) const RECORD_CHUNK_GROUP: u16 = 12;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) struct DescriptorBody {
@@ -152,6 +154,101 @@ pub(super) fn decode_transform_plans(bytes: &[u8]) -> Result<Box<[TransformPlan]
         return Err(noncanonical("TransformPlan records are not canonical"));
     }
     Ok(plans)
+}
+
+pub(super) fn encode_dictionaries(dictionaries: &BTreeMap<Digest, Dictionary>) -> Result<Vec<u8>> {
+    let mut encoded = Vec::new();
+    for dictionary in dictionaries.values() {
+        let mut record = RecordBuilder::new(RECORD_DICTIONARY);
+        record
+            .bytes(1, dictionary.dictionary_id.as_bytes())?
+            .utf8(2, &dictionary.codec)?
+            .utf8(3, &dictionary.format)?
+            .utf8(4, &dictionary.construction)?
+            .bytes(5, &dictionary.bytes)?;
+        encoded.extend_from_slice(&record.finish()?);
+    }
+    Ok(encoded)
+}
+
+pub(super) fn decode_dictionaries(bytes: &[u8]) -> Result<BTreeMap<Digest, Dictionary>> {
+    let mut dictionaries = BTreeMap::new();
+    let mut previous = None;
+    for record in decode_record_stream(bytes)? {
+        if record.kind != RECORD_DICTIONARY {
+            return Err(noncanonical(
+                "DICTIONARIES contains a non-Dictionary record",
+            ));
+        }
+        record.expect_tags(&[1, 2, 3, 4, 5], &[])?;
+        let dictionary_id = digest(record.field(1)?.as_bytes()?)?;
+        if previous.is_some_and(|value| value >= dictionary_id) {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::DuplicateSemanticDeclaration,
+                "Dictionaries must be uniquely ordered by dictionary_id",
+            ));
+        }
+        previous = Some(dictionary_id);
+        let dictionary = Dictionary {
+            dictionary_id,
+            codec: record.field(2)?.as_utf8()?.to_owned(),
+            format: record.field(3)?.as_utf8()?.to_owned(),
+            construction: record.field(4)?.as_utf8()?.to_owned(),
+            bytes: record.field(5)?.as_bytes()?.into(),
+        };
+        crate::codec::validate_dictionary(&dictionary)?;
+        dictionaries.insert(dictionary_id, dictionary);
+    }
+    if encode_dictionaries(&dictionaries)? != bytes {
+        return Err(noncanonical("Dictionary records are not canonical"));
+    }
+    Ok(dictionaries)
+}
+
+pub(super) fn encode_chunk_groups(groups: &BTreeMap<Digest, ChunkGroup>) -> Result<Vec<u8>> {
+    let mut encoded = Vec::new();
+    for group in groups.values() {
+        let mut record = RecordBuilder::new(RECORD_CHUNK_GROUP);
+        record
+            .bytes(1, group.group_id.as_bytes())?
+            .u32(2, group.max_lookback)?
+            .u64(3, group.max_preceding_bytes)?;
+        encoded.extend_from_slice(&record.finish()?);
+    }
+    Ok(encoded)
+}
+
+pub(super) fn decode_chunk_groups(bytes: &[u8]) -> Result<BTreeMap<Digest, ChunkGroup>> {
+    let mut groups = BTreeMap::new();
+    let mut previous = None;
+    for record in decode_record_stream(bytes)? {
+        if record.kind != RECORD_CHUNK_GROUP {
+            return Err(noncanonical("CHUNK_GROUPS contains a non-group record"));
+        }
+        record.expect_tags(&[1, 2, 3], &[])?;
+        let group_id = digest(record.field(1)?.as_bytes()?)?;
+        if previous.is_some_and(|value| value >= group_id) {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::DuplicateSemanticDeclaration,
+                "ChunkGroups must be uniquely ordered by group_id",
+            ));
+        }
+        previous = Some(group_id);
+        groups.insert(
+            group_id,
+            ChunkGroup {
+                group_id,
+                max_lookback: record.field(2)?.as_u32()?,
+                max_preceding_bytes: record.field(3)?.as_u64()?,
+            },
+        );
+    }
+    if encode_chunk_groups(&groups)? != bytes {
+        return Err(noncanonical("ChunkGroup records are not canonical"));
+    }
+    Ok(groups)
 }
 
 pub(super) fn encode_manifest(
@@ -631,4 +728,30 @@ fn duplicate(detail: impl Into<String>) -> Diagnostic {
         ReasonCode::DuplicateSemanticDeclaration,
         detail,
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::identity::sha256_exact;
+
+    #[test]
+    fn duplicate_dictionary_records_are_typed_nonconformance() {
+        let bytes: Box<[u8]> = b"generated dictionary test bytes".as_slice().into();
+        let dictionary_id = sha256_exact(&bytes);
+        let dictionary = Dictionary {
+            dictionary_id,
+            codec: "zstandard/v1".to_owned(),
+            format: "zstd-trained/v1".to_owned(),
+            construction: "zstd-1.5.7-train-buffer-v1/balanced-v3-digest-order-samples16-sample-cap16384-dict-cap8192".to_owned(),
+            bytes,
+        };
+        let encoded = encode_dictionaries(&BTreeMap::from([(dictionary_id, dictionary)])).unwrap();
+        let mut duplicate = encoded.clone();
+        duplicate.extend_from_slice(&encoded);
+        assert_eq!(
+            decode_dictionaries(&duplicate).unwrap_err().code(),
+            ReasonCode::DuplicateSemanticDeclaration
+        );
+    }
 }

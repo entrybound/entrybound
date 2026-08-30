@@ -176,9 +176,12 @@ fn generated_native_conformance_corpus() {
             &valid,
             ReasonCode::UnsupportedRequiredFeature,
             |bytes| {
-                bytes[16..24].copy_from_slice(&1_u64.to_be_bytes());
+                bytes[16..24].copy_from_slice(&(1_u64 << 63).to_be_bytes());
                 let checksum = sha256_exact(&bytes[16..40]);
                 bytes[40..72].copy_from_slice(checksum.as_bytes());
+                let preamble_digest = sha256_exact(&bytes[..PREAMBLE_LEN as usize]);
+                let footer = bytes.len() - FOOTER_LEN as usize;
+                bytes[footer + 64..footer + 96].copy_from_slice(preamble_digest.as_bytes());
             },
         ),
         invalid_case(
@@ -391,7 +394,17 @@ fn complete_fixture(
     Archive {
         descriptor: descriptor(chunker_id),
         entry_set: EntrySet::new(entries).unwrap(),
-        content_store: ContentStore { objects, chunks },
+        content_store: ContentStore {
+            physical_order: chunks
+                .keys()
+                .copied()
+                .collect::<Vec<_>>()
+                .into_boxed_slice(),
+            objects,
+            chunks,
+            dictionaries: BTreeMap::new(),
+            chunk_groups: BTreeMap::new(),
+        },
         transform_plans: vec![store_plan()].into_boxed_slice(),
         fidelity: FidelityReport {
             captured: vec!["core.executable".to_owned(), "core.mtime".to_owned()]
@@ -497,6 +510,13 @@ fn replace_text_content(archive: &mut Archive, replacement: &[u8]) {
     let digest = object.logical_digest;
     archive.content_store.objects.insert(digest, object);
     archive.content_store.chunks.extend(chunks);
+    archive.content_store.physical_order = archive
+        .content_store
+        .chunks
+        .keys()
+        .copied()
+        .collect::<Vec<_>>()
+        .into_boxed_slice();
     entries[index] = Entry::new(
         path,
         EntryData::File {

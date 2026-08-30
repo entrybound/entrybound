@@ -37,8 +37,7 @@ The implemented bootstrap layout is `INDEXED`, role `Complete`, unencrypted,
 with only directory and regular-file entries. It consists of:
 
 1. a fixed 256-byte preamble beginning with `8E 45 42 31 0D 0A 1A 0A`;
-2. checksum-protected `DESCRIPTOR`, `TRANSFORM_PLANS`, `CHUNK_DATA`,
-   `MANIFEST_RECORDS`, `FIDELITY`, and optional `INDEX` sections;
+2. checksum-protected authoritative sections plus an optional `INDEX`;
 3. a fixed 128-byte footer with total length, actual totals, authoritative
    descriptor/manifest locators, and a preamble digest.
 
@@ -48,7 +47,8 @@ caches chunk-frame locators and is ignored and rebuilt when absent or invalid.
 No semantic Entry field appears in the Index.
 
 Chunk frames carry the authoritative Chunk fields (`chunk_id`, `logical_len`,
-and `plan_ref`) plus stored bytes. ContentObjects carry ordered Chunk
+`plan_ref`, and, when the extension requires it, `group_ref`) plus stored
+bytes. ContentObjects carry ordered Chunk
 references. Entry records carry the sole path/kind/content/metadata authority.
 
 ## Transform and chunking
@@ -69,7 +69,10 @@ versioned normalized CDC while historical archives retain `fixed-1mib/v1`.
 Ordered Chunk references already represent arbitrary boundaries, so CDC and
 deduplication require no wire change. Codec selection and chunking are physical
 choices, not Entry semantics. See [planner-v1.md](planner-v1.md) and
-[chunking-v1.md](chunking-v1.md).
+[chunking-v1.md](chunking-v1.md). Planner v3 may record canonical
+dictionary-backed `ZD01` or bounded-prefix `ZX01` parameter values while
+retaining codec identifier `zstandard/v1`; the complete frozen construction is
+documented in [cross-file-compression-v1.md](cross-file-compression-v1.md).
 
 ## Digests
 
@@ -115,12 +118,23 @@ Sections occur exactly once and in this order: DESCRIPTOR (1), TRANSFORM_PLANS
 (6). Unknown, missing, duplicate, or reordered authoritative sections are not
 canonical.
 
+Required incompatibility feature bit `0x1` (`cross-file-compression-v1`)
+selects the extended schema: DESCRIPTOR (1), TRANSFORM_PLANS (2), DICTIONARIES
+(3), CHUNK_GROUPS (4), CHUNK_DATA (5), MANIFEST_RECORDS (6), FIDELITY (7), and
+optionally INDEX (8). Both new authoritative sections occur exactly once even
+when empty. Readers reject any other unknown required incompatibility bit.
+
 CHUNK_DATA is a sequence of digest-ordered plan-driven frames:
 
 ```text
 "EBCH" | version:u16 | flags:u16 | stored_length:u64
 chunk_id:[u8;32] | logical_length:u64 | plan_ref:u64 | stored_bytes
 ```
+
+Under `cross-file-compression-v1`, version-2 frames append
+`group_ref:[u8;32]` before stored bytes. Zero means no group. This is the sole
+membership authority; ChunkGroup records do not contain member lists. Frame
+order is the authority for preceding-Chunk dependencies.
 
 The 128-byte footer begins with `8E 45 42 46 0D 0A 1A 0A`, then contains total
 container length; absolute offset/length pairs for DESCRIPTOR and
@@ -143,6 +157,8 @@ Record type and strictly increasing field tags are:
 | MetadataItem | 8 | name(1), criticality(2), restorability(3), boolean(4) or timestamp(5) |
 | Timestamp | 9 | signed seconds(1), nanoseconds(2), source precision(3), restorable(4) |
 | Fidelity issue | 10 | class(1), reason(2), optional entry scope(3) |
+| Dictionary | 11 | dictionary digest(1), codec(2), format(3), construction(4), exact bytes(5) |
+| ChunkGroup | 12 | group ID(1), maximum lookback Chunks(2), maximum preceding logical bytes(3) |
 
 Sequences contain `count:u64`, then repeated `item_length:u64 | item`. Entries
 are in canonical LogicalPath order. ContentObjects, Chunks, TransformPlans, and

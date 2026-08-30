@@ -28,7 +28,8 @@ Usage:\n\
 \n\
 This build supports unencrypted Complete INDEXED archives with directories,\n\
 regular files, normalized content-defined chunking, archive-wide exact dedup,\n\
-and per-unique-Chunk STORE/Zstandard planning.\n\
+and per-unique-Chunk STORE/Zstandard planning with optional shared dictionaries\n\
+and explicitly bounded ChunkGroups in dense/extreme archives.\n\
 The default creation profile is balanced; decoding is self-describing.\n";
 
 const PACK_HELP: &str = "\
@@ -212,12 +213,29 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
         view.chunks.average_chunk_bytes,
         view.chunks.maximum_chunk_bytes
     );
+    println!(
+        "cross-file compression: feature={}, dictionaries={}, dictionary-bytes={}, dictionary-backed-chunks={}",
+        view.cross_file.feature_present,
+        view.cross_file.dictionary_count,
+        view.cross_file.dictionary_bytes,
+        view.cross_file.dictionary_backed_chunks
+    );
+    println!(
+        "chunk groups: count={}, max-lookback={}, worst-access-chunks={}, worst-access-bytes={}, all-independent={}",
+        view.cross_file.chunk_group_count,
+        view.cross_file.maximum_lookback,
+        view.cross_file.worst_random_access_chunks,
+        view.cross_file.worst_random_access_bytes,
+        view.cross_file.every_chunk_independently_decodable
+    );
     for plan in view.plans {
         println!(
-            "transform plan: id={} {} (codec {}; window={}, working-set={}, flags={:#x})",
+            "transform plan: id={} {} (codec {}; dictionary={}; window={}, working-set={}, flags={:#x})",
             plan.plan_id,
             plan.identifier,
             plan.codec,
+            plan.dictionary
+                .map_or_else(|| "none".to_owned(), |value| value.to_string()),
             plan.decode.window_bytes,
             plan.decode.working_set_bytes,
             plan.decode.flags
@@ -309,9 +327,31 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
         explanation.zstandard_stored_bytes
     );
     println!(
-        "codec compression savings on unique Chunks: {} bytes",
+        "total Chunk-payload compression savings: {} bytes",
         explanation.physical_savings_bytes
     );
+    println!(
+        "ordinary independent codec savings: {} bytes",
+        explanation.ordinary_codec_savings_bytes
+    );
+    println!(
+        "shared-dictionary payload savings: {} bytes (dictionary storage: {} bytes)",
+        explanation.shared_dictionary_savings_bytes, explanation.dictionary_storage_bytes
+    );
+    println!(
+        "bounded-lookback payload savings: {} bytes",
+        explanation.bounded_lookback_savings_bytes
+    );
+    println!(
+        "similarity cohorts: count={}, chunks={}, logical-bytes={}, independently-encoded={}",
+        explanation.similarity_cohort_count,
+        explanation.similarity_cohort_chunks,
+        explanation.similarity_cohort_logical_bytes,
+        explanation.independent_similarity_cohort_count
+    );
+    if let Some(reason) = explanation.independent_cohort_reason {
+        println!("independent cohort decision: {reason}");
+    }
     Ok(())
 }
 
@@ -320,7 +360,7 @@ fn command_verify(arguments: Vec<OsString>) -> Result<()> {
     let bytes = read(&archive)?;
     let report = verify(&bytes)?;
     println!(
-        "OK verified canonical structure, section integrity, semantic invariants, Chunk/content integrity, Entry identities, LAI, PCR, AUX, and exact-byte PCI"
+        "OK verified canonical structure, section integrity, semantic invariants, Dictionary/ChunkGroup dependencies and access costs, Chunk/content integrity, Entry identities, LAI, PCR, AUX, and exact-byte PCI"
     );
     println!("index: {}", index_status(report.index_status));
     println!("LAI {}", report.identities.lai.0);

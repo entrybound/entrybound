@@ -1,20 +1,25 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use super::records::{
-    DescriptorBody, decode_descriptor, decode_fidelity, decode_index, decode_manifest,
-    decode_transform_plans, encode_descriptor, encode_fidelity, encode_index, encode_manifest,
-    encode_transform_plans,
+    DescriptorBody, decode_chunk_groups, decode_descriptor, decode_dictionaries, decode_fidelity,
+    decode_index, decode_manifest, decode_transform_plans, encode_chunk_groups, encode_descriptor,
+    encode_dictionaries, encode_fidelity, encode_index, encode_manifest, encode_transform_plans,
 };
 use super::{
-    CHUNK_FRAME_HEADER_LEN, FOOTER_LEN, FORMAT_NAMESPACE, FormatVersion, MAGIC, PREAMBLE_LEN,
-    SECTION_HEADER_LEN, SectionKind,
+    CHUNK_FRAME_HEADER_LEN, CHUNK_FRAME_V2_HEADER_LEN, FEATURE_CROSS_FILE_COMPRESSION_V1,
+    FOOTER_LEN, FORMAT_NAMESPACE, FormatVersion, MAGIC, PREAMBLE_LEN, SECTION_HEADER_LEN,
+    SUPPORTED_INCOMPAT_FEATURES, SectionKind,
 };
-use crate::codec::{aggregate_decode_requirements, decode_payload, encode_payload, validate_plans};
+use crate::codec::{
+    PlanMode, aggregate_archive_decode_requirements, decode_payload,
+    decode_payload_with_dictionary, decode_payload_with_prefix, encode_payload,
+    encode_payload_with_dictionary, encode_payload_with_prefix, plan_mode, validate_plans,
+};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
-    Archive, ArchiveDescriptor, ArchiveRole, Chunk, ChunkLocation, ContentStore,
-    DecodeRequirements, Digest, DigestAlgorithm, FeatureSet, IdentityProfile, Index, Layout,
-    ResourceBudget, TransformPlan,
+    Archive, ArchiveDescriptor, ArchiveRole, Chunk, ChunkGroup, ChunkLocation, ContentStore,
+    DecodeRequirements, Dictionary, Digest, DigestAlgorithm, FeatureSet, IdentityProfile, Index,
+    Layout, ResourceBudget, TransformPlan,
 };
 use crate::identity::{
     IdentitySet, apply_native_identities, physical_container_identity, sha256_exact,
@@ -63,6 +68,9 @@ pub struct VerificationReport {
     pub section_integrity: bool,
     pub semantic_invariants: bool,
     pub chunk_integrity: bool,
+    pub dictionary_integrity: bool,
+    pub chunk_group_integrity: bool,
+    pub access_costs: bool,
     pub content_integrity: bool,
     pub entry_identities: bool,
     pub lai: bool,
@@ -85,10 +93,13 @@ pub struct OpenedArchive {
 pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> {
     input.validate()?;
     validate_plans(&input.transform_plans)?;
+    validate_feature_model(input)?;
     let (mut archive, roots) = apply_native_identities(input)?;
+    let extended = has_cross_file_feature(archive.descriptor.features);
     let plans_payload = encode_transform_plans(&archive.transform_plans)?;
-    let (chunk_payload, relative_index) =
-        encode_chunks(&archive.content_store.chunks, &archive.transform_plans)?;
+    let dictionaries_payload = encode_dictionaries(&archive.content_store.dictionaries)?;
+    let groups_payload = encode_chunk_groups(&archive.content_store.chunk_groups)?;
+    let (chunk_payload, relative_index) = encode_chunks(&archive, extended)?;
     normalize_descriptor(&mut archive, &relative_index)?;
 
     let descriptor_payload = encode_descriptor(&DescriptorBody {
@@ -105,11 +116,46 @@ pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> 
     let fidelity_payload = encode_fidelity(&archive.fidelity)?;
 
     let mut body = Vec::new();
-    let descriptor = append_section(&mut body, SectionKind::Descriptor, &descriptor_payload)?;
-    append_section(&mut body, SectionKind::TransformPlans, &plans_payload)?;
-    let chunk_section = append_section(&mut body, SectionKind::ChunkData, &chunk_payload)?;
-    let manifest = append_section(&mut body, SectionKind::ManifestRecords, &manifest_payload)?;
-    append_section(&mut body, SectionKind::Fidelity, &fidelity_payload)?;
+    let descriptor = append_section(
+        &mut body,
+        SectionKind::Descriptor,
+        &descriptor_payload,
+        extended,
+    )?;
+    append_section(
+        &mut body,
+        SectionKind::TransformPlans,
+        &plans_payload,
+        extended,
+    )?;
+    if extended {
+        append_section(
+            &mut body,
+            SectionKind::Dictionaries,
+            &dictionaries_payload,
+            extended,
+        )?;
+        append_section(
+            &mut body,
+            SectionKind::ChunkGroups,
+            &groups_payload,
+            extended,
+        )?;
+    }
+    let chunk_section =
+        append_section(&mut body, SectionKind::ChunkData, &chunk_payload, extended)?;
+    let manifest = append_section(
+        &mut body,
+        SectionKind::ManifestRecords,
+        &manifest_payload,
+        extended,
+    )?;
+    append_section(
+        &mut body,
+        SectionKind::Fidelity,
+        &fidelity_payload,
+        extended,
+    )?;
 
     let payload_base = PREAMBLE_LEN
         .checked_add(chunk_section.offset)
@@ -132,7 +178,7 @@ pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> 
 
     if options.include_index {
         let index_payload = encode_index(&authoritative_index)?;
-        append_section(&mut body, SectionKind::Index, &index_payload)?;
+        append_section(&mut body, SectionKind::Index, &index_payload, extended)?;
     }
 
     let footer_offset = PREAMBLE_LEN
@@ -216,13 +262,24 @@ pub fn open_with_limits(
             "canonical INDEXED preamble footer hint must identify the fixed footer",
         ));
     }
-    let sections = decode_sections(bytes, &footer)?;
+    let extended = has_cross_file_feature(preamble.features);
+    let sections = decode_sections(bytes, &footer, extended)?;
 
     let descriptor_section = required_section(&sections, SectionKind::Descriptor)?;
     let plans_section = required_section(&sections, SectionKind::TransformPlans)?;
     let chunks_section = required_section(&sections, SectionKind::ChunkData)?;
     let manifest_section = required_section(&sections, SectionKind::ManifestRecords)?;
     let fidelity_section = required_section(&sections, SectionKind::Fidelity)?;
+    let dictionaries = if extended {
+        decode_dictionaries(required_section(&sections, SectionKind::Dictionaries)?.payload)?
+    } else {
+        BTreeMap::new()
+    };
+    let chunk_groups = if extended {
+        decode_chunk_groups(required_section(&sections, SectionKind::ChunkGroups)?.payload)?
+    } else {
+        BTreeMap::new()
+    };
 
     if descriptor_section.location != footer.descriptor
         || manifest_section.location != footer.manifest
@@ -244,7 +301,7 @@ pub fn open_with_limits(
         ));
     }
     let plans = decode_transform_plans(plans_section.payload)?;
-    let (chunks, rebuilt_index) = decode_chunks(
+    let (chunks, physical_order, rebuilt_index) = decode_chunks(
         chunks_section.payload,
         chunks_section
             .location
@@ -252,7 +309,10 @@ pub fn open_with_limits(
             .checked_add(SECTION_HEADER_LEN)
             .ok_or_else(|| resource("chunk payload offset overflow"))?,
         &plans,
+        &dictionaries,
+        &chunk_groups,
         preamble.budget,
+        extended,
     )?;
     let (entries, objects) = decode_manifest(manifest_section.payload)?;
     let fidelity = decode_fidelity(fidelity_section.payload)?;
@@ -283,7 +343,13 @@ pub fn open_with_limits(
     let archive = Archive {
         descriptor,
         entry_set: entries,
-        content_store: ContentStore { objects, chunks },
+        content_store: ContentStore {
+            objects,
+            chunks,
+            dictionaries,
+            chunk_groups,
+            physical_order,
+        },
         transform_plans: plans,
         fidelity,
         index,
@@ -350,6 +416,9 @@ pub fn open_with_limits(
             section_integrity: true,
             semantic_invariants: true,
             chunk_integrity: true,
+            dictionary_integrity: true,
+            chunk_group_integrity: true,
+            access_costs: true,
             content_integrity: true,
             entry_identities: true,
             lai: true,
@@ -419,6 +488,60 @@ fn enforce_decode_policy(declared: DecodeRequirements, policy: DecodeRequirement
     Ok(())
 }
 
+fn has_cross_file_feature(features: FeatureSet) -> bool {
+    features.incompat & FEATURE_CROSS_FILE_COMPRESSION_V1 != 0
+}
+
+fn validate_feature_model(archive: &Archive) -> Result<()> {
+    if archive.descriptor.features.incompat & !SUPPORTED_INCOMPAT_FEATURES != 0 {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedRequiredFeature,
+            "archive declares unsupported required feature bits",
+        ));
+    }
+    let extended = has_cross_file_feature(archive.descriptor.features);
+    for dictionary in archive.content_store.dictionaries.values() {
+        crate::codec::validate_dictionary(dictionary)?;
+    }
+    let dependent_plan = archive
+        .transform_plans
+        .iter()
+        .try_fold(false, |found, plan| {
+            Ok::<_, Diagnostic>(found || plan_mode(plan)? != PlanMode::Independent)
+        })?;
+    let dependent_model = !archive.content_store.dictionaries.is_empty()
+        || !archive.content_store.chunk_groups.is_empty()
+        || archive
+            .content_store
+            .chunks
+            .values()
+            .any(|chunk| chunk.group_ref.is_some())
+        || dependent_plan;
+    if dependent_model && !extended {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedRequiredFeature,
+            "Dictionary or ChunkGroup behavior requires cross-file-compression-v1",
+        ));
+    }
+    if !extended
+        && archive.content_store.physical_order.as_ref()
+            != archive
+                .content_store
+                .chunks
+                .keys()
+                .copied()
+                .collect::<Vec<_>>()
+                .as_slice()
+    {
+        return Err(noncanonical(
+            "historical Chunk frames must remain digest ordered",
+        ));
+    }
+    Ok(())
+}
+
 fn normalize_descriptor(
     archive: &mut Archive,
     relative_index: &BTreeMap<Digest, ChunkLocation>,
@@ -426,11 +549,24 @@ fn normalize_descriptor(
     archive.descriptor.format_major = FormatVersion::BOOTSTRAP.major;
     archive.descriptor.format_minor = FormatVersion::BOOTSTRAP.minor;
     archive.descriptor.format_namespace = FORMAT_NAMESPACE.to_owned();
-    archive.descriptor.features = FeatureSet::default();
+    if archive.descriptor.features.incompat & !SUPPORTED_INCOMPAT_FEATURES != 0 {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedRequiredFeature,
+            format!(
+                "unknown incompat feature bits {:016x}",
+                archive.descriptor.features.incompat & !SUPPORTED_INCOMPAT_FEATURES
+            ),
+        ));
+    }
     archive.descriptor.layout = Layout::Indexed;
     archive.descriptor.role = ArchiveRole::Complete;
     archive.descriptor.budget_declared = true;
-    archive.descriptor.decode = aggregate_decode_requirements(&archive.transform_plans);
+    archive.descriptor.decode = aggregate_archive_decode_requirements(
+        &archive.transform_plans,
+        &archive.content_store.dictionaries,
+        &archive.content_store.chunk_groups,
+    )?;
     archive.descriptor.identity_profile = IdentityProfile::IdentityV1;
     archive.descriptor.digest_algorithm = DigestAlgorithm::Sha256;
     if archive.descriptor.planner_id.is_empty() {
@@ -522,16 +658,25 @@ fn expansion_ratio(logical_len: u64, stored_len: u64) -> Result<u64> {
 }
 
 fn encode_chunks(
-    chunks: &BTreeMap<Digest, Chunk>,
-    plans: &[TransformPlan],
+    archive: &Archive,
+    extended: bool,
 ) -> Result<(Vec<u8>, BTreeMap<Digest, ChunkLocation>)> {
-    let plans = plans
+    let plans = archive
+        .transform_plans
         .iter()
         .map(|plan| (plan.plan_id, plan))
         .collect::<BTreeMap<_, _>>();
     let mut payload = Vec::new();
     let mut index = BTreeMap::new();
-    for chunk in chunks.values() {
+    let mut group_history = BTreeMap::<Digest, Vec<Digest>>::new();
+    for chunk_id in &archive.content_store.physical_order {
+        let chunk = archive.content_store.chunks.get(chunk_id).ok_or_else(|| {
+            Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::UnknownChunk,
+                chunk_id.to_string(),
+            )
+        })?;
         if chunk.logical_len != u64_len(&chunk.plaintext)? {
             return Err(structure("Chunk has an inconsistent logical length"));
         }
@@ -542,38 +687,132 @@ fn encode_chunks(
                 format!("Chunk {} uses plan {}", chunk.chunk_id, chunk.plan_ref),
             )
         })?;
-        let stored = encode_payload(plan, &chunk.plaintext)?;
+        let stored = match plan_mode(plan)? {
+            PlanMode::Independent if chunk.group_ref.is_none() => {
+                encode_payload(plan, &chunk.plaintext)?
+            }
+            PlanMode::Dictionary(dictionary_id) if chunk.group_ref.is_none() => {
+                let dictionary = archive
+                    .content_store
+                    .dictionaries
+                    .get(&dictionary_id)
+                    .ok_or_else(|| {
+                        Diagnostic::new(
+                            OutcomeClass::Nonconforming,
+                            ReasonCode::UnknownDictionary,
+                            dictionary_id.to_string(),
+                        )
+                    })?;
+                encode_payload_with_dictionary(plan, &chunk.plaintext, dictionary)?
+            }
+            PlanMode::Prefix { lookback } => {
+                let group_id = chunk.group_ref.ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::InvalidGroupReference,
+                        format!("prefix Chunk {} has no group_ref", chunk.chunk_id),
+                    )
+                })?;
+                let group = archive
+                    .content_store
+                    .chunk_groups
+                    .get(&group_id)
+                    .ok_or_else(|| {
+                        Diagnostic::new(
+                            OutcomeClass::Nonconforming,
+                            ReasonCode::InvalidGroupReference,
+                            group_id.to_string(),
+                        )
+                    })?;
+                if group.max_lookback != lookback {
+                    return Err(Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::LookbackViolation,
+                        format!("ChunkGroup {group_id} and TransformPlan disagree"),
+                    ));
+                }
+                let prefix = physical_prefix(
+                    &archive.content_store.chunks,
+                    group_history.entry(group_id).or_default(),
+                    lookback,
+                )?;
+                encode_payload_with_prefix(plan, &chunk.plaintext, &prefix)?
+            }
+            _ => {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidGroupReference,
+                    format!(
+                        "Chunk {} has a group incompatible with its plan",
+                        chunk.chunk_id
+                    ),
+                ));
+            }
+        };
         let stored_len = u64_len(&stored)?;
         let offset = u64_len(&payload)?;
         payload.extend_from_slice(&CHUNK_MAGIC);
-        payload.extend_from_slice(&SECTION_VERSION.to_be_bytes());
+        payload.extend_from_slice(&(if extended { 2_u16 } else { SECTION_VERSION }).to_be_bytes());
         payload.extend_from_slice(&0_u16.to_be_bytes());
         payload.extend_from_slice(&stored_len.to_be_bytes());
         payload.extend_from_slice(chunk.chunk_id.as_bytes());
         payload.extend_from_slice(&chunk.logical_len.to_be_bytes());
         payload.extend_from_slice(&chunk.plan_ref.to_be_bytes());
+        if extended {
+            payload.extend_from_slice(chunk.group_ref.unwrap_or(Digest::ZERO).as_bytes());
+        }
         payload.extend_from_slice(&stored);
         index.insert(chunk.chunk_id, ChunkLocation { offset, stored_len });
+        if let Some(group_id) = chunk.group_ref {
+            group_history
+                .entry(group_id)
+                .or_default()
+                .push(chunk.chunk_id);
+        }
     }
     Ok((payload, index))
 }
+
+#[derive(Clone, Copy)]
+struct EncodedChunkFrame<'a> {
+    offset: u64,
+    chunk_id: Digest,
+    logical_len: u64,
+    plan_ref: u64,
+    group_ref: Option<Digest>,
+    stored: &'a [u8],
+}
+
+type DecodedChunks = (
+    BTreeMap<Digest, Chunk>,
+    Box<[Digest]>,
+    BTreeMap<Digest, ChunkLocation>,
+);
 
 fn decode_chunks(
     payload: &[u8],
     absolute_payload_offset: u64,
     plans: &[TransformPlan],
+    dictionaries: &BTreeMap<Digest, Dictionary>,
+    groups: &BTreeMap<Digest, ChunkGroup>,
     declared_budget: ResourceBudget,
-) -> Result<(BTreeMap<Digest, Chunk>, BTreeMap<Digest, ChunkLocation>)> {
+    extended: bool,
+) -> Result<DecodedChunks> {
     let plans = plans
         .iter()
         .map(|plan| (plan.plan_id, plan))
         .collect::<BTreeMap<_, _>>();
-    let mut chunks = BTreeMap::new();
-    let mut index = BTreeMap::new();
+    let mut frames = Vec::<EncodedChunkFrame<'_>>::new();
+    let mut seen = BTreeSet::new();
     let mut cursor = 0_usize;
     let mut previous = None;
     while cursor < payload.len() {
-        let header_len = usize::try_from(CHUNK_FRAME_HEADER_LEN).unwrap_or(64);
+        let header_len = usize::try_from(if extended {
+            CHUNK_FRAME_V2_HEADER_LEN
+        } else {
+            CHUNK_FRAME_HEADER_LEN
+        })
+        .unwrap_or(if extended { 96 } else { 64 });
         if payload.len() - cursor < header_len {
             return Err(structure("Chunk frame header is truncated"));
         }
@@ -581,7 +820,8 @@ fn decode_chunks(
         if header[..4] != CHUNK_MAGIC {
             return Err(structure("Chunk frame magic mismatch"));
         }
-        if u16::from_be_bytes(exact(&header[4..6])?) != SECTION_VERSION || header[6..8] != [0; 2] {
+        let expected_version = if extended { 2 } else { SECTION_VERSION };
+        if u16::from_be_bytes(exact(&header[4..6])?) != expected_version || header[6..8] != [0; 2] {
             return Err(noncanonical(
                 "Chunk frame version or flags are not canonical",
             ));
@@ -590,13 +830,22 @@ fn decode_chunks(
         let chunk_id = digest(&header[16..48])?;
         let logical_len = u64::from_be_bytes(exact(&header[48..56])?);
         let plan_ref = u64::from_be_bytes(exact(&header[56..64])?);
-        if previous.is_some_and(|digest| digest >= chunk_id) {
+        let group_ref = if extended {
+            let value = digest(&header[64..96])?;
+            (value != Digest::ZERO).then_some(value)
+        } else {
+            None
+        };
+        if !seen.insert(chunk_id) {
+            return Err(noncanonical("Chunk frame IDs must be unique"));
+        }
+        if !extended && previous.is_some_and(|digest| digest >= chunk_id) {
             return Err(noncanonical(
                 "Chunk frames must be uniquely ordered by chunk ID",
             ));
         }
         previous = Some(chunk_id);
-        let plan = plans.get(&plan_ref).ok_or_else(|| {
+        plans.get(&plan_ref).ok_or_else(|| {
             Diagnostic::new(
                 OutcomeClass::Unsupported,
                 ReasonCode::UnknownTransformPlan,
@@ -626,35 +875,20 @@ fn decode_chunks(
         if data_end > payload.len() {
             return Err(structure("Chunk stored length exceeds CHUNK_DATA"));
         }
-        let plaintext = decode_payload(plan, &payload[data_start..data_end], logical_len)?;
-        if sha256_exact(&plaintext) != chunk_id {
-            return Err(integrity(
-                ReasonCode::ChunkDigestMismatch,
-                format!("Chunk {chunk_id}"),
-            ));
-        }
         let frame_offset =
             u64::try_from(cursor).map_err(|_| resource("Chunk offset exceeds u64"))?;
-        index.insert(
+        frames.push(EncodedChunkFrame {
+            offset: absolute_payload_offset
+                .checked_add(frame_offset)
+                .ok_or_else(|| resource("absolute Chunk offset overflow"))?,
             chunk_id,
-            ChunkLocation {
-                offset: absolute_payload_offset
-                    .checked_add(frame_offset)
-                    .ok_or_else(|| resource("absolute Chunk offset overflow"))?,
-                stored_len,
-            },
-        );
-        chunks.insert(
-            chunk_id,
-            Chunk {
-                chunk_id,
-                logical_len,
-                plan_ref,
-                plaintext: plaintext.into_boxed_slice(),
-            },
-        );
+            logical_len,
+            plan_ref,
+            group_ref,
+            stored: &payload[data_start..data_end],
+        });
         cursor = data_end;
-        if u64::try_from(chunks.len()).unwrap_or(u64::MAX) > declared_budget.chunk_count {
+        if u64::try_from(frames.len()).unwrap_or(u64::MAX) > declared_budget.chunk_count {
             return Err(Diagnostic::new(
                 OutcomeClass::Corrupt,
                 ReasonCode::ResourceLimit,
@@ -662,7 +896,237 @@ fn decode_chunks(
             ));
         }
     }
-    Ok((chunks, index))
+    validate_frame_dependencies(&frames, &plans, dictionaries, groups)?;
+
+    let mut chunks = BTreeMap::new();
+    let mut index = BTreeMap::new();
+    let mut group_history = BTreeMap::<Digest, Vec<Digest>>::new();
+    for (position, frame) in frames.iter().enumerate() {
+        let plan = plans[&frame.plan_ref];
+        let decoded = match plan_mode(plan)? {
+            PlanMode::Independent => decode_payload(plan, frame.stored, frame.logical_len),
+            PlanMode::Dictionary(dictionary_id) => {
+                let dictionary = dictionaries.get(&dictionary_id).ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::UnknownDictionary,
+                        dictionary_id.to_string(),
+                    )
+                })?;
+                decode_payload_with_dictionary(plan, frame.stored, frame.logical_len, dictionary)
+            }
+            PlanMode::Prefix { lookback } => {
+                let group_id = frame.group_ref.ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::InvalidGroupReference,
+                        frame.chunk_id.to_string(),
+                    )
+                })?;
+                let prefix = physical_prefix(
+                    &chunks,
+                    group_history.entry(group_id).or_default(),
+                    lookback,
+                )?;
+                decode_payload_with_prefix(plan, frame.stored, frame.logical_len, &prefix)
+            }
+        };
+        let plaintext = match decoded {
+            Ok(plaintext) => plaintext,
+            Err(error) if is_group_prerequisite(&frames, position, groups) => {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Corrupt,
+                    ReasonCode::PrerequisiteChunkCorrupt,
+                    format!(
+                        "Chunk {} is required by a later group member: {} {}",
+                        frame.chunk_id,
+                        error.code().as_str(),
+                        error.detail()
+                    ),
+                ));
+            }
+            Err(error) => return Err(error),
+        };
+        if sha256_exact(&plaintext) != frame.chunk_id {
+            let code = if is_group_prerequisite(&frames, position, groups) {
+                ReasonCode::PrerequisiteChunkCorrupt
+            } else {
+                ReasonCode::ChunkDigestMismatch
+            };
+            return Err(integrity(code, format!("Chunk {}", frame.chunk_id)));
+        }
+        index.insert(
+            frame.chunk_id,
+            ChunkLocation {
+                offset: frame.offset,
+                stored_len: u64::try_from(frame.stored.len())
+                    .map_err(|_| resource("stored Chunk length exceeds u64"))?,
+            },
+        );
+        chunks.insert(
+            frame.chunk_id,
+            Chunk {
+                chunk_id: frame.chunk_id,
+                logical_len: frame.logical_len,
+                plan_ref: frame.plan_ref,
+                group_ref: frame.group_ref,
+                plaintext: plaintext.into_boxed_slice(),
+            },
+        );
+        if let Some(group_id) = frame.group_ref {
+            group_history
+                .entry(group_id)
+                .or_default()
+                .push(frame.chunk_id);
+        }
+    }
+    let physical_order = frames
+        .iter()
+        .map(|frame| frame.chunk_id)
+        .collect::<Vec<_>>()
+        .into_boxed_slice();
+    Ok((chunks, physical_order, index))
+}
+
+fn validate_frame_dependencies(
+    frames: &[EncodedChunkFrame<'_>],
+    plans: &BTreeMap<u64, &TransformPlan>,
+    dictionaries: &BTreeMap<Digest, Dictionary>,
+    groups: &BTreeMap<Digest, ChunkGroup>,
+) -> Result<()> {
+    let mut positions = BTreeMap::<Digest, Vec<usize>>::new();
+    for (position, frame) in frames.iter().enumerate() {
+        match plan_mode(plans[&frame.plan_ref])? {
+            PlanMode::Independent if frame.group_ref.is_none() => {}
+            PlanMode::Dictionary(dictionary_id) if frame.group_ref.is_none() => {
+                if !dictionaries.contains_key(&dictionary_id) {
+                    return Err(Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::UnknownDictionary,
+                        dictionary_id.to_string(),
+                    ));
+                }
+            }
+            PlanMode::Prefix { lookback } => {
+                let group_id = frame.group_ref.ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::InvalidGroupReference,
+                        frame.chunk_id.to_string(),
+                    )
+                })?;
+                let group = groups.get(&group_id).ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::InvalidGroupReference,
+                        group_id.to_string(),
+                    )
+                })?;
+                if lookback != group.max_lookback {
+                    return Err(Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::LookbackViolation,
+                        format!("ChunkGroup {group_id} and TransformPlan disagree"),
+                    ));
+                }
+                positions.entry(group_id).or_default().push(position);
+            }
+            _ => {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidGroupReference,
+                    frame.chunk_id.to_string(),
+                ));
+            }
+        }
+    }
+    if positions.len() != groups.len() {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidGroupReference,
+            "every ChunkGroup must have prefix-coded members",
+        ));
+    }
+    for (group_id, member_positions) in positions {
+        if member_positions.len() < 2
+            || member_positions
+                .windows(2)
+                .any(|pair| pair[1] != pair[0] + 1)
+        {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidGroupOrdering,
+                group_id.to_string(),
+            ));
+        }
+        let group = &groups[&group_id];
+        let lookback = usize::try_from(group.max_lookback)
+            .map_err(|_| resource("group lookback exceeds usize"))?;
+        let mut maximum = 0_u64;
+        for member_index in 0..member_positions.len() {
+            let first = member_index.saturating_sub(lookback);
+            let bytes = member_positions[first..member_index].iter().try_fold(
+                0_u64,
+                |total, position| {
+                    total
+                        .checked_add(frames[*position].logical_len)
+                        .ok_or_else(|| resource("group access bytes exceed u64"))
+                },
+            )?;
+            maximum = maximum.max(bytes);
+        }
+        if maximum != group.max_preceding_bytes {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::AccessCostMismatch,
+                format!("ChunkGroup {group_id} access declaration mismatch"),
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn physical_prefix(
+    chunks: &BTreeMap<Digest, Chunk>,
+    history: &[Digest],
+    lookback: u32,
+) -> Result<Vec<u8>> {
+    let lookback = usize::try_from(lookback).map_err(|_| resource("lookback exceeds usize"))?;
+    let first = history.len().saturating_sub(lookback);
+    let preceding = &history[first..];
+    let total = preceding.iter().try_fold(0_usize, |total, chunk_id| {
+        total
+            .checked_add(chunks[chunk_id].plaintext.len())
+            .ok_or_else(|| resource("prefix length exceeds usize"))
+    })?;
+    let retained =
+        total.min(usize::try_from(crate::codec::ZSTD_WINDOW_BYTES).unwrap_or(usize::MAX));
+    let mut skip = total - retained;
+    let mut prefix = Vec::with_capacity(retained);
+    for chunk_id in preceding {
+        let plaintext = &chunks[chunk_id].plaintext;
+        if skip >= plaintext.len() {
+            skip -= plaintext.len();
+            continue;
+        }
+        prefix.extend_from_slice(&plaintext[skip..]);
+        skip = 0;
+    }
+    Ok(prefix)
+}
+
+fn is_group_prerequisite(
+    frames: &[EncodedChunkFrame<'_>],
+    position: usize,
+    groups: &BTreeMap<Digest, ChunkGroup>,
+) -> bool {
+    let Some(group_id) = frames[position].group_ref else {
+        return false;
+    };
+    let lookback = usize::try_from(groups[&group_id].max_lookback).unwrap_or(0);
+    frames[position + 1..frames.len().min(position.saturating_add(lookback + 1))]
+        .iter()
+        .any(|frame| frame.group_ref == Some(group_id))
 }
 
 fn validate_or_rebuild_index(
@@ -725,10 +1189,11 @@ fn append_section(
     body: &mut Vec<u8>,
     kind: SectionKind,
     payload: &[u8],
+    extended: bool,
 ) -> Result<SectionLocation> {
     let offset = u64_len(body)?;
     body.extend_from_slice(&SECTION_MAGIC);
-    body.extend_from_slice(&section_id(kind).to_be_bytes());
+    body.extend_from_slice(&section_id(kind, extended)?.to_be_bytes());
     body.extend_from_slice(&SECTION_VERSION.to_be_bytes());
     body.extend_from_slice(&0_u32.to_be_bytes());
     body.extend_from_slice(&0_u32.to_be_bytes());
@@ -836,11 +1301,14 @@ fn decode_preamble(bytes: &[u8]) -> Result<Preamble> {
             "feature bitmap checksum mismatch",
         ));
     }
-    if features.incompat != 0 {
+    if features.incompat & !SUPPORTED_INCOMPAT_FEATURES != 0 {
         return Err(Diagnostic::new(
             OutcomeClass::Unsupported,
             ReasonCode::UnsupportedRequiredFeature,
-            format!("unknown incompat feature bits {:016x}", features.incompat),
+            format!(
+                "unknown incompat feature bits {:016x}",
+                features.incompat & !SUPPORTED_INCOMPAT_FEATURES
+            ),
         ));
     }
     if preamble[72] != 1 || preamble[73] != 1 {
@@ -992,7 +1460,11 @@ struct SectionView<'a> {
     digest_valid: bool,
 }
 
-fn decode_sections<'a>(bytes: &'a [u8], footer: &Footer) -> Result<Vec<SectionView<'a>>> {
+fn decode_sections<'a>(
+    bytes: &'a [u8],
+    footer: &Footer,
+    extended: bool,
+) -> Result<Vec<SectionView<'a>>> {
     let mut sections = Vec::new();
     let mut cursor = usize::try_from(PREAMBLE_LEN).unwrap_or(256);
     let footer_offset =
@@ -1009,7 +1481,7 @@ fn decode_sections<'a>(bytes: &'a [u8], footer: &Footer) -> Result<Vec<SectionVi
             return Err(structure("section magic mismatch"));
         }
         let id = u16::from_be_bytes(exact(&header[4..6])?);
-        let kind = section_kind(id)?;
+        let kind = section_kind(id, extended)?;
         if id != expected_id {
             return Err(noncanonical(
                 "sections are missing, duplicated, or out of canonical order",
@@ -1064,7 +1536,8 @@ fn decode_sections<'a>(bytes: &'a [u8], footer: &Footer) -> Result<Vec<SectionVi
         });
         cursor = payload_end;
     }
-    if expected_id != 6 && expected_id != 7 {
+    let required_end = if extended { 8 } else { 6 };
+    if expected_id != required_end && expected_id != required_end + 1 {
         return Err(structure("required bootstrap sections are missing"));
     }
     Ok(sections)
@@ -1117,7 +1590,11 @@ fn validate_actuals(
         .max()
         .unwrap_or(0);
     let expansion = maximum_expansion_ratio(&archive.content_store.chunks, rebuilt_index)?;
-    let decode = aggregate_decode_requirements(&archive.transform_plans);
+    let decode = aggregate_archive_decode_requirements(
+        &archive.transform_plans,
+        &archive.content_store.dictionaries,
+        &archive.content_store.chunk_groups,
+    )?;
     if entry_count > budget.entry_count
         || total_logical > budget.total_logical_bytes
         || max_single > budget.max_single_entry_logical_bytes
@@ -1145,25 +1622,40 @@ fn validate_actuals(
     Ok(())
 }
 
-fn section_id(kind: SectionKind) -> u16 {
-    match kind {
-        SectionKind::Descriptor => 1,
-        SectionKind::TransformPlans => 2,
-        SectionKind::ChunkData => 3,
-        SectionKind::ManifestRecords => 4,
-        SectionKind::Fidelity => 5,
-        SectionKind::Index => 6,
+fn section_id(kind: SectionKind, extended: bool) -> Result<u16> {
+    match (extended, kind) {
+        (_, SectionKind::Descriptor) => Ok(1),
+        (_, SectionKind::TransformPlans) => Ok(2),
+        (false, SectionKind::ChunkData) => Ok(3),
+        (false, SectionKind::ManifestRecords) => Ok(4),
+        (false, SectionKind::Fidelity) => Ok(5),
+        (false, SectionKind::Index) => Ok(6),
+        (true, SectionKind::Dictionaries) => Ok(3),
+        (true, SectionKind::ChunkGroups) => Ok(4),
+        (true, SectionKind::ChunkData) => Ok(5),
+        (true, SectionKind::ManifestRecords) => Ok(6),
+        (true, SectionKind::Fidelity) => Ok(7),
+        (true, SectionKind::Index) => Ok(8),
+        _ => Err(structure(
+            "section kind does not belong to selected feature schema",
+        )),
     }
 }
 
-fn section_kind(value: u16) -> Result<SectionKind> {
-    match value {
-        1 => Ok(SectionKind::Descriptor),
-        2 => Ok(SectionKind::TransformPlans),
-        3 => Ok(SectionKind::ChunkData),
-        4 => Ok(SectionKind::ManifestRecords),
-        5 => Ok(SectionKind::Fidelity),
-        6 => Ok(SectionKind::Index),
+fn section_kind(value: u16, extended: bool) -> Result<SectionKind> {
+    match (extended, value) {
+        (_, 1) => Ok(SectionKind::Descriptor),
+        (_, 2) => Ok(SectionKind::TransformPlans),
+        (false, 3) => Ok(SectionKind::ChunkData),
+        (false, 4) => Ok(SectionKind::ManifestRecords),
+        (false, 5) => Ok(SectionKind::Fidelity),
+        (false, 6) => Ok(SectionKind::Index),
+        (true, 3) => Ok(SectionKind::Dictionaries),
+        (true, 4) => Ok(SectionKind::ChunkGroups),
+        (true, 5) => Ok(SectionKind::ChunkData),
+        (true, 6) => Ok(SectionKind::ManifestRecords),
+        (true, 7) => Ok(SectionKind::Fidelity),
+        (true, 8) => Ok(SectionKind::Index),
         _ => Err(Diagnostic::new(
             OutcomeClass::Unsupported,
             ReasonCode::UnsupportedRequiredFeature,

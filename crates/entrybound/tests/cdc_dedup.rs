@@ -119,7 +119,7 @@ fn archive_wide_dedup_is_exact_deterministic_and_extracts_all_references() {
     assert_eq!(first.bytes, second.bytes);
     let opened = open(&first.bytes).unwrap();
     verify(&first.bytes).unwrap();
-    assert_eq!(opened.archive.descriptor.planner_id, "balanced-v2");
+    assert_eq!(opened.archive.descriptor.planner_id, "balanced-v3");
     assert_eq!(opened.archive.descriptor.chunker_id, BALANCED_V2.chunker_id);
 
     let view = inspect(&opened).unwrap();
@@ -276,8 +276,15 @@ fn archive_with_content(
         )])
         .unwrap(),
         content_store: ContentStore {
+            physical_order: chunks
+                .keys()
+                .copied()
+                .collect::<Vec<_>>()
+                .into_boxed_slice(),
             objects: BTreeMap::from([(logical_digest, object)]),
             chunks,
+            dictionaries: BTreeMap::new(),
+            chunk_groups: BTreeMap::new(),
         },
         transform_plans: vec![TransformPlan {
             plan_id: STORE_PLAN_ID,
@@ -364,8 +371,12 @@ fn assert_shared_store_chunk_corruption_is_detected(bytes: &[u8], archive: &Arch
 
     let mut corrupt = bytes.to_vec();
     let location = archive.index.chunks[&chunk_id];
-    corrupt[usize::try_from(location.offset).unwrap() + 64] ^= 1;
-    rehash_section(&mut corrupt, 3);
+    let extended = archive.descriptor.features.incompat
+        & entrybound::ecf::FEATURE_CROSS_FILE_COMPRESSION_V1
+        != 0;
+    let frame_header = if extended { 96 } else { 64 };
+    corrupt[usize::try_from(location.offset).unwrap() + frame_header] ^= 1;
+    rehash_section(&mut corrupt, if extended { 5 } else { 3 });
     let error = verify(&corrupt).unwrap_err();
     assert_eq!(error.code(), ReasonCode::ChunkDigestMismatch);
     assert!(error.detail().contains(&chunk_id.to_string()));

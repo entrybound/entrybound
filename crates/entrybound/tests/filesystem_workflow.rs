@@ -44,7 +44,7 @@ fn filesystem_round_trip_is_deterministic_and_complete() {
     }));
     let view = inspect(&opened).unwrap();
     assert_eq!(view.entry_count as usize, listed.len());
-    assert_eq!(view.planner_id, "balanced-v2");
+    assert_eq!(view.planner_id, "balanced-v3");
     assert_eq!(
         view.chunker_id,
         "gear-norm-v1/min-131072/target-524288/max-2097152"
@@ -186,7 +186,7 @@ fn corruption_and_policy_refusal_happen_before_materialization() {
     let encoded = pack_directory(&source, PackOptions::default()).unwrap();
 
     let mut corrupt = encoded.bytes.clone();
-    let (_, chunk_payload) = locate_section(&corrupt, 3);
+    let (_, chunk_payload) = locate_section(&corrupt, 5);
     corrupt[chunk_payload.end - 1] ^= 1;
     let corrupt_destination = fixture.path.join("corrupt-output");
     let error = unpack(&corrupt, &corrupt_destination, ExtractionPolicy::default()).unwrap_err();
@@ -329,13 +329,13 @@ fn tree_entries(root: &Path) -> Vec<(PathBuf, bool)> {
 }
 
 fn mutate_first_component_to_dot(bytes: &mut [u8]) {
-    let (_, manifest) = locate_section(bytes, 4);
+    let (_, manifest) = locate_section(bytes, 6);
     let path_sequence = field_value(bytes, manifest.start, 1);
     let component_start = path_sequence.start + 16;
     let component_value = field_value(bytes, component_start, 2);
     assert_eq!(component_value.len(), 1);
     bytes[component_value.start] = b'.';
-    rehash_section(bytes, 4);
+    rehash_section(bytes, 6);
 }
 
 fn locate_section(bytes: &[u8], wanted: u16) -> (Range<usize>, Range<usize>) {
