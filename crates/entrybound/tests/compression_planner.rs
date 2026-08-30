@@ -5,12 +5,13 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 use entrybound::archive::{
     CollisionPolicy, ExtractionPolicy, PackOptions, bootstrap_decode_policy,
-    bootstrap_resource_policy, explain, inspect, pack_directory, unpack,
+    bootstrap_resource_policy, explain, inspect, pack_directory, unpack, unpack_stream,
 };
 use entrybound::diagnostics::{OutcomeClass, ReasonCode};
 use entrybound::eam::DecodeRequirements;
 use entrybound::ecf::{
-    FOOTER_LEN, PREAMBLE_LEN, SECTION_HEADER_LEN, open, open_with_limits, verify,
+    FOOTER_LEN, PREAMBLE_LEN, SECTION_HEADER_LEN, StreamWindow, StreamWriteOptions,
+    bootstrap_sequential_limits, encode_stream, open, open_with_limits, verify,
 };
 use entrybound::identity::{BOOTSTRAP_CHUNK_SIZE, sha256_exact};
 use entrybound::planner::CompressionProfile;
@@ -178,6 +179,32 @@ fn v4_transform_pipeline_is_self_describing_across_ecf_and_unpack() {
     let destination = fixture.path.join("restored");
     unpack(&first.bytes, &destination, ExtractionPolicy::default()).unwrap();
     assert_eq!(fs::read(destination.join("numeric.bin")).unwrap(), numeric);
+
+    let mut stream = Vec::new();
+    let stream_summary = encode_stream(
+        &first.archive,
+        StreamWriteOptions {
+            window: StreamWindow::Auto,
+            budget_declared: true,
+        },
+        &mut stream,
+    )
+    .unwrap();
+    assert_eq!(first.identities.lai, stream_summary.identities.lai);
+    assert_eq!(first.identities.aux, stream_summary.identities.aux);
+    assert_eq!(first.identities.pcr, stream_summary.identities.pcr);
+    let stream_destination = fixture.path.join("stream-restored");
+    unpack_stream(
+        stream.as_slice(),
+        &stream_destination,
+        ExtractionPolicy::default(),
+        bootstrap_sequential_limits(),
+    )
+    .unwrap();
+    assert_eq!(
+        fs::read(stream_destination.join("numeric.bin")).unwrap(),
+        numeric
+    );
 
     let explanation = explain(&opened).unwrap();
     assert!(explanation.transformed_chunk_count > 0);

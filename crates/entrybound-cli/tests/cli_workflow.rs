@@ -279,16 +279,17 @@ fn a_window_that_cannot_be_met_fails_with_a_typed_diagnostic() {
     let fixture = Fixture::new();
     let source = fixture.path.join("source");
     let archive = fixture.path.join("shared.eb");
-    // Each file owns content the other does not, so both contribute Chunks and
-    // the second record read necessarily reaches back to the first file's run.
+    // Both files share a prefix longer than the balanced-v6 CDC maximum and
+    // then diverge. The forced maximum boundary gives them at least one exact
+    // shared Chunk while each tail still contributes unique content.
     fs::create_dir(&source).unwrap();
-    let shared = structured(1024 * 1024);
-    let mut leading = seeded_noise(128 * 1024, 0x0bad_cafe_0bad_cafe);
-    leading.extend_from_slice(&shared);
-    let mut trailing = shared;
-    trailing.extend_from_slice(&seeded_noise(128 * 1024, 0x0fee_1900_0fee_1900));
-    fs::write(source.join("unique-head-then-shared.bin"), &leading).unwrap();
-    fs::write(source.join("shared-then-unique-tail.bin"), &trailing).unwrap();
+    let shared = structured(3 * 1024 * 1024);
+    let mut first = shared.clone();
+    first.extend_from_slice(&seeded_noise(128 * 1024, 0x0bad_cafe_0bad_cafe));
+    let mut second = shared;
+    second.extend_from_slice(&seeded_noise(128 * 1024, 0x0fee_1900_0fee_1900));
+    fs::write(source.join("shared-then-first-tail.bin"), &first).unwrap();
+    fs::write(source.join("shared-then-second-tail.bin"), &second).unwrap();
 
     let refused = command(["pack", path(&source), path(&archive), "--layout", "stream"]);
     assert!(!refused.status.success());

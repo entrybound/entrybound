@@ -69,8 +69,9 @@ already emitted unique Chunk. The default is 0, which refuses to create any\n\
 cross-object historical dependency. `auto` accepts whatever the selected\n\
 sequential organization requires and declares exactly that minimum. Packing\n\
 fails with a typed diagnostic rather than silently raising a window you asked\n\
-for; shared dictionaries and bounded-lookback ChunkGroups normally require a\n\
-non-zero window.\n";
+for. Shared dictionaries are declared before use and do not themselves consume\n\
+the window; historical exact-Chunk references and bounded-lookback ChunkGroups\n\
+may require a non-zero window.\n";
 
 fn run(arguments: impl IntoIterator<Item = OsString>) -> Result<()> {
     let mut arguments = arguments.into_iter();

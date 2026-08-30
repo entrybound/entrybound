@@ -15,7 +15,11 @@ use entrybound::archive::{
     unpack, unpack_stream,
 };
 use entrybound::diagnostics::{OutcomeClass, ReasonCode};
-use entrybound::eam::{Layout, ResourceBudget};
+use entrybound::eam::{
+    Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, DecodeRequirements, Digest,
+    DigestAlgorithm, Entry, EntryData, EntryIdentity, EntrySet, FeatureSet, FidelityReport,
+    IdentityProfile, Index, Layout, LogicalPath, MetadataSet, ResourceBudget, TransformPlan,
+};
 use entrybound::ecf::{
     CHUNK_FRAME_HEADER_LEN, CHUNK_FRAME_V2_HEADER_LEN, FEATURE_STREAM_LAYOUT_V1, IndexStatus,
     PREAMBLE_LEN, STREAM_FOOTER_LEN, STREAM_ITEM_HEADER_LEN, STREAM_ITEM_MAGIC, SequentialLimits,
@@ -23,7 +27,10 @@ use entrybound::ecf::{
     StreamWriteSummary, bootstrap_sequential_limits, encode_stream, open, open_stream_with_limits,
     verify_stream_with_limits,
 };
-use entrybound::identity::sha256_exact;
+use entrybound::identity::{
+    STORE_CODEC_IDENTIFIER, STORE_PLAN_ID, STORE_PLAN_IDENTIFIER, build_content_from_ranges,
+    sha256_exact,
+};
 use entrybound::planner::CompressionProfile;
 
 static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
@@ -315,24 +322,15 @@ fn a_window_of_zero_is_valid_when_no_object_shares_an_earlier_chunk() {
 
 #[test]
 fn a_plan_needing_history_fails_a_zero_window_and_names_the_requirement() {
-    let fixture = Fixture::new("window-refusal");
-    let source = fixture.path.join("source");
-    write_shared_content_source(&source);
-
-    let indexed = pack(&source, CompressionProfile::Balanced);
-    let auto = encode_to_vec(&indexed.archive, auto_window()).1;
+    let archive = shared_reference_archive();
+    let auto = encode_to_vec(&archive, auto_window()).1;
     assert!(
         auto.dedup_window > 0,
         "the fixture must create a cross-object historical dependency"
     );
 
     let mut refused = WriteOnlySink::default();
-    let error = encode_stream(
-        &indexed.archive,
-        StreamWriteOptions::default(),
-        &mut refused,
-    )
-    .unwrap_err();
+    let error = encode_stream(&archive, StreamWriteOptions::default(), &mut refused).unwrap_err();
     assert_eq!(error.code(), ReasonCode::StreamWindowExceeded);
     assert_eq!(error.class(), OutcomeClass::PolicyRefused);
     assert!(error.detail().contains(&auto.dedup_window.to_string()));
@@ -340,7 +338,7 @@ fn a_plan_needing_history_fails_a_zero_window_and_names_the_requirement() {
     // An explicit ceiling at or above the requirement is accepted, and the
     // archive declares the exact minimum its organization needs.
     let exact = encode_to_vec(
-        &indexed.archive,
+        &archive,
         StreamWriteOptions {
             window: StreamWindow::Ceiling(auto.dedup_window),
             ..StreamWriteOptions::default()
@@ -351,7 +349,7 @@ fn a_plan_needing_history_fails_a_zero_window_and_names_the_requirement() {
     let mut too_small = WriteOnlySink::default();
     assert_eq!(
         encode_stream(
-            &indexed.archive,
+            &archive,
             StreamWriteOptions {
                 window: StreamWindow::Ceiling(auto.dedup_window - 1),
                 ..StreamWriteOptions::default()
@@ -366,11 +364,8 @@ fn a_plan_needing_history_fails_a_zero_window_and_names_the_requirement() {
 
 #[test]
 fn a_reader_rejects_a_body_that_exceeds_its_declared_window() {
-    let fixture = Fixture::new("window-violation");
-    let source = fixture.path.join("source");
-    write_shared_content_source(&source);
-    let indexed = pack(&source, CompressionProfile::Balanced);
-    let (bytes, summary) = encode_to_vec(&indexed.archive, auto_window());
+    let archive = shared_reference_archive();
+    let (bytes, summary) = encode_to_vec(&archive, auto_window());
     assert!(summary.dedup_window > 0);
 
     // Re-declare a zero window without touching the body, and repair the
@@ -944,24 +939,107 @@ fn write_rich_source(source: &Path) {
     fs::write(source.join("empty"), []).unwrap();
 }
 
-/// Two files that share a large interior region but each also own content the
-/// other does not, which is what forces a cross-object historical Chunk
-/// dependency in a sequential body.
-///
-/// Both files must contribute Chunks of their own. If one file's Chunks were a
-/// subset of the other's, that file would emit no new frames, would join the
-/// other's record batch, and the archive would need no historical window at
-/// all — an outcome that would otherwise depend on which logical digest sorts
-/// first.
-fn write_shared_content_source(source: &Path) {
-    fs::create_dir_all(source).unwrap();
-    let shared = structured(1024 * 1024);
-    let mut leading = noise(128 * 1024, 0x0bad_cafe);
-    leading.extend_from_slice(&shared);
-    let mut trailing = shared;
-    trailing.extend_from_slice(&noise(128 * 1024, 0x0fee_1900));
-    fs::write(source.join("unique-head-then-shared.bin"), &leading).unwrap();
-    fs::write(source.join("shared-then-unique-tail.bin"), &trailing).unwrap();
+/// Two logical objects that share one exact Chunk and each own one unique
+/// Chunk. Constructing the ranges directly freezes the intended physical
+/// dependency instead of relying on incidental CDC boundaries.
+fn shared_reference_archive() -> Archive {
+    let shared = structured(4096);
+    let head = noise(1024, 0x0bad_cafe);
+    let tail = noise(1024, 0x0fee_1900);
+
+    let mut first_bytes = head.clone();
+    first_bytes.extend_from_slice(&shared);
+    let (first, first_chunks) = build_content_from_ranges(
+        &first_bytes,
+        &[0..head.len(), head.len()..first_bytes.len()],
+        STORE_PLAN_ID,
+    )
+    .unwrap();
+
+    let mut second_bytes = shared;
+    second_bytes.extend_from_slice(&tail);
+    let shared_len = second_bytes.len() - tail.len();
+    let (second, second_chunks) = build_content_from_ranges(
+        &second_bytes,
+        &[0..shared_len, shared_len..second_bytes.len()],
+        STORE_PLAN_ID,
+    )
+    .unwrap();
+
+    let entries = EntrySet::new(vec![
+        Entry::new(
+            LogicalPath::from_utf8(["first.bin"]).unwrap(),
+            EntryData::File {
+                content: ContentRef::Internal(first.logical_digest),
+            },
+            MetadataSet::default(),
+            EntryIdentity::default(),
+        ),
+        Entry::new(
+            LogicalPath::from_utf8(["second.bin"]).unwrap(),
+            EntryData::File {
+                content: ContentRef::Internal(second.logical_digest),
+            },
+            MetadataSet::default(),
+            EntryIdentity::default(),
+        ),
+    ])
+    .unwrap();
+    let objects = BTreeMap::from([
+        (first.logical_digest, first),
+        (second.logical_digest, second),
+    ]);
+    let mut chunks = first_chunks;
+    chunks.extend(second_chunks);
+
+    Archive {
+        descriptor: ArchiveDescriptor {
+            format_major: 0,
+            format_minor: 1,
+            format_namespace: entrybound::ecf::FORMAT_NAMESPACE.to_owned(),
+            features: FeatureSet::default(),
+            layout: Layout::Indexed,
+            role: ArchiveRole::Complete,
+            budget_declared: true,
+            stream_dedup_window: 0,
+            budget: ResourceBudget::default(),
+            decode: DecodeRequirements::default(),
+            identity_profile: IdentityProfile::IdentityV1,
+            digest_algorithm: DigestAlgorithm::Sha256,
+            planner_id: "stream-window-test/v1".to_owned(),
+            chunker_id: "explicit-ranges/test-v1".to_owned(),
+            lai: Digest::ZERO,
+            pcr: Digest::ZERO,
+            aux: Digest::ZERO,
+            pci: None,
+        },
+        entry_set: entries,
+        content_store: ContentStore {
+            physical_order: chunks
+                .keys()
+                .copied()
+                .collect::<Vec<_>>()
+                .into_boxed_slice(),
+            objects,
+            chunks,
+            ..ContentStore::default()
+        },
+        transform_plans: vec![TransformPlan {
+            plan_id: STORE_PLAN_ID,
+            identifier: STORE_PLAN_IDENTIFIER.to_owned(),
+            transforms: Box::default(),
+            codec: STORE_CODEC_IDENTIFIER.to_owned(),
+            codec_params: Box::default(),
+            dictionary: None,
+            decode: DecodeRequirements::default(),
+        }]
+        .into_boxed_slice(),
+        fidelity: FidelityReport {
+            platform: "test".to_owned(),
+            ..FidelityReport::default()
+        },
+        index: Index::default(),
+    }
 }
 
 fn write_similar_source(source: &Path, count: usize, len: usize, seed: u64) {
