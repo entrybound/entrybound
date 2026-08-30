@@ -12,6 +12,8 @@ workspace = true
 [dependencies]
 cap-std = "4.0.3"
 crc32fast = "=1.5.0"
+jixel = { version = "=0.2.19", default-features = false }
+jxl-oxide = { version = "=0.12.6", default-features = false }
 lz4_flex = { version = "=0.14.0", default-features = false, features = ["std", "safe-encode", "safe-decode", "checked-decode"] }
 lzma-rust2 = { version = "=0.20.0", default-features = false, features = ["std", "encoder"] }
 preflate-rs = "=0.7.6"
@@ -20,3 +22,4 @@ zstd = { version = "=0.13.3", default-features = false, features = ["zdict_build
 
 [dev-dependencies]
 flate2 = "=1.1.9"
+image = { version = "=0.25.8", default-features = false, features = ["jpeg"] }

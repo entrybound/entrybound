@@ -13,7 +13,8 @@ pub use filesystem::{
 };
 pub use inspection::{
     ArchiveInspection, ChunkStatistics, CodecUsage, CompressionExplanation, CrossFileInspection,
-    ListedEntry, PlanInspection, ReconstructionInspection, TransformUsage, explain, inspect, list,
+    ListedEntry, PlanInspection, ReconstructionInspection, TransformUsage, WholeObjectInspection,
+    explain, inspect, list,
 };
 
 /// Explicit, deliberately generous limits for the experimental bootstrap CLI.
@@ -34,14 +35,13 @@ pub const fn bootstrap_resource_policy() -> ResourceBudget {
 
 /// Decoder memory ceilings used by the experimental CLI.
 ///
-/// V5 adds a bounded 80 MiB reconstructive working set to the existing codec,
-/// Dictionary, and group-access requirements. Applications may provide a
-/// narrower caller-owned policy.
+/// V6 permits a bounded 256 MiB JPEG/JPEG XL reconstruction working set.
+/// Applications may provide a narrower caller-owned policy.
 #[must_use]
 pub const fn bootstrap_decode_policy() -> DecodeRequirements {
     DecodeRequirements {
         window_bytes: 8 * 1024 * 1024,
-        working_set_bytes: 128 * 1024 * 1024,
+        working_set_bytes: 384 * 1024 * 1024,
         flags: 0,
     }
 }

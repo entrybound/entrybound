@@ -97,7 +97,7 @@ fn planner_selects_codecs_per_chunk_and_round_trips_exactly() {
     }
 
     let explanation = explain(&opened).unwrap();
-    assert_eq!(explanation.planner_id, "balanced-v5");
+    assert_eq!(explanation.planner_id, "balanced-v6");
     assert!(explanation.physical_savings_bytes > 0);
 }
 
@@ -394,7 +394,9 @@ fn locate_section(bytes: &[u8], wanted: u16) -> (Range<usize>, Range<usize>) {
 
 fn chunk_section_kind(bytes: &[u8]) -> u16 {
     let incompat = u64::from_be_bytes(bytes[16..24].try_into().unwrap());
-    if incompat & entrybound::ecf::FEATURE_RECONSTRUCTIVE_TRANSFORM_V1 != 0 {
+    if incompat & entrybound::ecf::FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1 != 0 {
+        7
+    } else if incompat & entrybound::ecf::FEATURE_RECONSTRUCTIVE_TRANSFORM_V1 != 0 {
         6
     } else if incompat & entrybound::ecf::FEATURE_CROSS_FILE_COMPRESSION_V1 != 0 {
         5

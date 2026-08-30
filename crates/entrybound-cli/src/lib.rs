@@ -29,14 +29,17 @@ Usage:\n\
 This build supports unencrypted Complete INDEXED archives with directories,\n\
 regular files, normalized content-defined chunking, archive-wide exact dedup,\n\
 and per-unique-Chunk STORE, Zstandard, LZ4, and LZMA2 planning, reversible\n\
-structural transforms, verified DEFLATE reconstruction where complete cost wins,\n+optional shared dictionaries, and explicitly bounded ChunkGroups in dense/extreme archives.\n\
+structural transforms, verified DEFLATE reconstruction, opportunistic byte-exact\n\
+JPEG/JPEG XL whole-object reconstruction, optional shared dictionaries, and\n\
+explicitly bounded ChunkGroups in dense/extreme archives.\n\
 The default creation profile is balanced; decoding is self-describing.\n";
 
 const PACK_HELP: &str = "\
 Usage: ebound pack <input-directory> [output.eb] [--profile fast|balanced|dense|extreme]\n\
 \n\
 Creates a deterministic native .eb archive. The default profile is balanced.\n\
-Profiles are creation-time policy only; archives record their TransformPlans.\n";
+Profiles are creation-time policy only; archives record their TransformPlans.\n\
+JPEG reconstruction is opportunistic, bounded, and committed only after an exact byte round trip.\n";
 
 fn run(arguments: impl IntoIterator<Item = OsString>) -> Result<()> {
     let mut arguments = arguments.into_iter();
@@ -248,6 +251,19 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
         },
         view.reconstruction.maximum_intermediate_bytes
     );
+    println!(
+        "whole-object reconstruction: feature={}, regions={}, jpeg-regions={}, logical-bytes={}, jpeg-xl-bytes={}, stored-bytes={}, largest-region={}, worst-access-chunks={}, worst-access-bytes={}, all-independent={}",
+        view.whole_object.feature_present,
+        view.whole_object.region_count,
+        view.whole_object.jpeg_region_count,
+        view.whole_object.logical_bytes,
+        view.whole_object.jpeg_xl_bytes,
+        view.whole_object.stored_representation_bytes,
+        view.whole_object.largest_region_bytes,
+        view.whole_object.worst_access_chunks,
+        view.whole_object.worst_access_bytes,
+        view.whole_object.every_chunk_independently_decodable
+    );
     for plan in view.plans {
         println!(
             "transform plan: id={} {} (pipeline={}; codec {}; dictionary={}; window={}, working-set={}, flags={:#x})",
@@ -388,6 +404,17 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
             .reconstructive_fallback_reason
             .as_ref()
             .map_or_else(String::new, |reason| format!(" ({reason})"))
+    );
+    println!(
+        "JPEG reconstruction: gross-savings={} bytes, representation={} bytes, region-overhead={} bytes, net-savings={} bytes{}",
+        explanation.jpeg_reconstructive_gross_savings_bytes,
+        explanation.jpeg_representation_bytes,
+        explanation.jpeg_region_overhead_bytes,
+        explanation.jpeg_reconstructive_net_savings_bytes,
+        explanation
+            .jpeg_fallback_reason
+            .as_ref()
+            .map_or_else(String::new, |reason| format!(" (fallbacks: {reason})"))
     );
     println!(
         "structural-transform payload savings: {} bytes (transformed chunks: {}, rejected eligible chunks: {})",

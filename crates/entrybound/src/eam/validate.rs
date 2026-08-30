@@ -191,6 +191,209 @@ impl Archive {
             crate::reconstruction::validate_data(data)?;
         }
 
+        let mut region_ranges = BTreeMap::<Digest, Vec<(u64, u64, Digest)>>::new();
+        let mut region_owned_chunks = BTreeMap::<Digest, Digest>::new();
+        for (region_id, region) in &self.content_store.reconstruction_regions {
+            if region_id != &region.region_id
+                || crate::jpeg_reconstruction::region_identity(region) != region.region_id
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Corrupt,
+                    ReasonCode::InvalidReconstructionRegion,
+                    "ReconstructionRegion identity does not match its canonical physical fields",
+                ));
+            }
+            let object = self
+                .content_store
+                .objects
+                .get(&region.content_object)
+                .ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::UnknownContentObject,
+                        region.content_object.to_string(),
+                    )
+                })?;
+            let representation_len = u64::try_from(region.representation.len()).map_err(|_| {
+                Diagnostic::new(
+                    OutcomeClass::PolicyRefused,
+                    ReasonCode::ResourceLimit,
+                    "ReconstructionRegion representation exceeds u64",
+                )
+            })?;
+            if representation_len == 0
+                || representation_len
+                    > u64::try_from(crate::jpeg_reconstruction::MAX_JXL_BYTES).unwrap_or(u64::MAX)
+                || region.logical_bytes
+                    > representation_len
+                        .saturating_mul(crate::jpeg_reconstruction::MAX_REGION_EXPANSION_RATIO)
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::PolicyRefused,
+                    ReasonCode::ResourceLimit,
+                    "ReconstructionRegion exceeds the v1 representation/expansion bounds",
+                ));
+            }
+            let start = usize::try_from(region.start_chunk_index).map_err(|_| {
+                Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidReconstructionRegion,
+                    "ReconstructionRegion start exceeds usize",
+                )
+            })?;
+            let count = usize::try_from(region.chunk_count).map_err(|_| {
+                Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidReconstructionRegion,
+                    "ReconstructionRegion count exceeds usize",
+                )
+            })?;
+            let end = start.checked_add(count).ok_or_else(|| {
+                Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidReconstructionRegion,
+                    "ReconstructionRegion range overflows",
+                )
+            })?;
+            if count == 0
+                || region.chunk_count > crate::jpeg_reconstruction::MAX_REGION_CHUNKS
+                || end > object.chunks.len()
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidReconstructionRegion,
+                    "ReconstructionRegion range is outside its ContentObject",
+                ));
+            }
+            let plan = self
+                .transform_plans
+                .iter()
+                .find(|plan| plan.plan_id == region.plan_ref)
+                .ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Unsupported,
+                        ReasonCode::UnknownTransformPlan,
+                        format!("region {region_id} references plan {}", region.plan_ref),
+                    )
+                })?;
+            if plan.dictionary.is_some()
+                || !plan.transforms.first().is_some_and(|step| {
+                    crate::transform::is_whole_object_reconstructive(step).unwrap_or(false)
+                })
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidReconstructionRegion,
+                    "ReconstructionRegion requires an independent self-contained reconstructive plan",
+                ));
+            }
+            let mut logical_bytes = 0_u64;
+            for chunk_ref in &object.chunks[start..end] {
+                let chunk = self
+                    .content_store
+                    .chunks
+                    .get(&chunk_ref.chunk_id)
+                    .ok_or_else(|| {
+                        Diagnostic::new(
+                            OutcomeClass::Nonconforming,
+                            ReasonCode::UnknownChunk,
+                            chunk_ref.chunk_id.to_string(),
+                        )
+                    })?;
+                logical_bytes = logical_bytes
+                    .checked_add(chunk.logical_len)
+                    .ok_or_else(|| {
+                        Diagnostic::new(
+                            OutcomeClass::PolicyRefused,
+                            ReasonCode::ResourceLimit,
+                            "ReconstructionRegion logical length overflows",
+                        )
+                    })?;
+                if chunk.plan_ref != crate::jpeg_reconstruction::REGION_MEMBER_PLAN_REF
+                    || chunk.group_ref.is_some()
+                {
+                    return Err(Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::InvalidReconstructionRegion,
+                        "region-owned Chunks cannot carry an independent plan or ChunkGroup",
+                    ));
+                }
+                if let Some(other) = region_owned_chunks.insert(chunk.chunk_id, *region_id)
+                    && other != *region_id
+                {
+                    return Err(Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::OverlappingReconstructionRegion,
+                        format!("Chunk {} belongs to conflicting regions", chunk.chunk_id),
+                    ));
+                }
+            }
+            if logical_bytes != region.logical_bytes
+                || region.access.logical_bytes != region.logical_bytes
+                || region.access.logical_chunks != region.chunk_count
+                || region.access.worst_reconstructed_bytes != region.logical_bytes
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidRegionAccess,
+                    format!("ReconstructionRegion {region_id} access declaration is inconsistent"),
+                ));
+            }
+            let region_end = region
+                .start_chunk_index
+                .checked_add(region.chunk_count)
+                .ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::InvalidReconstructionRegion,
+                        "ReconstructionRegion range overflows",
+                    )
+                })?;
+            region_ranges
+                .entry(region.content_object)
+                .or_default()
+                .push((region.start_chunk_index, region_end, *region_id));
+        }
+        for ranges in region_ranges.values_mut() {
+            ranges.sort_by_key(|range| range.0);
+            if ranges.windows(2).any(|pair| pair[0].1 > pair[1].0) {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::OverlappingReconstructionRegion,
+                    "ReconstructionRegions overlap within one ContentObject",
+                ));
+            }
+        }
+
+        for (target, audit) in &self.content_store.reconstruction_audits {
+            if target != &audit.target || audit.transform_id.is_empty() {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::DuplicateSemanticDeclaration,
+                    "ReconstructionAudit key and explicit target must agree",
+                ));
+            }
+            let exists = match target {
+                super::ReconstructionAuditTarget::Chunk(digest) => {
+                    self.content_store.chunks.contains_key(digest)
+                }
+                super::ReconstructionAuditTarget::ContentObject(digest) => {
+                    self.content_store.objects.contains_key(digest)
+                }
+                super::ReconstructionAuditTarget::Region(digest) => self
+                    .content_store
+                    .reconstruction_regions
+                    .contains_key(digest),
+            };
+            if !exists {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::UnknownReconstructionRegion,
+                    "ReconstructionAudit target does not exist",
+                ));
+            }
+        }
+
         for (digest, group) in &self.content_store.chunk_groups {
             if digest != &group.group_id || group.group_id == Digest::ZERO {
                 return Err(Diagnostic::new(
@@ -223,11 +426,32 @@ impl Archive {
                     "Chunk logical_len differs from its plaintext byte length",
                 ));
             }
-            if !plans.contains(&chunk.plan_ref) {
+            if !region_owned_chunks.contains_key(digest)
+                && chunk.plan_ref == crate::jpeg_reconstruction::REGION_MEMBER_PLAN_REF
+                && self.descriptor.features.incompat
+                    & crate::ecf::FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1
+                    != 0
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::UnknownReconstructionRegion,
+                    format!("region-owned Chunk declaration {digest} has no region"),
+                ));
+            }
+            if !region_owned_chunks.contains_key(digest) && !plans.contains(&chunk.plan_ref) {
                 return Err(Diagnostic::new(
                     OutcomeClass::Unsupported,
                     ReasonCode::UnknownTransformPlan,
                     format!("chunk {digest} references plan {}", chunk.plan_ref),
+                ));
+            }
+            if region_owned_chunks.contains_key(digest)
+                && chunk.plan_ref != crate::jpeg_reconstruction::REGION_MEMBER_PLAN_REF
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidReconstructionRegion,
+                    format!("region-owned Chunk {digest} has an independent plan"),
                 ));
             }
             if let Some(group_id) = chunk.group_ref

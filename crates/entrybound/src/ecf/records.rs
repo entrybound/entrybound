@@ -5,8 +5,10 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     ChunkGroup, Criticality, Dictionary, Digest, Entry, EntryData, EntryIdentity, EntrySet,
     FidelityIssue, FidelityReport, LogicalPath, MetadataItem, MetadataName, MetadataSet,
-    PathComponent, PathEncoding, ReconstructionData, ReconstructionFallbackReason, Restorability,
-    Timestamp, TimestampPrecision, TransformPlan, TransformStep,
+    PathComponent, PathEncoding, ReconstructionAudit, ReconstructionAuditReason,
+    ReconstructionAuditTarget, ReconstructionData, ReconstructionFallbackReason,
+    ReconstructionRegion, RegionAccessCost, Restorability, Timestamp, TimestampPrecision,
+    TransformPlan, TransformStep,
 };
 
 pub(super) const RECORD_DESCRIPTOR: u16 = 1;
@@ -25,6 +27,9 @@ pub(super) const RECORD_TRANSFORM_STEP: u16 = 13;
 pub(super) const RECORD_RECONSTRUCTION_DATA: u16 = 14;
 pub(super) const RECORD_TRANSFORM_STEP_V2: u16 = 15;
 pub(super) const RECORD_RECONSTRUCTION_FALLBACK: u16 = 16;
+pub(super) const RECORD_TRANSFORM_STEP_V3: u16 = 17;
+pub(super) const RECORD_RECONSTRUCTION_REGION: u16 = 18;
+pub(super) const RECORD_RECONSTRUCTION_AUDIT_V2: u16 = 19;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) struct DescriptorBody {
@@ -330,6 +335,135 @@ fn decode_transform_step_v2(bytes: &[u8]) -> Result<TransformStep> {
     Ok(step)
 }
 
+pub(super) fn encode_transform_plans_v3(plans: &[TransformPlan]) -> Result<Vec<u8>> {
+    encode_transform_plans_with(plans, encode_transform_step_v3)
+}
+
+pub(super) fn decode_transform_plans_v3(bytes: &[u8]) -> Result<Box<[TransformPlan]>> {
+    decode_transform_plans_with(bytes, decode_transform_step_v3, encode_transform_plans_v3)
+}
+
+fn encode_transform_plans_with(
+    plans: &[TransformPlan],
+    encode_step: fn(&TransformStep) -> Result<Vec<u8>>,
+) -> Result<Vec<u8>> {
+    let mut encoded = Vec::new();
+    let mut previous = None;
+    for plan in plans {
+        if previous.is_some_and(|id| id >= plan.plan_id) {
+            return Err(noncanonical(
+                "TransformPlans must be strictly ordered by plan_id",
+            ));
+        }
+        previous = Some(plan.plan_id);
+        let transforms = plan
+            .transforms
+            .iter()
+            .map(encode_step)
+            .collect::<Result<Vec<_>>>()?;
+        let mut record = RecordBuilder::new(RECORD_TRANSFORM_PLAN);
+        record
+            .u64(1, plan.plan_id)?
+            .utf8(2, &plan.identifier)?
+            .sequence(3, &transforms)?
+            .utf8(4, &plan.codec)?
+            .bytes(5, &plan.codec_params)?;
+        if let Some(dictionary) = plan.dictionary {
+            record.bytes(6, dictionary.as_bytes())?;
+        }
+        record
+            .u64(7, plan.decode.window_bytes)?
+            .u64(8, plan.decode.working_set_bytes)?
+            .u32(9, plan.decode.flags)?;
+        encoded.extend_from_slice(&record.finish()?);
+    }
+    Ok(encoded)
+}
+
+fn decode_transform_plans_with(
+    bytes: &[u8],
+    decode_step: fn(&[u8]) -> Result<TransformStep>,
+    encode_plans: fn(&[TransformPlan]) -> Result<Vec<u8>>,
+) -> Result<Box<[TransformPlan]>> {
+    let records = decode_record_stream(bytes)?;
+    let mut plans = Vec::with_capacity(records.len());
+    let mut previous = None;
+    for record in records {
+        if record.kind != RECORD_TRANSFORM_PLAN {
+            return Err(noncanonical("TRANSFORM_PLANS contains a non-plan record"));
+        }
+        record.expect_tags(&[1, 2, 3, 4, 5, 7, 8, 9], &[6])?;
+        let plan_id = record.field(1)?.as_u64()?;
+        if previous.is_some_and(|id| id >= plan_id) {
+            return Err(noncanonical(
+                "TransformPlans must be strictly ordered by plan_id",
+            ));
+        }
+        previous = Some(plan_id);
+        let transforms = record
+            .field(3)?
+            .as_sequence()?
+            .into_iter()
+            .map(decode_step)
+            .collect::<Result<Vec<_>>>()?;
+        plans.push(TransformPlan {
+            plan_id,
+            identifier: record.field(2)?.as_utf8()?.to_owned(),
+            transforms: transforms.into_boxed_slice(),
+            codec: record.field(4)?.as_utf8()?.to_owned(),
+            codec_params: record.field(5)?.as_bytes()?.into(),
+            dictionary: record
+                .optional_field(6)
+                .map(|field| digest(field.as_bytes()?))
+                .transpose()?,
+            decode: crate::eam::DecodeRequirements {
+                window_bytes: record.field(7)?.as_u64()?,
+                working_set_bytes: record.field(8)?.as_u64()?,
+                flags: record.field(9)?.as_u32()?,
+            },
+        });
+    }
+    let plans = plans.into_boxed_slice();
+    crate::codec::validate_plans(&plans)?;
+    if encode_plans(&plans)? != bytes {
+        return Err(noncanonical("TransformPlan v3 records are not canonical"));
+    }
+    Ok(plans)
+}
+
+fn encode_transform_step_v3(step: &TransformStep) -> Result<Vec<u8>> {
+    let mut record = RecordBuilder::new(RECORD_TRANSFORM_STEP_V3);
+    record
+        .utf8(1, &step.transform_id)?
+        .bytes(2, &step.parameters)?;
+    if let Some(reference) = step.reconstruction_ref {
+        record.bytes(3, reference.as_bytes())?;
+    }
+    record.finish()
+}
+
+fn decode_transform_step_v3(bytes: &[u8]) -> Result<TransformStep> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() || record.kind != RECORD_TRANSFORM_STEP_V3 {
+        return Err(noncanonical(
+            "TransformStep v3 sequence item must be exactly one v3 step record",
+        ));
+    }
+    record.expect_tags(&[1, 2], &[3])?;
+    let step = TransformStep {
+        transform_id: record.field(1)?.as_utf8()?.to_owned(),
+        parameters: record.field(2)?.as_bytes()?.into(),
+        reconstruction_ref: record
+            .optional_field(3)
+            .map(|field| digest(field.as_bytes()?))
+            .transpose()?,
+    };
+    if encode_transform_step_v3(&step)? != bytes {
+        return Err(noncanonical("TransformStep v3 record is not canonical"));
+    }
+    Ok(step)
+}
+
 pub(super) fn encode_reconstruction_data(
     values: &BTreeMap<Digest, ReconstructionData>,
 ) -> Result<Vec<u8>> {
@@ -417,6 +551,148 @@ pub(super) fn decode_reconstruction_section(
         return Err(noncanonical("ReconstructionData records are not canonical"));
     }
     Ok((values, fallbacks))
+}
+
+pub(super) fn encode_reconstruction_regions(
+    regions: &BTreeMap<Digest, ReconstructionRegion>,
+    audits: &BTreeMap<ReconstructionAuditTarget, ReconstructionAudit>,
+) -> Result<Vec<u8>> {
+    let mut encoded = Vec::new();
+    for region in regions.values() {
+        let mut record = RecordBuilder::new(RECORD_RECONSTRUCTION_REGION);
+        record
+            .bytes(1, region.region_id.as_bytes())?
+            .bytes(2, region.content_object.as_bytes())?
+            .u64(3, region.start_chunk_index)?
+            .u64(4, region.chunk_count)?
+            .u64(5, region.plan_ref)?
+            .u64(6, region.logical_bytes)?
+            .u64(7, region.transformed_bytes)?
+            .u64(8, region.access.logical_bytes)?
+            .u64(9, region.access.logical_chunks)?
+            .u64(10, region.access.worst_reconstructed_bytes)?
+            .bytes(11, &region.representation)?
+            .u64(12, region.ordinary_physical_bytes)?
+            .u64(13, region.region_overhead_bytes)?;
+        encoded.extend_from_slice(&record.finish()?);
+    }
+    for audit in audits.values() {
+        let (target_kind, target_digest) = encode_audit_target(audit.target);
+        let mut record = RecordBuilder::new(RECORD_RECONSTRUCTION_AUDIT_V2);
+        record
+            .u8(1, target_kind)?
+            .bytes(2, target_digest.as_bytes())?
+            .utf8(3, &audit.transform_id)?
+            .u8(4, encode_audit_reason(audit.reason))?;
+        encoded.extend_from_slice(&record.finish()?);
+    }
+    Ok(encoded)
+}
+
+pub(super) fn decode_reconstruction_regions(
+    bytes: &[u8],
+) -> Result<(
+    BTreeMap<Digest, ReconstructionRegion>,
+    BTreeMap<ReconstructionAuditTarget, ReconstructionAudit>,
+)> {
+    let mut regions = BTreeMap::new();
+    let mut audits = BTreeMap::new();
+    let mut audits_started = false;
+    for record in decode_record_stream(bytes)? {
+        match record.kind {
+            RECORD_RECONSTRUCTION_REGION if !audits_started => {
+                record.expect_tags(&[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], &[])?;
+                let region_id = digest(record.field(1)?.as_bytes()?)?;
+                let region = ReconstructionRegion {
+                    region_id,
+                    content_object: digest(record.field(2)?.as_bytes()?)?,
+                    start_chunk_index: record.field(3)?.as_u64()?,
+                    chunk_count: record.field(4)?.as_u64()?,
+                    plan_ref: record.field(5)?.as_u64()?,
+                    logical_bytes: record.field(6)?.as_u64()?,
+                    transformed_bytes: record.field(7)?.as_u64()?,
+                    ordinary_physical_bytes: record.field(12)?.as_u64()?,
+                    region_overhead_bytes: record.field(13)?.as_u64()?,
+                    access: RegionAccessCost {
+                        logical_bytes: record.field(8)?.as_u64()?,
+                        logical_chunks: record.field(9)?.as_u64()?,
+                        worst_reconstructed_bytes: record.field(10)?.as_u64()?,
+                    },
+                    representation: record.field(11)?.as_bytes()?.into(),
+                };
+                if regions.insert(region_id, region).is_some() {
+                    return Err(duplicate("duplicate ReconstructionRegion identity"));
+                }
+            }
+            RECORD_RECONSTRUCTION_AUDIT_V2 => {
+                audits_started = true;
+                record.expect_tags(&[1, 2, 3, 4], &[])?;
+                let target = decode_audit_target(
+                    record.field(1)?.as_u8()?,
+                    digest(record.field(2)?.as_bytes()?)?,
+                )?;
+                let audit = ReconstructionAudit {
+                    target,
+                    transform_id: record.field(3)?.as_utf8()?.to_owned(),
+                    reason: decode_audit_reason(record.field(4)?.as_u8()?)?,
+                };
+                if audits.insert(target, audit).is_some() {
+                    return Err(duplicate("duplicate ReconstructionAudit target"));
+                }
+            }
+            _ => {
+                return Err(noncanonical(
+                    "RECONSTRUCTION_REGIONS record ordering is invalid",
+                ));
+            }
+        }
+    }
+    if encode_reconstruction_regions(&regions, &audits)? != bytes {
+        return Err(noncanonical(
+            "ReconstructionRegion records are not canonical",
+        ));
+    }
+    Ok((regions, audits))
+}
+
+fn encode_audit_target(target: ReconstructionAuditTarget) -> (u8, Digest) {
+    match target {
+        ReconstructionAuditTarget::Chunk(digest) => (1, digest),
+        ReconstructionAuditTarget::ContentObject(digest) => (2, digest),
+        ReconstructionAuditTarget::Region(digest) => (3, digest),
+    }
+}
+
+fn decode_audit_target(kind: u8, digest: Digest) -> Result<ReconstructionAuditTarget> {
+    match kind {
+        1 => Ok(ReconstructionAuditTarget::Chunk(digest)),
+        2 => Ok(ReconstructionAuditTarget::ContentObject(digest)),
+        3 => Ok(ReconstructionAuditTarget::Region(digest)),
+        _ => Err(noncanonical("unknown ReconstructionAudit target kind")),
+    }
+}
+
+fn encode_audit_reason(reason: ReconstructionAuditReason) -> u8 {
+    match reason {
+        ReconstructionAuditReason::NotRecognized => 1,
+        ReconstructionAuditReason::Unsupported => 2,
+        ReconstructionAuditReason::ExactVerificationFailed => 3,
+        ReconstructionAuditReason::CompleteCostDidNotWin => 4,
+        ReconstructionAuditReason::RegionDedupConflict => 5,
+        ReconstructionAuditReason::ResourcePolicyExcluded => 6,
+    }
+}
+
+fn decode_audit_reason(value: u8) -> Result<ReconstructionAuditReason> {
+    match value {
+        1 => Ok(ReconstructionAuditReason::NotRecognized),
+        2 => Ok(ReconstructionAuditReason::Unsupported),
+        3 => Ok(ReconstructionAuditReason::ExactVerificationFailed),
+        4 => Ok(ReconstructionAuditReason::CompleteCostDidNotWin),
+        5 => Ok(ReconstructionAuditReason::RegionDedupConflict),
+        6 => Ok(ReconstructionAuditReason::ResourcePolicyExcluded),
+        _ => Err(noncanonical("unknown ReconstructionAudit reason")),
+    }
 }
 
 #[cfg(test)]
@@ -1014,6 +1290,69 @@ mod tests {
     use crate::codec::zstd_transformed_plan;
     use crate::identity::sha256_exact;
     use crate::transform::{BYTE_SHUFFLE_ID, byte_shuffle_step, delta8_step};
+
+    #[test]
+    fn generated_whole_object_records_are_canonical_and_duplicate_safe() {
+        let region_id = sha256_exact(b"ECF-REGION-VALID-001");
+        let content_object = sha256_exact(b"region content object");
+        let region = ReconstructionRegion {
+            region_id,
+            content_object,
+            start_chunk_index: 0,
+            chunk_count: 2,
+            plan_ref: 77,
+            logical_bytes: 900,
+            transformed_bytes: 700,
+            ordinary_physical_bytes: 880,
+            region_overhead_bytes: 80,
+            access: RegionAccessCost {
+                logical_bytes: 900,
+                logical_chunks: 2,
+                worst_reconstructed_bytes: 900,
+            },
+            representation: vec![9; 600].into_boxed_slice(),
+        };
+        let target = ReconstructionAuditTarget::ContentObject(content_object);
+        let audit = ReconstructionAudit {
+            target,
+            transform_id: "jpeg-jxl-reconstruct/v1".to_owned(),
+            reason: ReconstructionAuditReason::CompleteCostDidNotWin,
+        };
+        let bytes = encode_reconstruction_regions(
+            &BTreeMap::from([(region_id, region.clone())]),
+            &BTreeMap::from([(target, audit.clone())]),
+        )
+        .unwrap();
+        let (decoded_regions, decoded_audits) = decode_reconstruction_regions(&bytes).unwrap();
+        assert_eq!(decoded_regions[&region_id], region);
+        assert_eq!(decoded_audits[&target], audit);
+
+        let region_only =
+            encode_reconstruction_regions(&BTreeMap::from([(region_id, region)]), &BTreeMap::new())
+                .unwrap();
+        let mut duplicate = region_only.clone();
+        duplicate.extend_from_slice(&region_only);
+        assert_eq!(
+            decode_reconstruction_regions(&duplicate)
+                .unwrap_err()
+                .code(),
+            ReasonCode::DuplicateSemanticDeclaration,
+            "ECF-REGION-DUPLICATE-001: region identity is unique"
+        );
+
+        let audit_only =
+            encode_reconstruction_regions(&BTreeMap::new(), &BTreeMap::from([(target, audit)]))
+                .unwrap();
+        let mut duplicate_audit = audit_only.clone();
+        duplicate_audit.extend_from_slice(&audit_only);
+        assert_eq!(
+            decode_reconstruction_regions(&duplicate_audit)
+                .unwrap_err()
+                .code(),
+            ReasonCode::DuplicateSemanticDeclaration,
+            "ECF-REGION-AUDIT-DUPLICATE-001: audit target is unique"
+        );
+    }
 
     #[test]
     fn duplicate_dictionary_records_are_typed_nonconformance() {

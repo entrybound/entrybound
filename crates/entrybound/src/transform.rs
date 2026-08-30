@@ -4,7 +4,14 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{Digest, ReconstructionData, TransformStep};
-use crate::ecf::{FEATURE_CODEC_TRANSFORM_V1, FEATURE_RECONSTRUCTIVE_TRANSFORM_V1};
+use crate::ecf::{
+    FEATURE_CODEC_TRANSFORM_V1, FEATURE_RECONSTRUCTIVE_TRANSFORM_V1,
+    FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1,
+};
+use crate::jpeg_reconstruction::{
+    JPEG_RECONSTRUCT_ID, JPEG_RECONSTRUCT_PARAMETERS, inverse as reconstruct_jpeg,
+    validate_parameters as validate_jpeg, verified_forward as verified_jpeg_forward,
+};
 use crate::reconstruction::{
     DEFLATE_RECONSTRUCT_ID, inverse as reconstruct_deflate,
     validate_parameters as validate_deflate, verified_forward as verified_deflate_forward,
@@ -19,6 +26,12 @@ pub(crate) enum ReversibilityClass {
     Reconstructive,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum ReconstructionBacking {
+    SideData,
+    SelfContained,
+}
+
 type StructuralOperation = fn(&[u8], &[u8]) -> Result<Vec<u8>>;
 
 pub(crate) struct TransformRegistration {
@@ -26,17 +39,19 @@ pub(crate) struct TransformRegistration {
     pub format_version: u16,
     pub required_feature: u64,
     pub reversibility: ReversibilityClass,
+    pub reconstruction_backing: Option<ReconstructionBacking>,
     validate: fn(&[u8]) -> Result<()>,
     forward: Option<StructuralOperation>,
     inverse: Option<StructuralOperation>,
 }
 
-static TRANSFORMS: [TransformRegistration; 3] = [
+static TRANSFORMS: [TransformRegistration; 4] = [
     TransformRegistration {
         identifier: DELTA8_ID,
         format_version: 1,
         required_feature: FEATURE_CODEC_TRANSFORM_V1,
         reversibility: ReversibilityClass::Structural,
+        reconstruction_backing: None,
         validate: validate_delta8,
         forward: Some(delta8_forward),
         inverse: Some(delta8_inverse),
@@ -46,6 +61,7 @@ static TRANSFORMS: [TransformRegistration; 3] = [
         format_version: 1,
         required_feature: FEATURE_CODEC_TRANSFORM_V1,
         reversibility: ReversibilityClass::Structural,
+        reconstruction_backing: None,
         validate: validate_shuffle,
         forward: Some(shuffle_forward),
         inverse: Some(shuffle_inverse),
@@ -55,7 +71,18 @@ static TRANSFORMS: [TransformRegistration; 3] = [
         format_version: 1,
         required_feature: FEATURE_RECONSTRUCTIVE_TRANSFORM_V1,
         reversibility: ReversibilityClass::Reconstructive,
+        reconstruction_backing: Some(ReconstructionBacking::SideData),
         validate: validate_deflate_parameters,
+        forward: None,
+        inverse: None,
+    },
+    TransformRegistration {
+        identifier: JPEG_RECONSTRUCT_ID,
+        format_version: 1,
+        required_feature: FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1,
+        reversibility: ReversibilityClass::Reconstructive,
+        reconstruction_backing: Some(ReconstructionBacking::SelfContained),
+        validate: validate_jpeg,
         forward: None,
         inverse: None,
     },
@@ -92,6 +119,16 @@ pub(crate) fn deflate_reconstruct_step(
     Ok(step)
 }
 
+pub(crate) fn jpeg_reconstruct_step() -> Result<TransformStep> {
+    let step = TransformStep {
+        transform_id: JPEG_RECONSTRUCT_ID.to_owned(),
+        parameters: JPEG_RECONSTRUCT_PARAMETERS.into(),
+        reconstruction_ref: None,
+    };
+    validate_step(&step)?;
+    Ok(step)
+}
+
 pub(crate) fn validate_pipeline(steps: &[TransformStep]) -> Result<()> {
     let mut identifiers = BTreeSet::new();
     let mut reconstructive_count = 0_u8;
@@ -106,9 +143,16 @@ pub(crate) fn validate_pipeline(steps: &[TransformStep]) -> Result<()> {
             }
             ReversibilityClass::Reconstructive => {
                 reconstructive_count = reconstructive_count.saturating_add(1);
-                if position != 0 || step.reconstruction_ref.is_none() {
+                let backing = registration
+                    .reconstruction_backing
+                    .expect("reconstructive registration declares its backing");
+                let reference_valid = match backing {
+                    ReconstructionBacking::SideData => step.reconstruction_ref.is_some(),
+                    ReconstructionBacking::SelfContained => step.reconstruction_ref.is_none(),
+                };
+                if position != 0 || !reference_valid {
                     return Err(invalid_parameters(
-                        "the sole reconstructive TransformStep must be first and reference ReconstructionData",
+                        "the sole reconstructive TransformStep must be first and use its registered backing mode",
                     ));
                 }
             }
@@ -167,18 +211,35 @@ pub(crate) fn forward_pipeline_with_reconstruction(
                     return Err(length_mismatch(&step.transform_id));
                 }
             }
-            ReversibilityClass::Reconstructive => {
-                let reference = step.reconstruction_ref.expect("validated reference");
-                let data = reconstruction_data.get(&reference).ok_or_else(|| {
-                    Diagnostic::new(
-                        OutcomeClass::Nonconforming,
-                        ReasonCode::UnknownReconstructionData,
-                        reference.to_string(),
-                    )
-                })?;
-                bytes =
-                    verified_deflate_forward(&bytes, validate_deflate(&step.parameters)?, data)?;
-            }
+            ReversibilityClass::Reconstructive => match registration.reconstruction_backing {
+                Some(ReconstructionBacking::SideData) => {
+                    let reference = step.reconstruction_ref.expect("validated reference");
+                    let data = reconstruction_data.get(&reference).ok_or_else(|| {
+                        Diagnostic::new(
+                            OutcomeClass::Nonconforming,
+                            ReasonCode::UnknownReconstructionData,
+                            reference.to_string(),
+                        )
+                    })?;
+                    bytes = verified_deflate_forward(
+                        &bytes,
+                        validate_deflate(&step.parameters)?,
+                        data,
+                    )?;
+                }
+                Some(ReconstructionBacking::SelfContained) => {
+                    bytes = verified_jpeg_forward(&bytes)
+                        .map_err(|error| {
+                            Diagnostic::new(
+                                OutcomeClass::Nonconforming,
+                                ReasonCode::TransformFailed,
+                                format!("JPEG reconstruction candidate is ineligible: {error:?}"),
+                            )
+                        })?
+                        .bytes;
+                }
+                None => unreachable!("validated reconstructive registration"),
+            },
         }
     }
     Ok(bytes)
@@ -214,17 +275,23 @@ pub(crate) fn inverse_pipeline_with_reconstruction(
                     return Err(length_mismatch(&step.transform_id));
                 }
             }
-            ReversibilityClass::Reconstructive => {
-                let reference = step.reconstruction_ref.expect("validated reference");
-                let data = reconstruction_data.get(&reference).ok_or_else(|| {
-                    Diagnostic::new(
-                        OutcomeClass::Nonconforming,
-                        ReasonCode::UnknownReconstructionData,
-                        reference.to_string(),
-                    )
-                })?;
-                bytes = reconstruct_deflate(&bytes, data)?;
-            }
+            ReversibilityClass::Reconstructive => match registration.reconstruction_backing {
+                Some(ReconstructionBacking::SideData) => {
+                    let reference = step.reconstruction_ref.expect("validated reference");
+                    let data = reconstruction_data.get(&reference).ok_or_else(|| {
+                        Diagnostic::new(
+                            OutcomeClass::Nonconforming,
+                            ReasonCode::UnknownReconstructionData,
+                            reference.to_string(),
+                        )
+                    })?;
+                    bytes = reconstruct_deflate(&bytes, data)?;
+                }
+                Some(ReconstructionBacking::SelfContained) => {
+                    bytes = reconstruct_jpeg(&bytes)?;
+                }
+                None => unreachable!("validated reconstructive registration"),
+            },
         }
     }
     Ok(bytes)
@@ -257,6 +324,15 @@ pub(crate) fn display_step(step: &TransformStep) -> String {
         return format!("byte-shuffle-{width}/v1");
     }
     step.transform_id.clone()
+}
+
+pub(crate) fn is_whole_object_reconstructive(step: &TransformStep) -> Result<bool> {
+    Ok(registration(&step.transform_id)?.reconstruction_backing
+        == Some(ReconstructionBacking::SelfContained))
+}
+
+pub(crate) fn is_reconstructive(step: &TransformStep) -> Result<bool> {
+    Ok(registration(&step.transform_id)?.reversibility == ReversibilityClass::Reconstructive)
 }
 
 fn validate_step(step: &TransformStep) -> Result<()> {

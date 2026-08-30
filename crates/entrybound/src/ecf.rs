@@ -39,9 +39,12 @@ pub const FEATURE_CROSS_FILE_COMPRESSION_V1: u64 = 1 << 0;
 pub const FEATURE_CODEC_TRANSFORM_V1: u64 = 1 << 1;
 /// Required capability for TransformStep v2 and ReconstructionData objects.
 pub const FEATURE_RECONSTRUCTIVE_TRANSFORM_V1: u64 = 1 << 2;
+/// Required capability for whole-ContentObject reconstruction regions and v3 steps.
+pub const FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1: u64 = 1 << 3;
 pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 = FEATURE_CROSS_FILE_COMPRESSION_V1
     | FEATURE_CODEC_TRANSFORM_V1
-    | FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
+    | FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
+    | FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1;
 
 /// Versioned namespace for the experimental encoding.
 pub const FORMAT_NAMESPACE: &str = "ecf/bootstrap-v1";
@@ -68,6 +71,34 @@ pub(crate) fn encoded_transform_plan_v2_len(plan: &TransformPlan) -> Result<u64>
             )
         },
     )
+}
+
+pub(crate) fn encoded_transform_plan_v3_len(plan: &TransformPlan) -> Result<u64> {
+    u64::try_from(records::encode_transform_plans_v3(std::slice::from_ref(plan))?.len()).map_err(
+        |_| {
+            crate::diagnostics::Diagnostic::new(
+                crate::diagnostics::OutcomeClass::PolicyRefused,
+                crate::diagnostics::ReasonCode::ResourceLimit,
+                "encoded TransformPlan v3 length exceeds u64",
+            )
+        },
+    )
+}
+
+pub(crate) fn encoded_reconstruction_region_len(
+    region: &crate::eam::ReconstructionRegion,
+) -> Result<u64> {
+    let regions = std::collections::BTreeMap::from([(region.region_id, region.clone())]);
+    u64::try_from(
+        records::encode_reconstruction_regions(&regions, &std::collections::BTreeMap::new())?.len(),
+    )
+    .map_err(|_| {
+        crate::diagnostics::Diagnostic::new(
+            crate::diagnostics::OutcomeClass::PolicyRefused,
+            crate::diagnostics::ReasonCode::ResourceLimit,
+            "encoded ReconstructionRegion length exceeds u64",
+        )
+    })
 }
 
 pub(crate) fn encoded_reconstruction_data_len(value: &ReconstructionData) -> Result<u64> {
@@ -126,6 +157,7 @@ pub enum SectionKind {
     Dictionaries,
     ChunkGroups,
     ReconstructionData,
+    ReconstructionRegions,
     ChunkData,
     ManifestRecords,
     Fidelity,

@@ -12,6 +12,7 @@ pub mod diagnostics;
 pub mod eam;
 pub mod ecf;
 pub mod identity;
+mod jpeg_reconstruction;
 pub mod planner;
 mod reconstruction;
 pub mod similarity;

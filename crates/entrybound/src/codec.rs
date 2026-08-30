@@ -14,8 +14,8 @@ use crate::ecf::FEATURE_CODEC_TRANSFORM_V1;
 use crate::identity::{STORE_CODEC_IDENTIFIER, STORE_PLAN_ID, STORE_PLAN_IDENTIFIER, sha256_exact};
 use crate::transform::{
     display_step, forward_pipeline, forward_pipeline_with_reconstruction, intermediate_len,
-    inverse_pipeline, inverse_pipeline_with_reconstruction,
-    required_features as transform_features, validate_pipeline,
+    inverse_pipeline, inverse_pipeline_with_reconstruction, is_reconstructive,
+    is_whole_object_reconstructive, required_features as transform_features, validate_pipeline,
 };
 
 pub(crate) const ZSTD_CODEC_IDENTIFIER: &str = "zstandard/v1";
@@ -274,7 +274,7 @@ pub(crate) fn lzma2_plan(
     )
 }
 
-fn with_pipeline(
+pub(crate) fn with_pipeline(
     mut base: TransformPlan,
     transforms: Box<[TransformStep]>,
 ) -> Result<TransformPlan> {
@@ -317,12 +317,21 @@ fn with_pipeline(
     if base
         .transforms
         .iter()
-        .any(|step| step.reconstruction_ref.is_some())
+        .any(|step| is_reconstructive(step).unwrap_or(false))
     {
+        let reconstruction_working_set = if base
+            .transforms
+            .iter()
+            .any(|step| is_whole_object_reconstructive(step).unwrap_or(false))
+        {
+            crate::jpeg_reconstruction::JPEG_WORKING_SET_BYTES
+        } else {
+            crate::reconstruction::RECONSTRUCTION_WORKING_SET_BYTES
+        };
         base.decode.working_set_bytes = base
             .decode
             .working_set_bytes
-            .checked_add(crate::reconstruction::RECONSTRUCTION_WORKING_SET_BYTES)
+            .checked_add(reconstruction_working_set)
             .ok_or_else(|| invalid_parameters("reconstruction working-set declaration overflow"))?;
     }
     Ok(base)
@@ -465,6 +474,22 @@ pub(crate) fn encode_payload(plan: &TransformPlan, plaintext: &[u8]) -> Result<V
     encode_with_context(plan, plaintext, CodecContext::default())
 }
 
+/// Encodes bytes that have already passed through the recorded transform
+/// pipeline. Used only by a whole-object region whose transform is represented
+/// and verified at region scope.
+pub(crate) fn encode_transformed_payload(
+    plan: &TransformPlan,
+    transformed: &[u8],
+) -> Result<Vec<u8>> {
+    validate_plan(plan)?;
+    if plan_mode(plan)? != PlanMode::Independent {
+        return Err(invalid_parameters(
+            "whole-object regions require an independent codec plan",
+        ));
+    }
+    (codec_registration(&plan.codec)?.encode)(plan, transformed, CodecContext::default())
+}
+
 pub(crate) fn encode_payload_with_dictionary(
     plan: &TransformPlan,
     plaintext: &[u8],
@@ -558,6 +583,27 @@ pub(crate) fn decode_payload(
         ));
     }
     decode_with_context(plan, stored, logical_len, CodecContext::default())
+}
+
+/// Decodes only the codec layer of a whole-object region. The caller then
+/// reverses the recorded region transform pipeline and verifies every member.
+pub(crate) fn decode_transformed_payload(
+    plan: &TransformPlan,
+    stored: &[u8],
+    transformed_len: u64,
+) -> Result<Vec<u8>> {
+    validate_plan(plan)?;
+    if plan_mode(plan)? != PlanMode::Independent {
+        return Err(invalid_parameters(
+            "whole-object regions require an independent codec plan",
+        ));
+    }
+    (codec_registration(&plan.codec)?.decode)(
+        plan,
+        stored,
+        transformed_len,
+        CodecContext::default(),
+    )
 }
 
 pub(crate) fn decode_payload_with_dictionary(
@@ -692,8 +738,13 @@ fn decode_with_context(
     validate_decoded_length(plaintext, logical_len)
 }
 
-fn validate_store_registration(_plan: &TransformPlan) -> Result<TransformPlan> {
-    Ok(store_plan())
+fn validate_store_registration(plan: &TransformPlan) -> Result<TransformPlan> {
+    if !plan.codec_params.is_empty() || plan.dictionary.is_some() {
+        return Err(invalid_parameters(
+            "STORE parameters and dictionary must be empty",
+        ));
+    }
+    with_pipeline(store_plan(), plan.transforms.clone())
 }
 
 fn encode_store_registration(

@@ -44,7 +44,7 @@ fn filesystem_round_trip_is_deterministic_and_complete() {
     }));
     let view = inspect(&opened).unwrap();
     assert_eq!(view.entry_count as usize, listed.len());
-    assert_eq!(view.planner_id, "balanced-v5");
+    assert_eq!(view.planner_id, "balanced-v6");
     assert_eq!(
         view.chunker_id,
         "gear-norm-v1/min-131072/target-524288/max-2097152"
@@ -186,7 +186,7 @@ fn corruption_and_policy_refusal_happen_before_materialization() {
     let encoded = pack_directory(&source, PackOptions::default()).unwrap();
 
     let mut corrupt = encoded.bytes.clone();
-    let (_, chunk_payload) = locate_section(&corrupt, 5);
+    let (_, chunk_payload) = locate_section(&corrupt, 7);
     corrupt[chunk_payload.end - 1] ^= 1;
     let corrupt_destination = fixture.path.join("corrupt-output");
     let error = unpack(&corrupt, &corrupt_destination, ExtractionPolicy::default()).unwrap_err();

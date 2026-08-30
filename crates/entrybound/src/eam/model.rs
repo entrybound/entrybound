@@ -421,6 +421,59 @@ pub enum ReconstructionFallbackReason {
     CompleteCostDidNotWin,
 }
 
+/// Explicit target for non-authoritative reconstructive planning evidence.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum ReconstructionAuditTarget {
+    Chunk(Digest),
+    ContentObject(Digest),
+    Region(Digest),
+}
+
+/// Frozen v6 whole-object reconstruction fallback reasons.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ReconstructionAuditReason {
+    NotRecognized,
+    Unsupported,
+    ExactVerificationFailed,
+    CompleteCostDidNotWin,
+    RegionDedupConflict,
+    ResourcePolicyExcluded,
+}
+
+/// Non-authoritative creation-time audit for one explicit target.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ReconstructionAudit {
+    pub target: ReconstructionAuditTarget,
+    pub transform_id: String,
+    pub reason: ReconstructionAuditReason,
+}
+
+/// Declared worst-case cost of accessing any logical Chunk in a region.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RegionAccessCost {
+    pub logical_bytes: u64,
+    pub logical_chunks: u64,
+    pub worst_reconstructed_bytes: u64,
+}
+
+/// One physical representation for a contiguous ContentObject Chunk range.
+/// Membership is authoritative only through `content_object`, `start_chunk_index`,
+/// and `chunk_count`; no member list is stored here.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ReconstructionRegion {
+    pub region_id: Digest,
+    pub content_object: Digest,
+    pub start_chunk_index: u64,
+    pub chunk_count: u64,
+    pub plan_ref: u64,
+    pub logical_bytes: u64,
+    pub transformed_bytes: u64,
+    pub ordinary_physical_bytes: u64,
+    pub region_overhead_bytes: u64,
+    pub access: RegionAccessCost,
+    pub representation: Box<[u8]>,
+}
+
 /// Bounded physical dependency declaration. Membership exists only through
 /// `Chunk::group_ref`; the CHUNK_DATA order supplies preceding-member order.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -438,6 +491,8 @@ pub struct ContentStore {
     pub dictionaries: BTreeMap<Digest, Dictionary>,
     pub reconstruction_data: BTreeMap<Digest, ReconstructionData>,
     pub reconstruction_fallbacks: BTreeMap<Digest, ReconstructionFallbackReason>,
+    pub reconstruction_regions: BTreeMap<Digest, ReconstructionRegion>,
+    pub reconstruction_audits: BTreeMap<ReconstructionAuditTarget, ReconstructionAudit>,
     pub chunk_groups: BTreeMap<Digest, ChunkGroup>,
     /// Exact CHUNK_DATA frame order. It is physical only and never changes
     /// ContentObject reference order or any logical identity.

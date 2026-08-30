@@ -83,6 +83,21 @@ pub struct ReconstructionInspection {
     pub maximum_intermediate_bytes: u64,
 }
 
+/// Whole-ContentObject reconstruction and its declared access tradeoff.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct WholeObjectInspection {
+    pub feature_present: bool,
+    pub region_count: u64,
+    pub jpeg_region_count: u64,
+    pub logical_bytes: u64,
+    pub jpeg_xl_bytes: u64,
+    pub stored_representation_bytes: u64,
+    pub largest_region_bytes: u64,
+    pub worst_access_chunks: u64,
+    pub worst_access_bytes: u64,
+    pub every_chunk_independently_decodable: bool,
+}
+
 /// First observable compression summary, derived without an audit-trail record.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompressionExplanation {
@@ -109,6 +124,11 @@ pub struct CompressionExplanation {
     pub reconstructive_chunk_count: u64,
     pub reconstructive_fallback_chunk_count: u64,
     pub reconstructive_fallback_reason: Option<String>,
+    pub jpeg_reconstructive_gross_savings_bytes: i128,
+    pub jpeg_representation_bytes: u64,
+    pub jpeg_region_overhead_bytes: u64,
+    pub jpeg_reconstructive_net_savings_bytes: i128,
+    pub jpeg_fallback_reason: Option<String>,
     pub transformed_chunk_count: u64,
     pub transform_rejected_chunk_count: u64,
     pub transform_usage: Vec<TransformUsage>,
@@ -143,6 +163,7 @@ pub struct ArchiveInspection {
     pub chunks: ChunkStatistics,
     pub cross_file: CrossFileInspection,
     pub reconstruction: ReconstructionInspection,
+    pub whole_object: WholeObjectInspection,
     pub identities: IdentitySet,
     pub index_status: IndexStatus,
     pub fidelity: FidelityReport,
@@ -178,6 +199,7 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
     let chunks = chunk_statistics(archive)?;
     let cross_file = cross_file_statistics(archive)?;
     let reconstruction = reconstruction_statistics(archive)?;
+    let whole_object = whole_object_statistics(archive)?;
     Ok(ArchiveInspection {
         format_namespace: FORMAT_NAMESPACE.to_owned(),
         version: FormatVersion {
@@ -220,6 +242,7 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
         chunks,
         cross_file,
         reconstruction,
+        whole_object,
         identities: opened.report.identities,
         index_status: opened.report.index_status,
         fidelity: archive.fidelity.clone(),
@@ -254,6 +277,9 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
     let reconstructive_gross_savings_bytes = reconstructive_explanation(opened)?;
     let (reconstructive_fallback_chunk_count, reconstructive_fallback_reason) =
         reconstruction_fallback_summary(&opened.archive)?;
+    let whole_object = whole_object_statistics(&opened.archive)?;
+    let (jpeg_gross, jpeg_overhead, jpeg_net, jpeg_fallback_reason) =
+        jpeg_reconstruction_explanation(&opened.archive)?;
     let (
         similarity_cohort_count,
         similarity_cohort_chunks,
@@ -286,6 +312,11 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
         reconstructive_chunk_count: reconstruction.chunk_count,
         reconstructive_fallback_chunk_count,
         reconstructive_fallback_reason,
+        jpeg_reconstructive_gross_savings_bytes: jpeg_gross,
+        jpeg_representation_bytes: whole_object.stored_representation_bytes,
+        jpeg_region_overhead_bytes: jpeg_overhead,
+        jpeg_reconstructive_net_savings_bytes: jpeg_net,
+        jpeg_fallback_reason,
         transformed_chunk_count: transformed_chunk_count(&opened.archive)?,
         transform_rejected_chunk_count: transform_rejected_chunk_count(&opened.archive)?,
         transform_usage: transform_usage(&opened.archive)?,
@@ -336,7 +367,7 @@ fn reconstruction_statistics(archive: &Archive) -> Result<ReconstructionInspecti
         .chunks
         .values()
         .filter_map(|chunk| {
-            let plan = plans[&chunk.plan_ref];
+            let plan = plans.get(&chunk.plan_ref)?;
             plan.transforms
                 .iter()
                 .any(|step| step.reconstruction_ref.is_some())
@@ -383,9 +414,121 @@ fn reconstruction_statistics(archive: &Archive) -> Result<ReconstructionInspecti
     })
 }
 
+fn whole_object_statistics(archive: &Archive) -> Result<WholeObjectInspection> {
+    let mut logical_bytes = 0_u64;
+    let mut jpeg_xl_bytes = 0_u64;
+    let mut stored_representation_bytes = 0_u64;
+    let mut largest_region_bytes = 0_u64;
+    let mut worst_access_chunks = 0_u64;
+    let mut worst_access_bytes = 0_u64;
+    for region in archive.content_store.reconstruction_regions.values() {
+        logical_bytes = logical_bytes
+            .checked_add(region.logical_bytes)
+            .ok_or_else(|| resource("region logical-byte total exceeds u64"))?;
+        jpeg_xl_bytes = jpeg_xl_bytes
+            .checked_add(region.transformed_bytes)
+            .ok_or_else(|| resource("JPEG XL byte total exceeds u64"))?;
+        stored_representation_bytes = stored_representation_bytes
+            .checked_add(
+                u64::try_from(region.representation.len())
+                    .map_err(|_| resource("region representation exceeds u64"))?,
+            )
+            .ok_or_else(|| resource("region representation total exceeds u64"))?;
+        largest_region_bytes = largest_region_bytes.max(region.logical_bytes);
+        worst_access_chunks = worst_access_chunks.max(region.access.logical_chunks);
+        worst_access_bytes = worst_access_bytes.max(region.access.worst_reconstructed_bytes);
+    }
+    let region_count = u64::try_from(archive.content_store.reconstruction_regions.len())
+        .map_err(|_| resource("ReconstructionRegion count exceeds u64"))?;
+    Ok(WholeObjectInspection {
+        feature_present: archive.descriptor.features.incompat
+            & crate::ecf::FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1
+            != 0,
+        region_count,
+        jpeg_region_count: region_count,
+        logical_bytes,
+        jpeg_xl_bytes,
+        stored_representation_bytes,
+        largest_region_bytes,
+        worst_access_chunks,
+        worst_access_bytes,
+        every_chunk_independently_decodable: archive
+            .content_store
+            .reconstruction_regions
+            .values()
+            .all(|region| region.chunk_count <= 1),
+    })
+}
+
+fn jpeg_reconstruction_explanation(archive: &Archive) -> Result<(i128, u64, i128, Option<String>)> {
+    use crate::eam::ReconstructionAuditReason;
+
+    let mut gross = 0_i128;
+    let mut overhead = 0_u64;
+    for region in archive.content_store.reconstruction_regions.values() {
+        let stored = u64::try_from(region.representation.len())
+            .map_err(|_| resource("region representation exceeds u64"))?;
+        gross += i128::from(region.ordinary_physical_bytes) - i128::from(stored);
+        overhead = overhead
+            .checked_add(region.region_overhead_bytes)
+            .ok_or_else(|| resource("region overhead total exceeds u64"))?;
+    }
+    let net = gross - i128::from(overhead);
+    let mut counts = [0_u64; 6];
+    for audit in archive.content_store.reconstruction_audits.values() {
+        let index = match audit.reason {
+            ReconstructionAuditReason::NotRecognized => 0,
+            ReconstructionAuditReason::Unsupported => 1,
+            ReconstructionAuditReason::ExactVerificationFailed => 2,
+            ReconstructionAuditReason::CompleteCostDidNotWin => 3,
+            ReconstructionAuditReason::RegionDedupConflict => 4,
+            ReconstructionAuditReason::ResourcePolicyExcluded => 5,
+        };
+        counts[index] = counts[index]
+            .checked_add(1)
+            .ok_or_else(|| resource("JPEG audit count exceeds u64"))?;
+    }
+    let fallback = counts.iter().any(|count| *count != 0).then(|| {
+        format!(
+            "not-recognized={}, unsupported={}, exact-verification-failed={}, complete-cost-rejected={}, dedup-conflict={}, resource-policy-excluded={}",
+            counts[0], counts[1], counts[2], counts[3], counts[4], counts[5]
+        )
+    });
+    Ok((gross, overhead, net, fallback))
+}
+
+fn region_owned_chunks(
+    archive: &Archive,
+) -> Result<std::collections::BTreeSet<crate::eam::Digest>> {
+    let mut owned = std::collections::BTreeSet::new();
+    for region in archive.content_store.reconstruction_regions.values() {
+        let object = archive
+            .content_store
+            .objects
+            .get(&region.content_object)
+            .ok_or_else(|| resource("region ContentObject is absent"))?;
+        let start = usize::try_from(region.start_chunk_index)
+            .map_err(|_| resource("region start exceeds usize"))?;
+        let end = start
+            .checked_add(
+                usize::try_from(region.chunk_count)
+                    .map_err(|_| resource("region count exceeds usize"))?,
+            )
+            .ok_or_else(|| resource("region range overflows"))?;
+        let range = object
+            .chunks
+            .get(start..end)
+            .ok_or_else(|| resource("region range is invalid"))?;
+        owned.extend(range.iter().map(|chunk_ref| chunk_ref.chunk_id));
+    }
+    Ok(owned)
+}
+
 fn reconstructive_explanation(opened: &OpenedArchive) -> Result<i128> {
     let archive = &opened.archive;
-    if !archive.descriptor.planner_id.ends_with("-v5") {
+    if !archive.descriptor.planner_id.ends_with("-v5")
+        && !archive.descriptor.planner_id.ends_with("-v6")
+    {
         return Ok(0);
     }
     let profile = CompressionProfile::from_planner_id(&archive.descriptor.planner_id)
@@ -396,7 +539,11 @@ fn reconstructive_explanation(opened: &OpenedArchive) -> Result<i128> {
         .map(|plan| (plan.plan_id, plan))
         .collect::<BTreeMap<_, _>>();
     let mut gross = 0_i128;
+    let region_owned = region_owned_chunks(archive)?;
     for (chunk_id, chunk) in &archive.content_store.chunks {
+        if region_owned.contains(chunk_id) {
+            continue;
+        }
         let plan = plans[&chunk.plan_ref];
         if plan
             .transforms
@@ -453,7 +600,11 @@ fn cross_file_statistics(archive: &Archive) -> Result<CrossFileInspection> {
         .content_store
         .chunks
         .values()
-        .filter(|chunk| plans[&chunk.plan_ref].dictionary.is_some())
+        .filter(|chunk| {
+            plans
+                .get(&chunk.plan_ref)
+                .is_some_and(|plan| plan.dictionary.is_some())
+        })
         .count();
     let dictionary_bytes =
         archive
@@ -511,7 +662,11 @@ fn separated_codec_savings(opened: &OpenedArchive) -> Result<(i128, i128, i128, 
     let mut dictionary = 0_i128;
     let mut lookback = 0_i128;
     let mut transforms = 0_i128;
+    let region_owned = region_owned_chunks(archive)?;
     for (chunk_id, chunk) in &archive.content_store.chunks {
+        if region_owned.contains(chunk_id) {
+            continue;
+        }
         let stored = archive.index.chunks[chunk_id].stored_len;
         let baseline = match profile {
             Some(profile) => {
@@ -561,6 +716,7 @@ fn similarity_statistics(archive: &Archive) -> Result<(u64, u64, u64, u64)> {
     if !archive.descriptor.planner_id.ends_with("-v3")
         && !archive.descriptor.planner_id.ends_with("-v4")
         && !archive.descriptor.planner_id.ends_with("-v5")
+        && !archive.descriptor.planner_id.ends_with("-v6")
     {
         return Ok((0, 0, 0, 0));
     }
@@ -575,7 +731,10 @@ fn similarity_statistics(archive: &Archive) -> Result<(u64, u64, u64, u64)> {
         .filter(|cohort| {
             cohort.chunks.iter().all(|chunk_id| {
                 let chunk = &archive.content_store.chunks[chunk_id];
-                plans[&chunk.plan_ref].dictionary.is_none() && chunk.group_ref.is_none()
+                plans
+                    .get(&chunk.plan_ref)
+                    .is_none_or(|plan| plan.dictionary.is_none())
+                    && chunk.group_ref.is_none()
             })
         })
         .count();
@@ -606,15 +765,28 @@ fn transformed_chunk_count(archive: &Archive) -> Result<u64> {
         .iter()
         .map(|plan| (plan.plan_id, plan))
         .collect::<BTreeMap<_, _>>();
-    u64::try_from(
+    let ordinary = u64::try_from(
         archive
             .content_store
             .chunks
             .values()
-            .filter(|chunk| !plans[&chunk.plan_ref].transforms.is_empty())
+            .filter(|chunk| {
+                plans
+                    .get(&chunk.plan_ref)
+                    .is_some_and(|plan| !plan.transforms.is_empty())
+            })
             .count(),
     )
-    .map_err(|_| resource("transformed Chunk count exceeds u64"))
+    .map_err(|_| resource("transformed Chunk count exceeds u64"))?;
+    archive
+        .content_store
+        .reconstruction_regions
+        .values()
+        .try_fold(ordinary, |total, region| {
+            total
+                .checked_add(region.chunk_count)
+                .ok_or_else(|| resource("transformed Chunk count exceeds u64"))
+        })
 }
 
 fn transform_usage(archive: &Archive) -> Result<Vec<TransformUsage>> {
@@ -625,12 +797,28 @@ fn transform_usage(archive: &Archive) -> Result<Vec<TransformUsage>> {
         .collect::<BTreeMap<_, _>>();
     let mut usage = BTreeMap::<String, u64>::new();
     for chunk in archive.content_store.chunks.values() {
-        for step in &plans[&chunk.plan_ref].transforms {
+        let Some(plan) = plans.get(&chunk.plan_ref) else {
+            continue;
+        };
+        for step in &plan.transforms {
             let value = usage
                 .entry(crate::transform::display_step(step))
                 .or_default();
             *value = value
                 .checked_add(1)
+                .ok_or_else(|| resource("transform usage count exceeds u64"))?;
+        }
+    }
+    for region in archive.content_store.reconstruction_regions.values() {
+        let plan = plans.get(&region.plan_ref).ok_or_else(|| {
+            resource("ReconstructionRegion TransformPlan is absent from inspection")
+        })?;
+        for step in &plan.transforms {
+            let value = usage
+                .entry(crate::transform::display_step(step))
+                .or_default();
+            *value = value
+                .checked_add(region.chunk_count)
                 .ok_or_else(|| resource("transform usage count exceeds u64"))?;
         }
     }
@@ -646,6 +834,7 @@ fn transform_usage(archive: &Archive) -> Result<Vec<TransformUsage>> {
 fn transform_rejected_chunk_count(archive: &Archive) -> Result<u64> {
     if !archive.descriptor.planner_id.ends_with("-v4")
         && !archive.descriptor.planner_id.ends_with("-v5")
+        && !archive.descriptor.planner_id.ends_with("-v6")
     {
         return Ok(0);
     }
@@ -667,7 +856,9 @@ fn transform_rejected_chunk_count(archive: &Archive) -> Result<u64> {
             .values()
             .filter(|chunk| {
                 crate::planner::analyze(&chunk.plaintext).likely_compressible
-                    && plans[&chunk.plan_ref].transforms.is_empty()
+                    && plans
+                        .get(&chunk.plan_ref)
+                        .is_none_or(|plan| plan.transforms.is_empty())
             })
             .count(),
     )
@@ -761,7 +952,11 @@ fn codec_usage(opened: &OpenedArchive) -> Result<Vec<CodecUsage>> {
         .map(|plan| (plan.plan_id, plan.codec.as_str()))
         .collect::<BTreeMap<_, _>>();
     let mut usage = BTreeMap::<String, CodecUsage>::new();
+    let region_owned = region_owned_chunks(archive)?;
     for (chunk_id, chunk) in &archive.content_store.chunks {
+        if region_owned.contains(chunk_id) {
+            continue;
+        }
         let codec = plans.get(&chunk.plan_ref).ok_or_else(|| {
             Diagnostic::new(
                 OutcomeClass::Unsupported,
@@ -793,6 +988,39 @@ fn codec_usage(opened: &OpenedArchive) -> Result<Vec<CodecUsage>> {
         item.stored_bytes = item
             .stored_bytes
             .checked_add(location.stored_len)
+            .ok_or_else(|| resource("codec stored byte total exceeds u64"))?;
+    }
+    for region in archive.content_store.reconstruction_regions.values() {
+        let codec = plans.get(&region.plan_ref).ok_or_else(|| {
+            Diagnostic::new(
+                OutcomeClass::Unsupported,
+                ReasonCode::UnknownTransformPlan,
+                format!(
+                    "region {} references plan {}",
+                    region.region_id, region.plan_ref
+                ),
+            )
+        })?;
+        let item = usage.entry((*codec).to_owned()).or_insert(CodecUsage {
+            codec: (*codec).to_owned(),
+            chunk_count: 0,
+            logical_bytes: 0,
+            stored_bytes: 0,
+        });
+        item.chunk_count = item
+            .chunk_count
+            .checked_add(region.chunk_count)
+            .ok_or_else(|| resource("codec Chunk count exceeds u64"))?;
+        item.logical_bytes = item
+            .logical_bytes
+            .checked_add(region.logical_bytes)
+            .ok_or_else(|| resource("codec logical byte total exceeds u64"))?;
+        item.stored_bytes = item
+            .stored_bytes
+            .checked_add(
+                u64::try_from(region.representation.len())
+                    .map_err(|_| resource("region representation exceeds u64"))?,
+            )
             .ok_or_else(|| resource("codec stored byte total exceeds u64"))?;
     }
     Ok(usage.into_values().collect())

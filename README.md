@@ -29,9 +29,9 @@ establishes:
   section structure, plaintext content, Entry identities, LAI, PCR, AUX, and
   exact-byte PCI;
 - optional Index validation and rebuilding from authoritative CHUNK_DATA.
-- deterministic creation-time compression planning with historical v1–v4
-  compatibility and current `fast-v5`, `balanced-v5`, `dense-v5`, and
-  `extreme-v5` policies;
+- deterministic creation-time compression planning with historical v1–v5
+  compatibility and current `fast-v6`, `balanced-v6`, `dense-v6`, and
+  `extreme-v6` policies;
 - normalized Gear-hash content-defined chunking with versioned min/target/max
   parameters and archive-wide exact plaintext Chunk deduplication;
 - governed codec/transform registries and operational per-Chunk STORE,
@@ -42,6 +42,9 @@ establishes:
 - bounded, bit-exact `deflate-reconstruct/v1` pipelines for eligible complete
   raw DEFLATE, zlib, and single-member gzip Chunks, with digest-addressed
   ReconstructionData and mandatory writer-side byte equality verification;
+- whole-ContentObject `ReconstructionRegion` representations and opportunistic
+  bit-exact `jpeg-jxl-reconstruct/v1`, with mandatory writer revalidation and
+  declared whole-region access cost;
 - deterministic binary similarity cohorts, cost-qualified shared Zstandard
   dictionaries, and explicitly bounded ChunkGroups for dense/extreme packing;
 - deterministic filesystem packing for UTF-8 directory and regular-file
@@ -81,12 +84,14 @@ self-describing decompression.
 This slice uses deterministic normalized content-defined chunking, stores each
 exact plaintext Chunk once, and measures complete-cost candidates across
 STORE, Zstandard, LZ4, raw LZMA2, structural pipelines, verified DEFLATE
-reconstruction, shared Zstandard dictionaries, and bounded Zstandard lookback.
+reconstruction, opportunistic JPEG/JPEG XL whole-object reconstruction, shared
+Zstandard dictionaries, and bounded Zstandard lookback.
 It writes only unencrypted Complete INDEXED archives. It
 supports UTF-8 directory names, directories, and regular files, and deliberately
 rejects symlinks and special files. There is no legacy ZIP/tar/7z import,
-STREAM layout, encryption, signing, JPEG reconstruction, embedded-stream
-scanning, unbounded solid compression, hardlink
+STREAM layout, encryption, signing, lossy image recompression, guaranteed
+support for every JPEG producer/marker combination, embedded-stream scanning,
+unbounded solid compression, hardlink
 metadata, ACLs, xattrs, ownership, platform-specific extended metadata,
 mounting, recovery, language bindings, Go compatibility layer, or FFI.
 
@@ -98,8 +103,9 @@ reports this confinement mode. Only collision policy `Refuse` is implemented.
 The CLI's explicit bootstrap resource defaults are 1,000,000 entries, 64 GiB
 total logical bytes, 16 GiB per file, 4,000,000 chunks, path depth 1,024, and
 1 GiB of manifest/metadata bytes. Decoder policy permits an 8 MiB codec window
-and 128 MiB aggregate working set, including LZMA2, stored-dictionary,
-bounded-group access, and the bounded 80 MiB reconstruction working set. These are compatibility
+and 384 MiB aggregate working set, including LZMA2, stored-dictionary,
+bounded-group access, the bounded 80 MiB DEFLATE reconstruction working set,
+and the bounded 256 MiB JPEG/JPEG XL reconstruction working set. These are compatibility
 limits, not claims that every machine can safely process archives of those
 sizes; embedders can and should supply narrower caller-owned limits.
 
@@ -138,5 +144,7 @@ similarity, Dictionary, and bounded ChunkGroup behavior,
 candidate sets, wire feature, and exact reversible transforms, and
 [the reconstructive-transform note](docs/reconstructive-transform-v1.md) for
 v5 DEFLATE recognition, exact reconstruction, resource limits, and wire
-evolution, and
+evolution, [the JPEG reconstruction note](docs/jpeg-reconstruction-v1.md) for
+v6 whole-object regions, eligibility, byte-exact JPEG reconstruction, and
+random-access costs, and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

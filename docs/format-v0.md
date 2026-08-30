@@ -81,6 +81,11 @@ Required incompatibility feature bit `0x4` (`reconstructive-transform-v1`)
 requires bits `0x1` and `0x2`, selects TransformStep v2 records, and adds the
 RECONSTRUCTION_DATA section. See
 [reconstructive-transform-v1.md](reconstructive-transform-v1.md).
+Required incompatibility feature bit `0x8`
+(`whole-object-reconstruction-v1`) requires bits `0x1`, `0x2`, and `0x4`,
+selects TransformStep v3 and Chunk frame v3, and adds the canonical
+RECONSTRUCTION_REGIONS section. See
+[jpeg-reconstruction-v1.md](jpeg-reconstruction-v1.md).
 
 ## Digests
 
@@ -130,14 +135,20 @@ Required incompatibility feature bit `0x1` (`cross-file-compression-v1`)
 selects the extended schema: DESCRIPTOR (1), TRANSFORM_PLANS (2), DICTIONARIES
 (3), CHUNK_GROUPS (4), CHUNK_DATA (5), MANIFEST_RECORDS (6), FIDELITY (7), and
 optionally INDEX (8). Both new authoritative sections occur exactly once even
-when empty. The three currently recognized incompatibility bits are `0x1`,
-`0x2`, and `0x4`; readers reject every other unknown required bit. `0x2` changes only the
+when empty. The four currently recognized incompatibility bits are `0x1`,
+`0x2`, `0x4`, and `0x8`; readers reject every other unknown required bit. `0x2` changes only the
 TransformPlan field-3 item schema and may be combined with `0x1`, as v4 does.
 
 With `0x4`, the canonical extended schema is DESCRIPTOR (1), TRANSFORM_PLANS
 (2), DICTIONARIES (3), CHUNK_GROUPS (4), RECONSTRUCTION_DATA (5), CHUNK_DATA
 (6), MANIFEST_RECORDS (7), FIDELITY (8), and optional INDEX (9). The new
 authoritative physical section occurs exactly once, including when empty.
+
+With `0x8`, the canonical extended schema is DESCRIPTOR (1), TRANSFORM_PLANS
+(2), DICTIONARIES (3), CHUNK_GROUPS (4), RECONSTRUCTION_DATA (5),
+RECONSTRUCTION_REGIONS (6), CHUNK_DATA (7), MANIFEST_RECORDS (8), FIDELITY
+(9), and optional INDEX (10). Both reconstruction sections occur exactly once,
+including when empty.
 
 CHUNK_DATA is a sequence of digest-ordered plan-driven frames:
 
@@ -150,6 +161,11 @@ Under `cross-file-compression-v1`, version-2 frames append
 `group_ref:[u8;32]` before stored bytes. Zero means no group. This is the sole
 membership authority; ChunkGroup records do not contain member lists. Frame
 order is the authority for preceding-Chunk dependencies.
+
+Under `whole-object-reconstruction-v1`, frame version is 3. Flag bit 0 marks a
+region-owned Chunk declaration. Such a frame has zero stored length, plan ref
+zero, and no group; its digest and logical length remain the authoritative
+original Chunk declaration. All other flag bits are reserved and zero.
 
 The 128-byte footer begins with `8E 45 42 46 0D 0A 1A 0A`, then contains total
 container length; absolute offset/length pairs for DESCRIPTOR and
@@ -178,6 +194,9 @@ Record type and strictly increasing field tags are:
 | ReconstructionData | 14 | exact-byte digest(1), format/version(2), intermediate length(3), exact reconstruction bytes(4) |
 | TransformStep v2 | 15 | transform identifier(1), canonical parameter bytes(2), optional reconstruction reference(3) |
 | ReconstructionFallback | 16 | Chunk digest(1), fallback reason enum(2) |
+| TransformStep v3 | 17 | transform identifier(1), canonical parameters(2), optional ReconstructionData reference(3) |
+| ReconstructionRegion | 18 | region identity(1), ContentObject(2), start Chunk index(3), Chunk count(4), plan ref(5), logical bytes(6), transformed bytes(7), access logical bytes(8), access Chunks(9), worst reconstructed bytes(10), encoded representation(11), ordinary physical bytes(12), region overhead bytes(13) |
+| ReconstructionAudit v2 | 19 | target kind(1), target digest(2), transform identifier(3), reason(4) |
 
 Without `codec-transform-v1`, TransformPlan field 3 remains the historical
 empty sequence. With the feature, every sequence item is a version-1 type-13
@@ -191,6 +210,10 @@ type-15 TransformStep v2 record. Type 13 is never reinterpreted. Structural
   are ordered by Chunk digest, and are non-authoritative creation-audit data.
   Reason 1 means recognition or mandatory exact verification did not qualify;
   reason 2 means a verified candidate did not win the complete-cost comparison.
+With `whole-object-reconstruction-v1`, TransformPlan sequences contain type-17
+steps. A self-contained reconstructive step omits field 3. Type-18 region
+records precede type-19 audits in RECONSTRUCTION_REGIONS; both sets are
+canonical and uniquely ordered. Region membership is not repeated as a list.
 
 Sequences contain `count:u64`, then repeated `item_length:u64 | item`. Entries
 are in canonical LogicalPath order. ContentObjects, Chunks, TransformPlans, and

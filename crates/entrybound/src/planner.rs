@@ -3,7 +3,7 @@
 //! Profiles exist only here. The native reader uses recorded TransformPlans
 //! and operational codecs without consulting this module.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::str::FromStr;
 
 use crate::chunker::{BALANCED_V2, ChunkingParameters, DENSE_V2, EXTREME_V2, FAST_V2};
@@ -12,25 +12,30 @@ use crate::codec::{
     ZSTD_DICTIONARY_CONSTRUCTION_PREFIX, ZSTD_DICTIONARY_FORMAT, ZSTD_WINDOW_BYTES,
     aggregate_archive_decode_requirements, aggregate_decode_requirements, encode_payload,
     encode_payload_with_dictionary, encode_payload_with_prefix, encode_payload_with_reconstruction,
-    lz4_plan, lzma2_plan, store_plan, train_dictionary, zstd_dictionary_plan, zstd_plan,
-    zstd_prefix_plan, zstd_transformed_plan,
+    encode_transformed_payload, lz4_plan, lzma2_plan, store_plan, train_dictionary, with_pipeline,
+    zstd_dictionary_plan, zstd_plan, zstd_prefix_plan, zstd_transformed_plan,
 };
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
-    Archive, ChunkGroup, Dictionary, Digest, ReconstructionData, ReconstructionFallbackReason,
-    TransformPlan,
+    Archive, ChunkGroup, Dictionary, Digest, ReconstructionAudit, ReconstructionAuditReason,
+    ReconstructionAuditTarget, ReconstructionData, ReconstructionFallbackReason,
+    ReconstructionRegion, RegionAccessCost, TransformPlan,
 };
 use crate::ecf::{
     FEATURE_CODEC_TRANSFORM_V1, FEATURE_CROSS_FILE_COMPRESSION_V1,
-    FEATURE_RECONSTRUCTIVE_TRANSFORM_V1, encoded_chunk_group_len, encoded_dictionary_len,
-    encoded_reconstruction_data_len, encoded_transform_plan_len, encoded_transform_plan_v2_len,
+    FEATURE_RECONSTRUCTIVE_TRANSFORM_V1, FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1,
+    SECTION_HEADER_LEN, encoded_chunk_group_len, encoded_dictionary_len,
+    encoded_reconstruction_data_len, encoded_reconstruction_region_len, encoded_transform_plan_len,
+    encoded_transform_plan_v2_len, encoded_transform_plan_v3_len,
 };
 use crate::identity::sha256_exact;
 use crate::similarity::{
     BALANCED_V3_SIMILARITY, DENSE_V3_SIMILARITY, EXTREME_V3_SIMILARITY, FAST_V3_SIMILARITY,
     SimilarityCohort, SimilarityPolicy, cluster,
 };
-use crate::transform::{byte_shuffle_step, deflate_reconstruct_step, delta8_step};
+use crate::transform::{
+    byte_shuffle_step, deflate_reconstruct_step, delta8_step, jpeg_reconstruct_step,
+};
 
 /// Temporary plan marker used only between plaintext chunking and planning.
 pub const UNPLANNED_PLAN_ID: u64 = 0;
@@ -55,7 +60,7 @@ const BALANCED_FALLBACK_LEVELS: [i32; 1] = [1];
 const DENSE_LEVELS: [i32; 3] = [5, 9, 15];
 const EXTREME_LEVELS: [i32; 4] = [9, 15, 19, 22];
 
-/// Public creation profiles. New filesystem archives use their v5 IDs.
+/// Public creation profiles. New filesystem archives use their frozen v6 IDs.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum CompressionProfile {
     Fast,
@@ -78,6 +83,16 @@ impl CompressionProfile {
 
     #[must_use]
     pub const fn planner_id(self) -> &'static str {
+        match self {
+            Self::Fast => "fast-v6",
+            Self::Balanced => "balanced-v6",
+            Self::Dense => "dense-v6",
+            Self::Extreme => "extreme-v6",
+        }
+    }
+
+    #[must_use]
+    pub const fn planner_v5_id(self) -> &'static str {
         match self {
             Self::Fast => "fast-v5",
             Self::Balanced => "balanced-v5",
@@ -190,14 +205,16 @@ impl CompressionProfile {
     #[must_use]
     pub fn from_planner_id(planner_id: &str) -> Option<Self> {
         match planner_id {
-            "fast-v1" | "fast-v2" | "fast-v3" | "fast-v4" | "fast-v5" => Some(Self::Fast),
-            "balanced-v1" | "balanced-v2" | "balanced-v3" | "balanced-v4" | "balanced-v5" => {
-                Some(Self::Balanced)
+            "fast-v1" | "fast-v2" | "fast-v3" | "fast-v4" | "fast-v5" | "fast-v6" => {
+                Some(Self::Fast)
             }
-            "dense-v1" | "dense-v2" | "dense-v3" | "dense-v4" | "dense-v5" => Some(Self::Dense),
-            "extreme-v1" | "extreme-v2" | "extreme-v3" | "extreme-v4" | "extreme-v5" => {
-                Some(Self::Extreme)
+            "balanced-v1" | "balanced-v2" | "balanced-v3" | "balanced-v4" | "balanced-v5"
+            | "balanced-v6" => Some(Self::Balanced),
+            "dense-v1" | "dense-v2" | "dense-v3" | "dense-v4" | "dense-v5" | "dense-v6" => {
+                Some(Self::Dense)
             }
+            "extreme-v1" | "extreme-v2" | "extreme-v3" | "extreme-v4" | "extreme-v5"
+            | "extreme-v6" => Some(Self::Extreme),
             _ => None,
         }
     }
@@ -255,6 +272,7 @@ pub struct PlanningReport {
 
 /// Frozen v1 codec selection for callers constructing historical fixed chunks.
 pub fn plan_archive(archive: &mut Archive, profile: CompressionProfile) -> Result<PlanningReport> {
+    clear_whole_object_state(archive);
     archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
     archive.content_store.reconstruction_data.clear();
     archive.content_store.reconstruction_fallbacks.clear();
@@ -266,6 +284,7 @@ pub fn plan_archive_v2(
     archive: &mut Archive,
     profile: CompressionProfile,
 ) -> Result<PlanningReport> {
+    clear_whole_object_state(archive);
     archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
     archive.content_store.reconstruction_data.clear();
     archive.content_store.reconstruction_fallbacks.clear();
@@ -278,6 +297,7 @@ pub fn plan_archive_v3(
     archive: &mut Archive,
     profile: CompressionProfile,
 ) -> Result<PlanningReport> {
+    clear_whole_object_state(archive);
     let planner_id = profile.planner_v3_id();
     archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
     archive.content_store.reconstruction_data.clear();
@@ -299,6 +319,7 @@ pub fn plan_archive_v4(
     archive: &mut Archive,
     profile: CompressionProfile,
 ) -> Result<PlanningReport> {
+    clear_whole_object_state(archive);
     let planner_id = profile.planner_v4_id();
     archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
     archive.content_store.reconstruction_data.clear();
@@ -319,7 +340,8 @@ pub fn plan_archive_v5(
     archive: &mut Archive,
     profile: CompressionProfile,
 ) -> Result<PlanningReport> {
-    let planner_id = profile.planner_id();
+    clear_whole_object_state(archive);
+    let planner_id = profile.planner_v5_id();
     let report = plan_archive_v5_independent(archive, profile, planner_id)?;
     let mut features = FEATURE_CROSS_FILE_COMPRESSION_V1 | FEATURE_CODEC_TRANSFORM_V1;
     if !archive.content_store.reconstruction_data.is_empty()
@@ -328,6 +350,381 @@ pub fn plan_archive_v5(
         features |= FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
     }
     finish_cross_file_planning(archive, profile, planner_id, features, report)
+}
+
+fn clear_whole_object_state(archive: &mut Archive) {
+    archive.descriptor.features.incompat &= !FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1;
+    archive.content_store.reconstruction_regions.clear();
+    archive.content_store.reconstruction_audits.clear();
+}
+
+/// V6 preserves the frozen v5 baseline, then competes one verified,
+/// self-contained JPEG reconstruction region against each eligible complete
+/// ContentObject. Region selection never changes logical Chunk boundaries.
+pub fn plan_archive_v6(
+    archive: &mut Archive,
+    profile: CompressionProfile,
+) -> Result<PlanningReport> {
+    let mut report = plan_archive_v5(archive, profile)?;
+    archive.descriptor.planner_id = profile.planner_id().to_owned();
+    clear_whole_object_state(archive);
+    if profile == CompressionProfile::Fast {
+        report.planner_id = profile.planner_id().to_owned();
+        return Ok(report);
+    }
+
+    let object_owners = chunk_object_owners(archive);
+    let objects = archive
+        .content_store
+        .objects
+        .values()
+        .cloned()
+        .collect::<Vec<_>>();
+    let mut plans = archive
+        .transform_plans
+        .iter()
+        .cloned()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
+    let mut emitted_region_section = false;
+
+    for object in objects {
+        let target = ReconstructionAuditTarget::ContentObject(object.logical_digest);
+        increment(
+            &mut report.reconstruction_attempts,
+            "JPEG reconstruction attempt",
+        )?;
+        if object.chunks.is_empty() {
+            insert_v6_audit(archive, target, ReconstructionAuditReason::NotRecognized);
+            continue;
+        }
+        if profile == CompressionProfile::Balanced && object.chunks.len() != 1 {
+            insert_v6_audit(
+                archive,
+                target,
+                ReconstructionAuditReason::ResourcePolicyExcluded,
+            );
+            continue;
+        }
+        if u64::try_from(object.chunks.len()).unwrap_or(u64::MAX)
+            > crate::jpeg_reconstruction::MAX_REGION_CHUNKS
+        {
+            insert_v6_audit(
+                archive,
+                target,
+                ReconstructionAuditReason::ResourcePolicyExcluded,
+            );
+            continue;
+        }
+        if object.chunks.iter().any(|chunk_ref| {
+            object_owners
+                .get(&chunk_ref.chunk_id)
+                .is_some_and(|owners| owners.len() != 1)
+        }) || object.chunks.iter().any(|chunk_ref| {
+            let chunk = &archive.content_store.chunks[&chunk_ref.chunk_id];
+            chunk.group_ref.is_some()
+                || plans
+                    .get(&chunk.plan_ref)
+                    .is_none_or(|plan| plan.dictionary.is_some())
+        }) {
+            insert_v6_audit(
+                archive,
+                target,
+                ReconstructionAuditReason::RegionDedupConflict,
+            );
+            continue;
+        }
+
+        let logical_bytes = object.chunks.iter().try_fold(0_u64, |total, chunk_ref| {
+            total
+                .checked_add(archive.content_store.chunks[&chunk_ref.chunk_id].logical_len)
+                .ok_or_else(|| resource("JPEG ContentObject length overflows"))
+        })?;
+        if logical_bytes
+            > u64::try_from(crate::jpeg_reconstruction::MAX_JPEG_BYTES).unwrap_or(u64::MAX)
+        {
+            insert_v6_audit(
+                archive,
+                target,
+                ReconstructionAuditReason::ResourcePolicyExcluded,
+            );
+            continue;
+        }
+        let mut original = Vec::with_capacity(
+            usize::try_from(logical_bytes)
+                .map_err(|_| resource("JPEG ContentObject length exceeds usize"))?,
+        );
+        for chunk_ref in &object.chunks {
+            original
+                .extend_from_slice(&archive.content_store.chunks[&chunk_ref.chunk_id].plaintext);
+        }
+        let verified = match crate::jpeg_reconstruction::verified_forward(&original) {
+            Ok(value) => value,
+            Err(failure) => {
+                let reason = match failure {
+                    crate::jpeg_reconstruction::JpegAttemptFailure::NotRecognized => {
+                        ReconstructionAuditReason::NotRecognized
+                    }
+                    crate::jpeg_reconstruction::JpegAttemptFailure::Unsupported => {
+                        ReconstructionAuditReason::Unsupported
+                    }
+                    crate::jpeg_reconstruction::JpegAttemptFailure::VerificationFailed => {
+                        ReconstructionAuditReason::ExactVerificationFailed
+                    }
+                    crate::jpeg_reconstruction::JpegAttemptFailure::ResourceExcluded => {
+                        ReconstructionAuditReason::ResourcePolicyExcluded
+                    }
+                };
+                insert_v6_audit(archive, target, reason);
+                continue;
+            }
+        };
+
+        let ordinary_cost = v6_ordinary_payload_cost(archive, &object, &plans)?;
+        let mut best: Option<(TransformPlan, Vec<u8>, u64)> = None;
+        for plan in jpeg_region_candidates(profile)? {
+            let representation = encode_transformed_payload(&plan, &verified.bytes)?;
+            let plan_cost = if plans.contains_key(&plan.plan_id) {
+                0
+            } else {
+                encoded_transform_plan_v3_len(&plan)?
+            };
+            let provisional = ReconstructionRegion {
+                region_id: Digest::ZERO,
+                content_object: object.logical_digest,
+                start_chunk_index: 0,
+                chunk_count: u64::try_from(object.chunks.len())
+                    .map_err(|_| resource("JPEG region Chunk count exceeds u64"))?,
+                plan_ref: plan.plan_id,
+                logical_bytes,
+                transformed_bytes: u64::try_from(verified.bytes.len())
+                    .map_err(|_| resource("JPEG XL representation exceeds u64"))?,
+                ordinary_physical_bytes: ordinary_cost,
+                region_overhead_bytes: 0,
+                access: RegionAccessCost {
+                    logical_bytes,
+                    logical_chunks: u64::try_from(object.chunks.len())
+                        .map_err(|_| resource("JPEG region Chunk count exceeds u64"))?,
+                    worst_reconstructed_bytes: logical_bytes,
+                },
+                representation: representation.clone().into_boxed_slice(),
+            };
+            let representation_len = u64::try_from(representation.len())
+                .map_err(|_| resource("JPEG region representation exceeds u64"))?;
+            let record_cost = encoded_reconstruction_region_len(&provisional)?
+                .checked_sub(representation_len)
+                .ok_or_else(|| resource("JPEG region record cost underflows"))?;
+            let overhead = plan_cost
+                .checked_add(record_cost)
+                .and_then(|value| {
+                    value.checked_add(if emitted_region_section {
+                        0
+                    } else {
+                        SECTION_HEADER_LEN
+                    })
+                })
+                .ok_or_else(|| resource("JPEG region overhead overflows"))?;
+            let complete_cost = representation_len
+                .checked_add(overhead)
+                .ok_or_else(|| resource("JPEG region cost overflows"))?;
+            if best
+                .as_ref()
+                .is_none_or(|(_, _, previous)| complete_cost < *previous)
+            {
+                best = Some((plan, representation, complete_cost));
+            }
+        }
+        let Some((plan, representation, complete_cost)) = best else {
+            insert_v6_audit(archive, target, ReconstructionAuditReason::Unsupported);
+            continue;
+        };
+        if !qualifies_reconstruction(complete_cost, ordinary_cost)? {
+            insert_v6_audit(
+                archive,
+                target,
+                ReconstructionAuditReason::CompleteCostDidNotWin,
+            );
+            increment(
+                &mut report.reconstruction_cost_rejections,
+                "JPEG reconstruction cost rejection",
+            )?;
+            continue;
+        }
+
+        let representation_len = u64::try_from(representation.len())
+            .map_err(|_| resource("JPEG region representation exceeds u64"))?;
+        let region_overhead_bytes = complete_cost
+            .checked_sub(representation_len)
+            .ok_or_else(|| resource("JPEG region cost underflows"))?;
+        let chunk_count = u64::try_from(object.chunks.len())
+            .map_err(|_| resource("JPEG region Chunk count exceeds u64"))?;
+        let transformed_bytes = u64::try_from(verified.bytes.len())
+            .map_err(|_| resource("JPEG XL representation exceeds u64"))?;
+        let mut region = ReconstructionRegion {
+            region_id: Digest::ZERO,
+            content_object: object.logical_digest,
+            start_chunk_index: 0,
+            chunk_count,
+            plan_ref: plan.plan_id,
+            logical_bytes,
+            transformed_bytes,
+            ordinary_physical_bytes: ordinary_cost,
+            region_overhead_bytes,
+            access: RegionAccessCost {
+                logical_bytes,
+                logical_chunks: chunk_count,
+                worst_reconstructed_bytes: logical_bytes,
+            },
+            representation: representation.into_boxed_slice(),
+        };
+        region.region_id = crate::jpeg_reconstruction::region_identity(&region);
+        let region_id = region.region_id;
+        plans.entry(plan.plan_id).or_insert(plan);
+        for chunk_ref in &object.chunks {
+            let chunk = archive
+                .content_store
+                .chunks
+                .get_mut(&chunk_ref.chunk_id)
+                .expect("validated ContentObject Chunk");
+            chunk.plan_ref = crate::jpeg_reconstruction::REGION_MEMBER_PLAN_REF;
+            chunk.group_ref = None;
+            archive
+                .content_store
+                .reconstruction_fallbacks
+                .remove(&chunk_ref.chunk_id);
+        }
+        archive
+            .content_store
+            .reconstruction_regions
+            .insert(region_id, region);
+        emitted_region_section = true;
+    }
+
+    if !archive.content_store.reconstruction_regions.is_empty()
+        || !archive.content_store.reconstruction_audits.is_empty()
+    {
+        archive.descriptor.features.incompat |= FEATURE_CROSS_FILE_COMPRESSION_V1
+            | FEATURE_CODEC_TRANSFORM_V1
+            | FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
+            | FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1;
+    }
+    archive.transform_plans = plans.into_values().collect::<Vec<_>>().into_boxed_slice();
+    archive.descriptor.decode = aggregate_archive_decode_requirements(
+        &archive.transform_plans,
+        &archive.content_store.dictionaries,
+        &archive.content_store.chunk_groups,
+    )?;
+    report.planner_id = profile.planner_id().to_owned();
+    report.selected_plans = archive.transform_plans.clone();
+    report.reconstructive_chunks = archive
+        .content_store
+        .reconstruction_regions
+        .values()
+        .try_fold(0_u64, |total, region| {
+            total
+                .checked_add(region.chunk_count)
+                .ok_or_else(|| resource("JPEG reconstructive Chunk count overflows"))
+        })?;
+    Ok(report)
+}
+
+fn chunk_object_owners(archive: &Archive) -> BTreeMap<Digest, BTreeSet<Digest>> {
+    let mut owners = BTreeMap::<Digest, BTreeSet<Digest>>::new();
+    for object in archive.content_store.objects.values() {
+        for chunk_ref in &object.chunks {
+            owners
+                .entry(chunk_ref.chunk_id)
+                .or_default()
+                .insert(object.logical_digest);
+        }
+    }
+    owners
+}
+
+fn insert_v6_audit(
+    archive: &mut Archive,
+    target: ReconstructionAuditTarget,
+    reason: ReconstructionAuditReason,
+) {
+    archive.content_store.reconstruction_audits.insert(
+        target,
+        ReconstructionAudit {
+            target,
+            transform_id: crate::jpeg_reconstruction::JPEG_RECONSTRUCT_ID.to_owned(),
+            reason,
+        },
+    );
+}
+
+fn v6_ordinary_payload_cost(
+    archive: &Archive,
+    object: &crate::eam::ContentObject,
+    plans: &BTreeMap<u64, TransformPlan>,
+) -> Result<u64> {
+    let mut total = 0_u64;
+    let mut unique = BTreeSet::new();
+    for chunk_ref in &object.chunks {
+        if !unique.insert(chunk_ref.chunk_id) {
+            continue;
+        }
+        let chunk = &archive.content_store.chunks[&chunk_ref.chunk_id];
+        let plan = plans.get(&chunk.plan_ref).ok_or_else(|| {
+            Diagnostic::new(
+                OutcomeClass::Unsupported,
+                ReasonCode::UnknownTransformPlan,
+                chunk.plan_ref.to_string(),
+            )
+        })?;
+        let payload = if plan
+            .transforms
+            .iter()
+            .any(|step| step.reconstruction_ref.is_some())
+        {
+            encode_payload_with_reconstruction(
+                plan,
+                &chunk.plaintext,
+                &archive.content_store.reconstruction_data,
+            )?
+        } else {
+            encode_payload(plan, &chunk.plaintext)?
+        };
+        total = total
+            .checked_add(
+                u64::try_from(payload.len())
+                    .map_err(|_| resource("ordinary JPEG payload exceeds u64"))?,
+            )
+            .ok_or_else(|| resource("ordinary JPEG representation cost overflows"))?;
+    }
+    Ok(total)
+}
+
+fn jpeg_region_candidates(profile: CompressionProfile) -> Result<Vec<TransformPlan>> {
+    let transform = jpeg_reconstruct_step()?;
+    let mut bases = vec![store_plan()];
+    match profile {
+        CompressionProfile::Fast => {}
+        CompressionProfile::Balanced => {
+            bases.push(lz4_plan(Box::default())?);
+            bases.push(zstd_plan(3)?);
+            bases.push(zstd_plan(5)?);
+        }
+        CompressionProfile::Dense => {
+            bases.push(zstd_plan(9)?);
+            bases.push(zstd_plan(15)?);
+            bases.push(lzma2_plan(6, 4 * 1024 * 1024, Box::default())?);
+        }
+        CompressionProfile::Extreme => {
+            bases.push(lz4_plan(Box::default())?);
+            bases.push(zstd_plan(15)?);
+            bases.push(zstd_plan(19)?);
+            bases.push(lzma2_plan(6, 4 * 1024 * 1024, Box::default())?);
+            bases.push(lzma2_plan(9, 8 * 1024 * 1024, Box::default())?);
+        }
+    }
+    bases
+        .into_iter()
+        .map(|base| with_pipeline(base, vec![transform.clone()].into_boxed_slice()))
+        .collect()
 }
 
 fn finish_cross_file_planning(
@@ -1439,12 +1836,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn profiles_expose_v5_and_preserve_frozen_historical_identifiers() {
+    fn profiles_expose_v6_and_preserve_frozen_historical_identifiers() {
         assert_eq!(CompressionProfile::default(), CompressionProfile::Balanced);
-        assert_eq!(CompressionProfile::Fast.planner_id(), "fast-v5");
-        assert_eq!(CompressionProfile::Balanced.planner_id(), "balanced-v5");
-        assert_eq!(CompressionProfile::Dense.planner_id(), "dense-v5");
-        assert_eq!(CompressionProfile::Extreme.planner_id(), "extreme-v5");
+        assert_eq!(CompressionProfile::Fast.planner_id(), "fast-v6");
+        assert_eq!(CompressionProfile::Balanced.planner_id(), "balanced-v6");
+        assert_eq!(CompressionProfile::Dense.planner_id(), "dense-v6");
+        assert_eq!(CompressionProfile::Extreme.planner_id(), "extreme-v6");
+        assert_eq!(CompressionProfile::Fast.planner_v5_id(), "fast-v5");
+        assert_eq!(CompressionProfile::Balanced.planner_v5_id(), "balanced-v5");
+        assert_eq!(CompressionProfile::Dense.planner_v5_id(), "dense-v5");
+        assert_eq!(CompressionProfile::Extreme.planner_v5_id(), "extreme-v5");
         assert_eq!(CompressionProfile::Fast.planner_v4_id(), "fast-v4");
         assert_eq!(CompressionProfile::Balanced.planner_v4_id(), "balanced-v4");
         assert_eq!(CompressionProfile::Dense.planner_v4_id(), "dense-v4");

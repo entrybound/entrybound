@@ -119,7 +119,7 @@ fn archive_wide_dedup_is_exact_deterministic_and_extracts_all_references() {
     assert_eq!(first.bytes, second.bytes);
     let opened = open(&first.bytes).unwrap();
     verify(&first.bytes).unwrap();
-    assert_eq!(opened.archive.descriptor.planner_id, "balanced-v5");
+    assert_eq!(opened.archive.descriptor.planner_id, "balanced-v6");
     assert_eq!(opened.archive.descriptor.chunker_id, BALANCED_V2.chunker_id);
 
     let view = inspect(&opened).unwrap();
@@ -286,6 +286,8 @@ fn archive_with_content(
             dictionaries: BTreeMap::new(),
             reconstruction_data: BTreeMap::new(),
             reconstruction_fallbacks: BTreeMap::new(),
+            reconstruction_regions: BTreeMap::new(),
+            reconstruction_audits: BTreeMap::new(),
             chunk_groups: BTreeMap::new(),
         },
         transform_plans: vec![TransformPlan {
@@ -379,6 +381,11 @@ fn assert_shared_store_chunk_corruption_is_detected(bytes: &[u8], archive: &Arch
     let frame_header = if extended { 96 } else { 64 };
     corrupt[usize::try_from(location.offset).unwrap() + frame_header] ^= 1;
     let chunk_section = if archive.descriptor.features.incompat
+        & entrybound::ecf::FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1
+        != 0
+    {
+        7
+    } else if archive.descriptor.features.incompat
         & entrybound::ecf::FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
         != 0
     {

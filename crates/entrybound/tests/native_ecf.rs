@@ -405,6 +405,8 @@ fn complete_fixture(
             dictionaries: BTreeMap::new(),
             reconstruction_data: BTreeMap::new(),
             reconstruction_fallbacks: BTreeMap::new(),
+            reconstruction_regions: BTreeMap::new(),
+            reconstruction_audits: BTreeMap::new(),
             chunk_groups: BTreeMap::new(),
         },
         transform_plans: vec![store_plan()].into_boxed_slice(),

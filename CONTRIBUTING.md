@@ -8,8 +8,8 @@ Specification and accompanied by focused conformance tests.
 
 Rust is Entrybound's primary implementation language. The stable
 toolchain is declared in `rust-toolchain.toml` and includes rustfmt and Clippy.
-The workspace MSRV is Rust 1.89, required by the pinned bit-exact DEFLATE
-reconstruction dependency.
+The workspace MSRV is Rust 1.94, required by the pinned pure-Rust JPEG/JPEG XL
+transcode dependency.
 
 ```sh
 cargo fmt --all --check
@@ -67,6 +67,11 @@ Planner v5 freezes the Structural/Reconstructive registry classes, preflate
 version and bounds, DEFLATE wrapper eligibility, mandatory dual round-trip
 check, ReconstructionData encoding, complete-cost margin, and candidate sets
 in `docs/reconstructive-transform-v1.md`.
+
+Planner v6 freezes the whole-ContentObject ReconstructionRegion model, the
+`jixel`/`jxl-oxide` versions and single-thread encoder setting, conservative
+dedup eligibility, mandatory exact round-trip check, access declarations,
+complete-cost margin, and candidate sets in `docs/jpeg-reconstruction-v1.md`.
 
 Generated conformance inputs belong in tests as format-building code, not as
 opaque binary fixtures. Each negative case must assert a stable reason code.

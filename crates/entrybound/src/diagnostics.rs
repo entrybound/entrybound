@@ -80,6 +80,12 @@ pub enum ReasonCode {
     ReconstructionFailed,
     ReconstructedLengthMismatch,
     ReconstructedDigestMismatch,
+    UnknownReconstructionRegion,
+    OverlappingReconstructionRegion,
+    InvalidReconstructionRegion,
+    InvalidRegionAccess,
+    MalformedReconstructionPayload,
+    RegionMemberDigestMismatch,
     UnknownCodec,
     InvalidCodecParameters,
     CompressionFailed,
@@ -153,6 +159,14 @@ impl ReasonCode {
             Self::ReconstructionFailed => "EB_RECONSTRUCTION_FAILED",
             Self::ReconstructedLengthMismatch => "EB_RECONSTRUCTION_LENGTH_MISMATCH",
             Self::ReconstructedDigestMismatch => "EB_RECONSTRUCTION_DIGEST_MISMATCH",
+            Self::UnknownReconstructionRegion => "EB_RECONSTRUCTION_REGION_UNKNOWN",
+            Self::OverlappingReconstructionRegion => "EB_RECONSTRUCTION_REGION_OVERLAP",
+            Self::InvalidReconstructionRegion => "EB_RECONSTRUCTION_REGION_INVALID",
+            Self::InvalidRegionAccess => "EB_RECONSTRUCTION_REGION_ACCESS_INVALID",
+            Self::MalformedReconstructionPayload => "EB_RECONSTRUCTION_PAYLOAD_MALFORMED",
+            Self::RegionMemberDigestMismatch => {
+                "EB_INTEGRITY_RECONSTRUCTION_REGION_MEMBER_DIGEST_MISMATCH"
+            }
             Self::UnknownCodec => "EB_CODEC_UNKNOWN",
             Self::InvalidCodecParameters => "EB_CODEC_INVALID_PARAMETERS",
             Self::CompressionFailed => "EB_CODEC_COMPRESSION_FAILED",
