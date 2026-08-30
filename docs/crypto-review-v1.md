@@ -1,7 +1,7 @@
 # Entrybound cryptographic architecture review v1
 
-Review date: 2026-08-30. Status: **security-design gate complete; production
-implementation not started**.
+Review date: 2026-08-30. Status: **security-design gate re-authorized after the
+canonical-wire correction below; production implementation not started**.
 
 This is the rationale and adversarial-review record for the frozen choices in
 [crypto-suite-v1.md](crypto-suite-v1.md) and
@@ -292,6 +292,86 @@ requires:
    expensive operation or allocation;
 10. test-only fixed randomness APIs compiled out of non-test builds.
 
+## Canonical-wire blocker resolution (2026-08-30)
+
+The implementation review correctly stopped before adding production crypto.
+Two security-critical byte grammars were not actually frozen:
+
+1. `recipient-wrap-ad/v1` named concepts but did not assign T1 tags or exact
+   stanza encodings;
+2. `PrivateFragmentV1` allowed an undefined “canonical sequence container” and
+   required a parser to distinguish records, Chunk frames, and collections
+   without an explicit discriminator.
+
+Repository history, the original review text, all checked-in documents, and
+the empty vector-helper location contained no earlier field table or generator
+from which one unique wrap-AD encoding could be recovered. The old V5/V6 AD
+hashes therefore were evidence of one unrecorded generator execution, not
+normative format semantics. No transcript search or brute-force preservation
+was attempted.
+
+The authorized minimal correction is a flat, required, 14-field T1 transcript.
+It binds namespace and format version, crypto/suite, archive ID, and the exact
+public stanza fields through nonce. Method parameters and encapsulation are
+complete values, not digests or a partially serialized stanza. `wrapped_afk`
+is excluded as the output. X-Wing uses the exact 39-byte draft-10 identifier
+and 1,120-byte encapsulation; password uses the exact 36-byte A2ID value and a
+zero-length encapsulation. The recipient public key remains an X-Wing KEM
+input, not an undocumented transcript field. Comparison of the pinned crate's
+three bundled draft-10 vector cases with the authoritative draft-10 vector data
+found identical seed, encapsulation seed, keys, ciphertext, and shared-secret
+values; this correction does not alter X-Wing.
+
+The private-object correction adds a 12-byte authenticated `EBPO` envelope
+whose kind explicitly dispatches a single canonical ECF record, one exact
+Chunk frame, or one `EBCS` collection. `EBCS` has fixed magic/version/kind/zero
+flags, a `u64be` count, and nonzero `u64be`-length-delimited canonical ECF
+records. Nine collection kinds define allowed record types, ordering,
+cardinality, and duplicate rules. It is self-delimiting through the enclosing
+authenticated object's already-authoritative extent; it does not add another
+total-length fact. Nesting and unknown items are forbidden. This preserves the
+inner record/frame/collection kind as semantic authority while making the
+outer kind purely physical parser dispatch.
+
+The audit also found and corrected three adjacent specification defects:
+
+- the signature feature row incorrectly said type 27 although
+  `SignatureRecordV1` is type 26;
+- record 22 and 27 collection items lacked canonical fields, so they are now
+  explicitly `RecipientDirectoryEntryV1` and `EncryptedIndexEntryV1` inside
+  typed EBCS collections;
+- the timestamp prose named an undefined `SignatureCoreV1`; it now points to
+  the exact canonical type-26 record through tag 8 already defined as
+  `SignatureRecordWithoutTimestamp`.
+
+V5 and V6 method-context hashes, HKDF PRKs, and wrap keys did not change. Their
+wrap-AD hashes and AES-GCM-SIV ciphertext/tags did change because those bytes
+had never had a normative definition. The old values are explicitly
+superseded in the wire document. Complete transcript bytes and sequence vectors
+are published in
+[crypto-wire-v1-vectors.txt](crypto-wire-v1-vectors.txt). A standalone
+RustCrypto helper and a Python implementation using independent T1/ECF/EBCS
+construction plus `cryptography` and `argon2-cffi` agree on all 35 named
+outputs. Neither helper is linked into Entrybound production code.
+
+The focused adversarial re-review reached these conclusions:
+
+- stanza-type, protection-class, stanza-ID, method-parameter, encapsulation,
+  nonce, archive, format, and suite substitution changes wrap AD and, for the
+  method fields, the wrap key context as well; no alternate nested encoding
+  exists;
+- canonical T1 and exact fixed/registered lengths prevent alternate stanza
+  encodings from representing the same accepted v1 value;
+- `EBPO` prevents record/Chunk/collection type confusion before inner parsing;
+- `EBCS` magic/version/kind/flags/count/item lengths and exact outer extent
+  prevent concatenation, count, length, and truncation ambiguity;
+- kind-specific order and unique semantic keys reject reordering and
+  duplicates; nested containers and unknown item types fail closed.
+
+No blocker remains from this correction. The encrypted-INDEXED implementation
+may proceed from the normative suite/wire documents without inventing crypto
+wire bytes.
+
 ## Independent adversarial pass
 
 The second pass began from the assumption that every public byte is controlled
@@ -329,6 +409,10 @@ producer. Findings are numbered for future audit traceability.
 | AR-27 Legitimate recipient forwarding | Recipient can share AFK/plaintext or create another archive. | Explicit non-goal; addressing signatures express author intent but cannot provide DRM. | Resolved by scope |
 | AR-28 Timestamp algorithm sprawl/network | CMS can import many algorithms, parsers, and online trust behavior. | 64 KiB DER bound, SHA-256 imprint, Ed25519 signer only, caller trust anchors, no network, separate unsupported status. | Resolved |
 | AR-29 Segment summary defeats padding | A public aggregate *unpadded* byte count would reveal the value bucket padding was meant to coarsen. | SegmentHeader offset 40 is reserved zero; exact unpadded totals exist only in authenticated encrypted SegmentEnd. | Resolved |
+| AR-30 Recipient wrap AD was not encoded | Independent implementations could authenticate different stanza/context bytes while claiming suite 1. | Flat 14-tag transcript with exact sources, widths, empty-value behavior, vectors, and a contiguous wrap/unwrap algorithm. | Resolved specification defect |
+| AR-31 Private object dispatch was heuristic | Record, Chunk frame, and collection bytes could be confused or require parser probing. | Authenticated `EBPO` magic/version/kind/flags dispatches exactly one complete payload grammar. | Resolved specification defect |
+| AR-32 Canonical private collection was undefined | Concatenation, ordering, duplicate, unknown-item, and truncation behavior could diverge. | `EBCS` grammar, nine semantic collection kinds, exact item records/order/cardinality, hard limits, and negative vectors. | Resolved specification defect |
+| AR-33 Adjacent crypto wire names disagreed | Signature type and timestamp transcript names or directory/Index item bytes could diverge. | Corrected type 26 reference, exact type-26-through-tag-8 timestamp input, and canonical type-22/type-27 entry schemas. | Resolved specification defect |
 
 No blocking adversarial finding remains in the specification. AR-25 is a
 mandatory implementation/release gate: failure to satisfy it blocks production

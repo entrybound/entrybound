@@ -1,0 +1,16 @@
+[package]
+name = "entrybound-crypto-vector-helper"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+# This is an intentionally separate, non-production workspace. Its fixed test
+# inputs are unsafe for real encryption and it is not linked by Entrybound.
+[workspace]
+
+[dependencies]
+aes-gcm-siv = "=0.12.1"
+argon2 = "=0.6.0"
+hkdf = "=0.13.0"
+sha2 = "=0.11.0"
+

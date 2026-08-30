@@ -142,7 +142,8 @@ bitmap, padding mode, and boundary mode. It excludes mutable locators and the
 envelope MAC itself.
 
 `EnvelopeCoreV1` contains that context, the commitment, protection policy, and
-the full canonical recipient sequence. The sequence uses the ordering in
+the full canonical `RecipientStanzaSequenceV1`. The sequence uses the grammar
+and ordering in
 [crypto-wire-v1.md](crypto-wire-v1.md), including unknown stanza bytes.
 
 ```text
@@ -305,10 +306,131 @@ wrap_key = HKDF-Expand-SHA256(
   L=32)
 ```
 
-Wrap associated data is `T1("entrybound/recipient-wrap-ad/v1", ...)` over the
-format namespace, crypto version, suite, archive ID, and complete public stanza
-header through the wrap nonce. The plaintext is exactly AFK. Neither wrap key
-nor nonce is deterministic in production.
+### Common recipient-wrap construction
+
+`recipient-wrap-ad/v1` is a flat transcript. It is not a partial
+`RecipientStanzaV1` record and does not contain another transcript. The fields
+are exactly:
+
+```text
+wrap_ad = T1("entrybound/recipient-wrap-ad/v1", {
+   1: ASCII "ecf/bootstrap-v1",
+   2: format_major:u16be,
+   3: format_minor:u16be,
+   4: crypto_version:u16be = 1,
+   5: payload_suite_id:u16be = 1,
+   6: archive_id[32],
+   7: stanza_version:u16be = 1,
+   8: stanza_type:u16be,
+   9: protection_class:u8,
+  10: stanza_id[16],
+  11: recipient_hint[16],
+  12: exact canonical method parameters,
+  13: exact method encapsulation bytes,
+  14: wrap_nonce[12]
+})
+```
+
+| Tag | Exact source | Encoding and length | Empty? |
+|---:|---|---|---|
+| 1 | frozen format namespace | raw 16-byte ASCII `ecf/bootstrap-v1` | no |
+| 2 | preamble format major | `u16be`, exactly 2 bytes | no |
+| 3 | preamble format minor | `u16be`, exactly 2 bytes | no |
+| 4 | CryptoEnvelope crypto version | `u16be = 1`, exactly 2 bytes | no |
+| 5 | CryptoEnvelope payload suite | `u16be = 1`, exactly 2 bytes | no |
+| 6 | CryptoEnvelope archive ID | raw bytes, exactly 32 | no |
+| 7 | RecipientStanza tag 1 | `u16be = 1`, exactly 2 bytes | no |
+| 8 | RecipientStanza tag 2 | `u16be`, exactly 2 bytes | no |
+| 9 | RecipientStanza tag 3 | `u8`, exactly 1 byte | no |
+| 10 | RecipientStanza tag 4 | raw stanza ID, exactly 16 bytes | no |
+| 11 | RecipientStanza tag 5 | raw hint, exactly 16 bytes and all zero in v1 | no |
+| 12 | RecipientStanza tag 6 | complete raw method-parameter value; type 1 = 39 ASCII bytes, type 2 = 36-byte A2ID | no |
+| 13 | RecipientStanza tag 7 | complete raw encapsulation; type 1 = 1,120 bytes, type 2 = zero bytes | type 2 only |
+| 14 | RecipientStanza tag 8 | raw AES-GCM-SIV nonce, exactly 12 bytes | no |
+
+All 14 tags are required and occur once in strictly increasing order. Tag 1 is
+the exact 16 ASCII bytes shown, not a digest or NUL-terminated string. Tags 2
+through 5, 7, and 8 are the exact fixed-width big-endian integers from the
+format/preamble and stanza. Tags 6 and 9 through 11 are the exact raw values
+from the public context/stanza. Tag 12 is the complete field-6 value of
+`RecipientStanzaV1`, not its digest: it is 39 nonempty ASCII bytes for stanza
+type 1 and the 36-byte `A2ID` value for type 2. Tag 13 is the complete field-7
+value: exactly 1,120 bytes for type 1 and the empty byte string for type 2; the
+empty value is encoded by T1 with a zero `value_length`. Tag 14 is the exact
+field-8 nonce. The complete stanza remains bounded to 64 KiB. No field may be
+empty except tag 13 for the password method. `wrapped_afk` is deliberately
+absent because it is the AEAD output authenticated by this AD.
+
+The flat form is the sole wrap-AD representation. It binds each stanza fact
+once and avoids an undefined or recursively incomplete “partial stanza”
+encoding. The key derivation separately binds the digest of the method-context
+transcript; the same canonical method-parameter and encapsulation bytes feed
+both constructions.
+
+The complete wrapping algorithm is:
+
+```text
+method_context = T1("entrybound/recipient-method-context/v1", {
+  1: stanza_version:u16be = 1,
+  2: stanza_type:u16be,
+  3: protection_class:u8,
+  4: stanza_id[16],
+  5: recipient_hint[16],
+  6: exact canonical method parameters,
+  7: exact method encapsulation bytes
+})
+method_context_digest = SHA256(method_context)                  # 32 bytes
+wrap_prk = HKDF-Extract-SHA256(salt=archive_id[32],
+                               IKM=method_secret[32])           # 32 bytes
+wrap_info = T1("entrybound/recipient-wrap-key/v1", {
+  1: payload_suite_id:u16be = 1,
+  2: stanza_type:u16be,
+  3: protection_class:u8,
+  4: stanza_id[16],
+  5: method_context_digest[32]
+})
+wrap_key = HKDF-Expand-SHA256(wrap_prk, wrap_info, 32)           # 32 bytes
+wrap_nonce = random(12)                                         # public
+wrap_ad = the exact required 14-field recipient-wrap-ad/v1 transcript above
+wrapped_afk = AES-256-GCM-SIV.Seal(
+    key=wrap_key, nonce=wrap_nonce, plaintext=AFK[32], AD=wrap_ad)
+                                                               # 48 bytes
+```
+
+For X-Wing, `method_secret` is the exact 32-byte draft-10 shared secret,
+method-context field 6 is the exact 39 ASCII bytes
+`xwing-mlkem768-x25519-sha3-256/draft-10`, and field 7 is the exact 1,120-byte
+draft-10 encapsulation. No recipient public-key field is hidden in either
+transcript: the public key affects `method_secret` through X-Wing itself. For a
+password stanza, field 6 is exactly `"A2ID" || version:u32be ||
+memory_kib:u32be || iterations:u32be || parallelism:u32be || salt[16]`, field 7
+is zero bytes, and the exact 32-byte Argon2id output is `method_secret`. Both
+methods then use the identical common construction above.
+
+Unwrapping performs this order without variation:
+
+1. parse and validate public canonical stanza framing, type/class/policy,
+   lengths, reserved values, and caller resource limits;
+2. decapsulate X-Wing or, after policy checks, run Argon2id to obtain the
+   32-byte method secret;
+3. construct the method context and derive `wrap_prk` and `wrap_key` exactly as
+   above;
+4. construct the identical 14-field `wrap_ad` from authenticated-intent public
+   inputs;
+5. authenticate/decrypt the 48-byte `wrapped_afk` and require exactly 32
+   plaintext bytes;
+6. derive the root hierarchy and verify the key commitment in constant time;
+7. verify the complete envelope MAC in constant time;
+8. only then accept AFK and permit private archive processing.
+
+Malformed public framing is `EB_CRYPTO_RECIPIENT_STANZA_INVALID`; unknown
+stanza types are skipped for matching while their exact bytes remain covered
+by the envelope. A wrong password, wrong identity, X-Wing implicit-rejection
+candidate, or failed wrap tag exposes only the common public unlock failure;
+after all allowed candidates fail it is `EB_CRYPTO_NO_MATCHING_RECIPIENT`.
+Commitment and envelope failures retain their frozen internal reason codes but
+must use the same non-oracular public wording. Neither wrap key nor nonce is
+deterministic in production.
 
 Unknown stanza types are skipped only for identity matching. Their lengths,
 protection class, reserved bits, and canonical framing are still validated,
@@ -564,7 +686,8 @@ signature, and caller trust decision; Entrybound does not define a PKI.
 
 A SignatureRecord may carry one DER RFC 3161 TimeStampToken, maximum 64 KiB.
 The `messageImprint` algorithm is SHA-256 and its value is
-`SHA256(canonical SignatureCoreV1 bytes excluding the timestamp)`. Crypto v1
+`SHA256(SignatureRecordWithoutTimestamp)`, meaning the exact canonical type-26
+record through tag 8 as defined in the wire document. Crypto v1
 accepts a CMS signer using Ed25519 (`id-Ed25519`) and an embedded certificate
 chain; other token signature algorithms are `TIMESTAMP_UNSUPPORTED`, not a
 fallback path. Verification uses caller-provided trust anchors and time policy

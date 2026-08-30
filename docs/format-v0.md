@@ -115,6 +115,15 @@ feature constraints, and footer v2 are frozen in
 [crypto-wire-v1.md](crypto-wire-v1.md); primitive and security rules are in
 [crypto-suite-v1.md](crypto-suite-v1.md).
 
+The crypto-v1 wire correction reserves two self-identifying grammars inside
+authenticated encrypted objects: `EBPO` version 1 dispatches one canonical
+record, Chunk frame, or sequence payload; `EBCS` version 1 carries one of nine
+explicitly typed private collections. Crypto record type 22 is
+`RecipientDirectoryEntryV1` and type 27 is `EncryptedIndexEntryV1`. These
+assignments remain unimplemented and therefore unsupported by current readers;
+their exact bytes, limits, and collection ordering are normative only in
+[crypto-wire-v1.md](crypto-wire-v1.md).
+
 ## Digests
 
 The bootstrap format uses SHA-256 through the RustCrypto `sha2` crate. SHA-256

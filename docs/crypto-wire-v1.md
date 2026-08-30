@@ -20,7 +20,7 @@ supported-feature mask until implemented:
 | `0x40` | `payload-suite-v1` | requires suite ID 1 and crypto version 1 |
 | `0x80` | `recipient-xwing-v1` | at least one type-1 stanza; requires `0x20`; mutually exclusive with `0x100` |
 | `0x100` | `recipient-password-v1` | exactly one type-2 stanza; requires `0x20`; mutually exclusive with `0x80` |
-| `0x200` | `signature-ed25519-v1` | at least one embedded type-27 signature record; may also be used by unencrypted future writers |
+| `0x200` | `signature-ed25519-v1` | at least one embedded type-26 signature record; may also be used by unencrypted future writers |
 | `0x400` | `crypto-padding-v1` | exactly one authenticated padding mode 0, 1, or 2 is present |
 | `0x800` | `keyed-boundary-phte-v1` | boundary mode must be 2; requires `0x20` |
 
@@ -58,6 +58,20 @@ segment_class                  1  CONTROL
 protected_record_class         1  DATA
                                 2  END
 
+private_object_kind            1  CANONICAL_RECORD
+                                2  CHUNK_FRAME
+                                3  SEQUENCE_CONTAINER
+
+sequence_container_kind        1  MANIFEST
+                                2  TRANSFORM_PLANS
+                                3  DICTIONARIES
+                                4  CHUNK_GROUPS
+                                5  RECONSTRUCTION_DATA_AND_AUDIT
+                                6  RECONSTRUCTION_REGIONS_AND_AUDIT
+                                7  EMBEDDED_SIGNATURES
+                                8  RECIPIENT_DIRECTORY
+                                9  ENCRYPTED_INDEX
+
 signature_algorithm            1  Ed25519
 signature_binding_mask         bit 0 CONTENT (mandatory)
                                 bit 1 PHYSICAL
@@ -77,12 +91,12 @@ The existing canonical record header/TLV rules in
 |---|---:|
 | CryptoEnvelopeV1 | 20 |
 | RecipientStanzaV1 | 21 |
-| EncryptedRecipientDirectoryV1 | 22 |
+| RecipientDirectoryEntryV1 | 22 |
 | PrivateFragmentV1 | 23 |
 | SegmentEndV1 | 24 |
 | ArchiveFinalV1 | 25 |
 | SignatureRecordV1 | 26 |
-| EncryptedIndexV1 | 27 |
+| EncryptedIndexEntryV1 | 27 |
 
 Encrypted INDEXED layout uses only these public sections:
 
@@ -206,12 +220,15 @@ The source fields are the preamble and CryptoEnvelope. They must agree.
 | 5 | protection policy `u8` |
 | 6 | padding mode `u8` |
 | 7 | boundary mode `u8` |
-| 8 | canonical RecipientStanza sequence |
+| 8 | exact `RecipientStanzaSequenceV1` bytes |
 | 9 | envelope MAC, 32 bytes |
 
-The stanza sequence is `count:u64be`, then repeated
-`length:u64be || exact RecipientStanzaV1 record`. Limits are 1,024 stanzas,
-64 KiB each, and 16 MiB total envelope before allocation.
+`RecipientStanzaSequenceV1` is exactly `count:u64be`, then repeated
+`length:u64be || exact RecipientStanzaV1 record` in the canonical order below.
+It is the field-local public-envelope sequence grammar, not an `EBCS` private
+container. There is no magic because the enclosing type-20 field tag/type owns
+dispatch. Limits are 1,024 stanzas, 64 KiB each, and 16 MiB total envelope
+before allocation. Encrypted archives require a nonempty sequence.
 
 `EnvelopeCoreV1` is:
 
@@ -220,7 +237,7 @@ T1("entrybound/envelope-core/v1", {
   1: canonical PublicCryptoContextV1,
   2: commitment[32],
   3: protection_policy:u8,
-  4: exact canonical ordered-stanza sequence
+  4: exact RecipientStanzaSequenceV1 bytes
 })
 ```
 
@@ -352,28 +369,145 @@ object_id = SHA256(
 ```
 
 Fragments for one object are contiguous, ordered, gap-free, non-overlapping,
-and collectively exact. The complete object is one existing canonical ECF
-record, one exact Chunk frame, or one canonical sequence container. Its own
-inner record/frame kind remains the sole semantic/physical type authority; the
-fragment wrapper does not duplicate it. A protected public DATA class reveals
-only CONTROL versus PAYLOAD through its containing segment.
+and collectively exact. They reassemble one `PrivateObjectV1`; no fragment is
+parsed as an inner object before complete authenticated reassembly.
 
-`EncryptedRecipientDirectoryV1` (type 22) is one encrypted CONTROL object. It
-contains a canonical unique sequence keyed by public stanza ID. Each item has
-the stanza ID, SHA-256 of
-`T1("entrybound/recipient-public-key/v1", {1: stanza_type, 2: exact canonical
-public key})`, and an optional UTF-8 user label. It is operational metadata, not
-part of LAI/PCR/AUX or recipient-set digest. Its stanza IDs must match the
-authenticated envelope exactly.
+### PrivateObjectV1 dispatch envelope
 
-`EncryptedIndexV1` (type 27) is a non-authoritative encrypted CONTROL cache.
-Tag 1 is a canonical sequence ordered by Chunk digest; each item contains the
-Chunk digest, segment ordinal, first protected-record counter, and fragment
-count. Locators are relative to ENCRYPTED_SEGMENTS and never absolute container
+Every complete encrypted object has this exact 12-byte header followed by its
+payload through the reassembled object extent:
+
+| Offset | Value |
+|---:|---|
+| 0 | magic ASCII `EBPO` |
+| 4 | version `u16be = 1` |
+| 6 | `private_object_kind:u16be` |
+| 8 | flags `u32be = 0` |
+| 12 | payload, extending to the exact complete-object length from `PrivateFragmentV1` tag 2 |
+
+There is intentionally no payload-length field: the fragment declaration is
+the sole owner of complete object extent. `PrivateObjectV1` is a standalone
+crypto framing grammar, not an ECF canonical record. Its kind is physical
+parser dispatch, not a second semantic record type.
+
+- `CANONICAL_RECORD` payload is exactly one complete canonical ECF record,
+  including its 16-byte record header, with no trailing bytes.
+- `CHUNK_FRAME` payload is exactly one complete versioned `EBCH` frame. The
+  frame owns its physical/logical fields and stored length.
+- `SEQUENCE_CONTAINER` payload is exactly one complete `EBCS` canonical
+  sequence container defined below.
+
+The selected dispatch and payload grammar must agree. Nested `EBPO` values,
+unknown object kinds, wrong inner magic/version, trailing bytes, and a complete
+object over `2^30` bytes are rejected before semantic use. This explicit header
+eliminates record/frame/container heuristics while leaving the inner record,
+Chunk frame, or sequence kind as its fact authority. A protected public DATA
+class still reveals only CONTROL versus PAYLOAD through its segment.
+
+### CanonicalSequenceV1 (`EBCS`)
+
+Crypto v1's phrase **canonical sequence container** means only this standalone
+grammar; it never means a raw concatenation or the field-local ECF sequence
+grammar from `format-v0.md`:
+
+```text
+magic[4] = ASCII "EBCS" ||
+version:u16be = 1 ||
+container_kind:u16be ||
+flags:u32be = 0 ||
+item_count:u64be ||
+for each item in normative order:
+    item_length:u64be || exact canonical ECF record bytes
+```
+
+The fixed header is 20 bytes. The complete extent is the remaining payload of
+the enclosing `PrivateObjectV1`, so there is no duplicate total-length field.
+Every item length is nonzero, at most 64 MiB, and must equal one complete ECF
+record. Item count is at most 1,000,000 and the complete `EBCS` extent is at
+most 1 GiB. Limits and checked arithmetic are enforced before allocation; a
+caller may set lower limits. No item may be another `EBCS`, `EBPO`, or Chunk
+frame. Nesting is forbidden in v1.
+
+The empty sequence for kind `K` is exactly
+`"EBCS" || 0001 || K:u16be || 00000000 || 0000000000000000`.
+An empty sequence is canonical only when the kind-specific cardinality below
+permits it. Unknown container kinds fail closed as
+`EB_CRYPTO_SUITE_UNSUPPORTED`; malformed known containers use
+`EB_CRYPTO_PRIVATE_OBJECT_INVALID`. Parsers first dispatch on the `EBPO` kind,
+then on `EBCS.container_kind`, then require the item record types and ordering
+in this table. They never infer a collection from its contents.
+
+| Kind | Allowed exact item record types | Canonical order | Empty and duplicates |
+|---:|---|---|---|
+| 1 MANIFEST | Entry (3), then ContentObject (4) | Entries by canonical LogicalPath; then ContentObjects by logical digest | empty allowed; duplicate path/digest forbidden |
+| 2 TRANSFORM_PLANS | TransformPlan (2) | plan ID ascending | nonempty; duplicate ID forbidden |
+| 3 DICTIONARIES | Dictionary (11) | dictionary digest ascending | empty allowed; duplicate digest forbidden |
+| 4 CHUNK_GROUPS | ChunkGroup (12) | group ID ascending | empty allowed; duplicate ID forbidden |
+| 5 RECONSTRUCTION_DATA_AND_AUDIT | ReconstructionData (14), then ReconstructionFallback (16) | data by reconstruction digest; then fallback by Chunk digest | empty allowed; duplicate target/digest forbidden |
+| 6 RECONSTRUCTION_REGIONS_AND_AUDIT | ReconstructionRegion (18), then ReconstructionAudit v2 (19) | regions by region ID; then audits by canonical `(target kind, target digest, transform ID)` byte tuple | empty allowed; duplicate region/target tuple forbidden |
+| 7 EMBEDDED_SIGNATURES | SignatureRecordV1 (26) | exact canonical record bytes lexicographically | object, when present, is nonempty; exact duplicates forbidden |
+| 8 RECIPIENT_DIRECTORY | RecipientDirectoryEntryV1 (22) | stanza ID ascending | HYBRID_ONLY object is nonempty and has exactly one unique entry for every authenticated stanza; absent in PASSWORD_ONLY |
+| 9 ENCRYPTED_INDEX | EncryptedIndexEntryV1 (27) | Chunk digest ascending | empty allowed; duplicate digest forbidden |
+
+For kind 6, the audit ordering tuple is encoded for comparison as
+`target_kind:u8 || target_digest[32] || transform_id_length:u64be ||
+UTF8(transform_id)`; no locale or Unicode normalization is applied. All other
+table keys are the exact byte encodings already frozen by their referenced ECF
+record definitions.
+
+Descriptor (type 1), FidelityReport (type 5), ArchiveFinalV1 (type 25), and
+other singleton control records are `CANONICAL_RECORD` objects. Chunk data is
+one `CHUNK_FRAME` object per physically stored Chunk, in the already-defined
+physical order. TransformStep records remain nested inside the field-local
+TransformPlan ECF sequence; Fidelity subrecords remain nested inside their
+existing ECF fields. They are not `EBCS` items. Crypto v1 assigns no provenance
+or ConversionRecord record, so no provenance sequence exists; adding one needs
+a new record assignment and required feature rather than an unknown item.
+
+The deterministic encrypted-object emission order is: Descriptor;
+TRANSFORM_PLANS; CHUNK_GROUPS; recipient directory when present; DICTIONARIES;
+RECONSTRUCTION_DATA_AND_AUDIT; RECONSTRUCTION_REGIONS_AND_AUDIT; Chunk frames
+in the authoritative physical order; MANIFEST; FidelityReport; embedded
+signatures when present; ENCRYPTED_INDEX when present; then the terminal
+ArchiveFinal object in its required final CONTROL segment. Empty collection
+objects required by the active ordinary ECF feature schema are emitted even
+when empty; optional audit/signature/Index objects are omitted when absent.
+Object fragments remain consecutive in DATA-object order even when a segment
+boundary inserts the prior segment's END and the next segment's header.
+
+### Private recipient directory and encrypted Index entries
+
+`RecipientDirectoryEntryV1` is canonical record type 22:
+
+| Tag | Type and rule |
+|---:|---|
+| 1 | stanza ID, exactly 16 bytes |
+| 2 | stanza type `u16be = 1` in v1 |
+| 3 | recipient public-key fingerprint, exactly 32 bytes |
+| 4 | required UTF-8 user label, 0..1,024 bytes; empty means no label |
+
+The fingerprint is
+`SHA256(T1("entrybound/recipient-public-key/v1", {1:
+stanza_type:u16be, 2: exact canonical public key bytes}))`. The directory is
+operational private metadata, not part of LAI/PCR/AUX or recipient-set digest.
+Every ID/type must equal one stanza in the authenticated HYBRID_ONLY envelope;
+PASSWORD_ONLY has no public key and therefore no directory object.
+
+`EncryptedIndexEntryV1` is canonical record type 27:
+
+| Tag | Type and rule |
+|---:|---|
+| 1 | Chunk digest, exactly 32 bytes |
+| 2 | segment ordinal `u64be` |
+| 3 | first protected-record counter `u64be` |
+| 4 | fragment count `u32be`, nonzero |
+
+Locators are relative to ENCRYPTED_SEGMENTS and never absolute container
 offsets. The reader rebuilds the same map by scanning authenticated private
-objects and ignores/rebuilds a missing or invalid Index exactly as it does for
+objects and ignores/rebuilds a missing or invalid kind-9 Index exactly as for
 unencrypted INDEXED archives. This relative form allows CryptoEnvelope length
-changes without rewriting bulk payload or creating a second semantic authority.
+changes without rewriting bulk payload or creating a second semantic
+authority.
 
 ### SegmentEndV1, record type 24
 
@@ -520,17 +654,27 @@ of exactly one canonical type-26 record and no container wrapper.
 
 ## Recipient wrapping wire rules
 
-The method context, wrap key, and wrap AD formulas are normative in
-[crypto-suite-v1.md](crypto-suite-v1.md). Additional method rules are:
+The method context, wrap key, and flat 14-field wrap-AD formulas are normative
+in [crypto-suite-v1.md](crypto-suite-v1.md). `RecipientStanzaV1` fields 1
+through 8 are the exact sources for wrap-AD tags 7 through 14; fields 6 and 7
+are copied as complete bytes, not digests or nested records. Field 9
+`wrapped_afk` is the result and is not in AD. Additional method rules are:
 
-- X-Wing field 7 is exactly 1120 bytes. Decapsulation returns a candidate
+- X-Wing field 6 is exactly the 39 ASCII bytes
+  `xwing-mlkem768-x25519-sha3-256/draft-10`; field 7 is exactly 1120 draft-10
+  encapsulation bytes. The 1216-byte recipient public key is not an implicit
+  method-context/wrap-AD field: it determines the X-Wing shared secret through
+  the frozen draft-10 KEM. Decapsulation returns a candidate
   32-byte secret even for an invalid KEM ciphertext according to the selected
   library's implicit-rejection contract; the wrap AEAD, commitment, and envelope
   MAC decide acceptance. Low-order/noncontributory X25519 behavior follows the
   pinned X-Wing draft and KATs, not an Entrybound special case.
-- Password field 7 is empty. The parameter structure is validated and policy
-  checked before Argon2id. KDF/wrap failure is exposed as the same user-facing
-  unlock failure as a wrong password.
+- Password field 6 is exactly the 36 bytes `"A2ID" || 00000013 ||
+  memory_kib:u32be || iterations:u32be || parallelism:u32be || salt[16]` and
+  field 7 is exactly empty. T1 still emits tag 7 with `value_length = 0` in the
+  method context and tag 13 with `value_length = 0` in wrap AD. The parameter
+  structure is validated and policy checked before Argon2id. KDF/wrap failure
+  is exposed as the same user-facing unlock failure as a wrong password.
 - A matching identity attempt budget defaults to 4,096 `(identity, stanza)`
   trials and is caller-lowerable. Exceeding it is POLICY_REFUSED.
 
@@ -563,6 +707,7 @@ Diagnostics use the existing top-level classes. Public CLI output is
 | `EB_CRYPTO_AEAD_AUTH_FAILED` | INTEGRITY_MISMATCH | protected-record tag failed; no plaintext released |
 | `EB_CRYPTO_SEGMENT_STRUCTURE_INVALID` | NONCONFORMING | ordinal, counter, salt reuse, count, END, terminal, or ordering rule violated |
 | `EB_CRYPTO_PADDING_INVALID` | NONCONFORMING | mode, bucket, private length, or padding framing invalid |
+| `EB_CRYPTO_PRIVATE_OBJECT_INVALID` | NONCONFORMING | EBPO/EBCS magic, version, flags, kind agreement, extent, item type/order/cardinality, or inner canonical bytes are invalid |
 | `EB_CRYPTO_BOUNDARY_MODE_UNSUPPORTED` | UNSUPPORTED | authenticated required boundary mode is not implemented |
 | `EB_CRYPTO_RESOURCE_POLICY_REFUSED` | POLICY_REFUSED | crypto framing, identity attempts, or decrypted declared requirements exceed caller policy |
 | `EB_SIGNATURE_ABSENT` | POLICY_REFUSED | signature was required by caller policy but none exists |
@@ -709,41 +854,69 @@ combiner vector is not a replacement for those KATs.
 Use V1 AFK/archive ID; synthetic method secret `b0..cf`; stanza ID `40..4f`;
 nonce `50..5b`; method parameters
 `xwing-mlkem768-x25519-sha3-256/draft-10`; and 1120 encapsulation bytes where
-byte `i` is `i mod 256`.
+byte `i` is `i mod 256`. Stanza type/class are `1/1`, stanza version is 1,
+recipient hint is 16 zero bytes, and format version is 0.1. The complete
+method-context and wrap-AD transcript hex are published as
+`V5_METHOD_CONTEXT` and `V5_WRAP_AD` in
+[crypto-wire-v1-vectors.txt](crypto-wire-v1-vectors.txt); they are normative,
+not abbreviated hashes.
 
 ```text
 encapsulation_sha  0de689b3c273e26569eaac258d83fd685
                    f7bd0c0e383e6c5e50895b65dbc8982
 method_ctx_sha256  3e48bbd23eb809b4b599abe0beb3561b
                    749790ce9e01115e2d9f4250d1b854a3
+wrap_prk           1692c5a48fea3da45fb59b22f9072534
+                   f8390d8b24ec47a47779dbaacb3d1c76
 wrap_key           0762e9b9abfdeb51baa1d748f538d802
                    8de80db7e0296b062a476f58cc3098f2
-wrap_AD_sha256     14ba444ac3a7cb223d6dcc90d21740bbc
-                   f35bac726b2b20903d5532573f3493d
-wrapped_AFK        c55043df94e36732fb682cf83ed60d8b
-                   391ade8d8a70a2eeb14fe61da8cbb8fa
-                   03ac8b01e8d341f1cf833a8d118e7d73
+wrap_AD_sha256     12334742b8d3e5457ae34a7c72ae30c1
+                   26dd506587a681f6a24b5c6c2fe171a0
+wrapped_AFK        db49535140afd435d92500c4eaf6e77f
+                   72bcf0fc469aa36c76775a44503ba19d
+                   192b1705f345960f1a72c4cec9541603
 ```
+
+The previous V5 wrap-AD hash
+`14ba444ac3a7cb223d6dcc90d21740bbcf35bac726b2b20903d5532573f3493d`
+and its `c550...7d73` wrapped AFK are superseded. They were produced before
+`recipient-wrap-ad/v1` had normative fields, so they could not define or test
+an independently implementable wire construction. Method context, wrap PRK,
+and wrap key are unaffected.
 
 ### V6: password KDF and wrapping
 
 Use V1 AFK/archive ID; password exact UTF-8 `correct horse battery staple`;
 salt `60..6f`; default Argon2id parameters; stanza ID `70..7f`; and nonce
-`80..8b`.
+`80..8b`. Stanza type/class are `2/2`, stanza version is 1, recipient hint is
+16 zero bytes, and format version is 0.1. The complete `A2ID`, method-context,
+and wrap-AD bytes are `V6_A2ID`, `V6_METHOD_CONTEXT`, and `V6_WRAP_AD` in
+[crypto-wire-v1-vectors.txt](crypto-wire-v1-vectors.txt).
 
 ```text
+parameter_bytes    41324944000000130004000000000003
+                   00000004606162636465666768696a6b
+                   6c6d6e6f
 argon2id_output    b954ca2999c51dfbd1810dad53340641
                    d507696a416ec59334f7e18bf823ea2d
 method_ctx_sha256  fa8bc3f2394fabcf754b735a54fd953b
                    04f01096584001b455fb41ecd94d6486
+wrap_prk           f04d722afb3931d82d594cd7400d1d59
+                   70abcbe2f3941e40ee5ad2c961529dd2
 wrap_key           46b449b0eb4d76fa2ff054606c7a0f2d
                    3ee44b4661a2ccae24d1d9828a0a2945
-wrap_AD_sha256     a8aee7d38f9756adf84cd953e73f3a8
-                   12b01afa174101d386fdde3b570427a4e
-wrapped_AFK        f3937b95a4b9df1001e77c2488c56a22
-                   72e9a332c4fcdbc430d6402ed13ca33f
-                   bcaf92bd5853d1bd182660785c212c81
+wrap_AD_sha256     56e84a074663fc268c5f5298cbdad6f7
+                   cc84731814c6113e136f484588c105df
+wrapped_AFK        e183d98d5694ee3dc723e9d43cdd56d9
+                   2889035d3f7c11e9492236f43115fe20
+                   a53c6725b498e1288e8fb12aae7ff573
 ```
+
+The previous V6 wrap-AD hash
+`a8aee7d38f9756adf84cd953e73f3a812b01afa174101d386fdde3b570427a4e`
+and its `f393...2c81` wrapped AFK are superseded for the same missing-normative-
+encoding defect. The A2ID bytes, Argon2id output, method context, wrap PRK, and
+wrap key are unaffected.
 
 ### V7: signature transcript hashes
 
@@ -781,6 +954,60 @@ The seed is RFC 8032 test-key-1
 `9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60`.
 The implementation must reproduce the signature and also pass all applicable
 RFC 8032 section 7.1 vectors.
+
+### V8: private-object and canonical-sequence containers
+
+The complete canonical and deliberately malformed byte strings are published
+without abbreviation as `S1_*` through `S7_*` in
+[crypto-wire-v1-vectors.txt](crypto-wire-v1-vectors.txt). The generators build
+the ECF records and container framing independently rather than consuming those
+hex strings.
+
+`S1` is an empty MANIFEST container and is the canonical empty encoding:
+
+```text
+S1_EMPTY         4542435300010001000000000000000000000000
+SHA256           6d025124515cac937fc17001ee46b15c
+                 11ee51ace780180438b4fb65f5e1666f
+```
+
+`S2` is one RECIPIENT_DIRECTORY item. Its type-22 record uses stanza ID
+`00..0f`, stanza type 1, fingerprint `20..3f`, and label `alice`. `S3` adds a
+second correctly ordered item with stanza ID `10..1f`, fingerprint `40..5f`,
+and an empty label. `S4` wraps the exact S3 bytes in an `EBPO` kind-3 private
+object. Their hashes are:
+
+```text
+S2_ONE_SHA256                    8da189b0c457fdf77f938d124b11a2f1
+                                 c6bca6359579bc0d1f78a118fd13e973
+S3_MULTI_SHA256                  b05bb05eb84ebfa6ba8ff8b79e35c518
+                                 0c7c0be9212ab196adf68ef0a1ed4bb6
+S4_PRIVATE_CONTROL_OBJECT_SHA256 50e9456d665b00eccc1d3ede310d2e12
+                                 6b75b695f4a982329b6adab390340305
+```
+
+The negative vectors retain structurally explicit bytes so a parser can prove
+it rejected the intended rule:
+
+```text
+S5_OUT_OF_ORDER_INVALID_SHA256  8a551fca35b6efe614874cd00ddfb796b
+                                d0cd765de7e4355bf1bf97752a55adc
+expected                        EB_CRYPTO_PRIVATE_OBJECT_INVALID
+
+S6_DUPLICATE_INVALID_SHA256     2d3c0c6868d7adb4e56c27f17127cc22
+                                3947477cd924e20935549aed5ec3febb
+expected                        EB_CRYPTO_PRIVATE_OBJECT_INVALID
+
+S7_TRUNCATED_INVALID_SHA256     91f9a7f2275c8669a490f74b3b09b346
+                                a53a55a9585a118f62346e9ff4b6b3ec
+expected                        EB_CRYPTO_PRIVATE_OBJECT_INVALID
+```
+
+S5 reverses S3's items, S6 repeats its first record exactly, and S7 removes the
+last byte from S2 while retaining the declared item length. If the containing
+archive itself ends before its promised fragment/ciphertext/footer extent that
+is `TRUNCATED`; S7 is instead a complete authenticated object whose inner item
+length exceeds its bytes and is therefore nonconforming.
 
 ### Required external primitive vectors
 
