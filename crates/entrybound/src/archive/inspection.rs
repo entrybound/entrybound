@@ -34,6 +34,19 @@ pub struct CodecUsage {
     pub stored_bytes: u64,
 }
 
+/// Logical-reference and unique physical-Chunk statistics.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ChunkStatistics {
+    pub unique_chunk_count: u64,
+    pub logical_chunk_references: u64,
+    pub unique_plaintext_bytes: u64,
+    pub deduplicated_bytes: u64,
+    pub dedup_ratio_milli: u64,
+    pub minimum_chunk_bytes: u64,
+    pub average_chunk_bytes: u64,
+    pub maximum_chunk_bytes: u64,
+}
+
 /// First observable compression summary, derived without an audit-trail record.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompressionExplanation {
@@ -41,6 +54,7 @@ pub struct CompressionExplanation {
     pub total_logical_bytes: u64,
     pub total_plaintext_chunk_bytes: u64,
     pub total_stored_chunk_bytes: u64,
+    pub chunks: ChunkStatistics,
     pub codec_usage: Vec<CodecUsage>,
     pub store_chunk_count: u64,
     pub store_logical_bytes: u64,
@@ -65,6 +79,7 @@ pub struct ArchiveInspection {
     pub chunker_id: String,
     pub plans: Vec<PlanInspection>,
     pub codec_usage: Vec<CodecUsage>,
+    pub chunks: ChunkStatistics,
     pub identities: IdentitySet,
     pub index_status: IndexStatus,
     pub fidelity: FidelityReport,
@@ -97,6 +112,7 @@ pub fn list(archive: &Archive) -> Result<Vec<ListedEntry>> {
 /// Derives an inspection view from an already opened and verified archive.
 pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
     let archive = &opened.archive;
+    let chunks = chunk_statistics(archive)?;
     Ok(ArchiveInspection {
         format_namespace: FORMAT_NAMESPACE.to_owned(),
         version: FormatVersion {
@@ -122,6 +138,7 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
             })
             .collect(),
         codec_usage: codec_usage(opened)?,
+        chunks,
         identities: opened.report.identities,
         index_status: opened.report.index_status,
         fidelity: archive.fidelity.clone(),
@@ -145,11 +162,13 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
     })?;
     let store = usage.iter().find(|item| item.codec == "store/v1");
     let zstandard = usage.iter().find(|item| item.codec == "zstandard/v1");
+    let chunks = chunk_statistics(&opened.archive)?;
     Ok(CompressionExplanation {
         planner_id: opened.archive.descriptor.planner_id.clone(),
         total_logical_bytes: opened.archive.total_logical_size()?,
         total_plaintext_chunk_bytes,
         total_stored_chunk_bytes,
+        chunks,
         store_chunk_count: store.map_or(0, |item| item.chunk_count),
         store_logical_bytes: store.map_or(0, |item| item.logical_bytes),
         store_stored_bytes: store.map_or(0, |item| item.stored_bytes),
@@ -159,6 +178,85 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
         codec_usage: usage,
         physical_savings_bytes: i128::from(total_plaintext_chunk_bytes)
             - i128::from(total_stored_chunk_bytes),
+    })
+}
+
+fn chunk_statistics(archive: &Archive) -> Result<ChunkStatistics> {
+    let unique_chunk_count = u64::try_from(archive.content_store.chunks.len())
+        .map_err(|_| resource("unique Chunk count exceeds u64"))?;
+    let unique_plaintext_bytes =
+        archive
+            .content_store
+            .chunks
+            .values()
+            .try_fold(0_u64, |total, chunk| {
+                total
+                    .checked_add(chunk.logical_len)
+                    .ok_or_else(|| resource("unique plaintext byte total exceeds u64"))
+            })?;
+    let logical_chunk_references =
+        archive
+            .entry_set
+            .entries()
+            .iter()
+            .try_fold(0_u64, |total, entry| {
+                let EntryData::File {
+                    content: ContentRef::Internal(digest),
+                } = entry.data()
+                else {
+                    return Ok(total);
+                };
+                let object = archive.content_store.objects.get(&digest).ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::UnknownContentObject,
+                        digest.to_string(),
+                    )
+                })?;
+                total
+                    .checked_add(
+                        u64::try_from(object.chunks.len())
+                            .map_err(|_| resource("logical Chunk refs exceed u64"))?,
+                    )
+                    .ok_or_else(|| resource("logical Chunk-reference count exceeds u64"))
+            })?;
+    let total_logical = archive.total_logical_size()?;
+    let deduplicated_bytes = total_logical.saturating_sub(unique_plaintext_bytes);
+    let dedup_ratio_milli = if unique_plaintext_bytes == 0 {
+        1_000
+    } else {
+        let ratio = u128::from(total_logical)
+            .checked_mul(1_000)
+            .ok_or_else(|| resource("dedup ratio exceeds u128"))?
+            / u128::from(unique_plaintext_bytes);
+        u64::try_from(ratio).map_err(|_| resource("dedup ratio exceeds u64"))?
+    };
+    let minimum_chunk_bytes = archive
+        .content_store
+        .chunks
+        .values()
+        .map(|chunk| chunk.logical_len)
+        .min()
+        .unwrap_or(0);
+    let maximum_chunk_bytes = archive
+        .content_store
+        .chunks
+        .values()
+        .map(|chunk| chunk.logical_len)
+        .max()
+        .unwrap_or(0);
+    let average_chunk_bytes = unique_plaintext_bytes
+        .checked_div(unique_chunk_count)
+        .unwrap_or(0);
+    Ok(ChunkStatistics {
+        unique_chunk_count,
+        logical_chunk_references,
+        unique_plaintext_bytes,
+        deduplicated_bytes,
+        dedup_ratio_milli,
+        minimum_chunk_bytes,
+        average_chunk_bytes,
+        maximum_chunk_bytes,
     })
 }
 

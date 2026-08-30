@@ -30,7 +30,10 @@ establishes:
   exact-byte PCI;
 - optional Index validation and rebuilding from authoritative CHUNK_DATA.
 - deterministic creation-time compression planning with frozen `fast-v1`,
-  `balanced-v1`, `dense-v1`, and `extreme-v1` policies;
+  `balanced-v1`, `dense-v1`, and `extreme-v1` compatibility behavior and new
+  CDC-aware `fast-v2`, `balanced-v2`, `dense-v2`, and `extreme-v2` policies;
+- normalized Gear-hash content-defined chunking with versioned min/target/max
+  parameters and archive-wide exact plaintext Chunk deduplication;
 - operational per-Chunk STORE and Zstandard TransformPlans, with declared and
   caller-enforced decoder-memory requirements;
 - deterministic filesystem packing for UTF-8 directory and regular-file
@@ -67,14 +70,15 @@ self-describing decompression.
 
 ## Deliberately not implemented
 
-This slice chooses STORE or Zstandard independently for each deterministic
-fixed 1 MiB Chunk and writes only unencrypted Complete INDEXED archives. It
-supports UTF-8 directory names, directories, and regular files. It deliberately
-rejects symlinks and special files. There is no legacy ZIP/tar/7z import,
-STREAM layout, encryption, signing, content-defined chunking, similarity or
-dictionary planning, additional codecs, reconstructive transforms, hardlink
-metadata, ACLs, xattrs, ownership, platform-specific extended metadata,
-mounting, recovery, language bindings, Go compatibility layer, or FFI.
+This slice uses deterministic normalized content-defined chunking, stores each
+exact plaintext Chunk once, chooses STORE or Zstandard independently per unique
+Chunk, and writes only unencrypted Complete INDEXED archives. It supports UTF-8
+directory names, directories, and regular files. It deliberately rejects
+symlinks and special files. There is no legacy ZIP/tar/7z import, STREAM layout,
+encryption, signing, similarity clustering, dictionaries, chunk groups or
+lookback, additional codecs, reconstructive transforms, hardlink metadata,
+ACLs, xattrs, ownership, platform-specific extended metadata, mounting,
+recovery, language bindings, Go compatibility layer, or FFI.
 
 Extraction is rooted in a held capability directory and resolves every
 LogicalPath component relative to that handle. The current implementation uses
@@ -83,7 +87,7 @@ reports this confinement mode. Only collision policy `Refuse` is implemented.
 
 The CLI's explicit bootstrap resource defaults are 1,000,000 entries, 64 GiB
 total logical bytes, 16 GiB per file, 4,000,000 chunks, path depth 1,024, and
-1 GiB of manifest/metadata bytes. Decoder policy permits the planner-v1 1 MiB
+1 GiB of manifest/metadata bytes. Decoder policy permits the current 1 MiB
 Zstandard window and declared 4 MiB working set. These are compatibility
 limits, not claims that every machine can safely process archives of those
 sizes; embedders can and should supply narrower caller-owned limits.
@@ -115,5 +119,6 @@ See [the bootstrap format note](docs/format-v0.md) for the canonical encoding
 and identity choices, [the filesystem bootstrap note](docs/filesystem-bootstrap.md)
 for capture, confinement, and policy behavior,
 [the planner-v1 note](docs/planner-v1.md) for frozen profiles and the
-minimum-gain rule, and
+minimum-gain rule, [the CDC/deduplication note](docs/chunking-v1.md) for v2
+chunking policies and exact physical sharing, and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

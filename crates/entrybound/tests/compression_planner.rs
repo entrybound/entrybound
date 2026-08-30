@@ -77,7 +77,8 @@ fn planner_selects_codecs_per_chunk_and_round_trips_exactly() {
                 .as_str()
         })
         .collect::<Vec<_>>();
-    assert_eq!(selected, ["zstandard/v1", "store/v1"]);
+    assert!(selected.contains(&"zstandard/v1"));
+    assert!(selected.contains(&"store/v1"));
 
     verify(&encoded.bytes).unwrap();
     let destination = fixture.path.join("restored");
@@ -96,7 +97,7 @@ fn planner_selects_codecs_per_chunk_and_round_trips_exactly() {
     }
 
     let explanation = explain(&opened).unwrap();
-    assert_eq!(explanation.planner_id, "balanced-v1");
+    assert_eq!(explanation.planner_id, "balanced-v2");
     assert!(explanation.physical_savings_bytes > 0);
 }
 
@@ -118,6 +119,13 @@ fn planning_and_native_encoding_are_deterministic() {
         let second = pack(&source, profile);
         assert_eq!(first.bytes, second.bytes, "{}", profile.planner_id());
         assert_eq!(first.identities, second.identities);
+        assert_eq!(first.archive.descriptor.planner_id, profile.planner_id());
+        assert!(
+            profile
+                .chunking_candidates()
+                .iter()
+                .any(|candidate| candidate.chunker_id == first.archive.descriptor.chunker_id)
+        );
     }
 }
 
@@ -145,8 +153,11 @@ fn creation_profile_is_physically_separate_from_logical_identity() {
             .keys()
             .collect::<Vec<_>>()
     );
-    // bootstrap-v1 defines PCR over plaintext chunk organization, not transforms.
-    assert_eq!(fast.identities.pcr, extreme.identities.pcr);
+    if fast.archive.descriptor.chunker_id == extreme.archive.descriptor.chunker_id {
+        assert_eq!(fast.identities.pcr, extreme.identities.pcr);
+    } else {
+        assert_ne!(fast.identities.pcr, extreme.identities.pcr);
+    }
     assert_ne!(fast.identities.pci, extreme.identities.pci);
     assert_ne!(fast.bytes, extreme.bytes);
 }

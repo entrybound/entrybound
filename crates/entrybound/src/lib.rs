@@ -6,6 +6,7 @@
 
 pub mod archive;
 mod canonical;
+pub mod chunker;
 mod codec;
 pub mod diagnostics;
 pub mod eam;

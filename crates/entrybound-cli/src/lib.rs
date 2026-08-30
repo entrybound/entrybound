@@ -27,7 +27,8 @@ Usage:\n\
   ebound explain <archive.eb>\n\
 \n\
 This build supports unencrypted Complete INDEXED archives with directories,\n\
-regular files, fixed 1 MiB chunking, and per-Chunk STORE/Zstandard planning.\n\
+regular files, normalized content-defined chunking, archive-wide exact dedup,\n\
+and per-unique-Chunk STORE/Zstandard planning.\n\
 The default creation profile is balanced; decoding is self-describing.\n";
 
 const PACK_HELP: &str = "\
@@ -203,6 +204,14 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
     );
     println!("planner: {}", view.planner_id);
     println!("chunker: {}", view.chunker_id);
+    println!(
+        "chunks: unique={}, logical-references={}, min-bytes={}, average-bytes={}, max-bytes={}",
+        view.chunks.unique_chunk_count,
+        view.chunks.logical_chunk_references,
+        view.chunks.minimum_chunk_bytes,
+        view.chunks.average_chunk_bytes,
+        view.chunks.maximum_chunk_bytes
+    );
     for plan in view.plans {
         println!(
             "transform plan: id={} {} (codec {}; window={}, working-set={}, flags={:#x})",
@@ -270,6 +279,23 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
         "stored Chunk bytes: {}",
         explanation.total_stored_chunk_bytes
     );
+    println!("unique Chunks: {}", explanation.chunks.unique_chunk_count);
+    println!(
+        "logical Chunk references: {}",
+        explanation.chunks.logical_chunk_references
+    );
+    println!(
+        "exact deduplication: eliminated-bytes={}, ratio={}.{:03}x",
+        explanation.chunks.deduplicated_bytes,
+        explanation.chunks.dedup_ratio_milli / 1_000,
+        explanation.chunks.dedup_ratio_milli % 1_000
+    );
+    println!(
+        "unique Chunk sizes: min={}, average={}, max={}",
+        explanation.chunks.minimum_chunk_bytes,
+        explanation.chunks.average_chunk_bytes,
+        explanation.chunks.maximum_chunk_bytes
+    );
     println!(
         "STORE: chunks={}, logical-bytes={}, stored-bytes={}",
         explanation.store_chunk_count,
@@ -283,7 +309,7 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
         explanation.zstandard_stored_bytes
     );
     println!(
-        "physical Chunk-payload savings: {} bytes",
+        "codec compression savings on unique Chunks: {} bytes",
         explanation.physical_savings_bytes
     );
     Ok(())

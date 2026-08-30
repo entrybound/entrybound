@@ -41,5 +41,11 @@ candidate levels, probe, cost rule, or parameter encoding of a `*-v1` policy;
 introduce a new planner version. Decoder behavior must depend only on recorded
 TransformPlans, never on the creation profile.
 
+Chunker behavior is likewise frozen by `chunker_id`. `gear-norm-v1` includes
+its table-generation formula, boundary masks, and min/target/max parameters.
+Never change those in place. Creation-time chunking belongs in
+`entrybound::chunker`; EAM and ECF consume only resulting ordered Chunk
+references. Exact dedup equality is the plaintext SHA-256 Chunk identity.
+
 Generated conformance inputs belong in tests as format-building code, not as
 opaque binary fixtures. Each negative case must assert a stable reason code.

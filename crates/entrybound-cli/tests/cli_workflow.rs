@@ -41,7 +41,9 @@ fn all_native_commands_operate_on_real_archives() {
     assert_success(&inspect);
     let inspection = String::from_utf8_lossy(&inspect.stdout);
     assert!(inspection.contains("format: ecf/bootstrap-v1"));
-    assert!(inspection.contains("planner: balanced-v1"));
+    assert!(inspection.contains("planner: balanced-v2"));
+    assert!(inspection.contains("chunker: gear-norm-v1/"));
+    assert!(inspection.contains("chunks: unique="));
     assert!(inspection.contains("codec usage: store/v1"));
     assert!(inspection.contains("codec usage: zstandard/v1"));
     assert!(inspection.contains("index: present and valid"));
@@ -49,9 +51,11 @@ fn all_native_commands_operate_on_real_archives() {
     let explain = command(["explain", path(&archive)]);
     assert_success(&explain);
     let explanation = String::from_utf8_lossy(&explain.stdout);
-    assert!(explanation.contains("planner: balanced-v1"));
+    assert!(explanation.contains("planner: balanced-v2"));
+    assert!(explanation.contains("exact deduplication:"));
+    assert!(explanation.contains("logical Chunk references:"));
     assert!(explanation.contains("Zstandard: chunks="));
-    assert!(explanation.contains("physical Chunk-payload savings:"));
+    assert!(explanation.contains("codec compression savings on unique Chunks:"));
 
     let unpack = command(["unpack", path(&archive), path(&restored)]);
     assert_success(&unpack);
@@ -75,7 +79,7 @@ fn pack_help_and_profile_option_are_available_only_at_creation() {
     fs::write(source.join("data"), vec![0_u8; 4096]).unwrap();
     let output = command(["pack", path(&source), path(&archive), "--profile", "dense"]);
     assert_success(&output);
-    assert!(String::from_utf8_lossy(&output.stdout).contains("planner dense-v1"));
+    assert!(String::from_utf8_lossy(&output.stdout).contains("planner dense-v2"));
 
     let error = command(["verify", path(&archive), "--profile", "fast"]);
     assert!(!error.status.success());

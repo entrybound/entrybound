@@ -11,6 +11,7 @@ use cap_std::fs::PermissionsExt;
 use cap_std::fs::{Dir, DirEntry, Metadata, OpenOptions};
 
 use super::{CollisionPolicy, ConfinementMode, ExtractionPolicy};
+use crate::chunker::{chunk_ranges, select_parameters};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, DecodeRequirements, Digest,
@@ -19,10 +20,8 @@ use crate::eam::{
     ResourceBudget, Timestamp, TimestampPrecision,
 };
 use crate::ecf::{EncodedArchive, WriteOptions, encode, open_with_limits};
-use crate::identity::{BOOTSTRAP_CHUNK_SIZE, build_content};
-use crate::planner::{CompressionProfile, UNPLANNED_PLAN_ID, plan_archive};
-
-const BOOTSTRAP_CHUNKER: &str = "fixed-1mib/v1";
+use crate::identity::{build_content_from_ranges, sha256_exact};
+use crate::planner::{CompressionProfile, UNPLANNED_PLAN_ID, plan_archive_v2};
 
 /// Bounded source-consistency and writer options for filesystem packing.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -251,12 +250,56 @@ pub fn unpack(
 #[derive(Default)]
 struct Scan {
     entries: Vec<Entry>,
-    objects: BTreeMap<Digest, crate::eam::ContentObject>,
-    chunks: BTreeMap<Digest, crate::eam::Chunk>,
+    files: Vec<Box<[u8]>>,
 }
 
 impl Scan {
     fn finish(self, profile: CompressionProfile) -> Result<Archive> {
+        let contents = self.files.iter().map(Box::as_ref).collect::<Vec<_>>();
+        let selection = select_parameters(&contents, profile.chunking_candidates())?;
+        let mut objects = BTreeMap::new();
+        let mut chunks = BTreeMap::new();
+        for plaintext in &self.files {
+            let ranges = chunk_ranges(plaintext, selection.parameters)?
+                .iter()
+                .map(|range| range.start..range.end)
+                .collect::<Vec<_>>();
+            let (object, object_chunks) =
+                build_content_from_ranges(plaintext, &ranges, UNPLANNED_PLAN_ID)?;
+            match objects.entry(object.logical_digest) {
+                std::collections::btree_map::Entry::Vacant(entry) => {
+                    entry.insert(object);
+                }
+                std::collections::btree_map::Entry::Occupied(entry) if entry.get() != &object => {
+                    return Err(Diagnostic::new(
+                        OutcomeClass::Corrupt,
+                        ReasonCode::ContentDigestMismatch,
+                        format!(
+                            "distinct ContentObjects produced logical digest {}",
+                            object.logical_digest
+                        ),
+                    ));
+                }
+                std::collections::btree_map::Entry::Occupied(_) => {}
+            }
+            for (chunk_id, chunk) in object_chunks {
+                match chunks.entry(chunk_id) {
+                    std::collections::btree_map::Entry::Vacant(entry) => {
+                        entry.insert(chunk);
+                    }
+                    std::collections::btree_map::Entry::Occupied(entry)
+                        if entry.get() != &chunk =>
+                    {
+                        return Err(Diagnostic::new(
+                            OutcomeClass::Corrupt,
+                            ReasonCode::ChunkIdentityCollision,
+                            format!("distinct plaintext Chunks produced ID {chunk_id}"),
+                        ));
+                    }
+                    std::collections::btree_map::Entry::Occupied(_) => {}
+                }
+            }
+        }
         let mut archive = Archive {
             descriptor: ArchiveDescriptor {
                 format_major: 0,
@@ -271,22 +314,19 @@ impl Scan {
                 identity_profile: IdentityProfile::IdentityV1,
                 digest_algorithm: DigestAlgorithm::Sha256,
                 planner_id: profile.planner_id().to_owned(),
-                chunker_id: BOOTSTRAP_CHUNKER.to_owned(),
+                chunker_id: selection.parameters.chunker_id.to_owned(),
                 lai: Digest::ZERO,
                 pcr: Digest::ZERO,
                 aux: Digest::ZERO,
                 pci: None,
             },
             entry_set: EntrySet::new(self.entries)?,
-            content_store: ContentStore {
-                objects: self.objects,
-                chunks: self.chunks,
-            },
+            content_store: ContentStore { objects, chunks },
             transform_plans: Box::default(),
             fidelity: bootstrap_fidelity(),
             index: Index::default(),
         };
-        plan_archive(&mut archive, profile)?;
+        plan_archive_v2(&mut archive, profile)?;
         Ok(archive)
     }
 }
@@ -332,11 +372,7 @@ fn scan_directory(
         } else if file_type.is_file() {
             let (plaintext, metadata) =
                 capture_entry_with_probe(&source_entry, retries, |_| Ok(false))?;
-            let (object, chunks) =
-                build_content(&plaintext, BOOTSTRAP_CHUNK_SIZE, UNPLANNED_PLAN_ID)?;
-            let digest = object.logical_digest;
-            scan.objects.entry(digest).or_insert(object);
-            scan.chunks.extend(chunks);
+            let digest = sha256_exact(&plaintext);
             scan.entries.push(Entry::new(
                 path,
                 EntryData::File {
@@ -345,6 +381,7 @@ fn scan_directory(
                 metadata_set(&metadata)?,
                 EntryIdentity::default(),
             ));
+            scan.files.push(plaintext.into_boxed_slice());
         } else {
             return Err(unsupported(path.to_string(), "special filesystem object"));
         }

@@ -6,6 +6,7 @@
 use std::collections::BTreeMap;
 use std::str::FromStr;
 
+use crate::chunker::{BALANCED_V2, ChunkingParameters, DENSE_V2, EXTREME_V2, FAST_V2};
 use crate::codec::{aggregate_decode_requirements, encode_payload, store_plan, zstd_plan};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{Archive, TransformPlan};
@@ -28,7 +29,7 @@ const BALANCED_FALLBACK_LEVELS: [i32; 1] = [1];
 const DENSE_LEVELS: [i32; 3] = [5, 9, 15];
 const EXTREME_LEVELS: [i32; 4] = [9, 15, 19, 22];
 
-/// Public creation profiles. Their planner IDs freeze the v1 behavior.
+/// Public creation profiles. New filesystem archives use their v2 IDs.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum CompressionProfile {
     Fast,
@@ -52,10 +53,32 @@ impl CompressionProfile {
     #[must_use]
     pub const fn planner_id(self) -> &'static str {
         match self {
+            Self::Fast => "fast-v2",
+            Self::Balanced => "balanced-v2",
+            Self::Dense => "dense-v2",
+            Self::Extreme => "extreme-v2",
+        }
+    }
+
+    /// Frozen ID used by the original fixed-chunk planner implementation.
+    #[must_use]
+    pub const fn planner_v1_id(self) -> &'static str {
+        match self {
             Self::Fast => "fast-v1",
             Self::Balanced => "balanced-v1",
             Self::Dense => "dense-v1",
             Self::Extreme => "extreme-v1",
+        }
+    }
+
+    /// Ordered CDC candidates. Earlier candidates win complete-cost ties.
+    #[must_use]
+    pub const fn chunking_candidates(self) -> &'static [ChunkingParameters] {
+        match self {
+            Self::Fast => &[FAST_V2],
+            Self::Balanced => &[BALANCED_V2],
+            Self::Dense => &[BALANCED_V2, DENSE_V2],
+            Self::Extreme => &[FAST_V2, BALANCED_V2, DENSE_V2, EXTREME_V2],
         }
     }
 
@@ -112,8 +135,24 @@ pub struct PlanningReport {
     pub selected_plans: Box<[TransformPlan]>,
 }
 
-/// Selects a recorded plan independently for every unique plaintext Chunk.
+/// Frozen v1 codec selection for callers constructing historical fixed chunks.
 pub fn plan_archive(archive: &mut Archive, profile: CompressionProfile) -> Result<PlanningReport> {
+    plan_archive_with_id(archive, profile, profile.planner_v1_id())
+}
+
+/// V2 codec selection after CDC and archive-wide exact deduplication.
+pub fn plan_archive_v2(
+    archive: &mut Archive,
+    profile: CompressionProfile,
+) -> Result<PlanningReport> {
+    plan_archive_with_id(archive, profile, profile.planner_id())
+}
+
+fn plan_archive_with_id(
+    archive: &mut Archive,
+    profile: CompressionProfile,
+    planner_id: &str,
+) -> Result<PlanningReport> {
     let mut plans = BTreeMap::new();
     let store = store_plan();
     plans.insert(store.plan_id, store);
@@ -161,10 +200,10 @@ pub fn plan_archive(archive: &mut Archive, profile: CompressionProfile) -> Resul
 
     let selected_plans = plans.into_values().collect::<Vec<_>>().into_boxed_slice();
     archive.transform_plans = selected_plans.clone();
-    archive.descriptor.planner_id = profile.planner_id().to_owned();
+    archive.descriptor.planner_id = planner_id.to_owned();
     archive.descriptor.decode = aggregate_decode_requirements(&archive.transform_plans);
     Ok(PlanningReport {
-        planner_id: profile.planner_id().to_owned(),
+        planner_id: planner_id.to_owned(),
         store_chunks,
         zstandard_chunks,
         selected_plans,
@@ -252,12 +291,29 @@ mod tests {
     use super::*;
 
     #[test]
-    fn profiles_have_frozen_v1_identifiers_and_balanced_is_default() {
+    fn profiles_expose_new_v2_and_preserve_frozen_v1_identifiers() {
         assert_eq!(CompressionProfile::default(), CompressionProfile::Balanced);
-        assert_eq!(CompressionProfile::Fast.planner_id(), "fast-v1");
-        assert_eq!(CompressionProfile::Balanced.planner_id(), "balanced-v1");
-        assert_eq!(CompressionProfile::Dense.planner_id(), "dense-v1");
-        assert_eq!(CompressionProfile::Extreme.planner_id(), "extreme-v1");
+        assert_eq!(CompressionProfile::Fast.planner_id(), "fast-v2");
+        assert_eq!(CompressionProfile::Balanced.planner_id(), "balanced-v2");
+        assert_eq!(CompressionProfile::Dense.planner_id(), "dense-v2");
+        assert_eq!(CompressionProfile::Extreme.planner_id(), "extreme-v2");
+        assert_eq!(CompressionProfile::Fast.planner_v1_id(), "fast-v1");
+        assert_eq!(CompressionProfile::Balanced.planner_v1_id(), "balanced-v1");
+        assert_eq!(CompressionProfile::Dense.planner_v1_id(), "dense-v1");
+        assert_eq!(CompressionProfile::Extreme.planner_v1_id(), "extreme-v1");
+        assert_eq!(CompressionProfile::Fast.chunking_candidates(), &[FAST_V2]);
+        assert_eq!(
+            CompressionProfile::Balanced.chunking_candidates(),
+            &[BALANCED_V2]
+        );
+        assert_eq!(
+            CompressionProfile::Dense.chunking_candidates(),
+            &[BALANCED_V2, DENSE_V2]
+        );
+        assert_eq!(
+            CompressionProfile::Extreme.chunking_candidates(),
+            &[FAST_V2, BALANCED_V2, DENSE_V2, EXTREME_V2]
+        );
     }
 
     #[test]

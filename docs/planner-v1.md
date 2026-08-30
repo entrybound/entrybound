@@ -1,13 +1,14 @@
 # Compression planner v1
 
-Status: frozen creation-policy behavior for the experimental bootstrap.
+Status: frozen codec-selection behavior retained for historical fixed-chunk
+archives and inherited unchanged by the CDC-aware v2 policies.
 
 The planner accepts validated plaintext Chunks and one public profile. It emits
 explicit TransformPlans and per-Chunk plan references before ECF serialization.
 It is never used to open, verify, list, inspect, explain, or unpack an archive.
 Those operations dispatch solely from the recorded plans.
 
-`balanced` is the CLI default. The public names map to frozen planner IDs:
+The original public names mapped to these frozen planner IDs:
 
 | Public profile | Planner ID | Measured Zstandard levels |
 |---|---|---|
@@ -46,7 +47,7 @@ zero decoder-memory declaration.
 LAI, ContentObject logical digests, and AUX exclude creation policy and codec
 parameters. Under `ecf/bootstrap-v1`, PCR deliberately binds plaintext Chunk
 organization and the chunker but excludes TransformPlans, so changing only the
-profile preserves PCR too. PCI hashes every exact container byte and therefore
-captures planner, plan, and encoded-payload differences. A future format that
-needs a transform-sensitive physical root must version that identity contract;
-planner v1 does not silently redefine bootstrap PCR.
+codec profile while retaining fixed chunking preserves PCR too. Current public
+profiles create `*-v2` archives and may select different CDC policies, in which
+case PCR changes. PCI hashes every exact container byte and therefore captures
+planner, plan, chunking, and encoded-payload differences.

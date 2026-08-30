@@ -7,6 +7,7 @@
 //! never padded.
 
 use std::collections::BTreeMap;
+use std::ops::Range;
 
 use sha2::{Digest as ShaDigest, Sha256};
 
@@ -102,20 +103,49 @@ pub fn build_content(
     if chunk_size == 0 {
         return Err(resource("chunk size must be non-zero"));
     }
+    let ranges = (0..plaintext.len())
+        .step_by(chunk_size)
+        .map(|start| start..start.saturating_add(chunk_size).min(plaintext.len()))
+        .collect::<Vec<_>>();
+    build_content_from_ranges(plaintext, &ranges, plan_ref)
+}
+
+/// Constructs content from validated creation-time chunk ranges.
+pub fn build_content_from_ranges(
+    plaintext: &[u8],
+    ranges: &[Range<usize>],
+    plan_ref: u64,
+) -> Result<(ContentObject, BTreeMap<Digest, Chunk>)> {
+    validate_complete_ranges(plaintext.len(), ranges)?;
     let logical_digest = sha256_exact(plaintext);
     let mut chunks = BTreeMap::new();
     let mut refs = Vec::new();
-    for bytes in plaintext.chunks(chunk_size) {
+    for range in ranges {
+        let bytes = &plaintext[range.clone()];
         let chunk_id = sha256_exact(bytes);
         let logical_len =
             u64::try_from(bytes.len()).map_err(|_| resource("chunk length exceeds u64"))?;
         refs.push(ChunkRef { chunk_id });
-        chunks.entry(chunk_id).or_insert_with(|| Chunk {
-            chunk_id,
-            logical_len,
-            plan_ref,
-            plaintext: bytes.into(),
-        });
+        match chunks.entry(chunk_id) {
+            std::collections::btree_map::Entry::Vacant(entry) => {
+                entry.insert(Chunk {
+                    chunk_id,
+                    logical_len,
+                    plan_ref,
+                    plaintext: bytes.into(),
+                });
+            }
+            std::collections::btree_map::Entry::Occupied(entry)
+                if entry.get().plaintext.as_ref() != bytes =>
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Corrupt,
+                    ReasonCode::ChunkIdentityCollision,
+                    format!("distinct plaintext regions produced Chunk ID {chunk_id}"),
+                ));
+            }
+            std::collections::btree_map::Entry::Occupied(_) => {}
+        }
     }
     let chunk_root = chunk_root(&refs, &chunks)?;
     Ok((
@@ -126,6 +156,28 @@ pub fn build_content(
         },
         chunks,
     ))
+}
+
+fn validate_complete_ranges(plaintext_len: usize, ranges: &[Range<usize>]) -> Result<()> {
+    let mut expected = 0;
+    for range in ranges {
+        if range.start != expected || range.start >= range.end || range.end > plaintext_len {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::SectionStructure,
+                "Chunk ranges overlap, contain a gap, are empty, or exceed plaintext",
+            ));
+        }
+        expected = range.end;
+    }
+    if expected != plaintext_len || (plaintext_len != 0 && ranges.is_empty()) {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::SectionStructure,
+            "Chunk ranges do not cover the complete plaintext",
+        ));
+    }
+    Ok(())
 }
 
 /// Recomputes all authoritative native identities and returns a canonical copy.

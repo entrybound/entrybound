@@ -1,12 +1,15 @@
 use std::fs;
+use std::fs::FileTimes;
 use std::ops::Range;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::{Duration, UNIX_EPOCH};
 
 use entrybound::archive::{
     CollisionPolicy, ExtractionPolicy, PackOptions, bootstrap_resource_policy, inspect, list,
     pack_directory, unpack,
 };
+use entrybound::chunker::BALANCED_V2;
 use entrybound::diagnostics::{OutcomeClass, ReasonCode};
 use entrybound::eam::{ContentRef, EntryData, EntryKind, ResourceBudget};
 use entrybound::ecf::{FOOTER_LEN, PREAMBLE_LEN, SECTION_HEADER_LEN, open, verify};
@@ -41,8 +44,11 @@ fn filesystem_round_trip_is_deterministic_and_complete() {
     }));
     let view = inspect(&opened).unwrap();
     assert_eq!(view.entry_count as usize, listed.len());
-    assert_eq!(view.planner_id, "balanced-v1");
-    assert_eq!(view.chunker_id, "fixed-1mib/v1");
+    assert_eq!(view.planner_id, "balanced-v2");
+    assert_eq!(
+        view.chunker_id,
+        "gear-norm-v1/min-131072/target-524288/max-2097152"
+    );
     assert!(view.plans.iter().any(|plan| plan.codec == "store/v1"));
     assert!(view.plans.iter().any(|plan| plan.codec == "zstandard/v1"));
 
@@ -97,6 +103,38 @@ fn filesystem_round_trip_is_deterministic_and_complete() {
             .modified()
             .unwrap()
     );
+}
+
+#[test]
+fn filesystem_creation_order_cannot_change_cdc_output() {
+    let fixture = Fixture::new("enumeration-order");
+    let first_source = fixture.path.join("first");
+    let second_source = fixture.path.join("second");
+    fs::create_dir(&first_source).unwrap();
+    fs::create_dir(&second_source).unwrap();
+    let names = ["zeta", "alpha", "middle", "omega", "beta"];
+    for name in names {
+        fs::write(first_source.join(name), format!("payload for {name}\n")).unwrap();
+    }
+    for name in names.into_iter().rev() {
+        fs::write(second_source.join(name), format!("payload for {name}\n")).unwrap();
+    }
+    let fixed_time = UNIX_EPOCH + Duration::from_secs(1_700_000_000);
+    for source in [&first_source, &second_source] {
+        for name in names {
+            let file = fs::OpenOptions::new()
+                .write(true)
+                .open(source.join(name))
+                .unwrap();
+            file.set_times(FileTimes::new().set_modified(fixed_time))
+                .unwrap();
+        }
+    }
+
+    let first = pack_directory(&first_source, PackOptions::default()).unwrap();
+    let second = pack_directory(&second_source, PackOptions::default()).unwrap();
+    assert_eq!(first.bytes, second.bytes);
+    assert_eq!(first.identities, second.identities);
 }
 
 #[test]
@@ -241,7 +279,7 @@ fn create_full_source(source: &Path) {
     fs::write(source.join("nested/duplicate.txt"), b"hello, Entrybound\n").unwrap();
     fs::write(
         source.join("large.bin"),
-        vec![0x5a; BOOTSTRAP_CHUNK_SIZE + 17],
+        vec![0x5a; BALANCED_V2.maximum_size + 17],
     )
     .unwrap();
     #[cfg(unix)]

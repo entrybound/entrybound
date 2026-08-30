@@ -12,8 +12,8 @@ pub use filesystem::{
     unpack,
 };
 pub use inspection::{
-    ArchiveInspection, CodecUsage, CompressionExplanation, ListedEntry, PlanInspection, explain,
-    inspect, list,
+    ArchiveInspection, ChunkStatistics, CodecUsage, CompressionExplanation, ListedEntry,
+    PlanInspection, explain, inspect, list,
 };
 
 /// Explicit, deliberately generous limits for the experimental bootstrap CLI.

@@ -16,10 +16,14 @@ The bootstrap captures `core.mtime` and captures `core.executable` on Unix.
 Platforms without a portable executable bit declare that class unavailable.
 The FidelityReport also declares ACLs, xattrs, ownership, hardlink identity,
 platform-specific metadata, and symlink/special-file semantics unavailable.
-Files use fixed 1 MiB chunks. The creation-only planner selects an explicit
-STORE or Zstandard TransformPlan for each unique plaintext Chunk; the reader
-uses only those recorded plans. `balanced-v1` is the default. Profiles are
-documented in [planner-v1.md](planner-v1.md).
+New files use normalized Gear-hash content-defined chunking. The default
+`balanced-v2` policy uses 128 KiB minimum, 512 KiB target, and 2 MiB maximum
+Chunks. Exact SHA-256 Chunk deduplication is archive-wide, after which the
+creation-only planner selects an explicit STORE or Zstandard TransformPlan once
+for each unique plaintext Chunk. The reader uses only recorded plans and Chunk
+references. Historical `fixed-1mib/v1` archives remain readable. Policies are
+documented in [chunking-v1.md](chunking-v1.md) and
+[planner-v1.md](planner-v1.md).
 
 Extraction fully opens, verifies, and enforces caller resource policy before it
 creates the destination root. It holds that root as a `cap-std` `Dir`, resolves

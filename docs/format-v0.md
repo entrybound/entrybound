@@ -64,9 +64,12 @@ codec defaults.
 
 The Rust writer uses `zstd` 0.13.3 with optional default features disabled and
 sets all represented encoder parameters explicitly. Zstandard plans declare a
-1 MiB decoder window and 4 MiB working set. The deterministic bootstrap builder
-continues to use fixed 1 MiB plaintext Chunks. Codec selection and chunking are
-physical choices, not Entry semantics. See [planner-v1.md](planner-v1.md).
+1 MiB decoder window and 4 MiB working set. New filesystem archives use
+versioned normalized CDC while historical archives retain `fixed-1mib/v1`.
+Ordered Chunk references already represent arbitrary boundaries, so CDC and
+deduplication require no wire change. Codec selection and chunking are physical
+choices, not Entry semantics. See [planner-v1.md](planner-v1.md) and
+[chunking-v1.md](chunking-v1.md).
 
 ## Digests
 
