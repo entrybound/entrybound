@@ -13,5 +13,6 @@ pub mod eam;
 pub mod ecf;
 pub mod identity;
 pub mod planner;
+mod reconstruction;
 pub mod similarity;
 mod transform;

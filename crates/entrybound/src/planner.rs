@@ -11,21 +11,23 @@ use crate::codec::{
     LZ4_CODEC_IDENTIFIER, LZMA2_CODEC_IDENTIFIER, ZSTD_CODEC_IDENTIFIER,
     ZSTD_DICTIONARY_CONSTRUCTION_PREFIX, ZSTD_DICTIONARY_FORMAT, ZSTD_WINDOW_BYTES,
     aggregate_archive_decode_requirements, aggregate_decode_requirements, encode_payload,
-    encode_payload_with_dictionary, encode_payload_with_prefix, lz4_plan, lzma2_plan, store_plan,
-    train_dictionary, zstd_dictionary_plan, zstd_plan, zstd_prefix_plan, zstd_transformed_plan,
+    encode_payload_with_dictionary, encode_payload_with_prefix, encode_payload_with_reconstruction,
+    lz4_plan, lzma2_plan, store_plan, train_dictionary, zstd_dictionary_plan, zstd_plan,
+    zstd_prefix_plan, zstd_transformed_plan,
 };
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
-use crate::eam::{Archive, ChunkGroup, Dictionary, Digest, TransformPlan};
+use crate::eam::{Archive, ChunkGroup, Dictionary, Digest, ReconstructionData, TransformPlan};
 use crate::ecf::{
-    FEATURE_CODEC_TRANSFORM_V1, FEATURE_CROSS_FILE_COMPRESSION_V1, encoded_chunk_group_len,
-    encoded_dictionary_len, encoded_transform_plan_len,
+    FEATURE_CODEC_TRANSFORM_V1, FEATURE_CROSS_FILE_COMPRESSION_V1,
+    FEATURE_RECONSTRUCTIVE_TRANSFORM_V1, encoded_chunk_group_len, encoded_dictionary_len,
+    encoded_reconstruction_data_len, encoded_transform_plan_len, encoded_transform_plan_v2_len,
 };
 use crate::identity::sha256_exact;
 use crate::similarity::{
     BALANCED_V3_SIMILARITY, DENSE_V3_SIMILARITY, EXTREME_V3_SIMILARITY, FAST_V3_SIMILARITY,
     SimilarityCohort, SimilarityPolicy, cluster,
 };
-use crate::transform::{byte_shuffle_step, delta8_step};
+use crate::transform::{byte_shuffle_step, deflate_reconstruct_step, delta8_step};
 
 /// Temporary plan marker used only between plaintext chunking and planning.
 pub const UNPLANNED_PLAN_ID: u64 = 0;
@@ -40,6 +42,9 @@ const PROBE_BYTES: usize = 4096;
 const MINIMUM_COHORT_GAIN_BYTES: u64 = 128;
 const DICTIONARY_SECTION_OVERHEAD_BYTES: u64 = 64;
 const CHUNK_GROUP_SECTION_OVERHEAD_BYTES: u64 = 64;
+const RECONSTRUCTION_SECTION_OVERHEAD_BYTES: u64 = 64;
+const MINIMUM_RECONSTRUCTION_GAIN_BYTES: u64 = 256;
+const MINIMUM_RECONSTRUCTION_GAIN_BASIS_POINTS: u64 = 200;
 
 const FAST_LEVELS: [i32; 1] = [1];
 const BALANCED_LEVELS: [i32; 3] = [1, 3, 5];
@@ -47,7 +52,7 @@ const BALANCED_FALLBACK_LEVELS: [i32; 1] = [1];
 const DENSE_LEVELS: [i32; 3] = [5, 9, 15];
 const EXTREME_LEVELS: [i32; 4] = [9, 15, 19, 22];
 
-/// Public creation profiles. New filesystem archives use their v4 IDs.
+/// Public creation profiles. New filesystem archives use their v5 IDs.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum CompressionProfile {
     Fast,
@@ -70,6 +75,16 @@ impl CompressionProfile {
 
     #[must_use]
     pub const fn planner_id(self) -> &'static str {
+        match self {
+            Self::Fast => "fast-v5",
+            Self::Balanced => "balanced-v5",
+            Self::Dense => "dense-v5",
+            Self::Extreme => "extreme-v5",
+        }
+    }
+
+    #[must_use]
+    pub const fn planner_v4_id(self) -> &'static str {
         match self {
             Self::Fast => "fast-v4",
             Self::Balanced => "balanced-v4",
@@ -172,10 +187,14 @@ impl CompressionProfile {
     #[must_use]
     pub fn from_planner_id(planner_id: &str) -> Option<Self> {
         match planner_id {
-            "fast-v1" | "fast-v2" | "fast-v3" | "fast-v4" => Some(Self::Fast),
-            "balanced-v1" | "balanced-v2" | "balanced-v3" | "balanced-v4" => Some(Self::Balanced),
-            "dense-v1" | "dense-v2" | "dense-v3" | "dense-v4" => Some(Self::Dense),
-            "extreme-v1" | "extreme-v2" | "extreme-v3" | "extreme-v4" => Some(Self::Extreme),
+            "fast-v1" | "fast-v2" | "fast-v3" | "fast-v4" | "fast-v5" => Some(Self::Fast),
+            "balanced-v1" | "balanced-v2" | "balanced-v3" | "balanced-v4" | "balanced-v5" => {
+                Some(Self::Balanced)
+            }
+            "dense-v1" | "dense-v2" | "dense-v3" | "dense-v4" | "dense-v5" => Some(Self::Dense),
+            "extreme-v1" | "extreme-v2" | "extreme-v3" | "extreme-v4" | "extreme-v5" => {
+                Some(Self::Extreme)
+            }
             _ => None,
         }
     }
@@ -225,11 +244,16 @@ pub struct PlanningReport {
     pub dictionary_chunks: u64,
     pub lookback_chunks: u64,
     pub similarity_cohorts: u64,
+    pub reconstructive_chunks: u64,
+    pub reconstruction_attempts: u64,
+    pub reconstruction_cost_rejections: u64,
     pub selected_plans: Box<[TransformPlan]>,
 }
 
 /// Frozen v1 codec selection for callers constructing historical fixed chunks.
 pub fn plan_archive(archive: &mut Archive, profile: CompressionProfile) -> Result<PlanningReport> {
+    archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
+    archive.content_store.reconstruction_data.clear();
     plan_archive_with_id(archive, profile, profile.planner_v1_id())
 }
 
@@ -238,6 +262,8 @@ pub fn plan_archive_v2(
     archive: &mut Archive,
     profile: CompressionProfile,
 ) -> Result<PlanningReport> {
+    archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
+    archive.content_store.reconstruction_data.clear();
     plan_archive_with_id(archive, profile, profile.planner_v2_id())
 }
 
@@ -248,6 +274,8 @@ pub fn plan_archive_v3(
     profile: CompressionProfile,
 ) -> Result<PlanningReport> {
     let planner_id = profile.planner_v3_id();
+    archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
+    archive.content_store.reconstruction_data.clear();
     archive.descriptor.features.incompat &= !FEATURE_CODEC_TRANSFORM_V1;
     let report = plan_archive_with_id(archive, profile, planner_id)?;
     finish_cross_file_planning(
@@ -265,7 +293,9 @@ pub fn plan_archive_v4(
     archive: &mut Archive,
     profile: CompressionProfile,
 ) -> Result<PlanningReport> {
-    let planner_id = profile.planner_id();
+    let planner_id = profile.planner_v4_id();
+    archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
+    archive.content_store.reconstruction_data.clear();
     let report = plan_archive_v4_independent(archive, profile, planner_id)?;
     finish_cross_file_planning(
         archive,
@@ -274,6 +304,21 @@ pub fn plan_archive_v4(
         FEATURE_CROSS_FILE_COMPRESSION_V1 | FEATURE_CODEC_TRANSFORM_V1,
         report,
     )
+}
+
+/// V5 adds verified, cost-qualified bit-exact DEFLATE reconstruction before
+/// the unchanged v3 cohort strategies compete against the independent result.
+pub fn plan_archive_v5(
+    archive: &mut Archive,
+    profile: CompressionProfile,
+) -> Result<PlanningReport> {
+    let planner_id = profile.planner_id();
+    let report = plan_archive_v5_independent(archive, profile, planner_id)?;
+    let mut features = FEATURE_CROSS_FILE_COMPRESSION_V1 | FEATURE_CODEC_TRANSFORM_V1;
+    if !archive.content_store.reconstruction_data.is_empty() {
+        features |= FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
+    }
+    finish_cross_file_planning(archive, profile, planner_id, features, report)
 }
 
 fn finish_cross_file_planning(
@@ -366,6 +411,33 @@ fn finish_cross_file_planning(
         }
     }
     archive.content_store.physical_order = physical_order.into_boxed_slice();
+    if planner_id.ends_with("-v5") {
+        let used_plans = archive
+            .content_store
+            .chunks
+            .values()
+            .map(|chunk| chunk.plan_ref)
+            .collect::<std::collections::BTreeSet<_>>();
+        plans.retain(|plan_id, plan| {
+            used_plans.contains(plan_id)
+                || !plan
+                    .transforms
+                    .iter()
+                    .any(|step| step.reconstruction_ref.is_some())
+        });
+        let used_reconstruction = plans
+            .values()
+            .flat_map(|plan| plan.transforms.iter())
+            .filter_map(|step| step.reconstruction_ref)
+            .collect::<std::collections::BTreeSet<_>>();
+        archive
+            .content_store
+            .reconstruction_data
+            .retain(|identity, _| used_reconstruction.contains(identity));
+        if archive.content_store.reconstruction_data.is_empty() {
+            archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
+        }
+    }
     archive.transform_plans = plans.into_values().collect::<Vec<_>>().into_boxed_slice();
     archive.descriptor.decode = aggregate_archive_decode_requirements(
         &archive.transform_plans,
@@ -379,6 +451,7 @@ fn finish_cross_file_planning(
     report.lz4_chunks = 0;
     report.lzma2_chunks = 0;
     report.transformed_chunks = 0;
+    report.reconstructive_chunks = 0;
     let selected_by_id = archive
         .transform_plans
         .iter()
@@ -409,6 +482,13 @@ fn finish_cross_file_planning(
         }
         if !plan.transforms.is_empty() {
             increment(&mut report.transformed_chunks, "transformed")?;
+        }
+        if plan
+            .transforms
+            .iter()
+            .any(|step| step.reconstruction_ref.is_some())
+        {
+            increment(&mut report.reconstructive_chunks, "reconstructive")?;
         }
     }
     report.similarity_cohorts = u64::try_from(cohorts.len())
@@ -481,6 +561,9 @@ fn plan_archive_with_id(
         dictionary_chunks: 0,
         lookback_chunks: 0,
         similarity_cohorts: 0,
+        reconstructive_chunks: 0,
+        reconstruction_attempts: 0,
+        reconstruction_cost_rejections: 0,
         selected_plans,
     })
 }
@@ -543,8 +626,223 @@ fn plan_archive_v4_independent(
         dictionary_chunks: 0,
         lookback_chunks: 0,
         similarity_cohorts: 0,
+        reconstructive_chunks: 0,
+        reconstruction_attempts: 0,
+        reconstruction_cost_rejections: 0,
         selected_plans: archive.transform_plans.clone(),
     })
+}
+
+fn plan_archive_v5_independent(
+    archive: &mut Archive,
+    profile: CompressionProfile,
+    planner_id: &str,
+) -> Result<PlanningReport> {
+    archive.content_store.reconstruction_data.clear();
+    let mut plans = BTreeMap::new();
+    let store = store_plan();
+    plans.insert(store.plan_id, store);
+    let mut report = PlanningReport {
+        planner_id: planner_id.to_owned(),
+        store_chunks: 0,
+        zstandard_chunks: 0,
+        lz4_chunks: 0,
+        lzma2_chunks: 0,
+        transformed_chunks: 0,
+        dictionary_chunks: 0,
+        lookback_chunks: 0,
+        similarity_cohorts: 0,
+        reconstructive_chunks: 0,
+        reconstruction_attempts: 0,
+        reconstruction_cost_rejections: 0,
+        selected_plans: Box::default(),
+    };
+    let chunk_ids = archive
+        .content_store
+        .chunks
+        .keys()
+        .copied()
+        .collect::<Vec<_>>();
+    for chunk_id in chunk_ids {
+        let plaintext = &archive.content_store.chunks[&chunk_id].plaintext;
+        if sha256_exact(plaintext) != chunk_id {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::ChunkDigestMismatch,
+                chunk_id.to_string(),
+            ));
+        }
+        let ordinary = select_v4_plan(profile, plaintext)?;
+        let mut selected = ordinary.clone();
+        let mut selected_data = None;
+        if profile != CompressionProfile::Fast {
+            increment(
+                &mut report.reconstruction_attempts,
+                "reconstruction attempt",
+            )?;
+            if let Some(candidate) =
+                crate::reconstruction::try_forward(plaintext, reconstruction_max_chain(profile))?
+            {
+                let baseline = v5_independent_cost(&ordinary, plaintext, None)?;
+                let data_map =
+                    BTreeMap::from([(candidate.data.reconstruction_id, candidate.data.clone())]);
+                let mut best_cost = baseline;
+                for plan in reconstruction_candidates(profile, &candidate.data)? {
+                    let cost =
+                        v5_independent_cost(&plan, plaintext, Some((&candidate.data, &data_map)))?;
+                    if qualifies_reconstruction(cost, baseline)? && cost < best_cost {
+                        best_cost = cost;
+                        selected = plan;
+                        selected_data = Some(candidate.data.clone());
+                    }
+                }
+                if selected_data.is_none() {
+                    increment(
+                        &mut report.reconstruction_cost_rejections,
+                        "reconstruction cost rejection",
+                    )?;
+                }
+            }
+        }
+        if let Some(data) = selected_data {
+            archive
+                .content_store
+                .reconstruction_data
+                .entry(data.reconstruction_id)
+                .or_insert(data);
+            increment(&mut report.reconstructive_chunks, "reconstructive")?;
+        }
+        archive
+            .content_store
+            .chunks
+            .get_mut(&chunk_id)
+            .expect("known Chunk")
+            .plan_ref = selected.plan_id;
+        match selected.codec.as_str() {
+            crate::identity::STORE_CODEC_IDENTIFIER => {
+                increment(&mut report.store_chunks, "STORE")?
+            }
+            ZSTD_CODEC_IDENTIFIER => increment(&mut report.zstandard_chunks, "Zstandard")?,
+            LZ4_CODEC_IDENTIFIER => increment(&mut report.lz4_chunks, "LZ4")?,
+            LZMA2_CODEC_IDENTIFIER => increment(&mut report.lzma2_chunks, "LZMA2")?,
+            codec => {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Unsupported,
+                    ReasonCode::UnknownCodec,
+                    codec.to_owned(),
+                ));
+            }
+        }
+        if !selected.transforms.is_empty() {
+            increment(&mut report.transformed_chunks, "transformed")?;
+        }
+        insert_plan(&mut plans, selected)?;
+    }
+    archive.transform_plans = plans.into_values().collect::<Vec<_>>().into_boxed_slice();
+    archive.descriptor.planner_id = planner_id.to_owned();
+    archive.descriptor.decode = aggregate_decode_requirements(&archive.transform_plans);
+    report.selected_plans = archive.transform_plans.clone();
+    Ok(report)
+}
+
+fn reconstruction_max_chain(profile: CompressionProfile) -> u32 {
+    match profile {
+        CompressionProfile::Fast => 512,
+        CompressionProfile::Balanced => 512,
+        CompressionProfile::Dense => 2_048,
+        CompressionProfile::Extreme => 4_096,
+    }
+}
+
+fn reconstruction_candidates(
+    profile: CompressionProfile,
+    data: &ReconstructionData,
+) -> Result<Vec<TransformPlan>> {
+    let reconstruct =
+        deflate_reconstruct_step(reconstruction_max_chain(profile), data.reconstruction_id)?;
+    let mut candidates = Vec::new();
+    match profile {
+        CompressionProfile::Fast => {}
+        CompressionProfile::Balanced => {
+            for level in [3, 5] {
+                candidates.push(zstd_transformed_plan(
+                    level,
+                    vec![reconstruct.clone()].into(),
+                )?);
+            }
+        }
+        CompressionProfile::Dense => {
+            candidates.push(zstd_transformed_plan(9, vec![reconstruct.clone()].into())?);
+            candidates.push(lzma2_plan(
+                6,
+                4 * 1024 * 1024,
+                vec![reconstruct.clone()].into(),
+            )?);
+            candidates.push(zstd_transformed_plan(
+                9,
+                vec![reconstruct.clone(), delta8_step()].into(),
+            )?);
+        }
+        CompressionProfile::Extreme => {
+            for level in [15, 19] {
+                candidates.push(zstd_transformed_plan(
+                    level,
+                    vec![reconstruct.clone()].into(),
+                )?);
+            }
+            candidates.push(lzma2_plan(
+                9,
+                8 * 1024 * 1024,
+                vec![reconstruct.clone()].into(),
+            )?);
+            candidates.push(zstd_transformed_plan(
+                15,
+                vec![reconstruct.clone(), delta8_step()].into(),
+            )?);
+            for width in [2, 4, 8] {
+                candidates.push(lzma2_plan(
+                    9,
+                    8 * 1024 * 1024,
+                    vec![reconstruct.clone(), byte_shuffle_step(width)?].into(),
+                )?);
+            }
+        }
+    }
+    Ok(candidates)
+}
+
+fn v5_independent_cost(
+    plan: &TransformPlan,
+    plaintext: &[u8],
+    reconstruction: Option<(&ReconstructionData, &BTreeMap<Digest, ReconstructionData>)>,
+) -> Result<u64> {
+    let payload = match reconstruction {
+        Some((_, values)) => encode_payload_with_reconstruction(plan, plaintext, values)?,
+        None => encode_payload(plan, plaintext)?,
+    };
+    let mut cost = u64::try_from(payload.len())
+        .map_err(|_| resource("v5 candidate payload exceeds u64"))?
+        .checked_add(encoded_transform_plan_v2_len(plan)?)
+        .ok_or_else(|| resource("v5 candidate cost overflow"))?;
+    if let Some((data, _)) = reconstruction {
+        cost = cost
+            .checked_add(encoded_reconstruction_data_len(data)?)
+            .and_then(|value| value.checked_add(RECONSTRUCTION_SECTION_OVERHEAD_BYTES))
+            .ok_or_else(|| resource("v5 ReconstructionData cost overflow"))?;
+    }
+    Ok(cost)
+}
+
+fn qualifies_reconstruction(candidate: u64, baseline: u64) -> Result<bool> {
+    let relative = baseline
+        .checked_mul(MINIMUM_RECONSTRUCTION_GAIN_BASIS_POINTS)
+        .and_then(|value| value.checked_add(9_999))
+        .map(|value| value / 10_000)
+        .ok_or_else(|| resource("v5 reconstruction margin overflow"))?;
+    candidate
+        .checked_add(MINIMUM_RECONSTRUCTION_GAIN_BYTES.max(relative))
+        .map(|value| value < baseline)
+        .ok_or_else(|| resource("v5 reconstruction candidate cost overflow"))
 }
 
 fn v4_candidates(
@@ -696,7 +994,19 @@ fn select_cohort_plan(
                 chunk.plan_ref.to_string(),
             )
         })?;
-        let encoded = encode_payload(plan, &chunk.plaintext)?;
+        let encoded = if plan
+            .transforms
+            .iter()
+            .any(|step| step.reconstruction_ref.is_some())
+        {
+            encode_payload_with_reconstruction(
+                plan,
+                &chunk.plaintext,
+                &archive.content_store.reconstruction_data,
+            )?
+        } else {
+            encode_payload(plan, &chunk.plaintext)?
+        };
         total
             .checked_add(
                 u64::try_from(encoded.len())
@@ -704,7 +1014,7 @@ fn select_cohort_plan(
             )
             .ok_or_else(|| resource("independent cohort cost exceeds u64"))
     })?;
-    if planner_id.ends_with("-v4") {
+    if planner_id.ends_with("-v4") || planner_id.ends_with("-v5") {
         let plan_ids = cohort
             .chunks
             .iter()
@@ -712,16 +1022,53 @@ fn select_cohort_plan(
             .collect::<std::collections::BTreeSet<_>>();
         for plan_id in plan_ids {
             independent_cost = independent_cost
-                .checked_add(encoded_plan_cost(plans.get(&plan_id).ok_or_else(
-                    || {
+                .checked_add(if planner_id.ends_with("-v5") {
+                    encoded_transform_plan_v2_len(plans.get(&plan_id).ok_or_else(|| {
                         Diagnostic::new(
                             OutcomeClass::Unsupported,
                             ReasonCode::UnknownTransformPlan,
                             plan_id.to_string(),
                         )
-                    },
-                )?)?)
+                    })?)?
+                } else {
+                    encoded_plan_cost(plans.get(&plan_id).ok_or_else(|| {
+                        Diagnostic::new(
+                            OutcomeClass::Unsupported,
+                            ReasonCode::UnknownTransformPlan,
+                            plan_id.to_string(),
+                        )
+                    })?)?
+                })
                 .ok_or_else(|| resource("v4 independent cohort complete cost exceeds u64"))?;
+        }
+        if planner_id.ends_with("-v5") {
+            let references = cohort
+                .chunks
+                .iter()
+                .filter_map(|chunk_id| {
+                    let plan = plans.get(&archive.content_store.chunks[chunk_id].plan_ref)?;
+                    plan.transforms
+                        .iter()
+                        .find_map(|step| step.reconstruction_ref)
+                })
+                .collect::<std::collections::BTreeSet<_>>();
+            for reference in references {
+                let data = archive
+                    .content_store
+                    .reconstruction_data
+                    .get(&reference)
+                    .ok_or_else(|| {
+                        Diagnostic::new(
+                            OutcomeClass::Nonconforming,
+                            ReasonCode::UnknownReconstructionData,
+                            reference.to_string(),
+                        )
+                    })?;
+                independent_cost = independent_cost
+                    .checked_add(encoded_reconstruction_data_len(data)?)
+                    .and_then(|value| value.checked_add(RECONSTRUCTION_SECTION_OVERHEAD_BYTES))
+                    .ok_or_else(|| resource("v5 independent reconstruction cost exceeds u64"))?;
+            }
         }
     }
     let mut best_cost = independent_cost;
@@ -1017,7 +1364,7 @@ pub(crate) fn independent_encoded_len(
     planner_id: &str,
     plaintext: &[u8],
 ) -> Result<usize> {
-    if planner_id.ends_with("-v4") {
+    if planner_id.ends_with("-v4") || planner_id.ends_with("-v5") {
         return Ok(encode_payload(&select_v4_plan(profile, plaintext)?, plaintext)?.len());
     }
     let logical_len =
@@ -1044,15 +1391,23 @@ fn resource(detail: impl Into<String>) -> Diagnostic {
 
 #[cfg(test)]
 mod tests {
+    use std::io::Write as _;
+
+    use flate2::{Compression, write::GzEncoder};
+
     use super::*;
 
     #[test]
-    fn profiles_expose_v4_and_preserve_frozen_historical_identifiers() {
+    fn profiles_expose_v5_and_preserve_frozen_historical_identifiers() {
         assert_eq!(CompressionProfile::default(), CompressionProfile::Balanced);
-        assert_eq!(CompressionProfile::Fast.planner_id(), "fast-v4");
-        assert_eq!(CompressionProfile::Balanced.planner_id(), "balanced-v4");
-        assert_eq!(CompressionProfile::Dense.planner_id(), "dense-v4");
-        assert_eq!(CompressionProfile::Extreme.planner_id(), "extreme-v4");
+        assert_eq!(CompressionProfile::Fast.planner_id(), "fast-v5");
+        assert_eq!(CompressionProfile::Balanced.planner_id(), "balanced-v5");
+        assert_eq!(CompressionProfile::Dense.planner_id(), "dense-v5");
+        assert_eq!(CompressionProfile::Extreme.planner_id(), "extreme-v5");
+        assert_eq!(CompressionProfile::Fast.planner_v4_id(), "fast-v4");
+        assert_eq!(CompressionProfile::Balanced.planner_v4_id(), "balanced-v4");
+        assert_eq!(CompressionProfile::Dense.planner_v4_id(), "dense-v4");
+        assert_eq!(CompressionProfile::Extreme.planner_v4_id(), "extreme-v4");
         assert_eq!(CompressionProfile::Fast.planner_v3_id(), "fast-v3");
         assert_eq!(CompressionProfile::Balanced.planner_v3_id(), "balanced-v3");
         assert_eq!(CompressionProfile::Dense.planner_v3_id(), "dense-v3");
@@ -1089,6 +1444,41 @@ mod tests {
         assert!(!empty.likely_compressible);
         assert!(repetitive.likely_compressible);
         assert!(!noise.likely_compressible);
+    }
+
+    #[test]
+    fn verified_deflate_candidate_can_beat_complete_ordinary_cost() {
+        let source = (0..20_000)
+            .flat_map(|index| {
+                format!(
+                    "row={index:06};value={:08x};category={}\n",
+                    index * 17,
+                    index % 31
+                )
+                .into_bytes()
+            })
+            .collect::<Vec<_>>();
+        let mut encoder = GzEncoder::new(Vec::new(), Compression::new(6));
+        encoder.write_all(&source).unwrap();
+        let original = encoder.finish().unwrap();
+        let candidate = crate::reconstruction::try_forward(&original, 2_048)
+            .unwrap()
+            .expect("eligible complete gzip stream");
+        let ordinary = select_v4_plan(CompressionProfile::Dense, &original).unwrap();
+        let baseline = v5_independent_cost(&ordinary, &original, None).unwrap();
+        let values = BTreeMap::from([(candidate.data.reconstruction_id, candidate.data.clone())]);
+        let best = reconstruction_candidates(CompressionProfile::Dense, &candidate.data)
+            .unwrap()
+            .into_iter()
+            .map(|plan| {
+                v5_independent_cost(&plan, &original, Some((&candidate.data, &values))).unwrap()
+            })
+            .min()
+            .unwrap();
+        assert!(
+            qualifies_reconstruction(best, baseline).unwrap(),
+            "best={best}, baseline={baseline}"
+        );
     }
 
     #[test]

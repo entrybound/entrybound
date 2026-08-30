@@ -7,13 +7,15 @@ use std::io::{BufReader, Cursor, Read, Write};
 
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
-    ChunkGroup, DecodeRequirements, Dictionary, Digest, TransformPlan, TransformStep,
+    ChunkGroup, DecodeRequirements, Dictionary, Digest, ReconstructionData, TransformPlan,
+    TransformStep,
 };
 use crate::ecf::FEATURE_CODEC_TRANSFORM_V1;
 use crate::identity::{STORE_CODEC_IDENTIFIER, STORE_PLAN_ID, STORE_PLAN_IDENTIFIER, sha256_exact};
 use crate::transform::{
-    display_step, forward_pipeline, inverse_pipeline, required_features as transform_features,
-    validate_pipeline,
+    display_step, forward_pipeline, forward_pipeline_with_reconstruction, intermediate_len,
+    inverse_pipeline, inverse_pipeline_with_reconstruction,
+    required_features as transform_features, validate_pipeline,
 };
 
 pub(crate) const ZSTD_CODEC_IDENTIFIER: &str = "zstandard/v1";
@@ -38,13 +40,16 @@ const SUPPORTED_LZMA2_CONFIGURATIONS: [(u8, u32); 3] =
     [(4, 1024 * 1024), (6, 4 * 1024 * 1024), (9, 8 * 1024 * 1024)];
 pub(crate) const ZSTD_DICTIONARY_FORMAT: &str = "zstd-trained/v1";
 pub(crate) const ZSTD_DICTIONARY_CONSTRUCTION_PREFIX: &str = "zstd-1.5.7-train-buffer-v1/";
-const SUPPORTED_DICTIONARY_CONSTRUCTIONS: [&str; 6] = [
+const SUPPORTED_DICTIONARY_CONSTRUCTIONS: [&str; 9] = [
     "zstd-1.5.7-train-buffer-v1/balanced-v3-digest-order-samples16-sample-cap16384-dict-cap8192",
     "zstd-1.5.7-train-buffer-v1/dense-v3-digest-order-samples32-sample-cap32768-dict-cap16384",
     "zstd-1.5.7-train-buffer-v1/extreme-v3-digest-order-samples64-sample-cap65536-dict-cap32768",
     "zstd-1.5.7-train-buffer-v1/balanced-v4-digest-order-samples16-sample-cap16384-dict-cap8192",
     "zstd-1.5.7-train-buffer-v1/dense-v4-digest-order-samples32-sample-cap32768-dict-cap16384",
     "zstd-1.5.7-train-buffer-v1/extreme-v4-digest-order-samples64-sample-cap65536-dict-cap32768",
+    "zstd-1.5.7-train-buffer-v1/balanced-v5-digest-order-samples16-sample-cap16384-dict-cap8192",
+    "zstd-1.5.7-train-buffer-v1/dense-v5-digest-order-samples32-sample-cap32768-dict-cap16384",
+    "zstd-1.5.7-train-buffer-v1/extreme-v5-digest-order-samples64-sample-cap65536-dict-cap32768",
 ];
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -71,6 +76,7 @@ pub(crate) struct CodecRegistration {
 struct CodecContext<'a> {
     dictionary: Option<&'a Dictionary>,
     prefix: Option<&'a [u8]>,
+    reconstruction_data: Option<&'a std::collections::BTreeMap<Digest, ReconstructionData>>,
 }
 
 static CODECS: [CodecRegistration; 4] = [
@@ -288,6 +294,12 @@ fn with_pipeline(
     for step in &transforms {
         append_identity_field(&mut identity, step.transform_id.as_bytes())?;
         append_identity_field(&mut identity, &step.parameters)?;
+        append_identity_field(
+            &mut identity,
+            step.reconstruction_ref
+                .as_ref()
+                .map_or(&[][..], |digest| digest.as_bytes()),
+        )?;
     }
     let digest = sha256_exact(&identity);
     let low = u64::from_be_bytes(digest.as_bytes()[..8].try_into().unwrap_or([0; 8]));
@@ -302,6 +314,17 @@ fn with_pipeline(
         base.identifier
     );
     base.transforms = transforms;
+    if base
+        .transforms
+        .iter()
+        .any(|step| step.reconstruction_ref.is_some())
+    {
+        base.decode.working_set_bytes = base
+            .decode
+            .working_set_bytes
+            .checked_add(crate::reconstruction::RECONSTRUCTION_WORKING_SET_BYTES)
+            .ok_or_else(|| invalid_parameters("reconstruction working-set declaration overflow"))?;
+    }
     Ok(base)
 }
 
@@ -459,6 +482,7 @@ pub(crate) fn encode_payload_with_dictionary(
         CodecContext {
             dictionary: Some(dictionary),
             prefix: None,
+            reconstruction_data: None,
         },
     )
 }
@@ -479,6 +503,28 @@ pub(crate) fn encode_payload_with_prefix(
         CodecContext {
             dictionary: None,
             prefix: Some(prefix),
+            reconstruction_data: None,
+        },
+    )
+}
+
+pub(crate) fn encode_payload_with_reconstruction(
+    plan: &TransformPlan,
+    plaintext: &[u8],
+    reconstruction_data: &std::collections::BTreeMap<Digest, ReconstructionData>,
+) -> Result<Vec<u8>> {
+    if plan_mode(plan)? != PlanMode::Independent {
+        return Err(invalid_parameters(
+            "reconstructive pipeline requires an independent codec plan",
+        ));
+    }
+    encode_with_context(
+        plan,
+        plaintext,
+        CodecContext {
+            dictionary: None,
+            prefix: None,
+            reconstruction_data: Some(reconstruction_data),
         },
     )
 }
@@ -533,6 +579,7 @@ pub(crate) fn decode_payload_with_dictionary(
         CodecContext {
             dictionary: Some(dictionary),
             prefix: None,
+            reconstruction_data: None,
         },
     )
 }
@@ -555,6 +602,30 @@ pub(crate) fn decode_payload_with_prefix(
         CodecContext {
             dictionary: None,
             prefix: Some(prefix),
+            reconstruction_data: None,
+        },
+    )
+}
+
+pub(crate) fn decode_payload_with_reconstruction(
+    plan: &TransformPlan,
+    stored: &[u8],
+    logical_len: u64,
+    reconstruction_data: &std::collections::BTreeMap<Digest, ReconstructionData>,
+) -> Result<Vec<u8>> {
+    if plan_mode(plan)? != PlanMode::Independent {
+        return Err(invalid_parameters(
+            "reconstructive pipeline requires an independent codec plan",
+        ));
+    }
+    decode_with_context(
+        plan,
+        stored,
+        logical_len,
+        CodecContext {
+            dictionary: None,
+            prefix: None,
+            reconstruction_data: Some(reconstruction_data),
         },
     )
 }
@@ -580,7 +651,10 @@ fn encode_with_context(
     context: CodecContext<'_>,
 ) -> Result<Vec<u8>> {
     validate_plan(plan)?;
-    let transformed = forward_pipeline(&plan.transforms, plaintext)?;
+    let transformed = match context.reconstruction_data {
+        Some(values) => forward_pipeline_with_reconstruction(&plan.transforms, plaintext, values)?,
+        None => forward_pipeline(&plan.transforms, plaintext)?,
+    };
     (codec_registration(&plan.codec)?.encode)(plan, &transformed, context)
 }
 
@@ -591,9 +665,30 @@ fn decode_with_context(
     context: CodecContext<'_>,
 ) -> Result<Vec<u8>> {
     validate_plan(plan)?;
+    let transformed_len = match context.reconstruction_data {
+        Some(values) => intermediate_len(&plan.transforms, logical_len, values)?,
+        None => logical_len,
+    };
     let transformed =
-        (codec_registration(&plan.codec)?.decode)(plan, stored, logical_len, context)?;
-    let plaintext = inverse_pipeline(&plan.transforms, &transformed)?;
+        (codec_registration(&plan.codec)?.decode)(plan, stored, transformed_len, context)?;
+    let plaintext = match context.reconstruction_data {
+        Some(values) => {
+            inverse_pipeline_with_reconstruction(&plan.transforms, &transformed, values)?
+        }
+        None => inverse_pipeline(&plan.transforms, &transformed)?,
+    };
+    if context.reconstruction_data.is_some()
+        && u64::try_from(plaintext.len()).unwrap_or(u64::MAX) != logical_len
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Corrupt,
+            ReasonCode::ReconstructedLengthMismatch,
+            format!(
+                "reconstructed {} bytes but Chunk declares {logical_len}",
+                plaintext.len()
+            ),
+        ));
+    }
     validate_decoded_length(plaintext, logical_len)
 }
 

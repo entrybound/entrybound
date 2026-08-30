@@ -5,7 +5,7 @@
 
 use crate::diagnostics::Result;
 use crate::eam::{ArchiveRole, Layout};
-use crate::eam::{ChunkGroup, Dictionary, Digest, TransformPlan};
+use crate::eam::{ChunkGroup, Dictionary, Digest, ReconstructionData, TransformPlan};
 
 mod container;
 mod records;
@@ -37,8 +37,11 @@ pub const CHUNK_FRAME_V2_HEADER_LEN: u64 = 96;
 pub const FEATURE_CROSS_FILE_COMPRESSION_V1: u64 = 1 << 0;
 /// Required capability for first-class TransformSteps and the v4 codec registry.
 pub const FEATURE_CODEC_TRANSFORM_V1: u64 = 1 << 1;
-pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 =
-    FEATURE_CROSS_FILE_COMPRESSION_V1 | FEATURE_CODEC_TRANSFORM_V1;
+/// Required capability for TransformStep v2 and ReconstructionData objects.
+pub const FEATURE_RECONSTRUCTIVE_TRANSFORM_V1: u64 = 1 << 2;
+pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 = FEATURE_CROSS_FILE_COMPRESSION_V1
+    | FEATURE_CODEC_TRANSFORM_V1
+    | FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
 
 /// Versioned namespace for the experimental encoding.
 pub const FORMAT_NAMESPACE: &str = "ecf/bootstrap-v1";
@@ -53,6 +56,29 @@ pub(crate) fn encoded_transform_plan_len(plan: &TransformPlan) -> Result<u64> {
             )
         },
     )
+}
+
+pub(crate) fn encoded_transform_plan_v2_len(plan: &TransformPlan) -> Result<u64> {
+    u64::try_from(records::encode_transform_plans_v2(std::slice::from_ref(plan))?.len()).map_err(
+        |_| {
+            crate::diagnostics::Diagnostic::new(
+                crate::diagnostics::OutcomeClass::PolicyRefused,
+                crate::diagnostics::ReasonCode::ResourceLimit,
+                "encoded TransformPlan v2 length exceeds u64",
+            )
+        },
+    )
+}
+
+pub(crate) fn encoded_reconstruction_data_len(value: &ReconstructionData) -> Result<u64> {
+    let values = std::collections::BTreeMap::from([(value.reconstruction_id, value.clone())]);
+    u64::try_from(records::encode_reconstruction_data(&values)?.len()).map_err(|_| {
+        crate::diagnostics::Diagnostic::new(
+            crate::diagnostics::OutcomeClass::PolicyRefused,
+            crate::diagnostics::ReasonCode::ResourceLimit,
+            "encoded ReconstructionData length exceeds u64",
+        )
+    })
 }
 
 pub(crate) fn encoded_dictionary_len(dictionary: &Dictionary) -> Result<u64> {
@@ -99,6 +125,7 @@ pub enum SectionKind {
     TransformPlans,
     Dictionaries,
     ChunkGroups,
+    ReconstructionData,
     ChunkData,
     ManifestRecords,
     Fidelity,

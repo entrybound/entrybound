@@ -74,6 +74,12 @@ pub enum ReasonCode {
     InvalidTransformParameters,
     TransformFailed,
     TransformedLengthMismatch,
+    UnknownReconstructionData,
+    ReconstructionDataDigestMismatch,
+    UnsupportedReconstructionFormat,
+    ReconstructionFailed,
+    ReconstructedLengthMismatch,
+    ReconstructedDigestMismatch,
     UnknownCodec,
     InvalidCodecParameters,
     CompressionFailed,
@@ -139,6 +145,14 @@ impl ReasonCode {
             Self::InvalidTransformParameters => "EB_TRANSFORM_INVALID_PARAMETERS",
             Self::TransformFailed => "EB_TRANSFORM_FAILED",
             Self::TransformedLengthMismatch => "EB_TRANSFORM_LENGTH_MISMATCH",
+            Self::UnknownReconstructionData => "EB_RECONSTRUCTION_DATA_UNKNOWN",
+            Self::ReconstructionDataDigestMismatch => {
+                "EB_INTEGRITY_RECONSTRUCTION_DATA_DIGEST_MISMATCH"
+            }
+            Self::UnsupportedReconstructionFormat => "EB_RECONSTRUCTION_FORMAT_UNSUPPORTED",
+            Self::ReconstructionFailed => "EB_RECONSTRUCTION_FAILED",
+            Self::ReconstructedLengthMismatch => "EB_RECONSTRUCTION_LENGTH_MISMATCH",
+            Self::ReconstructedDigestMismatch => "EB_RECONSTRUCTION_DIGEST_MISMATCH",
             Self::UnknownCodec => "EB_CODEC_UNKNOWN",
             Self::InvalidCodecParameters => "EB_CODEC_INVALID_PARAMETERS",
             Self::CompressionFailed => "EB_CODEC_COMPRESSION_FAILED",

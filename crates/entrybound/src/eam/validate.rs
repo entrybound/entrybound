@@ -113,6 +113,32 @@ impl Archive {
                 "every stored Dictionary must be referenced by a TransformPlan",
             ));
         }
+        let referenced_reconstruction = self
+            .transform_plans
+            .iter()
+            .flat_map(|plan| plan.transforms.iter())
+            .filter_map(|step| step.reconstruction_ref)
+            .collect::<BTreeSet<_>>();
+        for reconstruction_id in &referenced_reconstruction {
+            if !self
+                .content_store
+                .reconstruction_data
+                .contains_key(reconstruction_id)
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::UnknownReconstructionData,
+                    reconstruction_id.to_string(),
+                ));
+            }
+        }
+        if referenced_reconstruction.len() != self.content_store.reconstruction_data.len() {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::DuplicateSemanticDeclaration,
+                "every stored ReconstructionData object must be referenced by a TransformPlan",
+            ));
+        }
 
         let physical = self
             .content_store
@@ -152,6 +178,17 @@ impl Archive {
                     dictionary.dictionary_id.to_string(),
                 ));
             }
+        }
+
+        for (digest, data) in &self.content_store.reconstruction_data {
+            if digest != &data.reconstruction_id {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::DuplicateSemanticDeclaration,
+                    "ReconstructionData map key differs from its authoritative identity",
+                ));
+            }
+            crate::reconstruction::validate_data(data)?;
         }
 
         for (digest, group) in &self.content_store.chunk_groups {

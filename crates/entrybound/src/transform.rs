@@ -1,21 +1,25 @@
-//! Governed reversible structural transforms used by recorded TransformSteps.
-//!
-//! Archive strings are matched only against this closed registry. Every
-//! registered transform is length-preserving and bijective for all byte input.
+//! Governed structural and format-aware reconstructive transforms.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
-use crate::eam::TransformStep;
-use crate::ecf::FEATURE_CODEC_TRANSFORM_V1;
+use crate::eam::{Digest, ReconstructionData, TransformStep};
+use crate::ecf::{FEATURE_CODEC_TRANSFORM_V1, FEATURE_RECONSTRUCTIVE_TRANSFORM_V1};
+use crate::reconstruction::{
+    DEFLATE_RECONSTRUCT_ID, inverse as reconstruct_deflate,
+    validate_parameters as validate_deflate, verified_forward as verified_deflate_forward,
+};
 
 pub(crate) const DELTA8_ID: &str = "delta8/v1";
 pub(crate) const BYTE_SHUFFLE_ID: &str = "byte-shuffle/v1";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum ReversibilityClass {
-    BijectiveAllByteStrings,
+    Structural,
+    Reconstructive,
 }
+
+type StructuralOperation = fn(&[u8], &[u8]) -> Result<Vec<u8>>;
 
 pub(crate) struct TransformRegistration {
     pub identifier: &'static str,
@@ -23,28 +27,37 @@ pub(crate) struct TransformRegistration {
     pub required_feature: u64,
     pub reversibility: ReversibilityClass,
     validate: fn(&[u8]) -> Result<()>,
-    forward: fn(&[u8], &[u8]) -> Result<Vec<u8>>,
-    inverse: fn(&[u8], &[u8]) -> Result<Vec<u8>>,
+    forward: Option<StructuralOperation>,
+    inverse: Option<StructuralOperation>,
 }
 
-static TRANSFORMS: [TransformRegistration; 2] = [
+static TRANSFORMS: [TransformRegistration; 3] = [
     TransformRegistration {
         identifier: DELTA8_ID,
         format_version: 1,
         required_feature: FEATURE_CODEC_TRANSFORM_V1,
-        reversibility: ReversibilityClass::BijectiveAllByteStrings,
+        reversibility: ReversibilityClass::Structural,
         validate: validate_delta8,
-        forward: delta8_forward,
-        inverse: delta8_inverse,
+        forward: Some(delta8_forward),
+        inverse: Some(delta8_inverse),
     },
     TransformRegistration {
         identifier: BYTE_SHUFFLE_ID,
         format_version: 1,
         required_feature: FEATURE_CODEC_TRANSFORM_V1,
-        reversibility: ReversibilityClass::BijectiveAllByteStrings,
+        reversibility: ReversibilityClass::Structural,
         validate: validate_shuffle,
-        forward: shuffle_forward,
-        inverse: shuffle_inverse,
+        forward: Some(shuffle_forward),
+        inverse: Some(shuffle_inverse),
+    },
+    TransformRegistration {
+        identifier: DEFLATE_RECONSTRUCT_ID,
+        format_version: 1,
+        required_feature: FEATURE_RECONSTRUCTIVE_TRANSFORM_V1,
+        reversibility: ReversibilityClass::Reconstructive,
+        validate: validate_deflate_parameters,
+        forward: None,
+        inverse: None,
     },
 ];
 
@@ -52,6 +65,7 @@ pub(crate) fn delta8_step() -> TransformStep {
     TransformStep {
         transform_id: DELTA8_ID.to_owned(),
         parameters: Box::default(),
+        reconstruction_ref: None,
     }
 }
 
@@ -59,6 +73,20 @@ pub(crate) fn byte_shuffle_step(width: u8) -> Result<TransformStep> {
     let step = TransformStep {
         transform_id: BYTE_SHUFFLE_ID.to_owned(),
         parameters: Box::from([width]),
+        reconstruction_ref: None,
+    };
+    validate_step(&step)?;
+    Ok(step)
+}
+
+pub(crate) fn deflate_reconstruct_step(
+    max_chain_length: u32,
+    reconstruction_ref: Digest,
+) -> Result<TransformStep> {
+    let step = TransformStep {
+        transform_id: DEFLATE_RECONSTRUCT_ID.to_owned(),
+        parameters: crate::reconstruction::parameters(max_chain_length),
+        reconstruction_ref: Some(reconstruction_ref),
     };
     validate_step(&step)?;
     Ok(step)
@@ -66,9 +94,26 @@ pub(crate) fn byte_shuffle_step(width: u8) -> Result<TransformStep> {
 
 pub(crate) fn validate_pipeline(steps: &[TransformStep]) -> Result<()> {
     let mut identifiers = BTreeSet::new();
-    for step in steps {
+    let mut reconstructive_count = 0_u8;
+    for (position, step) in steps.iter().enumerate() {
         let registration = registration(&step.transform_id)?;
         (registration.validate)(&step.parameters)?;
+        match registration.reversibility {
+            ReversibilityClass::Structural if step.reconstruction_ref.is_some() => {
+                return Err(invalid_parameters(
+                    "structural TransformStep cannot reference ReconstructionData",
+                ));
+            }
+            ReversibilityClass::Reconstructive => {
+                reconstructive_count = reconstructive_count.saturating_add(1);
+                if position != 0 || step.reconstruction_ref.is_none() {
+                    return Err(invalid_parameters(
+                        "the sole reconstructive TransformStep must be first and reference ReconstructionData",
+                    ));
+                }
+            }
+            ReversibilityClass::Structural => {}
+        }
         if !identifiers.insert(step.transform_id.as_str()) {
             return Err(Diagnostic::new(
                 OutcomeClass::Nonconforming,
@@ -76,6 +121,11 @@ pub(crate) fn validate_pipeline(steps: &[TransformStep]) -> Result<()> {
                 format!("duplicate TransformStep '{}'", step.transform_id),
             ));
         }
+    }
+    if reconstructive_count > 1 {
+        return Err(invalid_parameters(
+            "a TransformPlan may contain at most one reconstructive TransformStep",
+        ));
     }
     Ok(())
 }
@@ -89,12 +139,46 @@ pub(crate) fn required_features(steps: &[TransformStep]) -> Result<u64> {
 
 pub(crate) fn forward_pipeline(steps: &[TransformStep], plaintext: &[u8]) -> Result<Vec<u8>> {
     validate_pipeline(steps)?;
+    if steps.iter().any(|step| step.reconstruction_ref.is_some()) {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::UnknownReconstructionData,
+            "reconstructive pipeline requires its recorded ReconstructionData",
+        ));
+    }
+    forward_pipeline_with_reconstruction(steps, plaintext, &BTreeMap::new())
+}
+
+pub(crate) fn forward_pipeline_with_reconstruction(
+    steps: &[TransformStep],
+    plaintext: &[u8],
+    reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
+) -> Result<Vec<u8>> {
+    validate_pipeline(steps)?;
     let mut bytes = plaintext.to_vec();
     for step in steps {
         let registration = registration(&step.transform_id)?;
-        bytes = (registration.forward)(&step.parameters, &bytes)?;
-        if bytes.len() != plaintext.len() {
-            return Err(length_mismatch(&step.transform_id));
+        match registration.reversibility {
+            ReversibilityClass::Structural => {
+                let before = bytes.len();
+                bytes =
+                    (registration.forward.expect("structural forward"))(&step.parameters, &bytes)?;
+                if bytes.len() != before {
+                    return Err(length_mismatch(&step.transform_id));
+                }
+            }
+            ReversibilityClass::Reconstructive => {
+                let reference = step.reconstruction_ref.expect("validated reference");
+                let data = reconstruction_data.get(&reference).ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::UnknownReconstructionData,
+                        reference.to_string(),
+                    )
+                })?;
+                bytes =
+                    verified_deflate_forward(&bytes, validate_deflate(&step.parameters)?, data)?;
+            }
         }
     }
     Ok(bytes)
@@ -102,15 +186,68 @@ pub(crate) fn forward_pipeline(steps: &[TransformStep], plaintext: &[u8]) -> Res
 
 pub(crate) fn inverse_pipeline(steps: &[TransformStep], encoded: &[u8]) -> Result<Vec<u8>> {
     validate_pipeline(steps)?;
+    if steps.iter().any(|step| step.reconstruction_ref.is_some()) {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::UnknownReconstructionData,
+            "reconstructive pipeline requires its recorded ReconstructionData",
+        ));
+    }
+    inverse_pipeline_with_reconstruction(steps, encoded, &BTreeMap::new())
+}
+
+pub(crate) fn inverse_pipeline_with_reconstruction(
+    steps: &[TransformStep],
+    encoded: &[u8],
+    reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
+) -> Result<Vec<u8>> {
+    validate_pipeline(steps)?;
     let mut bytes = encoded.to_vec();
     for step in steps.iter().rev() {
         let registration = registration(&step.transform_id)?;
-        bytes = (registration.inverse)(&step.parameters, &bytes)?;
-        if bytes.len() != encoded.len() {
-            return Err(length_mismatch(&step.transform_id));
+        match registration.reversibility {
+            ReversibilityClass::Structural => {
+                let before = bytes.len();
+                bytes =
+                    (registration.inverse.expect("structural inverse"))(&step.parameters, &bytes)?;
+                if bytes.len() != before {
+                    return Err(length_mismatch(&step.transform_id));
+                }
+            }
+            ReversibilityClass::Reconstructive => {
+                let reference = step.reconstruction_ref.expect("validated reference");
+                let data = reconstruction_data.get(&reference).ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::UnknownReconstructionData,
+                        reference.to_string(),
+                    )
+                })?;
+                bytes = reconstruct_deflate(&bytes, data)?;
+            }
         }
     }
     Ok(bytes)
+}
+
+pub(crate) fn intermediate_len(
+    steps: &[TransformStep],
+    logical_len: u64,
+    reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
+) -> Result<u64> {
+    let Some(reference) = steps.first().and_then(|step| step.reconstruction_ref) else {
+        return Ok(logical_len);
+    };
+    reconstruction_data
+        .get(&reference)
+        .map(|data| data.intermediate_len)
+        .ok_or_else(|| {
+            Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::UnknownReconstructionData,
+                reference.to_string(),
+            )
+        })
 }
 
 pub(crate) fn display_step(step: &TransformStep) -> String {
@@ -139,11 +276,11 @@ fn registration(identifier: &str) -> Result<&'static TransformRegistration> {
             )
         })?;
     debug_assert_ne!(registration.format_version, 0);
-    debug_assert_eq!(
-        registration.reversibility,
-        ReversibilityClass::BijectiveAllByteStrings
-    );
     Ok(registration)
+}
+
+fn validate_deflate_parameters(parameters: &[u8]) -> Result<()> {
+    validate_deflate(parameters).map(|_| ())
 }
 
 fn validate_delta8(parameters: &[u8]) -> Result<()> {
@@ -261,6 +398,7 @@ mod tests {
         let unknown = TransformStep {
             transform_id: "unregistered/v1".to_owned(),
             parameters: Box::default(),
+            reconstruction_ref: None,
         };
         assert_eq!(
             validate_pipeline(&[unknown]).unwrap_err().code(),
@@ -275,10 +413,47 @@ mod tests {
         let invalid = TransformStep {
             transform_id: BYTE_SHUFFLE_ID.to_owned(),
             parameters: Box::from([3]),
+            reconstruction_ref: None,
         };
         assert_eq!(
             validate_pipeline(&[invalid]).unwrap_err().code(),
             ReasonCode::InvalidTransformParameters
+        );
+    }
+
+    #[test]
+    fn reconstructive_step_order_and_reference_are_canonical() {
+        let reference = Digest::from_bytes([7; 32]);
+        let reconstruct = deflate_reconstruct_step(512, reference).unwrap();
+        validate_pipeline(&[reconstruct.clone(), delta8_step()]).unwrap();
+        assert_eq!(
+            validate_pipeline(&[delta8_step(), reconstruct.clone()])
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidTransformParameters
+        );
+        assert_eq!(
+            validate_pipeline(&[reconstruct.clone(), reconstruct])
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidTransformParameters
+        );
+        let missing = TransformStep {
+            transform_id: DEFLATE_RECONSTRUCT_ID.to_owned(),
+            parameters: crate::reconstruction::parameters(512),
+            reconstruction_ref: None,
+        };
+        assert_eq!(
+            validate_pipeline(&[missing]).unwrap_err().code(),
+            ReasonCode::InvalidTransformParameters
+        );
+        assert_eq!(
+            registration(DEFLATE_RECONSTRUCT_ID).unwrap().reversibility,
+            ReversibilityClass::Reconstructive
+        );
+        assert_eq!(
+            registration(DELTA8_ID).unwrap().reversibility,
+            ReversibilityClass::Structural
         );
     }
 }

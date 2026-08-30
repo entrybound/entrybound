@@ -17,7 +17,7 @@ Platforms without a portable executable bit declare that class unavailable.
 The FidelityReport also declares ACLs, xattrs, ownership, hardlink identity,
 platform-specific metadata, and symlink/special-file semantics unavailable.
 New files use normalized Gear-hash content-defined chunking. The default
-`balanced-v4` policy uses 128 KiB minimum, 512 KiB target, and 2 MiB maximum
+`balanced-v5` policy uses 128 KiB minimum, 512 KiB target, and 2 MiB maximum
 Chunks. Exact SHA-256 Chunk deduplication is archive-wide, after which the
 creation-only planner performs deterministic similarity analysis and compares
 independent multi-codec/structural pipelines with complete-cost shared-dictionary candidates.

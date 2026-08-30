@@ -97,7 +97,7 @@ fn planner_selects_codecs_per_chunk_and_round_trips_exactly() {
     }
 
     let explanation = explain(&opened).unwrap();
-    assert_eq!(explanation.planner_id, "balanced-v4");
+    assert_eq!(explanation.planner_id, "balanced-v5");
     assert!(explanation.physical_savings_bytes > 0);
 }
 

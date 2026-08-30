@@ -44,7 +44,7 @@ fn filesystem_round_trip_is_deterministic_and_complete() {
     }));
     let view = inspect(&opened).unwrap();
     assert_eq!(view.entry_count as usize, listed.len());
-    assert_eq!(view.planner_id, "balanced-v4");
+    assert_eq!(view.planner_id, "balanced-v5");
     assert_eq!(
         view.chunker_id,
         "gear-norm-v1/min-131072/target-524288/max-2097152"

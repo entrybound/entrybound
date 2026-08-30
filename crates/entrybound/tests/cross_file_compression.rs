@@ -38,7 +38,7 @@ fn balanced_uses_one_shared_dictionary_and_keeps_independent_access() {
     let opened = open(&first.bytes).unwrap();
     verify(&first.bytes).unwrap();
     let view = inspect(&opened).unwrap();
-    assert_eq!(view.planner_id, "balanced-v4");
+    assert_eq!(view.planner_id, "balanced-v5");
     assert_eq!(view.cross_file.dictionary_count, 1);
     assert!(view.cross_file.dictionary_bytes <= 8 * 1024);
     assert!(view.cross_file.dictionary_backed_chunks >= 8);
@@ -118,7 +118,7 @@ fn dense_and_extreme_select_only_bounded_lookback_and_preserve_identity() {
         assert!(view.cross_file.chunk_group_count >= 1);
         assert!(view.cross_file.maximum_lookback > 0);
         assert!(
-            view.cross_file.maximum_lookback <= if view.planner_id == "dense-v4" { 4 } else { 8 }
+            view.cross_file.maximum_lookback <= if view.planner_id == "dense-v5" { 4 } else { 8 }
         );
         assert_eq!(
             view.cross_file.worst_random_access_chunks,

@@ -77,6 +77,10 @@ Required incompatibility feature bit `0x2` (`codec-transform-v1`) enables
 first-class TransformStep records plus registered `lz4/v1` and `lzma2/v1`
 plans. It does not alter frozen v1-v3 plan interpretation. See
 [codec-transform-v1.md](codec-transform-v1.md).
+Required incompatibility feature bit `0x4` (`reconstructive-transform-v1`)
+requires bits `0x1` and `0x2`, selects TransformStep v2 records, and adds the
+RECONSTRUCTION_DATA section. See
+[reconstructive-transform-v1.md](reconstructive-transform-v1.md).
 
 ## Digests
 
@@ -126,9 +130,14 @@ Required incompatibility feature bit `0x1` (`cross-file-compression-v1`)
 selects the extended schema: DESCRIPTOR (1), TRANSFORM_PLANS (2), DICTIONARIES
 (3), CHUNK_GROUPS (4), CHUNK_DATA (5), MANIFEST_RECORDS (6), FIDELITY (7), and
 optionally INDEX (8). Both new authoritative sections occur exactly once even
-when empty. The two currently recognized incompatibility bits are `0x1` and
-`0x2`; readers reject every other unknown required bit. `0x2` changes only the
+when empty. The three currently recognized incompatibility bits are `0x1`,
+`0x2`, and `0x4`; readers reject every other unknown required bit. `0x2` changes only the
 TransformPlan field-3 item schema and may be combined with `0x1`, as v4 does.
+
+With `0x4`, the canonical extended schema is DESCRIPTOR (1), TRANSFORM_PLANS
+(2), DICTIONARIES (3), CHUNK_GROUPS (4), RECONSTRUCTION_DATA (5), CHUNK_DATA
+(6), MANIFEST_RECORDS (7), FIDELITY (8), and optional INDEX (9). The new
+authoritative physical section occurs exactly once, including when empty.
 
 CHUNK_DATA is a sequence of digest-ordered plan-driven frames:
 
@@ -166,11 +175,17 @@ Record type and strictly increasing field tags are:
 | Dictionary | 11 | dictionary digest(1), codec(2), format(3), construction(4), exact bytes(5) |
 | ChunkGroup | 12 | group ID(1), maximum lookback Chunks(2), maximum preceding logical bytes(3) |
 | TransformStep | 13 | transform identifier(1), canonical parameter bytes(2) |
+| ReconstructionData | 14 | exact-byte digest(1), format/version(2), intermediate length(3), exact reconstruction bytes(4) |
+| TransformStep v2 | 15 | transform identifier(1), canonical parameter bytes(2), optional reconstruction reference(3) |
 
 Without `codec-transform-v1`, TransformPlan field 3 remains the historical
 empty sequence. With the feature, every sequence item is a version-1 type-13
 TransformStep record. Non-empty legacy string placeholders were never emitted
 by frozen planners and are rejected rather than reinterpreted.
+With `reconstructive-transform-v1`, every TransformPlan field-3 item is a
+type-15 TransformStep v2 record. Type 13 is never reinterpreted. Structural
+steps omit field 3; the sole reconstructive step must be first and carries one
+digest reference to a type-14 ReconstructionData object.
 
 Sequences contain `count:u64`, then repeated `item_length:u64 | item`. Entries
 are in canonical LogicalPath order. ContentObjects, Chunks, TransformPlans, and

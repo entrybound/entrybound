@@ -5,8 +5,8 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     ChunkGroup, Criticality, Dictionary, Digest, Entry, EntryData, EntryIdentity, EntrySet,
     FidelityIssue, FidelityReport, LogicalPath, MetadataItem, MetadataName, MetadataSet,
-    PathComponent, PathEncoding, Restorability, Timestamp, TimestampPrecision, TransformPlan,
-    TransformStep,
+    PathComponent, PathEncoding, ReconstructionData, Restorability, Timestamp, TimestampPrecision,
+    TransformPlan, TransformStep,
 };
 
 pub(super) const RECORD_DESCRIPTOR: u16 = 1;
@@ -22,6 +22,8 @@ const RECORD_FIDELITY_ISSUE: u16 = 10;
 pub(super) const RECORD_DICTIONARY: u16 = 11;
 pub(super) const RECORD_CHUNK_GROUP: u16 = 12;
 pub(super) const RECORD_TRANSFORM_STEP: u16 = 13;
+pub(super) const RECORD_RECONSTRUCTION_DATA: u16 = 14;
+pub(super) const RECORD_TRANSFORM_STEP_V2: u16 = 15;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) struct DescriptorBody {
@@ -96,7 +98,7 @@ pub(super) fn encode_transform_plans(
         let transforms = if transform_steps {
             plan.transforms
                 .iter()
-                .map(encode_transform_step)
+                .map(encode_transform_step_v1)
                 .collect::<Result<Vec<_>>>()?
         } else {
             Vec::new()
@@ -136,7 +138,7 @@ pub(super) fn decode_transform_plans(
         let transforms = if transform_steps {
             transform_items
                 .into_iter()
-                .map(decode_transform_step)
+                .map(decode_transform_step_v1)
                 .collect::<Result<Vec<_>>>()?
         } else if transform_items.is_empty() {
             Vec::new()
@@ -179,7 +181,14 @@ pub(super) fn decode_transform_plans(
     Ok(plans)
 }
 
-fn encode_transform_step(step: &TransformStep) -> Result<Vec<u8>> {
+fn encode_transform_step_v1(step: &TransformStep) -> Result<Vec<u8>> {
+    if step.reconstruction_ref.is_some() {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedRequiredFeature,
+            "TransformStep reconstruction_ref requires reconstructive-transform-v1",
+        ));
+    }
     let mut record = RecordBuilder::new(RECORD_TRANSFORM_STEP);
     record
         .utf8(1, &step.transform_id)?
@@ -187,7 +196,7 @@ fn encode_transform_step(step: &TransformStep) -> Result<Vec<u8>> {
     record.finish()
 }
 
-fn decode_transform_step(bytes: &[u8]) -> Result<TransformStep> {
+fn decode_transform_step_v1(bytes: &[u8]) -> Result<TransformStep> {
     let (record, consumed) = decode_record(bytes)?;
     if consumed != bytes.len() || record.kind != RECORD_TRANSFORM_STEP {
         return Err(noncanonical(
@@ -198,11 +207,178 @@ fn decode_transform_step(bytes: &[u8]) -> Result<TransformStep> {
     let step = TransformStep {
         transform_id: record.field(1)?.as_utf8()?.to_owned(),
         parameters: record.field(2)?.as_bytes()?.into(),
+        reconstruction_ref: None,
     };
-    if encode_transform_step(&step)? != bytes {
+    if encode_transform_step_v1(&step)? != bytes {
         return Err(noncanonical("TransformStep record is not canonical"));
     }
     Ok(step)
+}
+
+pub(super) fn encode_transform_plans_v2(plans: &[TransformPlan]) -> Result<Vec<u8>> {
+    let mut encoded = Vec::new();
+    let mut previous = None;
+    for plan in plans {
+        if previous.is_some_and(|id| id >= plan.plan_id) {
+            return Err(noncanonical(
+                "TransformPlans must be strictly ordered by plan_id",
+            ));
+        }
+        previous = Some(plan.plan_id);
+        let transforms = plan
+            .transforms
+            .iter()
+            .map(encode_transform_step_v2)
+            .collect::<Result<Vec<_>>>()?;
+        let mut record = RecordBuilder::new(RECORD_TRANSFORM_PLAN);
+        record
+            .u64(1, plan.plan_id)?
+            .utf8(2, &plan.identifier)?
+            .sequence(3, &transforms)?
+            .utf8(4, &plan.codec)?
+            .bytes(5, &plan.codec_params)?;
+        if let Some(dictionary) = plan.dictionary {
+            record.bytes(6, dictionary.as_bytes())?;
+        }
+        record
+            .u64(7, plan.decode.window_bytes)?
+            .u64(8, plan.decode.working_set_bytes)?
+            .u32(9, plan.decode.flags)?;
+        encoded.extend_from_slice(&record.finish()?);
+    }
+    Ok(encoded)
+}
+
+pub(super) fn decode_transform_plans_v2(bytes: &[u8]) -> Result<Box<[TransformPlan]>> {
+    let records = decode_record_stream(bytes)?;
+    let mut plans = Vec::with_capacity(records.len());
+    let mut previous = None;
+    for record in records {
+        if record.kind != RECORD_TRANSFORM_PLAN {
+            return Err(noncanonical("TRANSFORM_PLANS contains a non-plan record"));
+        }
+        record.expect_tags(&[1, 2, 3, 4, 5, 7, 8, 9], &[6])?;
+        let plan_id = record.field(1)?.as_u64()?;
+        if previous.is_some_and(|id| id >= plan_id) {
+            return Err(noncanonical(
+                "TransformPlans must be strictly ordered by plan_id",
+            ));
+        }
+        previous = Some(plan_id);
+        let transforms = record
+            .field(3)?
+            .as_sequence()?
+            .into_iter()
+            .map(decode_transform_step_v2)
+            .collect::<Result<Vec<_>>>()?;
+        plans.push(TransformPlan {
+            plan_id,
+            identifier: record.field(2)?.as_utf8()?.to_owned(),
+            transforms: transforms.into_boxed_slice(),
+            codec: record.field(4)?.as_utf8()?.to_owned(),
+            codec_params: record.field(5)?.as_bytes()?.into(),
+            dictionary: record
+                .optional_field(6)
+                .map(|field| digest(field.as_bytes()?))
+                .transpose()?,
+            decode: crate::eam::DecodeRequirements {
+                window_bytes: record.field(7)?.as_u64()?,
+                working_set_bytes: record.field(8)?.as_u64()?,
+                flags: record.field(9)?.as_u32()?,
+            },
+        });
+    }
+    let plans = plans.into_boxed_slice();
+    crate::codec::validate_plans(&plans)?;
+    if encode_transform_plans_v2(&plans)? != bytes {
+        return Err(noncanonical("TransformPlan v2 records are not canonical"));
+    }
+    Ok(plans)
+}
+
+fn encode_transform_step_v2(step: &TransformStep) -> Result<Vec<u8>> {
+    let mut record = RecordBuilder::new(RECORD_TRANSFORM_STEP_V2);
+    record
+        .utf8(1, &step.transform_id)?
+        .bytes(2, &step.parameters)?;
+    if let Some(reference) = step.reconstruction_ref {
+        record.bytes(3, reference.as_bytes())?;
+    }
+    record.finish()
+}
+
+fn decode_transform_step_v2(bytes: &[u8]) -> Result<TransformStep> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() || record.kind != RECORD_TRANSFORM_STEP_V2 {
+        return Err(noncanonical(
+            "TransformStep v2 sequence item must be exactly one v2 step record",
+        ));
+    }
+    record.expect_tags(&[1, 2], &[3])?;
+    let step = TransformStep {
+        transform_id: record.field(1)?.as_utf8()?.to_owned(),
+        parameters: record.field(2)?.as_bytes()?.into(),
+        reconstruction_ref: record
+            .optional_field(3)
+            .map(|field| digest(field.as_bytes()?))
+            .transpose()?,
+    };
+    if encode_transform_step_v2(&step)? != bytes {
+        return Err(noncanonical("TransformStep v2 record is not canonical"));
+    }
+    Ok(step)
+}
+
+pub(super) fn encode_reconstruction_data(
+    values: &BTreeMap<Digest, ReconstructionData>,
+) -> Result<Vec<u8>> {
+    let mut encoded = Vec::new();
+    for value in values.values() {
+        let mut record = RecordBuilder::new(RECORD_RECONSTRUCTION_DATA);
+        record
+            .bytes(1, value.reconstruction_id.as_bytes())?
+            .utf8(2, &value.format)?
+            .u64(3, value.intermediate_len)?
+            .bytes(4, &value.bytes)?;
+        encoded.extend_from_slice(&record.finish()?);
+    }
+    Ok(encoded)
+}
+
+pub(super) fn decode_reconstruction_data(
+    bytes: &[u8],
+) -> Result<BTreeMap<Digest, ReconstructionData>> {
+    let mut values = BTreeMap::new();
+    let mut previous = None;
+    for record in decode_record_stream(bytes)? {
+        if record.kind != RECORD_RECONSTRUCTION_DATA {
+            return Err(noncanonical(
+                "RECONSTRUCTION_DATA contains a non-data record",
+            ));
+        }
+        record.expect_tags(&[1, 2, 3, 4], &[])?;
+        let reconstruction_id = digest(record.field(1)?.as_bytes()?)?;
+        if previous.is_some_and(|id| id >= reconstruction_id) {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::DuplicateSemanticDeclaration,
+                "ReconstructionData objects must be uniquely ordered by identity",
+            ));
+        }
+        previous = Some(reconstruction_id);
+        let value = ReconstructionData {
+            reconstruction_id,
+            format: record.field(2)?.as_utf8()?.to_owned(),
+            intermediate_len: record.field(3)?.as_u64()?,
+            bytes: record.field(4)?.as_bytes()?.into(),
+        };
+        crate::reconstruction::validate_data(&value)?;
+        values.insert(reconstruction_id, value);
+    }
+    if encode_reconstruction_data(&values)? != bytes {
+        return Err(noncanonical("ReconstructionData records are not canonical"));
+    }
+    Ok(values)
 }
 
 pub(super) fn encode_dictionaries(dictionaries: &BTreeMap<Digest, Dictionary>) -> Result<Vec<u8>> {
@@ -781,6 +957,10 @@ fn duplicate(detail: impl Into<String>) -> Diagnostic {
 
 #[cfg(test)]
 mod tests {
+    use std::io::Write as _;
+
+    use flate2::{Compression, write::DeflateEncoder};
+
     use super::*;
     use crate::codec::zstd_transformed_plan;
     use crate::identity::sha256_exact;
@@ -803,6 +983,42 @@ mod tests {
         assert_eq!(
             decode_dictionaries(&duplicate).unwrap_err().code(),
             ReasonCode::DuplicateSemanticDeclaration
+        );
+    }
+
+    #[test]
+    fn generated_reconstruction_data_conformance_cases_are_typed() {
+        let mut encoder = DeflateEncoder::new(Vec::new(), Compression::new(6));
+        let source = (0..5_000)
+            .flat_map(|index| format!("record={index:06};value={}\n", index * 19).into_bytes())
+            .collect::<Vec<_>>();
+        encoder.write_all(&source).unwrap();
+        let original = encoder.finish().unwrap();
+        let candidate = crate::reconstruction::try_forward(&original, 512)
+            .unwrap()
+            .unwrap();
+        let encoded = encode_reconstruction_data(&BTreeMap::from([(
+            candidate.data.reconstruction_id,
+            candidate.data.clone(),
+        )]))
+        .unwrap();
+        let mut duplicate = encoded.clone();
+        duplicate.extend_from_slice(&encoded);
+        assert_eq!(
+            decode_reconstruction_data(&duplicate).unwrap_err().code(),
+            ReasonCode::DuplicateSemanticDeclaration,
+            "ECF-RECONSTRUCTION-DUPLICATE-001"
+        );
+
+        let mut corrupt = candidate.data;
+        corrupt.bytes[0] ^= 1;
+        let bytes =
+            encode_reconstruction_data(&BTreeMap::from([(corrupt.reconstruction_id, corrupt)]))
+                .unwrap();
+        assert_eq!(
+            decode_reconstruction_data(&bytes).unwrap_err().code(),
+            ReasonCode::ReconstructionDataDigestMismatch,
+            "ECF-RECONSTRUCTION-DIGEST-001"
         );
     }
 
@@ -831,6 +1047,7 @@ mod tests {
                 TransformStep {
                     transform_id: "unknown-transform/v1".to_owned(),
                     parameters: Box::default(),
+                    reconstruction_ref: None,
                 },
                 ReasonCode::UnknownTransform,
             ),
@@ -839,6 +1056,7 @@ mod tests {
                 TransformStep {
                     transform_id: BYTE_SHUFFLE_ID.to_owned(),
                     parameters: Box::from([3]),
+                    reconstruction_ref: None,
                 },
                 ReasonCode::InvalidTransformParameters,
             ),

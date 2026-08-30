@@ -29,8 +29,7 @@ Usage:\n\
 This build supports unencrypted Complete INDEXED archives with directories,\n\
 regular files, normalized content-defined chunking, archive-wide exact dedup,\n\
 and per-unique-Chunk STORE, Zstandard, LZ4, and LZMA2 planning, reversible\n\
-structural transforms, optional shared dictionaries, and explicitly bounded\n\
-ChunkGroups in dense/extreme archives.\n\
+structural transforms, verified DEFLATE reconstruction where complete cost wins,\n+optional shared dictionaries, and explicitly bounded ChunkGroups in dense/extreme archives.\n\
 The default creation profile is balanced; decoding is self-describing.\n";
 
 const PACK_HELP: &str = "\
@@ -208,6 +207,10 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
         "codec/transform registry feature: {}",
         view.codec_transform_feature_present
     );
+    println!(
+        "reconstructive transform feature: {}",
+        view.reconstructive_transform_feature_present
+    );
     println!("planner: {}", view.planner_id);
     println!("chunker: {}", view.chunker_id);
     println!(
@@ -232,6 +235,18 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
         view.cross_file.worst_random_access_chunks,
         view.cross_file.worst_random_access_bytes,
         view.cross_file.every_chunk_independently_decodable
+    );
+    println!(
+        "reconstruction: objects={}, bytes={}, chunks={}, transforms={}, max-intermediate-bytes={}",
+        view.reconstruction.object_count,
+        view.reconstruction.object_bytes,
+        view.reconstruction.chunk_count,
+        if view.reconstruction.transform_types.is_empty() {
+            "none".to_owned()
+        } else {
+            view.reconstruction.transform_types.join(",")
+        },
+        view.reconstruction.maximum_intermediate_bytes
     );
     for plan in view.plans {
         println!(
@@ -360,6 +375,21 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
         explanation.bounded_lookback_savings_bytes
     );
     println!(
+        "reconstructive transform: chunks={}, gross-savings={} bytes, reconstruction-data-overhead={} bytes, net-savings={} bytes",
+        explanation.reconstructive_chunk_count,
+        explanation.reconstructive_gross_savings_bytes,
+        explanation.reconstruction_data_overhead_bytes,
+        explanation.reconstructive_net_savings_bytes
+    );
+    println!(
+        "reconstructive fallbacks: chunks={}{}",
+        explanation.reconstructive_fallback_chunk_count,
+        explanation
+            .reconstructive_fallback_reason
+            .as_ref()
+            .map_or_else(String::new, |reason| format!(" ({reason})"))
+    );
+    println!(
         "structural-transform payload savings: {} bytes (transformed chunks: {}, rejected eligible chunks: {})",
         explanation.structural_transform_savings_bytes,
         explanation.transformed_chunk_count,
@@ -395,7 +425,7 @@ fn command_verify(arguments: Vec<OsString>) -> Result<()> {
     let bytes = read(&archive)?;
     let report = verify(&bytes)?;
     println!(
-        "OK verified canonical structure, section integrity, semantic invariants, Dictionary/ChunkGroup dependencies and access costs, Chunk/content integrity, Entry identities, LAI, PCR, AUX, and exact-byte PCI"
+        "OK verified canonical structure, section integrity, semantic invariants, Dictionary/ChunkGroup/ReconstructionData dependencies and access costs, reconstructed original Chunk bytes, Chunk/content integrity, Entry identities, LAI, PCR, AUX, and exact-byte PCI"
     );
     println!("index: {}", index_status(report.index_status));
     println!("LAI {}", report.identities.lai.0);

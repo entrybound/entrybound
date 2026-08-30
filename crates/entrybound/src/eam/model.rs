@@ -265,10 +265,10 @@ impl MetadataSet {
     #[must_use]
     pub fn mtime(&self) -> Option<Timestamp> {
         self.items.iter().find_map(|item| {
-            if item.name == MetadataName::CoreMtime {
-                if let MetadataValue::Timestamp(value) = item.value {
-                    return Some(value);
-                }
+            if item.name == MetadataName::CoreMtime
+                && let MetadataValue::Timestamp(value) = item.value
+            {
+                return Some(value);
             }
             None
         })
@@ -401,6 +401,18 @@ pub struct Dictionary {
     pub bytes: Box<[u8]>,
 }
 
+/// Physical side data needed to recreate an original format representation.
+/// Its identity covers the exact reconstruction bytes; it is never part of
+/// logical archive identity.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ReconstructionData {
+    pub reconstruction_id: Digest,
+    pub format: String,
+    /// Length of the format-neutral intermediate supplied to reconstruction.
+    pub intermediate_len: u64,
+    pub bytes: Box<[u8]>,
+}
+
 /// Bounded physical dependency declaration. Membership exists only through
 /// `Chunk::group_ref`; the CHUNK_DATA order supplies preceding-member order.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -416,6 +428,7 @@ pub struct ContentStore {
     pub objects: BTreeMap<Digest, ContentObject>,
     pub chunks: BTreeMap<Digest, Chunk>,
     pub dictionaries: BTreeMap<Digest, Dictionary>,
+    pub reconstruction_data: BTreeMap<Digest, ReconstructionData>,
     pub chunk_groups: BTreeMap<Digest, ChunkGroup>,
     /// Exact CHUNK_DATA frame order. It is physical only and never changes
     /// ContentObject reference order or any logical identity.
@@ -435,6 +448,9 @@ pub struct DecodeRequirements {
 pub struct TransformStep {
     pub transform_id: String,
     pub parameters: Box<[u8]>,
+    /// Present only for a reconstructive step. Structural steps have no side
+    /// data reference.
+    pub reconstruction_ref: Option<Digest>,
 }
 
 /// A decoder-facing plan. The planner itself is not needed to decode it.

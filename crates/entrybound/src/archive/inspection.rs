@@ -72,6 +72,17 @@ pub struct CrossFileInspection {
     pub every_chunk_independently_decodable: bool,
 }
 
+/// Reconstructive physical representation and bounded side-data usage.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ReconstructionInspection {
+    pub feature_present: bool,
+    pub object_count: u64,
+    pub object_bytes: u64,
+    pub chunk_count: u64,
+    pub transform_types: Vec<String>,
+    pub maximum_intermediate_bytes: u64,
+}
+
 /// First observable compression summary, derived without an audit-trail record.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompressionExplanation {
@@ -92,6 +103,12 @@ pub struct CompressionExplanation {
     pub shared_dictionary_savings_bytes: i128,
     pub bounded_lookback_savings_bytes: i128,
     pub structural_transform_savings_bytes: i128,
+    pub reconstructive_gross_savings_bytes: i128,
+    pub reconstruction_data_overhead_bytes: u64,
+    pub reconstructive_net_savings_bytes: i128,
+    pub reconstructive_chunk_count: u64,
+    pub reconstructive_fallback_chunk_count: u64,
+    pub reconstructive_fallback_reason: Option<String>,
     pub transformed_chunk_count: u64,
     pub transform_rejected_chunk_count: u64,
     pub transform_usage: Vec<TransformUsage>,
@@ -116,6 +133,7 @@ pub struct ArchiveInspection {
     pub total_logical_bytes: u64,
     pub features: FeatureSet,
     pub codec_transform_feature_present: bool,
+    pub reconstructive_transform_feature_present: bool,
     pub planner_id: String,
     pub chunker_id: String,
     pub plans: Vec<PlanInspection>,
@@ -124,6 +142,7 @@ pub struct ArchiveInspection {
     pub transformed_chunk_count: u64,
     pub chunks: ChunkStatistics,
     pub cross_file: CrossFileInspection,
+    pub reconstruction: ReconstructionInspection,
     pub identities: IdentitySet,
     pub index_status: IndexStatus,
     pub fidelity: FidelityReport,
@@ -158,6 +177,7 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
     let archive = &opened.archive;
     let chunks = chunk_statistics(archive)?;
     let cross_file = cross_file_statistics(archive)?;
+    let reconstruction = reconstruction_statistics(archive)?;
     Ok(ArchiveInspection {
         format_namespace: FORMAT_NAMESPACE.to_owned(),
         version: FormatVersion {
@@ -172,6 +192,9 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
         features: archive.descriptor.features,
         codec_transform_feature_present: archive.descriptor.features.incompat
             & crate::ecf::FEATURE_CODEC_TRANSFORM_V1
+            != 0,
+        reconstructive_transform_feature_present: archive.descriptor.features.incompat
+            & crate::ecf::FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
             != 0,
         planner_id: archive.descriptor.planner_id.clone(),
         chunker_id: archive.descriptor.chunker_id.clone(),
@@ -196,6 +219,7 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
         transformed_chunk_count: transformed_chunk_count(archive)?,
         chunks,
         cross_file,
+        reconstruction,
         identities: opened.report.identities,
         index_status: opened.report.index_status,
         fidelity: archive.fidelity.clone(),
@@ -226,6 +250,9 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
         bounded_lookback_savings_bytes,
         structural_transform_savings_bytes,
     ) = separated_codec_savings(opened)?;
+    let reconstruction = reconstruction_statistics(&opened.archive)?;
+    let (reconstructive_gross_savings_bytes, reconstructive_fallback_chunk_count) =
+        reconstructive_explanation(opened)?;
     let (
         similarity_cohort_count,
         similarity_cohort_chunks,
@@ -251,6 +278,15 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
         shared_dictionary_savings_bytes,
         bounded_lookback_savings_bytes,
         structural_transform_savings_bytes,
+        reconstructive_gross_savings_bytes,
+        reconstruction_data_overhead_bytes: reconstruction.object_bytes,
+        reconstructive_net_savings_bytes: reconstructive_gross_savings_bytes
+            - i128::from(reconstruction.object_bytes),
+        reconstructive_chunk_count: reconstruction.chunk_count,
+        reconstructive_fallback_chunk_count,
+        reconstructive_fallback_reason: (reconstructive_fallback_chunk_count != 0).then(||
+            "candidate was ineligible, failed mandatory exact verification, or did not beat the complete-cost margin".to_owned()
+        ),
         transformed_chunk_count: transformed_chunk_count(&opened.archive)?,
         transform_rejected_chunk_count: transform_rejected_chunk_count(&opened.archive)?,
         transform_usage: transform_usage(&opened.archive)?,
@@ -288,6 +324,99 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
             "independent encoding won because dictionary/lookback training was unavailable or complete cost did not clear the frozen gain threshold".to_owned()
         }),
     })
+}
+
+fn reconstruction_statistics(archive: &Archive) -> Result<ReconstructionInspection> {
+    let plans = archive
+        .transform_plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
+    let reconstructive_plans = archive
+        .content_store
+        .chunks
+        .values()
+        .filter_map(|chunk| {
+            let plan = plans[&chunk.plan_ref];
+            plan.transforms
+                .iter()
+                .any(|step| step.reconstruction_ref.is_some())
+                .then_some(plan)
+        })
+        .collect::<Vec<_>>();
+    let transform_types = reconstructive_plans
+        .iter()
+        .flat_map(|plan| plan.transforms.iter())
+        .filter(|step| step.reconstruction_ref.is_some())
+        .map(|step| step.transform_id.clone())
+        .collect::<std::collections::BTreeSet<_>>()
+        .into_iter()
+        .collect();
+    let object_bytes = archive
+        .content_store
+        .reconstruction_data
+        .values()
+        .try_fold(0_u64, |total, data| {
+            total
+                .checked_add(
+                    u64::try_from(data.bytes.len())
+                        .map_err(|_| resource("ReconstructionData length exceeds u64"))?,
+                )
+                .ok_or_else(|| resource("ReconstructionData total exceeds u64"))
+        })?;
+    Ok(ReconstructionInspection {
+        feature_present: archive.descriptor.features.incompat
+            & crate::ecf::FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
+            != 0,
+        object_count: u64::try_from(archive.content_store.reconstruction_data.len())
+            .map_err(|_| resource("ReconstructionData count exceeds u64"))?,
+        object_bytes,
+        chunk_count: u64::try_from(reconstructive_plans.len())
+            .map_err(|_| resource("reconstructive Chunk count exceeds u64"))?,
+        transform_types,
+        maximum_intermediate_bytes: archive
+            .content_store
+            .reconstruction_data
+            .values()
+            .map(|data| data.intermediate_len)
+            .max()
+            .unwrap_or(0),
+    })
+}
+
+fn reconstructive_explanation(opened: &OpenedArchive) -> Result<(i128, u64)> {
+    let archive = &opened.archive;
+    if !archive.descriptor.planner_id.ends_with("-v5") {
+        return Ok((0, 0));
+    }
+    let profile = CompressionProfile::from_planner_id(&archive.descriptor.planner_id)
+        .ok_or_else(|| resource("unknown v5 profile"))?;
+    let plans = archive
+        .transform_plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
+    let mut gross = 0_i128;
+    let mut fallback = 0_u64;
+    for (chunk_id, chunk) in &archive.content_store.chunks {
+        let plan = plans[&chunk.plan_ref];
+        if plan
+            .transforms
+            .iter()
+            .any(|step| step.reconstruction_ref.is_some())
+        {
+            let ordinary =
+                independent_encoded_len(profile, profile.planner_v4_id(), &chunk.plaintext)?;
+            gross += i128::try_from(ordinary)
+                .map_err(|_| resource("ordinary size exceeds i128"))?
+                - i128::from(archive.index.chunks[chunk_id].stored_len);
+        } else if profile != CompressionProfile::Fast {
+            fallback = fallback
+                .checked_add(1)
+                .ok_or_else(|| resource("fallback count exceeds u64"))?;
+        }
+    }
+    Ok((gross, fallback))
 }
 
 fn cross_file_statistics(archive: &Archive) -> Result<CrossFileInspection> {
@@ -371,7 +500,13 @@ fn separated_codec_savings(opened: &OpenedArchive) -> Result<(i128, i128, i128, 
         match crate::codec::plan_mode(plans[&chunk.plan_ref])? {
             crate::codec::PlanMode::Independent => {
                 let plan = plans[&chunk.plan_ref];
-                if !plan.transforms.is_empty() {
+                if plan
+                    .transforms
+                    .iter()
+                    .any(|step| step.reconstruction_ref.is_some())
+                {
+                    ordinary += i128::from(chunk.logical_len) - baseline;
+                } else if !plan.transforms.is_empty() {
                     let base = crate::codec::without_transforms(plan)?;
                     let base_stored = crate::codec::encode_payload(&base, &chunk.plaintext)?;
                     let base_stored = i128::try_from(base_stored.len())
@@ -401,6 +536,7 @@ fn similarity_statistics(archive: &Archive) -> Result<(u64, u64, u64, u64)> {
     };
     if !archive.descriptor.planner_id.ends_with("-v3")
         && !archive.descriptor.planner_id.ends_with("-v4")
+        && !archive.descriptor.planner_id.ends_with("-v5")
     {
         return Ok((0, 0, 0, 0));
     }
@@ -484,7 +620,9 @@ fn transform_usage(archive: &Archive) -> Result<Vec<TransformUsage>> {
 }
 
 fn transform_rejected_chunk_count(archive: &Archive) -> Result<u64> {
-    if !archive.descriptor.planner_id.ends_with("-v4") {
+    if !archive.descriptor.planner_id.ends_with("-v4")
+        && !archive.descriptor.planner_id.ends_with("-v5")
+    {
         return Ok(0);
     }
     let Some(profile) = CompressionProfile::from_planner_id(&archive.descriptor.planner_id) else {
