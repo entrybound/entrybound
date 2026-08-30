@@ -1,6 +1,7 @@
 //! Bounded, bit-exact JPEG/JPEG XL whole-object reconstruction.
 
 use std::io::{Cursor, Write};
+use std::panic::{AssertUnwindSafe, catch_unwind};
 
 use jxl_oxide::{AllocTracker, JpegReconstructionStatus, JxlImage};
 
@@ -40,7 +41,11 @@ pub(crate) fn verified_forward(
     if original.len() > MAX_JPEG_BYTES {
         return Err(JpegAttemptFailure::ResourceExcluded);
     }
-    let (width, height) = jpeg_dimensions(original).ok_or(JpegAttemptFailure::NotRecognized)?;
+    let (width, height, frame_marker) =
+        jpeg_dimensions(original).ok_or(JpegAttemptFailure::NotRecognized)?;
+    if frame_marker != 0xc0 {
+        return Err(JpegAttemptFailure::Unsupported);
+    }
     let pixels = u64::from(width)
         .checked_mul(u64::from(height))
         .ok_or(JpegAttemptFailure::ResourceExcluded)?;
@@ -50,8 +55,11 @@ pub(crate) fn verified_forward(
     let config = jixel::JpegTranscodeConfig::default()
         .with_num_threads(1)
         .with_jpeg_reconstruction(true);
-    let bytes = jixel::encode_jpeg_lossless_with_config(original, &config)
-        .map_err(|_| JpegAttemptFailure::Unsupported)?;
+    let bytes = catch_unwind(AssertUnwindSafe(|| {
+        jixel::encode_jpeg_lossless_with_config(original, &config)
+    }))
+    .map_err(|_| JpegAttemptFailure::Unsupported)?
+    .map_err(|_| JpegAttemptFailure::Unsupported)?;
     if bytes.len() > MAX_JXL_BYTES {
         return Err(JpegAttemptFailure::ResourceExcluded);
     }
@@ -67,6 +75,12 @@ pub(crate) fn verified_forward(
 }
 
 pub(crate) fn inverse(representation: &[u8]) -> Result<Vec<u8>> {
+    catch_unwind(AssertUnwindSafe(|| inverse_inner(representation))).map_err(|_| {
+        malformed("JPEG XL reconstruction dependency aborted while processing the representation")
+    })?
+}
+
+fn inverse_inner(representation: &[u8]) -> Result<Vec<u8>> {
     if representation.len() > MAX_JXL_BYTES {
         return Err(resource("JPEG XL representation exceeds the v1 bound"));
     }
@@ -127,7 +141,7 @@ pub(crate) fn region_identity(region: &ReconstructionRegion) -> Digest {
     sha256_exact(&bytes)
 }
 
-fn jpeg_dimensions(bytes: &[u8]) -> Option<(u32, u32)> {
+fn jpeg_dimensions(bytes: &[u8]) -> Option<(u32, u32, u8)> {
     if bytes.len() < 4 || bytes[..2] != [0xff, 0xd8] || bytes[bytes.len() - 2..] != [0xff, 0xd9] {
         return None;
     }
@@ -160,7 +174,7 @@ fn jpeg_dimensions(bytes: &[u8]) -> Option<(u32, u32)> {
             }
             let height = u32::from(u16::from_be_bytes([bytes[cursor + 3], bytes[cursor + 4]]));
             let width = u32::from(u16::from_be_bytes([bytes[cursor + 5], bytes[cursor + 6]]));
-            return Some((width, height));
+            return Some((width, height, marker));
         }
         cursor += length;
     }
@@ -231,6 +245,7 @@ mod tests {
     use super::*;
     use image::codecs::jpeg::JpegEncoder;
     use image::{ExtendedColorType, ImageEncoder};
+    use jpeg_encoder::{ColorType, Encoder};
 
     #[test]
     fn pure_rust_transcode_reconstructs_generated_jpeg_exactly() {
@@ -238,6 +253,25 @@ mod tests {
         let candidate = verified_forward(&jpeg).unwrap();
         assert_eq!(inverse(&candidate.bytes).unwrap(), jpeg);
         assert_eq!((candidate.width, candidate.height), (128, 96));
+    }
+
+    #[test]
+    fn generated_progressive_jpeg_is_exact_or_fails_safe() {
+        let pixels = generated_pixels(192, 128);
+        let mut jpeg = Vec::new();
+        let mut encoder = Encoder::new(&mut jpeg, 86);
+        encoder.set_progressive(true);
+        encoder.set_progressive_scans(4);
+        encoder.encode(&pixels, 192, 128, ColorType::Rgb).unwrap();
+        assert!(jpeg.windows(2).any(|marker| marker == [0xff, 0xc2]));
+        match verified_forward(&jpeg) {
+            Ok(candidate) => assert_eq!(inverse(&candidate.bytes).unwrap(), jpeg),
+            Err(JpegAttemptFailure::Unsupported | JpegAttemptFailure::VerificationFailed) => {
+                // The pinned pure-Rust stack currently rejects this legal producer output.
+                // Entrybound must reject it before the known dependency failure path.
+            }
+            Err(error) => panic!("unexpected progressive JPEG outcome: {error:?}"),
+        }
     }
 
     #[test]
@@ -280,7 +314,16 @@ mod tests {
     }
 
     fn generated_jpeg(width: u32, height: u32) -> Vec<u8> {
-        let pixels = (0..height)
+        let pixels = generated_pixels(width, height);
+        let mut jpeg = Vec::new();
+        JpegEncoder::new_with_quality(&mut jpeg, 84)
+            .write_image(&pixels, width, height, ExtendedColorType::Rgb8)
+            .unwrap();
+        jpeg
+    }
+
+    fn generated_pixels(width: u32, height: u32) -> Vec<u8> {
+        (0..height)
             .flat_map(|y| {
                 (0..width).flat_map(move |x| {
                     [
@@ -290,12 +333,7 @@ mod tests {
                     ]
                 })
             })
-            .collect::<Vec<_>>();
-        let mut jpeg = Vec::new();
-        JpegEncoder::new_with_quality(&mut jpeg, 84)
-            .write_image(&pixels, width, height, ExtendedColorType::Rgb8)
-            .unwrap();
-        jpeg
+            .collect::<Vec<_>>()
     }
 
     fn marker(kind: u8, payload: &[u8]) -> Vec<u8> {

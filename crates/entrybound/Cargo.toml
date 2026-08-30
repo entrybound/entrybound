@@ -23,3 +23,4 @@ zstd = { version = "=0.13.3", default-features = false, features = ["zdict_build
 [dev-dependencies]
 flate2 = "=1.1.9"
 image = { version = "=0.25.8", default-features = false, features = ["jpeg"] }
+jpeg-encoder = { version = "=0.7.1", default-features = false }

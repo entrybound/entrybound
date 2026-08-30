@@ -77,11 +77,17 @@ opt-out. The JPEG XL representation is self-contained, so the TransformStep has
 no ReconstructionData reference and no redundant side-data object is emitted.
 
 The tested selected subset includes deterministic baseline sequential JPEGs.
-Progressive JPEGs and APP/COM/EXIF/ICC marker arrangements are attempted when
-the pinned libraries accept them and are eligible only if the mandatory exact
-check succeeds. Some otherwise legal producer/marker combinations are rejected
-by v1 and fall back to ordinary v5 physical encoding. Malformed, truncated, or
-unsupported inputs likewise fall back; Entrybound never weakens exactness.
+APP/COM/EXIF/ICC marker arrangements are attempted when the pinned libraries
+accept them and are eligible only if the mandatory exact check succeeds. The
+generated progressive corpus uses the pure-Rust, MIT-or-Apache-2.0
+`jpeg-encoder` crate only as test tooling. A known valid progressive producer
+output exposes an internal failure in the pinned JPEG/JPEG XL forward stack,
+so v1 rejects progressive SOF markers before entering that dependency and
+falls back safely. Progressive JPEG is therefore not part of the frozen v1
+selected subset. Dependency calls are additionally unwind-confined. Some
+otherwise legal producer/marker combinations are likewise rejected by v1 and
+fall back to ordinary v5 physical encoding. Malformed, truncated, or unsupported
+inputs also fall back; Entrybound never weakens exactness.
 
 Reconstruction is ContentObject-bounded. V6 does not scan nested JPEG streams or
 span more than one ContentObject.
