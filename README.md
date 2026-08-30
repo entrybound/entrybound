@@ -179,5 +179,10 @@ evolution, [the JPEG reconstruction note](docs/jpeg-reconstruction-v1.md) for
 v6 whole-object regions, eligibility, byte-exact JPEG reconstruction, and
 random-access costs, [the STREAM layout note](docs/stream-layout-v1.md) for the
 sequential wire shape, tagged items, dedup window, budget declaration, staging
-extraction, access complexity, and identity equivalence with INDEXED, and
+extraction, access complexity, and identity equivalence with INDEXED,
+[the crypto threat model](docs/crypto-threat-model-v1.md),
+[suite freeze](docs/crypto-suite-v1.md),
+[wire freeze](docs/crypto-wire-v1.md), and
+[security review](docs/crypto-review-v1.md) for the reviewed but deliberately
+unimplemented encryption/signature architecture, and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.
