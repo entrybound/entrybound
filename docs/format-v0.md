@@ -73,6 +73,10 @@ choices, not Entry semantics. See [planner-v1.md](planner-v1.md) and
 dictionary-backed `ZD01` or bounded-prefix `ZX01` parameter values while
 retaining codec identifier `zstandard/v1`; the complete frozen construction is
 documented in [cross-file-compression-v1.md](cross-file-compression-v1.md).
+Required incompatibility feature bit `0x2` (`codec-transform-v1`) enables
+first-class TransformStep records plus registered `lz4/v1` and `lzma2/v1`
+plans. It does not alter frozen v1-v3 plan interpretation. See
+[codec-transform-v1.md](codec-transform-v1.md).
 
 ## Digests
 
@@ -122,7 +126,9 @@ Required incompatibility feature bit `0x1` (`cross-file-compression-v1`)
 selects the extended schema: DESCRIPTOR (1), TRANSFORM_PLANS (2), DICTIONARIES
 (3), CHUNK_GROUPS (4), CHUNK_DATA (5), MANIFEST_RECORDS (6), FIDELITY (7), and
 optionally INDEX (8). Both new authoritative sections occur exactly once even
-when empty. Readers reject any other unknown required incompatibility bit.
+when empty. The two currently recognized incompatibility bits are `0x1` and
+`0x2`; readers reject every other unknown required bit. `0x2` changes only the
+TransformPlan field-3 item schema and may be combined with `0x1`, as v4 does.
 
 CHUNK_DATA is a sequence of digest-ordered plan-driven frames:
 
@@ -159,6 +165,12 @@ Record type and strictly increasing field tags are:
 | Fidelity issue | 10 | class(1), reason(2), optional entry scope(3) |
 | Dictionary | 11 | dictionary digest(1), codec(2), format(3), construction(4), exact bytes(5) |
 | ChunkGroup | 12 | group ID(1), maximum lookback Chunks(2), maximum preceding logical bytes(3) |
+| TransformStep | 13 | transform identifier(1), canonical parameter bytes(2) |
+
+Without `codec-transform-v1`, TransformPlan field 3 remains the historical
+empty sequence. With the feature, every sequence item is a version-1 type-13
+TransformStep record. Non-empty legacy string placeholders were never emitted
+by frozen planners and are rejected rather than reinterpreted.
 
 Sequences contain `count:u64`, then repeated `item_length:u64 | item`. Entries
 are in canonical LogicalPath order. ContentObjects, Chunks, TransformPlans, and

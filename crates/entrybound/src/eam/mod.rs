@@ -11,5 +11,5 @@ pub use model::{
     DigestAlgorithm, Entry, EntryData, EntryIdentity, EntryKind, EntrySet, FeatureSet,
     FidelityIssue, FidelityReport, IdentityProfile, Index, Layout, MetadataItem, MetadataName,
     MetadataSet, MetadataValue, ResourceBudget, Restorability, Timestamp, TimestampPrecision,
-    TransformPlan,
+    TransformPlan, TransformStep,
 };

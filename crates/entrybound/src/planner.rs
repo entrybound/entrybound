@@ -8,22 +8,24 @@ use std::str::FromStr;
 
 use crate::chunker::{BALANCED_V2, ChunkingParameters, DENSE_V2, EXTREME_V2, FAST_V2};
 use crate::codec::{
+    LZ4_CODEC_IDENTIFIER, LZMA2_CODEC_IDENTIFIER, ZSTD_CODEC_IDENTIFIER,
     ZSTD_DICTIONARY_CONSTRUCTION_PREFIX, ZSTD_DICTIONARY_FORMAT, ZSTD_WINDOW_BYTES,
     aggregate_archive_decode_requirements, aggregate_decode_requirements, encode_payload,
-    encode_payload_with_dictionary, encode_payload_with_prefix, store_plan, train_dictionary,
-    zstd_dictionary_plan, zstd_plan, zstd_prefix_plan,
+    encode_payload_with_dictionary, encode_payload_with_prefix, lz4_plan, lzma2_plan, store_plan,
+    train_dictionary, zstd_dictionary_plan, zstd_plan, zstd_prefix_plan, zstd_transformed_plan,
 };
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{Archive, ChunkGroup, Dictionary, Digest, TransformPlan};
 use crate::ecf::{
-    FEATURE_CROSS_FILE_COMPRESSION_V1, encoded_chunk_group_len, encoded_dictionary_len,
-    encoded_transform_plan_len,
+    FEATURE_CODEC_TRANSFORM_V1, FEATURE_CROSS_FILE_COMPRESSION_V1, encoded_chunk_group_len,
+    encoded_dictionary_len, encoded_transform_plan_len,
 };
 use crate::identity::sha256_exact;
 use crate::similarity::{
     BALANCED_V3_SIMILARITY, DENSE_V3_SIMILARITY, EXTREME_V3_SIMILARITY, FAST_V3_SIMILARITY,
     SimilarityCohort, SimilarityPolicy, cluster,
 };
+use crate::transform::{byte_shuffle_step, delta8_step};
 
 /// Temporary plan marker used only between plaintext chunking and planning.
 pub const UNPLANNED_PLAN_ID: u64 = 0;
@@ -45,7 +47,7 @@ const BALANCED_FALLBACK_LEVELS: [i32; 1] = [1];
 const DENSE_LEVELS: [i32; 3] = [5, 9, 15];
 const EXTREME_LEVELS: [i32; 4] = [9, 15, 19, 22];
 
-/// Public creation profiles. New filesystem archives use their v3 IDs.
+/// Public creation profiles. New filesystem archives use their v4 IDs.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum CompressionProfile {
     Fast,
@@ -68,6 +70,17 @@ impl CompressionProfile {
 
     #[must_use]
     pub const fn planner_id(self) -> &'static str {
+        match self {
+            Self::Fast => "fast-v4",
+            Self::Balanced => "balanced-v4",
+            Self::Dense => "dense-v4",
+            Self::Extreme => "extreme-v4",
+        }
+    }
+
+    /// Frozen IDs for similarity/dictionary/group planning.
+    #[must_use]
+    pub const fn planner_v3_id(self) -> &'static str {
         match self {
             Self::Fast => "fast-v3",
             Self::Balanced => "balanced-v3",
@@ -159,10 +172,10 @@ impl CompressionProfile {
     #[must_use]
     pub fn from_planner_id(planner_id: &str) -> Option<Self> {
         match planner_id {
-            "fast-v1" | "fast-v2" | "fast-v3" => Some(Self::Fast),
-            "balanced-v1" | "balanced-v2" | "balanced-v3" => Some(Self::Balanced),
-            "dense-v1" | "dense-v2" | "dense-v3" => Some(Self::Dense),
-            "extreme-v1" | "extreme-v2" | "extreme-v3" => Some(Self::Extreme),
+            "fast-v1" | "fast-v2" | "fast-v3" | "fast-v4" => Some(Self::Fast),
+            "balanced-v1" | "balanced-v2" | "balanced-v3" | "balanced-v4" => Some(Self::Balanced),
+            "dense-v1" | "dense-v2" | "dense-v3" | "dense-v4" => Some(Self::Dense),
+            "extreme-v1" | "extreme-v2" | "extreme-v3" | "extreme-v4" => Some(Self::Extreme),
             _ => None,
         }
     }
@@ -206,6 +219,9 @@ pub struct PlanningReport {
     pub planner_id: String,
     pub store_chunks: u64,
     pub zstandard_chunks: u64,
+    pub lz4_chunks: u64,
+    pub lzma2_chunks: u64,
+    pub transformed_chunks: u64,
     pub dictionary_chunks: u64,
     pub lookback_chunks: u64,
     pub similarity_cohorts: u64,
@@ -231,8 +247,43 @@ pub fn plan_archive_v3(
     archive: &mut Archive,
     profile: CompressionProfile,
 ) -> Result<PlanningReport> {
-    let mut report = plan_archive_with_id(archive, profile, profile.planner_id())?;
-    archive.descriptor.features.incompat |= FEATURE_CROSS_FILE_COMPRESSION_V1;
+    let planner_id = profile.planner_v3_id();
+    archive.descriptor.features.incompat &= !FEATURE_CODEC_TRANSFORM_V1;
+    let report = plan_archive_with_id(archive, profile, planner_id)?;
+    finish_cross_file_planning(
+        archive,
+        profile,
+        planner_id,
+        FEATURE_CROSS_FILE_COMPRESSION_V1,
+        report,
+    )
+}
+
+/// V4 planning competes registered independent codec/transform pipelines, then
+/// applies the frozen v3 cross-file strategies against that stronger baseline.
+pub fn plan_archive_v4(
+    archive: &mut Archive,
+    profile: CompressionProfile,
+) -> Result<PlanningReport> {
+    let planner_id = profile.planner_id();
+    let report = plan_archive_v4_independent(archive, profile, planner_id)?;
+    finish_cross_file_planning(
+        archive,
+        profile,
+        planner_id,
+        FEATURE_CROSS_FILE_COMPRESSION_V1 | FEATURE_CODEC_TRANSFORM_V1,
+        report,
+    )
+}
+
+fn finish_cross_file_planning(
+    archive: &mut Archive,
+    profile: CompressionProfile,
+    planner_id: &str,
+    required_features: u64,
+    mut report: PlanningReport,
+) -> Result<PlanningReport> {
+    archive.descriptor.features.incompat |= required_features;
     archive.content_store.dictionaries.clear();
     archive.content_store.chunk_groups.clear();
     for chunk in archive.content_store.chunks.values_mut() {
@@ -253,7 +304,7 @@ pub fn plan_archive_v3(
     let mut lookback_chunks = 0_u64;
 
     for cohort in &cohorts {
-        match select_cohort_plan(archive, cohort, profile, &plans)? {
+        match select_cohort_plan(archive, cohort, profile, planner_id, &plans)? {
             CohortSelection::Independent => {}
             CohortSelection::Dictionary { dictionary, plan } => {
                 insert_dictionary(&mut archive.content_store.dictionaries, dictionary)?;
@@ -323,6 +374,43 @@ pub fn plan_archive_v3(
     )?;
     report.dictionary_chunks = dictionary_chunks;
     report.lookback_chunks = lookback_chunks;
+    report.store_chunks = 0;
+    report.zstandard_chunks = 0;
+    report.lz4_chunks = 0;
+    report.lzma2_chunks = 0;
+    report.transformed_chunks = 0;
+    let selected_by_id = archive
+        .transform_plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
+    for chunk in archive.content_store.chunks.values() {
+        let plan = selected_by_id.get(&chunk.plan_ref).ok_or_else(|| {
+            Diagnostic::new(
+                OutcomeClass::Unsupported,
+                ReasonCode::UnknownTransformPlan,
+                chunk.plan_ref.to_string(),
+            )
+        })?;
+        match plan.codec.as_str() {
+            crate::identity::STORE_CODEC_IDENTIFIER => {
+                increment(&mut report.store_chunks, "STORE")?
+            }
+            ZSTD_CODEC_IDENTIFIER => increment(&mut report.zstandard_chunks, "Zstandard")?,
+            LZ4_CODEC_IDENTIFIER => increment(&mut report.lz4_chunks, "LZ4")?,
+            LZMA2_CODEC_IDENTIFIER => increment(&mut report.lzma2_chunks, "LZMA2")?,
+            codec => {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Unsupported,
+                    ReasonCode::UnknownCodec,
+                    codec.to_owned(),
+                ));
+            }
+        }
+        if !plan.transforms.is_empty() {
+            increment(&mut report.transformed_chunks, "transformed")?;
+        }
+    }
     report.similarity_cohorts = u64::try_from(cohorts.len())
         .map_err(|_| resource("similarity cohort count exceeds u64"))?;
     report.selected_plans = archive.transform_plans.clone();
@@ -387,11 +475,197 @@ fn plan_archive_with_id(
         planner_id: planner_id.to_owned(),
         store_chunks,
         zstandard_chunks,
+        lz4_chunks: 0,
+        lzma2_chunks: 0,
+        transformed_chunks: 0,
         dictionary_chunks: 0,
         lookback_chunks: 0,
         similarity_cohorts: 0,
         selected_plans,
     })
+}
+
+fn plan_archive_v4_independent(
+    archive: &mut Archive,
+    profile: CompressionProfile,
+    planner_id: &str,
+) -> Result<PlanningReport> {
+    let mut plans = BTreeMap::new();
+    let store = store_plan();
+    plans.insert(store.plan_id, store);
+    let mut store_chunks = 0_u64;
+    let mut zstandard_chunks = 0_u64;
+    let mut lz4_chunks = 0_u64;
+    let mut lzma2_chunks = 0_u64;
+    let mut transformed_chunks = 0_u64;
+
+    for chunk in archive.content_store.chunks.values_mut() {
+        if chunk.logical_len != u64::try_from(chunk.plaintext.len()).unwrap_or(u64::MAX)
+            || sha256_exact(&chunk.plaintext) != chunk.chunk_id
+        {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::ChunkDigestMismatch,
+                chunk.chunk_id.to_string(),
+            ));
+        }
+        let selected_plan = select_v4_plan(profile, &chunk.plaintext)?;
+        chunk.plan_ref = selected_plan.plan_id;
+        match selected_plan.codec.as_str() {
+            crate::identity::STORE_CODEC_IDENTIFIER => increment(&mut store_chunks, "STORE")?,
+            ZSTD_CODEC_IDENTIFIER => increment(&mut zstandard_chunks, "Zstandard")?,
+            LZ4_CODEC_IDENTIFIER => increment(&mut lz4_chunks, "LZ4")?,
+            LZMA2_CODEC_IDENTIFIER => increment(&mut lzma2_chunks, "LZMA2")?,
+            _ => {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Unsupported,
+                    ReasonCode::UnknownCodec,
+                    selected_plan.codec.clone(),
+                ));
+            }
+        }
+        if !selected_plan.transforms.is_empty() {
+            increment(&mut transformed_chunks, "transformed")?;
+        }
+        insert_plan(&mut plans, selected_plan)?;
+    }
+
+    archive.transform_plans = plans.into_values().collect::<Vec<_>>().into_boxed_slice();
+    archive.descriptor.planner_id = planner_id.to_owned();
+    archive.descriptor.decode = aggregate_decode_requirements(&archive.transform_plans);
+    Ok(PlanningReport {
+        planner_id: planner_id.to_owned(),
+        store_chunks,
+        zstandard_chunks,
+        lz4_chunks,
+        lzma2_chunks,
+        transformed_chunks,
+        dictionary_chunks: 0,
+        lookback_chunks: 0,
+        similarity_cohorts: 0,
+        selected_plans: archive.transform_plans.clone(),
+    })
+}
+
+fn v4_candidates(
+    profile: CompressionProfile,
+    plaintext: &[u8],
+) -> Result<(Vec<TransformPlan>, Vec<TransformPlan>)> {
+    let mut ordinary = vec![store_plan()];
+    let mut transformed = Vec::new();
+    match profile {
+        CompressionProfile::Fast => {
+            ordinary.push(lz4_plan(Box::default())?);
+            ordinary.push(zstd_plan(1)?);
+        }
+        CompressionProfile::Balanced => {
+            ordinary.push(lz4_plan(Box::default())?);
+            for level in [1, 3, 5] {
+                ordinary.push(zstd_plan(level)?);
+            }
+            if analyze(plaintext).likely_compressible {
+                transformed.push(zstd_transformed_plan(3, vec![delta8_step()].into())?);
+                transformed.push(zstd_transformed_plan(
+                    3,
+                    vec![byte_shuffle_step(4)?].into(),
+                )?);
+            }
+        }
+        CompressionProfile::Dense => {
+            for level in [5, 9, 15] {
+                ordinary.push(zstd_plan(level)?);
+            }
+            ordinary.push(lzma2_plan(4, 1024 * 1024, Box::default())?);
+            ordinary.push(lzma2_plan(6, 4 * 1024 * 1024, Box::default())?);
+            if analyze(plaintext).likely_compressible {
+                append_dense_transform_candidates(&mut transformed, false)?;
+            }
+        }
+        CompressionProfile::Extreme => {
+            ordinary.push(lz4_plan(Box::default())?);
+            for level in [9, 15, 19, 22] {
+                ordinary.push(zstd_plan(level)?);
+            }
+            ordinary.push(lzma2_plan(4, 1024 * 1024, Box::default())?);
+            ordinary.push(lzma2_plan(6, 4 * 1024 * 1024, Box::default())?);
+            ordinary.push(lzma2_plan(9, 8 * 1024 * 1024, Box::default())?);
+            if analyze(plaintext).likely_compressible {
+                append_dense_transform_candidates(&mut transformed, true)?;
+            }
+        }
+    }
+    Ok((ordinary, transformed))
+}
+
+fn select_v4_plan(profile: CompressionProfile, plaintext: &[u8]) -> Result<TransformPlan> {
+    let (ordinary, transformed) = v4_candidates(profile, plaintext)?;
+    let store_cost = complete_candidate_cost(&ordinary[0], plaintext)?;
+    let mut selected = (ordinary[0].clone(), store_cost);
+    for plan in ordinary.iter().skip(1) {
+        let cost = complete_candidate_cost(plan, plaintext)?;
+        if qualifies_v4(cost, store_cost)? && cost < selected.1 {
+            selected = (plan.clone(), cost);
+        }
+    }
+    let best_ordinary = selected.1;
+    for plan in transformed {
+        let cost = complete_candidate_cost(&plan, plaintext)?;
+        if qualifies_v4(cost, best_ordinary)? && cost < selected.1 {
+            selected = (plan, cost);
+        }
+    }
+    Ok(selected.0)
+}
+
+fn append_dense_transform_candidates(
+    candidates: &mut Vec<TransformPlan>,
+    extreme: bool,
+) -> Result<()> {
+    let transforms = [
+        delta8_step(),
+        byte_shuffle_step(2)?,
+        byte_shuffle_step(4)?,
+        byte_shuffle_step(8)?,
+    ];
+    for transform in transforms {
+        let steps = vec![transform].into_boxed_slice();
+        candidates.push(zstd_transformed_plan(
+            if extreme { 15 } else { 9 },
+            steps.clone(),
+        )?);
+        candidates.push(lzma2_plan(6, 4 * 1024 * 1024, steps.clone())?);
+        if extreme {
+            candidates.push(lzma2_plan(9, 8 * 1024 * 1024, steps)?);
+        }
+    }
+    Ok(())
+}
+
+fn complete_candidate_cost(plan: &TransformPlan, plaintext: &[u8]) -> Result<u64> {
+    let encoded = encode_payload(plan, plaintext)?;
+    u64::try_from(encoded.len())
+        .map_err(|_| resource("v4 candidate payload length exceeds u64"))?
+        .checked_add(encoded_plan_cost(plan)?)
+        .ok_or_else(|| resource("v4 complete candidate cost exceeds u64"))
+}
+
+fn qualifies_v4(candidate: u64, baseline: u64) -> Result<bool> {
+    let relative = baseline
+        .checked_mul(MINIMUM_GAIN_BASIS_POINTS)
+        .and_then(|value| value.checked_add(9_999))
+        .map(|value| value / 10_000)
+        .ok_or_else(|| resource("v4 minimum-gain calculation overflow"))?;
+    candidate
+        .checked_add(MINIMUM_GAIN_BYTES.max(relative))
+        .map(|cost| cost < baseline)
+        .ok_or_else(|| resource("v4 candidate cost overflow"))
+}
+
+fn increment(value: &mut u64, label: &str) -> Result<()> {
+    *value = value
+        .checked_add(1)
+        .ok_or_else(|| resource(format!("{label} Chunk count exceeds u64")))?;
+    Ok(())
 }
 
 enum CohortSelection {
@@ -410,9 +684,10 @@ fn select_cohort_plan(
     archive: &Archive,
     cohort: &SimilarityCohort,
     profile: CompressionProfile,
+    planner_id: &str,
     plans: &BTreeMap<u64, TransformPlan>,
 ) -> Result<CohortSelection> {
-    let independent_cost = cohort.chunks.iter().try_fold(0_u64, |total, chunk_id| {
+    let mut independent_cost = cohort.chunks.iter().try_fold(0_u64, |total, chunk_id| {
         let chunk = &archive.content_store.chunks[chunk_id];
         let plan = plans.get(&chunk.plan_ref).ok_or_else(|| {
             Diagnostic::new(
@@ -429,10 +704,30 @@ fn select_cohort_plan(
             )
             .ok_or_else(|| resource("independent cohort cost exceeds u64"))
     })?;
+    if planner_id.ends_with("-v4") {
+        let plan_ids = cohort
+            .chunks
+            .iter()
+            .map(|chunk_id| archive.content_store.chunks[chunk_id].plan_ref)
+            .collect::<std::collections::BTreeSet<_>>();
+        for plan_id in plan_ids {
+            independent_cost = independent_cost
+                .checked_add(encoded_plan_cost(plans.get(&plan_id).ok_or_else(
+                    || {
+                        Diagnostic::new(
+                            OutcomeClass::Unsupported,
+                            ReasonCode::UnknownTransformPlan,
+                            plan_id.to_string(),
+                        )
+                    },
+                )?)?)
+                .ok_or_else(|| resource("v4 independent cohort complete cost exceeds u64"))?;
+        }
+    }
     let mut best_cost = independent_cost;
     let mut best = CohortSelection::Independent;
 
-    if let Some(dictionary) = train_cohort_dictionary(archive, cohort, profile)? {
+    if let Some(dictionary) = train_cohort_dictionary(archive, cohort, profile, planner_id)? {
         let dictionary_cost = encoded_dictionary_cost(&dictionary)?
             .checked_add(DICTIONARY_SECTION_OVERHEAD_BYTES)
             .ok_or_else(|| resource("Dictionary section cost exceeds u64"))?;
@@ -508,6 +803,7 @@ fn train_cohort_dictionary(
     archive: &Archive,
     cohort: &SimilarityCohort,
     profile: CompressionProfile,
+    planner_id: &str,
 ) -> Result<Option<Dictionary>> {
     let policy = profile.similarity_policy();
     if policy.dictionary_bytes == 0 || profile.dictionary_levels().is_empty() {
@@ -532,7 +828,7 @@ fn train_cohort_dictionary(
         format: ZSTD_DICTIONARY_FORMAT.to_owned(),
         construction: format!(
             "{ZSTD_DICTIONARY_CONSTRUCTION_PREFIX}{}-digest-order-samples{}-sample-cap{}-dict-cap{}",
-            profile.planner_id(),
+            planner_id,
             policy.maximum_training_samples,
             policy.maximum_sample_bytes,
             policy.dictionary_bytes
@@ -718,8 +1014,12 @@ pub fn zstandard_wins(logical_len: u64, encoded_len: usize) -> Result<bool> {
 
 pub(crate) fn independent_encoded_len(
     profile: CompressionProfile,
+    planner_id: &str,
     plaintext: &[u8],
 ) -> Result<usize> {
+    if planner_id.ends_with("-v4") {
+        return Ok(encode_payload(&select_v4_plan(profile, plaintext)?, plaintext)?.len());
+    }
     let logical_len =
         u64::try_from(plaintext.len()).map_err(|_| resource("plaintext length exceeds u64"))?;
     let mut selected = plaintext.len();
@@ -747,12 +1047,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn profiles_expose_v3_and_preserve_frozen_v1_v2_identifiers() {
+    fn profiles_expose_v4_and_preserve_frozen_historical_identifiers() {
         assert_eq!(CompressionProfile::default(), CompressionProfile::Balanced);
-        assert_eq!(CompressionProfile::Fast.planner_id(), "fast-v3");
-        assert_eq!(CompressionProfile::Balanced.planner_id(), "balanced-v3");
-        assert_eq!(CompressionProfile::Dense.planner_id(), "dense-v3");
-        assert_eq!(CompressionProfile::Extreme.planner_id(), "extreme-v3");
+        assert_eq!(CompressionProfile::Fast.planner_id(), "fast-v4");
+        assert_eq!(CompressionProfile::Balanced.planner_id(), "balanced-v4");
+        assert_eq!(CompressionProfile::Dense.planner_id(), "dense-v4");
+        assert_eq!(CompressionProfile::Extreme.planner_id(), "extreme-v4");
+        assert_eq!(CompressionProfile::Fast.planner_v3_id(), "fast-v3");
+        assert_eq!(CompressionProfile::Balanced.planner_v3_id(), "balanced-v3");
+        assert_eq!(CompressionProfile::Dense.planner_v3_id(), "dense-v3");
+        assert_eq!(CompressionProfile::Extreme.planner_v3_id(), "extreme-v3");
         assert_eq!(CompressionProfile::Fast.planner_v2_id(), "fast-v2");
         assert_eq!(CompressionProfile::Balanced.planner_v2_id(), "balanced-v2");
         assert_eq!(CompressionProfile::Dense.planner_v2_id(), "dense-v2");
@@ -792,6 +1096,46 @@ mod tests {
         assert!(!zstandard_wins(100, 52).unwrap());
         assert!(zstandard_wins(100, 51).unwrap());
         assert!(!zstandard_wins(49, 1).unwrap());
+    }
+
+    #[test]
+    fn v4_measured_candidates_cover_store_speed_density_and_transforms() {
+        let noise = deterministic_noise(16 * 1024);
+        let store = select_v4_plan(CompressionProfile::Extreme, &noise).unwrap();
+        assert_eq!(store.codec, crate::identity::STORE_CODEC_IDENTIFIER);
+
+        let small_repetition = vec![b'x'; 512];
+        let speed = select_v4_plan(CompressionProfile::Fast, &small_repetition).unwrap();
+        assert_eq!(speed.codec, LZ4_CODEC_IDENTIFIER, "selected {speed:?}");
+
+        let numeric = (0_u32..65_536)
+            .flat_map(u32::to_le_bytes)
+            .collect::<Vec<_>>();
+        let transformed = select_v4_plan(CompressionProfile::Dense, &numeric).unwrap();
+        assert!(
+            !transformed.transforms.is_empty(),
+            "selected {transformed:?}"
+        );
+
+        let text = (0..8_192)
+            .flat_map(|index| format!("record {index:06}: alpha beta gamma delta\n").into_bytes())
+            .collect::<Vec<_>>();
+        let density = select_v4_plan(CompressionProfile::Extreme, &text).unwrap();
+        assert!(
+            matches!(
+                density.codec.as_str(),
+                ZSTD_CODEC_IDENTIFIER | LZMA2_CODEC_IDENTIFIER
+            ),
+            "selected {density:?}"
+        );
+
+        let block = deterministic_noise(1_100_000);
+        let long_distance = [block.as_slice(), block.as_slice()].concat();
+        let density_specialist = select_v4_plan(CompressionProfile::Dense, &long_distance).unwrap();
+        assert_eq!(
+            density_specialist.codec, LZMA2_CODEC_IDENTIFIER,
+            "selected {density_specialist:?}"
+        );
     }
 
     fn deterministic_noise(len: usize) -> Vec<u8> {

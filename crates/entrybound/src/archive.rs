@@ -13,7 +13,7 @@ pub use filesystem::{
 };
 pub use inspection::{
     ArchiveInspection, ChunkStatistics, CodecUsage, CompressionExplanation, CrossFileInspection,
-    ListedEntry, PlanInspection, explain, inspect, list,
+    ListedEntry, PlanInspection, TransformUsage, explain, inspect, list,
 };
 
 /// Explicit, deliberately generous limits for the experimental bootstrap CLI.
@@ -34,14 +34,14 @@ pub const fn bootstrap_resource_policy() -> ResourceBudget {
 
 /// Decoder memory ceilings used by the experimental CLI.
 ///
-/// V3 archives add stored Dictionary residency and bounded group access bytes
-/// to the 4 MiB Zstandard working set. Applications may provide narrower
+/// V4 archives may require an explicitly recorded LZMA2 dictionary while v3
+/// adds Dictionary residency and bounded group access bytes. Applications may provide narrower
 /// caller-owned policy.
 #[must_use]
 pub const fn bootstrap_decode_policy() -> DecodeRequirements {
     DecodeRequirements {
-        window_bytes: 1024 * 1024,
-        working_set_bytes: 64 * 1024 * 1024,
+        window_bytes: 8 * 1024 * 1024,
+        working_set_bytes: 128 * 1024 * 1024,
         flags: 0,
     }
 }

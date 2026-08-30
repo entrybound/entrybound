@@ -6,9 +6,9 @@ use super::records::{
     encode_dictionaries, encode_fidelity, encode_index, encode_manifest, encode_transform_plans,
 };
 use super::{
-    CHUNK_FRAME_HEADER_LEN, CHUNK_FRAME_V2_HEADER_LEN, FEATURE_CROSS_FILE_COMPRESSION_V1,
-    FOOTER_LEN, FORMAT_NAMESPACE, FormatVersion, MAGIC, PREAMBLE_LEN, SECTION_HEADER_LEN,
-    SUPPORTED_INCOMPAT_FEATURES, SectionKind,
+    CHUNK_FRAME_HEADER_LEN, CHUNK_FRAME_V2_HEADER_LEN, FEATURE_CODEC_TRANSFORM_V1,
+    FEATURE_CROSS_FILE_COMPRESSION_V1, FOOTER_LEN, FORMAT_NAMESPACE, FormatVersion, MAGIC,
+    PREAMBLE_LEN, SECTION_HEADER_LEN, SUPPORTED_INCOMPAT_FEATURES, SectionKind,
 };
 use crate::codec::{
     PlanMode, aggregate_archive_decode_requirements, decode_payload,
@@ -96,7 +96,22 @@ pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> 
     validate_feature_model(input)?;
     let (mut archive, roots) = apply_native_identities(input)?;
     let extended = has_cross_file_feature(archive.descriptor.features);
-    let plans_payload = encode_transform_plans(&archive.transform_plans)?;
+    for plan in &archive.transform_plans {
+        let required = crate::codec::required_features(plan)?;
+        if required & !archive.descriptor.features.incompat != 0 {
+            return Err(Diagnostic::new(
+                OutcomeClass::Unsupported,
+                ReasonCode::UnsupportedRequiredFeature,
+                format!(
+                    "TransformPlan {} requires undeclared incompat feature bits {:016x}",
+                    plan.plan_id,
+                    required & !archive.descriptor.features.incompat
+                ),
+            ));
+        }
+    }
+    let transform_steps = has_codec_transform_feature(archive.descriptor.features);
+    let plans_payload = encode_transform_plans(&archive.transform_plans, transform_steps)?;
     let dictionaries_payload = encode_dictionaries(&archive.content_store.dictionaries)?;
     let groups_payload = encode_chunk_groups(&archive.content_store.chunk_groups)?;
     let (chunk_payload, relative_index) = encode_chunks(&archive, extended)?;
@@ -300,7 +315,10 @@ pub fn open_with_limits(
             "unsupported descriptor namespace, identity profile, or digest algorithm",
         ));
     }
-    let plans = decode_transform_plans(plans_section.payload)?;
+    let plans = decode_transform_plans(
+        plans_section.payload,
+        has_codec_transform_feature(preamble.features),
+    )?;
     let (chunks, physical_order, rebuilt_index) = decode_chunks(
         chunks_section.payload,
         chunks_section
@@ -490,6 +508,10 @@ fn enforce_decode_policy(declared: DecodeRequirements, policy: DecodeRequirement
 
 fn has_cross_file_feature(features: FeatureSet) -> bool {
     features.incompat & FEATURE_CROSS_FILE_COMPRESSION_V1 != 0
+}
+
+fn has_codec_transform_feature(features: FeatureSet) -> bool {
+    features.incompat & FEATURE_CODEC_TRANSFORM_V1 != 0
 }
 
 fn validate_feature_model(archive: &Archive) -> Result<()> {

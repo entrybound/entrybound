@@ -29,13 +29,16 @@ establishes:
   section structure, plaintext content, Entry identities, LAI, PCR, AUX, and
   exact-byte PCI;
 - optional Index validation and rebuilding from authoritative CHUNK_DATA.
-- deterministic creation-time compression planning with historical v1/v2
-  compatibility and current `fast-v3`, `balanced-v3`, `dense-v3`, and
-  `extreme-v3` policies;
+- deterministic creation-time compression planning with historical v1/v2/v3
+  compatibility and current `fast-v4`, `balanced-v4`, `dense-v4`, and
+  `extreme-v4` policies;
 - normalized Gear-hash content-defined chunking with versioned min/target/max
   parameters and archive-wide exact plaintext Chunk deduplication;
-- operational per-Chunk STORE and Zstandard TransformPlans, with declared and
-  caller-enforced decoder-memory requirements;
+- governed codec/transform registries and operational per-Chunk STORE,
+  Zstandard, LZ4, and raw LZMA2 TransformPlans, with declared and caller-enforced
+  decoder-memory requirements;
+- first-class ordered `delta8/v1` and `byte-shuffle/v1` structural-transform
+  pipelines whose recorded parameters fully determine inverse decoding;
 - deterministic binary similarity cohorts, cost-qualified shared Zstandard
   dictionaries, and explicitly bounded ChunkGroups for dense/extreme packing;
 - deterministic filesystem packing for UTF-8 directory and regular-file
@@ -73,13 +76,13 @@ self-describing decompression.
 ## Deliberately not implemented
 
 This slice uses deterministic normalized content-defined chunking, stores each
-exact plaintext Chunk once, and chooses independent, shared-dictionary, or
-bounded-lookback STORE/Zstandard representations only when complete physical
-cost improves. It writes only unencrypted Complete INDEXED archives. It
+exact plaintext Chunk once, and measures complete-cost candidates across
+STORE, Zstandard, LZ4, raw LZMA2, structural pipelines, shared Zstandard
+dictionaries, and bounded Zstandard lookback. It writes only unencrypted Complete INDEXED archives. It
 supports UTF-8 directory names, directories, and regular files, and deliberately
 rejects symlinks and special files. There is no legacy ZIP/tar/7z import,
-STREAM layout, encryption, signing, additional codecs, content-specific
-parsers, unbounded solid compression, reconstructive transforms, hardlink
+STREAM layout, encryption, signing, content-specific parsers, unbounded solid
+compression, format-specific reconstructive transforms, hardlink
 metadata, ACLs, xattrs, ownership, platform-specific extended metadata,
 mounting, recovery, language bindings, Go compatibility layer, or FFI.
 
@@ -90,9 +93,9 @@ reports this confinement mode. Only collision policy `Refuse` is implemented.
 
 The CLI's explicit bootstrap resource defaults are 1,000,000 entries, 64 GiB
 total logical bytes, 16 GiB per file, 4,000,000 chunks, path depth 1,024, and
-1 GiB of manifest/metadata bytes. Decoder policy permits the current 1 MiB
-Zstandard window and 64 MiB aggregate working set, including stored dictionary
-and bounded-group access requirements. These are compatibility
+1 GiB of manifest/metadata bytes. Decoder policy permits an 8 MiB codec window
+and 128 MiB aggregate working set, including LZMA2, stored-dictionary, and
+bounded-group access requirements. These are compatibility
 limits, not claims that every machine can safely process archives of those
 sizes; embedders can and should supply narrower caller-owned limits.
 
@@ -126,5 +129,7 @@ for capture, confinement, and policy behavior,
 minimum-gain rule, [the CDC/deduplication note](docs/chunking-v1.md) for v2
 chunking policies and exact physical sharing,
 [the cross-file compression note](docs/cross-file-compression-v1.md) for v3
-similarity, Dictionary, and bounded ChunkGroup behavior, and
+similarity, Dictionary, and bounded ChunkGroup behavior,
+[the codec/transform note](docs/codec-transform-v1.md) for v4 registries,
+candidate sets, wire feature, and exact reversible transforms, and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

@@ -28,8 +28,9 @@ Usage:\n\
 \n\
 This build supports unencrypted Complete INDEXED archives with directories,\n\
 regular files, normalized content-defined chunking, archive-wide exact dedup,\n\
-and per-unique-Chunk STORE/Zstandard planning with optional shared dictionaries\n\
-and explicitly bounded ChunkGroups in dense/extreme archives.\n\
+and per-unique-Chunk STORE, Zstandard, LZ4, and LZMA2 planning, reversible\n\
+structural transforms, optional shared dictionaries, and explicitly bounded\n\
+ChunkGroups in dense/extreme archives.\n\
 The default creation profile is balanced; decoding is self-describing.\n";
 
 const PACK_HELP: &str = "\
@@ -203,6 +204,10 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
         "features: incompat={:#x}, read-only-compat={:#x}, compat={:#x}",
         view.features.incompat, view.features.read_only_compat, view.features.compat
     );
+    println!(
+        "codec/transform registry feature: {}",
+        view.codec_transform_feature_present
+    );
     println!("planner: {}", view.planner_id);
     println!("chunker: {}", view.chunker_id);
     println!(
@@ -230,9 +235,14 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
     );
     for plan in view.plans {
         println!(
-            "transform plan: id={} {} (codec {}; dictionary={}; window={}, working-set={}, flags={:#x})",
+            "transform plan: id={} {} (pipeline={}; codec {}; dictionary={}; window={}, working-set={}, flags={:#x})",
             plan.plan_id,
             plan.identifier,
+            if plan.transforms.is_empty() {
+                "none".to_owned()
+            } else {
+                plan.transforms.join(" -> ")
+            },
             plan.codec,
             plan.dictionary
                 .map_or_else(|| "none".to_owned(), |value| value.to_string()),
@@ -245,6 +255,13 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
         println!(
             "codec usage: {} chunks={}, logical-bytes={}, stored-bytes={}",
             usage.codec, usage.chunk_count, usage.logical_bytes, usage.stored_bytes
+        );
+    }
+    println!("transformed chunks: {}", view.transformed_chunk_count);
+    for usage in view.transform_usage {
+        println!(
+            "transform usage: {} chunks={}",
+            usage.transform, usage.chunk_count
         );
     }
     println!("LAI: {}", view.identities.lai.0);
@@ -342,6 +359,24 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
         "bounded-lookback payload savings: {} bytes",
         explanation.bounded_lookback_savings_bytes
     );
+    println!(
+        "structural-transform payload savings: {} bytes (transformed chunks: {}, rejected eligible chunks: {})",
+        explanation.structural_transform_savings_bytes,
+        explanation.transformed_chunk_count,
+        explanation.transform_rejected_chunk_count
+    );
+    for usage in explanation.transform_usage {
+        println!(
+            "transform usage: {} chunks={}",
+            usage.transform, usage.chunk_count
+        );
+    }
+    for pipeline in explanation.representative_pipelines {
+        println!("selected pipeline: {pipeline}");
+    }
+    if let Some(reason) = explanation.transform_rejection_reason {
+        println!("transform candidate rule: {reason}");
+    }
     println!(
         "similarity cohorts: count={}, chunks={}, logical-bytes={}, independently-encoded={}",
         explanation.similarity_cohort_count,

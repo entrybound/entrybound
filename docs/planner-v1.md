@@ -2,7 +2,8 @@
 
 Status: frozen codec-selection behavior retained for historical fixed-chunk
 archives and inherited unchanged by the CDC-aware v2 and cross-file-aware v3
-policies for their independent baseline candidates.
+policies for their independent baseline candidates. V4 preserves those IDs and
+adds a separately frozen multi-codec baseline.
 
 The planner accepts validated plaintext Chunks and one public profile. It emits
 explicit TransformPlans and per-Chunk plan references before ECF serialization.
@@ -54,8 +55,8 @@ v2 and v3 profiles may select different CDC policies, in which case PCR
 changes. PCI hashes every exact container byte and therefore captures planner,
 plan, chunking, and encoded-payload differences.
 
-Current public profiles create `*-v3` archives. They preserve this independent
-selection behavior, then compare complete-cost Dictionary and, for dense or
-extreme, bounded ChunkGroup candidates. See
-[cross-file-compression-v1.md](cross-file-compression-v1.md). No v1 or v2
-planner behavior was redefined.
+Current public profiles create `*-v4` archives. Frozen v3 preserves this
+independent selection behavior before complete-cost Dictionary and bounded
+ChunkGroup choices. V4 broadens the independent baseline as documented in
+[codec-transform-v1.md](codec-transform-v1.md), then retains the v3 cross-file
+strategy. No v1, v2, or v3 planner behavior was redefined.

@@ -6,6 +6,7 @@ use crate::eam::{
     ChunkGroup, Criticality, Dictionary, Digest, Entry, EntryData, EntryIdentity, EntrySet,
     FidelityIssue, FidelityReport, LogicalPath, MetadataItem, MetadataName, MetadataSet,
     PathComponent, PathEncoding, Restorability, Timestamp, TimestampPrecision, TransformPlan,
+    TransformStep,
 };
 
 pub(super) const RECORD_DESCRIPTOR: u16 = 1;
@@ -20,6 +21,7 @@ const RECORD_TIMESTAMP: u16 = 9;
 const RECORD_FIDELITY_ISSUE: u16 = 10;
 pub(super) const RECORD_DICTIONARY: u16 = 11;
 pub(super) const RECORD_CHUNK_GROUP: u16 = 12;
+pub(super) const RECORD_TRANSFORM_STEP: u16 = 13;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) struct DescriptorBody {
@@ -71,7 +73,10 @@ pub(super) fn decode_descriptor(bytes: &[u8]) -> Result<DescriptorBody> {
     Ok(value)
 }
 
-pub(super) fn encode_transform_plans(plans: &[TransformPlan]) -> Result<Vec<u8>> {
+pub(super) fn encode_transform_plans(
+    plans: &[TransformPlan],
+    transform_steps: bool,
+) -> Result<Vec<u8>> {
     let mut encoded = Vec::new();
     let mut previous = None;
     for plan in plans {
@@ -81,11 +86,21 @@ pub(super) fn encode_transform_plans(plans: &[TransformPlan]) -> Result<Vec<u8>>
             ));
         }
         previous = Some(plan.plan_id);
-        let transforms = plan
-            .transforms
-            .iter()
-            .map(|value| value.as_bytes().to_vec())
-            .collect::<Vec<_>>();
+        if !transform_steps && !plan.transforms.is_empty() {
+            return Err(Diagnostic::new(
+                OutcomeClass::Unsupported,
+                ReasonCode::UnsupportedRequiredFeature,
+                "first-class TransformSteps require codec-transform-v1",
+            ));
+        }
+        let transforms = if transform_steps {
+            plan.transforms
+                .iter()
+                .map(encode_transform_step)
+                .collect::<Result<Vec<_>>>()?
+        } else {
+            Vec::new()
+        };
         let mut record = RecordBuilder::new(RECORD_TRANSFORM_PLAN);
         record
             .u64(1, plan.plan_id)?
@@ -105,7 +120,10 @@ pub(super) fn encode_transform_plans(plans: &[TransformPlan]) -> Result<Vec<u8>>
     Ok(encoded)
 }
 
-pub(super) fn decode_transform_plans(bytes: &[u8]) -> Result<Box<[TransformPlan]>> {
+pub(super) fn decode_transform_plans(
+    bytes: &[u8],
+    transform_steps: bool,
+) -> Result<Box<[TransformPlan]>> {
     let records = decode_record_stream(bytes)?;
     let mut plans = Vec::with_capacity(records.len());
     let mut previous = None;
@@ -114,16 +132,21 @@ pub(super) fn decode_transform_plans(bytes: &[u8]) -> Result<Box<[TransformPlan]
             return Err(noncanonical("TRANSFORM_PLANS contains a non-plan record"));
         }
         record.expect_tags(&[1, 2, 3, 4, 5, 7, 8, 9], &[6])?;
-        let transforms = record
-            .field(3)?
-            .as_sequence()?
-            .into_iter()
-            .map(|value| {
-                std::str::from_utf8(value)
-                    .map(str::to_owned)
-                    .map_err(|_| noncanonical("transform identifier is not UTF-8"))
-            })
-            .collect::<Result<Vec<_>>>()?;
+        let transform_items = record.field(3)?.as_sequence()?;
+        let transforms = if transform_steps {
+            transform_items
+                .into_iter()
+                .map(decode_transform_step)
+                .collect::<Result<Vec<_>>>()?
+        } else if transform_items.is_empty() {
+            Vec::new()
+        } else {
+            return Err(Diagnostic::new(
+                OutcomeClass::Unsupported,
+                ReasonCode::UnknownTransform,
+                "legacy transform-string placeholders were never operational",
+            ));
+        };
         let plan_id = record.field(1)?.as_u64()?;
         if previous.is_some_and(|id| id >= plan_id) {
             return Err(noncanonical(
@@ -150,10 +173,36 @@ pub(super) fn decode_transform_plans(bytes: &[u8]) -> Result<Box<[TransformPlan]
     }
     let plans = plans.into_boxed_slice();
     crate::codec::validate_plans(&plans)?;
-    if encode_transform_plans(&plans)? != bytes {
+    if encode_transform_plans(&plans, transform_steps)? != bytes {
         return Err(noncanonical("TransformPlan records are not canonical"));
     }
     Ok(plans)
+}
+
+fn encode_transform_step(step: &TransformStep) -> Result<Vec<u8>> {
+    let mut record = RecordBuilder::new(RECORD_TRANSFORM_STEP);
+    record
+        .utf8(1, &step.transform_id)?
+        .bytes(2, &step.parameters)?;
+    record.finish()
+}
+
+fn decode_transform_step(bytes: &[u8]) -> Result<TransformStep> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() || record.kind != RECORD_TRANSFORM_STEP {
+        return Err(noncanonical(
+            "TransformStep sequence item must be exactly one step record",
+        ));
+    }
+    record.expect_tags(&[1, 2], &[])?;
+    let step = TransformStep {
+        transform_id: record.field(1)?.as_utf8()?.to_owned(),
+        parameters: record.field(2)?.as_bytes()?.into(),
+    };
+    if encode_transform_step(&step)? != bytes {
+        return Err(noncanonical("TransformStep record is not canonical"));
+    }
+    Ok(step)
 }
 
 pub(super) fn encode_dictionaries(dictionaries: &BTreeMap<Digest, Dictionary>) -> Result<Vec<u8>> {
@@ -733,7 +782,9 @@ fn duplicate(detail: impl Into<String>) -> Diagnostic {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::codec::zstd_transformed_plan;
     use crate::identity::sha256_exact;
+    use crate::transform::{BYTE_SHUFFLE_ID, byte_shuffle_step, delta8_step};
 
     #[test]
     fn duplicate_dictionary_records_are_typed_nonconformance() {
@@ -752,6 +803,73 @@ mod tests {
         assert_eq!(
             decode_dictionaries(&duplicate).unwrap_err().code(),
             ReasonCode::DuplicateSemanticDeclaration
+        );
+    }
+
+    #[test]
+    fn transform_steps_are_canonical_decoder_facing_records() {
+        let plan =
+            zstd_transformed_plan(3, vec![delta8_step(), byte_shuffle_step(4).unwrap()].into())
+                .unwrap();
+        let encoded = encode_transform_plans(std::slice::from_ref(&plan), true).unwrap();
+        assert_eq!(
+            decode_transform_plans(&encoded, true).unwrap().as_ref(),
+            &[plan]
+        );
+        assert_eq!(
+            decode_transform_plans(&encoded, false).unwrap_err().code(),
+            ReasonCode::UnknownTransform
+        );
+    }
+
+    #[test]
+    fn generated_transform_and_codec_conformance_cases_are_typed() {
+        let base = crate::codec::zstd_plan(3).unwrap();
+        let cases = [
+            (
+                "ECF-TRANSFORM-UNKNOWN-001",
+                TransformStep {
+                    transform_id: "unknown-transform/v1".to_owned(),
+                    parameters: Box::default(),
+                },
+                ReasonCode::UnknownTransform,
+            ),
+            (
+                "ECF-TRANSFORM-PARAMETERS-001",
+                TransformStep {
+                    transform_id: BYTE_SHUFFLE_ID.to_owned(),
+                    parameters: Box::from([3]),
+                },
+                ReasonCode::InvalidTransformParameters,
+            ),
+        ];
+        for (test_id, step, expected) in cases {
+            let mut plan = base.clone();
+            plan.transforms = vec![step].into_boxed_slice();
+            let bytes = encode_transform_plans(&[plan], true).unwrap();
+            assert_eq!(
+                decode_transform_plans(&bytes, true).unwrap_err().code(),
+                expected,
+                "{test_id}: TransformStep registry invariant"
+            );
+        }
+
+        let mut duplicate = base.clone();
+        duplicate.transforms = vec![delta8_step(), delta8_step()].into_boxed_slice();
+        let bytes = encode_transform_plans(&[duplicate], true).unwrap();
+        assert_eq!(
+            decode_transform_plans(&bytes, true).unwrap_err().code(),
+            ReasonCode::DuplicateSemanticDeclaration,
+            "ECF-TRANSFORM-DUPLICATE-001: one ordered step per transform family"
+        );
+
+        let mut unknown_codec = base;
+        unknown_codec.codec = "unknown-codec/v1".to_owned();
+        let bytes = encode_transform_plans(&[unknown_codec], true).unwrap();
+        assert_eq!(
+            decode_transform_plans(&bytes, true).unwrap_err().code(),
+            ReasonCode::UnknownCodec,
+            "ECF-CODEC-UNKNOWN-001: archive strings cannot select unregistered code"
         );
     }
 }

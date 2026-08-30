@@ -24,8 +24,16 @@ pub struct PlanInspection {
     pub plan_id: u64,
     pub identifier: String,
     pub codec: String,
+    pub transforms: Vec<String>,
     pub dictionary: Option<crate::eam::Digest>,
     pub decode: DecodeRequirements,
+}
+
+/// Actual unique Chunk usage for one recorded structural transform.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TransformUsage {
+    pub transform: String,
+    pub chunk_count: u64,
 }
 
 /// Actual unique Chunk usage for one recorded codec.
@@ -83,6 +91,12 @@ pub struct CompressionExplanation {
     pub ordinary_codec_savings_bytes: i128,
     pub shared_dictionary_savings_bytes: i128,
     pub bounded_lookback_savings_bytes: i128,
+    pub structural_transform_savings_bytes: i128,
+    pub transformed_chunk_count: u64,
+    pub transform_rejected_chunk_count: u64,
+    pub transform_usage: Vec<TransformUsage>,
+    pub representative_pipelines: Vec<String>,
+    pub transform_rejection_reason: Option<String>,
     pub dictionary_storage_bytes: u64,
     pub similarity_cohort_count: u64,
     pub similarity_cohort_chunks: u64,
@@ -101,10 +115,13 @@ pub struct ArchiveInspection {
     pub entry_count: u64,
     pub total_logical_bytes: u64,
     pub features: FeatureSet,
+    pub codec_transform_feature_present: bool,
     pub planner_id: String,
     pub chunker_id: String,
     pub plans: Vec<PlanInspection>,
     pub codec_usage: Vec<CodecUsage>,
+    pub transform_usage: Vec<TransformUsage>,
+    pub transformed_chunk_count: u64,
     pub chunks: ChunkStatistics,
     pub cross_file: CrossFileInspection,
     pub identities: IdentitySet,
@@ -153,6 +170,9 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
             .map_err(|_| resource("entry count exceeds u64"))?,
         total_logical_bytes: archive.total_logical_size()?,
         features: archive.descriptor.features,
+        codec_transform_feature_present: archive.descriptor.features.incompat
+            & crate::ecf::FEATURE_CODEC_TRANSFORM_V1
+            != 0,
         planner_id: archive.descriptor.planner_id.clone(),
         chunker_id: archive.descriptor.chunker_id.clone(),
         plans: archive
@@ -162,11 +182,18 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
                 plan_id: plan.plan_id,
                 identifier: plan.identifier.clone(),
                 codec: plan.codec.clone(),
+                transforms: plan
+                    .transforms
+                    .iter()
+                    .map(crate::transform::display_step)
+                    .collect(),
                 dictionary: plan.dictionary,
                 decode: plan.decode,
             })
             .collect(),
         codec_usage: codec_usage(opened)?,
+        transform_usage: transform_usage(archive)?,
+        transformed_chunk_count: transformed_chunk_count(archive)?,
         chunks,
         cross_file,
         identities: opened.report.identities,
@@ -197,6 +224,7 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
         ordinary_codec_savings_bytes,
         shared_dictionary_savings_bytes,
         bounded_lookback_savings_bytes,
+        structural_transform_savings_bytes,
     ) = separated_codec_savings(opened)?;
     let (
         similarity_cohort_count,
@@ -222,6 +250,24 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
         ordinary_codec_savings_bytes,
         shared_dictionary_savings_bytes,
         bounded_lookback_savings_bytes,
+        structural_transform_savings_bytes,
+        transformed_chunk_count: transformed_chunk_count(&opened.archive)?,
+        transform_rejected_chunk_count: transform_rejected_chunk_count(&opened.archive)?,
+        transform_usage: transform_usage(&opened.archive)?,
+        representative_pipelines: opened
+            .archive
+            .transform_plans
+            .iter()
+            .filter(|plan| !plan.transforms.is_empty())
+            .map(|plan| plan.identifier.clone())
+            .take(8)
+            .collect(),
+        transform_rejection_reason: opened
+            .archive
+            .descriptor
+            .planner_id
+            .ends_with("-v4")
+            .then(|| "transform candidates remained unselected where their complete encoded payload plus canonical plan cost did not clear the frozen gain threshold".to_owned()),
         dictionary_storage_bytes: opened
             .archive
             .content_store
@@ -300,7 +346,7 @@ fn cross_file_statistics(archive: &Archive) -> Result<CrossFileInspection> {
     })
 }
 
-fn separated_codec_savings(opened: &OpenedArchive) -> Result<(i128, i128, i128)> {
+fn separated_codec_savings(opened: &OpenedArchive) -> Result<(i128, i128, i128, i128)> {
     let archive = &opened.archive;
     let profile = CompressionProfile::from_planner_id(&archive.descriptor.planner_id);
     let plans = archive
@@ -311,17 +357,28 @@ fn separated_codec_savings(opened: &OpenedArchive) -> Result<(i128, i128, i128)>
     let mut ordinary = 0_i128;
     let mut dictionary = 0_i128;
     let mut lookback = 0_i128;
+    let mut transforms = 0_i128;
     for (chunk_id, chunk) in &archive.content_store.chunks {
         let stored = archive.index.chunks[chunk_id].stored_len;
         let baseline = match profile {
-            Some(profile) => independent_encoded_len(profile, &chunk.plaintext)?,
+            Some(profile) => {
+                independent_encoded_len(profile, &archive.descriptor.planner_id, &chunk.plaintext)?
+            }
             None => chunk.plaintext.len(),
         };
         let baseline = i128::try_from(baseline)
             .map_err(|_| resource("independent payload length exceeds i128"))?;
         match crate::codec::plan_mode(plans[&chunk.plan_ref])? {
             crate::codec::PlanMode::Independent => {
-                if plans[&chunk.plan_ref].codec == "zstandard/v1" {
+                let plan = plans[&chunk.plan_ref];
+                if !plan.transforms.is_empty() {
+                    let base = crate::codec::without_transforms(plan)?;
+                    let base_stored = crate::codec::encode_payload(&base, &chunk.plaintext)?;
+                    let base_stored = i128::try_from(base_stored.len())
+                        .map_err(|_| resource("base codec payload length exceeds i128"))?;
+                    ordinary += i128::from(chunk.logical_len) - base_stored;
+                    transforms += base_stored - i128::from(stored);
+                } else if plan.codec != "store/v1" {
                     ordinary += i128::from(chunk.logical_len) - i128::from(stored);
                 }
             }
@@ -335,14 +392,16 @@ fn separated_codec_savings(opened: &OpenedArchive) -> Result<(i128, i128, i128)>
             }
         }
     }
-    Ok((ordinary, dictionary, lookback))
+    Ok((ordinary, dictionary, lookback, transforms))
 }
 
 fn similarity_statistics(archive: &Archive) -> Result<(u64, u64, u64, u64)> {
     let Some(profile) = CompressionProfile::from_planner_id(&archive.descriptor.planner_id) else {
         return Ok((0, 0, 0, 0));
     };
-    if !archive.descriptor.planner_id.ends_with("-v3") {
+    if !archive.descriptor.planner_id.ends_with("-v3")
+        && !archive.descriptor.planner_id.ends_with("-v4")
+    {
         return Ok((0, 0, 0, 0));
     }
     let cohorts = cluster(&archive.content_store.chunks, profile.similarity_policy());
@@ -379,6 +438,78 @@ fn similarity_statistics(archive: &Archive) -> Result<(u64, u64, u64, u64)> {
         cohort_bytes,
         u64::try_from(independent).map_err(|_| resource("independent cohort count exceeds u64"))?,
     ))
+}
+
+fn transformed_chunk_count(archive: &Archive) -> Result<u64> {
+    let plans = archive
+        .transform_plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
+    u64::try_from(
+        archive
+            .content_store
+            .chunks
+            .values()
+            .filter(|chunk| !plans[&chunk.plan_ref].transforms.is_empty())
+            .count(),
+    )
+    .map_err(|_| resource("transformed Chunk count exceeds u64"))
+}
+
+fn transform_usage(archive: &Archive) -> Result<Vec<TransformUsage>> {
+    let plans = archive
+        .transform_plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
+    let mut usage = BTreeMap::<String, u64>::new();
+    for chunk in archive.content_store.chunks.values() {
+        for step in &plans[&chunk.plan_ref].transforms {
+            let value = usage
+                .entry(crate::transform::display_step(step))
+                .or_default();
+            *value = value
+                .checked_add(1)
+                .ok_or_else(|| resource("transform usage count exceeds u64"))?;
+        }
+    }
+    Ok(usage
+        .into_iter()
+        .map(|(transform, chunk_count)| TransformUsage {
+            transform,
+            chunk_count,
+        })
+        .collect())
+}
+
+fn transform_rejected_chunk_count(archive: &Archive) -> Result<u64> {
+    if !archive.descriptor.planner_id.ends_with("-v4") {
+        return Ok(0);
+    }
+    let Some(profile) = CompressionProfile::from_planner_id(&archive.descriptor.planner_id) else {
+        return Ok(0);
+    };
+    if profile == CompressionProfile::Fast {
+        return Ok(0);
+    }
+    let plans = archive
+        .transform_plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
+    u64::try_from(
+        archive
+            .content_store
+            .chunks
+            .values()
+            .filter(|chunk| {
+                crate::planner::analyze(&chunk.plaintext).likely_compressible
+                    && plans[&chunk.plan_ref].transforms.is_empty()
+            })
+            .count(),
+    )
+    .map_err(|_| resource("rejected transform candidate count exceeds u64"))
 }
 
 fn chunk_statistics(archive: &Archive) -> Result<ChunkStatistics> {

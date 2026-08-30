@@ -432,10 +432,17 @@ pub struct DecodeRequirements {
 
 /// A decoder-facing plan. The planner itself is not needed to decode it.
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TransformStep {
+    pub transform_id: String,
+    pub parameters: Box<[u8]>,
+}
+
+/// A decoder-facing plan. The planner itself is not needed to decode it.
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TransformPlan {
     pub plan_id: u64,
     pub identifier: String,
-    pub transforms: Box<[String]>,
+    pub transforms: Box<[TransformStep]>,
     pub codec: String,
     pub codec_params: Box<[u8]>,
     pub dictionary: Option<Digest>,

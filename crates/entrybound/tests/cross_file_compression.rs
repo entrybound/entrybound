@@ -14,7 +14,9 @@ use entrybound::ecf::{
     verify,
 };
 use entrybound::identity::sha256_exact;
-use entrybound::planner::{CompressionProfile, UNPLANNED_PLAN_ID, plan_archive_v2};
+use entrybound::planner::{
+    CompressionProfile, UNPLANNED_PLAN_ID, plan_archive_v2, plan_archive_v3,
+};
 
 static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
 
@@ -36,7 +38,7 @@ fn balanced_uses_one_shared_dictionary_and_keeps_independent_access() {
     let opened = open(&first.bytes).unwrap();
     verify(&first.bytes).unwrap();
     let view = inspect(&opened).unwrap();
-    assert_eq!(view.planner_id, "balanced-v3");
+    assert_eq!(view.planner_id, "balanced-v4");
     assert_eq!(view.cross_file.dictionary_count, 1);
     assert!(view.cross_file.dictionary_bytes <= 8 * 1024);
     assert!(view.cross_file.dictionary_backed_chunks >= 8);
@@ -58,6 +60,7 @@ fn balanced_uses_one_shared_dictionary_and_keeps_independent_access() {
         explanation.ordinary_codec_savings_bytes
             + explanation.shared_dictionary_savings_bytes
             + explanation.bounded_lookback_savings_bytes
+            + explanation.structural_transform_savings_bytes
     );
     assert_eq!(
         explanation.dictionary_storage_bytes,
@@ -115,7 +118,7 @@ fn dense_and_extreme_select_only_bounded_lookback_and_preserve_identity() {
         assert!(view.cross_file.chunk_group_count >= 1);
         assert!(view.cross_file.maximum_lookback > 0);
         assert!(
-            view.cross_file.maximum_lookback <= if view.planner_id == "dense-v3" { 4 } else { 8 }
+            view.cross_file.maximum_lookback <= if view.planner_id == "dense-v4" { 4 } else { 8 }
         );
         assert_eq!(
             view.cross_file.worst_random_access_chunks,
@@ -130,6 +133,7 @@ fn dense_and_extreme_select_only_bounded_lookback_and_preserve_identity() {
             explanation.ordinary_codec_savings_bytes
                 + explanation.shared_dictionary_savings_bytes
                 + explanation.bounded_lookback_savings_bytes
+                + explanation.structural_transform_savings_bytes
         );
         assert!(
             opened
@@ -237,7 +241,7 @@ fn dense_and_extreme_select_only_bounded_lookback_and_preserve_identity() {
 }
 
 #[test]
-fn small_cohort_stays_independent_and_v2_remains_readable() {
+fn small_cohort_stays_independent_and_v2_v3_remain_readable() {
     let fixture = Fixture::new("independent-v2");
     let source = fixture.path.join("source");
     fs::create_dir(&source).unwrap();
@@ -258,28 +262,44 @@ fn small_cohort_stays_independent_and_v2_remains_readable() {
     assert!(dense.archive.content_store.chunk_groups.is_empty());
     assert!(dense.archive.content_store.dictionaries.is_empty());
 
+    let mut historical_v3 = v3.archive.clone();
+    reset_planning(&mut historical_v3);
+    plan_archive_v3(&mut historical_v3, CompressionProfile::Balanced).unwrap();
+    let encoded = encode(&historical_v3, WriteOptions::default()).unwrap();
+    let reopened = open(&encoded.bytes).unwrap();
+    assert_eq!(reopened.archive.descriptor.planner_id, "balanced-v3");
+    assert_eq!(
+        reopened.archive.descriptor.features.incompat,
+        entrybound::ecf::FEATURE_CROSS_FILE_COMPRESSION_V1
+    );
+    verify(&encoded.bytes).unwrap();
+
     let mut v2 = v3.archive.clone();
-    v2.descriptor.features = FeatureSet::default();
-    v2.content_store.dictionaries.clear();
-    v2.content_store.chunk_groups.clear();
-    v2.content_store.physical_order = v2
-        .content_store
-        .chunks
-        .keys()
-        .copied()
-        .collect::<Vec<_>>()
-        .into_boxed_slice();
-    for chunk in v2.content_store.chunks.values_mut() {
-        chunk.plan_ref = UNPLANNED_PLAN_ID;
-        chunk.group_ref = None;
-    }
-    v2.transform_plans = Box::default();
+    reset_planning(&mut v2);
     plan_archive_v2(&mut v2, CompressionProfile::Balanced).unwrap();
     let encoded = encode(&v2, WriteOptions::default()).unwrap();
     let reopened = open(&encoded.bytes).unwrap();
     assert_eq!(reopened.archive.descriptor.planner_id, "balanced-v2");
     assert_eq!(reopened.archive.descriptor.features.incompat, 0);
     verify(&encoded.bytes).unwrap();
+}
+
+fn reset_planning(archive: &mut entrybound::eam::Archive) {
+    archive.descriptor.features = FeatureSet::default();
+    archive.content_store.dictionaries.clear();
+    archive.content_store.chunk_groups.clear();
+    archive.content_store.physical_order = archive
+        .content_store
+        .chunks
+        .keys()
+        .copied()
+        .collect::<Vec<_>>()
+        .into_boxed_slice();
+    for chunk in archive.content_store.chunks.values_mut() {
+        chunk.plan_ref = UNPLANNED_PLAN_ID;
+        chunk.group_ref = None;
+    }
+    archive.transform_plans = Box::default();
 }
 
 fn pack(source: &Path, profile: CompressionProfile) -> entrybound::ecf::EncodedArchive {

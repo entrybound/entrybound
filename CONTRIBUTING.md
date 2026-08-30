@@ -57,5 +57,9 @@ calculation. Changing any of those requires a new planner/similarity version.
 ChunkGroup membership authority belongs only on `Chunk.group_ref`; never add a
 duplicated authoritative member list.
 
+Planner v4 additionally freezes the closed codec/transform registries, codec
+parameters, structural-transform definitions, eligibility probe, complete-cost
+rule, and ordered candidate sets in `docs/codec-transform-v1.md`.
+
 Generated conformance inputs belong in tests as format-building code, not as
 opaque binary fixtures. Each negative case must assert a stable reason code.

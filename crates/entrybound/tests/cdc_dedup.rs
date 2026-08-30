@@ -119,7 +119,7 @@ fn archive_wide_dedup_is_exact_deterministic_and_extracts_all_references() {
     assert_eq!(first.bytes, second.bytes);
     let opened = open(&first.bytes).unwrap();
     verify(&first.bytes).unwrap();
-    assert_eq!(opened.archive.descriptor.planner_id, "balanced-v3");
+    assert_eq!(opened.archive.descriptor.planner_id, "balanced-v4");
     assert_eq!(opened.archive.descriptor.chunker_id, BALANCED_V2.chunker_id);
 
     let view = inspect(&opened).unwrap();

@@ -35,13 +35,16 @@ pub const CHUNK_FRAME_V2_HEADER_LEN: u64 = 96;
 
 /// Required capability for Dictionary/ChunkGroup sections and v2 frames.
 pub const FEATURE_CROSS_FILE_COMPRESSION_V1: u64 = 1 << 0;
-pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 = FEATURE_CROSS_FILE_COMPRESSION_V1;
+/// Required capability for first-class TransformSteps and the v4 codec registry.
+pub const FEATURE_CODEC_TRANSFORM_V1: u64 = 1 << 1;
+pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 =
+    FEATURE_CROSS_FILE_COMPRESSION_V1 | FEATURE_CODEC_TRANSFORM_V1;
 
 /// Versioned namespace for the experimental encoding.
 pub const FORMAT_NAMESPACE: &str = "ecf/bootstrap-v1";
 
 pub(crate) fn encoded_transform_plan_len(plan: &TransformPlan) -> Result<u64> {
-    u64::try_from(records::encode_transform_plans(std::slice::from_ref(plan))?.len()).map_err(
+    u64::try_from(records::encode_transform_plans(std::slice::from_ref(plan), true)?.len()).map_err(
         |_| {
             crate::diagnostics::Diagnostic::new(
                 crate::diagnostics::OutcomeClass::PolicyRefused,

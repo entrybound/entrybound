@@ -1,7 +1,7 @@
 # Normalized CDC and exact deduplication
 
 Status: frozen creation-time behavior introduced by planner v2 and inherited
-unchanged by planner v3. Decoders do not implement
+unchanged by planner v3 and v4. Decoders do not implement
 or invoke the chunker; they consume the ordered Chunk references recorded in
 each ContentObject.
 
@@ -50,8 +50,9 @@ gear-norm-v1/min-{bytes}/target-{bytes}/max-{bytes}
 
 ## Planner v2 policies
 
-The frozen v2 planner IDs use these CDC policies. Current v3 policies reuse the
-same ordered candidates without altering any `gear-norm-v1` parameter set:
+The frozen v2 planner IDs use these CDC policies. V3 and current v4 policies
+reuse the same ordered candidates without altering any `gear-norm-v1`
+parameter set:
 
 | Planner | Candidate policies (minimum / target / maximum) | Selection |
 |---|---|---|

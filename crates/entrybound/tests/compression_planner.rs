@@ -97,7 +97,7 @@ fn planner_selects_codecs_per_chunk_and_round_trips_exactly() {
     }
 
     let explanation = explain(&opened).unwrap();
-    assert_eq!(explanation.planner_id, "balanced-v3");
+    assert_eq!(explanation.planner_id, "balanced-v4");
     assert!(explanation.physical_savings_bytes > 0);
 }
 
@@ -127,6 +127,61 @@ fn planning_and_native_encoding_are_deterministic() {
                 .any(|candidate| candidate.chunker_id == first.archive.descriptor.chunker_id)
         );
     }
+}
+
+#[test]
+fn v4_transform_pipeline_is_self_describing_across_ecf_and_unpack() {
+    let fixture = Fixture::new("transform-pipeline");
+    let source = fixture.path.join("source");
+    fs::create_dir(&source).unwrap();
+    let numeric = (0_u32..65_536)
+        .flat_map(u32::to_le_bytes)
+        .collect::<Vec<_>>();
+    fs::write(source.join("numeric.bin"), &numeric).unwrap();
+
+    let first = pack(&source, CompressionProfile::Dense);
+    let second = pack(&source, CompressionProfile::Dense);
+    assert_eq!(first.bytes, second.bytes);
+    let opened = open(&first.bytes).unwrap();
+    let view = inspect(&opened).unwrap();
+    assert_ne!(
+        opened.archive.descriptor.features.incompat & entrybound::ecf::FEATURE_CODEC_TRANSFORM_V1,
+        0
+    );
+    assert!(view.transformed_chunk_count > 0);
+    assert!(!view.transform_usage.is_empty());
+    assert!(view.plans.iter().any(|plan| !plan.transforms.is_empty()));
+    let mut missing_feature = first.archive.clone();
+    missing_feature.descriptor.features.incompat &= !entrybound::ecf::FEATURE_CODEC_TRANSFORM_V1;
+    assert_eq!(
+        entrybound::ecf::encode(&missing_feature, entrybound::ecf::WriteOptions::default())
+            .unwrap_err()
+            .code(),
+        ReasonCode::UnsupportedRequiredFeature
+    );
+    let mut unknown_transform = first.archive.clone();
+    unknown_transform
+        .transform_plans
+        .iter_mut()
+        .find(|plan| !plan.transforms.is_empty())
+        .unwrap()
+        .transforms[0]
+        .transform_id = "unknown-transform/v1".to_owned();
+    assert_eq!(
+        entrybound::ecf::encode(&unknown_transform, entrybound::ecf::WriteOptions::default())
+            .unwrap_err()
+            .code(),
+        ReasonCode::UnknownTransform
+    );
+    verify(&first.bytes).unwrap();
+
+    let destination = fixture.path.join("restored");
+    unpack(&first.bytes, &destination, ExtractionPolicy::default()).unwrap();
+    assert_eq!(fs::read(destination.join("numeric.bin")).unwrap(), numeric);
+
+    let explanation = explain(&opened).unwrap();
+    assert!(explanation.transformed_chunk_count > 0);
+    assert!(!explanation.representative_pipelines.is_empty());
 }
 
 #[test]
