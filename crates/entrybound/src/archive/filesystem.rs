@@ -19,7 +19,11 @@ use crate::eam::{
     FidelityReport, IdentityProfile, Index, Layout, LogicalPath, MetadataItem, MetadataSet,
     ResourceBudget, Timestamp, TimestampPrecision,
 };
-use crate::ecf::{EncodedArchive, WriteOptions, encode, open_with_limits};
+use crate::ecf::{
+    EncodedArchive, SequentialLimits, StagedChunks, StreamContentPolicy, StreamReport,
+    StreamWriteOptions, StreamWriteSummary, WriteOptions, encode, encode_stream,
+    open_stream_with_limits, open_with_limits,
+};
 use crate::identity::{build_content_from_ranges, sha256_exact};
 use crate::planner::{CompressionProfile, UNPLANNED_PLAN_ID, plan_archive_v6};
 
@@ -54,6 +58,40 @@ pub struct ExtractionReport {
 
 /// Builds a validated EAM from a local directory and invokes the native writer.
 pub fn pack_directory(input: &Path, options: PackOptions) -> Result<EncodedArchive> {
+    let archive = build_archive(input, options)?;
+    encode(
+        &archive,
+        WriteOptions {
+            include_index: options.include_index,
+        },
+    )
+}
+
+/// Builds the same validated EAM and writes it as STREAM to any `Write` sink.
+///
+/// The sink is never seeked, so it may be a pipe or standard output. The
+/// resulting archive has the same LAI, PCR, and AUX as the INDEXED encoding of
+/// the same directory; only PCI differs.
+pub fn pack_directory_stream<W: std::io::Write>(
+    input: &Path,
+    options: PackOptions,
+    stream: StreamWriteOptions,
+    sink: W,
+) -> Result<StreamWriteSummary> {
+    let archive = build_archive(input, options)?;
+    encode_stream(&archive, stream, sink)
+}
+
+/// Scans a directory and returns the planned EAM without encoding it.
+///
+/// Callers that must choose or create their output only after planning has
+/// succeeded use this, so a plan that cannot be represented never leaves a
+/// partial artifact behind.
+pub fn plan_directory(input: &Path, options: PackOptions) -> Result<Archive> {
+    build_archive(input, options)
+}
+
+fn build_archive(input: &Path, options: PackOptions) -> Result<Archive> {
     let root_metadata = std::fs::symlink_metadata(input).map_err(|error| {
         Diagnostic::new(
             OutcomeClass::PolicyRefused,
@@ -88,13 +126,7 @@ pub fn pack_directory(input: &Path, options: PackOptions) -> Result<EncodedArchi
     })?;
     let mut scan = Scan::default();
     scan_directory(&root, &[], options.source_retries, &mut scan)?;
-    let archive = scan.finish(options.profile)?;
-    encode(
-        &archive,
-        WriteOptions {
-            include_index: options.include_index,
-        },
-    )
+    scan.finish(options.profile)
 }
 
 /// Predictable CLI output name: the input's final name plus `.eb` in the CWD.
@@ -121,9 +153,108 @@ pub fn default_unpack_destination(archive: &Path) -> PathBuf {
     }
 }
 
+/// Supplies verified plaintext for one Chunk during materialization.
+///
+/// Extraction never reads archive bytes through this trait; it reads content
+/// that a reader has already decoded and digest-verified.
+trait ChunkSource {
+    fn plaintext(&mut self, chunk_id: &Digest) -> Result<Vec<u8>>;
+}
+
+/// The INDEXED reader retains every Chunk's plaintext in the opened model.
+struct RetainedChunks<'a> {
+    chunks: &'a BTreeMap<Digest, crate::eam::Chunk>,
+}
+
+impl ChunkSource for RetainedChunks<'_> {
+    fn plaintext(&mut self, chunk_id: &Digest) -> Result<Vec<u8>> {
+        self.chunks
+            .get(chunk_id)
+            .map(|chunk| chunk.plaintext.to_vec())
+            .ok_or_else(|| {
+                Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::UnknownChunk,
+                    chunk_id.to_string(),
+                )
+            })
+    }
+}
+
+/// The sequential reader stages plaintext in bounded temporary storage.
+struct StagedSource<'a> {
+    staged: &'a mut StagedChunks,
+}
+
+impl ChunkSource for StagedSource<'_> {
+    fn plaintext(&mut self, chunk_id: &Digest) -> Result<Vec<u8>> {
+        self.staged.read(chunk_id)
+    }
+}
+
 /// Fully opens and verifies an archive, then extracts it beneath a held root.
 pub fn unpack(
     bytes: &[u8],
+    destination: &Path,
+    policy: ExtractionPolicy,
+) -> Result<ExtractionReport> {
+    let opened = open_with_limits(bytes, policy.budget(), policy.decode())?;
+    let chunks = opened.archive.content_store.chunks.clone();
+    materialize(
+        &opened.archive,
+        &mut RetainedChunks { chunks: &chunks },
+        destination,
+        policy,
+    )
+}
+
+/// Reads a STREAM archive from an unseekable source and extracts it safely.
+///
+/// The complete sequential pass runs first. Decoded content is held in bounded
+/// staging, not in the destination, until framing, every Chunk digest, the EAM
+/// invariants, the identity roots, the footer binding, and the exact total
+/// length have all been established. Only then is anything created under the
+/// caller's destination, using the same policy as INDEXED extraction. Staging
+/// is released when the pass ends, including when it ends in failure or
+/// truncation.
+pub fn unpack_stream<R: std::io::Read>(
+    source: R,
+    destination: &Path,
+    policy: ExtractionPolicy,
+    limits: SequentialLimits,
+) -> Result<(ExtractionReport, StreamReport)> {
+    let mut sequential = open_stream_with_limits(
+        source,
+        SequentialLimits {
+            budget: policy.budget(),
+            decode: policy.decode(),
+            content: StreamContentPolicy::Stage,
+            ..limits
+        },
+    )?;
+    let stream_report = sequential.stream;
+    let mut staged = sequential.staged.take().ok_or_else(|| {
+        Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::Io,
+            "the sequential pass produced no staged content to extract",
+        )
+    })?;
+    let report = materialize(
+        &sequential.opened.archive,
+        &mut StagedSource {
+            staged: &mut staged,
+        },
+        destination,
+        policy,
+    )?;
+    Ok((report, stream_report))
+}
+
+/// Creates destination objects from content that is already fully verified.
+fn materialize(
+    archive: &Archive,
+    source: &mut dyn ChunkSource,
     destination: &Path,
     policy: ExtractionPolicy,
 ) -> Result<ExtractionReport> {
@@ -134,7 +265,6 @@ pub fn unpack(
             "the bootstrap extractor supports only collision refusal",
         ));
     }
-    let opened = open_with_limits(bytes, policy.budget(), policy.decode())?;
 
     match std::fs::create_dir(destination) {
         Ok(()) => {}
@@ -158,7 +288,7 @@ pub fn unpack(
         metadata_not_restored: Vec::new(),
     };
 
-    for entry in opened.archive.entry_set.entries() {
+    for entry in archive.entry_set.entries() {
         let (parent, name) = resolve_parent(&root, entry.path())?;
         ensure_absent(&parent, name, entry.path())?;
         match entry.data() {
@@ -187,36 +317,23 @@ pub fn unpack(
                         io(format!("create file {}", entry.path()), error)
                     }
                 })?;
-                let object = opened
-                    .archive
-                    .content_store
-                    .objects
-                    .get(&digest)
-                    .ok_or_else(|| {
-                        Diagnostic::new(
-                            OutcomeClass::Nonconforming,
-                            ReasonCode::UnknownContentObject,
-                            entry.path().to_string(),
-                        )
-                    })?;
+                let object = archive.content_store.objects.get(&digest).ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::UnknownContentObject,
+                        entry.path().to_string(),
+                    )
+                })?;
                 for chunk_ref in &object.chunks {
-                    let chunk = opened
-                        .archive
-                        .content_store
-                        .chunks
-                        .get(&chunk_ref.chunk_id)
-                        .ok_or_else(|| {
-                            Diagnostic::new(
-                                OutcomeClass::Nonconforming,
-                                ReasonCode::UnknownChunk,
-                                chunk_ref.chunk_id.to_string(),
-                            )
-                        })?;
-                    file.write_all(&chunk.plaintext)
+                    let plaintext = source.plaintext(&chunk_ref.chunk_id)?;
+                    file.write_all(&plaintext)
                         .map_err(|error| io(format!("write file {}", entry.path()), error))?;
                     report.logical_bytes_written = report
                         .logical_bytes_written
-                        .checked_add(chunk.logical_len)
+                        .checked_add(
+                            u64::try_from(plaintext.len())
+                                .map_err(|_| resource("extracted Chunk exceeds u64"))?,
+                        )
                         .ok_or_else(|| resource("extracted byte count exceeds u64"))?;
                 }
                 apply_file_metadata(
@@ -233,7 +350,7 @@ pub fn unpack(
             .ok_or_else(|| resource("extracted entry count exceeds u64"))?;
     }
 
-    for entry in opened.archive.entry_set.entries().iter().rev() {
+    for entry in archive.entry_set.entries().iter().rev() {
         if matches!(entry.data(), EntryData::Directory) {
             let directory = resolve_directory(&root, entry.path())?;
             apply_file_metadata(
@@ -309,6 +426,7 @@ impl Scan {
                 layout: Layout::Indexed,
                 role: ArchiveRole::Complete,
                 budget_declared: true,
+                stream_dedup_window: 0,
                 budget: ResourceBudget::default(),
                 decode: DecodeRequirements::default(),
                 identity_profile: IdentityProfile::IdentityV1,

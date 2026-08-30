@@ -186,7 +186,24 @@ fn validate_complete_ranges(plaintext_len: usize, ranges: &[Range<usize>]) -> Re
 pub fn apply_native_identities(archive: &Archive) -> Result<(Archive, NativeRoots)> {
     archive.validate()?;
     verify_chunks_and_content(archive)?;
+    compute_native_identities(archive)
+}
 
+/// Recomputes native identities for a model whose Chunk plaintext digests and
+/// ContentObject logical digests were already verified incrementally.
+///
+/// The sequential STREAM reader verifies every Chunk as its bytes arrive and
+/// then releases the plaintext, so it cannot re-verify from a retained model.
+/// The identity construction itself is byte-identical: LAI, PCR, and AUX are
+/// derived from Entry fields, ContentObject `(logical_digest, chunk_root)`
+/// pairs, Chunk `(chunk_id, logical_len)` leaves, and the FidelityReport, none
+/// of which read plaintext.
+pub(crate) fn native_identities_from_verified(archive: &Archive) -> Result<(Archive, NativeRoots)> {
+    archive.validate_without_retained_plaintext()?;
+    compute_native_identities(archive)
+}
+
+fn compute_native_identities(archive: &Archive) -> Result<(Archive, NativeRoots)> {
     let entries = archive
         .entry_set
         .entries()
@@ -280,13 +297,28 @@ fn chunk_root(refs: &[ChunkRef], chunks: &BTreeMap<Digest, Chunk>) -> Result<Dig
                     chunk_ref.chunk_id.to_string(),
                 )
             })?;
-            Ok(structured_hash(
-                "chunk-tree/leaf",
-                &[chunk.chunk_id.as_bytes(), &chunk.logical_len.to_be_bytes()],
-            ))
+            Ok((chunk.chunk_id, chunk.logical_len))
         })
         .collect::<Result<Vec<_>>>()?;
-    Ok(merkle_root(&leaves, "chunk-tree/empty", "chunk-tree/node"))
+    Ok(chunk_root_from_leaves(&leaves))
+}
+
+/// Computes a ContentObject's chunk root from its ordered `(chunk_id,
+/// logical_len)` leaves.
+///
+/// The sequential reader knows both values from the Chunk frame headers and
+/// never needs retained plaintext to check a chunk root.
+pub(crate) fn chunk_root_from_leaves(leaves: &[(Digest, u64)]) -> Digest {
+    let leaves = leaves
+        .iter()
+        .map(|(chunk_id, logical_len)| {
+            structured_hash(
+                "chunk-tree/leaf",
+                &[chunk_id.as_bytes(), &logical_len.to_be_bytes()],
+            )
+        })
+        .collect::<Vec<_>>();
+    merkle_root(&leaves, "chunk-tree/empty", "chunk-tree/node")
 }
 
 fn entry_identity_digest(entry: &Entry) -> Digest {

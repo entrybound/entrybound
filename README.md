@@ -24,11 +24,19 @@ establishes:
 - distinct LAI, PCR, AUX, and PCI types, stable diagnostic classes/reason
   codes, and a caller-owned extraction-policy boundary.
 - deterministic canonical serialization of validated in-memory EAM into
-  unencrypted Complete INDEXED `.eb` bytes;
+  unencrypted Complete `.eb` bytes in two physical layouts, random-access
+  `INDEXED` and sequential `STREAM`, which encode the same archive model;
 - native reopen and verification covering canonical encoding, container and
   section structure, plaintext content, Entry identities, LAI, PCR, AUX, and
   exact-byte PCI;
 - optional Index validation and rebuilding from authoritative CHUNK_DATA.
+- a sequential `stream-layout-v1` writer that needs only `std::io::Write` and a
+  sequential reader that needs only `std::io::Read`, with tagged single-authority
+  framing, a declared and enforced stream deduplication window, and a
+  self-locating footer that keeps truncation distinguishable from corruption;
+- bounded, spilling staging for sequential extraction, so unverified content
+  never reaches a destination path and archive plaintext is never required in
+  RAM;
 - deterministic creation-time compression planning with historical v1–v5
   compatibility and current `fast-v6`, `balanced-v6`, `dense-v6`, and
   `extreme-v6` policies;
@@ -72,6 +80,27 @@ ebound explain example.eb
 ebound unpack example.eb ./restored
 ```
 
+Sequential workflows write and read the same archive model without seeking:
+
+```sh
+ebound pack ./example - --layout stream > example-stream.eb
+ebound pack ./example example-stream.eb --layout stream --stream-window auto
+ebound verify - < example-stream.eb
+ebound list - < example-stream.eb
+ebound inspect - < example-stream.eb
+ebound unpack - ./restored-stream < example-stream.eb
+ebound pack ./example - --layout stream | ebound verify -
+```
+
+An output of `-` writes archive bytes to standard output and defaults to
+`--layout stream`; a regular file output defaults to `--layout indexed`. When
+archive bytes go to standard output, every status line goes to standard error.
+`--stream-window` declares how far a sequential reference may reach back to an
+already emitted Chunk; the default of `0` refuses to create any cross-object
+historical dependency, and `auto` accepts and declares whatever the sequential
+organization requires. STREAM archives keep the `.eb` extension, carry no Index,
+and cannot resolve one entry without a complete sequential pass.
+
 `pack` uses `<input-name>.eb` when its output is omitted. `unpack` uses the
 archive path without its extension when its destination is omitted. Archive
 output files and extracted entries are created exclusively; existing objects
@@ -86,10 +115,12 @@ exact plaintext Chunk once, and measures complete-cost candidates across
 STORE, Zstandard, LZ4, raw LZMA2, structural pipelines, verified DEFLATE
 reconstruction, opportunistic JPEG/JPEG XL whole-object reconstruction, shared
 Zstandard dictionaries, and bounded Zstandard lookback.
-It writes only unencrypted Complete INDEXED archives. It
+It writes only unencrypted Complete archives, in either the INDEXED or the
+STREAM layout. It
 supports UTF-8 directory names, directories, and regular files, and deliberately
 rejects symlinks and special files. There is no legacy ZIP/tar/7z import,
-STREAM layout, encryption, signing, lossy image recompression, guaranteed
+encrypted STREAM layout, encryption, signing, remote range access, general
+`repack`, lossy image recompression, guaranteed
 support for every JPEG producer/marker combination, embedded-stream scanning,
 unbounded solid compression, hardlink
 metadata, ACLs, xattrs, ownership, platform-specific extended metadata,
@@ -146,5 +177,7 @@ candidate sets, wire feature, and exact reversible transforms, and
 v5 DEFLATE recognition, exact reconstruction, resource limits, and wire
 evolution, [the JPEG reconstruction note](docs/jpeg-reconstruction-v1.md) for
 v6 whole-object regions, eligibility, byte-exact JPEG reconstruction, and
-random-access costs, and
+random-access costs, [the STREAM layout note](docs/stream-layout-v1.md) for the
+sequential wire shape, tagged items, dedup window, budget declaration, staging
+extraction, access complexity, and identity equivalence with INDEXED, and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

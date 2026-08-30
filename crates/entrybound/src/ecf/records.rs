@@ -810,19 +810,86 @@ pub(super) fn encode_manifest(
         encoded.extend_from_slice(&encode_entry(entry)?);
     }
     for object in objects.values() {
-        let chunks = object
-            .chunks
-            .iter()
-            .map(|chunk| chunk.chunk_id.as_bytes().to_vec())
-            .collect::<Vec<_>>();
-        let mut record = RecordBuilder::new(RECORD_CONTENT_OBJECT);
-        record
-            .bytes(1, object.logical_digest.as_bytes())?
-            .bytes(2, object.chunk_root.as_bytes())?
-            .sequence(3, &chunks)?;
-        encoded.extend_from_slice(&record.finish()?);
+        encoded.extend_from_slice(&encode_content_object_record(object)?);
     }
     Ok(encoded)
+}
+
+/// Encodes one canonical ContentObject record.
+///
+/// STREAM emits manifest records individually so each one can follow the
+/// physical data it describes. The bytes are identical to this object's slice
+/// of an INDEXED MANIFEST_RECORDS payload.
+pub(super) fn encode_content_object_record(object: &crate::eam::ContentObject) -> Result<Vec<u8>> {
+    let chunks = object
+        .chunks
+        .iter()
+        .map(|chunk| chunk.chunk_id.as_bytes().to_vec())
+        .collect::<Vec<_>>();
+    let mut record = RecordBuilder::new(RECORD_CONTENT_OBJECT);
+    record
+        .bytes(1, object.logical_digest.as_bytes())?
+        .bytes(2, object.chunk_root.as_bytes())?
+        .sequence(3, &chunks)?;
+    record.finish()
+}
+
+/// Encodes one canonical Entry record.
+pub(super) fn encode_entry_record(entry: &Entry) -> Result<Vec<u8>> {
+    encode_entry(entry)
+}
+
+/// One semantic record carried by a STREAM `MANIFEST_RECORD` item.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(super) enum ManifestRecord {
+    Entry(Box<Entry>),
+    ContentObject(Box<crate::eam::ContentObject>),
+}
+
+/// Decodes exactly one canonical manifest record.
+///
+/// The item payload must hold a single record and must re-encode to the exact
+/// same bytes, so a STREAM manifest item is as strictly canonical as the
+/// INDEXED section it corresponds to.
+pub(super) fn decode_manifest_record(bytes: &[u8]) -> Result<ManifestRecord> {
+    let records = decode_record_stream(bytes)?;
+    let [record] = records.as_slice() else {
+        return Err(noncanonical(
+            "a MANIFEST_RECORD item must carry exactly one canonical record",
+        ));
+    };
+    match record.kind {
+        RECORD_ENTRY => {
+            let entry = decode_entry(record)?;
+            if encode_entry(&entry)? != bytes {
+                return Err(noncanonical("Entry record is not byte-canonical"));
+            }
+            Ok(ManifestRecord::Entry(Box::new(entry)))
+        }
+        RECORD_CONTENT_OBJECT => {
+            record.expect_tags(&[1, 2, 3], &[])?;
+            let logical_digest = digest(record.field(1)?.as_bytes()?)?;
+            let chunks = record
+                .field(3)?
+                .as_sequence()?
+                .into_iter()
+                .map(digest)
+                .map(|result| result.map(|chunk_id| crate::eam::ChunkRef { chunk_id }))
+                .collect::<Result<Vec<_>>>()?;
+            let object = crate::eam::ContentObject {
+                logical_digest,
+                chunk_root: digest(record.field(2)?.as_bytes()?)?,
+                chunks: chunks.into_boxed_slice(),
+            };
+            if encode_content_object_record(&object)? != bytes {
+                return Err(noncanonical("ContentObject record is not byte-canonical"));
+            }
+            Ok(ManifestRecord::ContentObject(Box::new(object)))
+        }
+        _ => Err(noncanonical(
+            "a MANIFEST_RECORD item must carry an Entry or ContentObject record",
+        )),
+    }
 }
 
 pub(super) fn decode_manifest(

@@ -33,8 +33,11 @@ are bounded before allocation.
 
 ## Container
 
-The implemented bootstrap layout is `INDEXED`, role `Complete`, unencrypted,
-with only directory and regular-file entries. It consists of:
+Two physical layouts are implemented, both role `Complete`, unencrypted, and
+with only directory and regular-file entries. They encode the same EAM: LAI,
+PCR, and AUX are identical across layouts and only PCI differs.
+
+`INDEXED` is the random-access layout and consists of:
 
 1. a fixed 256-byte preamble beginning with `8E 45 42 31 0D 0A 1A 0A`;
 2. checksum-protected authoritative sections plus an optional `INDEX`;
@@ -45,6 +48,16 @@ Section headers declare their payload length once and hash the payload. Chunk
 frames declare stored length once; manifests do not repeat it. The Index only
 caches chunk-frame locators and is ignored and rebuilt when absent or invalid.
 No semantic Entry field appears in the Index.
+
+`STREAM` is the sequential layout selected by required incompatibility feature
+bit `0x10` (`stream-layout-v1`) and layout discriminant `2`. It replaces the
+section sequence with a single tagged `STREAM_BODY`, carries no Index, is
+written without `Seek` and read without `Seek`, and declares a
+`stream_dedup_window` bounding how far a sequential reference may depend on an
+already emitted unique Chunk. Its Chunk frames are byte-identical to INDEXED
+frames; its manifest records are the same canonical records, emitted
+individually after the physical data they describe. The complete construction is
+documented in [stream-layout-v1.md](stream-layout-v1.md).
 
 Chunk frames carry the authoritative Chunk fields (`chunk_id`, `logical_len`,
 `plan_ref`, and, when the extension requires it, `group_ref`) plus stored
@@ -86,6 +99,11 @@ Required incompatibility feature bit `0x8`
 selects TransformStep v3 and Chunk frame v3, and adds the canonical
 RECONSTRUCTION_REGIONS section. See
 [jpeg-reconstruction-v1.md](jpeg-reconstruction-v1.md).
+Required incompatibility feature bit `0x10` (`stream-layout-v1`) selects the
+sequential STREAM layout. It requires no other bit and changes no record schema;
+it changes only the container's physical organization and access capability. It
+is declared exactly when the preamble's layout discriminant is `2`. See
+[stream-layout-v1.md](stream-layout-v1.md).
 
 ## Digests
 
@@ -113,11 +131,12 @@ must be zero.
 | 8 | major `u16`, minor `u16`, preamble length `u32` |
 | 16 | incompat, read-only-compatible, and compatible `u64` feature bitmaps |
 | 40 | SHA-256 of the 24 feature-bitmap bytes |
-| 72 | layout `u8`, role `u8`, budget-declared `bool`, reserved `u8` |
+| 72 | layout `u8` (`1` INDEXED, `2` STREAM), role `u8`, budget-declared `bool`, reserved `u8` |
 | 76 | aggregate decode window `u64`, working set `u64`, flags `u32` |
 | 96 | eight ResourceBudget `u64` values in specification order |
-| 160 | STREAM dedup window `u64` and hostility summary `u64`; both zero here |
-| 176 | advisory footer-offset hint `u64` |
+| 160 | STREAM dedup window `u64`; zero in INDEXED |
+| 168 | hostility summary `u64`; always zero in this version |
+| 176 | advisory footer-offset hint `u64`; zero in STREAM |
 
 Each section starts with a 64-byte header:
 
@@ -129,7 +148,8 @@ payload_length:u64 | sha256(payload):[u8;32] | reserved:[u8;8]
 Sections occur exactly once and in this order: DESCRIPTOR (1), TRANSFORM_PLANS
 (2), CHUNK_DATA (3), MANIFEST_RECORDS (4), FIDELITY (5), and optionally INDEX
 (6). Unknown, missing, duplicate, or reordered authoritative sections are not
-canonical.
+canonical. Sections exist only in INDEXED layout; STREAM replaces them with
+tagged items.
 
 Required incompatibility feature bit `0x1` (`cross-file-compression-v1`)
 selects the extended schema: DESCRIPTOR (1), TRANSFORM_PLANS (2), DICTIONARIES
@@ -167,10 +187,14 @@ region-owned Chunk declaration. Such a frame has zero stored length, plan ref
 zero, and no group; its digest and logical length remain the authoritative
 original Chunk declaration. All other flag bits are reserved and zero.
 
-The 128-byte footer begins with `8E 45 42 46 0D 0A 1A 0A`, then contains total
-container length; absolute offset/length pairs for DESCRIPTOR and
+The 128-byte INDEXED footer begins with `8E 45 42 46 0D 0A 1A 0A`, then contains
+total container length; absolute offset/length pairs for DESCRIPTOR and
 MANIFEST_RECORDS; actual entry count and total logical bytes; SHA-256 of the
-entire preamble; and 32 zero reserved bytes.
+entire preamble; and 32 zero reserved bytes. The STREAM footer keeps the same
+magic and width but declares the DESCRIPTOR item locator, the `STREAM_BODY`
+extent, final actual Chunk, entry, and logical-byte totals, the preamble digest,
+and the `STREAM_BODY` digest; see
+[stream-layout-v1.md](stream-layout-v1.md).
 
 ## Canonical records
 
@@ -256,7 +280,19 @@ The domains used are `chunk-tree/{leaf,empty,node}`,
 - PCI is SHA-256 over every exact `.eb` byte and therefore changes when an Index
   is added, removed, or repaired even though LAI, PCR, and AUX do not.
 
+## Layout equivalence
+
+A validated EAM encoded under both layouts produces identical LAI, PCR, and AUX
+and different PCI. None of the three logical identities binds the layout, the
+Chunk frame order, the Index, or the codec choice, so a physical reorganization
+cannot move them. STREAM selects an object-major frame order and therefore has a
+different `ContentStore::physical_order` than the INDEXED encoding of the same
+model; that field is physical only and participates in no identity.
+
 ## Index handling
+
+The Index exists only in INDEXED layout. STREAM has none by design, and readers
+report it as not applicable rather than absent or invalid.
 
 Index entries contain only physical Chunk-frame locators. The reader always
 rebuilds the authoritative locator map by scanning CHUNK_DATA. A present Index

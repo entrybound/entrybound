@@ -69,14 +69,34 @@ impl EntrySet {
 
 impl Archive {
     /// Validates semantic references and the supported bootstrap profile.
+    ///
+    /// This is the complete check and requires every Chunk to carry its
+    /// retained plaintext.
     pub fn validate(&self) -> Result<()> {
-        if self.descriptor.layout != Layout::Indexed
-            || self.descriptor.role != ArchiveRole::Complete
-        {
+        self.validate_without_retained_plaintext()?;
+        self.validate_retained_plaintext_lengths()
+    }
+
+    /// Validates every EAM invariant that does not read retained Chunk
+    /// plaintext.
+    ///
+    /// The sequential STREAM reader verifies each Chunk's plaintext digest as
+    /// the bytes arrive and does not retain plaintext afterwards, so it
+    /// validates the model through this entry point instead. Every invariant
+    /// checked here is identical for both layouts.
+    pub fn validate_without_retained_plaintext(&self) -> Result<()> {
+        if self.descriptor.role != ArchiveRole::Complete {
             return Err(Diagnostic::new(
                 OutcomeClass::Unsupported,
                 ReasonCode::UnsupportedRequiredFeature,
-                "only Complete INDEXED archives are supported by the bootstrap profile",
+                "only Complete archives are supported by the bootstrap profile",
+            ));
+        }
+        if self.descriptor.layout == Layout::Indexed && self.descriptor.stream_dedup_window != 0 {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::NoncanonicalEncoding,
+                "INDEXED archives must declare a zero STREAM dedup window",
             ));
         }
 
@@ -419,13 +439,6 @@ impl Archive {
                     "Chunk map key differs from the authoritative chunk_id",
                 ));
             }
-            if chunk.logical_len != u64::try_from(chunk.plaintext.len()).unwrap_or(u64::MAX) {
-                return Err(Diagnostic::new(
-                    OutcomeClass::Nonconforming,
-                    ReasonCode::SectionStructure,
-                    "Chunk logical_len differs from its plaintext byte length",
-                ));
-            }
             if !region_owned_chunks.contains_key(digest)
                 && chunk.plan_ref == crate::jpeg_reconstruction::REGION_MEMBER_PLAN_REF
                 && self.descriptor.features.incompat
@@ -524,6 +537,20 @@ impl Archive {
                     OutcomeClass::Nonconforming,
                     ReasonCode::UnknownContentObject,
                     entry.path().to_string(),
+                ));
+            }
+        }
+        Ok(())
+    }
+
+    /// Checks the one invariant that requires retained Chunk plaintext.
+    fn validate_retained_plaintext_lengths(&self) -> Result<()> {
+        for chunk in self.content_store.chunks.values() {
+            if chunk.logical_len != u64::try_from(chunk.plaintext.len()).unwrap_or(u64::MAX) {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::SectionStructure,
+                    "Chunk logical_len differs from its plaintext byte length",
                 ));
             }
         }

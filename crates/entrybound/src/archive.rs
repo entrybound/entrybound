@@ -9,7 +9,7 @@ mod inspection;
 
 pub use filesystem::{
     ExtractionReport, PackOptions, default_pack_output, default_unpack_destination, pack_directory,
-    unpack,
+    pack_directory_stream, plan_directory, unpack, unpack_stream,
 };
 pub use inspection::{
     ArchiveInspection, ChunkStatistics, CodecUsage, CompressionExplanation, CrossFileInspection,

@@ -255,6 +255,7 @@ fn archive_with_content(
             layout: Layout::Indexed,
             role: ArchiveRole::Complete,
             budget_declared: true,
+            stream_dedup_window: 0,
             budget: ResourceBudget::default(),
             decode: DecodeRequirements::default(),
             identity_profile: IdentityProfile::IdentityV1,

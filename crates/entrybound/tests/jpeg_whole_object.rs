@@ -12,7 +12,11 @@ use entrybound::eam::{
     DigestAlgorithm, Entry, EntryData, EntryIdentity, EntrySet, FeatureSet, FidelityReport,
     IdentityProfile, Index, Layout, LogicalPath, MetadataSet, ResourceBudget, TransformPlan,
 };
-use entrybound::ecf::{WriteOptions, encode, open, open_with_limits, verify};
+use entrybound::ecf::{
+    SequentialLimits, StreamContentPolicy, StreamWindow, StreamWriteOptions, WriteOptions,
+    bootstrap_sequential_limits, encode, encode_stream, open, open_stream_with_limits,
+    open_with_limits, verify,
+};
 use entrybound::identity::{
     STORE_CODEC_IDENTIFIER, STORE_PLAN_ID, STORE_PLAN_IDENTIFIER, build_content, sha256_exact,
 };
@@ -241,6 +245,62 @@ fn selected_multi_chunk_jpeg_region_is_exact_deterministic_and_identity_neutral(
 }
 
 #[test]
+fn whole_object_jpeg_regions_survive_the_sequential_layout() {
+    let original = generated_tiled_jpeg(1_024, 1_024, 96);
+    let mut archive = archive_for(&original, 64 * 1024);
+    plan_archive_v6(&mut archive, CompressionProfile::Dense).unwrap();
+    assert_eq!(archive.content_store.reconstruction_regions.len(), 1);
+
+    let indexed = encode(&archive, WriteOptions::default()).unwrap();
+    let mut bytes = Vec::new();
+    let summary = encode_stream(
+        &archive,
+        StreamWriteOptions {
+            window: StreamWindow::Auto,
+            budget_declared: true,
+        },
+        &mut bytes,
+    )
+    .unwrap();
+
+    assert_eq!(indexed.identities.lai, summary.identities.lai);
+    assert_eq!(indexed.identities.pcr, summary.identities.pcr);
+    assert_eq!(indexed.identities.aux, summary.identities.aux);
+    assert_ne!(indexed.identities.pci, summary.identities.pci);
+
+    // The region is one authoritative physical representation in both layouts,
+    // and every member Chunk is verified against its declared digest.
+    let sequential = open_stream_with_limits(
+        bytes.as_slice(),
+        SequentialLimits {
+            content: StreamContentPolicy::Retain,
+            ..bootstrap_sequential_limits()
+        },
+    )
+    .unwrap();
+    assert!(sequential.opened.report.reconstruction_integrity);
+    assert_eq!(
+        sequential
+            .opened
+            .archive
+            .content_store
+            .reconstruction_regions,
+        archive.content_store.reconstruction_regions
+    );
+    let opened = open(&indexed.bytes).unwrap();
+    assert_eq!(
+        opened.archive.content_store.chunks,
+        sequential.opened.archive.content_store.chunks
+    );
+
+    // A corrupted region representation must not reconstruct silently.
+    let mut broken = bytes.clone();
+    let target = broken.len() / 2;
+    broken[target] ^= 0xff;
+    assert!(open_stream_with_limits(broken.as_slice(), bootstrap_sequential_limits()).is_err());
+}
+
+#[test]
 fn balanced_retains_independent_access_and_small_jpeg_falls_back() {
     let fixture = Fixture::new("balanced");
     let source = fixture.path.join("source");
@@ -357,6 +417,7 @@ fn archive_for(bytes: &[u8], chunk_size: usize) -> Archive {
             layout: Layout::Indexed,
             role: ArchiveRole::Complete,
             budget_declared: true,
+            stream_dedup_window: 0,
             budget: ResourceBudget::default(),
             decode: DecodeRequirements::default(),
             identity_profile: IdentityProfile::IdentityV1,

@@ -73,5 +73,33 @@ Planner v6 freezes the whole-ContentObject ReconstructionRegion model, the
 dedup eligibility, mandatory exact round-trip check, access declarations,
 complete-cost margin, and candidate sets in `docs/jpeg-reconstruction-v1.md`.
 
+`stream-layout-v1` freezes the tagged `STREAM_BODY` item tags, their canonical
+order, the record-item and Chunk-frame framing, the STREAM footer field layout,
+and the stream dedup-window definition in `docs/stream-layout-v1.md`. Changing
+any of them requires a new layout feature bit, not an edit in place.
+
+Layout is a physical and access-capability choice only. A change that would make
+INDEXED and STREAM disagree about entries, ContentObjects, Chunks, declared
+bounds, LAI, PCR, or AUX is a bug in the change, not a property of the layout;
+add the equivalence assertion to `tests/stream_layout.rs` rather than relaxing
+it. Only PCI and `ContentStore::physical_order` may differ between layouts.
+
+Keep single-authority framing. A Chunk frame's own `stored_length` is the sole
+declaration of its extent; never add a second length to the enclosing item or a
+trailing record. Semantic facts are declared exactly once, and STREAM has no
+Index to reconcile.
+
+A sequential writer must be usable with a sink that implements `Write` and not
+`Seek`, and a sequential reader with a source that implements `Read` and not
+`Seek`. Keep those bounds narrow so the type system, not a comment, enforces
+the guarantee. Never make a sequential reader read its whole source into memory
+and delegate to the INDEXED reader, and never expose an API that looks
+random-access while hiding a full scan.
+
+Sequential extraction stages decoded content in bounded, spilling storage and
+materializes only after the whole archive has verified. Do not write unverified
+content into a caller's destination, and do not require the archive plaintext in
+RAM.
+
 Generated conformance inputs belong in tests as format-building code, not as
 opaque binary fixtures. Each negative case must assert a stable reason code.

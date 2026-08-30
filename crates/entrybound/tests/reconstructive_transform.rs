@@ -8,7 +8,10 @@ use entrybound::eam::{
     IdentityProfile, Index, Layout, LogicalPath, MetadataSet, ReconstructionFallbackReason,
     ResourceBudget, TransformPlan,
 };
-use entrybound::ecf::{WriteOptions, encode, open, verify};
+use entrybound::ecf::{
+    StreamContentPolicy, StreamWindow, StreamWriteOptions, WriteOptions,
+    bootstrap_sequential_limits, encode, encode_stream, open, open_stream_with_limits, verify,
+};
 use entrybound::identity::{
     STORE_CODEC_IDENTIFIER, STORE_PLAN_ID, STORE_PLAN_IDENTIFIER, build_content,
 };
@@ -47,6 +50,49 @@ fn v5_selected_reconstruction_round_trips_and_preserves_logical_identity() {
     assert_eq!(first.identities.pcr, historical.identities.pcr);
     assert_ne!(first.identities.pci, historical.identities.pci);
     assert_eq!(only_plaintext(&reopened_v4.archive), original.as_slice());
+}
+
+#[test]
+fn deflate_reconstruction_survives_the_sequential_layout() {
+    let original = gzip_fixture();
+    let mut archive = archive_for(&original);
+    plan_archive_v5(&mut archive, CompressionProfile::Dense).unwrap();
+    assert!(!archive.content_store.reconstruction_data.is_empty());
+
+    let indexed = encode(&archive, WriteOptions::default()).unwrap();
+    let mut bytes = Vec::new();
+    let summary = encode_stream(
+        &archive,
+        StreamWriteOptions {
+            window: StreamWindow::Auto,
+            budget_declared: true,
+        },
+        &mut bytes,
+    )
+    .unwrap();
+
+    assert_eq!(indexed.identities.lai, summary.identities.lai);
+    assert_eq!(indexed.identities.pcr, summary.identities.pcr);
+    assert_eq!(indexed.identities.aux, summary.identities.aux);
+    assert_ne!(indexed.identities.pci, summary.identities.pci);
+
+    let sequential = open_stream_with_limits(
+        bytes.as_slice(),
+        entrybound::ecf::SequentialLimits {
+            content: StreamContentPolicy::Retain,
+            ..bootstrap_sequential_limits()
+        },
+    )
+    .unwrap();
+    assert!(sequential.opened.report.reconstruction_integrity);
+    assert_eq!(
+        only_plaintext(&sequential.opened.archive),
+        original.as_slice()
+    );
+    assert_eq!(
+        sequential.opened.archive.content_store.reconstruction_data,
+        archive.content_store.reconstruction_data
+    );
 }
 
 #[test]
@@ -144,6 +190,7 @@ fn archive_for(bytes: &[u8]) -> Archive {
             layout: Layout::Indexed,
             role: ArchiveRole::Complete,
             budget_declared: true,
+            stream_dedup_window: 0,
             budget: ResourceBudget::default(),
             decode: DecodeRequirements::default(),
             identity_profile: IdentityProfile::IdentityV1,

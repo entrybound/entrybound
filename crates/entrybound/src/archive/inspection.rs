@@ -152,8 +152,21 @@ pub struct ArchiveInspection {
     pub entry_count: u64,
     pub total_logical_bytes: u64,
     pub features: FeatureSet,
+    /// Declared bound on sequential historical Chunk dependencies. Always zero
+    /// in INDEXED layout, where random access makes retention unnecessary.
+    pub stream_dedup_window: u64,
+    /// Whether the producer declared its resource budget before the payload.
+    /// Absence is never a claim that resources are unlimited.
+    pub budget_declared: bool,
+    /// Whether the layout can resolve one Entry without scanning the container.
+    /// This follows from the layout, never from whether the source happened to
+    /// be a seekable file.
+    pub random_entry_lookup: bool,
+    /// Whether the layout carries an Index at all.
+    pub index_applicable: bool,
     pub codec_transform_feature_present: bool,
     pub reconstructive_transform_feature_present: bool,
+    pub stream_layout_feature_present: bool,
     pub planner_id: String,
     pub chunker_id: String,
     pub plans: Vec<PlanInspection>,
@@ -212,11 +225,18 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
             .map_err(|_| resource("entry count exceeds u64"))?,
         total_logical_bytes: archive.total_logical_size()?,
         features: archive.descriptor.features,
+        stream_dedup_window: archive.descriptor.stream_dedup_window,
+        budget_declared: archive.descriptor.budget_declared,
+        random_entry_lookup: archive.descriptor.layout.supports_random_entry_lookup(),
+        index_applicable: archive.descriptor.layout == Layout::Indexed,
         codec_transform_feature_present: archive.descriptor.features.incompat
             & crate::ecf::FEATURE_CODEC_TRANSFORM_V1
             != 0,
         reconstructive_transform_feature_present: archive.descriptor.features.incompat
             & crate::ecf::FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
+            != 0,
+        stream_layout_feature_present: archive.descriptor.features.incompat
+            & crate::ecf::FEATURE_STREAM_LAYOUT_V1
             != 0,
         planner_id: archive.descriptor.planner_id.clone(),
         chunker_id: archive.descriptor.chunker_id.clone(),
@@ -252,7 +272,26 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
 }
 
 /// Derives physical compression totals from verified Chunk frames and plans.
+///
+/// This re-derives the physical alternatives the planner considered, so it
+/// needs the retained plaintext of every Chunk. A sequential pass that released
+/// its plaintext cannot answer these questions; scan again with a retaining
+/// content policy rather than reporting derived numbers from absent bytes.
 pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
+    if opened
+        .archive
+        .content_store
+        .chunks
+        .values()
+        .any(|chunk| chunk.logical_len != 0 && chunk.plaintext.is_empty())
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::CommandNotImplemented,
+            "compression explanation requires retained Chunk plaintext; \
+             re-scan the archive with a retaining content policy",
+        ));
+    }
     let usage = codec_usage(opened)?;
     let total_plaintext_chunk_bytes = usage.iter().try_fold(0_u64, |total, item| {
         total

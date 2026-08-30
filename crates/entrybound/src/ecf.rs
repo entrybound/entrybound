@@ -9,10 +9,22 @@ use crate::eam::{ChunkGroup, Dictionary, Digest, ReconstructionData, TransformPl
 
 mod container;
 mod records;
+mod staging;
+mod stream;
 
 pub use container::{
     EncodedArchive, IndexStatus, OpenedArchive, VerificationReport, WriteOptions, encode, open,
-    open_with_limits, open_with_policy, verify, verify_with_limits, verify_with_policy,
+    open_with_limits, open_with_policy, peek_layout, verify, verify_with_limits,
+    verify_with_policy,
+};
+pub use staging::StagingLimits;
+pub(crate) use stream::StagedChunks;
+pub use stream::{
+    STREAM_FOOTER_LEN, STREAM_ITEM_HEADER_LEN, STREAM_ITEM_MAGIC, SequentialArchive,
+    SequentialLimits, StreamAccessProfile, StreamContentPolicy, StreamItemTag, StreamReport,
+    StreamWindow, StreamWriteOptions, StreamWriteSummary, bootstrap_sequential_limits,
+    bootstrap_staging_limits, encode_stream, open_stream, open_stream_with_limits,
+    open_stream_with_policy, verify_stream, verify_stream_with_limits,
 };
 
 /// Candidate Entrybound magic selected by the architecture specification.
@@ -41,10 +53,16 @@ pub const FEATURE_CODEC_TRANSFORM_V1: u64 = 1 << 1;
 pub const FEATURE_RECONSTRUCTIVE_TRANSFORM_V1: u64 = 1 << 2;
 /// Required capability for whole-ContentObject reconstruction regions and v3 steps.
 pub const FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1: u64 = 1 << 3;
+/// Required capability for the single sequential tagged `STREAM_BODY`.
+///
+/// A reader that does not implement this bit must refuse the archive rather
+/// than attempt to interpret its bytes as INDEXED sections.
+pub const FEATURE_STREAM_LAYOUT_V1: u64 = 1 << 4;
 pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 = FEATURE_CROSS_FILE_COMPRESSION_V1
     | FEATURE_CODEC_TRANSFORM_V1
     | FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
-    | FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1;
+    | FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1
+    | FEATURE_STREAM_LAYOUT_V1;
 
 /// Versioned namespace for the experimental encoding.
 pub const FORMAT_NAMESPACE: &str = "ecf/bootstrap-v1";
@@ -187,7 +205,9 @@ impl Default for BootstrapCapabilities {
 
 #[cfg(test)]
 mod tests {
-    use super::{BootstrapCapabilities, MAGIC};
+    use super::{
+        BootstrapCapabilities, FEATURE_STREAM_LAYOUT_V1, MAGIC, SUPPORTED_INCOMPAT_FEATURES,
+    };
     use crate::eam::{ArchiveRole, Layout};
 
     #[test]
@@ -197,5 +217,13 @@ mod tests {
         assert_eq!(capabilities.role, ArchiveRole::Complete);
         assert!(capabilities.budget_declared);
         assert_eq!(MAGIC, [0x8e, b'E', b'B', b'1', 13, 10, 26, 10]);
+    }
+
+    #[test]
+    fn stream_layout_is_a_required_incompatibility_bit() {
+        assert_eq!(FEATURE_STREAM_LAYOUT_V1, 0x10);
+        assert_ne!(SUPPORTED_INCOMPAT_FEATURES & FEATURE_STREAM_LAYOUT_V1, 0);
+        assert_eq!(Layout::Stream.wire_id(), 2);
+        assert!(!Layout::Stream.supports_random_entry_lookup());
     }
 }

@@ -42,10 +42,43 @@ pub enum ArchiveRole {
 }
 
 /// The physical ECF layout.
+///
+/// Layout is a physical and access-capability choice only. Two archives that
+/// encode the same EAM under different layouts have identical LAI, PCR, and
+/// AUX and differ only in PCI.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Layout {
     /// Footer-indexed layout with contiguous authoritative manifest records.
     Indexed,
+    /// Single sequential tagged body written without `Seek` and read without
+    /// `Seek`. No Index exists, and entry lookup requires a full scan.
+    Stream,
+}
+
+impl Layout {
+    /// Returns the stable wire discriminant used by the fixed preamble.
+    #[must_use]
+    pub const fn wire_id(self) -> u8 {
+        match self {
+            Self::Indexed => 1,
+            Self::Stream => 2,
+        }
+    }
+
+    /// Returns the stable machine-readable layout name.
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Indexed => "INDEXED",
+            Self::Stream => "STREAM",
+        }
+    }
+
+    /// Whether the layout can resolve one Entry without scanning the container.
+    #[must_use]
+    pub const fn supports_random_entry_lookup(self) -> bool {
+        matches!(self, Self::Indexed)
+    }
 }
 
 /// The entry kinds supported by the first native slice.
@@ -606,6 +639,10 @@ pub struct ArchiveDescriptor {
     pub layout: Layout,
     pub role: ArchiveRole,
     pub budget_declared: bool,
+    /// Declared bound on how far a sequential semantic reference may depend on
+    /// an already emitted unique Chunk. It is always zero in INDEXED layout,
+    /// where random access makes historical retention unnecessary.
+    pub stream_dedup_window: u64,
     pub budget: ResourceBudget,
     pub decode: DecodeRequirements,
     pub identity_profile: IdentityProfile,

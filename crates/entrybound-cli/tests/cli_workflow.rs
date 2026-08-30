@@ -1,6 +1,6 @@
-use std::fs;
+use std::fs::{self, File};
 use std::path::PathBuf;
-use std::process::{Command, Output};
+use std::process::{Command, Output, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
@@ -114,6 +114,228 @@ fn entrybound_alias_uses_the_same_cli_implementation() {
     assert!(String::from_utf8_lossy(&primary.stdout).contains("ebound pack"));
 }
 
+#[test]
+fn a_real_pipe_carries_a_stream_archive_from_pack_to_verify() {
+    let fixture = Fixture::new();
+    let source = fixture.path.join("source");
+    write_pipe_source(&source);
+
+    // `ebound pack ./tree - --layout stream` writes archive bytes to standard
+    // output, so every status line must go to standard error instead.
+    let mut pack = Command::new(env!("CARGO_BIN_EXE_ebound"))
+        .args(["pack", path(&source), "-", "--layout", "stream"])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let verify = Command::new(env!("CARGO_BIN_EXE_ebound"))
+        .args(["verify", "-"])
+        .stdin(Stdio::from(pack.stdout.take().unwrap()))
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .output()
+        .unwrap();
+    let pack = pack.wait_with_output().unwrap();
+    assert_success(&pack);
+    assert_success(&verify);
+
+    let pack_status = String::from_utf8_lossy(&pack.stderr);
+    assert!(pack_status.contains("OK packed"));
+    assert!(pack_status.contains("layout STREAM"));
+    assert!(pack_status.contains("stream dedup window 0"));
+    assert!(pack_status.contains("PCI "));
+    assert!(
+        pack.stdout.is_empty(),
+        "status output must not share the byte stream"
+    );
+
+    let verified = String::from_utf8_lossy(&verify.stdout);
+    assert!(verified.contains("exact-byte PCI"));
+    assert!(verified.contains("stream dedup-window constraints"));
+    assert!(verified.contains("layout: STREAM"));
+    assert!(verified.contains("not applicable; STREAM layout carries no Index by design"));
+}
+
+#[test]
+fn stream_archives_round_trip_through_standard_input_and_output() {
+    let fixture = Fixture::new();
+    let source = fixture.path.join("source");
+    let archive = fixture.path.join("piped.eb");
+    let restored = fixture.path.join("restored");
+    write_pipe_source(&source);
+
+    let pack = Command::new(env!("CARGO_BIN_EXE_ebound"))
+        .args(["pack", path(&source), "-", "--layout", "stream"])
+        .stdout(Stdio::from(File::create(&archive).unwrap()))
+        .stderr(Stdio::piped())
+        .output()
+        .unwrap();
+    assert_success(&pack);
+    let bytes = fs::read(&archive).unwrap();
+    assert_eq!(&bytes[..8], &[0x8e, b'E', b'B', b'1', 13, 10, 26, 10]);
+    assert_eq!(bytes[72], 2, "the preamble must declare STREAM layout");
+
+    for (arguments, expected) in [
+        (vec!["list", "-"], "file\tnested/hello.txt"),
+        (vec!["inspect", "-"], "layout: STREAM"),
+        (vec!["explain", "-"], "exact deduplication:"),
+    ] {
+        let output = Command::new(env!("CARGO_BIN_EXE_ebound"))
+            .args(&arguments)
+            .stdin(Stdio::from(File::open(&archive).unwrap()))
+            .output()
+            .unwrap();
+        assert_success(&output);
+        assert!(
+            String::from_utf8_lossy(&output.stdout).contains(expected),
+            "{arguments:?} did not report {expected}"
+        );
+    }
+
+    let inspect = Command::new(env!("CARGO_BIN_EXE_ebound"))
+        .args(["inspect", "-"])
+        .stdin(Stdio::from(File::open(&archive).unwrap()))
+        .output()
+        .unwrap();
+    let inspection = String::from_utf8_lossy(&inspect.stdout);
+    assert!(inspection.contains("stream dedup window: 0"));
+    assert!(inspection.contains("producer budget declaration: declared before the payload"));
+    assert!(inspection.contains("random entry lookup: unavailable"));
+    assert!(inspection.contains("index: not applicable; STREAM layout carries no Index by design"));
+    assert!(inspection.contains("stream access: random-entry-lookup=false"));
+
+    let unpack = Command::new(env!("CARGO_BIN_EXE_ebound"))
+        .args(["unpack", "-", path(&restored)])
+        .stdin(Stdio::from(File::open(&archive).unwrap()))
+        .output()
+        .unwrap();
+    assert_success(&unpack);
+    assert!(String::from_utf8_lossy(&unpack.stdout).contains("layout: STREAM"));
+    assert_eq!(
+        fs::read(restored.join("nested/hello.txt")).unwrap(),
+        b"hello from the CLI\n"
+    );
+    assert!(restored.join("empty-dir").is_dir());
+}
+
+#[test]
+fn a_stream_archive_in_a_file_is_never_reported_as_random_access() {
+    let fixture = Fixture::new();
+    let source = fixture.path.join("source");
+    let archive = fixture.path.join("seekable.eb");
+    write_pipe_source(&source);
+
+    let pack = command(["pack", path(&source), path(&archive), "--layout", "stream"]);
+    assert_success(&pack);
+    assert!(String::from_utf8_lossy(&pack.stdout).contains("layout STREAM"));
+
+    let inspect = command(["inspect", path(&archive)]);
+    assert_success(&inspect);
+    let inspection = String::from_utf8_lossy(&inspect.stdout);
+    assert!(inspection.contains("layout: STREAM"));
+    assert!(inspection.contains("random entry lookup: unavailable"));
+
+    let list = command(["list", path(&archive)]);
+    assert_success(&list);
+    assert!(
+        String::from_utf8_lossy(&list.stderr).contains("required a complete sequential pass"),
+        "listing a STREAM archive must say what it cost"
+    );
+}
+
+#[test]
+fn a_truncated_stream_reports_truncation_rather_than_generic_corruption() {
+    let fixture = Fixture::new();
+    let source = fixture.path.join("source");
+    let archive = fixture.path.join("whole.eb");
+    let cut = fixture.path.join("cut.eb");
+    write_pipe_source(&source);
+    assert_success(&command([
+        "pack",
+        path(&source),
+        path(&archive),
+        "--layout",
+        "stream",
+    ]));
+
+    let bytes = fs::read(&archive).unwrap();
+    fs::write(&cut, &bytes[..bytes.len() - 200]).unwrap();
+    let output = Command::new(env!("CARGO_BIN_EXE_ebound"))
+        .args(["verify", "-"])
+        .stdin(Stdio::from(File::open(&cut).unwrap()))
+        .output()
+        .unwrap();
+    assert!(!output.status.success());
+    assert_eq!(output.status.code(), Some(3), "TRUNCATED exit class");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("TRUNCATED EB_ECF_TRUNCATED_STREAM"),
+        "{stderr}"
+    );
+}
+
+#[test]
+fn a_window_that_cannot_be_met_fails_with_a_typed_diagnostic() {
+    let fixture = Fixture::new();
+    let source = fixture.path.join("source");
+    let archive = fixture.path.join("shared.eb");
+    // Each file owns content the other does not, so both contribute Chunks and
+    // the second record read necessarily reaches back to the first file's run.
+    fs::create_dir(&source).unwrap();
+    let shared = structured(1024 * 1024);
+    let mut leading = seeded_noise(128 * 1024, 0x0bad_cafe_0bad_cafe);
+    leading.extend_from_slice(&shared);
+    let mut trailing = shared;
+    trailing.extend_from_slice(&seeded_noise(128 * 1024, 0x0fee_1900_0fee_1900));
+    fs::write(source.join("unique-head-then-shared.bin"), &leading).unwrap();
+    fs::write(source.join("shared-then-unique-tail.bin"), &trailing).unwrap();
+
+    let refused = command(["pack", path(&source), path(&archive), "--layout", "stream"]);
+    assert!(!refused.status.success());
+    let stderr = String::from_utf8_lossy(&refused.stderr);
+    assert!(stderr.contains("EB_ECF_STREAM_WINDOW_EXCEEDED"), "{stderr}");
+    assert!(stderr.contains("automatic window"), "{stderr}");
+    assert!(
+        !archive.exists(),
+        "a refused plan must not leave an output file behind"
+    );
+
+    let automatic = fixture.path.join("auto.eb");
+    let packed = command([
+        "pack",
+        path(&source),
+        path(&automatic),
+        "--layout",
+        "stream",
+        "--stream-window",
+        "auto",
+    ]);
+    assert_success(&packed);
+    let stdout = String::from_utf8_lossy(&packed.stdout);
+    assert!(stdout.contains("stream dedup window "));
+    assert!(!stdout.contains("stream dedup window 0"));
+    assert_success(&command(["verify", path(&automatic)]));
+}
+
+fn write_pipe_source(source: &std::path::Path) {
+    fs::create_dir_all(source.join("nested")).unwrap();
+    fs::create_dir(source.join("empty-dir")).unwrap();
+    fs::write(source.join("nested/hello.txt"), b"hello from the CLI\n").unwrap();
+    fs::write(source.join("compressible.bin"), vec![b'x'; 128 * 1024]).unwrap();
+    fs::write(
+        source.join("incompressible.bin"),
+        deterministic_noise(128 * 1024),
+    )
+    .unwrap();
+    fs::write(source.join("empty"), []).unwrap();
+}
+
+fn structured(len: usize) -> Vec<u8> {
+    (0..len)
+        .map(|index| ((index % 251) as u8).wrapping_add((index / 251) as u8))
+        .collect()
+}
+
 fn command<const N: usize>(arguments: [&str; N]) -> Output {
     command_with(env!("CARGO_BIN_EXE_ebound"), arguments)
 }
@@ -132,7 +354,11 @@ fn assert_success(output: &Output) {
 }
 
 fn deterministic_noise(len: usize) -> Vec<u8> {
-    let mut state = 0xbb67_ae85_84ca_a73b_u64;
+    seeded_noise(len, 0xbb67_ae85_84ca_a73b)
+}
+
+fn seeded_noise(len: usize, seed: u64) -> Vec<u8> {
+    let mut state = seed;
     (0..len)
         .map(|_| {
             state ^= state << 13;
