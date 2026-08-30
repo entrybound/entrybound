@@ -285,6 +285,7 @@ fn archive_with_content(
             chunks,
             dictionaries: BTreeMap::new(),
             reconstruction_data: BTreeMap::new(),
+            reconstruction_fallbacks: BTreeMap::new(),
             chunk_groups: BTreeMap::new(),
         },
         transform_plans: vec![TransformPlan {
@@ -377,7 +378,17 @@ fn assert_shared_store_chunk_corruption_is_detected(bytes: &[u8], archive: &Arch
         != 0;
     let frame_header = if extended { 96 } else { 64 };
     corrupt[usize::try_from(location.offset).unwrap() + frame_header] ^= 1;
-    rehash_section(&mut corrupt, if extended { 5 } else { 3 });
+    let chunk_section = if archive.descriptor.features.incompat
+        & entrybound::ecf::FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
+        != 0
+    {
+        6
+    } else if extended {
+        5
+    } else {
+        3
+    };
+    rehash_section(&mut corrupt, chunk_section);
     let error = verify(&corrupt).unwrap_err();
     assert_eq!(error.code(), ReasonCode::ChunkDigestMismatch);
     assert!(error.detail().contains(&chunk_id.to_string()));

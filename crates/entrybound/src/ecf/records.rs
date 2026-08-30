@@ -5,8 +5,8 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     ChunkGroup, Criticality, Dictionary, Digest, Entry, EntryData, EntryIdentity, EntrySet,
     FidelityIssue, FidelityReport, LogicalPath, MetadataItem, MetadataName, MetadataSet,
-    PathComponent, PathEncoding, ReconstructionData, Restorability, Timestamp, TimestampPrecision,
-    TransformPlan, TransformStep,
+    PathComponent, PathEncoding, ReconstructionData, ReconstructionFallbackReason, Restorability,
+    Timestamp, TimestampPrecision, TransformPlan, TransformStep,
 };
 
 pub(super) const RECORD_DESCRIPTOR: u16 = 1;
@@ -24,6 +24,7 @@ pub(super) const RECORD_CHUNK_GROUP: u16 = 12;
 pub(super) const RECORD_TRANSFORM_STEP: u16 = 13;
 pub(super) const RECORD_RECONSTRUCTION_DATA: u16 = 14;
 pub(super) const RECORD_TRANSFORM_STEP_V2: u16 = 15;
+pub(super) const RECORD_RECONSTRUCTION_FALLBACK: u16 = 16;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) struct DescriptorBody {
@@ -332,6 +333,13 @@ fn decode_transform_step_v2(bytes: &[u8]) -> Result<TransformStep> {
 pub(super) fn encode_reconstruction_data(
     values: &BTreeMap<Digest, ReconstructionData>,
 ) -> Result<Vec<u8>> {
+    encode_reconstruction_section(values, &BTreeMap::new())
+}
+
+pub(super) fn encode_reconstruction_section(
+    values: &BTreeMap<Digest, ReconstructionData>,
+    fallbacks: &BTreeMap<Digest, ReconstructionFallbackReason>,
+) -> Result<Vec<u8>> {
     let mut encoded = Vec::new();
     for value in values.values() {
         let mut record = RecordBuilder::new(RECORD_RECONSTRUCTION_DATA);
@@ -342,18 +350,48 @@ pub(super) fn encode_reconstruction_data(
             .bytes(4, &value.bytes)?;
         encoded.extend_from_slice(&record.finish()?);
     }
+    for (chunk_id, reason) in fallbacks {
+        let mut record = RecordBuilder::new(RECORD_RECONSTRUCTION_FALLBACK);
+        record.bytes(1, chunk_id.as_bytes())?.u8(
+            2,
+            match reason {
+                ReconstructionFallbackReason::UnrecognizedOrVerificationFailed => 1,
+                ReconstructionFallbackReason::CompleteCostDidNotWin => 2,
+            },
+        )?;
+        encoded.extend_from_slice(&record.finish()?);
+    }
     Ok(encoded)
 }
 
-pub(super) fn decode_reconstruction_data(
+pub(super) fn decode_reconstruction_section(
     bytes: &[u8],
-) -> Result<BTreeMap<Digest, ReconstructionData>> {
+) -> Result<(
+    BTreeMap<Digest, ReconstructionData>,
+    BTreeMap<Digest, ReconstructionFallbackReason>,
+)> {
     let mut values = BTreeMap::new();
+    let mut fallbacks = BTreeMap::new();
     let mut previous = None;
+    let mut fallbacks_started = false;
     for record in decode_record_stream(bytes)? {
-        if record.kind != RECORD_RECONSTRUCTION_DATA {
+        if record.kind == RECORD_RECONSTRUCTION_FALLBACK {
+            fallbacks_started = true;
+            record.expect_tags(&[1, 2], &[])?;
+            let chunk_id = digest(record.field(1)?.as_bytes()?)?;
+            let reason = match record.field(2)?.as_u8()? {
+                1 => ReconstructionFallbackReason::UnrecognizedOrVerificationFailed,
+                2 => ReconstructionFallbackReason::CompleteCostDidNotWin,
+                _ => return Err(noncanonical("unknown ReconstructionFallback reason")),
+            };
+            if fallbacks.insert(chunk_id, reason).is_some() {
+                return Err(duplicate("duplicate ReconstructionFallback Chunk"));
+            }
+            continue;
+        }
+        if record.kind != RECORD_RECONSTRUCTION_DATA || fallbacks_started {
             return Err(noncanonical(
-                "RECONSTRUCTION_DATA contains a non-data record",
+                "RECONSTRUCTION_DATA record ordering is invalid",
             ));
         }
         record.expect_tags(&[1, 2, 3, 4], &[])?;
@@ -375,8 +413,19 @@ pub(super) fn decode_reconstruction_data(
         crate::reconstruction::validate_data(&value)?;
         values.insert(reconstruction_id, value);
     }
-    if encode_reconstruction_data(&values)? != bytes {
+    if encode_reconstruction_section(&values, &fallbacks)? != bytes {
         return Err(noncanonical("ReconstructionData records are not canonical"));
+    }
+    Ok((values, fallbacks))
+}
+
+#[cfg(test)]
+pub(super) fn decode_reconstruction_data(
+    bytes: &[u8],
+) -> Result<BTreeMap<Digest, ReconstructionData>> {
+    let (values, fallbacks) = decode_reconstruction_section(bytes)?;
+    if !fallbacks.is_empty() {
+        return Err(noncanonical("unexpected ReconstructionFallback records"));
     }
     Ok(values)
 }
@@ -1019,6 +1068,24 @@ mod tests {
             decode_reconstruction_data(&bytes).unwrap_err().code(),
             ReasonCode::ReconstructionDataDigestMismatch,
             "ECF-RECONSTRUCTION-DIGEST-001"
+        );
+
+        let fallback = encode_reconstruction_section(
+            &BTreeMap::new(),
+            &BTreeMap::from([(
+                sha256_exact(b"fallback-chunk"),
+                ReconstructionFallbackReason::CompleteCostDidNotWin,
+            )]),
+        )
+        .unwrap();
+        let mut duplicate_fallback = fallback.clone();
+        duplicate_fallback.extend_from_slice(&fallback);
+        assert_eq!(
+            decode_reconstruction_section(&duplicate_fallback)
+                .unwrap_err()
+                .code(),
+            ReasonCode::DuplicateSemanticDeclaration,
+            "ECF-RECONSTRUCTION-FALLBACK-DUPLICATE-001"
         );
     }
 

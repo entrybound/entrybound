@@ -241,6 +241,34 @@ impl Archive {
             }
         }
 
+        for chunk_id in self.content_store.reconstruction_fallbacks.keys() {
+            let chunk = self.content_store.chunks.get(chunk_id).ok_or_else(|| {
+                Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::UnknownChunk,
+                    format!("ReconstructionFallback references unknown Chunk {chunk_id}"),
+                )
+            })?;
+            let plan = self
+                .transform_plans
+                .iter()
+                .find(|plan| plan.plan_id == chunk.plan_ref)
+                .expect("Chunk plan reference was validated above");
+            if plan
+                .transforms
+                .iter()
+                .any(|step| step.reconstruction_ref.is_some())
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::DuplicateSemanticDeclaration,
+                    format!(
+                        "Chunk {chunk_id} cannot carry both a selected reconstruction and a fallback audit"
+                    ),
+                ));
+            }
+        }
+
         self.validate_group_access_costs()?;
 
         for (digest, object) in &self.content_store.objects {

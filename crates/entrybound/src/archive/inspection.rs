@@ -251,8 +251,9 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
         structural_transform_savings_bytes,
     ) = separated_codec_savings(opened)?;
     let reconstruction = reconstruction_statistics(&opened.archive)?;
-    let (reconstructive_gross_savings_bytes, reconstructive_fallback_chunk_count) =
-        reconstructive_explanation(opened)?;
+    let reconstructive_gross_savings_bytes = reconstructive_explanation(opened)?;
+    let (reconstructive_fallback_chunk_count, reconstructive_fallback_reason) =
+        reconstruction_fallback_summary(&opened.archive)?;
     let (
         similarity_cohort_count,
         similarity_cohort_chunks,
@@ -284,9 +285,7 @@ pub fn explain(opened: &OpenedArchive) -> Result<CompressionExplanation> {
             - i128::from(reconstruction.object_bytes),
         reconstructive_chunk_count: reconstruction.chunk_count,
         reconstructive_fallback_chunk_count,
-        reconstructive_fallback_reason: (reconstructive_fallback_chunk_count != 0).then(||
-            "candidate was ineligible, failed mandatory exact verification, or did not beat the complete-cost margin".to_owned()
-        ),
+        reconstructive_fallback_reason,
         transformed_chunk_count: transformed_chunk_count(&opened.archive)?,
         transform_rejected_chunk_count: transform_rejected_chunk_count(&opened.archive)?,
         transform_usage: transform_usage(&opened.archive)?,
@@ -384,10 +383,10 @@ fn reconstruction_statistics(archive: &Archive) -> Result<ReconstructionInspecti
     })
 }
 
-fn reconstructive_explanation(opened: &OpenedArchive) -> Result<(i128, u64)> {
+fn reconstructive_explanation(opened: &OpenedArchive) -> Result<i128> {
     let archive = &opened.archive;
     if !archive.descriptor.planner_id.ends_with("-v5") {
-        return Ok((0, 0));
+        return Ok(0);
     }
     let profile = CompressionProfile::from_planner_id(&archive.descriptor.planner_id)
         .ok_or_else(|| resource("unknown v5 profile"))?;
@@ -397,7 +396,6 @@ fn reconstructive_explanation(opened: &OpenedArchive) -> Result<(i128, u64)> {
         .map(|plan| (plan.plan_id, plan))
         .collect::<BTreeMap<_, _>>();
     let mut gross = 0_i128;
-    let mut fallback = 0_u64;
     for (chunk_id, chunk) in &archive.content_store.chunks {
         let plan = plans[&chunk.plan_ref];
         if plan
@@ -410,13 +408,39 @@ fn reconstructive_explanation(opened: &OpenedArchive) -> Result<(i128, u64)> {
             gross += i128::try_from(ordinary)
                 .map_err(|_| resource("ordinary size exceeds i128"))?
                 - i128::from(archive.index.chunks[chunk_id].stored_len);
-        } else if profile != CompressionProfile::Fast {
-            fallback = fallback
-                .checked_add(1)
-                .ok_or_else(|| resource("fallback count exceeds u64"))?;
         }
     }
-    Ok((gross, fallback))
+    Ok(gross)
+}
+
+fn reconstruction_fallback_summary(archive: &Archive) -> Result<(u64, Option<String>)> {
+    use crate::eam::ReconstructionFallbackReason;
+
+    let mut unrecognized = 0_u64;
+    let mut cost_rejected = 0_u64;
+    for reason in archive.content_store.reconstruction_fallbacks.values() {
+        match reason {
+            ReconstructionFallbackReason::UnrecognizedOrVerificationFailed => {
+                unrecognized = unrecognized
+                    .checked_add(1)
+                    .ok_or_else(|| resource("reconstruction fallback count exceeds u64"))?;
+            }
+            ReconstructionFallbackReason::CompleteCostDidNotWin => {
+                cost_rejected = cost_rejected
+                    .checked_add(1)
+                    .ok_or_else(|| resource("reconstruction fallback count exceeds u64"))?;
+            }
+        }
+    }
+    let total = unrecognized
+        .checked_add(cost_rejected)
+        .ok_or_else(|| resource("reconstruction fallback count exceeds u64"))?;
+    let summary = (total != 0).then(|| {
+        format!(
+            "unrecognized-or-verification-failed={unrecognized}, complete-cost-rejected={cost_rejected}"
+        )
+    });
+    Ok((total, summary))
 }
 
 fn cross_file_statistics(archive: &Archive) -> Result<CrossFileInspection> {

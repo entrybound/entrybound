@@ -5,7 +5,8 @@ use entrybound::diagnostics::ReasonCode;
 use entrybound::eam::{
     Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, DecodeRequirements, Digest,
     DigestAlgorithm, Entry, EntryData, EntryIdentity, EntrySet, FeatureSet, FidelityReport,
-    IdentityProfile, Index, Layout, LogicalPath, MetadataSet, ResourceBudget, TransformPlan,
+    IdentityProfile, Index, Layout, LogicalPath, MetadataSet, ReconstructionFallbackReason,
+    ResourceBudget, TransformPlan,
 };
 use entrybound::ecf::{WriteOptions, encode, open, verify};
 use entrybound::identity::{
@@ -89,6 +90,32 @@ fn missing_corrupt_or_undeclared_reconstruction_fails_typed() {
     );
 }
 
+#[test]
+fn reconstruction_fallback_reason_is_canonical_and_explainable() {
+    let original = vec![0xff; 8 * 1024];
+    let mut archive = archive_for(&original);
+    plan_archive_v5(&mut archive, CompressionProfile::Balanced).unwrap();
+
+    let chunk_id = *archive.content_store.chunks.keys().next().unwrap();
+    assert_eq!(
+        archive.content_store.reconstruction_fallbacks[&chunk_id],
+        ReconstructionFallbackReason::UnrecognizedOrVerificationFailed
+    );
+
+    let encoded = encode(&archive, WriteOptions::default()).unwrap();
+    let opened = open(&encoded.bytes).unwrap();
+    assert_eq!(
+        opened.archive.content_store.reconstruction_fallbacks,
+        archive.content_store.reconstruction_fallbacks
+    );
+    let explanation = entrybound::archive::explain(&opened).unwrap();
+    assert_eq!(explanation.reconstructive_fallback_chunk_count, 1);
+    assert_eq!(
+        explanation.reconstructive_fallback_reason.as_deref(),
+        Some("unrecognized-or-verification-failed=1, complete-cost-rejected=0")
+    );
+}
+
 fn gzip_fixture() -> Vec<u8> {
     let source = (0..20_000)
         .flat_map(|index| {
@@ -147,6 +174,7 @@ fn archive_for(bytes: &[u8]) -> Archive {
             chunks,
             dictionaries: BTreeMap::new(),
             reconstruction_data: BTreeMap::new(),
+            reconstruction_fallbacks: BTreeMap::new(),
             chunk_groups: BTreeMap::new(),
         },
         transform_plans: vec![store_plan()].into_boxed_slice(),

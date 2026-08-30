@@ -272,16 +272,17 @@ fn compressed_payload_and_plan_corruption_have_typed_failures() {
     fs::create_dir(&source).unwrap();
     fs::write(source.join("content"), vec![b'r'; 128 * 1024]).unwrap();
     let encoded = pack(&source, CompressionProfile::Balanced);
+    let chunk_section = chunk_section_kind(&encoded.bytes);
 
     let mut damaged_payload = encoded.bytes.clone();
-    let (_, chunk_data) = locate_section(&damaged_payload, 5);
+    let (_, chunk_data) = locate_section(&damaged_payload, chunk_section);
     damaged_payload[chunk_data.start + 96] ^= 0xff;
-    rehash_section(&mut damaged_payload, 5);
+    rehash_section(&mut damaged_payload, chunk_section);
     let error = verify(&damaged_payload).unwrap_err();
     assert_eq!(error.code(), ReasonCode::DecompressionFailed);
 
     let mut wrong_logical_length = encoded.bytes.clone();
-    let (_, chunk_data) = locate_section(&wrong_logical_length, 5);
+    let (_, chunk_data) = locate_section(&wrong_logical_length, chunk_section);
     let declared = u64::from_be_bytes(
         wrong_logical_length[chunk_data.start + 48..chunk_data.start + 56]
             .try_into()
@@ -293,7 +294,7 @@ fn compressed_payload_and_plan_corruption_have_typed_failures() {
     let expansion = u64::from_be_bytes(wrong_logical_length[120..128].try_into().unwrap());
     wrong_logical_length[120..128].copy_from_slice(&(expansion + 1_000).to_be_bytes());
     rehash_preamble(&mut wrong_logical_length);
-    rehash_section(&mut wrong_logical_length, 5);
+    rehash_section(&mut wrong_logical_length, chunk_section);
     let error = verify(&wrong_logical_length).unwrap_err();
     assert_eq!(error.code(), ReasonCode::DecompressedLengthMismatch);
 
@@ -389,6 +390,17 @@ fn locate_section(bytes: &[u8], wanted: u16) -> (Range<usize>, Range<usize>) {
         cursor = payload_end;
     }
     panic!("section not found")
+}
+
+fn chunk_section_kind(bytes: &[u8]) -> u16 {
+    let incompat = u64::from_be_bytes(bytes[16..24].try_into().unwrap());
+    if incompat & entrybound::ecf::FEATURE_RECONSTRUCTIVE_TRANSFORM_V1 != 0 {
+        6
+    } else if incompat & entrybound::ecf::FEATURE_CROSS_FILE_COMPRESSION_V1 != 0 {
+        5
+    } else {
+        3
+    }
 }
 
 fn rehash_section(bytes: &mut [u8], section: u16) {

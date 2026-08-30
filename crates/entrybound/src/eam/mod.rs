@@ -10,6 +10,6 @@ pub use model::{
     ContentObject, ContentRef, ContentStore, Criticality, DecodeRequirements, Dictionary, Digest,
     DigestAlgorithm, Entry, EntryData, EntryIdentity, EntryKind, EntrySet, FeatureSet,
     FidelityIssue, FidelityReport, IdentityProfile, Index, Layout, MetadataItem, MetadataName,
-    MetadataSet, MetadataValue, ReconstructionData, ResourceBudget, Restorability, Timestamp,
-    TimestampPrecision, TransformPlan, TransformStep,
+    MetadataSet, MetadataValue, ReconstructionData, ReconstructionFallbackReason, ResourceBudget,
+    Restorability, Timestamp, TimestampPrecision, TransformPlan, TransformStep,
 };

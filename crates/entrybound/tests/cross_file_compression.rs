@@ -367,7 +367,7 @@ fn assert_prerequisite_corruption_fails(bytes: &[u8], archive: &entrybound::eam:
     let mut corrupt = bytes.to_vec();
     let location = archive.index.chunks[&chunk_id];
     corrupt[usize::try_from(location.offset).unwrap() + 96] ^= 1;
-    let (header, payload) = locate_section(&corrupt, 5);
+    let (header, payload) = locate_section(&corrupt, chunk_section_kind(&corrupt));
     rehash_section(&mut corrupt, header, payload);
     assert_eq!(
         verify(&corrupt).unwrap_err().code(),
@@ -392,6 +392,17 @@ fn locate_section(bytes: &[u8], wanted: u16) -> (Range<usize>, Range<usize>) {
         cursor = payload_end;
     }
     panic!("section not found")
+}
+
+fn chunk_section_kind(bytes: &[u8]) -> u16 {
+    let incompat = u64::from_be_bytes(bytes[16..24].try_into().unwrap());
+    if incompat & entrybound::ecf::FEATURE_RECONSTRUCTIVE_TRANSFORM_V1 != 0 {
+        6
+    } else if incompat & entrybound::ecf::FEATURE_CROSS_FILE_COMPRESSION_V1 != 0 {
+        5
+    } else {
+        3
+    }
 }
 
 fn rehash_section(bytes: &mut [u8], header: Range<usize>, payload: Range<usize>) {

@@ -413,6 +413,14 @@ pub struct ReconstructionData {
     pub bytes: Box<[u8]>,
 }
 
+/// Creation-time reason that an attempted reconstructive representation was
+/// not selected. This is a non-authoritative physical planning audit record.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ReconstructionFallbackReason {
+    UnrecognizedOrVerificationFailed,
+    CompleteCostDidNotWin,
+}
+
 /// Bounded physical dependency declaration. Membership exists only through
 /// `Chunk::group_ref`; the CHUNK_DATA order supplies preceding-member order.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -429,6 +437,7 @@ pub struct ContentStore {
     pub chunks: BTreeMap<Digest, Chunk>,
     pub dictionaries: BTreeMap<Digest, Dictionary>,
     pub reconstruction_data: BTreeMap<Digest, ReconstructionData>,
+    pub reconstruction_fallbacks: BTreeMap<Digest, ReconstructionFallbackReason>,
     pub chunk_groups: BTreeMap<Digest, ChunkGroup>,
     /// Exact CHUNK_DATA frame order. It is physical only and never changes
     /// ContentObject reference order or any logical identity.

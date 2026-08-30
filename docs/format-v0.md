@@ -177,6 +177,7 @@ Record type and strictly increasing field tags are:
 | TransformStep | 13 | transform identifier(1), canonical parameter bytes(2) |
 | ReconstructionData | 14 | exact-byte digest(1), format/version(2), intermediate length(3), exact reconstruction bytes(4) |
 | TransformStep v2 | 15 | transform identifier(1), canonical parameter bytes(2), optional reconstruction reference(3) |
+| ReconstructionFallback | 16 | Chunk digest(1), fallback reason enum(2) |
 
 Without `codec-transform-v1`, TransformPlan field 3 remains the historical
 empty sequence. With the feature, every sequence item is a version-1 type-13
@@ -184,8 +185,12 @@ TransformStep record. Non-empty legacy string placeholders were never emitted
 by frozen planners and are rejected rather than reinterpreted.
 With `reconstructive-transform-v1`, every TransformPlan field-3 item is a
 type-15 TransformStep v2 record. Type 13 is never reinterpreted. Structural
-steps omit field 3; the sole reconstructive step must be first and carries one
-digest reference to a type-14 ReconstructionData object.
+  steps omit field 3; the sole reconstructive step must be first and carries one
+  digest reference to a type-14 ReconstructionData object.
+  Type-16 records follow all type-14 records in the RECONSTRUCTION_DATA section,
+  are ordered by Chunk digest, and are non-authoritative creation-audit data.
+  Reason 1 means recognition or mandatory exact verification did not qualify;
+  reason 2 means a verified candidate did not win the complete-cost comparison.
 
 Sequences contain `count:u64`, then repeated `item_length:u64 | item`. Entries
 are in canonical LogicalPath order. ContentObjects, Chunks, TransformPlans, and

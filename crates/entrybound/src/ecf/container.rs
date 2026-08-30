@@ -2,9 +2,9 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::records::{
     DescriptorBody, decode_chunk_groups, decode_descriptor, decode_dictionaries, decode_fidelity,
-    decode_index, decode_manifest, decode_reconstruction_data, decode_transform_plans,
+    decode_index, decode_manifest, decode_reconstruction_section, decode_transform_plans,
     decode_transform_plans_v2, encode_chunk_groups, encode_descriptor, encode_dictionaries,
-    encode_fidelity, encode_index, encode_manifest, encode_reconstruction_data,
+    encode_fidelity, encode_index, encode_manifest, encode_reconstruction_section,
     encode_transform_plans, encode_transform_plans_v2,
 };
 use super::{
@@ -124,8 +124,10 @@ pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> 
     };
     let dictionaries_payload = encode_dictionaries(&archive.content_store.dictionaries)?;
     let groups_payload = encode_chunk_groups(&archive.content_store.chunk_groups)?;
-    let reconstruction_payload =
-        encode_reconstruction_data(&archive.content_store.reconstruction_data)?;
+    let reconstruction_payload = encode_reconstruction_section(
+        &archive.content_store.reconstruction_data,
+        &archive.content_store.reconstruction_fallbacks,
+    )?;
     let (chunk_payload, relative_index) = encode_chunks(&archive, extended)?;
     normalize_descriptor(&mut archive, &relative_index)?;
 
@@ -334,12 +336,12 @@ pub fn open_with_limits(
     } else {
         BTreeMap::new()
     };
-    let reconstruction_data = if reconstructive {
-        decode_reconstruction_data(
+    let (reconstruction_data, reconstruction_fallbacks) = if reconstructive {
+        decode_reconstruction_section(
             required_section(&sections, SectionKind::ReconstructionData)?.payload,
         )?
     } else {
-        BTreeMap::new()
+        (BTreeMap::new(), BTreeMap::new())
     };
 
     if descriptor_section.location != footer.descriptor
@@ -419,6 +421,7 @@ pub fn open_with_limits(
             chunks,
             dictionaries,
             reconstruction_data,
+            reconstruction_fallbacks,
             chunk_groups,
             physical_order,
         },
@@ -594,11 +597,14 @@ fn validate_feature_model(archive: &Archive) -> Result<()> {
             "reconstructive-transform-v1 requires cross-file-compression-v1 and codec-transform-v1",
         ));
     }
-    if !reconstructive && !archive.content_store.reconstruction_data.is_empty() {
+    if !reconstructive
+        && (!archive.content_store.reconstruction_data.is_empty()
+            || !archive.content_store.reconstruction_fallbacks.is_empty())
+    {
         return Err(Diagnostic::new(
             OutcomeClass::Unsupported,
             ReasonCode::UnsupportedRequiredFeature,
-            "ReconstructionData requires reconstructive-transform-v1",
+            "ReconstructionData and ReconstructionFallback require reconstructive-transform-v1",
         ));
     }
     for dictionary in archive.content_store.dictionaries.values() {
@@ -710,8 +716,9 @@ fn derived_budget(
     )?)?;
     if has_reconstructive_feature(archive.descriptor.features) {
         metadata_bound = metadata_bound
-            .checked_add(u64_len(&encode_reconstruction_data(
+            .checked_add(u64_len(&encode_reconstruction_section(
                 &archive.content_store.reconstruction_data,
+                &archive.content_store.reconstruction_fallbacks,
             )?)?)
             .ok_or_else(|| resource("metadata and reconstruction budget overflow"))?;
     }

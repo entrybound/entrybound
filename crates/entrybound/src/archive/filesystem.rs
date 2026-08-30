@@ -331,6 +331,7 @@ impl Scan {
                 chunks,
                 dictionaries: BTreeMap::new(),
                 reconstruction_data: BTreeMap::new(),
+                reconstruction_fallbacks: BTreeMap::new(),
                 chunk_groups: BTreeMap::new(),
             },
             transform_plans: Box::default(),

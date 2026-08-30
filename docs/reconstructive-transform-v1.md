@@ -70,6 +70,11 @@ container bytes; the correction stream recreates the exact raw DEFLATE body.
 Feature bit `0x4` requires bits `0x1` and `0x2`, adds canonical record type 14
 and TransformStep v2 record type 15, and selects the section sequence documented
 in `format-v0.md`. Historical type-13 steps and v1–v4 sections are unchanged.
+The same section may contain canonical type-16 ReconstructionFallback audit
+records after all ReconstructionData objects. They associate a Chunk digest
+with either `unrecognized-or-verification-failed` or `complete-cost-rejected`.
+These records are non-authoritative physical planning evidence, contain no
+alternate Chunk meaning, and participate only in section integrity and PCI.
 
 ## Frozen v5 planning
 
@@ -89,9 +94,10 @@ ordinary v4 representation by strictly more than both 256 bytes and 2%.
 Ordinary encoding wins ties. Existing cohort planning then compares its full
 Dictionary/lookback cost against this independent result.
 
-`explain` reports every non-selected v5 recognition attempt as a fallback and
-reports selected gross payload savings, ReconstructionData overhead, net
-savings, and the aggregate recognition/verification/complete-cost reason.
+`explain` reads the persisted type-16 records to report every non-selected v5
+attempt as a fallback, split between recognition/verification failures and
+complete-cost rejections. It also reports selected gross payload savings,
+ReconstructionData overhead, and net savings.
 
 ## Resource limits and identity
 

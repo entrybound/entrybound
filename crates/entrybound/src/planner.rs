@@ -16,7 +16,10 @@ use crate::codec::{
     zstd_prefix_plan, zstd_transformed_plan,
 };
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
-use crate::eam::{Archive, ChunkGroup, Dictionary, Digest, ReconstructionData, TransformPlan};
+use crate::eam::{
+    Archive, ChunkGroup, Dictionary, Digest, ReconstructionData, ReconstructionFallbackReason,
+    TransformPlan,
+};
 use crate::ecf::{
     FEATURE_CODEC_TRANSFORM_V1, FEATURE_CROSS_FILE_COMPRESSION_V1,
     FEATURE_RECONSTRUCTIVE_TRANSFORM_V1, encoded_chunk_group_len, encoded_dictionary_len,
@@ -254,6 +257,7 @@ pub struct PlanningReport {
 pub fn plan_archive(archive: &mut Archive, profile: CompressionProfile) -> Result<PlanningReport> {
     archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
     archive.content_store.reconstruction_data.clear();
+    archive.content_store.reconstruction_fallbacks.clear();
     plan_archive_with_id(archive, profile, profile.planner_v1_id())
 }
 
@@ -264,6 +268,7 @@ pub fn plan_archive_v2(
 ) -> Result<PlanningReport> {
     archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
     archive.content_store.reconstruction_data.clear();
+    archive.content_store.reconstruction_fallbacks.clear();
     plan_archive_with_id(archive, profile, profile.planner_v2_id())
 }
 
@@ -276,6 +281,7 @@ pub fn plan_archive_v3(
     let planner_id = profile.planner_v3_id();
     archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
     archive.content_store.reconstruction_data.clear();
+    archive.content_store.reconstruction_fallbacks.clear();
     archive.descriptor.features.incompat &= !FEATURE_CODEC_TRANSFORM_V1;
     let report = plan_archive_with_id(archive, profile, planner_id)?;
     finish_cross_file_planning(
@@ -296,6 +302,7 @@ pub fn plan_archive_v4(
     let planner_id = profile.planner_v4_id();
     archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
     archive.content_store.reconstruction_data.clear();
+    archive.content_store.reconstruction_fallbacks.clear();
     let report = plan_archive_v4_independent(archive, profile, planner_id)?;
     finish_cross_file_planning(
         archive,
@@ -315,7 +322,9 @@ pub fn plan_archive_v5(
     let planner_id = profile.planner_id();
     let report = plan_archive_v5_independent(archive, profile, planner_id)?;
     let mut features = FEATURE_CROSS_FILE_COMPRESSION_V1 | FEATURE_CODEC_TRANSFORM_V1;
-    if !archive.content_store.reconstruction_data.is_empty() {
+    if !archive.content_store.reconstruction_data.is_empty()
+        || !archive.content_store.reconstruction_fallbacks.is_empty()
+    {
         features |= FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
     }
     finish_cross_file_planning(archive, profile, planner_id, features, report)
@@ -412,6 +421,24 @@ fn finish_cross_file_planning(
     }
     archive.content_store.physical_order = physical_order.into_boxed_slice();
     if planner_id.ends_with("-v5") {
+        for chunk in archive.content_store.chunks.values() {
+            let reconstructive = plans[&chunk.plan_ref]
+                .transforms
+                .iter()
+                .any(|step| step.reconstruction_ref.is_some());
+            if reconstructive {
+                archive
+                    .content_store
+                    .reconstruction_fallbacks
+                    .remove(&chunk.chunk_id);
+            } else if profile != CompressionProfile::Fast {
+                archive
+                    .content_store
+                    .reconstruction_fallbacks
+                    .entry(chunk.chunk_id)
+                    .or_insert(ReconstructionFallbackReason::CompleteCostDidNotWin);
+            }
+        }
         let used_plans = archive
             .content_store
             .chunks
@@ -434,8 +461,12 @@ fn finish_cross_file_planning(
             .content_store
             .reconstruction_data
             .retain(|identity, _| used_reconstruction.contains(identity));
-        if archive.content_store.reconstruction_data.is_empty() {
+        if archive.content_store.reconstruction_data.is_empty()
+            && archive.content_store.reconstruction_fallbacks.is_empty()
+        {
             archive.descriptor.features.incompat &= !FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
+        } else {
+            archive.descriptor.features.incompat |= FEATURE_RECONSTRUCTIVE_TRANSFORM_V1;
         }
     }
     archive.transform_plans = plans.into_values().collect::<Vec<_>>().into_boxed_slice();
@@ -639,6 +670,7 @@ fn plan_archive_v5_independent(
     planner_id: &str,
 ) -> Result<PlanningReport> {
     archive.content_store.reconstruction_data.clear();
+    archive.content_store.reconstruction_fallbacks.clear();
     let mut plans = BTreeMap::new();
     let store = store_plan();
     plans.insert(store.plan_id, store);
@@ -697,11 +729,20 @@ fn plan_archive_v5_independent(
                     }
                 }
                 if selected_data.is_none() {
+                    archive.content_store.reconstruction_fallbacks.insert(
+                        chunk_id,
+                        ReconstructionFallbackReason::CompleteCostDidNotWin,
+                    );
                     increment(
                         &mut report.reconstruction_cost_rejections,
                         "reconstruction cost rejection",
                     )?;
                 }
+            } else {
+                archive.content_store.reconstruction_fallbacks.insert(
+                    chunk_id,
+                    ReconstructionFallbackReason::UnrecognizedOrVerificationFailed,
+                );
             }
         }
         if let Some(data) = selected_data {
