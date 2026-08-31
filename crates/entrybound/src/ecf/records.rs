@@ -3,10 +3,10 @@ use std::collections::BTreeMap;
 use crate::canonical::{Record, RecordBuilder, decode_record, decode_record_stream};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
-    ChunkGroup, Criticality, DecodeRequirements, Dictionary, Digest, Entry, EntryData,
-    EntryIdentity, EntrySet, FidelityIssue, FidelityReport, LogicalPath, MetadataItem,
-    MetadataName, MetadataSet, PathComponent, PathEncoding, ReconstructionAudit,
-    ReconstructionAuditReason, ReconstructionAuditTarget, ReconstructionData,
+    ChunkGroup, ConversionProvenance, ConversionResolution, Criticality, DecodeRequirements,
+    Dictionary, Digest, Entry, EntryData, EntryIdentity, EntrySet, FidelityIssue, FidelityReport,
+    LogicalPath, MetadataItem, MetadataName, MetadataSet, PathComponent, PathEncoding,
+    ReconstructionAudit, ReconstructionAuditReason, ReconstructionAuditTarget, ReconstructionData,
     ReconstructionFallbackReason, ReconstructionRegion, RegionAccessCost, ResourceBudget,
     Restorability, Timestamp, TimestampPrecision, TransformPlan, TransformStep,
 };
@@ -30,6 +30,8 @@ pub(super) const RECORD_RECONSTRUCTION_FALLBACK: u16 = 16;
 pub(super) const RECORD_TRANSFORM_STEP_V3: u16 = 17;
 pub(super) const RECORD_RECONSTRUCTION_REGION: u16 = 18;
 pub(super) const RECORD_RECONSTRUCTION_AUDIT_V2: u16 = 19;
+pub(super) const RECORD_CONVERSION_PROVENANCE: u16 = 28;
+const RECORD_CONVERSION_RESOLUTION: u16 = 29;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) struct DescriptorBody {
@@ -1256,6 +1258,214 @@ pub(super) fn decode_fidelity(bytes: &[u8]) -> Result<FidelityReport> {
     Ok(value)
 }
 
+pub(super) fn encode_conversion(value: &ConversionProvenance) -> Result<Vec<u8>> {
+    validate_conversion_counts(value)?;
+    let mut resolutions = Vec::new();
+    for resolution in &value.resolutions {
+        resolutions.extend_from_slice(&encode_conversion_resolution(resolution)?);
+    }
+    let ancestors = encode_string_sequence(
+        &value
+            .synthesized_ancestors
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<_>>(),
+    )?;
+    let mut record = RecordBuilder::new(RECORD_CONVERSION_PROVENANCE);
+    record
+        .utf8(1, &value.source_format)?
+        .utf8(2, &value.adapter_id)?
+        .bytes(3, value.source_digest.as_bytes())?
+        .utf8(4, &value.import_mode)?
+        .u64(5, value.source_entry_count)?
+        .u64(6, value.observation_count)?
+        .u64(7, value.omission_count)?
+        .u64(8, value.refinement_count)?
+        .u64(9, value.divergence_count)?
+        .u64(10, value.irreconcilable_count)?
+        .bytes(11, &resolutions)?
+        .bytes(12, &ancestors)?
+        .bytes(13, &encode_string_sequence(&value.unsupported_metadata)?)?
+        .utf8(14, &value.outcome)?;
+    record.finish()
+}
+
+pub(super) fn decode_conversion(bytes: &[u8]) -> Result<ConversionProvenance> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() || record.kind != RECORD_CONVERSION_PROVENANCE || record.version != 1
+    {
+        return Err(noncanonical(
+            "ConversionProvenance must be exactly one type-28/version-1 record",
+        ));
+    }
+    record.expect_tags(&[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], &[])?;
+    let resolutions = decode_record_stream(record.field(11)?.as_bytes()?)?
+        .into_iter()
+        .map(decode_conversion_resolution)
+        .collect::<Result<Vec<_>>>()?;
+    if resolutions.windows(2).any(|pair| pair[0] >= pair[1]) {
+        return Err(noncanonical(
+            "ConversionResolution records must be unique and canonically ordered",
+        ));
+    }
+    let synthesized_ancestors = decode_string_sequence(record.field(12)?.as_bytes()?)?
+        .into_iter()
+        .map(|path| LogicalPath::from_utf8(path.split('/')))
+        .collect::<Result<Vec<_>>>()?;
+    if synthesized_ancestors
+        .windows(2)
+        .any(|pair| pair[0] >= pair[1])
+    {
+        return Err(noncanonical(
+            "synthesized ancestor paths must be unique and canonically ordered",
+        ));
+    }
+    let unsupported_metadata = decode_string_sequence(record.field(13)?.as_bytes()?)?;
+    if unsupported_metadata
+        .windows(2)
+        .any(|pair| pair[0] >= pair[1])
+    {
+        return Err(noncanonical(
+            "unsupported metadata names must be unique and ordered",
+        ));
+    }
+    let value = ConversionProvenance {
+        source_format: record.field(1)?.as_utf8()?.to_owned(),
+        adapter_id: record.field(2)?.as_utf8()?.to_owned(),
+        source_digest: digest(record.field(3)?.as_bytes()?)?,
+        import_mode: record.field(4)?.as_utf8()?.to_owned(),
+        source_entry_count: record.field(5)?.as_u64()?,
+        observation_count: record.field(6)?.as_u64()?,
+        omission_count: record.field(7)?.as_u64()?,
+        refinement_count: record.field(8)?.as_u64()?,
+        divergence_count: record.field(9)?.as_u64()?,
+        irreconcilable_count: record.field(10)?.as_u64()?,
+        resolutions: resolutions.into_boxed_slice(),
+        synthesized_ancestors: synthesized_ancestors.into_boxed_slice(),
+        unsupported_metadata: unsupported_metadata.into_boxed_slice(),
+        outcome: record.field(14)?.as_utf8()?.to_owned(),
+    };
+    validate_conversion_counts(&value)?;
+    if encode_conversion(&value)? != bytes {
+        return Err(noncanonical("ConversionProvenance is not canonical"));
+    }
+    Ok(value)
+}
+
+fn validate_conversion_counts(value: &ConversionProvenance) -> Result<()> {
+    let classes = ["omission", "refinement", "divergence", "irreconcilable"];
+    if value
+        .resolutions
+        .iter()
+        .any(|resolution| !classes.contains(&resolution.conflict_class.as_str()))
+    {
+        return Err(noncanonical(
+            "ConversionProvenance contains an unknown conflict class",
+        ));
+    }
+    let resolved_counts = classes.map(|class| {
+        value
+            .resolutions
+            .iter()
+            .filter(|resolution| resolution.conflict_class == class)
+            .count()
+            .try_into()
+            .unwrap_or(u64::MAX)
+    });
+    let declared_counts = [
+        value.omission_count,
+        value.refinement_count,
+        value.divergence_count,
+        value.irreconcilable_count,
+    ];
+    if declared_counts
+        .iter()
+        .zip(resolved_counts)
+        .any(|(declared, resolved)| *declared < resolved)
+    {
+        return Err(noncanonical(
+            "ConversionProvenance resolves more conflicts than it declares",
+        ));
+    }
+    Ok(())
+}
+
+fn encode_conversion_resolution(value: &ConversionResolution) -> Result<Vec<u8>> {
+    let mut record = RecordBuilder::new(RECORD_CONVERSION_RESOLUTION);
+    record
+        .utf8(1, &value.conflict_class)?
+        .utf8(2, &value.semantic_field)?
+        .bytes(3, &encode_string_sequence(&value.authorities)?)?
+        .bytes(4, &encode_string_sequence(&value.observed_values)?)?
+        .utf8(5, &value.action)?;
+    record.finish()
+}
+
+fn decode_conversion_resolution(record: Record<'_>) -> Result<ConversionResolution> {
+    if record.kind != RECORD_CONVERSION_RESOLUTION || record.version != 1 {
+        return Err(noncanonical(
+            "conversion resolution collection contains a wrong record",
+        ));
+    }
+    record.expect_tags(&[1, 2, 3, 4, 5], &[])?;
+    Ok(ConversionResolution {
+        conflict_class: record.field(1)?.as_utf8()?.to_owned(),
+        semantic_field: record.field(2)?.as_utf8()?.to_owned(),
+        authorities: decode_string_sequence(record.field(3)?.as_bytes()?)?.into_boxed_slice(),
+        observed_values: decode_string_sequence(record.field(4)?.as_bytes()?)?.into_boxed_slice(),
+        action: record.field(5)?.as_utf8()?.to_owned(),
+    })
+}
+
+fn encode_string_sequence(values: &[String]) -> Result<Vec<u8>> {
+    let mut encoded = Vec::new();
+    encoded.extend_from_slice(
+        &u64::try_from(values.len())
+            .map_err(|_| resource_limit("string sequence count exceeds u64"))?
+            .to_be_bytes(),
+    );
+    for value in values {
+        encoded.extend_from_slice(
+            &u64::try_from(value.len())
+                .map_err(|_| resource_limit("string sequence item exceeds u64"))?
+                .to_be_bytes(),
+        );
+        encoded.extend_from_slice(value.as_bytes());
+    }
+    Ok(encoded)
+}
+
+fn decode_string_sequence(mut bytes: &[u8]) -> Result<Vec<String>> {
+    if bytes.len() < 8 {
+        return Err(noncanonical("string sequence count is truncated"));
+    }
+    let count = usize::try_from(u64::from_be_bytes(bytes[..8].try_into().unwrap()))
+        .map_err(|_| resource_limit("string sequence count exceeds usize"))?;
+    bytes = &bytes[8..];
+    let mut values = Vec::with_capacity(count.min(1_000_000));
+    for _ in 0..count {
+        if bytes.len() < 8 {
+            return Err(noncanonical("string sequence item length is truncated"));
+        }
+        let len = usize::try_from(u64::from_be_bytes(bytes[..8].try_into().unwrap()))
+            .map_err(|_| resource_limit("string sequence item exceeds usize"))?;
+        bytes = &bytes[8..];
+        let value = bytes
+            .get(..len)
+            .ok_or_else(|| noncanonical("string sequence item is truncated"))?;
+        values.push(
+            std::str::from_utf8(value)
+                .map_err(|_| noncanonical("string sequence item is not UTF-8"))?
+                .to_owned(),
+        );
+        bytes = &bytes[len..];
+    }
+    if !bytes.is_empty() {
+        return Err(noncanonical("string sequence has trailing bytes"));
+    }
+    Ok(values)
+}
+
 fn encode_fidelity_issue(value: &FidelityIssue) -> Result<Vec<u8>> {
     let mut record = RecordBuilder::new(RECORD_FIDELITY_ISSUE);
     record.utf8(1, &value.class)?.utf8(2, &value.reason)?;
@@ -1394,6 +1604,14 @@ fn noncanonical(detail: impl Into<String>) -> Diagnostic {
     Diagnostic::new(
         OutcomeClass::Nonconforming,
         ReasonCode::NoncanonicalEncoding,
+        detail,
+    )
+}
+
+fn resource_limit(detail: impl Into<String>) -> Diagnostic {
+    Diagnostic::new(
+        OutcomeClass::PolicyRefused,
+        ReasonCode::ResourceLimit,
         detail,
     )
 }

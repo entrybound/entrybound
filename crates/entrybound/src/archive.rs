@@ -7,7 +7,9 @@ use crate::eam::{DecodeRequirements, ResourceBudget};
 mod filesystem;
 mod inspection;
 
-pub(crate) use filesystem::{plan_directory_encrypted, replan_archive_encrypted};
+pub(crate) use filesystem::{
+    plan_directory_encrypted, plan_observed_archive, replan_archive_encrypted,
+};
 
 pub use filesystem::{
     ExtractionReport, PackOptions, default_pack_output, default_unpack_destination, pack_directory,

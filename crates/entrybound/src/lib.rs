@@ -14,6 +14,7 @@ pub mod eam;
 pub mod ecf;
 pub mod identity;
 mod jpeg_reconstruction;
+pub mod legacy;
 pub mod planner;
 mod reconstruction;
 pub mod similarity;

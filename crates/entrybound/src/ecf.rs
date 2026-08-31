@@ -58,11 +58,14 @@ pub const FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1: u64 = 1 << 3;
 /// A reader that does not implement this bit must refuse the archive rather
 /// than attempt to interpret its bytes as INDEXED sections.
 pub const FEATURE_STREAM_LAYOUT_V1: u64 = 1 << 4;
+/// Required capability for an in-band type-28 conversion provenance record.
+pub const FEATURE_CONVERSION_PROVENANCE_V1: u64 = 1 << 13;
 pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 = FEATURE_CROSS_FILE_COMPRESSION_V1
     | FEATURE_CODEC_TRANSFORM_V1
     | FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
     | FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1
     | FEATURE_STREAM_LAYOUT_V1
+    | FEATURE_CONVERSION_PROVENANCE_V1
     | crate::crypto::CRYPTO_FEATURES;
 
 #[cfg(test)]

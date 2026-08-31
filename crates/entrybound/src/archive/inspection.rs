@@ -2,8 +2,8 @@ use std::collections::BTreeMap;
 
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
-    Archive, ArchiveRole, ContentRef, DecodeRequirements, EntryData, EntryKind, FeatureSet,
-    FidelityReport, Layout, ResourceBudget,
+    Archive, ArchiveRole, ContentRef, ConversionProvenance, DecodeRequirements, EntryData,
+    EntryKind, FeatureSet, FidelityReport, Layout, ResourceBudget,
 };
 use crate::ecf::{FORMAT_NAMESPACE, FormatVersion, IndexStatus, OpenedArchive};
 use crate::identity::IdentitySet;
@@ -180,6 +180,7 @@ pub struct ArchiveInspection {
     pub identities: IdentitySet,
     pub index_status: IndexStatus,
     pub fidelity: FidelityReport,
+    pub conversion: Option<ConversionProvenance>,
     pub declared_resources: ResourceBudget,
     pub decode_requirements: DecodeRequirements,
 }
@@ -266,6 +267,7 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
         identities: opened.report.identities,
         index_status: opened.report.index_status,
         fidelity: archive.fidelity.clone(),
+        conversion: archive.conversion.clone(),
         declared_resources: archive.descriptor.budget,
         decode_requirements: archive.descriptor.decode,
     })

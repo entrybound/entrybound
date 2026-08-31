@@ -580,6 +580,37 @@ pub struct FidelityReport {
     pub filesystem: Box<[String]>,
 }
 
+/// One deterministic reconciliation decision retained as auxiliary evidence.
+/// It describes how foreign observations were projected; it is never an
+/// authority for the resulting Entry or ContentObject.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct ConversionResolution {
+    pub conflict_class: String,
+    pub semantic_field: String,
+    pub authorities: Box<[String]>,
+    pub observed_values: Box<[String]>,
+    pub action: String,
+}
+
+/// In-band provenance for one foreign-to-native conversion.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ConversionProvenance {
+    pub source_format: String,
+    pub adapter_id: String,
+    pub source_digest: Digest,
+    pub import_mode: String,
+    pub source_entry_count: u64,
+    pub observation_count: u64,
+    pub omission_count: u64,
+    pub refinement_count: u64,
+    pub divergence_count: u64,
+    pub irreconcilable_count: u64,
+    pub resolutions: Box<[ConversionResolution]>,
+    pub synthesized_ancestors: Box<[LogicalPath]>,
+    pub unsupported_metadata: Box<[String]>,
+    pub outcome: String,
+}
+
 /// A cached physical locator for one chunk frame.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ChunkLocation {
@@ -663,5 +694,7 @@ pub struct Archive {
     pub content_store: ContentStore,
     pub transform_plans: Box<[TransformPlan]>,
     pub fidelity: FidelityReport,
+    /// Auxiliary conversion evidence. Native archives have no value here.
+    pub conversion: Option<ConversionProvenance>,
     pub index: Index,
 }

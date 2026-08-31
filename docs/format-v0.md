@@ -124,6 +124,14 @@ feature constraints, and footer v2 are frozen in
 [crypto-wire-v1.md](crypto-wire-v1.md); primitive and security rules are in
 [crypto-suite-v1.md](crypto-suite-v1.md).
 
+Required incompatibility feature `0x2000` (`conversion-provenance-v1`) adds one
+auxiliary conversion record without changing section order. It is valid for the
+current unencrypted INDEXED and STREAM layouts. INDEXED FIDELITY payload is the
+canonical type-5 FidelityReport followed by exactly one type-28 provenance
+record; STREAM uses the same payload in its sole FIDELITY manifest item. The
+feature and record must be present together. See
+[legacy-observation-model-v1.md](legacy-observation-model-v1.md).
+
 The crypto-v1 wire correction reserves two self-identifying grammars inside
 authenticated encrypted objects: `EBPO` version 1 dispatches one canonical
 record, Chunk frame, or sequence payload; `EBCS` version 1 carries one of nine
@@ -185,7 +193,8 @@ selects the extended schema: DESCRIPTOR (1), TRANSFORM_PLANS (2), DICTIONARIES
 optionally INDEX (8). Both new authoritative sections occur exactly once even
 when empty. The unencrypted reader recognizes incompatibility bits `0x1`,
 `0x2`, `0x4`, `0x8`, and `0x10`; the crypto-v1 INDEXED reader additionally
-recognizes the implemented crypto bits listed above. Both reject every other
+recognizes the implemented crypto bits listed above. Unencrypted readers also
+recognize `0x2000`. Both reject every other
 unknown required bit. `0x2` changes only the TransformPlan field-3 item schema
 and may be combined with `0x1`, as v4 does.
 
@@ -252,6 +261,8 @@ Record type and strictly increasing field tags are:
 | TransformStep v3 | 17 | transform identifier(1), canonical parameters(2), optional ReconstructionData reference(3) |
 | ReconstructionRegion | 18 | region identity(1), ContentObject(2), start Chunk index(3), Chunk count(4), plan ref(5), logical bytes(6), transformed bytes(7), access logical bytes(8), access Chunks(9), worst reconstructed bytes(10), encoded representation(11), ordinary physical bytes(12), region overhead bytes(13) |
 | ReconstructionAudit v2 | 19 | target kind(1), target digest(2), transform identifier(3), reason(4) |
+| ConversionProvenance | 28 | source format(1), adapter ID(2), source SHA-256(3), import mode(4), source entry count(5), observation count(6), Omission count(7), Refinement count(8), Divergence count(9), Irreconcilable count(10), ordered resolution records(11), synthesized ancestor paths(12), unsupported metadata classes(13), outcome(14) |
+| ConversionResolution (nested only) | 29 | conflict class(1), semantic field(2), authority names(3), observed values(4), action(5) |
 
 Without `codec-transform-v1`, TransformPlan field 3 remains the historical
 empty sequence. With the feature, every sequence item is a version-1 type-13
@@ -295,7 +306,8 @@ SHA256(
 
 The domains used are `chunk-tree/{leaf,empty,node}`,
 `entry/{identity,aux}/v1`, `manifest/{leaf,empty,node}`, `lai/v1`, `pcr/v1`,
-`aux-manifest/{leaf,empty,node}`, `fidelity/v1`, `conversion/absent/v1`, and
+`aux-manifest/{leaf,empty,node}`, `fidelity/v1`, `conversion/absent/v1`,
+`conversion/provenance/v1`, and
 `aux/v1`.
 
 - Entry identity binds identity profile, component bytes and encodings, kind,
@@ -306,8 +318,9 @@ The domains used are `chunk-tree/{leaf,empty,node}`,
 - PCR binds SHA-256, the digest-ordered `(logical_digest, chunk_root)` list,
   unique physical Chunk count, and chunker ID. Transform plans are deliberately
   excluded so recompression with unchanged chunking preserves PCR.
-- AUX binds SHA-256, the Entry-AUX Merkle root, FidelityReport digest, and the
-  explicit absent-ConversionRecord digest.
+- AUX binds SHA-256, the Entry-AUX Merkle root, FidelityReport digest, and
+  either the explicit absent-ConversionRecord digest or the canonical
+  ConversionProvenance digest. Conversion never enters LAI or PCR.
 - PCI is SHA-256 over every exact `.eb` byte and therefore changes when an Index
   is added, removed, or repaired even though LAI, PCR, and AUX do not.
 

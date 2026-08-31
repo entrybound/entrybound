@@ -308,6 +308,7 @@ fn empty_archive() -> Archive {
             platform: "test".to_owned(),
             ..FidelityReport::default()
         },
+        conversion: None,
         index: Index::default(),
     }
 }
@@ -416,6 +417,7 @@ fn complete_fixture(
             platform: "test".to_owned(),
             ..FidelityReport::default()
         },
+        conversion: None,
         index: Index::default(),
     }
 }

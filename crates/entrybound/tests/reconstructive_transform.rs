@@ -228,6 +228,7 @@ fn archive_for(bytes: &[u8]) -> Archive {
         },
         transform_plans: vec![store_plan()].into_boxed_slice(),
         fidelity: FidelityReport::default(),
+        conversion: None,
         index: Index::default(),
     }
 }

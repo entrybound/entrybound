@@ -302,6 +302,7 @@ fn archive_with_content(
         }]
         .into_boxed_slice(),
         fidelity: FidelityReport::default(),
+        conversion: None,
         index: Index::default(),
     }
 }

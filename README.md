@@ -60,7 +60,10 @@ establishes:
 - capability-relative, component-at-a-time extraction with exclusive file and
   directory creation, collision refusal, and pre-materialization verification;
 - working `pack`, `unpack`, `list`, `inspect`, `verify`, compression `explain`,
-  `sign`, and authenticated `key` CLI commands;
+  strict ZIP `convert`, `sign`, and authenticated `key` CLI commands;
+- a format-neutral Legacy Observation Model, independent ZIP local/central/
+  descriptor evidence, strict ZIP32/ZIP64 STORE/DEFLATE reconciliation, and an
+  AUX-bound in-band conversion provenance record;
 - capture and restoration of `core.mtime` and, on Unix, `core.executable`, with
   an in-band FidelityReport for metadata the bootstrap does not preserve;
 - caller-owned resource limits enforced against the archive declaration before
@@ -90,6 +93,16 @@ ebound list example.eb
 ebound inspect example.eb
 ebound explain example.eb
 ebound unpack example.eb ./restored
+```
+
+Strict ZIP import produces an ordinary native archive after independently
+checking the foreign authorities, decompressed length, and CRC-32:
+
+```sh
+ebound convert input.zip converted.eb --strict
+ebound verify converted.eb
+ebound inspect converted.eb
+ebound unpack converted.eb ./restored-zip
 ```
 
 Encrypted crypto-v1 archives are `INDEXED` only. Recipient and identity files
@@ -178,7 +191,9 @@ Zstandard dictionaries, and bounded Zstandard lookback.
 It writes unencrypted Complete archives in INDEXED or STREAM layout and
 encrypted Complete archives in INDEXED layout. It supports UTF-8 directory
 names, directories, and regular files, and deliberately rejects symlinks and
-special files. There is no legacy ZIP/tar/7z import, encrypted STREAM layout,
+special files. Strict ZIP import supports single-disk ZIP32/ZIP64 STORE and
+DEFLATE, but there is no ZIP export, runtime-compatibility mode, preservation
+mode, encrypted ZIP, tar/7z import, encrypted STREAM layout,
 online TSA request support, general PKI/keychain integration, classical-only
 recipients, remote range access, general
 `repack`, lossy image recompression, guaranteed
@@ -252,4 +267,7 @@ extraction, access complexity, and identity equivalence with INDEXED,
 operational encrypted-INDEXED/signature subset, and the
 [signing and key-management note](docs/signing-key-management-v1.md) for binding
 freshness, timestamp trust, and recipient mutation architecture, and
+[Legacy Observation Model note](docs/legacy-observation-model-v1.md) and
+[strict ZIP import note](docs/zip-import-v1.md) for foreign evidence,
+reconciliation, bomb limits, and auxiliary conversion provenance, and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

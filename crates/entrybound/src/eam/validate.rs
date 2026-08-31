@@ -99,6 +99,15 @@ impl Archive {
                 "INDEXED archives must declare a zero STREAM dedup window",
             ));
         }
+        let conversion_feature =
+            self.descriptor.features.incompat & crate::ecf::FEATURE_CONVERSION_PROVENANCE_V1 != 0;
+        if conversion_feature != self.conversion.is_some() {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::DuplicateSemanticDeclaration,
+                "conversion-provenance-v1 feature and ConversionProvenance presence disagree",
+            ));
+        }
 
         let plans = self
             .transform_plans

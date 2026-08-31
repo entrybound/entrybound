@@ -1068,6 +1068,7 @@ fn parse_public(bytes: &[u8], policy: CryptoPolicy) -> Result<PublicParsed<'_>> 
         | super::FEATURE_PADDING;
     if features & required != required
         || features & crate::ecf::FEATURE_STREAM_LAYOUT_V1 != 0
+        || features & crate::ecf::FEATURE_CONVERSION_PROVENANCE_V1 != 0
         || features & !crate::ecf::SUPPORTED_INCOMPAT_FEATURES != 0
     {
         return Err(Diagnostic::new(

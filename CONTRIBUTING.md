@@ -143,3 +143,12 @@ must fail before any output is emitted.
 
 Generated conformance inputs belong in tests as format-building code, not as
 opaque binary fixtures. Each negative case must assert a stable reason code.
+
+Legacy adapters belong under `entrybound::legacy` and emit format-neutral LOM
+evidence before any EAM projection. Never make a central directory, runtime
+quirk, tar header, or other foreign declaration directly authoritative EAM
+state. Parser authorities remain independent through reconciliation; strict
+mode refuses Divergence and Irreconcilable evidence. Automatic Omission and
+Refinement decisions must be canonical conversion provenance, contribute only
+to AUX, and must not change LAI/PCR. ZIP tests build bytes programmatically and
+must enforce caller-owned compressed/uncompressed/expansion limits.

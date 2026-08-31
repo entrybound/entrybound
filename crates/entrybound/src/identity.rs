@@ -13,9 +13,9 @@ use sha2::{Digest as ShaDigest, Sha256};
 
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
-    Archive, Chunk, ChunkRef, ContentObject, ContentRef, Digest, Entry, EntryData, EntryIdentity,
-    EntrySet, FidelityIssue, FidelityReport, LogicalPath, MetadataItem, MetadataSet, MetadataValue,
-    TimestampPrecision,
+    Archive, Chunk, ChunkRef, ContentObject, ContentRef, ConversionProvenance,
+    ConversionResolution, Digest, Entry, EntryData, EntryIdentity, EntrySet, FidelityIssue,
+    FidelityReport, LogicalPath, MetadataItem, MetadataSet, MetadataValue, TimestampPrecision,
 };
 
 /// Fixed bootstrap chunk size used only by direct in-memory construction.
@@ -225,6 +225,7 @@ fn compute_native_identities(archive: &Archive) -> Result<(Archive, NativeRoots)
     let mut canonical = archive.clone();
     canonical.entry_set = entry_set;
     canonical.fidelity = canonical_fidelity(&archive.fidelity);
+    canonical.conversion = archive.conversion.as_ref().map(canonical_conversion);
     canonical.descriptor.pci = None;
 
     let manifest = manifest_root(&canonical);
@@ -423,16 +424,89 @@ fn aux(archive: &Archive) -> AuxiliaryRoot {
         .collect::<Vec<_>>();
     let entry_aux_root = merkle_root(&leaves, "aux-manifest/empty", "aux-manifest/node");
     let fidelity = structured_hash("fidelity/v1", &[&encode_fidelity(&archive.fidelity)]);
-    let conversion_absent = structured_hash("conversion/absent/v1", &[]);
+    let conversion = archive.conversion.as_ref().map_or_else(
+        || structured_hash("conversion/absent/v1", &[]),
+        |value| structured_hash("conversion/provenance/v1", &[&encode_conversion(value)]),
+    );
     AuxiliaryRoot(structured_hash(
         "aux/v1",
         &[
             b"sha256",
             entry_aux_root.as_bytes(),
             fidelity.as_bytes(),
-            conversion_absent.as_bytes(),
+            conversion.as_bytes(),
         ],
     ))
+}
+
+fn encode_conversion(value: &ConversionProvenance) -> Vec<u8> {
+    let mut encoded = Vec::new();
+    append_bytes(&mut encoded, value.source_format.as_bytes());
+    append_bytes(&mut encoded, value.adapter_id.as_bytes());
+    encoded.extend_from_slice(value.source_digest.as_bytes());
+    append_bytes(&mut encoded, value.import_mode.as_bytes());
+    for count in [
+        value.source_entry_count,
+        value.observation_count,
+        value.omission_count,
+        value.refinement_count,
+        value.divergence_count,
+        value.irreconcilable_count,
+    ] {
+        encoded.extend_from_slice(&count.to_be_bytes());
+    }
+    append_len(&mut encoded, value.resolutions.len());
+    for resolution in &value.resolutions {
+        append_bytes(&mut encoded, resolution.conflict_class.as_bytes());
+        append_bytes(&mut encoded, resolution.semantic_field.as_bytes());
+        encode_string_list(&mut encoded, &resolution.authorities);
+        encode_string_list(&mut encoded, &resolution.observed_values);
+        append_bytes(&mut encoded, resolution.action.as_bytes());
+    }
+    append_len(&mut encoded, value.synthesized_ancestors.len());
+    for path in &value.synthesized_ancestors {
+        append_bytes(&mut encoded, &encode_path(path));
+    }
+    encode_string_list(&mut encoded, &value.unsupported_metadata);
+    append_bytes(&mut encoded, value.outcome.as_bytes());
+    encoded
+}
+
+fn canonical_conversion(value: &ConversionProvenance) -> ConversionProvenance {
+    let mut canonical = value.clone();
+    let mut resolutions = canonical.resolutions.into_vec();
+    resolutions.sort_by(resolution_order);
+    resolutions.dedup();
+    canonical.resolutions = resolutions.into_boxed_slice();
+    let mut ancestors = canonical.synthesized_ancestors.into_vec();
+    ancestors.sort();
+    ancestors.dedup();
+    canonical.synthesized_ancestors = ancestors.into_boxed_slice();
+    let mut unsupported = canonical.unsupported_metadata.into_vec();
+    unsupported.sort();
+    unsupported.dedup();
+    canonical.unsupported_metadata = unsupported.into_boxed_slice();
+    canonical
+}
+
+fn resolution_order(
+    left: &ConversionResolution,
+    right: &ConversionResolution,
+) -> std::cmp::Ordering {
+    (
+        &left.conflict_class,
+        &left.semantic_field,
+        &left.authorities,
+        &left.observed_values,
+        &left.action,
+    )
+        .cmp(&(
+            &right.conflict_class,
+            &right.semantic_field,
+            &right.authorities,
+            &right.observed_values,
+            &right.action,
+        ))
 }
 
 fn structured_hash(domain: &str, fields: &[&[u8]]) -> Digest {

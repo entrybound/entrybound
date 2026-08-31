@@ -17,15 +17,15 @@ use crate::chunker::{
 };
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
-    Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, DecodeRequirements, Digest,
-    DigestAlgorithm, Entry, EntryData, EntryIdentity, EntrySet, FeatureSet, FidelityIssue,
-    FidelityReport, IdentityProfile, Index, Layout, LogicalPath, MetadataItem, MetadataSet,
-    ResourceBudget, Timestamp, TimestampPrecision,
+    Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, ConversionProvenance,
+    DecodeRequirements, Digest, DigestAlgorithm, Entry, EntryData, EntryIdentity, EntrySet,
+    FeatureSet, FidelityIssue, FidelityReport, IdentityProfile, Index, Layout, LogicalPath,
+    MetadataItem, MetadataSet, ResourceBudget, Timestamp, TimestampPrecision,
 };
 use crate::ecf::{
-    EncodedArchive, SequentialLimits, StagedChunks, StreamContentPolicy, StreamReport,
-    StreamWriteOptions, StreamWriteSummary, WriteOptions, encode, encode_stream,
-    open_stream_with_limits, open_with_limits,
+    EncodedArchive, FEATURE_CONVERSION_PROVENANCE_V1, SequentialLimits, StagedChunks,
+    StreamContentPolicy, StreamReport, StreamWriteOptions, StreamWriteSummary, WriteOptions,
+    encode, encode_stream, open_stream_with_limits, open_with_limits,
 };
 use crate::identity::{build_content_from_ranges, sha256_exact};
 use crate::planner::{CompressionProfile, UNPLANNED_PLAN_ID, plan_archive_v6};
@@ -220,6 +220,7 @@ pub(crate) fn replan_archive_encrypted(
         },
         transform_plans: Box::default(),
         fidelity: source.fidelity.clone(),
+        conversion: source.conversion.clone(),
         index: Index::default(),
     };
     plan_archive_v6(&mut archive, profile)?;
@@ -534,6 +535,16 @@ impl Scan {
         profile: CompressionProfile,
         boundary: Option<(&EncryptedBoundaryKey, &'static str)>,
     ) -> Result<Archive> {
+        self.finish_with(profile, boundary, bootstrap_fidelity(), None)
+    }
+
+    fn finish_with(
+        self,
+        profile: CompressionProfile,
+        boundary: Option<(&EncryptedBoundaryKey, &'static str)>,
+        fidelity: FidelityReport,
+        conversion: Option<ConversionProvenance>,
+    ) -> Result<Archive> {
         let contents = self.files.iter().map(Box::as_ref).collect::<Vec<_>>();
         let selection = if let Some((boundary, _)) = boundary {
             select_parameters_encrypted(&contents, profile.chunking_candidates(), boundary)?
@@ -636,12 +647,30 @@ impl Scan {
                 chunk_groups: BTreeMap::new(),
             },
             transform_plans: Box::default(),
-            fidelity: bootstrap_fidelity(),
+            fidelity,
+            conversion,
             index: Index::default(),
         };
         plan_archive_v6(&mut archive, profile)?;
         Ok(archive)
     }
+}
+
+/// Plans already-reconciled plaintext observations through the ordinary native v6 pipeline.
+///
+/// Legacy adapters use this only after they have resolved foreign evidence into valid EAM
+/// entries. ZIP compression and ZIP structure never cross this boundary.
+pub(crate) fn plan_observed_archive(
+    entries: Vec<Entry>,
+    files: Vec<Box<[u8]>>,
+    fidelity: FidelityReport,
+    conversion: ConversionProvenance,
+    profile: CompressionProfile,
+) -> Result<Archive> {
+    let mut archive =
+        Scan { entries, files }.finish_with(profile, None, fidelity, Some(conversion))?;
+    archive.descriptor.features.incompat |= FEATURE_CONVERSION_PROVENANCE_V1;
+    Ok(archive)
 }
 
 fn scan_directory(

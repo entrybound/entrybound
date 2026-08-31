@@ -70,15 +70,18 @@ use super::container::{
 };
 use super::records::{
     DescriptorBody, ManifestRecord, decode_chunk_groups, decode_descriptor, decode_dictionaries,
-    decode_fidelity, decode_manifest_record, decode_reconstruction_regions,
-    decode_reconstruction_section, decode_transform_plans, decode_transform_plans_v2,
-    decode_transform_plans_v3, encode_chunk_groups, encode_content_object_record,
-    encode_descriptor, encode_dictionaries, encode_entry_record, encode_fidelity,
-    encode_reconstruction_regions, encode_reconstruction_section, encode_transform_plans,
-    encode_transform_plans_v2, encode_transform_plans_v3,
+    decode_manifest_record, decode_reconstruction_regions, decode_reconstruction_section,
+    decode_transform_plans, decode_transform_plans_v2, decode_transform_plans_v3,
+    encode_chunk_groups, encode_content_object_record, encode_conversion, encode_descriptor,
+    encode_dictionaries, encode_entry_record, encode_fidelity, encode_reconstruction_regions,
+    encode_reconstruction_section, encode_transform_plans, encode_transform_plans_v2,
+    encode_transform_plans_v3,
 };
 use super::staging::{ChunkStaging, StagingLimits};
-use super::{FEATURE_STREAM_LAYOUT_V1, FOOTER_LEN, FORMAT_NAMESPACE, PREAMBLE_LEN};
+use super::{
+    FEATURE_CONVERSION_PROVENANCE_V1, FEATURE_STREAM_LAYOUT_V1, FOOTER_LEN, FORMAT_NAMESPACE,
+    PREAMBLE_LEN,
+};
 use crate::archive::EntryCursorComplexity;
 use crate::codec::{PlanMode, aggregate_archive_decode_requirements, plan_mode, validate_plans};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
@@ -751,7 +754,10 @@ pub fn encode_stream<W: Write>(
         aux: roots.aux.0,
         declarations: None,
     })?;
-    let fidelity_payload = encode_fidelity(&archive.fidelity)?;
+    let mut fidelity_payload = encode_fidelity(&archive.fidelity)?;
+    if let Some(conversion) = &archive.conversion {
+        fidelity_payload.extend_from_slice(&encode_conversion(conversion)?);
+    }
 
     let mut writer = StreamSink::new(sink);
     writer.write_framing(&encode_preamble(&archive.descriptor, 0)?)?;
@@ -1086,6 +1092,7 @@ struct Scanner<R: Read> {
     reconstruction_audits: BTreeMap<ReconstructionAuditTarget, ReconstructionAudit>,
     regions_by_object: BTreeMap<Digest, Vec<Digest>>,
     fidelity: Option<crate::eam::FidelityReport>,
+    conversion: Option<crate::eam::ConversionProvenance>,
     descriptor_body: Option<DescriptorBody>,
     descriptor_location: Option<(u64, u64)>,
 
@@ -1172,6 +1179,7 @@ impl<R: Read> Scanner<R> {
             reconstruction_audits: BTreeMap::new(),
             regions_by_object: BTreeMap::new(),
             fidelity: None,
+            conversion: None,
             descriptor_body: None,
             descriptor_location: None,
             entries: Vec::new(),
@@ -1380,7 +1388,14 @@ impl<R: Read> Scanner<R> {
                     ManifestRecord::Entry(entry) => self.accept_entry(*entry)?,
                 }
             }
-            StreamItemTag::Fidelity => self.fidelity = Some(decode_fidelity(&payload)?),
+            StreamItemTag::Fidelity => {
+                let (fidelity, conversion) = super::container::decode_auxiliary_payload(
+                    &payload,
+                    self.preamble.features.incompat & FEATURE_CONVERSION_PROVENANCE_V1 != 0,
+                )?;
+                self.fidelity = Some(fidelity);
+                self.conversion = conversion;
+            }
             StreamItemTag::Descriptor => {
                 self.descriptor_body = Some(decode_descriptor(&payload)?);
                 self.descriptor_location = Some((item_offset, item_len));
@@ -1973,6 +1988,7 @@ impl<R: Read> Scanner<R> {
             },
             transform_plans: std::mem::take(&mut self.plans).into_boxed_slice(),
             fidelity,
+            conversion: self.conversion.take(),
             index: Index {
                 present: false,
                 valid: false,
@@ -2335,6 +2351,7 @@ mod tests {
                 platform: "test".to_owned(),
                 ..FidelityReport::default()
             },
+            conversion: None,
             index: Index::default(),
         };
 
