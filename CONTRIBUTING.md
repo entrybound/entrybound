@@ -108,7 +108,21 @@ derivations, or feature/record assignments to fit an implementation. The
 `entrybound::crypto` module owns this closed suite and uses pinned RustCrypto,
 X-Wing, Argon2, and zeroization dependencies; it must not gain locally written
 cryptographic primitives or user-selectable algorithms. Permanent RFC,
-draft-10, and V1-V6 vectors are the external-conformance gate.
+draft-10, V1-V7, and RFC 8032 vectors are the external-conformance gate.
+
+Signature records are canonical type 26 and frozen by the three independent
+CONTENT/PHYSICAL/ADDRESSING transcripts. Never substitute PCI for PCR or merge
+cryptographic validity with binding freshness. Embedded signatures belong only
+to encrypted EBCS kind 7; unencrypted archives use exact detached `.ebsig`
+records. Timestamp verification is offline, SHA-256/Ed25519-only, bounded to
+64 KiB DER, and requires caller-provided trust anchors.
+
+Adding a recipient must preserve AFK/archive ID and unchanged PAYLOAD ciphertext
+where ordinal-compatible; it makes ADDRESSING signatures stale without touching
+CONTENT/PHYSICAL. Removing a recipient or changing a password is never a stanza
+edit: it rotates AFK/archive ID, re-runs keyed chunking/planning, and self-verifies
+a complete replacement before filesystem replacement. Never silently delete or
+resign stale historical signatures.
 
 Canonical Descriptor v1 is permanently type 1/version 1 with tags 1-8.
 Corrected encrypted INDEXED archives alone use Descriptor type 1/version 2,

@@ -2,9 +2,11 @@ use std::path::PathBuf;
 
 use entrybound::archive::{PackOptions, plan_directory};
 use entrybound::crypto::{
-    BoundaryMode, CryptoPolicy, EncryptedOpenOptions, EncryptedWriteOptions,
-    FEATURE_PRIVATE_RESOURCE_DECLARATION_V1, PaddingMode, Unlock, XWingIdentity, XWingRecipient,
-    encrypt_archive, inspect_encrypted, open_encrypted, pack_directory_encrypted,
+    BindingStatus, BoundaryMode, CryptoPolicy, EncryptedOpenOptions, EncryptedWriteOptions,
+    FEATURE_PRIVATE_RESOURCE_DECLARATION_V1, PaddingMode, SigningKey, Unlock, XWingIdentity,
+    XWingRecipient, add_recipient, change_password, current_bindings, embed_signature,
+    encrypt_archive, inspect_encrypted, open_encrypted, open_encrypted_authenticated,
+    pack_directory_encrypted, reencrypt_recipients, sign_archive, verify_signature,
 };
 use entrybound::diagnostics::ReasonCode;
 use entrybound::ecf::{WriteOptions, encode};
@@ -165,6 +167,109 @@ fn password_archive_unlocks_and_wrong_password_does_not_materialize() {
     .unwrap_err();
     assert_eq!(error.code(), ReasonCode::CryptoNoMatchingRecipient);
     assert!(!destination.exists());
+}
+
+#[test]
+fn embedded_signature_and_recipient_mutation_report_binding_staleness() {
+    let fixture = Fixture::new("signature-recipient-mutation");
+    let archive = plan_directory(&fixture.source, PackOptions::default()).unwrap();
+    let (first_identity, first_recipient) = XWingIdentity::generate().unwrap();
+    let (second_identity, second_recipient) = XWingIdentity::generate().unwrap();
+    let initial = encrypt_archive(
+        &archive,
+        EncryptedWriteOptions {
+            recipients: std::slice::from_ref(&first_recipient),
+            ..EncryptedWriteOptions::default()
+        },
+    )
+    .unwrap();
+    let authenticated = open_encrypted_authenticated(
+        &initial.bytes,
+        EncryptedOpenOptions::new(Some(Unlock::Identity(&first_identity))),
+    )
+    .unwrap();
+    let current = current_bindings(&authenticated.opened, Some(authenticated.addressing)).unwrap();
+    let signature = sign_archive(&current, &SigningKey::from_seed([0x44; 32]), true, true).unwrap();
+    let signed = embed_signature(
+        &initial.bytes,
+        EncryptedOpenOptions::new(Some(Unlock::Identity(&first_identity))),
+        signature,
+    )
+    .unwrap();
+    let added = add_recipient(
+        &signed.bytes,
+        EncryptedOpenOptions::new(Some(Unlock::Identity(&first_identity))),
+        &second_recipient,
+    )
+    .unwrap();
+    open_identity(&added.bytes, &first_identity).unwrap();
+    open_identity(&added.bytes, &second_identity).unwrap();
+    let authenticated = open_encrypted_authenticated(
+        &added.bytes,
+        EncryptedOpenOptions::new(Some(Unlock::Identity(&second_identity))),
+    )
+    .unwrap();
+    assert_eq!(authenticated.embedded_signatures.len(), 1);
+    let current = current_bindings(&authenticated.opened, Some(authenticated.addressing)).unwrap();
+    let status = verify_signature(&authenticated.embedded_signatures[0], &current, None).unwrap();
+    assert_eq!(status.content, BindingStatus::Valid);
+    assert_eq!(status.physical, BindingStatus::Valid);
+    assert_eq!(status.addressing, BindingStatus::Stale);
+
+    let rotated = reencrypt_recipients(
+        &added.bytes,
+        EncryptedOpenOptions::new(Some(Unlock::Identity(&first_identity))),
+        std::slice::from_ref(&second_recipient),
+    )
+    .unwrap();
+    assert_eq!(
+        open_identity(&rotated.bytes, &first_identity)
+            .unwrap_err()
+            .code(),
+        ReasonCode::CryptoNoMatchingRecipient
+    );
+    let reopened = open_identity(&rotated.bytes, &second_identity).unwrap();
+    assert_eq!(reopened.report.identities.lai, initial.identities.lai);
+    assert_eq!(reopened.report.identities.aux, initial.identities.aux);
+}
+
+#[test]
+fn password_change_rotates_the_key_and_invalidates_the_old_password() {
+    let fixture = Fixture::new("password-rotation");
+    let archive = plan_directory(&fixture.source, PackOptions::default()).unwrap();
+    let old_password = b"old high entropy archive password";
+    let new_password = b"new high entropy archive password";
+    let initial = encrypt_archive(
+        &archive,
+        EncryptedWriteOptions {
+            password: Some(old_password),
+            ..EncryptedWriteOptions::default()
+        },
+    )
+    .unwrap();
+    let rotated = change_password(
+        &initial.bytes,
+        EncryptedOpenOptions::new(Some(Unlock::Password(old_password))),
+        new_password,
+    )
+    .unwrap();
+    assert_eq!(
+        open_encrypted(
+            &rotated.bytes,
+            EncryptedOpenOptions::new(Some(Unlock::Password(old_password))),
+        )
+        .unwrap_err()
+        .code(),
+        ReasonCode::CryptoNoMatchingRecipient
+    );
+    let reopened = open_encrypted(
+        &rotated.bytes,
+        EncryptedOpenOptions::new(Some(Unlock::Password(new_password))),
+    )
+    .unwrap();
+    assert_eq!(reopened.report.identities.lai, initial.identities.lai);
+    assert_eq!(reopened.report.identities.aux, initial.identities.aux);
+    assert_ne!(reopened.report.identities.pci, initial.identities.pci);
 }
 
 #[test]

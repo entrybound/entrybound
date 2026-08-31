@@ -11,16 +11,20 @@ use entrybound::archive::{
     unpack, unpack_opened, unpack_stream,
 };
 use entrybound::crypto::{
-    BoundaryMode, CryptoPolicy, EncryptedOpenOptions, EncryptedWriteOptions,
-    FEATURE_ENCRYPTED_INDEXED_V1, PaddingMode, Unlock, XWingIdentity, XWingRecipient,
-    inspect_encrypted, open_encrypted, pack_directory_encrypted, verify_encrypted,
+    BindingStatus, BoundaryMode, CryptoPolicy, CryptographicStatus, EncryptedOpenOptions,
+    EncryptedWriteOptions, FEATURE_ENCRYPTED_INDEXED_V1, FEATURE_PRIVATE_RESOURCE_DECLARATION_V1,
+    PaddingMode, SignaturePolicy, SignatureRecord, SignatureStatus, SigningKey, TimestampPolicy,
+    TimestampStatus, TimestampTrustAnchor, Unlock, XWingIdentity, XWingRecipient, add_recipient,
+    change_password, current_bindings, embed_signature, inspect_encrypted, open_encrypted,
+    open_encrypted_authenticated, pack_directory_encrypted, read_detached_signature,
+    reencrypt_recipients, sign_archive, verify_signature,
 };
 use entrybound::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use entrybound::eam::{ArchiveRole, EntryKind, Layout};
 use entrybound::ecf::{
     IndexStatus, OpenedArchive, SequentialLimits, StreamContentPolicy, StreamReport, StreamWindow,
     StreamWriteOptions, WriteOptions, bootstrap_sequential_limits, encode, encode_stream, open,
-    open_stream_with_limits, peek_layout, verify,
+    open_stream_with_limits, peek_layout,
 };
 use entrybound::planner::CompressionProfile;
 use zeroize::Zeroizing;
@@ -38,7 +42,18 @@ Usage:\n\
   ebound unpack <archive.eb|-> [destination] [--identity <file>|--password]\n\
   ebound list <archive.eb|->\n\
   ebound inspect <archive.eb|-> [--crypto] [--identity <file>|--password]\n\
+                                [--timestamp-trust <anchor.der> ...]\n\
   ebound verify <archive.eb|-> [--identity <file>|--password]\n\
+                               [--signatures|--signature <archive.ebsig>]\n\
+  ebound sign <archive.eb> --signing-key <file> [--detached [file]|--embed]\n\
+                           [--identity <file>|--password]\n\
+                           [--bind-physical] [--bind-addressing]\n\
+                           [--timestamp-token <token.der>]\n\
+  ebound key generate-signing <signing-key>\n\
+  ebound key list <archive.eb> [--identity <file>|--password]\n\
+  ebound key add <archive.eb> --identity <file> --recipient <recipient.pub>\n\
+  ebound key remove <archive.eb> --identity <file> --retain <recipient.pub> ...\n\
+  ebound key change-password <archive.eb> --password\n\
   ebound explain <archive.eb|->\n\
 \n\
 This build supports unencrypted Complete archives in two physical layouts,\n\
@@ -55,7 +70,10 @@ STREAM writes without seeking and reads without seeking, carries no Index, and\n
 cannot resolve one entry without a full sequential pass.\n\
 Crypto v1 adds metadata-private encrypted INDEXED archives using either one\n\
 or more X-Wing draft-10 hybrid recipients, or one password-only Argon2id\n\
-recipient. Encrypted STREAM is deliberately unsupported.\n\
+recipient. Ed25519 signatures may be detached, or embedded as encrypted private\n\
+CONTROL data; RFC 3161 verification is offline against caller trust anchors.\n\
+Authenticated recipient addition preserves the AFK, while removal and password\n\
+rotation use full fresh-key re-encryption. Encrypted STREAM is unsupported.\n\
 \n\
 Use `-` for standard input or standard output. When archive bytes go to\n\
 standard output, all status output goes to standard error.\n\
@@ -96,6 +114,34 @@ padding defaults to bucketed; --pad none is a recorded privacy-reducing opt-out\
 and --pad max uses the maximum class. The encrypted boundary default is a\n\
 secret AFK-derived Gear table; --chunk-boundary keyed-prf selects PHTE/AES-128.\n";
 
+const SIGN_HELP: &str = "\
+Usage: ebound sign <archive.eb> --signing-key <file>\n\
+             [--detached [archive.ebsig] | --embed]\n\
+             [--identity <file> | --password]\n\
+             [--bind-physical] [--bind-addressing]\n\
+             [--timestamp-token <token.der>]\n\
+\n\
+CONTENT is always bound. PHYSICAL binds PCR, not PCI. ADDRESSING is available\n\
+only after authenticating an encrypted INDEXED archive. Signing defaults to\n\
+every binding available for the archive. Detached signatures\n\
+are one exact canonical type-26 record. Embedded signatures are encrypted\n\
+private CONTROL data and do not rotate the archive file key or rewrite bulk\n\
+payload ciphertext. RFC 3161 tokens are supplied externally; Entrybound never\n\
+contacts a TSA.\n";
+
+const KEY_HELP: &str = "\
+Usage:\n\
+  ebound key generate-signing <signing-key>\n\
+  ebound key list <archive.eb> [--identity <file>|--password]\n\
+  ebound key add <archive.eb> --identity <file> --recipient <recipient.pub>\n\
+  ebound key remove <archive.eb> --identity <file> --retain <recipient.pub> ...\n\
+  ebound key change-password <archive.eb> --password\n\
+\n\
+Adding a hybrid recipient rewraps the existing AFK and preserves bulk PAYLOAD\n\
+ciphertext. Removal and password changes rotate AFK/archive ID and perform a\n\
+complete verified re-encryption; deleting a stanza is never treated as\n\
+revocation. Mutations replace the original only after the replacement verifies.\n";
+
 fn run(arguments: impl IntoIterator<Item = OsString>) -> Result<()> {
     let mut arguments = arguments.into_iter();
     let _program = arguments.next();
@@ -117,6 +163,8 @@ fn run(arguments: impl IntoIterator<Item = OsString>) -> Result<()> {
         "list" => command_list(arguments.collect()),
         "inspect" => command_inspect(arguments.collect()),
         "verify" => command_verify(arguments.collect()),
+        "sign" => command_sign(arguments.collect()),
+        "key" => command_key(arguments.collect()),
         "explain" => command_explain(arguments.collect()),
         other => Err(Diagnostic::new(
             OutcomeClass::Unsupported,
@@ -192,6 +240,7 @@ struct ReadArguments {
     positionals: Vec<OsString>,
     unlock: Option<OwnedUnlock>,
     crypto: bool,
+    timestamp_trust: Vec<PathBuf>,
 }
 
 fn parse_read_arguments(
@@ -203,6 +252,7 @@ fn parse_read_arguments(
     let mut identity = None;
     let mut password = false;
     let mut crypto = false;
+    let mut timestamp_trust = Vec::new();
     let mut cursor = 0;
     while cursor < arguments.len() {
         let value = &arguments[cursor];
@@ -225,6 +275,13 @@ fn parse_read_arguments(
                 return Err(usage("inspect accepts --crypto only once"));
             }
             crypto = true;
+        } else if value == "--timestamp-trust" && allow_crypto_flag {
+            cursor += 1;
+            timestamp_trust.push(PathBuf::from(
+                arguments
+                    .get(cursor)
+                    .ok_or_else(|| usage("--timestamp-trust requires a DER certificate"))?,
+            ));
         } else if value.to_string_lossy().starts_with("--") {
             return Err(usage(format!(
                 "{command} does not recognize option '{}'",
@@ -252,6 +309,7 @@ fn parse_read_arguments(
         positionals,
         unlock,
         crypto,
+        timestamp_trust,
     })
 }
 
@@ -531,6 +589,7 @@ fn command_pack(arguments: Vec<OsString>) -> Result<()> {
                 padding: padding.unwrap_or_default(),
                 boundary: boundary.unwrap_or_default(),
                 include_index: options.include_index,
+                embedded_signatures: &[],
             },
         )?;
         let Destination::Path(path) = &destination else {
@@ -777,6 +836,475 @@ fn command_unpack(arguments: Vec<OsString>) -> Result<()> {
 }
 
 // ---------------------------------------------------------------------------
+// signatures and authenticated recipient mutation
+// ---------------------------------------------------------------------------
+
+fn command_sign(arguments: Vec<OsString>) -> Result<()> {
+    if arguments.len() == 1 && matches!(arguments[0].to_str(), Some("--help" | "-h")) {
+        print!("{SIGN_HELP}");
+        return Ok(());
+    }
+    let mut positionals = Vec::new();
+    let mut signing_key = None;
+    let mut detached = None::<Option<PathBuf>>;
+    let mut embed = false;
+    let mut identity = None;
+    let mut password = false;
+    let mut bind_physical = true;
+    let mut bind_addressing = false;
+    let mut timestamp = None;
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        let value = &arguments[cursor];
+        if value == "--signing-key" {
+            cursor += 1;
+            signing_key = Some(PathBuf::from(
+                arguments
+                    .get(cursor)
+                    .ok_or_else(|| usage("--signing-key requires a file"))?,
+            ));
+        } else if value == "--detached" {
+            if detached.is_some() {
+                return Err(usage("sign accepts --detached only once"));
+            }
+            let explicit = arguments
+                .get(cursor + 1)
+                .filter(|next| !next.to_string_lossy().starts_with("--") && positionals.len() == 1);
+            if let Some(path) = explicit {
+                cursor += 1;
+                detached = Some(Some(PathBuf::from(path)));
+            } else {
+                detached = Some(None);
+            }
+        } else if value == "--embed" {
+            embed = true;
+        } else if value == "--identity" {
+            cursor += 1;
+            identity = Some(PathBuf::from(
+                arguments
+                    .get(cursor)
+                    .ok_or_else(|| usage("--identity requires a file"))?,
+            ));
+        } else if value == "--password" {
+            password = true;
+        } else if value == "--bind-physical" {
+            bind_physical = true;
+        } else if value == "--bind-addressing" {
+            bind_addressing = true;
+        } else if value == "--timestamp-token" {
+            cursor += 1;
+            timestamp =
+                Some(PathBuf::from(arguments.get(cursor).ok_or_else(|| {
+                    usage("--timestamp-token requires a DER token")
+                })?));
+        } else if value.to_string_lossy().starts_with("--") {
+            return Err(usage(format!(
+                "sign does not recognize option '{}'",
+                value.to_string_lossy()
+            )));
+        } else {
+            positionals.push(value.clone());
+        }
+        cursor += 1;
+    }
+    if positionals.len() != 1 || signing_key.is_none() || (embed && detached.is_some()) {
+        return Err(usage(
+            "sign requires <archive.eb> --signing-key <file> and at most one of --embed/--detached",
+        ));
+    }
+    let archive_path = PathBuf::from(&positionals[0]);
+    let encrypted = path_is_encrypted(&archive_path)?;
+    // The frozen CLI policy signs every binding the archive can provide:
+    // CONTENT+PHYSICAL for plaintext, plus ADDRESSING after encrypted unlock.
+    bind_addressing |= encrypted;
+    if !encrypted && embed {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::SignatureUnsupported,
+            "embedded signatures are defined only for encrypted INDEXED crypto-v1; use .ebsig",
+        ));
+    }
+    let unlock = load_unlock(identity, password, "Archive password: ")?;
+    if encrypted && unlock.is_none() {
+        return Err(usage(
+            "signing an encrypted archive requires --identity or --password",
+        ));
+    }
+    if !encrypted && unlock.is_some() {
+        return Err(usage(
+            "unlock material was supplied for an unencrypted archive",
+        ));
+    }
+    let bytes = read(&archive_path)?;
+    let (opened, addressing) = if encrypted {
+        let authenticated = open_encrypted_authenticated(
+            &bytes,
+            EncryptedOpenOptions::new(unlock.as_ref().map(OwnedUnlock::borrowed)),
+        )?;
+        (authenticated.opened, Some(authenticated.addressing))
+    } else {
+        (open(&bytes)?, None)
+    };
+    let current = current_bindings(&opened, addressing)?;
+    let signing_key_path = signing_key.expect("validated signing key");
+    warn_identity_permissions(&signing_key_path);
+    let key = SigningKey::read_file(&signing_key_path)?;
+    let mut signature = sign_archive(&current, &key, bind_physical, bind_addressing)?;
+    if let Some(path) = timestamp {
+        signature = signature.with_timestamp_token(read(&path)?)?;
+    }
+    if embed {
+        let replacement = embed_signature(
+            &bytes,
+            EncryptedOpenOptions::new(unlock.as_ref().map(OwnedUnlock::borrowed)),
+            signature,
+        )?;
+        replace_verified(&archive_path, &replacement.bytes)?;
+        println!(
+            "OK embedded signature and atomically replaced {}",
+            archive_path.display()
+        );
+    } else {
+        let output = detached
+            .flatten()
+            .unwrap_or_else(|| detached_path(&archive_path));
+        let mut file = create_exclusive(&output)?;
+        file.write_all(&signature.encode()?)
+            .and_then(|()| file.sync_all())
+            .map_err(|error| io_error("write detached signature", &error))?;
+        println!("OK wrote detached signature {}", output.display());
+    }
+    Ok(())
+}
+
+fn command_key(arguments: Vec<OsString>) -> Result<()> {
+    if arguments.len() == 1 && matches!(arguments[0].to_str(), Some("--help" | "-h")) {
+        print!("{KEY_HELP}");
+        return Ok(());
+    }
+    let Some(operation) = arguments.first().and_then(|value| value.to_str()) else {
+        return Err(usage(
+            "key requires generate-signing, list, add, remove, or change-password",
+        ));
+    };
+    let rest = arguments[1..].to_vec();
+    match operation {
+        "generate-signing" => command_key_generate_signing(rest),
+        "list" => command_key_list(rest),
+        "add" => command_key_add(rest),
+        "remove" => command_key_remove(rest),
+        "change-password" => command_key_change_password(rest),
+        _ => Err(usage("unknown key operation")),
+    }
+}
+
+fn command_key_generate_signing(arguments: Vec<OsString>) -> Result<()> {
+    if arguments.len() != 1 {
+        return Err(usage("key generate-signing requires <signing-key>"));
+    }
+    let path = PathBuf::from(&arguments[0]);
+    let key = SigningKey::generate()?;
+    let mut file = create_exclusive(&path)?;
+    file.write_all(&key.encode_file())
+        .and_then(|()| file.sync_all())
+        .map_err(|error| io_error("write signing key", &error))?;
+    restrict_secret_permissions(&path)?;
+    println!("OK generated Ed25519 signing key {}", path.display());
+    Ok(())
+}
+
+fn command_key_list(arguments: Vec<OsString>) -> Result<()> {
+    let parsed = parse_read_arguments("key list", arguments, false)?;
+    if parsed.positionals.len() != 1 || parsed.unlock.is_none() {
+        return Err(usage(
+            "key list requires <archive.eb> --identity <file>|--password",
+        ));
+    }
+    let path = PathBuf::from(&parsed.positionals[0]);
+    let authenticated = open_encrypted_authenticated(
+        &read(&path)?,
+        EncryptedOpenOptions::new(parsed.unlock.as_ref().map(OwnedUnlock::borrowed)),
+    )?;
+    if authenticated.recipient_directory.is_empty() {
+        println!("protection: PASSWORD_ONLY");
+        println!("recipients: one password stanza (no public-key directory)");
+    } else {
+        println!("protection: HYBRID_ONLY");
+        for entry in authenticated.recipient_directory {
+            println!(
+                "stanza={} type={} class=HYBRID_PQ fingerprint={} label={}",
+                hex(&entry.stanza_id),
+                entry.stanza_type,
+                hex(&entry.fingerprint),
+                if entry.label.is_empty() {
+                    "-"
+                } else {
+                    &entry.label
+                }
+            );
+        }
+    }
+    Ok(())
+}
+
+fn command_key_add(arguments: Vec<OsString>) -> Result<()> {
+    let mutation = parse_key_mutation("key add", arguments, "--recipient")?;
+    if mutation.keys.len() != 1 {
+        return Err(usage(
+            "key add requires exactly one --recipient <public-key>",
+        ));
+    }
+    let identity = mutation
+        .identity
+        .as_ref()
+        .ok_or_else(|| usage("key add requires --identity"))?;
+    let recipient = XWingRecipient::read_file(&mutation.keys[0])?;
+    let bytes = read(&mutation.archive)?;
+    let replacement = add_recipient(
+        &bytes,
+        EncryptedOpenOptions::new(Some(Unlock::Identity(identity))),
+        &recipient,
+    )?;
+    write_mutation_output(
+        &mutation.archive,
+        mutation.output.as_deref(),
+        &replacement.bytes,
+    )?;
+    println!(
+        "OK added recipient; AFK and archive ID preserved, addressing signatures may now be stale"
+    );
+    Ok(())
+}
+
+fn command_key_remove(arguments: Vec<OsString>) -> Result<()> {
+    let mutation = parse_key_mutation("key remove", arguments, "--retain")?;
+    if mutation.keys.is_empty() {
+        return Err(usage(
+            "key remove requires every retained public key via --retain",
+        ));
+    }
+    let identity = mutation
+        .identity
+        .as_ref()
+        .ok_or_else(|| usage("key remove requires --identity"))?;
+    let retained = mutation
+        .keys
+        .iter()
+        .map(|path| XWingRecipient::read_file(path))
+        .collect::<Result<Vec<_>>>()?;
+    let bytes = read(&mutation.archive)?;
+    let replacement = reencrypt_recipients(
+        &bytes,
+        EncryptedOpenOptions::new(Some(Unlock::Identity(identity))),
+        &retained,
+    )?;
+    write_mutation_output(
+        &mutation.archive,
+        mutation.output.as_deref(),
+        &replacement.bytes,
+    )?;
+    println!("OK removed recipient through fresh-AFK full re-encryption");
+    Ok(())
+}
+
+fn command_key_change_password(arguments: Vec<OsString>) -> Result<()> {
+    let mut archive = None;
+    let mut output = None;
+    let mut old_password = false;
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        if arguments[cursor] == "--password" {
+            old_password = true;
+        } else if arguments[cursor] == "--output" {
+            cursor += 1;
+            output = Some(PathBuf::from(
+                arguments
+                    .get(cursor)
+                    .ok_or_else(|| usage("--output requires a path"))?,
+            ));
+        } else if arguments[cursor].to_string_lossy().starts_with("--") {
+            return Err(usage("key change-password received an unknown option"));
+        } else if archive.replace(PathBuf::from(&arguments[cursor])).is_some() {
+            return Err(usage("key change-password accepts one archive"));
+        }
+        cursor += 1;
+    }
+    let archive =
+        archive.ok_or_else(|| usage("key change-password requires <archive.eb> --password"))?;
+    if !old_password {
+        return Err(usage(
+            "key change-password requires --password for the old password",
+        ));
+    }
+    let old = Zeroizing::new(prompt_password("Current archive password: ")?);
+    let new = Zeroizing::new(prompt_password("New archive password: ")?);
+    let confirmation = Zeroizing::new(prompt_password("Confirm new archive password: ")?);
+    if *new != *confirmation || new.is_empty() {
+        return Err(usage(
+            "new password confirmation did not match or was empty",
+        ));
+    }
+    let replacement = change_password(
+        &read(&archive)?,
+        EncryptedOpenOptions::new(Some(Unlock::Password(old.as_bytes()))),
+        new.as_bytes(),
+    )?;
+    write_mutation_output(&archive, output.as_deref(), &replacement.bytes)?;
+    println!("OK changed password through fresh-AFK full re-encryption");
+    Ok(())
+}
+
+struct KeyMutationArguments {
+    archive: PathBuf,
+    identity: Option<XWingIdentity>,
+    keys: Vec<PathBuf>,
+    output: Option<PathBuf>,
+}
+
+fn parse_key_mutation(
+    command: &str,
+    arguments: Vec<OsString>,
+    key_flag: &str,
+) -> Result<KeyMutationArguments> {
+    let mut archive = None;
+    let mut identity = None;
+    let mut keys = Vec::new();
+    let mut output = None;
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        if arguments[cursor] == "--identity" {
+            cursor += 1;
+            let path = PathBuf::from(
+                arguments
+                    .get(cursor)
+                    .ok_or_else(|| usage("--identity requires a file"))?,
+            );
+            warn_identity_permissions(&path);
+            identity = Some(XWingIdentity::read_file(&path)?);
+        } else if arguments[cursor] == key_flag {
+            cursor += 1;
+            keys.push(PathBuf::from(
+                arguments
+                    .get(cursor)
+                    .ok_or_else(|| usage(format!("{key_flag} requires a file")))?,
+            ));
+        } else if arguments[cursor] == "--output" {
+            cursor += 1;
+            output = Some(PathBuf::from(
+                arguments
+                    .get(cursor)
+                    .ok_or_else(|| usage("--output requires a path"))?,
+            ));
+        } else if arguments[cursor].to_string_lossy().starts_with("--") {
+            return Err(usage(format!("{command} received an unknown option")));
+        } else if archive.replace(PathBuf::from(&arguments[cursor])).is_some() {
+            return Err(usage(format!("{command} accepts one archive")));
+        }
+        cursor += 1;
+    }
+    Ok(KeyMutationArguments {
+        archive: archive.ok_or_else(|| usage(format!("{command} requires <archive.eb>")))?,
+        identity,
+        keys,
+        output,
+    })
+}
+
+fn load_unlock(
+    identity: Option<PathBuf>,
+    password: bool,
+    prompt: &str,
+) -> Result<Option<OwnedUnlock>> {
+    if identity.is_some() && password {
+        return Err(usage("--identity and --password cannot be combined"));
+    }
+    if let Some(path) = identity {
+        warn_identity_permissions(&path);
+        Ok(Some(OwnedUnlock::Identity(XWingIdentity::read_file(
+            &path,
+        )?)))
+    } else if password {
+        Ok(Some(OwnedUnlock::Password(Zeroizing::new(
+            prompt_password(prompt)?,
+        ))))
+    } else {
+        Ok(None)
+    }
+}
+
+fn detached_path(archive: &Path) -> PathBuf {
+    let mut value = archive.as_os_str().to_os_string();
+    value.push(".ebsig");
+    PathBuf::from(value)
+}
+
+fn write_mutation_output(source: &Path, output: Option<&Path>, bytes: &[u8]) -> Result<()> {
+    if let Some(output) = output.filter(|output| *output != source) {
+        let mut file = create_exclusive(output)?;
+        file.write_all(bytes)
+            .and_then(|()| file.sync_all())
+            .map_err(|error| io_error("write replacement archive", &error))?;
+        Ok(())
+    } else {
+        replace_verified(source, bytes)
+    }
+}
+
+fn replace_verified(path: &Path, bytes: &[u8]) -> Result<()> {
+    let parent = path.parent().unwrap_or_else(|| Path::new("."));
+    let name = path
+        .file_name()
+        .ok_or_else(|| usage("archive path has no file name"))?;
+    let temporary = parent.join(format!(
+        ".{}.entrybound-tmp-{}",
+        name.to_string_lossy(),
+        std::process::id()
+    ));
+    let backup = parent.join(format!(
+        ".{}.entrybound-backup-{}",
+        name.to_string_lossy(),
+        std::process::id()
+    ));
+    let mut file = create_exclusive(&temporary)?;
+    if let Err(error) = file
+        .write_all(bytes)
+        .and_then(|()| file.sync_all())
+        .map_err(|error| io_error("write verified replacement", &error))
+    {
+        drop(file);
+        let _ = std::fs::remove_file(&temporary);
+        return Err(error);
+    }
+    drop(file);
+    std::fs::rename(path, &backup)
+        .map_err(|error| io_error("preserve original archive", &error))?;
+    if let Err(error) = std::fs::rename(&temporary, path) {
+        let _ = std::fs::rename(&backup, path);
+        let _ = std::fs::remove_file(&temporary);
+        return Err(io_error("install replacement archive", &error));
+    }
+    std::fs::remove_file(&backup)
+        .map_err(|error| io_error("remove replaced archive backup", &error))?;
+    Ok(())
+}
+
+#[cfg(unix)]
+fn restrict_secret_permissions(path: &Path) -> Result<()> {
+    use std::os::unix::fs::PermissionsExt as _;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
+        .map_err(|error| io_error("restrict signing-key permissions", &error))
+}
+
+#[cfg(not(unix))]
+fn restrict_secret_permissions(_path: &Path) -> Result<()> {
+    Ok(())
+}
+
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|byte| format!("{byte:02x}")).collect()
+}
+
+// ---------------------------------------------------------------------------
 // list, inspect, verify, explain
 // ---------------------------------------------------------------------------
 
@@ -815,11 +1343,17 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
     }
     let (view, stream) = if encrypted {
         let bytes = read_source_fully(&source)?;
-        let result = inspect_encrypted(
-            &bytes,
-            parsed.unlock.as_ref().map(OwnedUnlock::borrowed),
-            CryptoPolicy::default(),
-        )?;
+        let authenticated_crypto = parsed
+            .unlock
+            .as_ref()
+            .map(|unlock| {
+                open_encrypted_authenticated(
+                    &bytes,
+                    EncryptedOpenOptions::new(Some(unlock.borrowed())),
+                )
+            })
+            .transpose()?;
+        let result = inspect_encrypted(&bytes, None, CryptoPolicy::default())?;
         println!("encrypted: yes");
         println!("payload suite: {}", result.public.payload_suite);
         println!("recipient count: {}", result.public.recipient_count);
@@ -840,35 +1374,27 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
                 .expect("public encrypted scan reports segment count")
         );
         println!("container bytes: {}", result.public.total_container_bytes);
-        let Some(authenticated) = result.authenticated else {
+        let Some(authenticated_crypto) = authenticated_crypto else {
             println!(
                 "private archive metadata: locked; supply --identity or --password for authenticated inspection"
             );
             return Ok(());
         };
-        let descriptor = result
-            .authenticated_descriptor
-            .expect("authenticated crypto inspection reports its Descriptor status");
+        let authenticated = inspect(&authenticated_crypto.opened)?;
+        let producer_declaration_present = u64::from_be_bytes(bytes[16..24].try_into().unwrap())
+            & FEATURE_PRIVATE_RESOURCE_DECLARATION_V1
+            != 0;
         println!(
             "encrypted Descriptor record version: {}",
-            descriptor.record_version
+            if producer_declaration_present { 2 } else { 1 }
         );
-        if descriptor.producer_declaration_present {
+        if producer_declaration_present {
             println!("producer resource declaration: present");
             println!(
-                "producer resource declaration validation: {}",
-                if descriptor.independently_validated {
-                    "matches authenticated archive reality"
-                } else {
-                    "not validated"
-                }
+                "producer resource declaration validation: matches authenticated archive reality"
             );
-            let budget = descriptor
-                .declared_budget
-                .expect("present producer declaration carries a budget");
-            let decode = descriptor
-                .declared_decode
-                .expect("present producer declaration carries decode requirements");
+            let budget = authenticated.declared_resources;
+            let decode = authenticated.decode_requirements;
             println!(
                 "declared resources: entries={} logical-bytes={} max-entry={} expansion-ratio-milli={} chunks={} path-depth={} metadata-bytes={} key-derivation-cost={}",
                 budget.entry_count,
@@ -887,6 +1413,21 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
         } else {
             println!("producer resource declaration: absent (legacy experimental crypto-v1)");
         }
+        println!(
+            "embedded signatures: {}",
+            authenticated_crypto.embedded_signatures.len()
+        );
+        let current = current_bindings(
+            &authenticated_crypto.opened,
+            Some(authenticated_crypto.addressing),
+        )?;
+        let timestamp_policy = timestamp_policy(&parsed.timestamp_trust)?;
+        let statuses = verify_signatures(
+            &authenticated_crypto.embedded_signatures,
+            &current,
+            timestamp_policy.as_ref(),
+        )?;
+        print_signature_statuses(&statuses);
         (authenticated, None)
     } else {
         if parsed.unlock.is_some() {
@@ -1199,21 +1740,90 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
     Ok(())
 }
 
+struct VerifyArguments {
+    read: ReadArguments,
+    embedded: bool,
+    detached: Vec<PathBuf>,
+    trust_anchors: Vec<PathBuf>,
+    policy: SignaturePolicy,
+}
+
+fn parse_verify_arguments(arguments: Vec<OsString>) -> Result<VerifyArguments> {
+    let mut ordinary = Vec::new();
+    let mut embedded = false;
+    let mut detached = Vec::new();
+    let mut trust_anchors = Vec::new();
+    let mut policy = SignaturePolicy::default();
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        if arguments[cursor] == "--signatures" {
+            embedded = true;
+        } else if arguments[cursor] == "--signature" {
+            cursor += 1;
+            detached.push(PathBuf::from(
+                arguments
+                    .get(cursor)
+                    .ok_or_else(|| usage("--signature requires an .ebsig file"))?,
+            ));
+        } else if arguments[cursor] == "--timestamp-trust" {
+            cursor += 1;
+            trust_anchors.push(PathBuf::from(
+                arguments
+                    .get(cursor)
+                    .ok_or_else(|| usage("--timestamp-trust requires a DER certificate"))?,
+            ));
+        } else if arguments[cursor] == "--require-signature" {
+            policy.require_signature = true;
+        } else if arguments[cursor] == "--require-content-signature" {
+            policy.require_content = true;
+        } else if arguments[cursor] == "--require-physical-signature" {
+            policy.require_physical = true;
+        } else if arguments[cursor] == "--require-addressing-signature" {
+            policy.require_addressing = true;
+        } else {
+            ordinary.push(arguments[cursor].clone());
+        }
+        cursor += 1;
+    }
+    Ok(VerifyArguments {
+        read: parse_read_arguments("verify", ordinary, false)?,
+        embedded,
+        detached,
+        trust_anchors,
+        policy,
+    })
+}
+
 fn command_verify(arguments: Vec<OsString>) -> Result<()> {
-    let parsed = parse_read_arguments("verify", arguments, false)?;
-    if parsed.positionals.len() != 1 {
+    let parsed = parse_verify_arguments(arguments)?;
+    let read_arguments = &parsed.read;
+    if read_arguments.positionals.len() != 1 {
         return Err(usage(
-            "verify requires <archive.eb|-> [--identity <file>|--password]",
+            "verify requires <archive.eb|-> [unlock] [signature policy/options]",
         ));
     }
-    let source = Source::parse(&parsed.positionals[0]);
+    let source = Source::parse(&read_arguments.positionals[0]);
     let encrypted = match &source {
         Source::Path(path) => path_is_encrypted(path)?,
-        Source::Stdin => parsed.unlock.is_some(),
+        Source::Stdin => read_arguments.unlock.is_some(),
     };
+    let detached = parsed
+        .detached
+        .iter()
+        .map(|path| read_detached_signature(path))
+        .collect::<Result<Vec<_>>>()?;
+    let timestamp_policy = timestamp_policy(&parsed.trust_anchors)?;
     if encrypted {
         let bytes = read_source_fully(&source)?;
-        let Some(unlock) = parsed.unlock.as_ref().map(OwnedUnlock::borrowed) else {
+        let Some(unlock) = read_arguments.unlock.as_ref().map(OwnedUnlock::borrowed) else {
+            if parsed.embedded
+                || !detached.is_empty()
+                || parsed.policy != SignaturePolicy::default()
+            {
+                return Err(usage(
+                    "encrypted signature evaluation requires --identity or --password",
+                ));
+            }
             let public = inspect_encrypted(&bytes, None, CryptoPolicy::default())?;
             println!(
                 "PUBLIC framing valid: encrypted={}, suite={}, recipients={}, padding={:?}, boundary={:?}",
@@ -1228,7 +1838,16 @@ fn command_verify(arguments: Vec<OsString>) -> Result<()> {
             );
             return Ok(());
         };
-        let report = verify_encrypted(&bytes, EncryptedOpenOptions::new(Some(unlock)))?;
+        let authenticated =
+            open_encrypted_authenticated(&bytes, EncryptedOpenOptions::new(Some(unlock)))?;
+        let current = current_bindings(&authenticated.opened, Some(authenticated.addressing))?;
+        let mut signatures = detached;
+        if parsed.embedded {
+            signatures.extend(authenticated.embedded_signatures.iter().cloned());
+        }
+        let statuses = verify_signatures(&signatures, &current, timestamp_policy.as_ref())?;
+        parsed.policy.enforce(&statuses)?;
+        let report = authenticated.opened.report;
         println!(
             "OK authenticated and verified CryptoEnvelope commitment/MAC, every AEAD DATA/END record, segment order/finality, canonical private ECF, semantic invariants, Chunk/content integrity, LAI, PCR, AUX, and exact-byte PCI"
         );
@@ -1237,26 +1856,38 @@ fn command_verify(arguments: Vec<OsString>) -> Result<()> {
         println!("PCR {}", report.identities.pcr.0);
         println!("AUX {}", report.identities.aux.0);
         println!("PCI {}", report.identities.pci.0);
+        print_signature_statuses(&statuses);
         return Ok(());
     }
-    if parsed.unlock.is_some() {
+    if read_arguments.unlock.is_some() {
         return Err(usage(
             "an identity/password was supplied for an unencrypted archive",
         ));
     }
-    let (report, stream) = match &source {
+    if parsed.embedded {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::SignatureUnsupported,
+            "unencrypted ECF has no normative embedded-signature placement; supply .ebsig",
+        ));
+    }
+    let (opened, stream) = match &source {
         Source::Stdin => {
             let sequential =
                 open_stream_with_limits(std::io::stdin().lock(), bootstrap_sequential_limits())?;
-            (sequential.opened.report, Some(sequential.stream))
+            (sequential.opened, Some(sequential.stream))
         }
         Source::Path(path) if path_layout(path)? == Layout::Stream => {
             let file = File::open(path).map_err(|error| read_error(path, &error))?;
             let sequential = open_stream_with_limits(file, bootstrap_sequential_limits())?;
-            (sequential.opened.report, Some(sequential.stream))
+            (sequential.opened, Some(sequential.stream))
         }
-        Source::Path(path) => (verify(&read(path)?)?, None),
+        Source::Path(path) => (open(&read(path)?)?, None),
     };
+    let current = current_bindings(&opened, None)?;
+    let statuses = verify_signatures(&detached, &current, timestamp_policy.as_ref())?;
+    parsed.policy.enforce(&statuses)?;
+    let report = opened.report;
     println!(
         "OK verified canonical structure, section integrity, semantic invariants, Dictionary/ChunkGroup/ReconstructionData dependencies and access costs, reconstructed original Chunk bytes, Chunk/content integrity, Entry identities, LAI, PCR, AUX, and exact-byte PCI"
     );
@@ -1277,7 +1908,82 @@ fn command_verify(arguments: Vec<OsString>) -> Result<()> {
     println!("PCR {}", report.identities.pcr.0);
     println!("AUX {}", report.identities.aux.0);
     println!("PCI {}", report.identities.pci.0);
+    print_signature_statuses(&statuses);
     Ok(())
+}
+
+fn timestamp_policy(paths: &[PathBuf]) -> Result<Option<TimestampPolicy>> {
+    if paths.is_empty() {
+        return Ok(None);
+    }
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|_| usage("system time precedes the Unix epoch"))?;
+    Ok(Some(TimestampPolicy {
+        trust_anchors: paths
+            .iter()
+            .map(|path| read(path).map(|der| TimestampTrustAnchor { der }))
+            .collect::<Result<Vec<_>>>()?,
+        verification_unix_seconds: i64::try_from(now.as_secs())
+            .map_err(|_| usage("system time exceeds timestamp policy range"))?,
+    }))
+}
+
+fn verify_signatures(
+    signatures: &[SignatureRecord],
+    current: &entrybound::crypto::CurrentBindings,
+    timestamp: Option<&TimestampPolicy>,
+) -> Result<Vec<SignatureStatus>> {
+    signatures
+        .iter()
+        .map(|signature| verify_signature(signature, current, timestamp))
+        .collect()
+}
+
+fn print_signature_statuses(statuses: &[SignatureStatus]) {
+    if statuses.is_empty() {
+        return;
+    }
+    for status in statuses {
+        println!(
+            "signature signer={} mask={:#04x} cryptographic={} content={} physical={} addressing={} timestamp={}{}",
+            hex(&status.signer_id),
+            status.binding_mask,
+            cryptographic_status(status.cryptographic),
+            binding_status(status.content),
+            binding_status(status.physical),
+            binding_status(status.addressing),
+            timestamp_status(status.timestamp),
+            status
+                .timestamp_unix_seconds
+                .map_or_else(String::new, |time| format!(" time={time}"))
+        );
+    }
+}
+
+const fn cryptographic_status(value: CryptographicStatus) -> &'static str {
+    match value {
+        CryptographicStatus::Valid => "VALID",
+        CryptographicStatus::Invalid => "INVALID",
+        CryptographicStatus::Unsupported => "UNSUPPORTED",
+    }
+}
+
+const fn binding_status(value: BindingStatus) -> &'static str {
+    match value {
+        BindingStatus::Valid => "VALID",
+        BindingStatus::Stale => "STALE",
+        BindingStatus::NotBound => "NOT_BOUND",
+    }
+}
+
+const fn timestamp_status(value: TimestampStatus) -> &'static str {
+    match value {
+        TimestampStatus::Valid => "VALID",
+        TimestampStatus::Invalid => "INVALID",
+        TimestampStatus::Unsupported => "UNSUPPORTED",
+        TimestampStatus::Absent => "ABSENT",
+    }
 }
 
 const fn index_status(status: IndexStatus) -> &'static str {

@@ -117,7 +117,8 @@ implemented. The required incompatibility bits are `0x20` (`encrypted-indexed-v1
 (`recipient-password-v1`), `0x200` (`signature-ed25519-v1`), `0x400`
 (`crypto-padding-v1`), `0x800` (`keyed-boundary-phte-v1`), and `0x1000`
 (`private-resource-declaration-v1`). Current readers accept the crypto bits only
-through the crypto-v1 INDEXED reader; `0x200` signatures remain unsupported.
+through the crypto-v1 INDEXED reader; `0x200` is accepted exactly when a
+nonempty authenticated EBCS kind-7 signature collection is present.
 Canonical records,
 feature constraints, and footer v2 are frozen in
 [crypto-wire-v1.md](crypto-wire-v1.md); primitive and security rules are in
@@ -350,8 +351,9 @@ assignments, limits, vectors, and reason codes are normative in
 [crypto-threat-model-v1.md](crypto-threat-model-v1.md) and
 [crypto-review-v1.md](crypto-review-v1.md). The implemented encrypted-INDEXED
 subset is recorded in
-[crypto-implementation-v1.md](crypto-implementation-v1.md); signatures and
-encrypted STREAM remain unsupported.
+[crypto-implementation-v1.md](crypto-implementation-v1.md). Detached type-26
+records and encrypted embedded signatures are operational; encrypted STREAM
+remains unsupported.
 
 Implementation exposed and resolved one frozen-wire contradiction: Descriptor
 v1 cannot encode the private producer `ResourceBudget` and

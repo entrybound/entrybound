@@ -1,6 +1,7 @@
 # Crypto v1 implementation note
 
-Status: experimental implementation of the frozen encrypted-INDEXED subset.
+Status: experimental implementation of the frozen encrypted-INDEXED,
+signature, timestamp-verification, and recipient-mutation subset.
 The normative construction remains `crypto-suite-v1.md` and
 `crypto-wire-v1.md`; this note records implementation choices and verification,
 not a second wire authority.
@@ -41,6 +42,7 @@ The direct crypto dependencies are pinned exactly:
 | `aes` | 0.9.3 | AES-128 for PHTE boundary decisions | MIT OR Apache-2.0 |
 | `aes-gcm-siv` | 0.12.1 | Payload and AFK-wrap AEAD | MIT OR Apache-2.0 |
 | `argon2` | 0.6.0 | Argon2id password recipient | MIT OR Apache-2.0 |
+| `ed25519-dalek` | 3.0.0 | pure Ed25519 archive and CMS signature verification | BSD-3-Clause |
 | `getrandom` | 0.4.3 | OS entropy | MIT OR Apache-2.0 |
 | `hkdf` | 0.13.0 | HKDF-SHA-256 hierarchy | MIT OR Apache-2.0 |
 | `hmac` | 0.13.0 | commitment and envelope MAC | MIT OR Apache-2.0 |
@@ -51,6 +53,10 @@ The direct crypto dependencies are pinned exactly:
 | `x-wing` | 0.1.0 | draft-10 X-Wing KEM | Apache-2.0 OR MIT |
 | `x25519-dalek` | 3.0.0 | reviewed X-Wing dependency surface | BSD-3-Clause |
 | `zeroize` | 1.9.0 | owned secret erasure | Apache-2.0 OR MIT |
+| `der` | 0.8.1 | bounded canonical DER parsing | MIT OR Apache-2.0 |
+| `spki` | 0.8.0 | algorithm/key representation for timestamp verification | MIT OR Apache-2.0 |
+| `x509-cert` | 0.3.0 | offline certificate parsing and path checks | MIT OR Apache-2.0 |
+| `cms` | 0.3.0-pre.2 | RFC 3161 CMS SignedData parsing | MIT OR Apache-2.0 |
 | `rpassword` | 7.4.0 | controlling-terminal CLI prompts | Apache-2.0 |
 
 Entrybound adds no unsafe Rust and implements no cryptographic primitive. The
@@ -75,6 +81,42 @@ version 1/type 2 contains exactly the 32-byte X-Wing identity seed. Length,
 version, type, flags, and reserved bytes are strict. It is the minimum local
 serialization needed by `--recipient` and `--identity`, not a general key store;
 callers remain responsible for restricting identity-file permissions.
+
+The separate experimental `EBSK` wrapper is version 1/type 1 and carries one
+32-byte Ed25519 seed. The type deliberately has no `Debug`/`Display`, zeroizes
+on drop, and is permission-restricted to mode 0600 when created on Unix.
+
+## Signatures, timestamps, and recipient transactions
+
+`SignatureRecordV1` is the exact canonical type-26 record. The implementation
+uses pure Ed25519 over the frozen T1 transcript and evaluates cryptographic
+validity independently from CONTENT, PHYSICAL, and ADDRESSING freshness.
+Detached `.ebsig` files contain exactly one record with no wrapper or trailing
+bytes. Embedded records are lexically ordered in encrypted EBCS kind 7 and set
+feature `0x200`; embedding re-authenticates CONTROL/footer state while preserving
+the AFK, archive ID, LAI/AUX/PCR, and ordinal-compatible PAYLOAD ciphertext.
+
+RFC 3161 support is verification/attachment only. The verifier accepts DER up
+to 64 KiB, SHA-256 message imprint over the exact record through tag 8, an
+Ed25519 CMS signer, embedded certificates with critical sole `timeStamping`
+EKU, and caller-supplied trust anchors/time policy. It performs no network,
+OCSP, CRL, or TSA operation. Unsupported algorithms and invalid imprint,
+signature, chain, or time are separately statused.
+
+Authenticated `key list` reads only private RecipientDirectory data. `key add`
+wraps the same AFK for a new hybrid recipient, regenerates the recipient set,
+MAC, directory, final record, and CONTROL/footer locators, and reuses unchanged
+PAYLOAD segment bytes when their ordinal remains valid. Existing CONTENT and
+PHYSICAL bindings remain current; ADDRESSING becomes stale.
+
+`key remove` requires the complete retained public-key set and rotates AFK and
+archive ID. `key change-password` likewise uses a fresh AFK/archive ID and
+Argon2 salt. Both re-run keyed CDC/planning, fully encrypt, authenticate, and
+self-verify the replacement before the CLI performs a staged same-directory
+replacement. The original remains present on construction/authentication
+failure. LAI/AUX remain stable for unchanged semantics; PCR may change and PCI
+does change. Existing signatures are retained and evaluated as historical
+assertions rather than silently deleted or renewed.
 
 Recipient wrapping uses the corrected flat 14-field
 `recipient-wrap-ad/v1`. The executable V5/V6 tests reproduce the authoritative
@@ -163,12 +205,15 @@ published in [descriptor-vectors-v1.txt](descriptor-vectors-v1.txt).
 ## Conformance gates
 
 Tests retain RFC 8452 AES-256-GCM-SIV, RFC 5869 HKDF, RFC 4231 HMAC-SHA-256,
-RFC 9106 Argon2id, all X-Wing draft-10, V1-V6 transcript, secret-Gear, and PHTE
+RFC 9106 Argon2id, all X-Wing draft-10, V1-V7 transcript/signature,
+RFC 8032 section 7.1, secret-Gear, and PHTE
 vectors. Generated integration tests cover hybrid and password unlock,
 multi-recipient behavior, padding modes, metadata privacy, keyed chunking,
 ciphertext/envelope/commitment/footer mutation, truncation, destination safety,
-and real CLI pack/inspect/verify/unpack. Historical unencrypted INDEXED and
+recipient addition/removal, password rotation, offline generated RFC 3161,
+and real CLI pack/inspect/verify/unpack/sign/key. Historical unencrypted INDEXED and
 STREAM tests remain in the normal targeted suite.
 
-Signatures, recipient add/remove, classical-only recipients, encrypted STREAM,
-KMS/HSM integration, and deterministic encryption remain unimplemented.
+Online TSA requests, classical-only recipients, encrypted STREAM, KMS/HSM
+integration, general PKI/keychain management, and deterministic encryption
+remain unimplemented.

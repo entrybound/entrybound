@@ -107,6 +107,125 @@ pub(crate) fn plan_directory_encrypted(
     build_archive_with_boundary(input, options, Some((boundary, chunker_prefix)))
 }
 
+/// Rebuilds only the encrypted physical plan from an already authenticated
+/// EAM. Logical Entries, metadata, FidelityReport, and ContentObject plaintext
+/// remain authoritative; AFK-derived boundaries and all physical plans are
+/// regenerated for a fresh encryption epoch.
+pub(crate) fn replan_archive_encrypted(
+    source: &Archive,
+    profile: CompressionProfile,
+    boundary: &EncryptedBoundaryKey,
+    chunker_prefix: &'static str,
+) -> Result<Archive> {
+    source.validate()?;
+    let mut plaintext_objects = Vec::with_capacity(source.content_store.objects.len());
+    for (digest, object) in &source.content_store.objects {
+        let mut plaintext = Vec::new();
+        for reference in &object.chunks {
+            let chunk = source
+                .content_store
+                .chunks
+                .get(&reference.chunk_id)
+                .ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::UnknownChunk,
+                        format!("ContentObject {digest} references an unknown Chunk"),
+                    )
+                })?;
+            plaintext.extend_from_slice(&chunk.plaintext);
+        }
+        if sha256_exact(&plaintext) != *digest {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::ContentDigestMismatch,
+                format!("ContentObject {digest} plaintext does not match its digest"),
+            ));
+        }
+        plaintext_objects.push((*digest, plaintext.into_boxed_slice()));
+    }
+    let contents = plaintext_objects
+        .iter()
+        .map(|(_, bytes)| bytes.as_ref())
+        .collect::<Vec<_>>();
+    let selection =
+        select_parameters_encrypted(&contents, profile.chunking_candidates(), boundary)?;
+    let mut objects = BTreeMap::new();
+    let mut chunks = BTreeMap::new();
+    for (expected_digest, plaintext) in plaintext_objects {
+        let selected = chunk_ranges_encrypted(&plaintext, selection.parameters, boundary)?;
+        let ranges = selected
+            .iter()
+            .map(|range| range.start..range.end)
+            .collect::<Vec<_>>();
+        let (object, object_chunks) =
+            build_content_from_ranges(&plaintext, &ranges, UNPLANNED_PLAN_ID)?;
+        if object.logical_digest != expected_digest {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::ContentDigestMismatch,
+                "rechunking changed a ContentObject logical digest",
+            ));
+        }
+        objects.insert(object.logical_digest, object);
+        for (digest, chunk) in object_chunks {
+            if let Some(existing) = chunks.insert(digest, chunk.clone())
+                && existing != chunk
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Corrupt,
+                    ReasonCode::ChunkIdentityCollision,
+                    format!("distinct plaintext Chunks produced ID {digest}"),
+                ));
+            }
+        }
+    }
+    let mut descriptor = source.descriptor.clone();
+    descriptor.features = FeatureSet::default();
+    descriptor.layout = Layout::Indexed;
+    descriptor.role = ArchiveRole::Complete;
+    descriptor.budget_declared = true;
+    descriptor.stream_dedup_window = 0;
+    descriptor.budget = ResourceBudget::default();
+    descriptor.decode = DecodeRequirements::default();
+    descriptor.planner_id = profile.planner_id().to_owned();
+    descriptor.chunker_id = format!(
+        "{chunker_prefix}/min-{}/target-{}/max-{}",
+        selection.parameters.minimum_size,
+        selection.parameters.target_size,
+        selection.parameters.maximum_size
+    );
+    descriptor.lai = Digest::ZERO;
+    descriptor.pcr = Digest::ZERO;
+    descriptor.aux = Digest::ZERO;
+    descriptor.pci = None;
+    let physical_order = chunks
+        .keys()
+        .copied()
+        .collect::<Vec<_>>()
+        .into_boxed_slice();
+    let mut archive = Archive {
+        descriptor,
+        entry_set: source.entry_set.clone(),
+        content_store: ContentStore {
+            physical_order,
+            objects,
+            chunks,
+            dictionaries: BTreeMap::new(),
+            reconstruction_data: BTreeMap::new(),
+            reconstruction_fallbacks: BTreeMap::new(),
+            reconstruction_regions: BTreeMap::new(),
+            reconstruction_audits: BTreeMap::new(),
+            chunk_groups: BTreeMap::new(),
+        },
+        transform_plans: Box::default(),
+        fidelity: source.fidelity.clone(),
+        index: Index::default(),
+    };
+    plan_archive_v6(&mut archive, profile)?;
+    Ok(archive)
+}
+
 fn build_archive_with_boundary(
     input: &Path,
     options: PackOptions,

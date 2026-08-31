@@ -59,8 +59,8 @@ establishes:
   trees, including bounded same-handle source-change detection;
 - capability-relative, component-at-a-time extraction with exclusive file and
   directory creation, collision refusal, and pre-materialization verification;
-- working `pack`, `unpack`, `list`, `inspect`, `verify`, and compression
-  `explain` CLI commands;
+- working `pack`, `unpack`, `list`, `inspect`, `verify`, compression `explain`,
+  `sign`, and authenticated `key` CLI commands;
 - capture and restoration of `core.mtime` and, on Unix, `core.executable`, with
   an in-band FidelityReport for metadata the bootstrap does not preserve;
 - caller-owned resource limits enforced against the archive declaration before
@@ -71,6 +71,12 @@ establishes:
   and authenticated record padding;
 - public-only encrypted inspection plus authenticated verify and unpack paths;
   extraction still materializes nothing until the complete archive verifies.
+- pure Ed25519 CONTENT/PHYSICAL/ADDRESSING signatures, exact detached `.ebsig`
+  records, encrypted embedded signatures, and offline RFC 3161 verification
+  against caller-provided trust anchors;
+- authenticated recipient listing and hybrid-recipient addition without AFK
+  rotation, plus recipient removal and password changes through verified
+  fresh-AFK full re-encryption.
 
 ## Native bootstrap workflow
 
@@ -88,8 +94,9 @@ ebound unpack example.eb ./restored
 
 Encrypted crypto-v1 archives are `INDEXED` only. Recipient and identity files
 use the small experimental `EBK1` local-key wrapper; this is local tooling and
-is not part of the `.eb` wire format. The library exposes key generation and
-serialization while full key-management commands remain out of scope.
+is not part of the `.eb` wire format. The implemented key commands are limited
+to authenticated listing, hybrid addition, fresh-key hybrid removal, and
+fresh-key password rotation; they are not a general key-management system.
 
 ```sh
 ebound pack ./example private.eb --recipient recipient.ebk
@@ -100,6 +107,29 @@ ebound unpack private.eb ./restored-private --identity identity.ebk
 # Passwords are read from the controlling terminal and never from argv.
 ebound pack ./example private-password.eb --password
 ebound unpack private-password.eb ./restored-password --password
+```
+
+Signatures always bind CONTENT and default to every binding available:
+CONTENT+PHYSICAL for unencrypted archives, plus ADDRESSING for authenticated
+encrypted archives. Unencrypted archives use detached signatures because the current unencrypted ECF has no
+normative embedded-signature placement. Encrypted archives may embed signatures
+after successful unlock. Timestamp tokens are supplied externally and verified
+offline; Entrybound does not contact a TSA.
+
+```sh
+ebound key generate-signing signer.key
+ebound sign example.eb --signing-key signer.key --detached example.ebsig --bind-physical
+ebound verify example.eb --signature example.ebsig --require-content-signature
+
+ebound sign private.eb --signing-key signer.key --embed \
+  --identity identity.ebk --bind-physical --bind-addressing
+ebound verify private.eb --identity identity.ebk --signatures
+
+ebound key list private.eb --identity identity.ebk
+ebound key add private.eb --identity identity.ebk --recipient colleague.ebk
+# Removal requires every retained public key and performs complete re-encryption.
+ebound key remove private.eb --identity identity.ebk --retain colleague.ebk
+ebound key change-password private-password.eb --password
 ```
 
 Repeated `--recipient` options create one hybrid archive for multiple X-Wing
@@ -149,7 +179,8 @@ It writes unencrypted Complete archives in INDEXED or STREAM layout and
 encrypted Complete archives in INDEXED layout. It supports UTF-8 directory
 names, directories, and regular files, and deliberately rejects symlinks and
 special files. There is no legacy ZIP/tar/7z import, encrypted STREAM layout,
-signing, recipient mutation, classical-only recipients, remote range access, general
+online TSA request support, general PKI/keychain integration, classical-only
+recipients, remote range access, general
 `repack`, lossy image recompression, guaranteed
 support for every JPEG producer/marker combination, embedded-stream scanning,
 unbounded solid compression, hardlink
@@ -218,6 +249,7 @@ extraction, access complexity, and identity equivalence with INDEXED,
 [wire freeze](docs/crypto-wire-v1.md),
 [security review](docs/crypto-review-v1.md), and
 [crypto implementation note](docs/crypto-implementation-v1.md) for the
-operational encrypted-INDEXED subset and the still-unimplemented signature
-architecture, and
+operational encrypted-INDEXED/signature subset, and the
+[signing and key-management note](docs/signing-key-management-v1.md) for binding
+freshness, timestamp trust, and recipient mutation architecture, and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

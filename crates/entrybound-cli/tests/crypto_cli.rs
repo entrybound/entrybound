@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use std::process::Command;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use entrybound::crypto::XWingIdentity;
 
@@ -7,8 +8,12 @@ struct Fixture(PathBuf);
 
 impl Fixture {
     fn new() -> Self {
-        let path =
-            std::env::temp_dir().join(format!("entrybound-crypto-cli-{}", std::process::id()));
+        static NEXT: AtomicUsize = AtomicUsize::new(0);
+        let path = std::env::temp_dir().join(format!(
+            "entrybound-crypto-cli-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
         let _ = std::fs::remove_dir_all(&path);
         std::fs::create_dir_all(path.join("source/nested")).unwrap();
         std::fs::write(path.join("source/nested/private.txt"), b"secret CLI bytes").unwrap();
@@ -130,6 +135,176 @@ fn hybrid_pack_public_inspect_verify_and_unpack() {
     ]);
     assert!(!failure.status.success());
     assert!(!tampered_destination.exists());
+
+    let signer = fixture.0.join("signer.key");
+    let generated = run(&["key", "generate-signing", signer.to_str().unwrap()]);
+    assert!(generated.status.success());
+    let embedded = run(&[
+        "sign",
+        archive.to_str().unwrap(),
+        "--signing-key",
+        signer.to_str().unwrap(),
+        "--embed",
+        "--identity",
+        identity_path.to_str().unwrap(),
+    ]);
+    assert!(
+        embedded.status.success(),
+        "{}",
+        String::from_utf8_lossy(&embedded.stderr)
+    );
+    let signed = run(&[
+        "verify",
+        archive.to_str().unwrap(),
+        "--identity",
+        identity_path.to_str().unwrap(),
+        "--signatures",
+        "--require-addressing-signature",
+    ]);
+    assert!(signed.status.success());
+    assert!(
+        String::from_utf8(signed.stdout)
+            .unwrap()
+            .contains("addressing=VALID")
+    );
+
+    let (retained_identity, retained_recipient) = XWingIdentity::generate().unwrap();
+    let retained_identity_path = fixture.0.join("retained-identity.ebk");
+    let retained_recipient_path = fixture.0.join("retained-recipient.ebk");
+    std::fs::write(
+        &retained_identity_path,
+        retained_identity.encode_file().unwrap(),
+    )
+    .unwrap();
+    std::fs::write(
+        &retained_recipient_path,
+        retained_recipient.encode_file().unwrap(),
+    )
+    .unwrap();
+    let added = run(&[
+        "key",
+        "add",
+        archive.to_str().unwrap(),
+        "--identity",
+        identity_path.to_str().unwrap(),
+        "--recipient",
+        retained_recipient_path.to_str().unwrap(),
+    ]);
+    assert!(
+        added.status.success(),
+        "{}",
+        String::from_utf8_lossy(&added.stderr)
+    );
+    let stale = run(&[
+        "verify",
+        archive.to_str().unwrap(),
+        "--identity",
+        retained_identity_path.to_str().unwrap(),
+        "--signatures",
+    ]);
+    assert!(stale.status.success());
+    let stale = String::from_utf8(stale.stdout).unwrap();
+    assert!(stale.contains("content=VALID"));
+    assert!(stale.contains("physical=VALID"));
+    assert!(stale.contains("addressing=STALE"));
+
+    let listed = run(&[
+        "key",
+        "list",
+        archive.to_str().unwrap(),
+        "--identity",
+        retained_identity_path.to_str().unwrap(),
+    ]);
+    assert!(listed.status.success());
+    assert_eq!(
+        String::from_utf8(listed.stdout)
+            .unwrap()
+            .matches("fingerprint=")
+            .count(),
+        2
+    );
+
+    let removed = run(&[
+        "key",
+        "remove",
+        archive.to_str().unwrap(),
+        "--identity",
+        identity_path.to_str().unwrap(),
+        "--retain",
+        retained_recipient_path.to_str().unwrap(),
+    ]);
+    assert!(
+        removed.status.success(),
+        "{}",
+        String::from_utf8_lossy(&removed.stderr)
+    );
+    assert!(
+        !run(&[
+            "verify",
+            archive.to_str().unwrap(),
+            "--identity",
+            identity_path.to_str().unwrap(),
+        ])
+        .status
+        .success()
+    );
+    assert!(
+        run(&[
+            "verify",
+            archive.to_str().unwrap(),
+            "--identity",
+            retained_identity_path.to_str().unwrap(),
+        ])
+        .status
+        .success()
+    );
+}
+
+#[test]
+fn detached_signing_cli_enforces_requested_bindings() {
+    let fixture = Fixture::new();
+    let archive = fixture.0.join("plain.eb");
+    let signer = fixture.0.join("signer.key");
+    let signature = fixture.0.join("plain.ebsig");
+    assert!(
+        run(&[
+            "pack",
+            fixture.0.join("source").to_str().unwrap(),
+            archive.to_str().unwrap(),
+        ])
+        .status
+        .success()
+    );
+    assert!(
+        run(&["key", "generate-signing", signer.to_str().unwrap(),])
+            .status
+            .success()
+    );
+    assert!(
+        run(&[
+            "sign",
+            archive.to_str().unwrap(),
+            "--signing-key",
+            signer.to_str().unwrap(),
+            "--detached",
+            signature.to_str().unwrap(),
+        ])
+        .status
+        .success()
+    );
+    let verified = run(&[
+        "verify",
+        archive.to_str().unwrap(),
+        "--signature",
+        signature.to_str().unwrap(),
+        "--require-content-signature",
+        "--require-physical-signature",
+    ]);
+    assert!(
+        verified.status.success(),
+        "{}",
+        String::from_utf8_lossy(&verified.stderr)
+    );
 }
 
 fn run(arguments: &[&str]) -> std::process::Output {

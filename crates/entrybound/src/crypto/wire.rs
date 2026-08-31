@@ -17,6 +17,7 @@ pub(crate) const RECORD_RECIPIENT_DIRECTORY: u16 = 22;
 pub(crate) const RECORD_PRIVATE_FRAGMENT: u16 = 23;
 pub(crate) const RECORD_SEGMENT_END: u16 = 24;
 pub(crate) const RECORD_ARCHIVE_FINAL: u16 = 25;
+pub(crate) const RECORD_SIGNATURE: u16 = 26;
 pub(crate) const RECORD_ENCRYPTED_INDEX: u16 = 27;
 
 pub(crate) const PRIVATE_OBJECT_RECORD: u16 = 1;

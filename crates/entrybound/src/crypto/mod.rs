@@ -4,6 +4,8 @@
 //! crypto-v1 documents. Algorithm choice is not archive- or caller-negotiable.
 
 mod container;
+mod signature;
+mod timestamp;
 mod wire;
 
 use std::path::Path;
@@ -26,15 +28,24 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::{archive::PackOptions, chunker::EncryptedBoundaryKey};
 
 pub use container::{
-    AuthenticatedDescriptorInspection, CryptoInspection, EncryptedArchive, EncryptedOpenOptions,
-    EncryptedWriteOptions, PublicCryptoInspection, encrypt_archive, inspect_encrypted,
-    open_encrypted, verify_encrypted,
+    AuthenticatedDescriptorInspection, AuthenticatedEncryptedArchive, CryptoInspection,
+    EncryptedArchive, EncryptedOpenOptions, EncryptedWriteOptions, PublicCryptoInspection,
+    RecipientDirectoryEntry, add_recipient, change_password, embed_signature, encrypt_archive,
+    inspect_encrypted, open_encrypted, open_encrypted_authenticated, reencrypt_recipients,
+    verify_encrypted,
 };
+pub use signature::{
+    AddressingBinding, BindingStatus, CryptographicStatus, CurrentBindings, SignaturePolicy,
+    SignatureRecord, SignatureStatus, SigningKey, TimestampStatus, current_bindings,
+    read_detached_signature, sign_archive, verify_signature,
+};
+pub use timestamp::{TimestampPolicy, TimestampTrustAnchor};
 
 pub const FEATURE_ENCRYPTED_INDEXED_V1: u64 = 0x20;
 pub const FEATURE_PAYLOAD_SUITE_V1: u64 = 0x40;
 pub const FEATURE_XWING_RECIPIENT: u64 = 0x80;
 pub const FEATURE_PASSWORD_RECIPIENT: u64 = 0x100;
+pub const FEATURE_SIGNATURE_ED25519_V1: u64 = 0x200;
 pub const FEATURE_PADDING: u64 = 0x400;
 pub const FEATURE_STRONG_BOUNDARY: u64 = 0x800;
 /// Corrected encrypted Descriptor v2 with private resource declarations.
@@ -43,6 +54,7 @@ pub const CRYPTO_FEATURES: u64 = FEATURE_ENCRYPTED_INDEXED_V1
     | FEATURE_PAYLOAD_SUITE_V1
     | FEATURE_XWING_RECIPIENT
     | FEATURE_PASSWORD_RECIPIENT
+    | FEATURE_SIGNATURE_ED25519_V1
     | FEATURE_PADDING
     | FEATURE_STRONG_BOUNDARY
     | FEATURE_PRIVATE_RESOURCE_DECLARATION_V1;

@@ -710,6 +710,12 @@ token itself is tag 9 and is excluded from that hash.
 Embedded records are encrypted CONTROL objects. A detached `.ebsig` consists
 of exactly one canonical type-26 record and no container wrapper.
 
+Implementation confirmation: the Rust crypto-v1 reader/writer accepts EBCS
+kind 7 only in authenticated encrypted CONTROL data, sets required bit `0x200`
+exactly when that nonempty collection exists, sorts by complete canonical
+record bytes, and rejects exact duplicates. This confirms the frozen placement;
+it does not add another signature representation.
+
 ## Recipient wrapping wire rules
 
 The method context, wrap key, and flat 14-field wrap-AD formulas are normative

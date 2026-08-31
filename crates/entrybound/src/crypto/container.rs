@@ -11,10 +11,10 @@ use x_wing::{
 use zeroize::Zeroize;
 
 use super::{
-    BoundaryMode, CryptoPolicy, KeyHierarchy, PaddingMode, ProtectionPolicy, Unlock,
-    XWingRecipient, a2id, aead_open, aead_seal, commitment, crypto_integrity, envelope_mac,
-    no_recipient, open_afk, password_secret, public_crypto_context, random, resource_refused,
-    seal_afk, stanza_invalid, wire,
+    AddressingBinding, BoundaryMode, CryptoPolicy, KeyHierarchy, PaddingMode, ProtectionPolicy,
+    SignatureRecord, Unlock, XWingRecipient, a2id, aead_open, aead_seal, commitment,
+    crypto_integrity, envelope_mac, no_recipient, open_afk, password_secret, public_crypto_context,
+    random, resource_refused, seal_afk, stanza_invalid, wire,
 };
 use crate::archive::{ArchiveInspection, inspect};
 use crate::canonical::{RecordBuilder, decode_record};
@@ -26,6 +26,7 @@ use crate::ecf::{
 };
 use crate::ecf::{OpenedArchive, VerificationReport};
 use crate::identity::{IdentitySet, physical_container_identity, sha256_exact};
+use crate::planner::CompressionProfile;
 
 const SECTION_MAGIC: &[u8; 4] = b"EBS1";
 const SECTION_ENVELOPE: u16 = 32;
@@ -50,6 +51,7 @@ pub struct EncryptedWriteOptions<'a> {
     pub padding: PaddingMode,
     pub boundary: BoundaryMode,
     pub include_index: bool,
+    pub embedded_signatures: &'a [SignatureRecord],
 }
 
 impl Default for EncryptedWriteOptions<'_> {
@@ -60,6 +62,7 @@ impl Default for EncryptedWriteOptions<'_> {
             padding: PaddingMode::Bucketed,
             boundary: BoundaryMode::SecretGearTable,
             include_index: true,
+            embedded_signatures: &[],
         }
     }
 }
@@ -121,6 +124,25 @@ pub struct EncryptedArchive {
     pub public: PublicCryptoInspection,
 }
 
+/// Authenticated private recipient-directory metadata.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RecipientDirectoryEntry {
+    pub stanza_id: [u8; 16],
+    pub stanza_type: u16,
+    pub fingerprint: [u8; 32],
+    pub label: String,
+}
+
+/// Encrypted archive state whose private signature/addressing data has been
+/// authenticated. No file key is exposed.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AuthenticatedEncryptedArchive {
+    pub opened: OpenedArchive,
+    pub embedded_signatures: Vec<SignatureRecord>,
+    pub recipient_directory: Vec<RecipientDirectoryEntry>,
+    pub addressing: AddressingBinding,
+}
+
 #[derive(Clone)]
 struct PlainObject {
     class: u8,
@@ -176,14 +198,38 @@ pub fn encrypt_archive(
 }
 
 pub(super) fn encrypt_with_file_key(
-    mut parts: EncryptedPlainParts,
+    parts: EncryptedPlainParts,
     afk: &[u8; 32],
     archive_id: [u8; 32],
     options: EncryptedWriteOptions<'_>,
 ) -> Result<EncryptedArchive> {
+    validate_write_options(&options)?;
+    let (policy, stanzas, directory) = build_recipients(afk, &archive_id, &options)?;
+    encrypt_with_material(
+        parts, afk, archive_id, options, policy, stanzas, directory, None,
+    )
+}
+
+#[derive(Clone)]
+struct ReusableSegment {
+    class: u8,
+    bytes: Vec<u8>,
+    digest: [u8; 32],
+}
+
+#[allow(clippy::too_many_arguments)]
+fn encrypt_with_material(
+    mut parts: EncryptedPlainParts,
+    afk: &[u8; 32],
+    archive_id: [u8; 32],
+    options: EncryptedWriteOptions<'_>,
+    policy: ProtectionPolicy,
+    mut stanzas: Vec<wire::RecipientStanza>,
+    directory: Vec<Vec<u8>>,
+    reusable_payload: Option<&std::collections::BTreeMap<u64, ReusableSegment>>,
+) -> Result<EncryptedArchive> {
     let descriptor_declaration = private_descriptor_declaration(&parts.descriptor)?;
     let keys = KeyHierarchy::derive(afk, &archive_id)?;
-    let (policy, mut stanzas, directory) = build_recipients(afk, &archive_id, &options)?;
     stanzas.sort_by(|left, right| {
         left.sort_key()
             .expect("canonical stanza")
@@ -201,6 +247,9 @@ pub(super) fn encrypt_with_file_key(
         | recipient_feature;
     if options.boundary == BoundaryMode::PhteAes128 {
         features |= super::FEATURE_STRONG_BOUNDARY;
+    }
+    if !options.embedded_signatures.is_empty() {
+        features |= super::FEATURE_SIGNATURE_ED25519_V1;
     }
     match descriptor_declaration.version {
         1 => {}
@@ -304,6 +353,24 @@ pub(super) fn encrypt_with_file_key(
         class: SEGMENT_CONTROL,
         bytes: wire::private_object(wire::PRIVATE_OBJECT_RECORD, &parts.fidelity)?,
     });
+    if !options.embedded_signatures.is_empty() {
+        let mut signatures = options
+            .embedded_signatures
+            .iter()
+            .map(SignatureRecord::encode)
+            .collect::<Result<Vec<_>>>()?;
+        signatures.sort();
+        signatures.dedup();
+        if signatures.len() != options.embedded_signatures.len() {
+            return Err(wire::private_invalid(
+                "embedded signatures contain an exact duplicate",
+            ));
+        }
+        objects.push(PlainObject {
+            class: SEGMENT_CONTROL,
+            bytes: collection_object(wire::COLLECTION_SIGNATURES, &signatures)?,
+        });
+    }
     if options.include_index {
         encrypted_index.sort();
         objects.push(PlainObject {
@@ -315,7 +382,30 @@ pub(super) fn encrypt_with_file_key(
     let mut segments = Vec::new();
     let mut segment_digests = Vec::new();
     let mut segment_salts = BTreeSet::new();
+    if let Some(reusable) = reusable_payload {
+        for value in reusable.values() {
+            let salt: [u8; 16] = value
+                .bytes
+                .get(16..32)
+                .ok_or_else(|| segment_invalid("reusable segment header is truncated"))?
+                .try_into()
+                .unwrap();
+            if !segment_salts.insert((value.class, salt)) {
+                return Err(segment_invalid("reusable segment salt is duplicated"));
+            }
+        }
+    }
     for (ordinal, object) in objects.into_iter().enumerate() {
+        if object.class == SEGMENT_PAYLOAD
+            && let Some(reused) = reusable_payload.and_then(|values| values.get(&(ordinal as u64)))
+        {
+            if reused.class != object.class {
+                return Err(segment_invalid("reusable payload segment class mismatch"));
+            }
+            segments.extend_from_slice(&reused.bytes);
+            segment_digests.push(reused.digest);
+            continue;
+        }
         let built = build_unique_segment(
             object.class,
             ordinal as u64,
@@ -430,6 +520,9 @@ pub(super) fn encrypt_with_file_key(
 }
 
 pub(super) fn validate_write_options(options: &EncryptedWriteOptions<'_>) -> Result<()> {
+    for signature in options.embedded_signatures {
+        signature.encode()?;
+    }
     if options.password.is_some() == !options.recipients.is_empty() {
         return Err(Diagnostic::new(
             OutcomeClass::PolicyRefused,
@@ -510,6 +603,15 @@ fn build_recipients(
 
 /// Opens and fully authenticates/decrypts an encrypted INDEXED archive.
 pub fn open_encrypted(bytes: &[u8], options: EncryptedOpenOptions<'_>) -> Result<OpenedArchive> {
+    Ok(open_encrypted_authenticated(bytes, options)?.opened)
+}
+
+/// Opens an encrypted archive and returns only authenticated private
+/// signature/addressing metadata alongside the ordinary verified EAM.
+pub fn open_encrypted_authenticated(
+    bytes: &[u8],
+    options: EncryptedOpenOptions<'_>,
+) -> Result<AuthenticatedEncryptedArchive> {
     let parsed = parse_public(bytes, options.crypto_policy)?;
     let unlock = options.unlock.ok_or_else(no_recipient)?;
     let (afk, keys) = unlock_envelope(
@@ -528,12 +630,24 @@ pub fn open_encrypted(bytes: &[u8], options: EncryptedOpenOptions<'_>) -> Result
         options,
     )?;
     drop(afk);
-    crate::ecf::open_encrypted_plain_parts(
-        decoded,
+    let addressing = AddressingBinding {
+        payload_suite_id: wire::PAYLOAD_SUITE_V1,
+        recipient_set_digest: recipient_set_digest(&parsed.envelope.stanzas)?,
+        commitment: parsed.envelope.commitment,
+        archive_id: parsed.envelope.archive_id,
+    };
+    let opened = crate::ecf::open_encrypted_plain_parts(
+        decoded.parts,
         options.resource_policy,
         options.decode_policy,
         pci,
-    )
+    )?;
+    Ok(AuthenticatedEncryptedArchive {
+        opened,
+        embedded_signatures: decoded.signatures,
+        recipient_directory: decoded.recipient_directory,
+        addressing,
+    })
 }
 
 pub fn verify_encrypted(
@@ -541,6 +655,345 @@ pub fn verify_encrypted(
     options: EncryptedOpenOptions<'_>,
 ) -> Result<VerificationReport> {
     Ok(open_encrypted(bytes, options)?.report)
+}
+
+struct MutationState {
+    opened: OpenedArchive,
+    afk: super::Secret32,
+    archive_id: [u8; 32],
+    envelope: wire::CryptoEnvelope,
+    signatures: Vec<SignatureRecord>,
+    recipient_directory: Vec<RecipientDirectoryEntry>,
+    payload_segments: std::collections::BTreeMap<u64, ReusableSegment>,
+    include_index: bool,
+}
+
+fn open_for_mutation(bytes: &[u8], options: EncryptedOpenOptions<'_>) -> Result<MutationState> {
+    let parsed = parse_public(bytes, options.crypto_policy)?;
+    let unlock = options.unlock.ok_or_else(no_recipient)?;
+    let (afk, keys) = unlock_envelope(
+        &parsed.envelope,
+        parsed.features,
+        unlock,
+        options.crypto_policy,
+    )?;
+    let pci = physical_container_identity(bytes);
+    let decoded = decrypt_segments(
+        parsed.segments,
+        &parsed.envelope,
+        &keys,
+        &parsed.footer,
+        parsed.features,
+        options,
+    )?;
+    let include_index = decoded.index_present;
+    let opened = crate::ecf::open_encrypted_plain_parts(
+        decoded.parts,
+        options.resource_policy,
+        options.decode_policy,
+        pci,
+    )?;
+    Ok(MutationState {
+        opened,
+        afk,
+        archive_id: parsed.envelope.archive_id,
+        envelope: parsed.envelope,
+        signatures: decoded.signatures,
+        recipient_directory: decoded.recipient_directory,
+        payload_segments: decoded.payload_segments,
+        include_index,
+    })
+}
+
+/// Embeds a signature by re-authenticating CONTROL/footer data while retaining
+/// the AFK, archive ID, and ordinal-compatible PAYLOAD ciphertext.
+pub fn embed_signature(
+    bytes: &[u8],
+    options: EncryptedOpenOptions<'_>,
+    signature: SignatureRecord,
+) -> Result<EncryptedArchive> {
+    let mut state = open_for_mutation(bytes, options)?;
+    if state
+        .signatures
+        .iter()
+        .any(|existing| existing == &signature)
+    {
+        return Err(wire::private_invalid(
+            "embedded signature is an exact duplicate",
+        ));
+    }
+    state.signatures.push(signature);
+    state
+        .signatures
+        .sort_by_key(|value| value.encode().expect("validated signature"));
+    let directory = state
+        .recipient_directory
+        .iter()
+        .map(encode_recipient_directory_entry)
+        .collect::<Result<Vec<_>>>()?;
+    let parts = prepare_encrypted_plain_parts(&state.opened.archive)?;
+    let padding = PaddingMode::try_from(state.envelope.padding_mode)?;
+    let boundary = BoundaryMode::try_from(state.envelope.boundary_mode)?;
+    let write = EncryptedWriteOptions {
+        recipients: &[],
+        password: None,
+        padding,
+        boundary,
+        include_index: state.include_index,
+        embedded_signatures: &state.signatures,
+    };
+    let policy = protection_policy(state.envelope.protection_policy)?;
+    let output = encrypt_with_material(
+        parts,
+        &state.afk.0,
+        state.archive_id,
+        write,
+        policy,
+        state.envelope.stanzas,
+        directory,
+        Some(&state.payload_segments),
+    )?;
+    verify_mutation_output(&output.bytes, &state.afk.0)?;
+    Ok(output)
+}
+
+/// Adds one X-Wing recipient while preserving the existing AFK, archive ID,
+/// keyed chunking, and ordinal-compatible PAYLOAD ciphertext.
+pub fn add_recipient(
+    bytes: &[u8],
+    options: EncryptedOpenOptions<'_>,
+    recipient: &XWingRecipient,
+) -> Result<EncryptedArchive> {
+    let mut state = open_for_mutation(bytes, options)?;
+    if state.envelope.protection_policy != ProtectionPolicy::HybridOnly as u8 {
+        return Err(Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::CryptoRecipientPolicyInvalid,
+            "recipient addition is available only for HYBRID_ONLY archives",
+        ));
+    }
+    if state
+        .recipient_directory
+        .iter()
+        .any(|entry| entry.fingerprint == recipient.fingerprint())
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::CryptoRecipientPolicyInvalid,
+            "recipient public key is already present",
+        ));
+    }
+    let singleton = [recipient.clone()];
+    let temporary = EncryptedWriteOptions {
+        recipients: &singleton,
+        password: None,
+        padding: PaddingMode::try_from(state.envelope.padding_mode)?,
+        boundary: BoundaryMode::try_from(state.envelope.boundary_mode)?,
+        include_index: state.include_index,
+        embedded_signatures: &[],
+    };
+    let (_, new_stanzas, new_directory) =
+        build_recipients(&state.afk.0, &state.archive_id, &temporary)?;
+    state.envelope.stanzas.extend(new_stanzas);
+    let mut directory = state
+        .recipient_directory
+        .iter()
+        .map(encode_recipient_directory_entry)
+        .collect::<Result<Vec<_>>>()?;
+    directory.extend(new_directory);
+    directory.sort_by(|left, right| left[28..44].cmp(&right[28..44]));
+    let parts = prepare_encrypted_plain_parts(&state.opened.archive)?;
+    let write = EncryptedWriteOptions {
+        recipients: &[],
+        password: None,
+        padding: temporary.padding,
+        boundary: temporary.boundary,
+        include_index: state.include_index,
+        embedded_signatures: &state.signatures,
+    };
+    let output = encrypt_with_material(
+        parts,
+        &state.afk.0,
+        state.archive_id,
+        write,
+        ProtectionPolicy::HybridOnly,
+        state.envelope.stanzas,
+        directory,
+        Some(&state.payload_segments),
+    )?;
+    verify_mutation_output(&output.bytes, &state.afk.0)?;
+    Ok(output)
+}
+
+/// Removes recipients only by creating a fresh encryption epoch. `retained`
+/// must name every recipient that should unlock the replacement.
+pub fn reencrypt_recipients(
+    bytes: &[u8],
+    options: EncryptedOpenOptions<'_>,
+    retained: &[XWingRecipient],
+) -> Result<EncryptedArchive> {
+    let state = open_for_mutation(bytes, options)?;
+    if state.envelope.protection_policy != ProtectionPolicy::HybridOnly as u8 || retained.is_empty()
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::CryptoRecipientPolicyInvalid,
+            "recipient removal requires a HYBRID_ONLY archive and at least one retained recipient",
+        ));
+    }
+    let current = state
+        .recipient_directory
+        .iter()
+        .map(|entry| entry.fingerprint)
+        .collect::<BTreeSet<_>>();
+    let retained_set = retained
+        .iter()
+        .map(XWingRecipient::fingerprint)
+        .collect::<BTreeSet<_>>();
+    if retained_set.len() != retained.len()
+        || !retained_set.is_subset(&current)
+        || retained_set.len() >= current.len()
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::CryptoRecipientPolicyInvalid,
+            "retained public keys must be a unique proper subset of the authenticated directory",
+        ));
+    }
+    rotate_encryption_epoch(state, retained, None)
+}
+
+/// Replaces a password through fresh-AFK/archive-ID full re-encryption.
+pub fn change_password(
+    bytes: &[u8],
+    options: EncryptedOpenOptions<'_>,
+    new_password: &[u8],
+) -> Result<EncryptedArchive> {
+    let state = open_for_mutation(bytes, options)?;
+    if state.envelope.protection_policy != ProtectionPolicy::PasswordOnly as u8
+        || new_password.is_empty()
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::CryptoRecipientPolicyInvalid,
+            "password rotation requires a PASSWORD_ONLY archive and a nonempty new password",
+        ));
+    }
+    rotate_encryption_epoch(state, &[], Some(new_password))
+}
+
+fn rotate_encryption_epoch(
+    state: MutationState,
+    recipients: &[XWingRecipient],
+    password: Option<&[u8]>,
+) -> Result<EncryptedArchive> {
+    let afk = super::Secret32(random::<32>()?);
+    let archive_id = random::<32>()?;
+    let keys = KeyHierarchy::derive(&afk.0, &archive_id)?;
+    let boundary_mode = BoundaryMode::try_from(state.envelope.boundary_mode)?;
+    let (boundary, chunker_prefix) = keys.boundary_key(boundary_mode)?;
+    let profile = encrypted_profile(&state.opened.archive.descriptor.planner_id)?;
+    let mut archive = crate::archive::replan_archive_encrypted(
+        &state.opened.archive,
+        profile,
+        &boundary,
+        chunker_prefix,
+    )?;
+    archive.descriptor.planner_id = match profile {
+        CompressionProfile::Fast => "fast-enc-v1",
+        CompressionProfile::Balanced => "balanced-enc-v1",
+        CompressionProfile::Dense => "dense-enc-v1",
+        CompressionProfile::Extreme => "extreme-enc-v1",
+    }
+    .to_owned();
+    let parts = prepare_encrypted_plain_parts(&archive)?;
+    let output = encrypt_with_file_key(
+        parts,
+        &afk.0,
+        archive_id,
+        EncryptedWriteOptions {
+            recipients,
+            password,
+            padding: PaddingMode::try_from(state.envelope.padding_mode)?,
+            boundary: boundary_mode,
+            include_index: state.include_index,
+            embedded_signatures: &state.signatures,
+        },
+    )?;
+    verify_mutation_output(&output.bytes, &afk.0)?;
+    Ok(output)
+}
+
+/// Mutations know the newly installed AFK, so they can authenticate and
+/// structurally verify the complete replacement before the caller replaces a
+/// filesystem object—even when the retained recipients' private identities
+/// are intentionally unavailable to the mutating caller.
+fn verify_mutation_output(bytes: &[u8], afk: &[u8; 32]) -> Result<()> {
+    let options = EncryptedOpenOptions::new(None);
+    let parsed = parse_public(bytes, options.crypto_policy)?;
+    let keys = KeyHierarchy::derive(afk, &parsed.envelope.archive_id)?;
+    let padding = PaddingMode::try_from(parsed.envelope.padding_mode)?;
+    let boundary = BoundaryMode::try_from(parsed.envelope.boundary_mode)?;
+    let expected_commitment = commitment(&keys, &parsed.envelope.archive_id, padding, boundary)?;
+    if !bool::from(expected_commitment.ct_eq(&parsed.envelope.commitment)) {
+        return Err(crypto_integrity(
+            ReasonCode::CryptoKeyCommitmentFailed,
+            "replacement archive key commitment did not self-verify",
+        ));
+    }
+    let public_context = public_crypto_context(
+        &parsed.envelope.archive_id,
+        parsed.features,
+        padding,
+        boundary,
+    )?;
+    let expected_mac = envelope_mac(
+        &keys,
+        &public_context,
+        &parsed.envelope.commitment,
+        protection_policy(parsed.envelope.protection_policy)?,
+        &parsed.envelope.stanzas,
+    )?;
+    if !bool::from(expected_mac.ct_eq(&parsed.envelope.envelope_mac)) {
+        return Err(crypto_integrity(
+            ReasonCode::CryptoEnvelopeAuthFailed,
+            "replacement archive envelope did not self-verify",
+        ));
+    }
+    let pci = physical_container_identity(bytes);
+    let decoded = decrypt_segments(
+        parsed.segments,
+        &parsed.envelope,
+        &keys,
+        &parsed.footer,
+        parsed.features,
+        options,
+    )?;
+    crate::ecf::open_encrypted_plain_parts(
+        decoded.parts,
+        options.resource_policy,
+        options.decode_policy,
+        pci,
+    )?;
+    Ok(())
+}
+
+fn encrypted_profile(planner_id: &str) -> Result<CompressionProfile> {
+    if planner_id.starts_with("fast-") {
+        Ok(CompressionProfile::Fast)
+    } else if planner_id.starts_with("balanced-") {
+        Ok(CompressionProfile::Balanced)
+    } else if planner_id.starts_with("dense-") {
+        Ok(CompressionProfile::Dense)
+    } else if planner_id.starts_with("extreme-") {
+        Ok(CompressionProfile::Extreme)
+    } else {
+        Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedRequiredFeature,
+            "cannot map encrypted planner ID to a frozen creation profile",
+        ))
+    }
 }
 
 pub fn inspect_encrypted(
@@ -826,6 +1279,14 @@ fn unlock_envelope(
     Err(no_recipient())
 }
 
+struct DecryptedPrivate {
+    parts: EncryptedDecodedParts,
+    signatures: Vec<SignatureRecord>,
+    recipient_directory: Vec<RecipientDirectoryEntry>,
+    payload_segments: std::collections::BTreeMap<u64, ReusableSegment>,
+    index_present: bool,
+}
+
 fn decrypt_segments(
     bytes: &[u8],
     envelope: &wire::CryptoEnvelope,
@@ -833,7 +1294,7 @@ fn decrypt_segments(
     footer: &ParsedFooter,
     features: u64,
     options: EncryptedOpenOptions<'_>,
-) -> Result<EncryptedDecodedParts> {
+) -> Result<DecryptedPrivate> {
     let policy = options.crypto_policy;
     let resource_policy = options.resource_policy;
     let decode_policy = options.decode_policy;
@@ -841,6 +1302,7 @@ fn decrypt_segments(
     let mut cursor = 0usize;
     let mut ordinal = 0u64;
     let mut completed = Vec::new();
+    let mut payload_segments = std::collections::BTreeMap::new();
     let mut segment_salts = BTreeSet::new();
     let mut collector = ObjectCollector::default();
     let mut archive_final = None;
@@ -945,6 +1407,16 @@ fn decrypt_segments(
         )?)
         .into();
         completed.push(digest);
+        if class == SEGMENT_PAYLOAD {
+            payload_segments.insert(
+                ordinal,
+                ReusableSegment {
+                    class,
+                    bytes: segment.to_vec(),
+                    digest,
+                },
+            );
+        }
         cursor = end;
         ordinal += 1;
         if cursor == bytes.len() {
@@ -1019,6 +1491,21 @@ fn decrypt_segments(
         ));
     }
     collector.validate_recipient_directory(&envelope.stanzas)?;
+    let signature_present = collector.signatures.is_some();
+    if signature_present != (features & super::FEATURE_SIGNATURE_ED25519_V1 != 0) {
+        return Err(wire::private_invalid(
+            "embedded-signature feature and collection presence disagree",
+        ));
+    }
+    let signatures = collector
+        .signatures
+        .as_deref()
+        .unwrap_or_default()
+        .iter()
+        .map(|bytes| SignatureRecord::decode(bytes))
+        .collect::<Result<Vec<_>>>()?;
+    let recipient_directory = collector.decode_recipient_directory()?;
+    let index_present = collector.index_present;
     let decoded = collector.finish(
         FeatureSet {
             incompat: features & !super::CRYPTO_FEATURES,
@@ -1040,7 +1527,13 @@ fn decrypt_segments(
     if decoded.chunk_frames.len() as u64 != final_value.chunk_count {
         return Err(segment_invalid("ArchiveFinal unique Chunk count mismatch"));
     }
-    Ok(decoded)
+    Ok(DecryptedPrivate {
+        parts: decoded,
+        signatures,
+        recipient_directory,
+        payload_segments,
+        index_present,
+    })
 }
 
 #[derive(Default)]
@@ -1059,6 +1552,8 @@ struct ObjectCollector {
     manifest_id: Option<[u8; 32]>,
     fidelity: Option<Vec<u8>>,
     recipient_directory: Option<Vec<Vec<u8>>>,
+    signatures: Option<Vec<Vec<u8>>>,
+    index_present: bool,
     last_rank: u8,
 }
 
@@ -1154,7 +1649,7 @@ impl ObjectCollector {
                     set_once(&mut self.fidelity, payload.to_vec(), "Fidelity")?;
                 }
                 wire::RECORD_ARCHIVE_FINAL => {
-                    self.rank(12)?;
+                    self.rank(13)?;
                     return Ok(Some(decode_archive_final(payload)?));
                 }
                 _ => return Err(wire::private_invalid("forbidden singleton private record")),
@@ -1204,8 +1699,19 @@ impl ObjectCollector {
                         set_once(&mut self.manifest, items, "Manifest")?;
                         self.manifest_id = Some(id);
                     }
-                    wire::COLLECTION_INDEX => {
+                    wire::COLLECTION_SIGNATURES => {
                         self.rank(11)?;
+                        for item in &items {
+                            SignatureRecord::decode(item)?;
+                        }
+                        set_once(&mut self.signatures, items, "EmbeddedSignatures")?;
+                    }
+                    wire::COLLECTION_INDEX => {
+                        self.rank(12)?;
+                        if self.index_present {
+                            return Err(wire::private_invalid("duplicate encrypted Index object"));
+                        }
+                        self.index_present = true;
                     }
                     _ => return Err(wire::private_invalid("unsupported private EBCS collection")),
                 }
@@ -1272,6 +1778,29 @@ impl ObjectCollector {
             ));
         }
         Ok(())
+    }
+
+    fn decode_recipient_directory(&self) -> Result<Vec<RecipientDirectoryEntry>> {
+        self.recipient_directory
+            .as_deref()
+            .unwrap_or_default()
+            .iter()
+            .map(|bytes| {
+                let (record, consumed) = decode_record(bytes)?;
+                if consumed != bytes.len() || record.kind != wire::RECORD_RECIPIENT_DIRECTORY {
+                    return Err(wire::private_invalid(
+                        "recipient directory contains a wrong record",
+                    ));
+                }
+                record.expect_tags(&[1, 2, 3, 4], &[])?;
+                Ok(RecipientDirectoryEntry {
+                    stanza_id: exact(record.field(1)?.as_bytes()?)?,
+                    stanza_type: record.field(2)?.as_u16()?,
+                    fingerprint: exact(record.field(3)?.as_bytes()?)?,
+                    label: record.field(4)?.as_utf8()?.to_owned(),
+                })
+            })
+            .collect()
     }
 
     fn rank(&mut self, rank: u8) -> Result<()> {
@@ -2193,6 +2722,23 @@ fn public_inspection(
     })
 }
 
+fn recipient_set_digest(stanzas: &[wire::RecipientStanza]) -> Result<[u8; 32]> {
+    let sequence = wire::encode_stanza_sequence(stanzas)?;
+    Ok(Sha256::digest(wire::t1("entrybound/recipient-set/v1", &[&sequence])?).into())
+}
+
+fn protection_policy(value: u8) -> Result<ProtectionPolicy> {
+    match value {
+        1 => Ok(ProtectionPolicy::HybridOnly),
+        2 => Ok(ProtectionPolicy::PasswordOnly),
+        _ => Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::CryptoRecipientPolicyInvalid,
+            "unknown recipient protection policy",
+        )),
+    }
+}
+
 fn encode_recipient_directory(
     id: &[u8; 16],
     fingerprint: &[u8; 32],
@@ -2205,6 +2751,15 @@ fn encode_recipient_directory(
         .bytes(3, fingerprint)?
         .utf8(4, label)?;
     record.finish()
+}
+
+fn encode_recipient_directory_entry(value: &RecipientDirectoryEntry) -> Result<Vec<u8>> {
+    if value.stanza_type != 1 {
+        return Err(wire::private_invalid(
+            "recipient directory contains an unsupported stanza type",
+        ));
+    }
+    encode_recipient_directory(&value.stanza_id, &value.fingerprint, &value.label)
 }
 
 fn decode_descriptor_roots(bytes: &[u8]) -> Result<([u8; 32], [u8; 32], [u8; 32])> {
@@ -2280,10 +2835,12 @@ fn truncated(detail: impl Into<String>) -> Diagnostic {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::BTreeMap;
     use std::path::PathBuf;
 
     use super::*;
     use crate::archive::{PackOptions, plan_directory};
+    use crate::crypto::{SigningKey, current_bindings, sign_archive};
 
     struct Fixture {
         root: PathBuf,
@@ -2538,5 +3095,69 @@ mod tests {
                 .code(),
             ReasonCode::ResourceLimit
         );
+    }
+
+    #[test]
+    fn recipient_addition_reuses_bulk_payload_ciphertext() {
+        let fixture = Fixture::new("recipient-add-payload-preservation");
+        let archive = fixture.archive();
+        let (first_identity, first_recipient) = super::super::XWingIdentity::generate().unwrap();
+        let (second_identity, second_recipient) = super::super::XWingIdentity::generate().unwrap();
+        let initial = encrypted_from_parts(
+            prepare_encrypted_plain_parts(&archive).unwrap(),
+            &first_recipient,
+        );
+        let before = open_for_mutation(
+            &initial.bytes,
+            EncryptedOpenOptions::new(Some(Unlock::Identity(&first_identity))),
+        )
+        .unwrap();
+        let authenticated = open_encrypted_authenticated(
+            &initial.bytes,
+            EncryptedOpenOptions::new(Some(Unlock::Identity(&first_identity))),
+        )
+        .unwrap();
+        let bindings =
+            current_bindings(&authenticated.opened, Some(authenticated.addressing)).unwrap();
+        let signature =
+            sign_archive(&bindings, &SigningKey::from_seed([0x71; 32]), true, true).unwrap();
+        let signed = embed_signature(
+            &initial.bytes,
+            EncryptedOpenOptions::new(Some(Unlock::Identity(&first_identity))),
+            signature,
+        )
+        .unwrap();
+        let after_embed = open_for_mutation(
+            &signed.bytes,
+            EncryptedOpenOptions::new(Some(Unlock::Identity(&first_identity))),
+        )
+        .unwrap();
+        assert_reused_payload(&before.payload_segments, &after_embed.payload_segments);
+
+        let added = add_recipient(
+            &signed.bytes,
+            EncryptedOpenOptions::new(Some(Unlock::Identity(&first_identity))),
+            &second_recipient,
+        )
+        .unwrap();
+        let after = open_for_mutation(
+            &added.bytes,
+            EncryptedOpenOptions::new(Some(Unlock::Identity(&second_identity))),
+        )
+        .unwrap();
+        assert_reused_payload(&after_embed.payload_segments, &after.payload_segments);
+    }
+
+    fn assert_reused_payload(
+        expected: &BTreeMap<u64, ReusableSegment>,
+        actual: &BTreeMap<u64, ReusableSegment>,
+    ) {
+        assert_eq!(expected.len(), actual.len());
+        for (ordinal, expected) in expected {
+            let actual = actual.get(ordinal).unwrap();
+            assert_eq!(actual.class, expected.class);
+            assert_eq!(actual.bytes, expected.bytes);
+            assert_eq!(actual.digest, expected.digest);
+        }
     }
 }
