@@ -128,24 +128,37 @@ canonical structure, EAM semantics, codec/transforms/reconstruction, and all
 identities have verified. Wrong credentials, corruption, or truncation therefore
 leave the destination untouched.
 
-## Frozen-wire issue discovered during implementation
+## Descriptor-v2 schema correction
 
-The normative crypto prose says the encrypted Descriptor carries the complete
-authoritative ResourceBudget and DecodeRequirements. The frozen canonical ECF
-Descriptor record (type 1/version 1) has exactly fields 1 through 8 and contains
-neither structure, and crypto v1 assigns no other private record for them.
-`EBPO` requires the inner record to remain an exact canonical ECF record, so the
-missing bytes cannot be added without a new normative record/version decision.
+Implementation correctly stopped when the normative crypto prose required the
+encrypted Descriptor to carry authoritative `ResourceBudget` and
+`DecodeRequirements`, while canonical Descriptor type 1/version 1 contained
+only tags 1 through 8. Adding an independent resource record would have created
+a competing semantic authority, so the correction preserves Descriptor v1 and
+defines Descriptor type 1/version 2 with required tags 9 through 19.
 
-The implementation does not invent fields. It authenticates all private bytes
-under the independent public `CryptoPolicy`, derives actual EAM and decoder
-requirements from authenticated records, applies the caller ResourceBudget and
-DecodeRequirements before codec decode, and reconstructs the ordinary
-Descriptor model with those checked values. This preserves memory safety and
-the existing canonical record, but it cannot satisfy the prose claim that a
-producer-authored final resource declaration is present inside Descriptor.
-That specification contradiction remains open and must be resolved by a
-separate wire correction before crypto v1 can be called fully format-conformant.
+New encrypted writers always emit Descriptor v2 and set required incompatibility
+feature `0x1000` (`private-resource-declaration-v1`). The Descriptor is the
+first authenticated private object after AFK commitment and envelope-MAC
+verification. Its declaration is caller-policy checked immediately. Decoder
+requirements are then independently aggregated from authenticated physical
+plans/dictionaries/groups, and complete EAM actuals are derived and checked
+against every declared upper bound before the archive is accepted. Public
+crypto/KDF policy remains authoritative before unlock; the encrypted Descriptor
+cannot retroactively authorize expensive public work.
+
+The encrypted preamble keeps `BudgetDeclared=false` and all-zero public values
+as privacy sentinels. Authenticated inspection reports Descriptor version,
+declaration presence, declared values, and validation status. Unauthenticated
+inspection exposes none of those values.
+
+Archives made by the initial implementation at `bb8cca9` use Descriptor v1 and
+omit `0x1000`. Readers retain this generated compatibility form, derive actual
+requirements from authenticated records, apply caller policy, and report
+`producer resource declaration: absent (legacy experimental crypto-v1)`.
+Readers do not synthesize a declaration and new writers cannot emit the legacy
+form. Descriptor-v1 bytes remain unchanged; canonical Descriptor vectors are
+published in [descriptor-vectors-v1.txt](descriptor-vectors-v1.txt).
 
 ## Conformance gates
 

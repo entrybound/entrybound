@@ -3,12 +3,12 @@ use std::collections::BTreeMap;
 use crate::canonical::{Record, RecordBuilder, decode_record, decode_record_stream};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
-    ChunkGroup, Criticality, Dictionary, Digest, Entry, EntryData, EntryIdentity, EntrySet,
-    FidelityIssue, FidelityReport, LogicalPath, MetadataItem, MetadataName, MetadataSet,
-    PathComponent, PathEncoding, ReconstructionAudit, ReconstructionAuditReason,
-    ReconstructionAuditTarget, ReconstructionData, ReconstructionFallbackReason,
-    ReconstructionRegion, RegionAccessCost, Restorability, Timestamp, TimestampPrecision,
-    TransformPlan, TransformStep,
+    ChunkGroup, Criticality, DecodeRequirements, Dictionary, Digest, Entry, EntryData,
+    EntryIdentity, EntrySet, FidelityIssue, FidelityReport, LogicalPath, MetadataItem,
+    MetadataName, MetadataSet, PathComponent, PathEncoding, ReconstructionAudit,
+    ReconstructionAuditReason, ReconstructionAuditTarget, ReconstructionData,
+    ReconstructionFallbackReason, ReconstructionRegion, RegionAccessCost, ResourceBudget,
+    Restorability, Timestamp, TimestampPrecision, TransformPlan, TransformStep,
 };
 
 pub(super) const RECORD_DESCRIPTOR: u16 = 1;
@@ -41,10 +41,22 @@ pub(super) struct DescriptorBody {
     pub lai: Digest,
     pub pcr: Digest,
     pub aux: Digest,
+    /// Present exactly for Descriptor record version 2.
+    pub declarations: Option<DescriptorDeclarations>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(super) struct DescriptorDeclarations {
+    pub decode: DecodeRequirements,
+    pub budget: ResourceBudget,
 }
 
 pub(super) fn encode_descriptor(value: &DescriptorBody) -> Result<Vec<u8>> {
-    let mut record = RecordBuilder::new(RECORD_DESCRIPTOR);
+    let mut record = if value.declarations.is_some() {
+        RecordBuilder::new_version(RECORD_DESCRIPTOR, 2)
+    } else {
+        RecordBuilder::new(RECORD_DESCRIPTOR)
+    };
     record
         .utf8(1, &value.namespace)?
         .u8(2, value.identity_profile)?
@@ -54,6 +66,20 @@ pub(super) fn encode_descriptor(value: &DescriptorBody) -> Result<Vec<u8>> {
         .bytes(6, value.lai.as_bytes())?
         .bytes(7, value.pcr.as_bytes())?
         .bytes(8, value.aux.as_bytes())?;
+    if let Some(declarations) = value.declarations {
+        record
+            .u64(9, declarations.decode.window_bytes)?
+            .u64(10, declarations.decode.working_set_bytes)?
+            .u32(11, declarations.decode.flags)?
+            .u64(12, declarations.budget.entry_count)?
+            .u64(13, declarations.budget.total_logical_bytes)?
+            .u64(14, declarations.budget.max_single_entry_logical_bytes)?
+            .u64(15, declarations.budget.max_expansion_ratio_milli)?
+            .u64(16, declarations.budget.chunk_count)?
+            .u64(17, declarations.budget.max_path_depth)?
+            .u64(18, declarations.budget.max_metadata_bytes)?
+            .u64(19, declarations.budget.max_key_derivation_cost)?;
+    }
     record.finish()
 }
 
@@ -64,7 +90,39 @@ pub(super) fn decode_descriptor(bytes: &[u8]) -> Result<DescriptorBody> {
             "DESCRIPTOR must contain exactly one Descriptor record",
         ));
     }
-    record.expect_tags(&[1, 2, 3, 4, 5, 6, 7, 8], &[])?;
+    let declarations = match record.version {
+        1 => {
+            record.expect_versioned_tags(1, &[1, 2, 3, 4, 5, 6, 7, 8], &[])?;
+            None
+        }
+        2 => {
+            record.expect_versioned_tags(
+                2,
+                &[
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+                ],
+                &[],
+            )?;
+            Some(DescriptorDeclarations {
+                decode: DecodeRequirements {
+                    window_bytes: record.field(9)?.as_u64()?,
+                    working_set_bytes: record.field(10)?.as_u64()?,
+                    flags: record.field(11)?.as_u32()?,
+                },
+                budget: ResourceBudget {
+                    entry_count: record.field(12)?.as_u64()?,
+                    total_logical_bytes: record.field(13)?.as_u64()?,
+                    max_single_entry_logical_bytes: record.field(14)?.as_u64()?,
+                    max_expansion_ratio_milli: record.field(15)?.as_u64()?,
+                    chunk_count: record.field(16)?.as_u64()?,
+                    max_path_depth: record.field(17)?.as_u64()?,
+                    max_metadata_bytes: record.field(18)?.as_u64()?,
+                    max_key_derivation_cost: record.field(19)?.as_u64()?,
+                },
+            })
+        }
+        _ => return Err(noncanonical("unsupported Descriptor record version")),
+    };
     let value = DescriptorBody {
         namespace: record.field(1)?.as_utf8()?.to_owned(),
         identity_profile: record.field(2)?.as_u8()?,
@@ -74,6 +132,7 @@ pub(super) fn decode_descriptor(bytes: &[u8]) -> Result<DescriptorBody> {
         lai: digest(record.field(6)?.as_bytes()?)?,
         pcr: digest(record.field(7)?.as_bytes()?)?,
         aux: digest(record.field(8)?.as_bytes()?)?,
+        declarations,
     };
     if encode_descriptor(&value)? != bytes {
         return Err(noncanonical("Descriptor record is not in canonical form"));
@@ -1357,6 +1416,162 @@ mod tests {
     use crate::codec::zstd_transformed_plan;
     use crate::identity::sha256_exact;
     use crate::transform::{BYTE_SHUFFLE_ID, byte_shuffle_step, delta8_step};
+
+    fn descriptor_fixture(declarations: Option<DescriptorDeclarations>) -> DescriptorBody {
+        DescriptorBody {
+            namespace: "ecf/bootstrap-v1".to_owned(),
+            identity_profile: 1,
+            digest_algorithm: 1,
+            planner_id: "balanced-v6".to_owned(),
+            chunker_id: "gear-norm-v1".to_owned(),
+            lai: Digest::from_bytes([0x11; 32]),
+            pcr: Digest::from_bytes([0x22; 32]),
+            aux: Digest::from_bytes([0x33; 32]),
+            declarations,
+        }
+    }
+
+    fn descriptor_field_offset(bytes: &[u8], wanted: u16) -> usize {
+        let mut cursor = crate::canonical::RECORD_HEADER_LEN;
+        while cursor < bytes.len() {
+            let tag = u16::from_be_bytes(bytes[cursor..cursor + 2].try_into().unwrap());
+            if tag == wanted {
+                return cursor;
+            }
+            let len = u64::from_be_bytes(bytes[cursor + 4..cursor + 12].try_into().unwrap());
+            cursor += 12 + usize::try_from(len).unwrap();
+        }
+        panic!("Descriptor field {wanted} is missing");
+    }
+
+    fn hex(bytes: &[u8]) -> String {
+        bytes.iter().map(|byte| format!("{byte:02x}")).collect()
+    }
+
+    fn descriptor_vector(name: &str) -> &'static str {
+        include_str!("../../../../docs/descriptor-vectors-v1.txt")
+            .lines()
+            .find_map(|line| line.strip_prefix(&format!("{name}=")))
+            .expect("Descriptor vector must exist")
+    }
+
+    #[test]
+    fn descriptor_v1_is_frozen_and_v2_is_closed_and_canonical() {
+        let v1 = encode_descriptor(&descriptor_fixture(None)).unwrap();
+        assert_eq!(&v1[2..4], &1_u16.to_be_bytes());
+        assert_eq!(decode_descriptor(&v1).unwrap(), descriptor_fixture(None));
+
+        let representative = DescriptorDeclarations {
+            decode: DecodeRequirements {
+                window_bytes: 1_048_576,
+                working_set_bytes: 2_097_152,
+                flags: 5,
+            },
+            budget: ResourceBudget {
+                entry_count: 3,
+                total_logical_bytes: 12_345,
+                max_single_entry_logical_bytes: 8_192,
+                max_expansion_ratio_milli: 1_500,
+                chunk_count: 7,
+                max_path_depth: 4,
+                max_metadata_bytes: 2_048,
+                max_key_derivation_cost: 0,
+            },
+        };
+        let v2 = encode_descriptor(&descriptor_fixture(Some(representative))).unwrap();
+        assert_eq!(&v2[2..4], &2_u16.to_be_bytes());
+        assert_eq!(
+            decode_descriptor(&v2).unwrap(),
+            descriptor_fixture(Some(representative))
+        );
+
+        let maximum = DescriptorDeclarations {
+            decode: DecodeRequirements {
+                window_bytes: u64::MAX,
+                working_set_bytes: u64::MAX,
+                flags: u32::MAX,
+            },
+            budget: ResourceBudget {
+                entry_count: u64::MAX,
+                total_logical_bytes: u64::MAX,
+                max_single_entry_logical_bytes: u64::MAX,
+                max_expansion_ratio_milli: u64::MAX,
+                chunk_count: u64::MAX,
+                max_path_depth: u64::MAX,
+                max_metadata_bytes: u64::MAX,
+                max_key_derivation_cost: u64::MAX,
+            },
+        };
+        let max_bytes = encode_descriptor(&descriptor_fixture(Some(maximum))).unwrap();
+        assert_eq!(
+            decode_descriptor(&max_bytes).unwrap(),
+            descriptor_fixture(Some(maximum))
+        );
+        assert_eq!(hex(&v1), descriptor_vector("DESCRIPTOR_V1"));
+        assert_eq!(
+            sha256_exact(&v1).to_string(),
+            descriptor_vector("DESCRIPTOR_V1_SHA256")
+        );
+        assert_eq!(hex(&v2), descriptor_vector("DESCRIPTOR_V2"));
+        assert_eq!(
+            sha256_exact(&v2).to_string(),
+            descriptor_vector("DESCRIPTOR_V2_SHA256")
+        );
+        assert_eq!(hex(&max_bytes), descriptor_vector("DESCRIPTOR_V2_MAX"));
+        assert_eq!(
+            sha256_exact(&max_bytes).to_string(),
+            descriptor_vector("DESCRIPTOR_V2_MAX_SHA256")
+        );
+    }
+
+    #[test]
+    fn malformed_descriptor_v2_cases_are_typed() {
+        let declarations = DescriptorDeclarations {
+            decode: DecodeRequirements::default(),
+            budget: ResourceBudget::default(),
+        };
+        let valid = encode_descriptor(&descriptor_fixture(Some(declarations))).unwrap();
+
+        let mut missing = valid.clone();
+        missing.truncate(missing.len() - 20);
+        let payload_len =
+            u64::try_from(missing.len() - crate::canonical::RECORD_HEADER_LEN).unwrap();
+        missing[8..16].copy_from_slice(&payload_len.to_be_bytes());
+        assert_eq!(
+            decode_descriptor(&missing).unwrap_err().code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+
+        let tag_19 = descriptor_field_offset(&valid, 19);
+        let mut duplicate = valid.clone();
+        duplicate[tag_19..tag_19 + 2].copy_from_slice(&18_u16.to_be_bytes());
+        assert_eq!(
+            decode_descriptor(&duplicate).unwrap_err().code(),
+            ReasonCode::DuplicateSemanticDeclaration
+        );
+
+        let mut out_of_order = valid.clone();
+        out_of_order[tag_19..tag_19 + 2].copy_from_slice(&17_u16.to_be_bytes());
+        assert_eq!(
+            decode_descriptor(&out_of_order).unwrap_err().code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+
+        let mut wrong_type = valid.clone();
+        let tag_9 = descriptor_field_offset(&valid, 9);
+        wrong_type[tag_9 + 2] = crate::canonical::FieldType::Bytes as u8;
+        assert_eq!(
+            decode_descriptor(&wrong_type).unwrap_err().code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+
+        let mut version_three = valid;
+        version_three[2..4].copy_from_slice(&3_u16.to_be_bytes());
+        assert_eq!(
+            decode_descriptor(&version_three).unwrap_err().code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+    }
 
     #[test]
     fn generated_whole_object_records_are_canonical_and_duplicate_safe() {

@@ -1,9 +1,8 @@
 # Entrybound cryptographic architecture review v1
 
-Review date: 2026-08-30. Status: **security-design gate re-authorized after the
-canonical-wire correction below; encrypted-INDEXED implementation integrated,
-with complete wire-conformance still blocked by one frozen specification
-issue**.
+Review date: 2026-08-30; Descriptor-v2 correction reviewed 2026-08-31.
+Status: **security-design gate re-authorized; encrypted-INDEXED implementation
+and the single-authority private resource declaration are integrated**.
 
 This is the rationale and adversarial-review record for the frozen choices in
 [crypto-suite-v1.md](crypto-suite-v1.md) and
@@ -14,13 +13,11 @@ and an external cryptographic audit.
 
 The implementation record is
 [crypto-implementation-v1.md](crypto-implementation-v1.md). Integration
-confirmed all selected primitives and canonical recipient-wrap vectors, but
-also found that the frozen type-1 Descriptor has no byte fields for the
-ResourceBudget and DecodeRequirements that this review says it carries. The
-implementation correctly did not invent a new record or tag. Public crypto
-limits and authenticated derived actual requirements preserve bounded decode,
-but the producer-authored private declaration remains a specification blocker
-for claiming complete wire conformance.
+confirmed all selected primitives and canonical recipient-wrap vectors. It
+also caught that Descriptor type 1/version 1 had no byte fields for the
+`ResourceBudget` and `DecodeRequirements` this review required. Implementation
+correctly stopped rather than inventing a competing record. The correction
+below adds Descriptor type 1/version 2 while preserving version 1 byte-for-byte.
 
 ## Sources and review method
 
@@ -384,6 +381,53 @@ No blocker remains from this correction. The encrypted-INDEXED implementation
 may proceed from the normative suite/wire documents without inventing crypto
 wire bytes.
 
+## Descriptor resource-declaration blocker resolution
+
+The encrypted implementation subsequently exposed one remaining frozen-schema
+contradiction: crypto v1 required final producer `ResourceBudget` and
+`DecodeRequirements` values inside the authenticated private Descriptor, but
+the only canonical Descriptor was type 1/version 1 with tags 1 through 8.
+There were no bytes from which an independent implementation could recover the
+producer declaration. This was a specification defect caught at implementation,
+not an implementation failure.
+
+A separate ResourceBudget record was rejected because it would compete with
+the EAM Descriptor for the same facts. Instead, Descriptor type 1/version 2
+retains tags 1 through 8 exactly and adds required tags 9 through 19 for the
+two declarations. Required incompatibility bit `0x1000` binds the corrected
+schema to encrypted INDEXED: the bit requires Descriptor v2, Descriptor v2
+requires the bit, and unencrypted archives cannot set it. Descriptor v1 remains
+the only encoding for existing unencrypted INDEXED/STREAM archives.
+
+The corrected read order is public crypto bounds; recipient/KDF policy; AFK
+unlock; commitment; envelope MAC; authenticate/decrypt Descriptor v2; apply
+caller policy to its declaration; then accept dependent private control and
+payload. Authenticated plans/dictionaries/groups independently derive decoder
+requirements, and the complete EAM independently derives archive actuals.
+Under-declaration fails closed. The private declaration never authorizes public
+KDF/framing work retroactively.
+
+The `bb8cca9` implementation form (no `0x1000`, Descriptor v1) remains readable
+as explicitly labeled legacy experimental crypto v1. It has no producer
+declaration; readers derive actuals and apply caller policy without claiming
+that values were serialized. New writers never emit it.
+
+The feature bitmap is an input to `PublicCryptoContextV1`, so adding `0x1000`
+changes the public-context bytes, envelope MAC, footer public-context digest,
+and all ciphertext AD transitively for newly written corrected archives. Those
+values are randomized per archive and had no fixed V1-V6 deterministic vector.
+V1-V6, including the corrected V5/V6 wrap AD, do not contain the incompatibility
+bitmap and remain unchanged. A fixed representative public-context before/after
+vector and exact Descriptor vectors are published in
+[descriptor-vectors-v1.txt](descriptor-vectors-v1.txt).
+
+The focused adversarial review found no new ambiguity: feature/version mismatch,
+missing/duplicate Descriptor, underdeclared budgets, lower-than-actual decoder
+requirements, Descriptor ciphertext tampering, wrong ArchiveFinal Descriptor
+binding, and cross-archive Descriptor-segment substitution all fail before
+archive acceptance or materialization. The public all-zero sentinel leaks none
+of the new private values, and LAI/AUX/PCR do not hash raw Descriptor bytes.
+
 ## Independent adversarial pass
 
 The second pass began from the assumption that every public byte is controlled
@@ -425,6 +469,7 @@ producer. Findings are numbered for future audit traceability.
 | AR-31 Private object dispatch was heuristic | Record, Chunk frame, and collection bytes could be confused or require parser probing. | Authenticated `EBPO` magic/version/kind/flags dispatches exactly one complete payload grammar. | Resolved specification defect |
 | AR-32 Canonical private collection was undefined | Concatenation, ordering, duplicate, unknown-item, and truncation behavior could diverge. | `EBCS` grammar, nine semantic collection kinds, exact item records/order/cardinality, hard limits, and negative vectors. | Resolved specification defect |
 | AR-33 Adjacent crypto wire names disagreed | Signature type and timestamp transcript names or directory/Index item bytes could diverge. | Corrected type 26 reference, exact type-26-through-tag-8 timestamp input, and canonical type-22/type-27 entry schemas. | Resolved specification defect |
+| AR-34 Private resource declaration had no canonical bytes | The crypto prose required authenticated producer limits, but Descriptor v1 could not encode them; adding another record would create two authorities. | Descriptor type 1/version 2 adds required tags 9-19; feature `0x1000` gates it bidirectionally; actuals are independently derived; v1 stays frozen and legacy encrypted archives are explicitly labeled. | Resolved specification contradiction |
 
 No blocking adversarial finding remains in the specification. AR-25 is a
 mandatory implementation/release gate: failure to satisfy it blocks production
@@ -441,7 +486,7 @@ LAI, PCR, AUX, and PCI retain their established meanings:
   as any chunker change does;
 - PCI changes for every exact-byte encryption or envelope edit.
 
-One genuine pre-existing architecture contradiction was found: recipient
-addition was described both as an envelope-only operation and as full
-re-encryption. The frozen resolution is AR-18 and the lifecycle rule in the
-suite document. No other Entrybound architecture contradiction remains.
+Two genuine pre-existing architecture contradictions were found: recipient
+addition semantics (resolved by AR-18) and the missing private producer
+resource declaration encoding (resolved by AR-34 and Descriptor v2). No
+Entrybound architecture contradiction remains open.

@@ -28,6 +28,10 @@ serialization defaults. Records and the namespace `ecf/bootstrap-v1` are
 versioned so later format revisions can add records without changing these
 bytes' interpretation.
 
+All historical record writers emit version 1. The sole assigned version-2
+record is Descriptor type 1 under corrected encrypted INDEXED feature `0x1000`;
+version 2 on any other record type and every unassigned version fail closed.
+
 All lengths, offsets, and counts are unsigned 64-bit values. Repeated values
 are bounded before allocation.
 
@@ -111,9 +115,10 @@ Cryptographic architecture is frozen and the encrypted-INDEXED subset is
 implemented. The required incompatibility bits are `0x20` (`encrypted-indexed-v1`),
 `0x40` (`payload-suite-v1`), `0x80` (`recipient-xwing-v1`), `0x100`
 (`recipient-password-v1`), `0x200` (`signature-ed25519-v1`), `0x400`
-(`crypto-padding-v1`), and `0x800` (`keyed-boundary-phte-v1`). Current readers
-accept the crypto bits only through the crypto-v1 INDEXED reader; `0x200`
-signatures remain unsupported. Canonical records,
+(`crypto-padding-v1`), `0x800` (`keyed-boundary-phte-v1`), and `0x1000`
+(`private-resource-declaration-v1`). Current readers accept the crypto bits only
+through the crypto-v1 INDEXED reader; `0x200` signatures remain unsupported.
+Canonical records,
 feature constraints, and footer v2 are frozen in
 [crypto-wire-v1.md](crypto-wire-v1.md); primitive and security rules are in
 [crypto-suite-v1.md](crypto-suite-v1.md).
@@ -226,7 +231,8 @@ Record type and strictly increasing field tags are:
 
 | Record | Type | Fields |
 |---|---:|---|
-| Descriptor | 1 | namespace(1), identity profile(2), digest algorithm(3), planner ID(4), chunker ID(5), LAI(6), PCR(7), AUX(8) |
+| Descriptor v1 | 1/version 1 | namespace(1), identity profile(2), digest algorithm(3), planner ID(4), chunker ID(5), LAI(6), PCR(7), AUX(8) |
+| Descriptor v2 | 1/version 2 | Descriptor-v1 fields(1-8), decode window(9), decode working set(10), decode flags(11), entry count(12), total logical bytes(13), max single-entry logical bytes(14), max expansion ratio milli(15), Chunk count(16), max path depth(17), max metadata bytes(18), max key-derivation cost(19) |
 | TransformPlan | 2 | plan ID(1), identifier(2), transform sequence(3), codec(4), parameters(5), optional dictionary(6), decode window(7), working set(8), flags(9) |
 | Entry | 3 | LogicalPath components(1), kind(2), ContentRef kind(3), optional logical digest(4), MetadataSet(5), identity digest(6), auxiliary digest(7) |
 | ContentObject | 4 | logical digest(1), chunk root(2), ordered Chunk references(3) |
@@ -347,13 +353,17 @@ subset is recorded in
 [crypto-implementation-v1.md](crypto-implementation-v1.md); signatures and
 encrypted STREAM remain unsupported.
 
-Implementation exposed one frozen-wire contradiction: the canonical type-1
-Descriptor above has no ResourceBudget or DecodeRequirements fields although
-the crypto-v1 prose requires both inside the encrypted Descriptor. The current
-implementation does not invent undocumented fields; it applies public crypto
-limits during authentication, derives and caller-checks actual EAM/decode
-requirements before codec decode, and records the unresolved format issue in
-the implementation note.
+Implementation exposed and resolved one frozen-wire contradiction: Descriptor
+v1 cannot encode the private producer `ResourceBudget` and
+`DecodeRequirements` required by crypto v1. Descriptor type 1/version 2 is the
+single-authority correction. Its tags 1-8 are identical to v1 and required tags
+9-19 encode the two declarations. New encrypted INDEXED writers set required
+feature `0x1000` (`private-resource-declaration-v1`) and emit v2; unencrypted
+INDEXED/STREAM writers remain byte-frozen on v1. The public encrypted preamble
+continues to carry all-zero privacy sentinels, not a competing declaration.
+Pre-correction encrypted Descriptor-v1 archives remain explicitly labeled
+legacy experimental compatibility input. Exact bytes are in
+[descriptor-vectors-v1.txt](descriptor-vectors-v1.txt).
 
 ## Index handling
 

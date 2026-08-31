@@ -110,6 +110,16 @@ X-Wing, Argon2, and zeroization dependencies; it must not gain locally written
 cryptographic primitives or user-selectable algorithms. Permanent RFC,
 draft-10, and V1-V6 vectors are the external-conformance gate.
 
+Canonical Descriptor v1 is permanently type 1/version 1 with tags 1-8.
+Corrected encrypted INDEXED archives alone use Descriptor type 1/version 2,
+required tags 1-19, and incompatibility feature `0x1000`. Do not add a second
+resource/decode record or expose Descriptor-v2 values through public crypto
+framing. The reader must authenticate and caller-check Descriptor v2 before
+dependent private objects, then independently derive decoder requirements and
+actual archive resource usage. Legacy encrypted Descriptor-v1 input is
+compatibility-only and must remain explicitly labeled as lacking a producer
+declaration; writers may not emit it.
+
 Never print or derive `Debug`/`Display` for AFKs, identity seeds, method
 secrets, passwords, or derived keys. Check attacker-controlled KDF, stanza,
 segment, record, and allocation bounds before expensive work. No plaintext

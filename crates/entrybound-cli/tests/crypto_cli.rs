@@ -54,6 +54,25 @@ fn hybrid_pack_public_inspect_verify_and_unpack() {
     assert!(public.contains("private archive metadata: locked"));
     assert!(!public.contains("nested/private.txt"));
 
+    let private_inspect = run(&[
+        "inspect",
+        archive.to_str().unwrap(),
+        "--crypto",
+        "--identity",
+        identity_path.to_str().unwrap(),
+    ]);
+    assert!(
+        private_inspect.status.success(),
+        "{}",
+        String::from_utf8_lossy(&private_inspect.stderr)
+    );
+    let private_inspect = String::from_utf8(private_inspect.stdout).unwrap();
+    assert!(private_inspect.contains("encrypted Descriptor record version: 2"));
+    assert!(private_inspect.contains("producer resource declaration: present"));
+    assert!(private_inspect.contains("matches authenticated archive reality"));
+    assert!(private_inspect.contains("declared resources:"));
+    assert!(private_inspect.contains("declared decode:"));
+
     let public_verify = run(&["verify", archive.to_str().unwrap()]);
     assert!(public_verify.status.success());
     let public_verify = String::from_utf8(public_verify.stdout).unwrap();

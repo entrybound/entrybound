@@ -749,6 +749,7 @@ pub fn encode_stream<W: Write>(
         lai: roots.lai.0,
         pcr: roots.pcr.0,
         aux: roots.aux.0,
+        declarations: None,
     })?;
     let fidelity_payload = encode_fidelity(&archive.fidelity)?;
 
@@ -1906,6 +1907,7 @@ impl<R: Read> Scanner<R> {
         if descriptor_body.namespace != FORMAT_NAMESPACE
             || descriptor_body.identity_profile != 1
             || descriptor_body.digest_algorithm != 1
+            || descriptor_body.declarations.is_some()
         {
             return Err(Diagnostic::new(
                 OutcomeClass::Unsupported,

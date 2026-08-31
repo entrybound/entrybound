@@ -5,8 +5,8 @@ The suite identifier is `entrybound-payload-suite-v1`, numeric ID `1`. An
 encrypted archive uses this one suite in its entirety. There is no cipher list,
 preference order, or algorithm negotiation. A future suite requires a new suite
 and format feature; an implementation MUST NOT silently redefine suite 1.
-Implementation dependencies, vector gates, and the open Descriptor resource
-declaration issue are recorded in
+Implementation dependencies, vector gates, and the Descriptor-v2
+resource-declaration correction are recorded in
 [crypto-implementation-v1.md](crypto-implementation-v1.md). Signatures and
 encrypted STREAM are not implemented.
 

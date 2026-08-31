@@ -1,12 +1,13 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use super::records::{
-    DescriptorBody, decode_chunk_groups, decode_descriptor, decode_dictionaries, decode_fidelity,
-    decode_index, decode_manifest, decode_reconstruction_regions, decode_reconstruction_section,
-    decode_transform_plans, decode_transform_plans_v2, decode_transform_plans_v3,
-    encode_chunk_groups, encode_descriptor, encode_dictionaries, encode_fidelity, encode_index,
-    encode_manifest, encode_reconstruction_regions, encode_reconstruction_section,
-    encode_transform_plans, encode_transform_plans_v2, encode_transform_plans_v3,
+    DescriptorBody, DescriptorDeclarations, decode_chunk_groups, decode_descriptor,
+    decode_dictionaries, decode_fidelity, decode_index, decode_manifest,
+    decode_reconstruction_regions, decode_reconstruction_section, decode_transform_plans,
+    decode_transform_plans_v2, decode_transform_plans_v3, encode_chunk_groups, encode_descriptor,
+    encode_dictionaries, encode_fidelity, encode_index, encode_manifest,
+    encode_reconstruction_regions, encode_reconstruction_section, encode_transform_plans,
+    encode_transform_plans_v2, encode_transform_plans_v3,
 };
 use super::{
     CHUNK_FRAME_HEADER_LEN, CHUNK_FRAME_V2_HEADER_LEN, FEATURE_CODEC_TRANSFORM_V1,
@@ -156,6 +157,7 @@ pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> 
         lai: roots.lai.0,
         pcr: roots.pcr.0,
         aux: roots.aux.0,
+        declarations: None,
     })?;
     let manifest_payload = encode_manifest(&archive.entry_set, &archive.content_store.objects)?;
     let fidelity_payload = encode_fidelity(&archive.fidelity)?;
@@ -343,6 +345,20 @@ pub(crate) struct EncryptedPlainParts {
 
 /// Produces the authoritative canonical records/frames for crypto-v1.
 pub(crate) fn prepare_encrypted_plain_parts(input: &Archive) -> Result<EncryptedPlainParts> {
+    prepare_encrypted_plain_parts_version(input, 2)
+}
+
+/// Reproduces the pre-correction encrypted form only for generated
+/// compatibility tests. No production writer can select Descriptor v1.
+#[cfg(test)]
+pub(crate) fn prepare_legacy_encrypted_plain_parts(input: &Archive) -> Result<EncryptedPlainParts> {
+    prepare_encrypted_plain_parts_version(input, 1)
+}
+
+fn prepare_encrypted_plain_parts_version(
+    input: &Archive,
+    descriptor_version: u16,
+) -> Result<EncryptedPlainParts> {
     input.validate()?;
     validate_plans(&input.transform_plans)?;
     validate_feature_model(input)?;
@@ -398,6 +414,14 @@ pub(crate) fn prepare_encrypted_plain_parts(input: &Archive) -> Result<Encrypted
         lai: roots.lai.0,
         pcr: roots.pcr.0,
         aux: roots.aux.0,
+        declarations: match descriptor_version {
+            1 => None,
+            2 => Some(DescriptorDeclarations {
+                decode: archive.descriptor.decode,
+                budget: archive.descriptor.budget,
+            }),
+            _ => return Err(noncanonical("unsupported encrypted Descriptor version")),
+        },
     })?;
     let manifest_payload = encode_manifest(&archive.entry_set, &archive.content_store.objects)?;
     let fidelity = encode_fidelity(&archive.fidelity)?;
@@ -454,6 +478,7 @@ fn split_canonical_records(mut input: &[u8]) -> Result<Vec<Vec<u8>>> {
 
 pub(crate) struct EncryptedDecodedParts {
     pub(crate) ordinary_features: FeatureSet,
+    pub(crate) descriptor_version: u16,
     pub(crate) descriptor: Vec<u8>,
     pub(crate) transform_plans: Vec<Vec<u8>>,
     pub(crate) dictionaries: Vec<Vec<u8>>,
@@ -467,6 +492,31 @@ pub(crate) struct EncryptedDecodedParts {
     pub(crate) total_logical: u64,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct PrivateDescriptorDeclaration {
+    pub(crate) version: u16,
+    pub(crate) decode: Option<DecodeRequirements>,
+    pub(crate) budget: Option<ResourceBudget>,
+}
+
+/// Parses only the authenticated Descriptor declaration surface needed by the
+/// crypto reader before it continues through dependent private objects.
+pub(crate) fn private_descriptor_declaration(bytes: &[u8]) -> Result<PrivateDescriptorDeclaration> {
+    let body = decode_descriptor(bytes)?;
+    Ok(match body.declarations {
+        Some(declarations) => PrivateDescriptorDeclaration {
+            version: 2,
+            decode: Some(declarations.decode),
+            budget: Some(declarations.budget),
+        },
+        None => PrivateDescriptorDeclaration {
+            version: 1,
+            decode: None,
+            budget: None,
+        },
+    })
+}
+
 /// Re-enters the ordinary ECF semantic reader after crypto authentication.
 ///
 /// The temporary container exists only in memory. Every semantic record and
@@ -478,6 +528,28 @@ pub(crate) fn open_encrypted_plain_parts(
     decode_policy: DecodeRequirements,
     encrypted_pci: crate::identity::PhysicalContainerIdentity,
 ) -> Result<OpenedArchive> {
+    let descriptor_body = decode_descriptor(&parts.descriptor)?;
+    let declarations = descriptor_body.declarations;
+    let decoded_descriptor_version = if declarations.is_some() { 2 } else { 1 };
+    if decoded_descriptor_version != parts.descriptor_version {
+        return Err(noncanonical(
+            "authenticated Descriptor version disagrees with its crypto dispatch",
+        ));
+    }
+    if descriptor_body.namespace != FORMAT_NAMESPACE
+        || descriptor_body.identity_profile != 1
+        || descriptor_body.digest_algorithm != 1
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedRequiredFeature,
+            "unsupported encrypted Descriptor namespace, identity profile, or digest algorithm",
+        ));
+    }
+    if let Some(declarations) = declarations {
+        enforce_caller_policy(declarations.budget, policy)?;
+        enforce_decode_policy(declarations.decode, decode_policy)?;
+    }
     let extended = has_cross_file_feature(parts.ordinary_features);
     let reconstructive = has_reconstructive_feature(parts.ordinary_features);
     let whole_object = has_whole_object_feature(parts.ordinary_features);
@@ -510,8 +582,21 @@ pub(crate) fn open_encrypted_plain_parts(
         BTreeMap::new()
     };
     let decode = aggregate_archive_decode_requirements(&plans, &dictionaries, &groups)?;
+    if declarations.is_some_and(|value| value.decode != decode) {
+        return Err(Diagnostic::new(
+            OutcomeClass::Corrupt,
+            ReasonCode::ResourceLimit,
+            "Descriptor v2 DecodeRequirements disagree with authenticated decoder structures",
+        ));
+    }
     enforce_decode_policy(decode, decode_policy)?;
-    let descriptor_body = decode_descriptor(&parts.descriptor)?;
+    let descriptor_budget = declarations.map_or(
+        ResourceBudget {
+            max_key_derivation_cost: 0,
+            ..policy
+        },
+        |value| value.budget,
+    );
     let descriptor = ArchiveDescriptor {
         format_major: FormatVersion::BOOTSTRAP.major,
         format_minor: FormatVersion::BOOTSTRAP.minor,
@@ -521,10 +606,7 @@ pub(crate) fn open_encrypted_plain_parts(
         role: ArchiveRole::Complete,
         budget_declared: true,
         stream_dedup_window: 0,
-        budget: ResourceBudget {
-            max_key_derivation_cost: 0,
-            ..policy
-        },
+        budget: descriptor_budget,
         decode,
         identity_profile: IdentityProfile::IdentityV1,
         digest_algorithm: DigestAlgorithm::Sha256,
@@ -632,10 +714,14 @@ pub(crate) fn open_encrypted_plain_parts(
     let mut bytes = preamble;
     bytes.extend_from_slice(&body);
     bytes.extend_from_slice(&footer);
-    let mut opened = open_with_limits(&bytes, policy, decode_policy)?;
+    let mut opened =
+        open_with_limits_internal(&bytes, policy, decode_policy, declarations.is_some())?;
     let exact_budget = derived_budget(&opened.archive, &opened.archive.index.chunks)?;
     enforce_caller_policy(exact_budget, policy)?;
-    opened.archive.descriptor.budget = exact_budget;
+    if declarations.is_none() {
+        opened.archive.descriptor.budget_declared = false;
+        opened.archive.descriptor.budget = exact_budget;
+    }
     opened.archive.descriptor.pci = Some(encrypted_pci.0);
     opened.report.identities.pci = encrypted_pci;
     Ok(opened)
@@ -673,6 +759,15 @@ pub fn open_with_limits(
     bytes: &[u8],
     policy: ResourceBudget,
     decode_policy: DecodeRequirements,
+) -> Result<OpenedArchive> {
+    open_with_limits_internal(bytes, policy, decode_policy, false)
+}
+
+fn open_with_limits_internal(
+    bytes: &[u8],
+    policy: ResourceBudget,
+    decode_policy: DecodeRequirements,
+    allow_private_descriptor_v2: bool,
 ) -> Result<OpenedArchive> {
     let preamble = decode_preamble(bytes)?;
     if preamble.layout != Layout::Indexed {
@@ -734,6 +829,13 @@ pub fn open_with_limits(
     }
 
     let descriptor_body = decode_descriptor(descriptor_section.payload)?;
+    if descriptor_body.declarations.is_some() != allow_private_descriptor_v2 {
+        return Err(noncanonical(if allow_private_descriptor_v2 {
+            "corrected encrypted archive requires Descriptor v2"
+        } else {
+            "Descriptor v2 is private to corrected encrypted INDEXED archives"
+        }));
+    }
     if descriptor_body.namespace != FORMAT_NAMESPACE
         || descriptor_body.identity_profile != 1
         || descriptor_body.digest_algorithm != 1
@@ -782,6 +884,10 @@ pub fn open_with_limits(
         .iter()
         .find(|section| section.kind == SectionKind::Index);
     let (index, index_status) = validate_or_rebuild_index(index_section, &rebuilt_index);
+    let (budget_declared, budget, decode) = descriptor_body.declarations.map_or(
+        (preamble.budget_declared, preamble.budget, preamble.decode),
+        |declarations| (true, declarations.budget, declarations.decode),
+    );
     let descriptor = ArchiveDescriptor {
         format_major: preamble.version.major,
         format_minor: preamble.version.minor,
@@ -789,10 +895,10 @@ pub fn open_with_limits(
         features: preamble.features,
         layout: Layout::Indexed,
         role: ArchiveRole::Complete,
-        budget_declared: preamble.budget_declared,
+        budget_declared,
         stream_dedup_window: 0,
-        budget: preamble.budget,
-        decode: preamble.decode,
+        budget,
+        decode,
         identity_profile: IdentityProfile::IdentityV1,
         digest_algorithm: DigestAlgorithm::Sha256,
         planner_id: descriptor_body.planner_id,
@@ -821,12 +927,7 @@ pub fn open_with_limits(
         index,
     };
     archive.validate()?;
-    validate_actuals(
-        &archive,
-        &footer,
-        u64_len(manifest_section.payload)?,
-        &rebuilt_index,
-    )?;
+    validate_actuals(&archive, &footer, &rebuilt_index)?;
 
     let stored_entries = archive
         .entry_set
@@ -930,7 +1031,7 @@ pub fn verify_with_limits(
     Ok(open_with_limits(bytes, policy, decode_policy)?.report)
 }
 
-pub(super) fn enforce_caller_policy(
+pub(crate) fn enforce_caller_policy(
     declared: ResourceBudget,
     policy: ResourceBudget,
 ) -> Result<()> {
@@ -952,7 +1053,7 @@ pub(super) fn enforce_caller_policy(
     Ok(())
 }
 
-pub(super) fn enforce_decode_policy(
+pub(crate) fn enforce_decode_policy(
     declared: DecodeRequirements,
     policy: DecodeRequirements,
 ) -> Result<()> {
@@ -991,6 +1092,13 @@ pub(super) fn validate_feature_model(archive: &Archive) -> Result<()> {
             OutcomeClass::Unsupported,
             ReasonCode::UnsupportedRequiredFeature,
             "archive declares unsupported required feature bits",
+        ));
+    }
+    if archive.descriptor.features.incompat & crate::crypto::CRYPTO_FEATURES != 0 {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::UnsupportedRequiredFeature,
+            "crypto incompatibility features are not part of an unencrypted EAM declaration",
         ));
     }
     let declares_stream = archive.descriptor.features.incompat & FEATURE_STREAM_LAYOUT_V1 != 0;
@@ -2555,6 +2663,15 @@ pub(super) fn decode_preamble(bytes: &[u8]) -> Result<Preamble> {
             ),
         ));
     }
+    if features.incompat & crate::crypto::FEATURE_PRIVATE_RESOURCE_DECLARATION_V1 != 0
+        && features.incompat & crate::crypto::FEATURE_ENCRYPTED_INDEXED_V1 == 0
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::UnsupportedRequiredFeature,
+            "private-resource-declaration-v1 requires encrypted-indexed-v1",
+        ));
+    }
     let layout = match preamble[72] {
         1 => Layout::Indexed,
         2 => Layout::Stream,
@@ -2854,7 +2971,6 @@ fn required_section<'a>(
 fn validate_actuals(
     archive: &Archive,
     footer: &Footer,
-    manifest_len: u64,
     rebuilt_index: &BTreeMap<Digest, ChunkLocation>,
 ) -> Result<()> {
     let entry_count =
@@ -2866,48 +2982,20 @@ fn validate_actuals(
         ));
     }
     let budget = archive.descriptor.budget;
-    let max_single = archive
-        .content_store
-        .objects
-        .values()
-        .map(|object| {
-            object.chunks.iter().try_fold(0_u64, |total, chunk_ref| {
-                let chunk = archive
-                    .content_store
-                    .chunks
-                    .get(&chunk_ref.chunk_id)
-                    .ok_or_else(|| structure("ContentObject references an unknown Chunk"))?;
-                total
-                    .checked_add(chunk.logical_len)
-                    .ok_or_else(|| resource("ContentObject logical size overflow"))
-            })
-        })
-        .collect::<Result<Vec<_>>>()?
-        .into_iter()
-        .max()
-        .unwrap_or(0);
-    let expansion = maximum_expansion_ratio(archive, rebuilt_index)?;
+    let actual = derived_budget(archive, rebuilt_index)?;
     let decode = aggregate_archive_decode_requirements(
         &archive.transform_plans,
         &archive.content_store.dictionaries,
         &archive.content_store.chunk_groups,
     )?;
-    if entry_count > budget.entry_count
-        || total_logical > budget.total_logical_bytes
-        || max_single > budget.max_single_entry_logical_bytes
-        || u64::try_from(archive.content_store.chunks.len()).unwrap_or(u64::MAX)
-            > budget.chunk_count
-        || archive
-            .entry_set
-            .entries()
-            .iter()
-            .map(|entry| u64::try_from(entry.path().depth()).unwrap_or(u64::MAX))
-            .max()
-            .unwrap_or(0)
-            > budget.max_path_depth
-        || manifest_len > budget.max_metadata_bytes
-        || expansion > budget.max_expansion_ratio_milli
-        || budget.max_key_derivation_cost != 0
+    if actual.entry_count > budget.entry_count
+        || actual.total_logical_bytes > budget.total_logical_bytes
+        || actual.max_single_entry_logical_bytes > budget.max_single_entry_logical_bytes
+        || actual.max_expansion_ratio_milli > budget.max_expansion_ratio_milli
+        || actual.chunk_count > budget.chunk_count
+        || actual.max_path_depth > budget.max_path_depth
+        || actual.max_metadata_bytes > budget.max_metadata_bytes
+        || actual.max_key_derivation_cost > budget.max_key_derivation_cost
         || archive.descriptor.decode != decode
     {
         return Err(Diagnostic::new(

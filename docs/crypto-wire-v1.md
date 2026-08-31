@@ -6,7 +6,7 @@ transcripts, limits, and reason codes that implementations must use. It extends
 `ecf/bootstrap-v1` under required incompatibility features; it does not
 reinterpret historical unencrypted bytes. See
 [crypto-implementation-v1.md](crypto-implementation-v1.md) for implementation
-status and the unresolved canonical Descriptor resource-declaration mismatch.
+status and the implemented Descriptor-v2 schema correction.
 
 ## Numeric registry
 
@@ -25,6 +25,7 @@ supported-feature mask, while signature bit `0x200` remains unsupported:
 | `0x200` | `signature-ed25519-v1` | at least one embedded type-26 signature record; may also be used by unencrypted future writers |
 | `0x400` | `crypto-padding-v1` | exactly one authenticated padding mode 0, 1, or 2 is present |
 | `0x800` | `keyed-boundary-phte-v1` | boundary mode must be 2; requires `0x20` |
+| `0x1000` | `private-resource-declaration-v1` | requires `0x20` and exactly one authenticated private Descriptor record type 1/version 2; forbidden for unencrypted archives |
 
 Bits are compatibility declarations, not competing semantic authorities. The
 suite/mode fields below are authoritative. A bit and its required field must
@@ -137,6 +138,18 @@ The preamble retains its current size and field offsets. Under feature `0x20`:
 - final authoritative budgets/requirements are encrypted in the Descriptor and
   checked before protected decoding that depends on them;
 - hard crypto framing limits from this specification apply before decryption.
+
+New conforming encrypted writers set `0x1000` and encode Descriptor v2 as the
+sole producer declaration. Descriptor v2 without `0x1000`, or Descriptor v1
+with `0x1000`, is nonconforming. The public `BudgetDeclared=false` byte remains
+a privacy sentinel and is not an alternate semantic declaration.
+
+Encrypted archives emitted before the correction at commit `bb8cca9` may carry
+`0x20` without `0x1000` and a private Descriptor v1. Current readers accept
+that pair as the legacy experimental crypto-v1 compatibility form: public
+crypto limits still apply before unlock, and actual authenticated EAM/decode
+requirements are derived and caller-checked. Inspection reports that no
+producer resource declaration was serialized. Writers never emit this form.
 
 This feature-versioned sentinel rule prevents entry count, logical byte totals,
 codec memory, and similar metadata from leaking through the historical public
@@ -466,6 +479,49 @@ existing ECF fields. They are not `EBCS` items. Crypto v1 assigns no provenance
 or ConversionRecord record, so no provenance sequence exists; adding one needs
 a new record assignment and required feature rather than an unknown item.
 
+### Descriptor v2, canonical record type 1/version 2
+
+Descriptor v1 remains record type 1/version 1 with exactly tags 1 through 8.
+Descriptor v2 retains those fields byte-for-byte and adds the authenticated
+private declarations below. All 19 tags are required exactly once, use the
+ordinary strictly-increasing canonical TLV grammar, and admit no unknown or
+optional fields.
+
+| Tag | Canonical type | Meaning |
+|---:|---|---|
+| 1 | UTF-8 | format namespace |
+| 2 | `u8` | identity profile |
+| 3 | `u8` | digest algorithm |
+| 4 | UTF-8 | planner ID |
+| 5 | UTF-8 | chunker ID |
+| 6 | bytes, exactly 32 | LAI |
+| 7 | bytes, exactly 32 | PCR |
+| 8 | bytes, exactly 32 | AUX |
+| 9 | `u64be` | `DecodeRequirements.window_bytes` |
+| 10 | `u64be` | `DecodeRequirements.working_set_bytes` |
+| 11 | `u32be` | `DecodeRequirements.flags` |
+| 12 | `u64be` | `ResourceBudget.entry_count` |
+| 13 | `u64be` | `ResourceBudget.total_logical_bytes` |
+| 14 | `u64be` | `ResourceBudget.max_single_entry_logical_bytes` |
+| 15 | `u64be` | `ResourceBudget.max_expansion_ratio_milli` |
+| 16 | `u64be` | `ResourceBudget.chunk_count` |
+| 17 | `u64be` | `ResourceBudget.max_path_depth` |
+| 18 | `u64be` | `ResourceBudget.max_metadata_bytes` |
+| 19 | `u64be` | `ResourceBudget.max_key_derivation_cost` |
+
+Descriptor v2 itself means the producer declaration is present; no separate
+private `budget_declared` field exists. After commitment and envelope-MAC
+verification, the Descriptor object is the first authenticated private object.
+Its declaration is checked against caller policy before dependent private
+objects are accepted. The reader then independently aggregates decoder
+requirements from authenticated plans/dictionaries/groups and derives archive
+actuals from the complete EAM; requirements must match and actuals must remain
+within every declared upper bound. Pre-unlock password/KDF safety continues to
+come solely from caller `CryptoPolicy`, because Descriptor v2 is encrypted.
+
+The exact historical, representative, and maximum-value encodings are frozen
+in [descriptor-vectors-v1.txt](descriptor-vectors-v1.txt).
+
 The deterministic encrypted-object emission order is: Descriptor;
 TRANSFORM_PLANS; CHUNK_GROUPS; recipient directory when present; DICTIONARIES;
 RECONSTRUCTION_DATA_AND_AUDIT; RECONSTRUCTION_REGIONS_AND_AUDIT; Chunk frames
@@ -579,7 +635,7 @@ SHA256(T1("entrybound/segment-sequence/v1", {
 }))
 ```
 
-The Descriptor itself carries the complete final resource/decode requirements
+Descriptor v2 itself carries the complete final resource/decode requirements
 and semantic identities. ArchiveFinal repeats final identities/totals only as
 the terminal physical authentication assertion required by the architecture;
 the authenticated Descriptor/EAM remains semantic authority, and equality is

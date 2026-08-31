@@ -65,9 +65,11 @@ pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 = FEATURE_CROSS_FILE_COMPRESSI
     | FEATURE_STREAM_LAYOUT_V1
     | crate::crypto::CRYPTO_FEATURES;
 
+#[cfg(test)]
+pub(crate) use container::prepare_legacy_encrypted_plain_parts;
 pub(crate) use container::{
-    EncryptedDecodedParts, EncryptedPlainParts, open_encrypted_plain_parts,
-    prepare_encrypted_plain_parts,
+    EncryptedDecodedParts, EncryptedPlainParts, enforce_caller_policy, enforce_decode_policy,
+    open_encrypted_plain_parts, prepare_encrypted_plain_parts, private_descriptor_declaration,
 };
 
 /// Versioned namespace for the experimental encoding.

@@ -846,6 +846,47 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
             );
             return Ok(());
         };
+        let descriptor = result
+            .authenticated_descriptor
+            .expect("authenticated crypto inspection reports its Descriptor status");
+        println!(
+            "encrypted Descriptor record version: {}",
+            descriptor.record_version
+        );
+        if descriptor.producer_declaration_present {
+            println!("producer resource declaration: present");
+            println!(
+                "producer resource declaration validation: {}",
+                if descriptor.independently_validated {
+                    "matches authenticated archive reality"
+                } else {
+                    "not validated"
+                }
+            );
+            let budget = descriptor
+                .declared_budget
+                .expect("present producer declaration carries a budget");
+            let decode = descriptor
+                .declared_decode
+                .expect("present producer declaration carries decode requirements");
+            println!(
+                "declared resources: entries={} logical-bytes={} max-entry={} expansion-ratio-milli={} chunks={} path-depth={} metadata-bytes={} key-derivation-cost={}",
+                budget.entry_count,
+                budget.total_logical_bytes,
+                budget.max_single_entry_logical_bytes,
+                budget.max_expansion_ratio_milli,
+                budget.chunk_count,
+                budget.max_path_depth,
+                budget.max_metadata_bytes,
+                budget.max_key_derivation_cost
+            );
+            println!(
+                "declared decode: window-bytes={} working-set-bytes={} flags={:#010x}",
+                decode.window_bytes, decode.working_set_bytes, decode.flags
+            );
+        } else {
+            println!("producer resource declaration: absent (legacy experimental crypto-v1)");
+        }
         (authenticated, None)
     } else {
         if parsed.unlock.is_some() {

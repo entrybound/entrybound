@@ -2,11 +2,12 @@ use std::path::PathBuf;
 
 use entrybound::archive::{PackOptions, plan_directory};
 use entrybound::crypto::{
-    BoundaryMode, CryptoPolicy, EncryptedOpenOptions, EncryptedWriteOptions, PaddingMode, Unlock,
-    XWingIdentity, XWingRecipient, encrypt_archive, inspect_encrypted, open_encrypted,
-    pack_directory_encrypted,
+    BoundaryMode, CryptoPolicy, EncryptedOpenOptions, EncryptedWriteOptions,
+    FEATURE_PRIVATE_RESOURCE_DECLARATION_V1, PaddingMode, Unlock, XWingIdentity, XWingRecipient,
+    encrypt_archive, inspect_encrypted, open_encrypted, pack_directory_encrypted,
 };
 use entrybound::diagnostics::ReasonCode;
+use entrybound::ecf::{WriteOptions, encode};
 use sha2::{Digest as _, Sha256};
 
 struct Fixture {
@@ -51,15 +52,54 @@ fn encrypted_hybrid_indexed_round_trip_is_metadata_private() {
     .unwrap();
     assert!(!contains(&encrypted.bytes, b"nested/data.bin"));
     assert!(!contains(&encrypted.bytes, b"private entrybound bytes"));
+    assert_ne!(
+        u64::from_be_bytes(encrypted.bytes[16..24].try_into().unwrap())
+            & FEATURE_PRIVATE_RESOURCE_DECLARATION_V1,
+        0
+    );
     let public = inspect_encrypted(&encrypted.bytes, None, CryptoPolicy::default()).unwrap();
     assert!(public.authenticated.is_none());
+    assert!(public.authenticated_descriptor.is_none());
     assert_eq!(public.public.recipient_count, 1);
 
+    let private = inspect_encrypted(
+        &encrypted.bytes,
+        Some(Unlock::Identity(&identity)),
+        CryptoPolicy::default(),
+    )
+    .unwrap();
+    let descriptor = private.authenticated_descriptor.unwrap();
+    assert_eq!(descriptor.record_version, 2);
+    assert!(descriptor.producer_declaration_present);
+    assert!(descriptor.independently_validated);
+    assert_eq!(
+        descriptor.declared_budget,
+        Some(encrypted.archive.descriptor.budget)
+    );
+    assert_eq!(
+        descriptor.declared_decode,
+        Some(encrypted.archive.descriptor.decode)
+    );
+
     let opened = open_identity(&encrypted.bytes, &identity).unwrap();
+    assert!(opened.archive.descriptor.budget_declared);
     assert_eq!(opened.archive.entry_set.len(), archive.entry_set.len());
     assert_eq!(opened.report.identities.lai, encrypted.identities.lai);
     assert_eq!(opened.report.identities.pcr, encrypted.identities.pcr);
     assert_eq!(opened.report.identities.aux, encrypted.identities.aux);
+}
+
+#[test]
+fn private_resource_declaration_feature_is_forbidden_on_unencrypted_archives() {
+    let fixture = Fixture::new("crypto-private-resource-feature");
+    let mut archive = plan_directory(&fixture.source, PackOptions::default()).unwrap();
+    archive.descriptor.features.incompat |= FEATURE_PRIVATE_RESOURCE_DECLARATION_V1;
+    assert_eq!(
+        encode(&archive, WriteOptions::default())
+            .unwrap_err()
+            .code(),
+        ReasonCode::UnsupportedRequiredFeature
+    );
 }
 
 #[test]

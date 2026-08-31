@@ -26,8 +26,9 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::{archive::PackOptions, chunker::EncryptedBoundaryKey};
 
 pub use container::{
-    CryptoInspection, EncryptedArchive, EncryptedOpenOptions, EncryptedWriteOptions,
-    PublicCryptoInspection, encrypt_archive, inspect_encrypted, open_encrypted, verify_encrypted,
+    AuthenticatedDescriptorInspection, CryptoInspection, EncryptedArchive, EncryptedOpenOptions,
+    EncryptedWriteOptions, PublicCryptoInspection, encrypt_archive, inspect_encrypted,
+    open_encrypted, verify_encrypted,
 };
 
 pub const FEATURE_ENCRYPTED_INDEXED_V1: u64 = 0x20;
@@ -36,12 +37,15 @@ pub const FEATURE_XWING_RECIPIENT: u64 = 0x80;
 pub const FEATURE_PASSWORD_RECIPIENT: u64 = 0x100;
 pub const FEATURE_PADDING: u64 = 0x400;
 pub const FEATURE_STRONG_BOUNDARY: u64 = 0x800;
+/// Corrected encrypted Descriptor v2 with private resource declarations.
+pub const FEATURE_PRIVATE_RESOURCE_DECLARATION_V1: u64 = 0x1000;
 pub const CRYPTO_FEATURES: u64 = FEATURE_ENCRYPTED_INDEXED_V1
     | FEATURE_PAYLOAD_SUITE_V1
     | FEATURE_XWING_RECIPIENT
     | FEATURE_PASSWORD_RECIPIENT
     | FEATURE_PADDING
-    | FEATURE_STRONG_BOUNDARY;
+    | FEATURE_STRONG_BOUNDARY
+    | FEATURE_PRIVATE_RESOURCE_DECLARATION_V1;
 
 const XWING_PUBLIC_KEY_LEN: usize = 1_216;
 const XWING_SECRET_KEY_LEN: usize = 32;
@@ -806,6 +810,45 @@ mod tests {
                     .and_then(|value| value.strip_prefix('='))
             })
             .unwrap_or_else(|| panic!("missing crypto vector {name}"))
+    }
+
+    #[test]
+    fn descriptor_v2_public_context_vector() {
+        let archive_id: [u8; 32] = core::array::from_fn(|index| index as u8);
+        let legacy = public_crypto_context(
+            &archive_id,
+            0x04ef,
+            PaddingMode::Bucketed,
+            BoundaryMode::SecretGearTable,
+        )
+        .unwrap();
+        let corrected = public_crypto_context(
+            &archive_id,
+            0x14ef,
+            PaddingMode::Bucketed,
+            BoundaryMode::SecretGearTable,
+        )
+        .unwrap();
+        let descriptor_vectors = include_str!("../../../../docs/descriptor-vectors-v1.txt");
+        let descriptor_vector = |name: &str| {
+            descriptor_vectors
+                .lines()
+                .find_map(|line| line.strip_prefix(&format!("{name}=")))
+                .unwrap_or_else(|| panic!("missing Descriptor correction vector {name}"))
+        };
+        assert_eq!(hex(&legacy), descriptor_vector("PUBLIC_CONTEXT_LEGACY"));
+        assert_eq!(
+            hex(&Sha256::digest(&legacy)),
+            descriptor_vector("PUBLIC_CONTEXT_LEGACY_SHA256")
+        );
+        assert_eq!(
+            hex(&corrected),
+            descriptor_vector("PUBLIC_CONTEXT_DESCRIPTOR_V2")
+        );
+        assert_eq!(
+            hex(&Sha256::digest(&corrected)),
+            descriptor_vector("PUBLIC_CONTEXT_DESCRIPTOR_V2_SHA256")
+        );
     }
 
     #[test]

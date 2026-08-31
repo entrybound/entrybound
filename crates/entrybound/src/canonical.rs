@@ -4,7 +4,8 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 
 pub(crate) const RECORD_HEADER_LEN: usize = 16;
 const FIELD_HEADER_LEN: usize = 12;
-const RECORD_VERSION: u16 = 1;
+const RECORD_VERSION_V1: u16 = 1;
+const RECORD_VERSION_V2: u16 = 2;
 const MAX_SEQUENCE_ITEMS: u64 = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -41,6 +42,7 @@ impl FieldType {
 #[derive(Clone, Debug)]
 pub(crate) struct RecordBuilder {
     kind: u16,
+    version: u16,
     payload: Vec<u8>,
     last_tag: Option<u16>,
 }
@@ -49,6 +51,21 @@ impl RecordBuilder {
     pub(crate) const fn new(kind: u16) -> Self {
         Self {
             kind,
+            version: RECORD_VERSION_V1,
+            payload: Vec::new(),
+            last_tag: None,
+        }
+    }
+
+    /// Constructs one explicitly versioned canonical record.
+    ///
+    /// Version 2 is currently assigned only to Descriptor record kind 1. The
+    /// ordinary constructor remains frozen to version 1 for every historical
+    /// writer.
+    pub(crate) const fn new_version(kind: u16, version: u16) -> Self {
+        Self {
+            kind,
+            version,
             payload: Vec::new(),
             last_tag: None,
         }
@@ -120,11 +137,17 @@ impl RecordBuilder {
     }
 
     pub(crate) fn finish(self) -> Result<Vec<u8>> {
+        if self.version == 0
+            || self.version > RECORD_VERSION_V2
+            || (self.version == RECORD_VERSION_V2 && self.kind != 1)
+        {
+            return Err(noncanonical("unsupported canonical record version"));
+        }
         let payload_len = u64::try_from(self.payload.len())
             .map_err(|_| resource_limit("record payload exceeds u64"))?;
         let mut record = Vec::with_capacity(RECORD_HEADER_LEN + self.payload.len());
         record.extend_from_slice(&self.kind.to_be_bytes());
-        record.extend_from_slice(&RECORD_VERSION.to_be_bytes());
+        record.extend_from_slice(&self.version.to_be_bytes());
         record.extend_from_slice(&0_u32.to_be_bytes());
         record.extend_from_slice(&payload_len.to_be_bytes());
         record.extend_from_slice(&self.payload);
@@ -211,11 +234,24 @@ impl<'a> Field<'a> {
 #[derive(Clone, Debug)]
 pub(crate) struct Record<'a> {
     pub(crate) kind: u16,
+    pub(crate) version: u16,
     fields: Vec<Field<'a>>,
 }
 
 impl<'a> Record<'a> {
     pub(crate) fn expect_tags(&self, required: &[u16], optional: &[u16]) -> Result<()> {
+        self.expect_versioned_tags(RECORD_VERSION_V1, required, optional)
+    }
+
+    pub(crate) fn expect_versioned_tags(
+        &self,
+        version: u16,
+        required: &[u16],
+        optional: &[u16],
+    ) -> Result<()> {
+        if self.version != version {
+            return Err(noncanonical("unsupported canonical record version"));
+        }
         for tag in required {
             if !self.fields.iter().any(|field| field.tag == *tag) {
                 return Err(noncanonical("canonical record is missing a required field"));
@@ -250,7 +286,7 @@ pub(crate) fn decode_record(input: &[u8]) -> Result<(Record<'_>, usize)> {
     }
     let kind = u16::from_be_bytes(exact(&input[0..2])?);
     let version = u16::from_be_bytes(exact(&input[2..4])?);
-    if version != RECORD_VERSION {
+    if version == 0 || version > RECORD_VERSION_V2 || (version == RECORD_VERSION_V2 && kind != 1) {
         return Err(noncanonical("unsupported canonical record version"));
     }
     if input[4..8] != [0; 4] {
@@ -308,7 +344,14 @@ pub(crate) fn decode_record(input: &[u8]) -> Result<(Record<'_>, usize)> {
         });
         cursor = value_end;
     }
-    Ok((Record { kind, fields }, total_len))
+    Ok((
+        Record {
+            kind,
+            version,
+            fields,
+        },
+        total_len,
+    ))
 }
 
 pub(crate) fn decode_record_stream(input: &[u8]) -> Result<Vec<Record<'_>>> {
@@ -418,11 +461,37 @@ mod tests {
         let mut builder = RecordBuilder::new(7);
         builder.u8(1, 4).unwrap().utf8(2, "entry").unwrap();
         let bytes = builder.finish().unwrap();
+        assert_eq!(&bytes[2..4], &1_u16.to_be_bytes());
         let (record, consumed) = decode_record(&bytes).unwrap();
         assert_eq!(consumed, bytes.len());
         assert_eq!(record.kind, 7);
+        assert_eq!(record.version, 1);
         assert_eq!(record.field(1).unwrap().as_u8().unwrap(), 4);
         assert_eq!(record.field(2).unwrap().as_utf8().unwrap(), "entry");
+    }
+
+    #[test]
+    fn only_descriptor_may_use_record_version_two() {
+        let mut descriptor = RecordBuilder::new_version(1, 2);
+        descriptor.u8(1, 7).unwrap();
+        let bytes = descriptor.finish().unwrap();
+        let (record, _) = decode_record(&bytes).unwrap();
+        assert_eq!(record.kind, 1);
+        assert_eq!(record.version, 2);
+
+        let mut unrelated = RecordBuilder::new_version(2, 2);
+        unrelated.u8(1, 7).unwrap();
+        assert_eq!(
+            unrelated.finish().unwrap_err().code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+
+        let mut version_three = bytes;
+        version_three[2..4].copy_from_slice(&3_u16.to_be_bytes());
+        assert_eq!(
+            decode_record(&version_three).unwrap_err().code(),
+            ReasonCode::NoncanonicalEncoding
+        );
     }
 
     #[test]

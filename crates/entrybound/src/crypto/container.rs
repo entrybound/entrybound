@@ -22,7 +22,7 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{Archive, DecodeRequirements, FeatureSet, ResourceBudget};
 use crate::ecf::{
     EncryptedDecodedParts, EncryptedPlainParts, MAGIC, PREAMBLE_LEN, SECTION_HEADER_LEN,
-    prepare_encrypted_plain_parts,
+    prepare_encrypted_plain_parts, private_descriptor_declaration,
 };
 use crate::ecf::{OpenedArchive, VerificationReport};
 use crate::identity::{IdentitySet, physical_container_identity, sha256_exact};
@@ -100,6 +100,17 @@ pub struct PublicCryptoInspection {
 pub struct CryptoInspection {
     pub public: PublicCryptoInspection,
     pub authenticated: Option<ArchiveInspection>,
+    pub authenticated_descriptor: Option<AuthenticatedDescriptorInspection>,
+}
+
+/// Authenticated status of the sole producer resource declaration.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct AuthenticatedDescriptorInspection {
+    pub record_version: u16,
+    pub producer_declaration_present: bool,
+    pub independently_validated: bool,
+    pub declared_budget: Option<ResourceBudget>,
+    pub declared_decode: Option<DecodeRequirements>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -170,6 +181,7 @@ pub(super) fn encrypt_with_file_key(
     archive_id: [u8; 32],
     options: EncryptedWriteOptions<'_>,
 ) -> Result<EncryptedArchive> {
+    let descriptor_declaration = private_descriptor_declaration(&parts.descriptor)?;
     let keys = KeyHierarchy::derive(afk, &archive_id)?;
     let (policy, mut stanzas, directory) = build_recipients(afk, &archive_id, &options)?;
     stanzas.sort_by(|left, right| {
@@ -189,6 +201,15 @@ pub(super) fn encrypt_with_file_key(
         | recipient_feature;
     if options.boundary == BoundaryMode::PhteAes128 {
         features |= super::FEATURE_STRONG_BOUNDARY;
+    }
+    match descriptor_declaration.version {
+        1 => {}
+        2 => features |= super::FEATURE_PRIVATE_RESOURCE_DECLARATION_V1,
+        _ => {
+            return Err(wire::private_invalid(
+                "unsupported encrypted Descriptor version",
+            ));
+        }
     }
     let public_context =
         public_crypto_context(&archive_id, features, options.padding, options.boundary)?;
@@ -504,7 +525,7 @@ pub fn open_encrypted(bytes: &[u8], options: EncryptedOpenOptions<'_>) -> Result
         &keys,
         &parsed.footer,
         parsed.features,
-        options.crypto_policy,
+        options,
     )?;
     drop(afk);
     crate::ecf::open_encrypted_plain_parts(
@@ -541,9 +562,20 @@ pub fn inspect_encrypted(
     } else {
         None
     };
+    let authenticated_descriptor = authenticated.as_ref().map(|view| {
+        let present = parsed.features & super::FEATURE_PRIVATE_RESOURCE_DECLARATION_V1 != 0;
+        AuthenticatedDescriptorInspection {
+            record_version: if present { 2 } else { 1 },
+            producer_declaration_present: present,
+            independently_validated: true,
+            declared_budget: present.then_some(view.declared_resources),
+            declared_decode: present.then_some(view.decode_requirements),
+        }
+    });
     Ok(CryptoInspection {
         public,
         authenticated,
+        authenticated_descriptor,
     })
 }
 
@@ -800,8 +832,11 @@ fn decrypt_segments(
     keys: &KeyHierarchy,
     footer: &ParsedFooter,
     features: u64,
-    policy: CryptoPolicy,
+    options: EncryptedOpenOptions<'_>,
 ) -> Result<EncryptedDecodedParts> {
+    let policy = options.crypto_policy;
+    let resource_policy = options.resource_policy;
+    let decode_policy = options.decode_policy;
     let padding = PaddingMode::try_from(envelope.padding_mode)?;
     let mut cursor = 0usize;
     let mut ordinal = 0u64;
@@ -869,7 +904,8 @@ fn decrypt_segments(
             exact_data.extend_from_slice(ciphertext);
             if let Some(object) = collector.push(wire::decode_private_fragment(&private)?)? {
                 completed_objects += 1;
-                if let Some(final_value) = collector.dispatch(object)?
+                if let Some(final_value) =
+                    collector.dispatch(object, features, resource_policy, decode_policy)?
                     && archive_final.replace(final_value).is_some()
                 {
                     return Err(segment_invalid("duplicate ArchiveFinal"));
@@ -1012,6 +1048,7 @@ struct ObjectCollector {
     partial: Option<PartialObject>,
     descriptor: Option<Vec<u8>>,
     descriptor_id: Option<[u8; 32]>,
+    descriptor_version: Option<u16>,
     plans: Option<Vec<Vec<u8>>>,
     dictionaries: Option<Vec<Vec<u8>>>,
     groups: Option<Vec<Vec<u8>>>,
@@ -1083,15 +1120,34 @@ impl ObjectCollector {
         Ok(None)
     }
 
-    fn dispatch(&mut self, object: Vec<u8>) -> Result<Option<ArchiveFinal>> {
+    fn dispatch(
+        &mut self,
+        object: Vec<u8>,
+        features: u64,
+        resource_policy: ResourceBudget,
+        decode_policy: DecodeRequirements,
+    ) -> Result<Option<ArchiveFinal>> {
         let id = wire::encrypted_object_id(&object)?;
         let (kind, payload) = wire::decode_private_object(&object)?;
         match kind {
             wire::PRIVATE_OBJECT_RECORD => match wire::record_kind(payload)? {
                 1 => {
                     self.rank(1)?;
+                    let declaration = private_descriptor_declaration(payload)?;
+                    let feature_present =
+                        features & super::FEATURE_PRIVATE_RESOURCE_DECLARATION_V1 != 0;
+                    if feature_present != (declaration.version == 2) {
+                        return Err(wire::private_invalid(
+                            "Descriptor version and private-resource-declaration-v1 feature disagree",
+                        ));
+                    }
+                    if let (Some(budget), Some(decode)) = (declaration.budget, declaration.decode) {
+                        crate::ecf::enforce_caller_policy(budget, resource_policy)?;
+                        crate::ecf::enforce_decode_policy(decode, decode_policy)?;
+                    }
                     set_once(&mut self.descriptor, payload.to_vec(), "Descriptor")?;
                     self.descriptor_id = Some(id);
+                    self.descriptor_version = Some(declaration.version);
                 }
                 5 => {
                     self.rank(10)?;
@@ -1219,6 +1275,11 @@ impl ObjectCollector {
     }
 
     fn rank(&mut self, rank: u8) -> Result<()> {
+        if self.descriptor.is_none() && rank != 1 {
+            return Err(wire::private_invalid(
+                "authenticated Descriptor must be the first private object",
+            ));
+        }
         if rank < self.last_rank || (rank == self.last_rank && rank != 8) {
             return Err(wire::private_invalid(
                 "private objects are duplicated or out of order",
@@ -1236,6 +1297,9 @@ impl ObjectCollector {
     ) -> Result<EncryptedDecodedParts> {
         Ok(EncryptedDecodedParts {
             ordinary_features,
+            descriptor_version: self
+                .descriptor_version
+                .ok_or_else(|| wire::private_invalid("missing Descriptor version"))?,
             descriptor: self
                 .descriptor
                 .ok_or_else(|| wire::private_invalid("missing Descriptor"))?,
@@ -2148,7 +2212,21 @@ fn decode_descriptor_roots(bytes: &[u8]) -> Result<([u8; 32], [u8; 32], [u8; 32]
     if consumed != bytes.len() || record.kind != 1 {
         return Err(wire::private_invalid("encrypted Descriptor is not type 1"));
     }
-    record.expect_tags(&[1, 2, 3, 4, 5, 6, 7, 8], &[])?;
+    match record.version {
+        1 => record.expect_versioned_tags(1, &[1, 2, 3, 4, 5, 6, 7, 8], &[])?,
+        2 => record.expect_versioned_tags(
+            2,
+            &[
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+            ],
+            &[],
+        )?,
+        _ => {
+            return Err(wire::private_invalid(
+                "unsupported encrypted Descriptor version",
+            ));
+        }
+    }
     Ok((
         exact(record.field(6)?.as_bytes()?)?,
         exact(record.field(7)?.as_bytes()?)?,
@@ -2202,7 +2280,79 @@ fn truncated(detail: impl Into<String>) -> Diagnostic {
 
 #[cfg(test)]
 mod tests {
+    use std::path::PathBuf;
+
     use super::*;
+    use crate::archive::{PackOptions, plan_directory};
+
+    struct Fixture {
+        root: PathBuf,
+        source: PathBuf,
+    }
+
+    impl Fixture {
+        fn new(name: &str) -> Self {
+            let root = std::env::temp_dir().join(format!(
+                "entrybound-descriptor-v2-{}-{name}",
+                std::process::id()
+            ));
+            let _ = std::fs::remove_dir_all(&root);
+            let source = root.join("source");
+            std::fs::create_dir_all(&source).unwrap();
+            std::fs::write(source.join("data.bin"), vec![b'A'; 2 * 1024 * 1024 + 31]).unwrap();
+            Self { root, source }
+        }
+
+        fn archive(&self) -> Archive {
+            plan_directory(&self.source, PackOptions::default()).unwrap()
+        }
+    }
+
+    impl Drop for Fixture {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.root);
+        }
+    }
+
+    fn encrypted_from_parts(
+        parts: EncryptedPlainParts,
+        recipient: &XWingRecipient,
+    ) -> EncryptedArchive {
+        encrypt_with_file_key(
+            parts,
+            &[0x41; 32],
+            [0x52; 32],
+            EncryptedWriteOptions {
+                recipients: std::slice::from_ref(recipient),
+                padding: PaddingMode::None,
+                ..EncryptedWriteOptions::default()
+            },
+        )
+        .unwrap()
+    }
+
+    fn open_identity(
+        bytes: &[u8],
+        identity: &super::super::XWingIdentity,
+    ) -> Result<OpenedArchive> {
+        open_encrypted(
+            bytes,
+            EncryptedOpenOptions::new(Some(Unlock::Identity(identity))),
+        )
+    }
+
+    fn descriptor_value_offset(bytes: &[u8], wanted: u16) -> usize {
+        let mut cursor = crate::canonical::RECORD_HEADER_LEN;
+        while cursor < bytes.len() {
+            let tag = u16::from_be_bytes(bytes[cursor..cursor + 2].try_into().unwrap());
+            let len = u64::from_be_bytes(bytes[cursor + 4..cursor + 12].try_into().unwrap());
+            if tag == wanted {
+                return cursor + 12;
+            }
+            cursor += 12 + usize::try_from(len).unwrap();
+        }
+        panic!("Descriptor field {wanted} is absent");
+    }
 
     #[test]
     fn padding_and_nonce_rules_are_frozen() {
@@ -2220,5 +2370,173 @@ mod tests {
         );
         assert_eq!(&data_nonce(7)[..4], &[0; 4]);
         assert_eq!(&end_nonce(7)[..4], &[0xff; 4]);
+    }
+
+    #[test]
+    fn corrected_writer_emits_v2_feature_and_legacy_v1_remains_readable() {
+        let fixture = Fixture::new("compatibility");
+        let archive = fixture.archive();
+        let (identity, recipient) = super::super::XWingIdentity::generate().unwrap();
+
+        let corrected =
+            encrypted_from_parts(prepare_encrypted_plain_parts(&archive).unwrap(), &recipient);
+        let corrected_features = u64::from_be_bytes(corrected.bytes[16..24].try_into().unwrap());
+        assert_ne!(
+            corrected_features & super::super::FEATURE_PRIVATE_RESOURCE_DECLARATION_V1,
+            0
+        );
+        let corrected_open = open_identity(&corrected.bytes, &identity).unwrap();
+        assert!(corrected_open.archive.descriptor.budget_declared);
+        assert_eq!(
+            corrected_open.archive.descriptor.budget,
+            corrected.archive.descriptor.budget
+        );
+        assert_eq!(
+            corrected_open.archive.descriptor.decode,
+            corrected.archive.descriptor.decode
+        );
+        let corrected_inspection = inspect_encrypted(
+            &corrected.bytes,
+            Some(Unlock::Identity(&identity)),
+            CryptoPolicy::default(),
+        )
+        .unwrap()
+        .authenticated_descriptor
+        .unwrap();
+        assert_eq!(corrected_inspection.record_version, 2);
+        assert!(corrected_inspection.producer_declaration_present);
+        assert!(corrected_inspection.independently_validated);
+
+        let mut resource_refusal = EncryptedOpenOptions::new(Some(Unlock::Identity(&identity)));
+        resource_refusal.resource_policy.entry_count = 0;
+        let error = open_encrypted(&corrected.bytes, resource_refusal).unwrap_err();
+        assert_eq!(error.class(), OutcomeClass::PolicyRefused);
+        assert_eq!(error.code(), ReasonCode::ResourceLimit);
+
+        let mut decode_refusal = EncryptedOpenOptions::new(Some(Unlock::Identity(&identity)));
+        decode_refusal.decode_policy.window_bytes = 0;
+        let error = open_encrypted(&corrected.bytes, decode_refusal).unwrap_err();
+        assert_eq!(error.class(), OutcomeClass::PolicyRefused);
+        assert_eq!(error.code(), ReasonCode::ResourceLimit);
+
+        let legacy = encrypted_from_parts(
+            crate::ecf::prepare_legacy_encrypted_plain_parts(&archive).unwrap(),
+            &recipient,
+        );
+        let legacy_features = u64::from_be_bytes(legacy.bytes[16..24].try_into().unwrap());
+        assert_eq!(
+            legacy_features & super::super::FEATURE_PRIVATE_RESOURCE_DECLARATION_V1,
+            0
+        );
+        let legacy_open = open_identity(&legacy.bytes, &identity).unwrap();
+        assert!(!legacy_open.archive.descriptor.budget_declared);
+        let legacy_inspection = inspect_encrypted(
+            &legacy.bytes,
+            Some(Unlock::Identity(&identity)),
+            CryptoPolicy::default(),
+        )
+        .unwrap()
+        .authenticated_descriptor
+        .unwrap();
+        assert_eq!(legacy_inspection.record_version, 1);
+        assert!(!legacy_inspection.producer_declaration_present);
+        assert!(legacy_inspection.declared_budget.is_none());
+        assert!(legacy_inspection.declared_decode.is_none());
+    }
+
+    #[test]
+    fn descriptor_feature_mismatch_duplicate_and_missing_fail_closed() {
+        let fixture = Fixture::new("dispatch-negative");
+        let archive = fixture.archive();
+        let policy = crate::archive::bootstrap_resource_policy();
+        let decode_policy = crate::archive::bootstrap_decode_policy();
+        let v1 = crate::ecf::prepare_legacy_encrypted_plain_parts(&archive).unwrap();
+        let v2 = prepare_encrypted_plain_parts(&archive).unwrap();
+        let v1_object = wire::private_object(wire::PRIVATE_OBJECT_RECORD, &v1.descriptor).unwrap();
+        let v2_object = wire::private_object(wire::PRIVATE_OBJECT_RECORD, &v2.descriptor).unwrap();
+
+        let error = ObjectCollector::default()
+            .dispatch(
+                v1_object,
+                super::super::FEATURE_PRIVATE_RESOURCE_DECLARATION_V1,
+                policy,
+                decode_policy,
+            )
+            .err()
+            .expect("feature/version mismatch must fail");
+        assert_eq!(error.code(), ReasonCode::CryptoPrivateObjectInvalid);
+
+        let error = ObjectCollector::default()
+            .dispatch(v2_object.clone(), 0, policy, decode_policy)
+            .err()
+            .expect("feature/version mismatch must fail");
+        assert_eq!(error.code(), ReasonCode::CryptoPrivateObjectInvalid);
+
+        let mut duplicate = ObjectCollector::default();
+        duplicate
+            .dispatch(
+                v2_object.clone(),
+                super::super::FEATURE_PRIVATE_RESOURCE_DECLARATION_V1,
+                policy,
+                decode_policy,
+            )
+            .unwrap();
+        let error = duplicate
+            .dispatch(
+                v2_object,
+                super::super::FEATURE_PRIVATE_RESOURCE_DECLARATION_V1,
+                policy,
+                decode_policy,
+            )
+            .err()
+            .expect("duplicate Descriptor must fail");
+        assert_eq!(error.code(), ReasonCode::CryptoPrivateObjectInvalid);
+
+        let plans =
+            collection_object(wire::COLLECTION_TRANSFORM_PLANS, &v2.transform_plans).unwrap();
+        let error = ObjectCollector::default()
+            .dispatch(
+                plans,
+                super::super::FEATURE_PRIVATE_RESOURCE_DECLARATION_V1,
+                policy,
+                decode_policy,
+            )
+            .err()
+            .expect("missing Descriptor must fail");
+        assert_eq!(error.code(), ReasonCode::CryptoPrivateObjectInvalid);
+    }
+
+    #[test]
+    fn authenticated_underdeclared_budget_and_decode_are_rejected() {
+        let fixture = Fixture::new("underdeclared");
+        let archive = fixture.archive();
+        let (identity, recipient) = super::super::XWingIdentity::generate().unwrap();
+
+        for tag in [12_u16, 13, 16] {
+            let mut parts = prepare_encrypted_plain_parts(&archive).unwrap();
+            let value = descriptor_value_offset(&parts.descriptor, tag);
+            parts.descriptor[value..value + 8].copy_from_slice(&0_u64.to_be_bytes());
+            let encrypted = encrypted_from_parts(parts, &recipient);
+            assert_eq!(
+                open_identity(&encrypted.bytes, &identity)
+                    .unwrap_err()
+                    .code(),
+                ReasonCode::ResourceLimit,
+                "underdeclared Descriptor tag {tag} must fail"
+            );
+        }
+
+        let mut parts = prepare_encrypted_plain_parts(&archive).unwrap();
+        let declaration = private_descriptor_declaration(&parts.descriptor).unwrap();
+        assert!(declaration.decode.unwrap().window_bytes > 0);
+        let window = descriptor_value_offset(&parts.descriptor, 9);
+        parts.descriptor[window..window + 8].copy_from_slice(&0_u64.to_be_bytes());
+        let encrypted = encrypted_from_parts(parts, &recipient);
+        assert_eq!(
+            open_identity(&encrypted.bytes, &identity)
+                .unwrap_err()
+                .code(),
+            ReasonCode::ResourceLimit
+        );
     }
 }
