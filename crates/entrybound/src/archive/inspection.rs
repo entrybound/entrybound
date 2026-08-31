@@ -181,6 +181,7 @@ pub struct ArchiveInspection {
     pub index_status: IndexStatus,
     pub fidelity: FidelityReport,
     pub conversion: Option<ConversionProvenance>,
+    pub preservation: Option<crate::eam::LegacyPreservation>,
     pub declared_resources: ResourceBudget,
     pub decode_requirements: DecodeRequirements,
 }
@@ -268,6 +269,7 @@ pub fn inspect(opened: &OpenedArchive) -> Result<ArchiveInspection> {
         index_status: opened.report.index_status,
         fidelity: archive.fidelity.clone(),
         conversion: archive.conversion.clone(),
+        preservation: archive.preservation.clone(),
         declared_resources: archive.descriptor.budget,
         decode_requirements: archive.descriptor.decode,
     })

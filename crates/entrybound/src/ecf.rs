@@ -60,12 +60,15 @@ pub const FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1: u64 = 1 << 3;
 pub const FEATURE_STREAM_LAYOUT_V1: u64 = 1 << 4;
 /// Required capability for an in-band type-28 conversion provenance record.
 pub const FEATURE_CONVERSION_PROVENANCE_V1: u64 = 1 << 13;
+/// Required capability for exact legacy source and structured LOM evidence.
+pub const FEATURE_LEGACY_PRESERVATION_V1: u64 = 1 << 14;
 pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 = FEATURE_CROSS_FILE_COMPRESSION_V1
     | FEATURE_CODEC_TRANSFORM_V1
     | FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
     | FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1
     | FEATURE_STREAM_LAYOUT_V1
     | FEATURE_CONVERSION_PROVENANCE_V1
+    | FEATURE_LEGACY_PRESERVATION_V1
     | crate::crypto::CRYPTO_FEATURES;
 
 #[cfg(test)]
@@ -88,6 +91,39 @@ pub(crate) fn encoded_transform_plan_len(plan: &TransformPlan) -> Result<u64> {
             )
         },
     )
+}
+
+pub(crate) fn encoded_legacy_evidence_len(
+    conversion: &crate::eam::ConversionProvenance,
+    preservation: Option<&crate::eam::LegacyPreservation>,
+) -> Result<u64> {
+    let conversion =
+        u64::try_from(records::encode_conversion(conversion)?.len()).map_err(|_| {
+            crate::diagnostics::Diagnostic::new(
+                crate::diagnostics::OutcomeClass::PolicyRefused,
+                crate::diagnostics::ReasonCode::ResourceLimit,
+                "encoded ConversionProvenance length exceeds u64",
+            )
+        })?;
+    preservation.map_or(Ok(conversion), |value| {
+        conversion
+            .checked_add(
+                u64::try_from(records::encode_legacy_preservation(value)?.len()).map_err(|_| {
+                    crate::diagnostics::Diagnostic::new(
+                        crate::diagnostics::OutcomeClass::PolicyRefused,
+                        crate::diagnostics::ReasonCode::ResourceLimit,
+                        "encoded LegacyPreservation length exceeds u64",
+                    )
+                })?,
+            )
+            .ok_or_else(|| {
+                crate::diagnostics::Diagnostic::new(
+                    crate::diagnostics::OutcomeClass::PolicyRefused,
+                    crate::diagnostics::ReasonCode::ResourceLimit,
+                    "encoded legacy evidence length overflows u64",
+                )
+            })
+    })
 }
 
 pub(crate) fn encoded_transform_plan_v2_len(plan: &TransformPlan) -> Result<u64> {

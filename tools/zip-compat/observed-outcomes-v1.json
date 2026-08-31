@@ -1,0 +1,734 @@
+{
+  "cases": {
+    "central-crc": {
+      "java_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "libarchive_bsdtar": {
+        "listing": [],
+        "listing_error": "tar: Error exit delayed from previous errors",
+        "runtime": "zip/libarchive-bsdtar@3.8.8"
+      },
+      "python_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "error": "zipfile.BadZipFile",
+            "name": "a.txt"
+          }
+        ]
+      },
+      "source_sha256": "f2b9cd4e6afc357772d5b4127cfa3568f0e3724e46c20a75b619b1aa9b7e245b"
+    },
+    "central-size-short": {
+      "java_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "libarchive_bsdtar": {
+        "listing": [],
+        "listing_error": "tar: Error exit delayed from previous errors",
+        "runtime": "zip/libarchive-bsdtar@3.8.8"
+      },
+      "python_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "error": "zipfile.BadZipFile",
+            "name": "a.txt"
+          }
+        ]
+      },
+      "source_sha256": "03612834a550e11a036dbac637a6c96695465752efe5c159c447afa414e96ba1"
+    },
+    "deflate-trailing": {
+      "java_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 240,
+            "name": "a.txt",
+            "sha256": "47480b4e34d2785bafefc1b9275ea0443cbfae142f92657f71883951d1fc54bf"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [],
+        "stream_error": "java.util.zip.ZipException"
+      },
+      "libarchive_bsdtar": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/libarchive-bsdtar@3.8.8",
+        "selected": [
+          {
+            "error": "tar: Error exit delayed from previous errors",
+            "name": "a.txt"
+          }
+        ]
+      },
+      "python_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "length": 240,
+            "name": "a.txt",
+            "sha256": "47480b4e34d2785bafefc1b9275ea0443cbfae142f92657f71883951d1fc54bf"
+          }
+        ]
+      },
+      "source_sha256": "1514420909b0a1ff4693116a1407bc187230adb8a6dba55b403813d3e9e79a6f"
+    },
+    "descriptor-crc": {
+      "java_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [],
+        "stream_error": "java.util.zip.ZipException"
+      },
+      "libarchive_bsdtar": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/libarchive-bsdtar@3.8.8",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "python_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "source_sha256": "8648bf14312a2ea6ea206597dd9c720fb16c18b9309ca37ce166552bdebe5799"
+    },
+    "directory-type": {
+      "java_zipfile": {
+        "listing": [
+          "plain"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 0,
+            "name": "plain",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "plain"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [
+          {
+            "length": 0,
+            "name": "plain",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      },
+      "libarchive_bsdtar": {
+        "listing": [
+          "plain/"
+        ],
+        "runtime": "zip/libarchive-bsdtar@3.8.8",
+        "selected": [
+          {
+            "length": 0,
+            "name": "plain/",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      },
+      "python_zipfile": {
+        "listing": [
+          "plain"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "length": 0,
+            "name": "plain",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      },
+      "source_sha256": "3f5e9a07a8886e60c0e0521b4de7722a1b3e93e14cafdc0121d1b809cd381e75"
+    },
+    "duplicate-name": {
+      "java_zipfile": {
+        "listing": [
+          "dup",
+          "dup"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 6,
+            "name": "dup",
+            "sha256": "16367aacb67a4a017c8da8ab95682ccb390863780f7114dda0a0e0c55644c7c4"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "dup",
+          "dup"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [
+          {
+            "length": 6,
+            "name": "dup",
+            "sha256": "16367aacb67a4a017c8da8ab95682ccb390863780f7114dda0a0e0c55644c7c4"
+          }
+        ]
+      },
+      "libarchive_bsdtar": {
+        "listing": [
+          "dup",
+          "dup"
+        ],
+        "runtime": "zip/libarchive-bsdtar@3.8.8",
+        "selected": [
+          {
+            "length": 11,
+            "name": "dup",
+            "sha256": "da83f63e1a473003712c18f5afc5a79044221943d1083c7c5a7ac7236d85e8d2"
+          }
+        ]
+      },
+      "python_zipfile": {
+        "listing": [
+          "dup",
+          "dup"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "length": 6,
+            "name": "dup",
+            "sha256": "16367aacb67a4a017c8da8ab95682ccb390863780f7114dda0a0e0c55644c7c4"
+          }
+        ]
+      },
+      "source_sha256": "f8e98fda69c8f17b3f0deec4f938c5e701f4b3ec97ab56e6e062390ca5de5166"
+    },
+    "local-central-method": {
+      "java_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [],
+        "stream_error": "java.util.zip.ZipException"
+      },
+      "libarchive_bsdtar": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/libarchive-bsdtar@3.8.8",
+        "selected": [
+          {
+            "error": "tar: Error exit delayed from previous errors",
+            "name": "a.txt"
+          }
+        ]
+      },
+      "python_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "source_sha256": "d1c26e4fc017888772a97489a06a0f1eba3cd96370ca2f25e6d085bc4106a127"
+    },
+    "local-central-name": {
+      "java_zipfile": {
+        "listing": [
+          "central"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "central",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "local"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "local",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "libarchive_bsdtar": {
+        "listing": [
+          "local"
+        ],
+        "runtime": "zip/libarchive-bsdtar@3.8.8",
+        "selected": [
+          {
+            "length": 7,
+            "name": "local",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "python_zipfile": {
+        "listing": [
+          "central"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "error": "zipfile.BadZipFile",
+            "name": "central"
+          }
+        ]
+      },
+      "source_sha256": "c7a31e02631184c15ee3b608fe9d1b21df24dccee7738ff60266a0817fd1d52b"
+    },
+    "local-crc": {
+      "java_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [],
+        "stream_error": "java.util.zip.ZipException"
+      },
+      "libarchive_bsdtar": {
+        "listing": [],
+        "listing_error": "tar: Error exit delayed from previous errors",
+        "runtime": "zip/libarchive-bsdtar@3.8.8"
+      },
+      "python_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "source_sha256": "50e75dfd72d59d70f2bf612b235d419781b46f12962396b01254285ce516509d"
+    },
+    "local-size-short": {
+      "java_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [],
+        "stream_error": "java.util.zip.ZipException"
+      },
+      "libarchive_bsdtar": {
+        "listing": [],
+        "listing_error": "tar: Error exit delayed from previous errors",
+        "runtime": "zip/libarchive-bsdtar@3.8.8"
+      },
+      "python_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "source_sha256": "bcdb6735e085af7a8ee7c97dac06e02d5cb527ad14b3b8cb02fe6d27359a3c8c"
+    },
+    "ordinary-deflate": {
+      "java_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 260,
+            "name": "a.txt",
+            "sha256": "481dec2524423e3702beb8fd22a9324c947b7175f348239b7539badf23b30723"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [
+          {
+            "length": 260,
+            "name": "a.txt",
+            "sha256": "481dec2524423e3702beb8fd22a9324c947b7175f348239b7539badf23b30723"
+          }
+        ]
+      },
+      "libarchive_bsdtar": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/libarchive-bsdtar@3.8.8",
+        "selected": [
+          {
+            "length": 260,
+            "name": "a.txt",
+            "sha256": "481dec2524423e3702beb8fd22a9324c947b7175f348239b7539badf23b30723"
+          }
+        ]
+      },
+      "python_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "length": 260,
+            "name": "a.txt",
+            "sha256": "481dec2524423e3702beb8fd22a9324c947b7175f348239b7539badf23b30723"
+          }
+        ]
+      },
+      "source_sha256": "8053f68ae379109443314d14023344650582d6ebabc1d3891ca019a9eb06ea10"
+    },
+    "ordinary-store": {
+      "java_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "libarchive_bsdtar": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/libarchive-bsdtar@3.8.8",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "python_zipfile": {
+        "listing": [
+          "a.txt"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "length": 7,
+            "name": "a.txt",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "source_sha256": "496e4218fae644445f9d50d81068e01e6d7d9e30c89c61ce02d126eeabb7b9fe"
+    },
+    "unicode-conflict": {
+      "java_zipfile": {
+        "listing": [
+          "primary"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "primary",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "primary"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "primary",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "libarchive_bsdtar": {
+        "listing": [
+          "different"
+        ],
+        "runtime": "zip/libarchive-bsdtar@3.8.8",
+        "selected": [
+          {
+            "length": 7,
+            "name": "different",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "python_zipfile": {
+        "listing": [
+          "different"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "length": 7,
+            "name": "different",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "source_sha256": "1c6b4f8376b0d453e9151b0e1f4be07818102e9bd7d633cea5554d2ae8d3912f"
+    },
+    "unsafe-parent": {
+      "java_zipfile": {
+        "listing": [
+          "../escape"
+        ],
+        "runtime": "zip/java-zipfile@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "../escape",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "java_zipinputstream": {
+        "listing": [
+          "../escape"
+        ],
+        "runtime": "zip/java-zipinputstream@21.0.12.1",
+        "selected": [
+          {
+            "length": 7,
+            "name": "../escape",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "libarchive_bsdtar": {
+        "listing": [
+          "../escape"
+        ],
+        "runtime": "zip/libarchive-bsdtar@3.8.8",
+        "selected": [
+          {
+            "length": 7,
+            "name": "../escape",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "python_zipfile": {
+        "listing": [
+          "../escape"
+        ],
+        "runtime": "zip/python-zipfile@3.13.5",
+        "selected": [
+          {
+            "length": 7,
+            "name": "../escape",
+            "sha256": "239f59ed55e737c77147cf55ad0c1b030b6d7ee748a7426952f9b852d5a935e5"
+          }
+        ]
+      },
+      "source_sha256": "b8571ce016b338dc7293ecf349854d8b7da6d92467f885a0739112ae59b72336"
+    }
+  },
+  "matrix_version": "zip-observed-outcomes/v1",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "runtimes": [
+    {
+      "profile_id": "zip/python-zipfile@3.13.5",
+      "version": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]"
+    },
+    {
+      "profile_id": "zip/java-zipfile@21.0.12.1",
+      "version": "openjdk version \"21.0.12.1\" 2026-08-18 LTS"
+    },
+    {
+      "profile_id": "zip/java-zipinputstream@21.0.12.1",
+      "version": "openjdk version \"21.0.12.1\" 2026-08-18 LTS"
+    },
+    {
+      "profile_id": "zip/libarchive-bsdtar@3.8.8",
+      "version": "bsdtar 3.8.8 - libarchive 3.8.8 zlib/1.2.13.1-motley liblzma/5.8.1 bz2lib/1.0.8 libzstd/1.5.7 cng/2.0 libb2/bundled "
+    }
+  ]
+}

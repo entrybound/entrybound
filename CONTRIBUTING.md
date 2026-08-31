@@ -152,3 +152,13 @@ mode refuses Divergence and Irreconcilable evidence. Automatic Omission and
 Refinement decisions must be canonical conversion provenance, contribute only
 to AUX, and must not change LAI/PCR. ZIP tests build bytes programmatically and
 must enforce caller-owned compressed/uncompressed/expansion limits.
+
+ZIP strict, compatibility, and preservation policies must all consume the same
+immutable `ZipObservation`. A compatibility ID always includes the exact probed
+runtime version; behavior changes require a new ID and regenerated checked
+matrix. Reference Python/Java/libarchive programs belong only in
+`tools/zip-compat`, never in production. Compatibility never bypasses path,
+extent, collision, special-file, or resource safety. Preservation feature
+`0x4000` requires conversion feature `0x2000`, keeps type 28 unchanged, and
+stores exact source plus ordered LOM evidence in canonical types 30-36. It may
+change AUX/PCI, never LAI/PCR for the same EAM projection.

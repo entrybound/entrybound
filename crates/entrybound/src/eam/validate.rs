@@ -108,6 +108,87 @@ impl Archive {
                 "conversion-provenance-v1 feature and ConversionProvenance presence disagree",
             ));
         }
+        let preservation_feature =
+            self.descriptor.features.incompat & crate::ecf::FEATURE_LEGACY_PRESERVATION_V1 != 0;
+        if preservation_feature != self.preservation.is_some()
+            || preservation_feature && !conversion_feature
+        {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::DuplicateSemanticDeclaration,
+                "legacy-preservation-v1 requires exactly one ConversionProvenance and one preservation object",
+            ));
+        }
+        if let Some(preservation) = &self.preservation {
+            if preservation.preservation_format != "legacy-preservation/v1"
+                || preservation.source_format != "ZIP"
+                || crate::identity::sha256_exact(&preservation.source_bytes)
+                    != preservation.source_digest
+                || self
+                    .conversion
+                    .as_ref()
+                    .is_none_or(|conversion| conversion.source_digest != preservation.source_digest)
+                || self.conversion.as_ref().is_none_or(|conversion| {
+                    conversion.resolutions != preservation.selected_resolutions
+                })
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Corrupt,
+                    ReasonCode::AuxMismatch,
+                    "legacy preservation source identity or format is invalid",
+                ));
+            }
+            if preservation.observations.windows(2).any(|pair| {
+                (
+                    pair[0].scope,
+                    pair[0].subject_ordinal,
+                    pair[0].observation_ordinal,
+                ) >= (
+                    pair[1].scope,
+                    pair[1].subject_ordinal,
+                    pair[1].observation_ordinal,
+                )
+            }) || preservation
+                .conflicts
+                .windows(2)
+                .any(|pair| pair[0].ordinal >= pair[1].ordinal)
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::NoncanonicalEncoding,
+                    "legacy preservation observations/conflicts are not canonically ordered",
+                ));
+            }
+            let source_len = u64::try_from(preservation.source_bytes.len()).unwrap_or(u64::MAX);
+            if preservation.observations.iter().any(|item| {
+                !matches!(item.scope, 0 | 1)
+                    || item.scope == 1
+                        && self.conversion.as_ref().is_none_or(|conversion| {
+                            item.subject_ordinal >= conversion.source_entry_count
+                        })
+                    || item
+                        .evidence
+                        .offset
+                        .checked_add(item.evidence.length)
+                        .is_none_or(|end| end > source_len)
+            }) || preservation.conflicts.iter().any(|conflict| {
+                conflict.authorities.is_empty()
+                    || conflict.authorities.len() != conflict.observed_values.len()
+                    || conflict.authorities.len() != conflict.evidence.len()
+                    || conflict.evidence.iter().any(|location| {
+                        location
+                            .offset
+                            .checked_add(location.length)
+                            .is_none_or(|end| end > source_len)
+                    })
+            }) {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::NoncanonicalEncoding,
+                    "legacy preservation scope, evidence extent, or conflict cardinality is invalid",
+                ));
+            }
+        }
 
         let plans = self
             .transform_plans

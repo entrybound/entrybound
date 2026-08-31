@@ -452,6 +452,7 @@ fn archive_for(bytes: &[u8], chunk_size: usize) -> Archive {
         .into_boxed_slice(),
         fidelity: FidelityReport::default(),
         conversion: None,
+        preservation: None,
         index: Index::default(),
     }
 }

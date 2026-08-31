@@ -611,6 +611,87 @@ pub struct ConversionProvenance {
     pub outcome: String,
 }
 
+/// Format-neutral authority retained for forensic legacy evidence.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct PreservedLegacyAuthority {
+    pub format: String,
+    pub structure: String,
+    pub instance: u64,
+}
+
+/// Exact source range supporting one preserved claim.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct PreservedLegacyLocation {
+    pub offset: u64,
+    pub length: u64,
+}
+
+/// Typed value retained from the format-neutral observation model.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum PreservedLegacyValue {
+    Bytes(Box<[u8]>),
+    Unsigned(u64),
+    Signed(i64),
+    Text(String),
+    Boolean(bool),
+}
+
+/// Parser validity state, frozen independently from reconciliation policy.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum PreservedLegacyValidity {
+    Valid,
+    Invalid,
+    Uninterpreted,
+}
+
+/// One ordered LOM observation. Scope 0 is archive-wide and scope 1 identifies
+/// a source entry by `subject_ordinal`.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct PreservedLegacyObservation {
+    pub scope: u8,
+    pub subject_ordinal: u64,
+    pub observation_ordinal: u64,
+    pub semantic_field: String,
+    pub authority: PreservedLegacyAuthority,
+    pub raw_value: Box<[u8]>,
+    pub interpreted_value: Option<PreservedLegacyValue>,
+    pub evidence: PreservedLegacyLocation,
+    pub validity: PreservedLegacyValidity,
+}
+
+/// Policy-independent resolution attached to a preserved LOM conflict.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct PreservedLegacyResolution {
+    pub action: String,
+    pub selected_authority: Option<PreservedLegacyAuthority>,
+}
+
+/// One ordered preserved conflict with all competing observations retained.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct PreservedLegacyConflict {
+    pub ordinal: u64,
+    pub semantic_field: String,
+    pub authorities: Box<[PreservedLegacyAuthority]>,
+    pub observed_values: Box<[PreservedLegacyValue]>,
+    pub evidence: Box<[PreservedLegacyLocation]>,
+    pub classification: String,
+    pub resolution: Option<PreservedLegacyResolution>,
+}
+
+/// Exact-source and structured format-neutral evidence retained by preserve-v1.
+/// The compatibility profile remains authoritative in ConversionProvenance's
+/// versioned adapter ID rather than being duplicated here.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LegacyPreservation {
+    pub preservation_format: String,
+    pub source_format: String,
+    pub source_digest: Digest,
+    pub source_bytes: Box<[u8]>,
+    pub observations: Box<[PreservedLegacyObservation]>,
+    pub conflicts: Box<[PreservedLegacyConflict]>,
+    pub selected_resolutions: Box<[ConversionResolution]>,
+}
+
 /// A cached physical locator for one chunk frame.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ChunkLocation {
@@ -696,5 +777,7 @@ pub struct Archive {
     pub fidelity: FidelityReport,
     /// Auxiliary conversion evidence. Native archives have no value here.
     pub conversion: Option<ConversionProvenance>,
+    /// Optional exact foreign-source snapshot and structured LOM evidence.
+    pub preservation: Option<LegacyPreservation>,
     pub index: Index,
 }

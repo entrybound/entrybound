@@ -132,6 +132,14 @@ record; STREAM uses the same payload in its sole FIDELITY manifest item. The
 feature and record must be present together. See
 [legacy-observation-model-v1.md](legacy-observation-model-v1.md).
 
+Required incompatibility feature `0x4000` (`legacy-preservation-v1`) requires
+`0x2000` and appends exactly one canonical type-30 LegacyPreservation record
+after type 28 in that same auxiliary payload. Nested record types 31-36 encode
+ordered observations, conflicts, authorities, values, locations, and LOM
+resolutions. Absence of `0x4000` leaves historical strict conversion bytes
+unchanged. Exact grammar and identity rules are in
+[legacy-preservation-v1.md](legacy-preservation-v1.md).
+
 The crypto-v1 wire correction reserves two self-identifying grammars inside
 authenticated encrypted objects: `EBPO` version 1 dispatches one canonical
 record, Chunk frame, or sequence payload; `EBCS` version 1 carries one of nine
@@ -194,7 +202,7 @@ optionally INDEX (8). Both new authoritative sections occur exactly once even
 when empty. The unencrypted reader recognizes incompatibility bits `0x1`,
 `0x2`, `0x4`, `0x8`, and `0x10`; the crypto-v1 INDEXED reader additionally
 recognizes the implemented crypto bits listed above. Unencrypted readers also
-recognize `0x2000`. Both reject every other
+recognize `0x2000` and `0x4000`. Both reject every other
 unknown required bit. `0x2` changes only the TransformPlan field-3 item schema
 and may be combined with `0x1`, as v4 does.
 
@@ -262,6 +270,14 @@ Record type and strictly increasing field tags are:
 | ReconstructionRegion | 18 | region identity(1), ContentObject(2), start Chunk index(3), Chunk count(4), plan ref(5), logical bytes(6), transformed bytes(7), access logical bytes(8), access Chunks(9), worst reconstructed bytes(10), encoded representation(11), ordinary physical bytes(12), region overhead bytes(13) |
 | ReconstructionAudit v2 | 19 | target kind(1), target digest(2), transform identifier(3), reason(4) |
 | ConversionProvenance | 28 | source format(1), adapter ID(2), source SHA-256(3), import mode(4), source entry count(5), observation count(6), Omission count(7), Refinement count(8), Divergence count(9), Irreconcilable count(10), ordered resolution records(11), synthesized ancestor paths(12), unsupported metadata classes(13), outcome(14) |
+| ConversionResolution | 29 | conflict class(1), semantic field(2), authorities(3), observed values(4), action(5) |
+| LegacyPreservation | 30 | preservation format(1), source format(2), source SHA-256(3), exact source bytes(4), ordered observations(5), ordered conflicts(6), selected resolutions(7) |
+| PreservedObservation | 31 | scope(1), subject ordinal(2), observation ordinal(3), field(4), authority(5), raw value(6), optional interpreted value(7), evidence location(8), validity(9) |
+| PreservedConflict | 32 | ordinal(1), semantic field(2), authorities(3), observed values(4), evidence locations(5), class(6), optional LOM resolution(7) |
+| PreservedAuthority | 33 | source format(1), structure(2), instance(3) |
+| PreservedValue | 34 | value kind(1), exactly one typed value(2) |
+| PreservedLocation | 35 | source offset(1), length(2) |
+| PreservedLOMResolution | 36 | action(1), optional selected authority(2) |
 | ConversionResolution (nested only) | 29 | conflict class(1), semantic field(2), authority names(3), observed values(4), action(5) |
 
 Without `codec-transform-v1`, TransformPlan field 3 remains the historical

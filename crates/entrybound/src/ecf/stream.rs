@@ -73,14 +73,14 @@ use super::records::{
     decode_manifest_record, decode_reconstruction_regions, decode_reconstruction_section,
     decode_transform_plans, decode_transform_plans_v2, decode_transform_plans_v3,
     encode_chunk_groups, encode_content_object_record, encode_conversion, encode_descriptor,
-    encode_dictionaries, encode_entry_record, encode_fidelity, encode_reconstruction_regions,
-    encode_reconstruction_section, encode_transform_plans, encode_transform_plans_v2,
-    encode_transform_plans_v3,
+    encode_dictionaries, encode_entry_record, encode_fidelity, encode_legacy_preservation,
+    encode_reconstruction_regions, encode_reconstruction_section, encode_transform_plans,
+    encode_transform_plans_v2, encode_transform_plans_v3,
 };
 use super::staging::{ChunkStaging, StagingLimits};
 use super::{
-    FEATURE_CONVERSION_PROVENANCE_V1, FEATURE_STREAM_LAYOUT_V1, FOOTER_LEN, FORMAT_NAMESPACE,
-    PREAMBLE_LEN,
+    FEATURE_CONVERSION_PROVENANCE_V1, FEATURE_LEGACY_PRESERVATION_V1, FEATURE_STREAM_LAYOUT_V1,
+    FOOTER_LEN, FORMAT_NAMESPACE, PREAMBLE_LEN,
 };
 use crate::archive::EntryCursorComplexity;
 use crate::codec::{PlanMode, aggregate_archive_decode_requirements, plan_mode, validate_plans};
@@ -758,6 +758,9 @@ pub fn encode_stream<W: Write>(
     if let Some(conversion) = &archive.conversion {
         fidelity_payload.extend_from_slice(&encode_conversion(conversion)?);
     }
+    if let Some(preservation) = &archive.preservation {
+        fidelity_payload.extend_from_slice(&encode_legacy_preservation(preservation)?);
+    }
 
     let mut writer = StreamSink::new(sink);
     writer.write_framing(&encode_preamble(&archive.descriptor, 0)?)?;
@@ -1093,6 +1096,7 @@ struct Scanner<R: Read> {
     regions_by_object: BTreeMap<Digest, Vec<Digest>>,
     fidelity: Option<crate::eam::FidelityReport>,
     conversion: Option<crate::eam::ConversionProvenance>,
+    preservation: Option<crate::eam::LegacyPreservation>,
     descriptor_body: Option<DescriptorBody>,
     descriptor_location: Option<(u64, u64)>,
 
@@ -1180,6 +1184,7 @@ impl<R: Read> Scanner<R> {
             regions_by_object: BTreeMap::new(),
             fidelity: None,
             conversion: None,
+            preservation: None,
             descriptor_body: None,
             descriptor_location: None,
             entries: Vec::new(),
@@ -1389,12 +1394,15 @@ impl<R: Read> Scanner<R> {
                 }
             }
             StreamItemTag::Fidelity => {
-                let (fidelity, conversion) = super::container::decode_auxiliary_payload(
-                    &payload,
-                    self.preamble.features.incompat & FEATURE_CONVERSION_PROVENANCE_V1 != 0,
-                )?;
+                let (fidelity, conversion, preservation) =
+                    super::container::decode_auxiliary_payload(
+                        &payload,
+                        self.preamble.features.incompat & FEATURE_CONVERSION_PROVENANCE_V1 != 0,
+                        self.preamble.features.incompat & FEATURE_LEGACY_PRESERVATION_V1 != 0,
+                    )?;
                 self.fidelity = Some(fidelity);
                 self.conversion = conversion;
+                self.preservation = preservation;
             }
             StreamItemTag::Descriptor => {
                 self.descriptor_body = Some(decode_descriptor(&payload)?);
@@ -1989,6 +1997,7 @@ impl<R: Read> Scanner<R> {
             transform_plans: std::mem::take(&mut self.plans).into_boxed_slice(),
             fidelity,
             conversion: self.conversion.take(),
+            preservation: self.preservation.take(),
             index: Index {
                 present: false,
                 valid: false,
@@ -2352,6 +2361,7 @@ mod tests {
                 ..FidelityReport::default()
             },
             conversion: None,
+            preservation: None,
             index: Index::default(),
         };
 

@@ -1039,6 +1039,7 @@ fn shared_reference_archive() -> Archive {
             ..FidelityReport::default()
         },
         conversion: None,
+        preservation: None,
         index: Index::default(),
     }
 }

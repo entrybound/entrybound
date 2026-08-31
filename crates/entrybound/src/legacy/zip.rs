@@ -6,6 +6,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::Read;
+use std::str::FromStr;
 
 use crc32fast::Hasher as Crc32;
 use flate2::read::DeflateDecoder;
@@ -19,8 +20,10 @@ use crate::archive::plan_observed_archive;
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     Archive, ContentRef, ConversionProvenance, ConversionResolution, Entry, EntryData,
-    EntryIdentity, FidelityIssue, FidelityReport, LogicalPath, MetadataItem, MetadataSet,
-    Timestamp, TimestampPrecision,
+    EntryIdentity, FidelityIssue, FidelityReport, LegacyPreservation, LogicalPath, MetadataItem,
+    MetadataSet, PreservedLegacyAuthority, PreservedLegacyConflict, PreservedLegacyLocation,
+    PreservedLegacyObservation, PreservedLegacyResolution, PreservedLegacyValidity,
+    PreservedLegacyValue, Timestamp, TimestampPrecision,
 };
 use crate::identity::sha256_exact;
 use crate::planner::CompressionProfile;
@@ -53,6 +56,12 @@ pub struct ZipImportPolicy {
     pub max_uncompressed_entry_bytes: u64,
     pub max_total_uncompressed_bytes: u64,
     pub max_expansion_ratio_milli: u64,
+    pub max_observations: u64,
+    pub max_observations_per_subject: u64,
+    pub max_conflicts: u64,
+    pub max_resolutions: u64,
+    pub max_conversion_record_bytes: u64,
+    pub max_preserved_source_bytes: u64,
 }
 
 impl Default for ZipImportPolicy {
@@ -67,6 +76,99 @@ impl Default for ZipImportPolicy {
             max_uncompressed_entry_bytes: 4 * 1024 * 1024 * 1024,
             max_total_uncompressed_bytes: 16 * 1024 * 1024 * 1024,
             max_expansion_ratio_milli: 1_000_000,
+            max_observations: 8_000_000,
+            max_observations_per_subject: 4_096,
+            max_conflicts: 1_000_000,
+            max_resolutions: 1_000_000,
+            max_conversion_record_bytes: 256 * 1024 * 1024,
+            max_preserved_source_bytes: 4 * 1024 * 1024 * 1024,
+        }
+    }
+}
+
+/// Frozen runtime behavior contracts supported by ZIP compatibility import v1.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum CompatibilityProfileId {
+    PythonZipfile3135,
+    JavaZipFile210121,
+    JavaZipInputStream210121,
+    LibarchiveBsdtar388,
+}
+
+impl CompatibilityProfileId {
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::PythonZipfile3135 => "zip/python-zipfile@3.13.5",
+            Self::JavaZipFile210121 => "zip/java-zipfile@21.0.12.1",
+            Self::JavaZipInputStream210121 => "zip/java-zipinputstream@21.0.12.1",
+            Self::LibarchiveBsdtar388 => "zip/libarchive-bsdtar@3.8.8",
+        }
+    }
+
+    #[must_use]
+    pub const fn supported() -> &'static [Self] {
+        &[
+            Self::PythonZipfile3135,
+            Self::JavaZipFile210121,
+            Self::JavaZipInputStream210121,
+            Self::LibarchiveBsdtar388,
+        ]
+    }
+}
+
+impl std::fmt::Display for CompatibilityProfileId {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str(self.as_str())
+    }
+}
+
+impl FromStr for CompatibilityProfileId {
+    type Err = Diagnostic;
+
+    fn from_str(value: &str) -> std::result::Result<Self, Self::Err> {
+        Self::supported()
+            .iter()
+            .copied()
+            .find(|profile| profile.as_str() == value)
+            .ok_or_else(|| {
+                Diagnostic::new(
+                    OutcomeClass::Unsupported,
+                    ReasonCode::UnsupportedRequiredFeature,
+                    format!("unknown or unversioned ZIP compatibility profile '{value}'"),
+                )
+            })
+    }
+}
+
+/// One resolver policy over the immutable ZIP observation model.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ImportPolicy {
+    Strict,
+    Compatibility(CompatibilityProfileId),
+    Preservation(CompatibilityProfileId),
+}
+
+impl ImportPolicy {
+    #[must_use]
+    pub const fn compatibility_profile(self) -> Option<CompatibilityProfileId> {
+        match self {
+            Self::Strict => None,
+            Self::Compatibility(profile) | Self::Preservation(profile) => Some(profile),
+        }
+    }
+
+    #[must_use]
+    pub const fn preserves_evidence(self) -> bool {
+        matches!(self, Self::Preservation(_))
+    }
+
+    #[must_use]
+    pub const fn mode(self) -> &'static str {
+        match self {
+            Self::Strict => "strict",
+            Self::Compatibility(_) => "compat",
+            Self::Preservation(_) => "preserve",
         }
     }
 }
@@ -154,6 +256,8 @@ struct ObservedZipEntry {
     data_offset: u64,
     data_length: u64,
     extent_end: u64,
+    descriptor: Option<DescriptorClaims>,
+    central_directory_offset: u64,
 }
 
 #[derive(Clone, Debug)]
@@ -359,8 +463,10 @@ pub fn observe(source: &[u8], policy: ZipImportPolicy) -> Result<ZipObservation>
     let mut total_extra = 0_u64;
     let mut total_name_comment = u64::try_from(comment_len).unwrap_or(u64::MAX);
     let mut declared_total_uncompressed = 0_u64;
+    let mut observations_built = u64::try_from(archive_fields.len()).unwrap_or(u64::MAX);
     for ordinal in 0..entry_count {
-        let (central, next, extra_bytes) = parse_central(source, cursor, ordinal)?;
+        let (central, next, extra_bytes) =
+            parse_central(source, cursor, ordinal, policy.max_observations_per_subject)?;
         total_extra = total_extra
             .checked_add(extra_bytes)
             .ok_or_else(|| policy_error("extra-field byte count overflow"))?;
@@ -375,6 +481,7 @@ pub fn observe(source: &[u8], policy: ZipImportPolicy) -> Result<ZipObservation>
             source,
             to_usize(local_offset, "local-header offset")?,
             ordinal,
+            policy.max_observations_per_subject,
         )?;
         total_name_comment = total_name_comment
             .checked_add(u64::try_from(central.name.len()).unwrap_or(u64::MAX))
@@ -461,6 +568,21 @@ pub fn observe(source: &[u8], policy: ZipImportPolicy) -> Result<ZipObservation>
         if let Some(descriptor) = &descriptor {
             fields.extend(observe_descriptor(descriptor));
         }
+        policy_check(
+            u64::try_from(fields.len()).unwrap_or(u64::MAX) <= policy.max_observations_per_subject,
+            "ZIP observations for one entry exceed policy",
+        )?;
+        observations_built = observations_built
+            .checked_add(u64::try_from(fields.len()).unwrap_or(u64::MAX))
+            .ok_or_else(|| policy_error("ZIP observation count overflows"))?;
+        policy_check(
+            observations_built <= policy.max_observations,
+            "ZIP observations exceed policy",
+        )?;
+        policy_check(
+            u64::try_from(conflicts.len()).unwrap_or(u64::MAX) <= policy.max_conflicts,
+            "ZIP conflicts exceed policy",
+        )?;
         inspect_extra_metadata(&central, &mut unsupported_metadata)?;
         inspect_extra_metadata(&local, &mut unsupported_metadata)?;
         if !central.comment.is_empty() {
@@ -480,6 +602,8 @@ pub fn observe(source: &[u8], policy: ZipImportPolicy) -> Result<ZipObservation>
             data_offset: u64::try_from(data_offset).unwrap_or(u64::MAX),
             data_length: compressed_size,
             extent_end,
+            descriptor,
+            central_directory_offset: cd_offset,
         });
         cursor = next;
     }
@@ -489,6 +613,27 @@ pub fn observe(source: &[u8], policy: ZipImportPolicy) -> Result<ZipObservation>
         ));
     }
     classify_extent_conflicts(&entries, &mut conflicts);
+    let observation_count = archive_fields.len().saturating_add(
+        lom_entries
+            .iter()
+            .map(|entry| entry.fields.len())
+            .sum::<usize>(),
+    );
+    policy_check(
+        u64::try_from(observation_count).unwrap_or(u64::MAX) <= policy.max_observations,
+        "ZIP observations exceed policy",
+    )?;
+    policy_check(
+        lom_entries.iter().all(|entry| {
+            u64::try_from(entry.fields.len()).unwrap_or(u64::MAX)
+                <= policy.max_observations_per_subject
+        }),
+        "ZIP observations for one entry exceed policy",
+    )?;
+    policy_check(
+        u64::try_from(conflicts.len()).unwrap_or(u64::MAX) <= policy.max_conflicts,
+        "ZIP conflicts exceed policy",
+    )?;
 
     Ok(ZipObservation {
         lom: LegacyArchiveObservation {
@@ -511,7 +656,35 @@ pub fn resolve_strict(
     policy: ZipImportPolicy,
     profile: CompressionProfile,
 ) -> Result<ZipImportResult> {
-    refuse_unresolved_conflicts(&observation.lom.conflicts)?;
+    resolve(observation, policy, profile, ImportPolicy::Strict)
+}
+
+/// Reconciles one immutable observation through an explicit import policy.
+pub fn resolve(
+    observation: ZipObservation,
+    policy: ZipImportPolicy,
+    profile: CompressionProfile,
+    import_policy: ImportPolicy,
+) -> Result<ZipImportResult> {
+    if import_policy == ImportPolicy::Strict {
+        refuse_unresolved_conflicts(&observation.lom.conflicts)?;
+    } else {
+        refuse_irreconcilable_conflicts(&observation.lom.conflicts)?;
+        refuse_unmodeled_compatibility_conflicts(
+            &observation.lom.conflicts,
+            import_policy.compatibility_profile().unwrap(),
+        )?;
+    }
+    let mut preservation = if import_policy.preserves_evidence() {
+        policy_check(
+            u64::try_from(observation.source.len()).unwrap_or(u64::MAX)
+                <= policy.max_preserved_source_bytes,
+            "exact preserved ZIP source exceeds policy",
+        )?;
+        Some(preserve_observation(&observation)?)
+    } else {
+        None
+    };
     let mut resolved = Vec::new();
     let mut total_plaintext = 0_u64;
     let mut resolution_records = observation
@@ -521,8 +694,20 @@ pub fn resolve_strict(
         .filter_map(conflict_resolution)
         .collect::<Vec<_>>();
     for entry in &observation.entries {
-        let resolved_entry =
-            resolve_entry(entry, &observation.source, policy, &mut resolution_records)?;
+        let resolved_entry = match import_policy {
+            ImportPolicy::Strict => {
+                resolve_entry(entry, &observation.source, policy, &mut resolution_records)?
+            }
+            ImportPolicy::Compatibility(profile) | ImportPolicy::Preservation(profile) => {
+                resolve_entry_compat(
+                    entry,
+                    &observation.source,
+                    policy,
+                    profile,
+                    &mut resolution_records,
+                )?
+            }
+        };
         total_plaintext = total_plaintext
             .checked_add(u64::try_from(resolved_entry.plaintext.len()).unwrap_or(u64::MAX))
             .ok_or_else(|| policy_error("total uncompressed byte count overflow"))?;
@@ -534,17 +719,38 @@ pub fn resolve_strict(
     }
 
     let mut kind_by_path = BTreeMap::<LogicalPath, bool>::new();
-    for entry in &resolved {
-        if kind_by_path
-            .insert(entry.path.clone(), entry.directory)
-            .is_some()
-        {
-            return Err(Diagnostic::new(
-                OutcomeClass::Nonconforming,
-                ReasonCode::DuplicateLogicalPath,
-                format!("duplicate reconciled ZIP path {}", entry.path),
-            ));
+    let mut unique_resolved = BTreeMap::<LogicalPath, ResolvedEntry>::new();
+    for entry in resolved {
+        if let Some(previous) = unique_resolved.insert(entry.path.clone(), entry) {
+            if import_policy == ImportPolicy::Strict {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::DuplicateLogicalPath,
+                    format!("duplicate reconciled ZIP path {}", previous.path),
+                ));
+            }
+            let compat = import_policy.compatibility_profile().unwrap();
+            resolution_records.push(ConversionResolution {
+                conflict_class: ConflictClass::Divergence.as_str().to_owned(),
+                semantic_field: format!("duplicate-path:{}", previous.path),
+                authorities: Box::from([
+                    "earlier ZIP member".to_owned(),
+                    "later ZIP member".to_owned(),
+                ]),
+                observed_values: Box::from([
+                    "earlier member".to_owned(),
+                    "later member".to_owned(),
+                ]),
+                action: format!(
+                    "{} selected the last member; Entrybound extraction safety remains enforced",
+                    compat.as_str()
+                ),
+            });
         }
+    }
+    let resolved = unique_resolved.into_values().collect::<Vec<_>>();
+    for entry in &resolved {
+        kind_by_path.insert(entry.path.clone(), entry.directory);
     }
     let mut synthesized = BTreeSet::new();
     for entry in &resolved {
@@ -616,6 +822,13 @@ pub fn resolve_strict(
 
     resolution_records.sort();
     resolution_records.dedup();
+    policy_check(
+        u64::try_from(resolution_records.len()).unwrap_or(u64::MAX) <= policy.max_resolutions,
+        "ZIP compatibility resolutions exceed policy",
+    )?;
+    if let Some(value) = preservation.as_mut() {
+        value.selected_resolutions = resolution_records.clone().into_boxed_slice();
+    }
     let synthesized = synthesized.into_iter().collect::<Vec<_>>();
     let unsupported_metadata = observation
         .unsupported_metadata
@@ -633,26 +846,55 @@ pub fn resolve_strict(
         .count()
         .try_into()
         .unwrap_or(u64::MAX);
+    let divergence_count = observation
+        .lom
+        .conflict_count(ConflictClass::Divergence)
+        .max(
+            resolution_records
+                .iter()
+                .filter(|resolution| {
+                    resolution.conflict_class == ConflictClass::Divergence.as_str()
+                })
+                .count()
+                .try_into()
+                .unwrap_or(u64::MAX),
+        );
+    let irreconcilable_count = observation
+        .lom
+        .conflict_count(ConflictClass::Irreconcilable)
+        .max(
+            resolution_records
+                .iter()
+                .filter(|resolution| {
+                    resolution.conflict_class == ConflictClass::Irreconcilable.as_str()
+                })
+                .count()
+                .try_into()
+                .unwrap_or(u64::MAX),
+        );
     let provenance = ConversionProvenance {
         source_format: "ZIP".to_owned(),
-        adapter_id: "zip-strict/v1".to_owned(),
+        adapter_id: import_policy.compatibility_profile().map_or_else(
+            || "zip-strict/v1".to_owned(),
+            |value| value.as_str().to_owned(),
+        ),
         source_digest: observation.lom.source_digest,
-        import_mode: "strict".to_owned(),
+        import_mode: import_policy.mode().to_owned(),
         source_entry_count: u64::try_from(observation.entries.len()).unwrap_or(u64::MAX),
         observation_count: observation.lom.observation_count(),
         omission_count,
         refinement_count,
-        divergence_count: observation.lom.conflict_count(ConflictClass::Divergence),
-        irreconcilable_count: observation
-            .lom
-            .conflict_count(ConflictClass::Irreconcilable),
+        divergence_count,
+        irreconcilable_count,
         resolutions: resolution_records.clone().into_boxed_slice(),
         synthesized_ancestors: synthesized.clone().into_boxed_slice(),
         unsupported_metadata: unsupported_metadata.clone().into_boxed_slice(),
         outcome: "success".to_owned(),
     };
+    enforce_conversion_budget(&provenance, preservation.as_ref(), policy)?;
     let fidelity = zip_fidelity(&unsupported_metadata);
-    let archive = plan_observed_archive(entries, files, fidelity, provenance, profile)?;
+    let archive =
+        plan_observed_archive(entries, files, fidelity, provenance, preservation, profile)?;
     Ok(ZipImportResult {
         archive,
         report: ZipConversionReport {
@@ -670,6 +912,41 @@ pub fn import_strict(
     profile: CompressionProfile,
 ) -> Result<ZipImportResult> {
     resolve_strict(observe(source, policy)?, policy, profile)
+}
+
+/// Convenience operation for any frozen strict/compat/preserve policy.
+pub fn import(
+    source: &[u8],
+    policy: ZipImportPolicy,
+    profile: CompressionProfile,
+    import_policy: ImportPolicy,
+) -> Result<ZipImportResult> {
+    resolve(observe(source, policy)?, policy, profile, import_policy)
+}
+
+/// Recovers the exact authenticated foreign source retained by preserve-v1.
+pub fn recover_preserved_source(archive: &Archive) -> Result<Box<[u8]>> {
+    archive.validate_without_retained_plaintext()?;
+    let preservation = archive.preservation.as_ref().ok_or_else(|| {
+        Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedRequiredFeature,
+            "archive does not carry legacy-preservation-v1 evidence",
+        )
+    })?;
+    if sha256_exact(&preservation.source_bytes) != preservation.source_digest
+        || archive
+            .conversion
+            .as_ref()
+            .is_none_or(|value| value.source_digest != preservation.source_digest)
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Corrupt,
+            ReasonCode::AuxMismatch,
+            "preserved source does not match ConversionProvenance source digest",
+        ));
+    }
+    Ok(preservation.source_bytes.clone())
 }
 
 fn parse_zip64_directory(source: &[u8], eocd_offset: usize) -> Result<Zip64DirectoryClaims> {
@@ -774,7 +1051,12 @@ fn compare_zip32_zip64_value(
     }
 }
 
-fn parse_central(source: &[u8], offset: usize, ordinal: u64) -> Result<(HeaderClaims, usize, u64)> {
+fn parse_central(
+    source: &[u8],
+    offset: usize,
+    ordinal: u64,
+    max_extra_items: u64,
+) -> Result<(HeaderClaims, usize, u64)> {
     let fixed = slice(source, offset, 46, "central-directory entry")?;
     if le_u32(fixed, 0)? != CENTRAL_SIGNATURE {
         return Err(structure("central-directory entry signature is invalid"));
@@ -790,7 +1072,11 @@ fn parse_central(source: &[u8], offset: usize, ordinal: u64) -> Result<(HeaderCl
     let all = slice(source, offset, total, "central-directory entry body")?;
     let name = &all[46..46 + name_len];
     let extra_start = offset + 46 + name_len;
-    let extra = parse_extras(&all[46 + name_len..46 + name_len + extra_len], extra_start)?;
+    let extra = parse_extras(
+        &all[46 + name_len..46 + name_len + extra_len],
+        extra_start,
+        max_extra_items,
+    )?;
     let comment = &all[46 + name_len + extra_len..];
     let raw_uncompressed = le_u32(fixed, 24)?;
     let raw_compressed = le_u32(fixed, 20)?;
@@ -831,7 +1117,12 @@ fn parse_central(source: &[u8], offset: usize, ordinal: u64) -> Result<(HeaderCl
     ))
 }
 
-fn parse_local(source: &[u8], offset: usize, ordinal: u64) -> Result<(HeaderClaims, usize, u64)> {
+fn parse_local(
+    source: &[u8],
+    offset: usize,
+    ordinal: u64,
+    max_extra_items: u64,
+) -> Result<(HeaderClaims, usize, u64)> {
     let fixed = slice(source, offset, 30, "local file header")?;
     if le_u32(fixed, 0)? != LOCAL_SIGNATURE {
         return Err(structure(
@@ -846,7 +1137,11 @@ fn parse_local(source: &[u8], offset: usize, ordinal: u64) -> Result<(HeaderClai
         .ok_or_else(|| structure("local header length overflows"))?;
     let all = slice(source, offset, total, "local file header body")?;
     let name = &all[30..30 + name_len];
-    let extra = parse_extras(&all[30 + name_len..], offset + 30 + name_len)?;
+    let extra = parse_extras(
+        &all[30 + name_len..],
+        offset + 30 + name_len,
+        max_extra_items,
+    )?;
     let flags = le_u16(fixed, 6)?;
     let raw_uncompressed = le_u32(fixed, 22)?;
     let raw_compressed = le_u32(fixed, 18)?;
@@ -952,7 +1247,7 @@ fn extra_u64(extra: &ExtraField, cursor: &mut usize) -> Result<u64> {
     Ok(u64::from_le_bytes(bytes.try_into().unwrap()))
 }
 
-fn parse_extras(bytes: &[u8], absolute_offset: usize) -> Result<Vec<ExtraField>> {
+fn parse_extras(bytes: &[u8], absolute_offset: usize, max_items: u64) -> Result<Vec<ExtraField>> {
     let mut extras = Vec::new();
     let mut cursor = 0;
     while cursor < bytes.len() {
@@ -973,6 +1268,10 @@ fn parse_extras(bytes: &[u8], absolute_offset: usize) -> Result<Vec<ExtraField>>
             data: bytes[cursor + 4..end].to_vec().into_boxed_slice(),
             location: location(absolute_offset + cursor, end - cursor),
         });
+        policy_check(
+            u64::try_from(extras.len()).unwrap_or(u64::MAX) <= max_items,
+            "ZIP extra-field observations for one entry exceed policy",
+        )?;
         cursor = end;
     }
     Ok(extras)
@@ -1021,6 +1320,387 @@ fn parse_descriptor(
             .to_vec()
             .into_boxed_slice(),
     })
+}
+
+#[derive(Clone, Copy)]
+struct CompatibilityRules {
+    name_from_central: bool,
+    require_name_match: bool,
+    unicode_extra: bool,
+    method_from_central: bool,
+    sizes_from_descriptor: bool,
+    sizes_from_central: bool,
+    enforce_crc: bool,
+    enforce_cross_header_integrity: bool,
+    enforce_declared_output_size: bool,
+    allow_unused_deflate_bytes: bool,
+    directory_from_attributes: bool,
+}
+
+fn compatibility_rules(profile: CompatibilityProfileId) -> CompatibilityRules {
+    match profile {
+        CompatibilityProfileId::PythonZipfile3135 => CompatibilityRules {
+            name_from_central: true,
+            require_name_match: true,
+            unicode_extra: true,
+            method_from_central: true,
+            sizes_from_descriptor: false,
+            sizes_from_central: true,
+            enforce_crc: true,
+            enforce_cross_header_integrity: false,
+            enforce_declared_output_size: true,
+            allow_unused_deflate_bytes: true,
+            directory_from_attributes: false,
+        },
+        CompatibilityProfileId::JavaZipFile210121 => CompatibilityRules {
+            name_from_central: true,
+            require_name_match: false,
+            unicode_extra: false,
+            method_from_central: true,
+            sizes_from_descriptor: false,
+            sizes_from_central: true,
+            enforce_crc: false,
+            enforce_cross_header_integrity: false,
+            enforce_declared_output_size: false,
+            allow_unused_deflate_bytes: true,
+            directory_from_attributes: false,
+        },
+        CompatibilityProfileId::JavaZipInputStream210121 => CompatibilityRules {
+            name_from_central: false,
+            require_name_match: false,
+            unicode_extra: false,
+            method_from_central: false,
+            sizes_from_descriptor: true,
+            sizes_from_central: false,
+            enforce_crc: true,
+            enforce_cross_header_integrity: false,
+            enforce_declared_output_size: true,
+            allow_unused_deflate_bytes: false,
+            directory_from_attributes: false,
+        },
+        CompatibilityProfileId::LibarchiveBsdtar388 => CompatibilityRules {
+            name_from_central: false,
+            require_name_match: false,
+            unicode_extra: true,
+            method_from_central: false,
+            sizes_from_descriptor: false,
+            sizes_from_central: false,
+            enforce_crc: true,
+            enforce_cross_header_integrity: true,
+            enforce_declared_output_size: true,
+            allow_unused_deflate_bytes: false,
+            directory_from_attributes: true,
+        },
+    }
+}
+
+fn resolve_entry_compat(
+    entry: &ObservedZipEntry,
+    source: &[u8],
+    policy: ZipImportPolicy,
+    profile: CompatibilityProfileId,
+    resolutions: &mut Vec<ConversionResolution>,
+) -> Result<ResolvedEntry> {
+    let rules = compatibility_rules(profile);
+    if rules.require_name_match && entry.central.name != entry.local.name {
+        return Err(divergence(format!(
+            "{} refuses a local/central filename mismatch",
+            profile.as_str()
+        )));
+    }
+    if rules.enforce_cross_header_integrity {
+        let mut comparisons = vec![(
+            "method",
+            u64::from(entry.central.method),
+            u64::from(entry.local.method),
+        )];
+        if let (Some(central), Some(local)) =
+            (entry.central.compressed_size, entry.local.compressed_size)
+        {
+            comparisons.push(("compressed-size", central, local));
+        }
+        if let (Some(central), Some(local)) = (
+            entry.central.uncompressed_size,
+            entry.local.uncompressed_size,
+        ) {
+            comparisons.push(("uncompressed-size", central, local));
+        }
+        if let (Some(central), Some(local)) = (entry.central.crc32, entry.local.crc32) {
+            comparisons.push(("crc32", u64::from(central), u64::from(local)));
+        }
+        for (field, central, local) in comparisons {
+            if central != local {
+                return Err(divergence(format!(
+                    "{} refuses divergent local/central {field}",
+                    profile.as_str()
+                )));
+            }
+        }
+    }
+
+    let name_header = if rules.name_from_central {
+        &entry.central
+    } else {
+        &entry.local
+    };
+    let name = compatibility_name(name_header, rules.unicode_extra, profile, resolutions)?;
+    record_selected_divergence(
+        "path",
+        display_name(&entry.central.name),
+        display_name(&entry.local.name),
+        if rules.name_from_central {
+            "central-directory"
+        } else {
+            "local-header"
+        },
+        profile,
+        resolutions,
+    );
+    let (path, components, marker_directory) = logical_path(&name)?;
+    let directory = if rules.directory_from_attributes {
+        entry_kind(&entry.central)?.unwrap_or(marker_directory)
+    } else {
+        marker_directory
+    };
+
+    let method = if rules.method_from_central {
+        entry.central.method
+    } else {
+        entry.local.method
+    };
+    record_selected_divergence(
+        "compression-method",
+        entry.central.method.to_string(),
+        entry.local.method.to_string(),
+        if rules.method_from_central {
+            "central-directory"
+        } else {
+            "local-header"
+        },
+        profile,
+        resolutions,
+    );
+
+    let descriptor = entry.descriptor.as_ref();
+    let compressed_len =
+        if let Some(descriptor) = descriptor.filter(|_| rules.sizes_from_descriptor) {
+            descriptor.compressed_size
+        } else if rules.sizes_from_central {
+            require_claim(entry.central.compressed_size, "central compressed size")?
+        } else {
+            entry
+                .local
+                .compressed_size
+                .or(entry.central.compressed_size)
+                .ok_or_else(|| structure("selected ZIP authority omits compressed size"))?
+        };
+    let expected_len = if let Some(descriptor) = descriptor.filter(|_| rules.sizes_from_descriptor)
+    {
+        descriptor.uncompressed_size
+    } else if rules.sizes_from_central {
+        require_claim(entry.central.uncompressed_size, "central uncompressed size")?
+    } else {
+        entry
+            .local
+            .uncompressed_size
+            .or(entry.central.uncompressed_size)
+            .ok_or_else(|| structure("selected ZIP authority omits uncompressed size"))?
+    };
+    policy_check(
+        compressed_len <= policy.max_compressed_entry_bytes,
+        "compatibility-selected compressed extent exceeds policy",
+    )?;
+    let data_start = to_usize(entry.data_offset, "file-data offset")?;
+    let data_len = to_usize(compressed_len, "compatibility file-data length")?;
+    let data_end = data_start
+        .checked_add(data_len)
+        .ok_or_else(|| structure("compatibility file-data extent overflows"))?;
+    let first_directory_byte =
+        to_usize(entry.central_directory_offset, "central-directory offset")?;
+    if data_end > source.len() || data_end > first_directory_byte {
+        return Err(structure(
+            "compatibility-selected file-data extent is outside observed ZIP data",
+        ));
+    }
+    let compressed = slice(source, data_start, data_len, "compatibility file data")?;
+    let plaintext = if directory {
+        Vec::new()
+    } else {
+        decode_entry_compat(compressed, method, policy, rules.allow_unused_deflate_bytes)?
+    };
+    let actual_len = u64::try_from(plaintext.len()).unwrap_or(u64::MAX);
+    policy_check(
+        actual_len <= policy.max_uncompressed_entry_bytes,
+        "compatibility-selected output exceeds policy",
+    )?;
+    if rules.enforce_declared_output_size && actual_len != expected_len {
+        return Err(Diagnostic::new(
+            OutcomeClass::Corrupt,
+            ReasonCode::ZipSizeMismatch,
+            format!(
+                "{} rejected the selected output length for {name}",
+                profile.as_str()
+            ),
+        ));
+    }
+    if rules.enforce_crc {
+        let expected_crc =
+            if let Some(descriptor) = descriptor.filter(|_| rules.sizes_from_descriptor) {
+                descriptor.crc32
+            } else if rules.sizes_from_central {
+                require_claim(entry.central.crc32, "central CRC")?
+            } else {
+                entry
+                    .local
+                    .crc32
+                    .or(entry.central.crc32)
+                    .ok_or_else(|| structure("selected ZIP authority omits CRC"))?
+            };
+        let mut crc = Crc32::new();
+        crc.update(&plaintext);
+        if crc.finalize() != expected_crc {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::ZipCrcMismatch,
+                format!("{} rejected CRC-32 for {name}", profile.as_str()),
+            ));
+        }
+    }
+    if expected_len != actual_len || entry.central.crc32 != entry.local.crc32 {
+        resolutions.push(ConversionResolution {
+            conflict_class: ConflictClass::Divergence.as_str().to_owned(),
+            semantic_field: format!("content:{name}"),
+            authorities: Box::from([
+                "central-directory/local-header/data-descriptor".to_owned(),
+                profile.as_str().to_owned(),
+            ]),
+            observed_values: Box::from([
+                format!("declared={expected_len}, actual={actual_len}"),
+                format!("{} bytes selected", plaintext.len()),
+            ]),
+            action: format!("applied frozen {} content rule", profile.as_str()),
+        });
+    }
+    let executable = unix_mode(&entry.central).is_some_and(|mode| mode & 0o111 != 0);
+    let mut timestamp_resolutions = Vec::new();
+    let mtime = resolve_mtime(name_header, name_header, &mut timestamp_resolutions)?;
+    resolutions.extend(timestamp_resolutions);
+    Ok(ResolvedEntry {
+        path,
+        components,
+        directory,
+        executable,
+        mtime,
+        plaintext: plaintext.into_boxed_slice(),
+    })
+}
+
+fn compatibility_name(
+    header: &HeaderClaims,
+    use_unicode_extra: bool,
+    profile: CompatibilityProfileId,
+    resolutions: &mut Vec<ConversionResolution>,
+) -> Result<String> {
+    let primary = if header.flags & UTF8_FLAG != 0 {
+        std::str::from_utf8(&header.name)
+            .map_err(|_| ambiguous("compatibility-selected UTF-8 name is invalid"))?
+            .to_owned()
+    } else {
+        decode_cp437(&header.name)
+    };
+    if !use_unicode_extra {
+        return Ok(primary);
+    }
+    let mut unicode = header
+        .extra
+        .iter()
+        .filter(|extra| extra.id == UNICODE_PATH_EXTRA)
+        .map(|extra| parse_unicode_extra(extra, &header.name, "Unicode path"))
+        .collect::<Result<Vec<_>>>()?;
+    unicode.sort();
+    unicode.dedup();
+    if unicode.len() > 1 {
+        return Err(ambiguous("multiple Unicode path extras disagree"));
+    }
+    if let Some(value) = unicode.pop() {
+        if value != primary {
+            resolutions.push(ConversionResolution {
+                conflict_class: ConflictClass::Divergence.as_str().to_owned(),
+                semantic_field: "path.unicode".to_owned(),
+                authorities: Box::from([
+                    "ZIP primary name".to_owned(),
+                    "Info-ZIP Unicode Path".to_owned(),
+                ]),
+                observed_values: Box::from([primary, value.clone()]),
+                action: format!("{} selected CRC-bound Unicode path", profile.as_str()),
+            });
+        }
+        Ok(value)
+    } else {
+        Ok(primary)
+    }
+}
+
+fn display_name(value: &[u8]) -> String {
+    String::from_utf8_lossy(value).into_owned()
+}
+
+fn record_selected_divergence(
+    field: &str,
+    central: String,
+    local: String,
+    selected: &str,
+    profile: CompatibilityProfileId,
+    resolutions: &mut Vec<ConversionResolution>,
+) {
+    if central != local {
+        resolutions.push(ConversionResolution {
+            conflict_class: ConflictClass::Divergence.as_str().to_owned(),
+            semantic_field: field.to_owned(),
+            authorities: Box::from(["central-directory".to_owned(), "local-header".to_owned()]),
+            observed_values: Box::from([central, local]),
+            action: format!("{} selected {selected}", profile.as_str()),
+        });
+    }
+}
+
+fn decode_entry_compat(
+    compressed: &[u8],
+    method: u16,
+    policy: ZipImportPolicy,
+    allow_unused_deflate_bytes: bool,
+) -> Result<Vec<u8>> {
+    match method {
+        0 => Ok(compressed.to_vec()),
+        8 => {
+            let decoder = DeflateDecoder::new(compressed);
+            let mut limited = decoder.take(policy.max_uncompressed_entry_bytes.saturating_add(1));
+            let mut output = Vec::new();
+            limited.read_to_end(&mut output).map_err(|error| {
+                Diagnostic::new(
+                    OutcomeClass::Corrupt,
+                    ReasonCode::ZipStructureInvalid,
+                    format!("DEFLATE decode failed: {error}"),
+                )
+            })?;
+            if u64::try_from(output.len()).unwrap_or(u64::MAX) > policy.max_uncompressed_entry_bytes
+            {
+                return Err(policy_error("compatibility DEFLATE output exceeds policy"));
+            }
+            let consumed = limited.into_inner().total_in();
+            if !allow_unused_deflate_bytes
+                && consumed != u64::try_from(compressed.len()).unwrap_or(u64::MAX)
+            {
+                return Err(structure(
+                    "selected runtime rejects trailing bytes in the DEFLATE extent",
+                ));
+            }
+            Ok(output)
+        }
+        _ => Err(unsupported(format!(
+            "ZIP compression method {method} is unsupported"
+        ))),
+    }
 }
 
 fn resolve_entry(
@@ -1754,6 +2434,180 @@ fn refuse_unresolved_conflicts(conflicts: &[LegacyConflict]) -> Result<()> {
         )));
     }
     Ok(())
+}
+
+fn refuse_irreconcilable_conflicts(conflicts: &[LegacyConflict]) -> Result<()> {
+    let irreconcilable_count = conflicts
+        .iter()
+        .filter(|conflict| conflict.classification == ConflictClass::Irreconcilable)
+        .count();
+    if let Some(conflict) = conflicts
+        .iter()
+        .find(|conflict| conflict.classification == ConflictClass::Irreconcilable)
+    {
+        if conflict.semantic_field == "physical_extent" {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::ZipOverlappingExtent,
+                "compatibility interpretation blocked by Entrybound safety invariant: overlapping extents",
+            ));
+        }
+        return Err(irreconcilable(format!(
+            "compatibility interpretation blocked by Entrybound safety invariant: {} ({irreconcilable_count} irreconcilable conflicts)",
+            conflict.semantic_field
+        )));
+    }
+    Ok(())
+}
+
+fn refuse_unmodeled_compatibility_conflicts(
+    conflicts: &[LegacyConflict],
+    profile: CompatibilityProfileId,
+) -> Result<()> {
+    const MODELED_DIVERGENCES: &[&str] = &[
+        "filename",
+        "compression_method",
+        "crc32",
+        "compressed_size",
+        "uncompressed_size",
+    ];
+    if let Some(conflict) = conflicts.iter().find(|conflict| {
+        conflict.classification == ConflictClass::Divergence
+            && !MODELED_DIVERGENCES.contains(&conflict.semantic_field.as_str())
+    }) {
+        return Err(divergence(format!(
+            "{} has divergent ZIP authorities not modeled by {}; compatibility interpretation refused",
+            conflict.semantic_field,
+            profile.as_str()
+        )));
+    }
+    Ok(())
+}
+
+fn preserve_observation(observation: &ZipObservation) -> Result<LegacyPreservation> {
+    let mut observations = Vec::new();
+    for (ordinal, field) in observation.lom.archive_fields.iter().enumerate() {
+        observations.push(preserve_field(
+            0,
+            0,
+            u64::try_from(ordinal).unwrap_or(u64::MAX),
+            field,
+        ));
+    }
+    for entry in &observation.lom.entries {
+        for (ordinal, field) in entry.fields.iter().enumerate() {
+            observations.push(preserve_field(
+                1,
+                entry.ordinal,
+                u64::try_from(ordinal).unwrap_or(u64::MAX),
+                field,
+            ));
+        }
+    }
+    let conflicts = observation
+        .lom
+        .conflicts
+        .iter()
+        .enumerate()
+        .map(|(ordinal, conflict)| PreservedLegacyConflict {
+            ordinal: u64::try_from(ordinal).unwrap_or(u64::MAX),
+            semantic_field: conflict.semantic_field.clone(),
+            authorities: conflict
+                .authorities
+                .iter()
+                .map(preserve_authority)
+                .collect::<Vec<_>>()
+                .into_boxed_slice(),
+            observed_values: conflict
+                .observed_values
+                .iter()
+                .map(preserve_value)
+                .collect::<Vec<_>>()
+                .into_boxed_slice(),
+            evidence: conflict
+                .evidence
+                .iter()
+                .map(|value| PreservedLegacyLocation {
+                    offset: value.offset,
+                    length: value.length,
+                })
+                .collect::<Vec<_>>()
+                .into_boxed_slice(),
+            classification: conflict.classification.as_str().to_owned(),
+            resolution: conflict
+                .resolution
+                .as_ref()
+                .map(|value| PreservedLegacyResolution {
+                    action: value.action.clone(),
+                    selected_authority: value.selected_authority.as_ref().map(preserve_authority),
+                }),
+        })
+        .collect::<Vec<_>>();
+    Ok(LegacyPreservation {
+        preservation_format: "legacy-preservation/v1".to_owned(),
+        source_format: observation.lom.source_format.clone(),
+        source_digest: observation.lom.source_digest,
+        source_bytes: observation.source.clone(),
+        observations: observations.into_boxed_slice(),
+        conflicts: conflicts.into_boxed_slice(),
+        selected_resolutions: Box::default(),
+    })
+}
+
+fn preserve_field(
+    scope: u8,
+    subject_ordinal: u64,
+    observation_ordinal: u64,
+    field: &LegacyFieldObservation<LegacyObservedValue>,
+) -> PreservedLegacyObservation {
+    PreservedLegacyObservation {
+        scope,
+        subject_ordinal,
+        observation_ordinal,
+        semantic_field: field.semantic_field.clone(),
+        authority: preserve_authority(&field.authority),
+        raw_value: field.raw_value.clone(),
+        interpreted_value: field.interpreted_value.as_ref().map(preserve_value),
+        evidence: PreservedLegacyLocation {
+            offset: field.evidence.offset,
+            length: field.evidence.length,
+        },
+        validity: match field.validity {
+            ObservationValidity::Valid => PreservedLegacyValidity::Valid,
+            ObservationValidity::Invalid => PreservedLegacyValidity::Invalid,
+            ObservationValidity::Uninterpreted => PreservedLegacyValidity::Uninterpreted,
+        },
+    }
+}
+
+fn preserve_authority(value: &LegacyAuthority) -> PreservedLegacyAuthority {
+    PreservedLegacyAuthority {
+        format: value.format.clone(),
+        structure: value.structure.clone(),
+        instance: value.instance,
+    }
+}
+
+fn preserve_value(value: &LegacyObservedValue) -> PreservedLegacyValue {
+    match value {
+        LegacyObservedValue::Bytes(value) => PreservedLegacyValue::Bytes(value.clone()),
+        LegacyObservedValue::Unsigned(value) => PreservedLegacyValue::Unsigned(*value),
+        LegacyObservedValue::Signed(value) => PreservedLegacyValue::Signed(*value),
+        LegacyObservedValue::Text(value) => PreservedLegacyValue::Text(value.clone()),
+        LegacyObservedValue::Boolean(value) => PreservedLegacyValue::Boolean(*value),
+    }
+}
+
+fn enforce_conversion_budget(
+    conversion: &ConversionProvenance,
+    preservation: Option<&LegacyPreservation>,
+    policy: ZipImportPolicy,
+) -> Result<()> {
+    policy_check(
+        crate::ecf::encoded_legacy_evidence_len(conversion, preservation)?
+            <= policy.max_conversion_record_bytes,
+        "conversion/preservation evidence exceeds policy",
+    )
 }
 
 fn conflict_resolution(conflict: &LegacyConflict) -> Option<ConversionResolution> {
@@ -3214,5 +4068,423 @@ mod tests {
     #[test]
     fn cp437_names_are_deterministic() {
         assert_eq!(decode_cp437(&[0x82]), "é");
+    }
+
+    #[test]
+    fn frozen_profiles_resolve_one_observation_differently() {
+        let mut source = zip(&[TestEntry {
+            name: b"local-a",
+            content: b"content",
+            method: 0,
+            descriptor: false,
+            external: 0,
+            flags: 0,
+            extra: b"",
+        }]);
+        let central = source
+            .windows(4)
+            .position(|window| window == CENTRAL_SIGNATURE.to_le_bytes())
+            .unwrap();
+        source[central + 46..central + 53].copy_from_slice(b"central");
+
+        let python = import(
+            &source,
+            ZipImportPolicy::default(),
+            CompressionProfile::Fast,
+            ImportPolicy::Compatibility(CompatibilityProfileId::PythonZipfile3135),
+        )
+        .unwrap_err();
+        assert_eq!(python.code(), ReasonCode::ZipConflictDivergence);
+
+        let java_file = import(
+            &source,
+            ZipImportPolicy::default(),
+            CompressionProfile::Fast,
+            ImportPolicy::Compatibility(CompatibilityProfileId::JavaZipFile210121),
+        )
+        .unwrap();
+        assert_eq!(
+            java_file.archive.entry_set.entries()[0].path().to_string(),
+            "central"
+        );
+
+        for profile in [
+            CompatibilityProfileId::JavaZipInputStream210121,
+            CompatibilityProfileId::LibarchiveBsdtar388,
+        ] {
+            let imported = import(
+                &source,
+                ZipImportPolicy::default(),
+                CompressionProfile::Fast,
+                ImportPolicy::Compatibility(profile),
+            )
+            .unwrap();
+            assert_eq!(
+                imported.archive.entry_set.entries()[0].path().to_string(),
+                "local-a"
+            );
+            assert!(
+                imported
+                    .archive
+                    .conversion
+                    .as_ref()
+                    .unwrap()
+                    .resolutions
+                    .iter()
+                    .any(|value| value.semantic_field == "path")
+            );
+        }
+    }
+
+    #[test]
+    fn frozen_profile_crc_size_unicode_and_type_rules_match_the_matrix() {
+        let base = || {
+            zip(&[TestEntry {
+                name: b"a.txt",
+                content: b"payload",
+                method: 0,
+                descriptor: false,
+                external: 0,
+                flags: 0,
+                extra: b"",
+            }])
+        };
+        let mut central_crc = base();
+        let central = central_crc
+            .windows(4)
+            .position(|window| window == CENTRAL_SIGNATURE.to_le_bytes())
+            .unwrap();
+        central_crc[central + 16] ^= 1;
+        for profile in [
+            CompatibilityProfileId::JavaZipFile210121,
+            CompatibilityProfileId::JavaZipInputStream210121,
+        ] {
+            assert!(
+                import(
+                    &central_crc,
+                    ZipImportPolicy::default(),
+                    CompressionProfile::Fast,
+                    ImportPolicy::Compatibility(profile),
+                )
+                .is_ok()
+            );
+        }
+        for profile in [
+            CompatibilityProfileId::PythonZipfile3135,
+            CompatibilityProfileId::LibarchiveBsdtar388,
+        ] {
+            assert_eq!(
+                import(
+                    &central_crc,
+                    ZipImportPolicy::default(),
+                    CompressionProfile::Fast,
+                    ImportPolicy::Compatibility(profile),
+                )
+                .unwrap_err()
+                .code(),
+                if profile == CompatibilityProfileId::PythonZipfile3135 {
+                    ReasonCode::ZipCrcMismatch
+                } else {
+                    ReasonCode::ZipConflictDivergence
+                }
+            );
+        }
+
+        let mut central_size = base();
+        let central = central_size
+            .windows(4)
+            .position(|window| window == CENTRAL_SIGNATURE.to_le_bytes())
+            .unwrap();
+        central_size[central + 24..central + 28].copy_from_slice(&1_u32.to_le_bytes());
+        assert!(
+            import(
+                &central_size,
+                ZipImportPolicy::default(),
+                CompressionProfile::Fast,
+                ImportPolicy::Compatibility(CompatibilityProfileId::JavaZipFile210121),
+            )
+            .is_ok()
+        );
+        assert!(
+            import(
+                &central_size,
+                ZipImportPolicy::default(),
+                CompressionProfile::Fast,
+                ImportPolicy::Compatibility(CompatibilityProfileId::JavaZipInputStream210121),
+            )
+            .is_ok()
+        );
+        assert_eq!(
+            import(
+                &central_size,
+                ZipImportPolicy::default(),
+                CompressionProfile::Fast,
+                ImportPolicy::Compatibility(CompatibilityProfileId::PythonZipfile3135),
+            )
+            .unwrap_err()
+            .code(),
+            ReasonCode::ZipSizeMismatch
+        );
+
+        let raw_name = b"primary";
+        let mut crc = Crc32::new();
+        crc.update(raw_name);
+        let unicode = b"different";
+        let mut extra = Vec::new();
+        extra.extend_from_slice(&UNICODE_PATH_EXTRA.to_le_bytes());
+        extra.extend_from_slice(&(5_u16 + unicode.len() as u16).to_le_bytes());
+        extra.push(1);
+        extra.extend_from_slice(&crc.finalize().to_le_bytes());
+        extra.extend_from_slice(unicode);
+        let unicode_zip = zip(&[TestEntry {
+            name: raw_name,
+            content: b"x",
+            method: 0,
+            descriptor: false,
+            external: 0,
+            flags: 0,
+            extra: &extra,
+        }]);
+        for profile in [
+            CompatibilityProfileId::PythonZipfile3135,
+            CompatibilityProfileId::LibarchiveBsdtar388,
+        ] {
+            let imported = import(
+                &unicode_zip,
+                ZipImportPolicy::default(),
+                CompressionProfile::Fast,
+                ImportPolicy::Compatibility(profile),
+            )
+            .unwrap();
+            assert_eq!(
+                imported.archive.entry_set.entries()[0].path().to_string(),
+                "different"
+            );
+        }
+        for profile in [
+            CompatibilityProfileId::JavaZipFile210121,
+            CompatibilityProfileId::JavaZipInputStream210121,
+        ] {
+            let imported = import(
+                &unicode_zip,
+                ZipImportPolicy::default(),
+                CompressionProfile::Fast,
+                ImportPolicy::Compatibility(profile),
+            )
+            .unwrap();
+            assert_eq!(
+                imported.archive.entry_set.entries()[0].path().to_string(),
+                "primary"
+            );
+        }
+
+        let directory_zip = zip(&[TestEntry {
+            name: b"plain",
+            content: b"",
+            method: 0,
+            descriptor: false,
+            external: 0o040755_u32 << 16,
+            flags: 0,
+            extra: b"",
+        }]);
+        let libarchive = import(
+            &directory_zip,
+            ZipImportPolicy::default(),
+            CompressionProfile::Fast,
+            ImportPolicy::Compatibility(CompatibilityProfileId::LibarchiveBsdtar388),
+        )
+        .unwrap();
+        assert!(matches!(
+            libarchive.archive.entry_set.entries()[0].data(),
+            EntryData::Directory
+        ));
+        let java = import(
+            &directory_zip,
+            ZipImportPolicy::default(),
+            CompressionProfile::Fast,
+            ImportPolicy::Compatibility(CompatibilityProfileId::JavaZipFile210121),
+        )
+        .unwrap();
+        assert!(matches!(
+            java.archive.entry_set.entries()[0].data(),
+            EntryData::File { .. }
+        ));
+    }
+
+    #[test]
+    fn preservation_round_trips_indexed_and_stream_and_changes_aux_only() {
+        let unknown_extra = [0x34, 0x12, 0x02, 0x00, 0xaa, 0xbb];
+        let source = zip(&[TestEntry {
+            name: b"evidence/file",
+            content: b"preserved",
+            method: 8,
+            descriptor: true,
+            external: 0,
+            flags: 0,
+            extra: &unknown_extra,
+        }]);
+        let profile = CompatibilityProfileId::JavaZipFile210121;
+        let compatible = import(
+            &source,
+            ZipImportPolicy::default(),
+            CompressionProfile::Fast,
+            ImportPolicy::Compatibility(profile),
+        )
+        .unwrap();
+        let preserved = import(
+            &source,
+            ZipImportPolicy::default(),
+            CompressionProfile::Fast,
+            ImportPolicy::Preservation(profile),
+        )
+        .unwrap();
+        assert_eq!(
+            compatible.archive.descriptor.lai,
+            preserved.archive.descriptor.lai
+        );
+        assert_eq!(
+            compatible.archive.descriptor.pcr,
+            preserved.archive.descriptor.pcr
+        );
+        assert_ne!(
+            compatible.archive.descriptor.aux,
+            preserved.archive.descriptor.aux
+        );
+        assert_eq!(
+            recover_preserved_source(&preserved.archive)
+                .unwrap()
+                .as_ref(),
+            source
+        );
+
+        let indexed = encode(&preserved.archive, WriteOptions::default()).unwrap();
+        let reopened = open(&indexed.bytes).unwrap();
+        assert_eq!(
+            recover_preserved_source(&reopened.archive)
+                .unwrap()
+                .as_ref(),
+            source
+        );
+        assert!(
+            reopened
+                .archive
+                .preservation
+                .as_ref()
+                .unwrap()
+                .observations
+                .iter()
+                .any(|item| item.raw_value.windows(2).any(|value| value == [0xaa, 0xbb]))
+        );
+
+        let mut stream = Vec::new();
+        encode_stream(
+            &preserved.archive,
+            StreamWriteOptions::default(),
+            &mut stream,
+        )
+        .unwrap();
+        let reopened = open_stream(stream.as_slice()).unwrap();
+        assert_eq!(
+            recover_preserved_source(&reopened.opened.archive)
+                .unwrap()
+                .as_ref(),
+            source
+        );
+
+        let mut missing_feature = preserved.archive.clone();
+        missing_feature.descriptor.features.incompat &= !crate::ecf::FEATURE_LEGACY_PRESERVATION_V1;
+        assert_eq!(
+            encode(&missing_feature, WriteOptions::default())
+                .unwrap_err()
+                .code(),
+            ReasonCode::DuplicateSemanticDeclaration
+        );
+        let mut missing_record = preserved.archive.clone();
+        missing_record.preservation = None;
+        assert_eq!(
+            encode(&missing_record, WriteOptions::default())
+                .unwrap_err()
+                .code(),
+            ReasonCode::DuplicateSemanticDeclaration
+        );
+        let mut tampered = preserved.archive.clone();
+        tampered.preservation.as_mut().unwrap().source_bytes[0] ^= 1;
+        assert_eq!(
+            encode(&tampered, WriteOptions::default())
+                .unwrap_err()
+                .code(),
+            ReasonCode::AuxMismatch
+        );
+    }
+
+    #[test]
+    fn compatibility_never_overrides_native_safety_or_evidence_budgets() {
+        let unsafe_source = zip(&[TestEntry {
+            name: b"../escape",
+            content: b"no",
+            method: 0,
+            descriptor: false,
+            external: 0,
+            flags: 0,
+            extra: b"",
+        }]);
+        for profile in CompatibilityProfileId::supported() {
+            assert_eq!(
+                import(
+                    &unsafe_source,
+                    ZipImportPolicy::default(),
+                    CompressionProfile::Fast,
+                    ImportPolicy::Compatibility(*profile),
+                )
+                .unwrap_err()
+                .code(),
+                ReasonCode::ZipUnsafePath
+            );
+        }
+
+        let source = zip(&[TestEntry {
+            name: b"a",
+            content: b"x",
+            method: 0,
+            descriptor: false,
+            external: 0,
+            flags: 0,
+            extra: b"",
+        }]);
+        let policy = ZipImportPolicy {
+            max_preserved_source_bytes: 1,
+            ..ZipImportPolicy::default()
+        };
+        assert_eq!(
+            import(
+                &source,
+                policy,
+                CompressionProfile::Fast,
+                ImportPolicy::Preservation(CompatibilityProfileId::JavaZipFile210121),
+            )
+            .unwrap_err()
+            .code(),
+            ReasonCode::LegacyResourcePolicyRefused
+        );
+    }
+
+    #[test]
+    fn compatibility_refuses_divergence_outside_the_frozen_matrix() {
+        let mut source = zip64_one(b"a", b"x");
+        let eocd = source.len() - 22;
+        source[eocd + 8..eocd + 10].copy_from_slice(&2_u16.to_le_bytes());
+        source[eocd + 10..eocd + 12].copy_from_slice(&2_u16.to_le_bytes());
+
+        for profile in CompatibilityProfileId::supported() {
+            let error = import(
+                &source,
+                ZipImportPolicy::default(),
+                CompressionProfile::Fast,
+                ImportPolicy::Compatibility(*profile),
+            )
+            .unwrap_err();
+            assert_eq!(error.code(), ReasonCode::ZipConflictDivergence);
+            assert!(error.detail().contains("not modeled"));
+        }
     }
 }

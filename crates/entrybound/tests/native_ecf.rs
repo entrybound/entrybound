@@ -309,6 +309,7 @@ fn empty_archive() -> Archive {
             ..FidelityReport::default()
         },
         conversion: None,
+        preservation: None,
         index: Index::default(),
     }
 }
@@ -418,6 +419,7 @@ fn complete_fixture(
             ..FidelityReport::default()
         },
         conversion: None,
+        preservation: None,
         index: Index::default(),
     }
 }

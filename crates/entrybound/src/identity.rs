@@ -15,7 +15,8 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     Archive, Chunk, ChunkRef, ContentObject, ContentRef, ConversionProvenance,
     ConversionResolution, Digest, Entry, EntryData, EntryIdentity, EntrySet, FidelityIssue,
-    FidelityReport, LogicalPath, MetadataItem, MetadataSet, MetadataValue, TimestampPrecision,
+    FidelityReport, LegacyPreservation, LogicalPath, MetadataItem, MetadataSet, MetadataValue,
+    PreservedLegacyValue, TimestampPrecision,
 };
 
 /// Fixed bootstrap chunk size used only by direct in-memory construction.
@@ -428,7 +429,7 @@ fn aux(archive: &Archive) -> AuxiliaryRoot {
         || structured_hash("conversion/absent/v1", &[]),
         |value| structured_hash("conversion/provenance/v1", &[&encode_conversion(value)]),
     );
-    AuxiliaryRoot(structured_hash(
+    let base = structured_hash(
         "aux/v1",
         &[
             b"sha256",
@@ -436,7 +437,126 @@ fn aux(archive: &Archive) -> AuxiliaryRoot {
             fidelity.as_bytes(),
             conversion.as_bytes(),
         ],
-    ))
+    );
+    archive
+        .preservation
+        .as_ref()
+        .map_or(AuxiliaryRoot(base), |preservation| {
+            let evidence = structured_hash(
+                "legacy-preservation/v1",
+                &[&encode_preservation(preservation)],
+            );
+            AuxiliaryRoot(structured_hash(
+                "aux-preservation/v1",
+                &[base.as_bytes(), evidence.as_bytes()],
+            ))
+        })
+}
+
+fn encode_preservation(value: &LegacyPreservation) -> Vec<u8> {
+    let mut encoded = Vec::new();
+    append_bytes(&mut encoded, value.preservation_format.as_bytes());
+    append_bytes(&mut encoded, value.source_format.as_bytes());
+    encoded.extend_from_slice(value.source_digest.as_bytes());
+    append_bytes(&mut encoded, &value.source_bytes);
+    append_len(&mut encoded, value.observations.len());
+    for item in &value.observations {
+        encoded.push(item.scope);
+        encoded.extend_from_slice(&item.subject_ordinal.to_be_bytes());
+        encoded.extend_from_slice(&item.observation_ordinal.to_be_bytes());
+        append_bytes(&mut encoded, item.semantic_field.as_bytes());
+        append_bytes(&mut encoded, item.authority.format.as_bytes());
+        append_bytes(&mut encoded, item.authority.structure.as_bytes());
+        encoded.extend_from_slice(&item.authority.instance.to_be_bytes());
+        append_bytes(&mut encoded, &item.raw_value);
+        encode_preserved_value(&mut encoded, item.interpreted_value.as_ref());
+        encoded.extend_from_slice(&item.evidence.offset.to_be_bytes());
+        encoded.extend_from_slice(&item.evidence.length.to_be_bytes());
+        encoded.push(match item.validity {
+            crate::eam::PreservedLegacyValidity::Valid => 1,
+            crate::eam::PreservedLegacyValidity::Invalid => 2,
+            crate::eam::PreservedLegacyValidity::Uninterpreted => 3,
+        });
+    }
+    append_len(&mut encoded, value.conflicts.len());
+    for conflict in &value.conflicts {
+        encoded.extend_from_slice(&conflict.ordinal.to_be_bytes());
+        append_bytes(&mut encoded, conflict.semantic_field.as_bytes());
+        append_len(&mut encoded, conflict.authorities.len());
+        for authority in &conflict.authorities {
+            append_bytes(&mut encoded, authority.format.as_bytes());
+            append_bytes(&mut encoded, authority.structure.as_bytes());
+            encoded.extend_from_slice(&authority.instance.to_be_bytes());
+        }
+        append_len(&mut encoded, conflict.observed_values.len());
+        for observed in &conflict.observed_values {
+            encode_preserved_value(&mut encoded, Some(observed));
+        }
+        append_len(&mut encoded, conflict.evidence.len());
+        for location in &conflict.evidence {
+            encoded.extend_from_slice(&location.offset.to_be_bytes());
+            encoded.extend_from_slice(&location.length.to_be_bytes());
+        }
+        append_bytes(&mut encoded, conflict.classification.as_bytes());
+        if let Some(resolution) = &conflict.resolution {
+            encoded.push(1);
+            append_bytes(&mut encoded, resolution.action.as_bytes());
+            if let Some(authority) = &resolution.selected_authority {
+                encoded.push(1);
+                append_bytes(&mut encoded, authority.format.as_bytes());
+                append_bytes(&mut encoded, authority.structure.as_bytes());
+                encoded.extend_from_slice(&authority.instance.to_be_bytes());
+            } else {
+                encoded.push(0);
+            }
+        } else {
+            encoded.push(0);
+        }
+    }
+    append_len(&mut encoded, value.selected_resolutions.len());
+    for resolution in &value.selected_resolutions {
+        append_bytes(
+            &mut encoded,
+            &encode_conversion_resolution_identity(resolution),
+        );
+    }
+    encoded
+}
+
+fn encode_conversion_resolution_identity(value: &ConversionResolution) -> Vec<u8> {
+    let mut encoded = Vec::new();
+    append_bytes(&mut encoded, value.conflict_class.as_bytes());
+    append_bytes(&mut encoded, value.semantic_field.as_bytes());
+    encode_string_list(&mut encoded, &value.authorities);
+    encode_string_list(&mut encoded, &value.observed_values);
+    append_bytes(&mut encoded, value.action.as_bytes());
+    encoded
+}
+
+fn encode_preserved_value(encoded: &mut Vec<u8>, value: Option<&PreservedLegacyValue>) {
+    match value {
+        None => encoded.push(0),
+        Some(PreservedLegacyValue::Bytes(value)) => {
+            encoded.push(1);
+            append_bytes(encoded, value);
+        }
+        Some(PreservedLegacyValue::Unsigned(value)) => {
+            encoded.push(2);
+            encoded.extend_from_slice(&value.to_be_bytes());
+        }
+        Some(PreservedLegacyValue::Signed(value)) => {
+            encoded.push(3);
+            encoded.extend_from_slice(&value.to_be_bytes());
+        }
+        Some(PreservedLegacyValue::Text(value)) => {
+            encoded.push(4);
+            append_bytes(encoded, value.as_bytes());
+        }
+        Some(PreservedLegacyValue::Boolean(value)) => {
+            encoded.push(5);
+            encoded.push(u8::from(*value));
+        }
+    }
 }
 
 fn encode_conversion(value: &ConversionProvenance) -> Vec<u8> {

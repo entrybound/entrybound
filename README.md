@@ -60,10 +60,12 @@ establishes:
 - capability-relative, component-at-a-time extraction with exclusive file and
   directory creation, collision refusal, and pre-materialization verification;
 - working `pack`, `unpack`, `list`, `inspect`, `verify`, compression `explain`,
-  strict ZIP `convert`, `sign`, and authenticated `key` CLI commands;
+  strict/compatibility/preservation ZIP `convert`, `sign`, and authenticated
+  `key` CLI commands;
 - a format-neutral Legacy Observation Model, independent ZIP local/central/
   descriptor evidence, strict ZIP32/ZIP64 STORE/DEFLATE reconciliation, and an
-  AUX-bound in-band conversion provenance record;
+  AUX-bound in-band conversion provenance plus optional exact-source/LOM
+  preservation evidence;
 - capture and restoration of `core.mtime` and, on Unix, `core.executable`, with
   an in-band FidelityReport for metadata the bootstrap does not preserve;
 - caller-owned resource limits enforced against the archive declaration before
@@ -100,6 +102,10 @@ checking the foreign authorities, decompressed length, and CRC-32:
 
 ```sh
 ebound convert input.zip converted.eb --strict
+ebound convert input.zip python-compatible.eb --compat=zip/python-zipfile@3.13.5
+ebound convert input.zip preserved.eb --preserve \
+  --compat=zip/java-zipfile@21.0.12.1
+ebound convert input.zip ignored.eb --compat=zip/libarchive-bsdtar@3.8.8 --dry-run
 ebound verify converted.eb
 ebound inspect converted.eb
 ebound unpack converted.eb ./restored-zip
@@ -269,5 +275,7 @@ operational encrypted-INDEXED/signature subset, and the
 freshness, timestamp trust, and recipient mutation architecture, and
 [Legacy Observation Model note](docs/legacy-observation-model-v1.md) and
 [strict ZIP import note](docs/zip-import-v1.md) for foreign evidence,
+[versioned ZIP compatibility profiles](docs/zip-compatibility-profiles-v1.md),
+[legacy preservation v1](docs/legacy-preservation-v1.md),
 reconciliation, bomb limits, and auxiliary conversion provenance, and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

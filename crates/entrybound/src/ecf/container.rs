@@ -2,17 +2,18 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::records::{
     DescriptorBody, DescriptorDeclarations, decode_chunk_groups, decode_conversion,
-    decode_descriptor, decode_dictionaries, decode_fidelity, decode_index, decode_manifest,
-    decode_reconstruction_regions, decode_reconstruction_section, decode_transform_plans,
-    decode_transform_plans_v2, decode_transform_plans_v3, encode_chunk_groups, encode_conversion,
-    encode_descriptor, encode_dictionaries, encode_fidelity, encode_index, encode_manifest,
-    encode_reconstruction_regions, encode_reconstruction_section, encode_transform_plans,
-    encode_transform_plans_v2, encode_transform_plans_v3,
+    decode_descriptor, decode_dictionaries, decode_fidelity, decode_index,
+    decode_legacy_preservation, decode_manifest, decode_reconstruction_regions,
+    decode_reconstruction_section, decode_transform_plans, decode_transform_plans_v2,
+    decode_transform_plans_v3, encode_chunk_groups, encode_conversion, encode_descriptor,
+    encode_dictionaries, encode_fidelity, encode_index, encode_legacy_preservation,
+    encode_manifest, encode_reconstruction_regions, encode_reconstruction_section,
+    encode_transform_plans, encode_transform_plans_v2, encode_transform_plans_v3,
 };
 use super::{
     CHUNK_FRAME_HEADER_LEN, CHUNK_FRAME_V2_HEADER_LEN, FEATURE_CODEC_TRANSFORM_V1,
     FEATURE_CONVERSION_PROVENANCE_V1, FEATURE_CROSS_FILE_COMPRESSION_V1,
-    FEATURE_RECONSTRUCTIVE_TRANSFORM_V1, FEATURE_STREAM_LAYOUT_V1,
+    FEATURE_LEGACY_PRESERVATION_V1, FEATURE_RECONSTRUCTIVE_TRANSFORM_V1, FEATURE_STREAM_LAYOUT_V1,
     FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1, FOOTER_LEN, FORMAT_NAMESPACE, FormatVersion, MAGIC,
     PREAMBLE_LEN, SECTION_HEADER_LEN, SUPPORTED_INCOMPAT_FEATURES, SectionKind,
 };
@@ -163,6 +164,9 @@ pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> 
     let mut fidelity_payload = encode_fidelity(&archive.fidelity)?;
     if let Some(conversion) = &archive.conversion {
         fidelity_payload.extend_from_slice(&encode_conversion(conversion)?);
+    }
+    if let Some(preservation) = &archive.preservation {
+        fidelity_payload.extend_from_slice(&encode_legacy_preservation(preservation)?);
     }
 
     let mut body = Vec::new();
@@ -753,20 +757,25 @@ fn concat_records(records: &[Vec<u8>]) -> Result<Vec<u8>> {
 pub(super) fn decode_auxiliary_payload(
     payload: &[u8],
     conversion_feature: bool,
+    preservation_feature: bool,
 ) -> Result<(
     crate::eam::FidelityReport,
     Option<crate::eam::ConversionProvenance>,
+    Option<crate::eam::LegacyPreservation>,
 )> {
     let (_, consumed) = crate::canonical::decode_record(payload)?;
     let fidelity = decode_fidelity(&payload[..consumed])?;
-    let trailing = &payload[consumed..];
+    let mut trailing = &payload[consumed..];
     let conversion = if conversion_feature {
         if trailing.is_empty() {
             return Err(noncanonical(
                 "conversion-provenance-v1 requires one type-28 record",
             ));
         }
-        Some(decode_conversion(trailing)?)
+        let (_, conversion_len) = crate::canonical::decode_record(trailing)?;
+        let value = decode_conversion(&trailing[..conversion_len])?;
+        trailing = &trailing[conversion_len..];
+        Some(value)
     } else {
         if !trailing.is_empty() {
             return Err(noncanonical(
@@ -775,7 +784,24 @@ pub(super) fn decode_auxiliary_payload(
         }
         None
     };
-    Ok((fidelity, conversion))
+    let preservation = if preservation_feature {
+        if !conversion_feature || trailing.is_empty() {
+            return Err(noncanonical(
+                "legacy-preservation-v1 requires conversion provenance and one type-30 record",
+            ));
+        }
+        let value = decode_legacy_preservation(trailing)?;
+        trailing = &[];
+        Some(value)
+    } else {
+        None
+    };
+    if !trailing.is_empty() {
+        return Err(noncanonical(
+            "Fidelity payload has an undeclared trailing semantic record",
+        ));
+    }
+    Ok((fidelity, conversion, preservation))
 }
 
 /// Opens and fully verifies canonical bootstrap ECF bytes.
@@ -916,9 +942,10 @@ fn open_with_limits_internal(
             regions: &reconstruction_regions,
         },
     )?;
-    let (fidelity, conversion) = decode_auxiliary_payload(
+    let (fidelity, conversion, preservation) = decode_auxiliary_payload(
         fidelity_section.payload,
         preamble.features.incompat & FEATURE_CONVERSION_PROVENANCE_V1 != 0,
+        preamble.features.incompat & FEATURE_LEGACY_PRESERVATION_V1 != 0,
     )?;
 
     let index_section = sections
@@ -966,6 +993,7 @@ fn open_with_limits_internal(
         transform_plans: plans,
         fidelity,
         conversion,
+        preservation,
         index,
     };
     archive.validate()?;
@@ -1339,6 +1367,11 @@ pub(super) fn derived_budget(
         metadata_bound = metadata_bound
             .checked_add(u64_len(&encode_conversion(conversion)?)?)
             .ok_or_else(|| resource("metadata and conversion-provenance budget overflow"))?;
+    }
+    if let Some(preservation) = &archive.preservation {
+        metadata_bound = metadata_bound
+            .checked_add(u64_len(&encode_legacy_preservation(preservation)?)?)
+            .ok_or_else(|| resource("metadata and legacy-preservation budget overflow"))?;
     }
     if has_reconstructive_feature(archive.descriptor.features) {
         metadata_bound = metadata_bound

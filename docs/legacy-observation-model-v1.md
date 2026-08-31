@@ -1,7 +1,8 @@
 # Legacy Observation Model v1
 
 Status: implemented experimental adapter contract. This document freezes the
-boundary used by `zip-strict/v1`; it does not add foreign semantics to EAM.
+boundary used by strict, compatibility, and preservation ZIP import; it does
+not add foreign semantics to EAM.
 
 ## Pipeline and authority
 
@@ -70,10 +71,15 @@ type-5 FidelityReport record in the FIDELITY section. In STREAM, both records
 are carried in the one FIDELITY manifest item. Absence of the feature preserves
 the historical single-record payload exactly.
 
-## Extension rules
+## Policy implementations
 
-Future compatibility profiles may resolve Divergence differently, and a
-future preservation mode may retain more foreign evidence. They must consume
-the same observations, name the policy/version in provenance, and must not
-weaken EAM or silently redefine `strict`. A new adapter/parser behavior requires
-a new adapter identifier.
+`Strict`, `Compatibility(CompatibilityProfileId)`, and
+`Preservation(CompatibilityProfileId)` consume the same immutable observation.
+Compatibility can resolve Divergence only through a frozen exact-version rule.
+Preservation uses that projection and adds the exact source plus structured LOM
+evidence under feature `0x4000`; it never changes EAM authority. See
+[zip-compatibility-profiles-v1.md](zip-compatibility-profiles-v1.md) and
+[legacy-preservation-v1.md](legacy-preservation-v1.md).
+
+New parser behavior requires a new adapter version. Changed runtime behavior
+requires a new profile ID; strict behavior is never silently updated.

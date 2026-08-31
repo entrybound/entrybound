@@ -26,7 +26,7 @@ use entrybound::ecf::{
     StreamWriteOptions, WriteOptions, bootstrap_sequential_limits, encode, encode_stream, open,
     open_stream_with_limits, peek_layout,
 };
-use entrybound::legacy::zip::{ZipImportPolicy, import_strict};
+use entrybound::legacy::zip::{CompatibilityProfileId, ImportPolicy, ZipImportPolicy, import};
 use entrybound::planner::CompressionProfile;
 use zeroize::Zeroizing;
 
@@ -40,7 +40,9 @@ Usage:\n\
                                 [--recipient <file> ... | --password]\n\
                                 [--pad bucketed|none|max]\n\
                                 [--chunk-boundary default|keyed-prf]\n\
-  ebound convert <input.zip> <output.eb|-> [--strict] [--from zip]\n\
+  ebound convert <input.zip> <output.eb|-> [--strict|--compat=<versioned-profile>]\n\
+                         [--preserve --compat=<versioned-profile>] [--dry-run]\n\
+                         [--from zip]\n\
                          [--layout indexed|stream]\n\
                          [--profile fast|balanced|dense|extreme]\n\
   ebound unpack <archive.eb|-> [destination] [--identity <file>|--password]\n\
@@ -119,14 +121,18 @@ and --pad max uses the maximum class. The encrypted boundary default is a\n\
 secret AFK-derived Gear table; --chunk-boundary keyed-prf selects PHTE/AES-128.\n";
 
 const CONVERT_HELP: &str = "\
-Usage: ebound convert <input.zip> <output.eb|-> [--strict] [--from zip]\n\
+Usage: ebound convert <input.zip> <output.eb|->\n\
+                      [--strict | --compat=<versioned-profile>]\n\
+                      [--preserve --compat=<versioned-profile>] [--dry-run]\n\
+                      [--from zip]\n\
                       [--layout indexed|stream]\n\
                       [--profile fast|balanced|dense|extreme]\n\
 \n\
-Strict ZIP import independently observes central-directory, local-header, and\n\
-data-descriptor authorities. Divergent semantic claims, unsafe names, unknown\n\
-methods, encryption, and special files are refused. ZIP compression is decoded\n\
-and CRC/size verified before plaintext enters the ordinary native planner.\n";
+All modes consume one independent observation of central-directory, local-header,\n\
+and data-descriptor authorities. Strict refuses divergence. A named, exact-version\n\
+compatibility profile applies its checked behavioral rules; preserve additionally\n\
+retains the exact ZIP and structured evidence. Preserve requires --compat. Unsafe\n\
+paths, unbounded output, encryption, and special files are always refused.\n";
 
 const SIGN_HELP: &str = "\
 Usage: ebound sign <archive.eb> --signing-key <file>\n\
@@ -722,7 +728,7 @@ fn command_pack(arguments: Vec<OsString>) -> Result<()> {
 }
 
 // ---------------------------------------------------------------------------
-// strict legacy conversion
+// legacy conversion policies
 // ---------------------------------------------------------------------------
 
 fn command_convert(arguments: Vec<OsString>) -> Result<()> {
@@ -734,6 +740,9 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
     let mut profile = None;
     let mut layout = None;
     let mut strict = false;
+    let mut compat = None;
+    let mut preserve = false;
+    let mut dry_run = false;
     let mut from = None;
     let mut cursor = 0;
     while cursor < arguments.len() {
@@ -743,6 +752,36 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
                 return Err(usage("convert accepts --strict only once"));
             }
             strict = true;
+        } else if value == "--preserve" {
+            if preserve {
+                return Err(usage("convert accepts --preserve only once"));
+            }
+            preserve = true;
+        } else if value == "--dry-run" {
+            if dry_run {
+                return Err(usage("convert accepts --dry-run only once"));
+            }
+            dry_run = true;
+        } else if let Some(profile_id) = value
+            .to_str()
+            .and_then(|value| value.strip_prefix("--compat="))
+        {
+            if compat.is_some() {
+                return Err(usage("convert accepts --compat only once"));
+            }
+            compat = Some(profile_id.parse::<CompatibilityProfileId>()?);
+        } else if value == "--compat" {
+            if compat.is_some() {
+                return Err(usage("convert accepts --compat only once"));
+            }
+            cursor += 1;
+            compat = Some(
+                arguments
+                    .get(cursor)
+                    .and_then(|value| value.to_str())
+                    .ok_or_else(|| usage("--compat requires an exact versioned profile"))?
+                    .parse::<CompatibilityProfileId>()?,
+            );
         } else if value == "--from" {
             if from.is_some() {
                 return Err(usage("convert accepts --from only once"));
@@ -801,8 +840,18 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
             "strict legacy import currently supports only ZIP",
         ));
     }
-    // Strict is the sole production policy in v1 and therefore the default.
-    let _ = strict;
+    if strict && compat.is_some() {
+        return Err(usage("--strict and --compat are mutually exclusive"));
+    }
+    if preserve && compat.is_none() {
+        return Err(usage("--preserve requires --compat=<versioned-profile>"));
+    }
+    let import_policy = match (preserve, compat) {
+        (true, Some(profile)) => ImportPolicy::Preservation(profile),
+        (false, Some(profile)) => ImportPolicy::Compatibility(profile),
+        (false, None) => ImportPolicy::Strict,
+        (true, None) => unreachable!("validated above"),
+    };
     let input = PathBuf::from(&positionals[0]);
     let destination = if positionals[1] == OsStr::new("-") {
         Destination::Stdout
@@ -813,54 +862,82 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
         Destination::Stdout => Layout::Stream,
         Destination::Path(_) => Layout::Indexed,
     });
-    let imported = import_strict(
+    let imported = import(
         &read(&input)?,
         ZipImportPolicy::default(),
         profile.unwrap_or_default(),
+        import_policy,
     )?;
     let status = Status {
         to_stderr: matches!(destination, Destination::Stdout),
     };
-    let (identities, output_entries) = match layout {
-        Layout::Indexed => {
-            let encoded = encode(&imported.archive, WriteOptions::default())?;
-            write_archive_destination(&destination, &encoded.bytes)?;
-            (encoded.identities, encoded.archive.entry_set.len())
+    let (identities, output_entries) = if dry_run {
+        match layout {
+            Layout::Indexed => {
+                let encoded = encode(&imported.archive, WriteOptions::default())?;
+                (encoded.identities, encoded.archive.entry_set.len())
+            }
+            Layout::Stream => {
+                let mut discarded = Vec::new();
+                let summary = encode_stream(
+                    &imported.archive,
+                    StreamWriteOptions::default(),
+                    &mut discarded,
+                )?;
+                (summary.identities, summary.archive.entry_set.len())
+            }
         }
-        Layout::Stream => {
-            let summary = match &destination {
-                Destination::Stdout => {
-                    let stdout = std::io::stdout();
-                    let mut handle = stdout.lock();
-                    let summary = encode_stream(
-                        &imported.archive,
-                        StreamWriteOptions::default(),
-                        &mut handle,
-                    )?;
-                    handle
-                        .flush()
-                        .map_err(|error| io_error("flush standard output", &error))?;
-                    summary
-                }
-                Destination::Path(path) => {
-                    let mut file = create_exclusive(path)?;
-                    match encode_stream(&imported.archive, StreamWriteOptions::default(), &mut file)
-                    {
-                        Ok(summary) => summary,
-                        Err(error) => {
-                            drop(file);
-                            let _ = std::fs::remove_file(path);
-                            return Err(error);
+    } else {
+        match layout {
+            Layout::Indexed => {
+                let encoded = encode(&imported.archive, WriteOptions::default())?;
+                write_archive_destination(&destination, &encoded.bytes)?;
+                (encoded.identities, encoded.archive.entry_set.len())
+            }
+            Layout::Stream => {
+                let summary = match &destination {
+                    Destination::Stdout => {
+                        let stdout = std::io::stdout();
+                        let mut handle = stdout.lock();
+                        let summary = encode_stream(
+                            &imported.archive,
+                            StreamWriteOptions::default(),
+                            &mut handle,
+                        )?;
+                        handle
+                            .flush()
+                            .map_err(|error| io_error("flush standard output", &error))?;
+                        summary
+                    }
+                    Destination::Path(path) => {
+                        let mut file = create_exclusive(path)?;
+                        match encode_stream(
+                            &imported.archive,
+                            StreamWriteOptions::default(),
+                            &mut file,
+                        ) {
+                            Ok(summary) => summary,
+                            Err(error) => {
+                                drop(file);
+                                let _ = std::fs::remove_file(path);
+                                return Err(error);
+                            }
                         }
                     }
-                }
-            };
-            (summary.identities, summary.archive.entry_set.len())
+                };
+                (summary.identities, summary.archive.entry_set.len())
+            }
         }
     };
     let observation = &imported.report.observation;
     status.line("source: ZIP");
-    status.line("mode: strict");
+    status.line(format!("mode: {}", import_policy.mode()));
+    if let Some(profile) = import_policy.compatibility_profile() {
+        status.line(format!("compat-profile: {}", profile.as_str()));
+    }
+    if import_policy.preserves_evidence() {
+        status.line("preservation: exact-source + observations");
+    }
     status.line(format!("entries observed: {}", observation.entries.len()));
     let provenance = imported
         .archive
@@ -880,9 +957,17 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
         imported.report.synthesized_ancestors.len(),
     ));
     status.line(format!(
-        "OK converted {output_entries} native entries into {} {}",
-        layout.as_str(),
-        describe(&destination),
+        "OK {} {output_entries} native entries{}",
+        if dry_run {
+            "dry-run resolved"
+        } else {
+            "converted"
+        },
+        if dry_run {
+            String::new()
+        } else {
+            format!(" into {} {}", layout.as_str(), describe(&destination))
+        },
     ));
     print_identities(&status, &identities);
     Ok(())
@@ -1824,6 +1909,36 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
             conversion.resolutions.len(),
             conversion.synthesized_ancestors.len(),
         );
+        for resolution in conversion.resolutions.iter().take(16) {
+            println!(
+                "conversion resolution: class={} field={} action={}",
+                resolution.conflict_class, resolution.semantic_field, resolution.action
+            );
+        }
+    }
+    if let Some(preservation) = &view.preservation {
+        let opaque = preservation
+            .observations
+            .iter()
+            .filter(|item| {
+                matches!(
+                    item.validity,
+                    entrybound::eam::PreservedLegacyValidity::Uninterpreted
+                )
+            })
+            .count();
+        println!("preservation format: {}", preservation.preservation_format);
+        println!(
+            "preserved source: bytes={} digest={}",
+            preservation.source_bytes.len(),
+            preservation.source_digest
+        );
+        println!(
+            "preservation evidence: observations={} conflicts={} opaque={} exact-source-recovery=yes",
+            preservation.observations.len(),
+            preservation.conflicts.len(),
+            opaque
+        );
     }
     let budget = view.declared_resources;
     println!(
@@ -2424,6 +2539,76 @@ mod tests {
             b"zip conversion"
         );
         std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn compat_preserve_and_dry_run_workflows_are_explicit() {
+        let id = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
+        let root = std::env::temp_dir().join(format!(
+            "entrybound-cli-zip-compat-{}-{id}",
+            std::process::id()
+        ));
+        std::fs::create_dir(&root).unwrap();
+        let input = root.join("source.zip");
+        let dry_output = root.join("dry-run.eb");
+        let archive = root.join("preserved.eb");
+        std::fs::write(&input, store_zip(b"file", b"compatibility")).unwrap();
+
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("convert"),
+            input.as_os_str().to_owned(),
+            dry_output.as_os_str().to_owned(),
+            OsString::from("--compat=zip/java-zipfile@21.0.12.1"),
+            OsString::from("--dry-run"),
+            OsString::from("--profile"),
+            OsString::from("fast"),
+        ])
+        .unwrap();
+        assert!(!dry_output.exists());
+
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("convert"),
+            input.as_os_str().to_owned(),
+            archive.as_os_str().to_owned(),
+            OsString::from("--preserve"),
+            OsString::from("--compat=zip/java-zipfile@21.0.12.1"),
+            OsString::from("--profile"),
+            OsString::from("fast"),
+        ])
+        .unwrap();
+        let opened = entrybound::ecf::open(&std::fs::read(&archive).unwrap()).unwrap();
+        assert_eq!(
+            entrybound::legacy::zip::recover_preserved_source(&opened.archive)
+                .unwrap()
+                .as_ref(),
+            std::fs::read(&input).unwrap()
+        );
+        assert!(opened.archive.preservation.is_some());
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn preserve_requires_an_exact_compatibility_profile() {
+        let error = run(args(&[
+            "ebound",
+            "convert",
+            "source.zip",
+            "output.eb",
+            "--preserve",
+        ]))
+        .unwrap_err();
+        assert_eq!(error.code(), ReasonCode::CommandUsage);
+        let error = run(args(&[
+            "ebound",
+            "convert",
+            "source.zip",
+            "output.eb",
+            "--compat=zip/java",
+        ]))
+        .unwrap_err();
+        assert_eq!(error.code(), ReasonCode::UnsupportedRequiredFeature);
     }
 
     #[test]

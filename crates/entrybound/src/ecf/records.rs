@@ -5,10 +5,13 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     ChunkGroup, ConversionProvenance, ConversionResolution, Criticality, DecodeRequirements,
     Dictionary, Digest, Entry, EntryData, EntryIdentity, EntrySet, FidelityIssue, FidelityReport,
-    LogicalPath, MetadataItem, MetadataName, MetadataSet, PathComponent, PathEncoding,
-    ReconstructionAudit, ReconstructionAuditReason, ReconstructionAuditTarget, ReconstructionData,
-    ReconstructionFallbackReason, ReconstructionRegion, RegionAccessCost, ResourceBudget,
-    Restorability, Timestamp, TimestampPrecision, TransformPlan, TransformStep,
+    LegacyPreservation, LogicalPath, MetadataItem, MetadataName, MetadataSet, PathComponent,
+    PathEncoding, PreservedLegacyAuthority, PreservedLegacyConflict, PreservedLegacyLocation,
+    PreservedLegacyObservation, PreservedLegacyResolution, PreservedLegacyValidity,
+    PreservedLegacyValue, ReconstructionAudit, ReconstructionAuditReason,
+    ReconstructionAuditTarget, ReconstructionData, ReconstructionFallbackReason,
+    ReconstructionRegion, RegionAccessCost, ResourceBudget, Restorability, Timestamp,
+    TimestampPrecision, TransformPlan, TransformStep,
 };
 
 pub(super) const RECORD_DESCRIPTOR: u16 = 1;
@@ -32,6 +35,13 @@ pub(super) const RECORD_RECONSTRUCTION_REGION: u16 = 18;
 pub(super) const RECORD_RECONSTRUCTION_AUDIT_V2: u16 = 19;
 pub(super) const RECORD_CONVERSION_PROVENANCE: u16 = 28;
 const RECORD_CONVERSION_RESOLUTION: u16 = 29;
+pub(super) const RECORD_LEGACY_PRESERVATION: u16 = 30;
+const RECORD_LEGACY_OBSERVATION: u16 = 31;
+const RECORD_LEGACY_CONFLICT: u16 = 32;
+const RECORD_LEGACY_AUTHORITY: u16 = 33;
+const RECORD_LEGACY_VALUE: u16 = 34;
+const RECORD_LEGACY_LOCATION: u16 = 35;
+const RECORD_LEGACY_RESOLUTION: u16 = 36;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) struct DescriptorBody {
@@ -1415,6 +1425,352 @@ fn decode_conversion_resolution(record: Record<'_>) -> Result<ConversionResoluti
         observed_values: decode_string_sequence(record.field(4)?.as_bytes()?)?.into_boxed_slice(),
         action: record.field(5)?.as_utf8()?.to_owned(),
     })
+}
+
+pub(super) fn encode_legacy_preservation(value: &LegacyPreservation) -> Result<Vec<u8>> {
+    let observations = value
+        .observations
+        .iter()
+        .map(encode_legacy_observation)
+        .collect::<Result<Vec<_>>>()?;
+    let conflicts = value
+        .conflicts
+        .iter()
+        .map(encode_legacy_conflict)
+        .collect::<Result<Vec<_>>>()?;
+    let resolutions = value
+        .selected_resolutions
+        .iter()
+        .map(encode_conversion_resolution)
+        .collect::<Result<Vec<_>>>()?;
+    let mut record = RecordBuilder::new(RECORD_LEGACY_PRESERVATION);
+    record
+        .utf8(1, &value.preservation_format)?
+        .utf8(2, &value.source_format)?
+        .bytes(3, value.source_digest.as_bytes())?
+        .bytes(4, &value.source_bytes)?
+        .bytes(5, &concat_records(&observations))?
+        .bytes(6, &concat_records(&conflicts))?
+        .bytes(7, &concat_records(&resolutions))?;
+    record.finish()
+}
+
+pub(super) fn decode_legacy_preservation(bytes: &[u8]) -> Result<LegacyPreservation> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() || record.kind != RECORD_LEGACY_PRESERVATION || record.version != 1 {
+        return Err(noncanonical(
+            "LegacyPreservation must be exactly one type-30/version-1 record",
+        ));
+    }
+    record.expect_tags(&[1, 2, 3, 4, 5, 6, 7], &[])?;
+    let observations = decode_record_stream(record.field(5)?.as_bytes()?)?
+        .into_iter()
+        .map(decode_legacy_observation)
+        .collect::<Result<Vec<_>>>()?;
+    let conflicts = decode_record_stream(record.field(6)?.as_bytes()?)?
+        .into_iter()
+        .map(decode_legacy_conflict)
+        .collect::<Result<Vec<_>>>()?;
+    let resolutions = decode_record_stream(record.field(7)?.as_bytes()?)?
+        .into_iter()
+        .map(decode_conversion_resolution)
+        .collect::<Result<Vec<_>>>()?;
+    let value = LegacyPreservation {
+        preservation_format: record.field(1)?.as_utf8()?.to_owned(),
+        source_format: record.field(2)?.as_utf8()?.to_owned(),
+        source_digest: digest(record.field(3)?.as_bytes()?)?,
+        source_bytes: record.field(4)?.as_bytes()?.to_vec().into_boxed_slice(),
+        observations: observations.into_boxed_slice(),
+        conflicts: conflicts.into_boxed_slice(),
+        selected_resolutions: resolutions.into_boxed_slice(),
+    };
+    if value.preservation_format != "legacy-preservation/v1"
+        || value.source_format != "ZIP"
+        || value.observations.windows(2).any(|pair| {
+            (
+                pair[0].scope,
+                pair[0].subject_ordinal,
+                pair[0].observation_ordinal,
+            ) >= (
+                pair[1].scope,
+                pair[1].subject_ordinal,
+                pair[1].observation_ordinal,
+            )
+        })
+        || value
+            .conflicts
+            .windows(2)
+            .any(|pair| pair[0].ordinal >= pair[1].ordinal)
+        || value
+            .selected_resolutions
+            .windows(2)
+            .any(|pair| pair[0] >= pair[1])
+        || crate::identity::sha256_exact(&value.source_bytes) != value.source_digest
+    {
+        return Err(noncanonical("LegacyPreservation invariants are invalid"));
+    }
+    if encode_legacy_preservation(&value)? != bytes {
+        return Err(noncanonical("LegacyPreservation is not canonical"));
+    }
+    Ok(value)
+}
+
+fn encode_legacy_observation(value: &PreservedLegacyObservation) -> Result<Vec<u8>> {
+    let authority = encode_legacy_authority(&value.authority)?;
+    let location = encode_legacy_location(value.evidence)?;
+    let interpreted = value
+        .interpreted_value
+        .as_ref()
+        .map(encode_legacy_value)
+        .transpose()?;
+    let mut record = RecordBuilder::new(RECORD_LEGACY_OBSERVATION);
+    record
+        .u8(1, value.scope)?
+        .u64(2, value.subject_ordinal)?
+        .u64(3, value.observation_ordinal)?
+        .utf8(4, &value.semantic_field)?
+        .bytes(5, &authority)?
+        .bytes(6, &value.raw_value)?;
+    if let Some(interpreted) = interpreted {
+        record.bytes(7, &interpreted)?;
+    }
+    record.bytes(8, &location)?.u8(
+        9,
+        match value.validity {
+            PreservedLegacyValidity::Valid => 1,
+            PreservedLegacyValidity::Invalid => 2,
+            PreservedLegacyValidity::Uninterpreted => 3,
+        },
+    )?;
+    record.finish()
+}
+
+fn decode_legacy_observation(record: Record<'_>) -> Result<PreservedLegacyObservation> {
+    if record.kind != RECORD_LEGACY_OBSERVATION || record.version != 1 {
+        return Err(noncanonical(
+            "preservation observation has a wrong record type",
+        ));
+    }
+    record.expect_tags(&[1, 2, 3, 4, 5, 6, 8, 9], &[7])?;
+    let validity = match record.field(9)?.as_u8()? {
+        1 => PreservedLegacyValidity::Valid,
+        2 => PreservedLegacyValidity::Invalid,
+        3 => PreservedLegacyValidity::Uninterpreted,
+        _ => return Err(noncanonical("unknown preserved observation validity")),
+    };
+    Ok(PreservedLegacyObservation {
+        scope: record.field(1)?.as_u8()?,
+        subject_ordinal: record.field(2)?.as_u64()?,
+        observation_ordinal: record.field(3)?.as_u64()?,
+        semantic_field: record.field(4)?.as_utf8()?.to_owned(),
+        authority: decode_one_nested(record.field(5)?.as_bytes()?, decode_legacy_authority)?,
+        raw_value: record.field(6)?.as_bytes()?.to_vec().into_boxed_slice(),
+        interpreted_value: record
+            .optional_field(7)
+            .map(|field| decode_one_nested(field.as_bytes()?, decode_legacy_value))
+            .transpose()?,
+        evidence: decode_one_nested(record.field(8)?.as_bytes()?, decode_legacy_location)?,
+        validity,
+    })
+}
+
+fn encode_legacy_conflict(value: &PreservedLegacyConflict) -> Result<Vec<u8>> {
+    let authorities = value
+        .authorities
+        .iter()
+        .map(encode_legacy_authority)
+        .collect::<Result<Vec<_>>>()?;
+    let observed_values = value
+        .observed_values
+        .iter()
+        .map(encode_legacy_value)
+        .collect::<Result<Vec<_>>>()?;
+    let evidence = value
+        .evidence
+        .iter()
+        .copied()
+        .map(encode_legacy_location)
+        .collect::<Result<Vec<_>>>()?;
+    let resolution = value
+        .resolution
+        .as_ref()
+        .map(encode_legacy_resolution)
+        .transpose()?;
+    let mut record = RecordBuilder::new(RECORD_LEGACY_CONFLICT);
+    record
+        .u64(1, value.ordinal)?
+        .utf8(2, &value.semantic_field)?
+        .bytes(3, &concat_records(&authorities))?
+        .bytes(4, &concat_records(&observed_values))?
+        .bytes(5, &concat_records(&evidence))?
+        .utf8(6, &value.classification)?;
+    if let Some(resolution) = resolution {
+        record.bytes(7, &resolution)?;
+    }
+    record.finish()
+}
+
+fn decode_legacy_conflict(record: Record<'_>) -> Result<PreservedLegacyConflict> {
+    if record.kind != RECORD_LEGACY_CONFLICT || record.version != 1 {
+        return Err(noncanonical(
+            "preservation conflict has a wrong record type",
+        ));
+    }
+    record.expect_tags(&[1, 2, 3, 4, 5, 6], &[7])?;
+    Ok(PreservedLegacyConflict {
+        ordinal: record.field(1)?.as_u64()?,
+        semantic_field: record.field(2)?.as_utf8()?.to_owned(),
+        authorities: decode_record_stream(record.field(3)?.as_bytes()?)?
+            .into_iter()
+            .map(decode_legacy_authority)
+            .collect::<Result<Vec<_>>>()?
+            .into_boxed_slice(),
+        observed_values: decode_record_stream(record.field(4)?.as_bytes()?)?
+            .into_iter()
+            .map(decode_legacy_value)
+            .collect::<Result<Vec<_>>>()?
+            .into_boxed_slice(),
+        evidence: decode_record_stream(record.field(5)?.as_bytes()?)?
+            .into_iter()
+            .map(decode_legacy_location)
+            .collect::<Result<Vec<_>>>()?
+            .into_boxed_slice(),
+        classification: record.field(6)?.as_utf8()?.to_owned(),
+        resolution: record
+            .optional_field(7)
+            .map(|field| decode_one_nested(field.as_bytes()?, decode_legacy_resolution))
+            .transpose()?,
+    })
+}
+
+fn encode_legacy_authority(value: &PreservedLegacyAuthority) -> Result<Vec<u8>> {
+    let mut record = RecordBuilder::new(RECORD_LEGACY_AUTHORITY);
+    record
+        .utf8(1, &value.format)?
+        .utf8(2, &value.structure)?
+        .u64(3, value.instance)?;
+    record.finish()
+}
+
+fn decode_legacy_authority(record: Record<'_>) -> Result<PreservedLegacyAuthority> {
+    if record.kind != RECORD_LEGACY_AUTHORITY || record.version != 1 {
+        return Err(noncanonical(
+            "preservation authority has a wrong record type",
+        ));
+    }
+    record.expect_tags(&[1, 2, 3], &[])?;
+    Ok(PreservedLegacyAuthority {
+        format: record.field(1)?.as_utf8()?.to_owned(),
+        structure: record.field(2)?.as_utf8()?.to_owned(),
+        instance: record.field(3)?.as_u64()?,
+    })
+}
+
+fn encode_legacy_value(value: &PreservedLegacyValue) -> Result<Vec<u8>> {
+    let mut record = RecordBuilder::new(RECORD_LEGACY_VALUE);
+    match value {
+        PreservedLegacyValue::Bytes(value) => {
+            record.u8(1, 1)?.bytes(2, value)?;
+        }
+        PreservedLegacyValue::Unsigned(value) => {
+            record.u8(1, 2)?.u64(2, *value)?;
+        }
+        PreservedLegacyValue::Signed(value) => {
+            record.u8(1, 3)?.i64(2, *value)?;
+        }
+        PreservedLegacyValue::Text(value) => {
+            record.u8(1, 4)?.utf8(2, value)?;
+        }
+        PreservedLegacyValue::Boolean(value) => {
+            record.u8(1, 5)?.bool(2, *value)?;
+        }
+    }
+    record.finish()
+}
+
+fn decode_legacy_value(record: Record<'_>) -> Result<PreservedLegacyValue> {
+    if record.kind != RECORD_LEGACY_VALUE || record.version != 1 {
+        return Err(noncanonical("preservation value has a wrong record type"));
+    }
+    record.expect_tags(&[1, 2], &[])?;
+    match record.field(1)?.as_u8()? {
+        1 => Ok(PreservedLegacyValue::Bytes(
+            record.field(2)?.as_bytes()?.to_vec().into_boxed_slice(),
+        )),
+        2 => Ok(PreservedLegacyValue::Unsigned(record.field(2)?.as_u64()?)),
+        3 => Ok(PreservedLegacyValue::Signed(record.field(2)?.as_i64()?)),
+        4 => Ok(PreservedLegacyValue::Text(
+            record.field(2)?.as_utf8()?.to_owned(),
+        )),
+        5 => Ok(PreservedLegacyValue::Boolean(record.field(2)?.as_bool()?)),
+        _ => Err(noncanonical("unknown preserved value type")),
+    }
+}
+
+fn encode_legacy_location(value: PreservedLegacyLocation) -> Result<Vec<u8>> {
+    let mut record = RecordBuilder::new(RECORD_LEGACY_LOCATION);
+    record.u64(1, value.offset)?.u64(2, value.length)?;
+    record.finish()
+}
+
+fn decode_legacy_location(record: Record<'_>) -> Result<PreservedLegacyLocation> {
+    if record.kind != RECORD_LEGACY_LOCATION || record.version != 1 {
+        return Err(noncanonical(
+            "preservation location has a wrong record type",
+        ));
+    }
+    record.expect_tags(&[1, 2], &[])?;
+    Ok(PreservedLegacyLocation {
+        offset: record.field(1)?.as_u64()?,
+        length: record.field(2)?.as_u64()?,
+    })
+}
+
+fn encode_legacy_resolution(value: &PreservedLegacyResolution) -> Result<Vec<u8>> {
+    let authority = value
+        .selected_authority
+        .as_ref()
+        .map(encode_legacy_authority)
+        .transpose()?;
+    let mut record = RecordBuilder::new(RECORD_LEGACY_RESOLUTION);
+    record.utf8(1, &value.action)?;
+    if let Some(authority) = authority {
+        record.bytes(2, &authority)?;
+    }
+    record.finish()
+}
+
+fn decode_legacy_resolution(record: Record<'_>) -> Result<PreservedLegacyResolution> {
+    if record.kind != RECORD_LEGACY_RESOLUTION || record.version != 1 {
+        return Err(noncanonical(
+            "preservation resolution has a wrong record type",
+        ));
+    }
+    record.expect_tags(&[1], &[2])?;
+    Ok(PreservedLegacyResolution {
+        action: record.field(1)?.as_utf8()?.to_owned(),
+        selected_authority: record
+            .optional_field(2)
+            .map(|field| decode_one_nested(field.as_bytes()?, decode_legacy_authority))
+            .transpose()?,
+    })
+}
+
+fn decode_one_nested<T>(bytes: &[u8], decode: impl FnOnce(Record<'_>) -> Result<T>) -> Result<T> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() {
+        return Err(noncanonical("nested canonical record has trailing bytes"));
+    }
+    decode(record)
+}
+
+fn concat_records(records: &[Vec<u8>]) -> Vec<u8> {
+    let length = records.iter().map(Vec::len).sum();
+    let mut output = Vec::with_capacity(length);
+    for record in records {
+        output.extend_from_slice(record);
+    }
+    output
 }
 
 fn encode_string_sequence(values: &[String]) -> Result<Vec<u8>> {

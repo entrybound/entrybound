@@ -221,6 +221,7 @@ pub(crate) fn replan_archive_encrypted(
         transform_plans: Box::default(),
         fidelity: source.fidelity.clone(),
         conversion: source.conversion.clone(),
+        preservation: source.preservation.clone(),
         index: Index::default(),
     };
     plan_archive_v6(&mut archive, profile)?;
@@ -649,6 +650,7 @@ impl Scan {
             transform_plans: Box::default(),
             fidelity,
             conversion,
+            preservation: None,
             index: Index::default(),
         };
         plan_archive_v6(&mut archive, profile)?;
@@ -665,11 +667,17 @@ pub(crate) fn plan_observed_archive(
     files: Vec<Box<[u8]>>,
     fidelity: FidelityReport,
     conversion: ConversionProvenance,
+    preservation: Option<crate::eam::LegacyPreservation>,
     profile: CompressionProfile,
 ) -> Result<Archive> {
     let mut archive =
         Scan { entries, files }.finish_with(profile, None, fidelity, Some(conversion))?;
+    archive.preservation = preservation;
     archive.descriptor.features.incompat |= FEATURE_CONVERSION_PROVENANCE_V1;
+    if archive.preservation.is_some() {
+        archive.descriptor.features.incompat |= crate::ecf::FEATURE_LEGACY_PRESERVATION_V1;
+    }
+    let (archive, _) = crate::identity::apply_native_identities(&archive)?;
     Ok(archive)
 }
 
