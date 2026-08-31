@@ -21,6 +21,8 @@ path = "src/bin/entrybound.rs"
 
 [dependencies]
 entrybound = { path = "../entrybound" }
+rpassword = "=7.4.0"
+zeroize = { version = "=1.9.0", features = ["alloc"] }
 
 [lints]
 workspace = true

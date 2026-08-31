@@ -62,7 +62,13 @@ pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 = FEATURE_CROSS_FILE_COMPRESSI
     | FEATURE_CODEC_TRANSFORM_V1
     | FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
     | FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1
-    | FEATURE_STREAM_LAYOUT_V1;
+    | FEATURE_STREAM_LAYOUT_V1
+    | crate::crypto::CRYPTO_FEATURES;
+
+pub(crate) use container::{
+    EncryptedDecodedParts, EncryptedPlainParts, open_encrypted_plain_parts,
+    prepare_encrypted_plain_parts,
+};
 
 /// Versioned namespace for the experimental encoding.
 pub const FORMAT_NAMESPACE: &str = "ecf/bootstrap-v1";

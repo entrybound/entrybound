@@ -323,6 +323,337 @@ pub fn encode(input: &Archive, options: WriteOptions) -> Result<EncodedArchive> 
     })
 }
 
+/// Canonical private pieces consumed by the encrypted INDEXED writer.
+///
+/// These are the same record/frame encoders as unencrypted INDEXED. Crypto
+/// framing changes their visibility and physical organization, not EAM facts.
+pub(crate) struct EncryptedPlainParts {
+    pub(crate) archive: Archive,
+    pub(crate) roots: crate::identity::NativeRoots,
+    pub(crate) descriptor: Vec<u8>,
+    pub(crate) transform_plans: Vec<Vec<u8>>,
+    pub(crate) dictionaries: Vec<Vec<u8>>,
+    pub(crate) chunk_groups: Vec<Vec<u8>>,
+    pub(crate) reconstruction_data: Vec<Vec<u8>>,
+    pub(crate) reconstruction_regions: Vec<Vec<u8>>,
+    pub(crate) chunk_frames: Vec<Vec<u8>>,
+    pub(crate) manifest: Vec<Vec<u8>>,
+    pub(crate) fidelity: Vec<u8>,
+}
+
+/// Produces the authoritative canonical records/frames for crypto-v1.
+pub(crate) fn prepare_encrypted_plain_parts(input: &Archive) -> Result<EncryptedPlainParts> {
+    input.validate()?;
+    validate_plans(&input.transform_plans)?;
+    validate_feature_model(input)?;
+    let (mut archive, roots) = apply_native_identities(input)?;
+    let extended = has_cross_file_feature(archive.descriptor.features);
+    let reconstructive = has_reconstructive_feature(archive.descriptor.features);
+    let whole_object = has_whole_object_feature(archive.descriptor.features);
+    for plan in &archive.transform_plans {
+        let required = crate::codec::required_features(plan)?;
+        if required & !archive.descriptor.features.incompat != 0 {
+            return Err(Diagnostic::new(
+                OutcomeClass::Unsupported,
+                ReasonCode::UnsupportedRequiredFeature,
+                format!(
+                    "TransformPlan {} requires undeclared features",
+                    plan.plan_id
+                ),
+            ));
+        }
+    }
+    let plans_payload = if whole_object {
+        encode_transform_plans_v3(&archive.transform_plans)?
+    } else if reconstructive {
+        encode_transform_plans_v2(&archive.transform_plans)?
+    } else {
+        encode_transform_plans(
+            &archive.transform_plans,
+            has_codec_transform_feature(archive.descriptor.features),
+        )?
+    };
+    let dictionaries_payload = encode_dictionaries(&archive.content_store.dictionaries)?;
+    let groups_payload = encode_chunk_groups(&archive.content_store.chunk_groups)?;
+    let reconstruction_payload = encode_reconstruction_section(
+        &archive.content_store.reconstruction_data,
+        &archive.content_store.reconstruction_fallbacks,
+    )?;
+    let regions_payload = encode_reconstruction_regions(
+        &archive.content_store.reconstruction_regions,
+        &archive.content_store.reconstruction_audits,
+    )?;
+    let (chunks_payload, relative_index) = encode_chunks(&archive, extended, whole_object)?;
+    normalize_descriptor(
+        &mut archive,
+        Some(&relative_index),
+        PhysicalDeclaration::INDEXED,
+    )?;
+    let descriptor = encode_descriptor(&DescriptorBody {
+        namespace: FORMAT_NAMESPACE.to_owned(),
+        identity_profile: 1,
+        digest_algorithm: 1,
+        planner_id: archive.descriptor.planner_id.clone(),
+        chunker_id: archive.descriptor.chunker_id.clone(),
+        lai: roots.lai.0,
+        pcr: roots.pcr.0,
+        aux: roots.aux.0,
+    })?;
+    let manifest_payload = encode_manifest(&archive.entry_set, &archive.content_store.objects)?;
+    let fidelity = encode_fidelity(&archive.fidelity)?;
+    let header_len = usize::try_from(chunk_frame_header_len(extended))
+        .map_err(|_| resource("Chunk frame header exceeds usize"))?;
+    let mut chunk_frames = Vec::new();
+    let mut cursor = 0usize;
+    while cursor < chunks_payload.len() {
+        let header_end = cursor
+            .checked_add(header_len)
+            .ok_or_else(|| resource("Chunk frame header offset overflow"))?;
+        let header_bytes = chunks_payload
+            .get(cursor..header_end)
+            .ok_or_else(|| structure("Chunk frame header is truncated"))?;
+        let header = parse_chunk_frame_header(header_bytes, extended, whole_object)?;
+        let end = header_end
+            .checked_add(
+                usize::try_from(header.stored_len)
+                    .map_err(|_| resource("Chunk frame payload exceeds usize"))?,
+            )
+            .ok_or_else(|| resource("Chunk frame extent overflow"))?;
+        chunk_frames.push(
+            chunks_payload
+                .get(cursor..end)
+                .ok_or_else(|| structure("Chunk frame payload is truncated"))?
+                .to_vec(),
+        );
+        cursor = end;
+    }
+    Ok(EncryptedPlainParts {
+        archive,
+        roots,
+        descriptor,
+        transform_plans: split_canonical_records(&plans_payload)?,
+        dictionaries: split_canonical_records(&dictionaries_payload)?,
+        chunk_groups: split_canonical_records(&groups_payload)?,
+        reconstruction_data: split_canonical_records(&reconstruction_payload)?,
+        reconstruction_regions: split_canonical_records(&regions_payload)?,
+        chunk_frames,
+        manifest: split_canonical_records(&manifest_payload)?,
+        fidelity,
+    })
+}
+
+fn split_canonical_records(mut input: &[u8]) -> Result<Vec<Vec<u8>>> {
+    let mut records = Vec::new();
+    while !input.is_empty() {
+        let (_, consumed) = crate::canonical::decode_record(input)?;
+        records.push(input[..consumed].to_vec());
+        input = &input[consumed..];
+    }
+    Ok(records)
+}
+
+pub(crate) struct EncryptedDecodedParts {
+    pub(crate) ordinary_features: FeatureSet,
+    pub(crate) descriptor: Vec<u8>,
+    pub(crate) transform_plans: Vec<Vec<u8>>,
+    pub(crate) dictionaries: Vec<Vec<u8>>,
+    pub(crate) chunk_groups: Vec<Vec<u8>>,
+    pub(crate) reconstruction_data: Vec<Vec<u8>>,
+    pub(crate) reconstruction_regions: Vec<Vec<u8>>,
+    pub(crate) chunk_frames: Vec<Vec<u8>>,
+    pub(crate) manifest: Vec<Vec<u8>>,
+    pub(crate) fidelity: Vec<u8>,
+    pub(crate) entry_count: u64,
+    pub(crate) total_logical: u64,
+}
+
+/// Re-enters the ordinary ECF semantic reader after crypto authentication.
+///
+/// The temporary container exists only in memory. Every semantic record and
+/// Chunk frame is the exact authenticated canonical byte sequence from EBPO;
+/// this avoids a second EAM parser or serialization-shaped model.
+pub(crate) fn open_encrypted_plain_parts(
+    parts: EncryptedDecodedParts,
+    policy: ResourceBudget,
+    decode_policy: DecodeRequirements,
+    encrypted_pci: crate::identity::PhysicalContainerIdentity,
+) -> Result<OpenedArchive> {
+    let extended = has_cross_file_feature(parts.ordinary_features);
+    let reconstructive = has_reconstructive_feature(parts.ordinary_features);
+    let whole_object = has_whole_object_feature(parts.ordinary_features);
+    let plans_payload = concat_records(&parts.transform_plans)?;
+    let dictionaries_payload = concat_records(&parts.dictionaries)?;
+    let groups_payload = concat_records(&parts.chunk_groups)?;
+    let reconstruction_payload = concat_records(&parts.reconstruction_data)?;
+    let regions_payload = concat_records(&parts.reconstruction_regions)?;
+    let chunks_payload = concat_records(&parts.chunk_frames)?;
+    let manifest_payload = concat_records(&parts.manifest)?;
+
+    let plans = if whole_object {
+        decode_transform_plans_v3(&plans_payload)?
+    } else if reconstructive {
+        decode_transform_plans_v2(&plans_payload)?
+    } else {
+        decode_transform_plans(
+            &plans_payload,
+            has_codec_transform_feature(parts.ordinary_features),
+        )?
+    };
+    let dictionaries = if extended {
+        decode_dictionaries(&dictionaries_payload)?
+    } else {
+        BTreeMap::new()
+    };
+    let groups = if extended {
+        decode_chunk_groups(&groups_payload)?
+    } else {
+        BTreeMap::new()
+    };
+    let decode = aggregate_archive_decode_requirements(&plans, &dictionaries, &groups)?;
+    enforce_decode_policy(decode, decode_policy)?;
+    let descriptor_body = decode_descriptor(&parts.descriptor)?;
+    let descriptor = ArchiveDescriptor {
+        format_major: FormatVersion::BOOTSTRAP.major,
+        format_minor: FormatVersion::BOOTSTRAP.minor,
+        format_namespace: descriptor_body.namespace,
+        features: parts.ordinary_features,
+        layout: Layout::Indexed,
+        role: ArchiveRole::Complete,
+        budget_declared: true,
+        stream_dedup_window: 0,
+        budget: ResourceBudget {
+            max_key_derivation_cost: 0,
+            ..policy
+        },
+        decode,
+        identity_profile: IdentityProfile::IdentityV1,
+        digest_algorithm: DigestAlgorithm::Sha256,
+        planner_id: descriptor_body.planner_id,
+        chunker_id: descriptor_body.chunker_id,
+        lai: descriptor_body.lai,
+        pcr: descriptor_body.pcr,
+        aux: descriptor_body.aux,
+        pci: None,
+    };
+    let mut body = Vec::new();
+    let descriptor_location = append_section(
+        &mut body,
+        SectionKind::Descriptor,
+        &parts.descriptor,
+        extended,
+        reconstructive,
+        whole_object,
+    )?;
+    append_section(
+        &mut body,
+        SectionKind::TransformPlans,
+        &plans_payload,
+        extended,
+        reconstructive,
+        whole_object,
+    )?;
+    if extended {
+        append_section(
+            &mut body,
+            SectionKind::Dictionaries,
+            &dictionaries_payload,
+            extended,
+            reconstructive,
+            whole_object,
+        )?;
+        append_section(
+            &mut body,
+            SectionKind::ChunkGroups,
+            &groups_payload,
+            extended,
+            reconstructive,
+            whole_object,
+        )?;
+    }
+    if reconstructive {
+        append_section(
+            &mut body,
+            SectionKind::ReconstructionData,
+            &reconstruction_payload,
+            extended,
+            reconstructive,
+            whole_object,
+        )?;
+    }
+    if whole_object {
+        append_section(
+            &mut body,
+            SectionKind::ReconstructionRegions,
+            &regions_payload,
+            extended,
+            reconstructive,
+            whole_object,
+        )?;
+    }
+    append_section(
+        &mut body,
+        SectionKind::ChunkData,
+        &chunks_payload,
+        extended,
+        reconstructive,
+        whole_object,
+    )?;
+    let manifest_location = append_section(
+        &mut body,
+        SectionKind::ManifestRecords,
+        &manifest_payload,
+        extended,
+        reconstructive,
+        whole_object,
+    )?;
+    append_section(
+        &mut body,
+        SectionKind::Fidelity,
+        &parts.fidelity,
+        extended,
+        reconstructive,
+        whole_object,
+    )?;
+    let footer_offset = PREAMBLE_LEN
+        .checked_add(u64_len(&body)?)
+        .ok_or_else(|| resource("temporary authenticated container length overflow"))?;
+    let total_len = footer_offset
+        .checked_add(FOOTER_LEN)
+        .ok_or_else(|| resource("temporary authenticated container length overflow"))?;
+    let preamble = encode_preamble(&descriptor, footer_offset)?;
+    let footer = encode_footer(
+        total_len,
+        absolute_section(descriptor_location),
+        absolute_section(manifest_location),
+        parts.entry_count,
+        parts.total_logical,
+        sha256_exact(&preamble),
+    );
+    let mut bytes = preamble;
+    bytes.extend_from_slice(&body);
+    bytes.extend_from_slice(&footer);
+    let mut opened = open_with_limits(&bytes, policy, decode_policy)?;
+    let exact_budget = derived_budget(&opened.archive, &opened.archive.index.chunks)?;
+    enforce_caller_policy(exact_budget, policy)?;
+    opened.archive.descriptor.budget = exact_budget;
+    opened.archive.descriptor.pci = Some(encrypted_pci.0);
+    opened.report.identities.pci = encrypted_pci;
+    Ok(opened)
+}
+
+fn concat_records(records: &[Vec<u8>]) -> Result<Vec<u8>> {
+    let total = records.iter().try_fold(0usize, |total, record| {
+        total
+            .checked_add(record.len())
+            .ok_or_else(|| resource("authenticated private collection exceeds usize"))
+    })?;
+    let mut bytes = Vec::with_capacity(total);
+    for record in records {
+        bytes.extend_from_slice(record);
+    }
+    Ok(bytes)
+}
+
 /// Opens and fully verifies canonical bootstrap ECF bytes.
 pub fn open(bytes: &[u8]) -> Result<OpenedArchive> {
     open_with_limits(

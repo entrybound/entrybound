@@ -1,7 +1,9 @@
 # Entrybound cryptographic architecture review v1
 
 Review date: 2026-08-30. Status: **security-design gate re-authorized after the
-canonical-wire correction below; production implementation not started**.
+canonical-wire correction below; encrypted-INDEXED implementation integrated,
+with complete wire-conformance still blocked by one frozen specification
+issue**.
 
 This is the rationale and adversarial-review record for the frozen choices in
 [crypto-suite-v1.md](crypto-suite-v1.md) and
@@ -9,6 +11,16 @@ This is the rationale and adversarial-review record for the frozen choices in
 unit tests alone establish security. A production implementation requires code
 review, standard and cross-implementation vectors, fuzzing, dependency review,
 and an external cryptographic audit.
+
+The implementation record is
+[crypto-implementation-v1.md](crypto-implementation-v1.md). Integration
+confirmed all selected primitives and canonical recipient-wrap vectors, but
+also found that the frozen type-1 Descriptor has no byte fields for the
+ResourceBudget and DecodeRequirements that this review says it carries. The
+implementation correctly did not invent a new record or tag. Public crypto
+limits and authenticated derived actual requirements preserve bounded decode,
+but the producer-authored private declaration remains a specification blocker
+for claiming complete wire conformance.
 
 ## Sources and review method
 

@@ -11,7 +11,10 @@ use cap_std::fs::PermissionsExt;
 use cap_std::fs::{Dir, DirEntry, Metadata, OpenOptions};
 
 use super::{CollisionPolicy, ConfinementMode, ExtractionPolicy};
-use crate::chunker::{chunk_ranges, select_parameters};
+use crate::chunker::{
+    EncryptedBoundaryKey, chunk_ranges, chunk_ranges_encrypted, select_parameters,
+    select_parameters_encrypted,
+};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, DecodeRequirements, Digest,
@@ -92,6 +95,23 @@ pub fn plan_directory(input: &Path, options: PackOptions) -> Result<Archive> {
 }
 
 fn build_archive(input: &Path, options: PackOptions) -> Result<Archive> {
+    build_archive_with_boundary(input, options, None)
+}
+
+pub(crate) fn plan_directory_encrypted(
+    input: &Path,
+    options: PackOptions,
+    boundary: &EncryptedBoundaryKey,
+    chunker_prefix: &'static str,
+) -> Result<Archive> {
+    build_archive_with_boundary(input, options, Some((boundary, chunker_prefix)))
+}
+
+fn build_archive_with_boundary(
+    input: &Path,
+    options: PackOptions,
+    boundary: Option<(&EncryptedBoundaryKey, &'static str)>,
+) -> Result<Archive> {
     let root_metadata = std::fs::symlink_metadata(input).map_err(|error| {
         Diagnostic::new(
             OutcomeClass::PolicyRefused,
@@ -126,7 +146,7 @@ fn build_archive(input: &Path, options: PackOptions) -> Result<Archive> {
     })?;
     let mut scan = Scan::default();
     scan_directory(&root, &[], options.source_retries, &mut scan)?;
-    scan.finish(options.profile)
+    scan.finish(options.profile, boundary)
 }
 
 /// Predictable CLI output name: the input's final name plus `.eb` in the CWD.
@@ -199,6 +219,25 @@ pub fn unpack(
     policy: ExtractionPolicy,
 ) -> Result<ExtractionReport> {
     let opened = open_with_limits(bytes, policy.budget(), policy.decode())?;
+    let chunks = opened.archive.content_store.chunks.clone();
+    materialize(
+        &opened.archive,
+        &mut RetainedChunks { chunks: &chunks },
+        destination,
+        policy,
+    )
+}
+
+/// Materializes a fully authenticated and verified opened archive.
+///
+/// Crypto callers use this only after recipient unlock, envelope/segment
+/// authentication, and ordinary EAM verification have all succeeded, so a
+/// failed credential or ciphertext never creates a destination object.
+pub fn unpack_opened(
+    opened: &crate::ecf::OpenedArchive,
+    destination: &Path,
+    policy: ExtractionPolicy,
+) -> Result<ExtractionReport> {
     let chunks = opened.archive.content_store.chunks.clone();
     materialize(
         &opened.archive,
@@ -371,13 +410,26 @@ struct Scan {
 }
 
 impl Scan {
-    fn finish(self, profile: CompressionProfile) -> Result<Archive> {
+    fn finish(
+        self,
+        profile: CompressionProfile,
+        boundary: Option<(&EncryptedBoundaryKey, &'static str)>,
+    ) -> Result<Archive> {
         let contents = self.files.iter().map(Box::as_ref).collect::<Vec<_>>();
-        let selection = select_parameters(&contents, profile.chunking_candidates())?;
+        let selection = if let Some((boundary, _)) = boundary {
+            select_parameters_encrypted(&contents, profile.chunking_candidates(), boundary)?
+        } else {
+            select_parameters(&contents, profile.chunking_candidates())?
+        };
         let mut objects = BTreeMap::new();
         let mut chunks = BTreeMap::new();
         for plaintext in &self.files {
-            let ranges = chunk_ranges(plaintext, selection.parameters)?
+            let selected_ranges = if let Some((boundary, _)) = boundary {
+                chunk_ranges_encrypted(plaintext, selection.parameters, boundary)?
+            } else {
+                chunk_ranges(plaintext, selection.parameters)?
+            };
+            let ranges = selected_ranges
                 .iter()
                 .map(|range| range.start..range.end)
                 .collect::<Vec<_>>();
@@ -432,7 +484,17 @@ impl Scan {
                 identity_profile: IdentityProfile::IdentityV1,
                 digest_algorithm: DigestAlgorithm::Sha256,
                 planner_id: profile.planner_id().to_owned(),
-                chunker_id: selection.parameters.chunker_id.to_owned(),
+                chunker_id: boundary.map_or_else(
+                    || selection.parameters.chunker_id.to_owned(),
+                    |(_, prefix)| {
+                        format!(
+                            "{prefix}/min-{}/target-{}/max-{}",
+                            selection.parameters.minimum_size,
+                            selection.parameters.target_size,
+                            selection.parameters.maximum_size
+                        )
+                    },
+                ),
                 lai: Digest::ZERO,
                 pcr: Digest::ZERO,
                 aux: Digest::ZERO,

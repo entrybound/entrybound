@@ -8,6 +8,7 @@ pub mod archive;
 mod canonical;
 pub mod chunker;
 mod codec;
+pub mod crypto;
 pub mod diagnostics;
 pub mod eam;
 pub mod ecf;

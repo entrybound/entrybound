@@ -65,6 +65,12 @@ establishes:
   an in-band FidelityReport for metadata the bootstrap does not preserve;
 - caller-owned resource limits enforced against the archive declaration before
   authoritative records are decoded.
+- metadata-private crypto-v1 `INDEXED` archives using the frozen
+  AES-256-GCM-SIV payload suite, X-Wing draft-10 hybrid recipients or a sole
+  Argon2id password recipient, authenticated segments, keyed encrypted CDC,
+  and authenticated record padding;
+- public-only encrypted inspection plus authenticated verify and unpack paths;
+  extraction still materializes nothing until the complete archive verifies.
 
 ## Native bootstrap workflow
 
@@ -79,6 +85,30 @@ ebound inspect example.eb
 ebound explain example.eb
 ebound unpack example.eb ./restored
 ```
+
+Encrypted crypto-v1 archives are `INDEXED` only. Recipient and identity files
+use the small experimental `EBK1` local-key wrapper; this is local tooling and
+is not part of the `.eb` wire format. The library exposes key generation and
+serialization while full key-management commands remain out of scope.
+
+```sh
+ebound pack ./example private.eb --recipient recipient.ebk
+ebound inspect private.eb --crypto
+ebound verify private.eb --identity identity.ebk
+ebound unpack private.eb ./restored-private --identity identity.ebk
+
+# Passwords are read from the controlling terminal and never from argv.
+ebound pack ./example private-password.eb --password
+ebound unpack private-password.eb ./restored-password --password
+```
+
+Repeated `--recipient` options create one hybrid archive for multiple X-Wing
+recipients. `--pad bucketed` is the default; `--pad none` deliberately leaks
+exact protected-record sizes and is reported as a privacy warning, while
+`--pad max` uses the frozen maximum record class. Encrypted creation uses a
+file-key-derived secret Gear table by default; `--chunk-boundary keyed-prf`
+selects the stronger PHTE/AES-128 mode. Encryption is intentionally
+nondeterministic even when logical identity is unchanged.
 
 Sequential workflows write and read the same archive model without seeking:
 
@@ -115,11 +145,11 @@ exact plaintext Chunk once, and measures complete-cost candidates across
 STORE, Zstandard, LZ4, raw LZMA2, structural pipelines, verified DEFLATE
 reconstruction, opportunistic JPEG/JPEG XL whole-object reconstruction, shared
 Zstandard dictionaries, and bounded Zstandard lookback.
-It writes only unencrypted Complete archives, in either the INDEXED or the
-STREAM layout. It
-supports UTF-8 directory names, directories, and regular files, and deliberately
-rejects symlinks and special files. There is no legacy ZIP/tar/7z import,
-encrypted STREAM layout, encryption, signing, remote range access, general
+It writes unencrypted Complete archives in INDEXED or STREAM layout and
+encrypted Complete archives in INDEXED layout. It supports UTF-8 directory
+names, directories, and regular files, and deliberately rejects symlinks and
+special files. There is no legacy ZIP/tar/7z import, encrypted STREAM layout,
+signing, recipient mutation, classical-only recipients, remote range access, general
 `repack`, lossy image recompression, guaranteed
 support for every JPEG producer/marker combination, embedded-stream scanning,
 unbounded solid compression, hardlink
@@ -136,7 +166,10 @@ total logical bytes, 16 GiB per file, 4,000,000 chunks, path depth 1,024, and
 1 GiB of manifest/metadata bytes. Decoder policy permits an 8 MiB codec window
 and 384 MiB aggregate working set, including LZMA2, stored-dictionary,
 bounded-group access, the bounded 80 MiB DEFLATE reconstruction working set,
-and the bounded 256 MiB JPEG/JPEG XL reconstruction working set. These are compatibility
+and the bounded 256 MiB JPEG/JPEG XL reconstruction working set. Crypto policy
+additionally caps recipient/envelope sizes, identity attempts, Argon2 work,
+segment/message counts, ciphertext/private-record sizes, and aggregate crypto
+working memory before attacker-controlled work. These are compatibility
 limits, not claims that every machine can safely process archives of those
 sizes; embedders can and should supply narrower caller-owned limits.
 
@@ -182,7 +215,9 @@ sequential wire shape, tagged items, dedup window, budget declaration, staging
 extraction, access complexity, and identity equivalence with INDEXED,
 [the crypto threat model](docs/crypto-threat-model-v1.md),
 [suite freeze](docs/crypto-suite-v1.md),
-[wire freeze](docs/crypto-wire-v1.md), and
-[security review](docs/crypto-review-v1.md) for the reviewed but deliberately
-unimplemented encryption/signature architecture, and
+[wire freeze](docs/crypto-wire-v1.md),
+[security review](docs/crypto-review-v1.md), and
+[crypto implementation note](docs/crypto-implementation-v1.md) for the
+operational encrypted-INDEXED subset and the still-unimplemented signature
+architecture, and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

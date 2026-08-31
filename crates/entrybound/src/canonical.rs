@@ -86,6 +86,10 @@ impl RecordBuilder {
         self.field(tag, FieldType::U8, &[value])
     }
 
+    pub(crate) fn u16(&mut self, tag: u16, value: u16) -> Result<&mut Self> {
+        self.field(tag, FieldType::U16, &value.to_be_bytes())
+    }
+
     pub(crate) fn u32(&mut self, tag: u16, value: u32) -> Result<&mut Self> {
         self.field(tag, FieldType::U32, &value.to_be_bytes())
     }
@@ -164,6 +168,10 @@ impl<'a> Field<'a> {
             return Err(noncanonical("u8 field must contain exactly one byte"));
         }
         Ok(value[0])
+    }
+
+    pub(crate) fn as_u16(self) -> Result<u16> {
+        Ok(u16::from_be_bytes(exact(self.require(FieldType::U16)?)?))
     }
 
     pub(crate) fn as_u32(self) -> Result<u32> {

@@ -6,6 +6,11 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
+use aes::{
+    Aes128, Block,
+    cipher::{BlockCipherEncrypt, KeyInit},
+};
+
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::Digest;
 use crate::identity::sha256_exact;
@@ -19,6 +24,18 @@ pub const CHUNK_REFERENCE_OVERHEAD_BYTES: u64 = 40;
 
 const GEAR_SEED: u64 = 0x6a09_e667_f3bc_c909;
 const GEAR_TABLE: [u64; 256] = gear_table();
+const PHTE_MODULUS: u128 = (1_u128 << 127) - 1;
+const PHTE_WINDOW: usize = 64;
+
+/// File-key-derived boundary material for encrypted archives.
+///
+/// This is creation-time state only. It is never serialized and never needed
+/// by a decoder, which consumes the resulting canonical Chunk references.
+#[derive(Clone, Eq, PartialEq)]
+pub enum EncryptedBoundaryKey {
+    SecretGearTable(Box<[u64; 256]>),
+    PhteAes128 { polynomial: u128, aes_key: [u8; 16] },
+}
 
 /// Frozen parameters for one `gear-norm-v1` policy.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -92,6 +109,31 @@ pub const EXTREME_V2: ChunkingParameters = ChunkingParameters {
 
 /// Finds canonical CDC ranges. Empty plaintext has no physical Chunks.
 pub fn chunk_ranges(plaintext: &[u8], parameters: ChunkingParameters) -> Result<Box<[ChunkRange]>> {
+    chunk_ranges_with_table(plaintext, parameters, &GEAR_TABLE)
+}
+
+/// Finds encrypted CDC ranges using the AFK-derived boundary construction.
+pub fn chunk_ranges_encrypted(
+    plaintext: &[u8],
+    parameters: ChunkingParameters,
+    key: &EncryptedBoundaryKey,
+) -> Result<Box<[ChunkRange]>> {
+    match key {
+        EncryptedBoundaryKey::SecretGearTable(table) => {
+            chunk_ranges_with_table(plaintext, parameters, table)
+        }
+        EncryptedBoundaryKey::PhteAes128 {
+            polynomial,
+            aes_key,
+        } => chunk_ranges_phte(plaintext, parameters, *polynomial, aes_key),
+    }
+}
+
+fn chunk_ranges_with_table(
+    plaintext: &[u8],
+    parameters: ChunkingParameters,
+    table: &[u64; 256],
+) -> Result<Box<[ChunkRange]>> {
     validate_parameters(parameters)?;
     if plaintext.is_empty() {
         return Ok(Box::default());
@@ -109,9 +151,7 @@ pub fn chunk_ranges(plaintext: &[u8], parameters: ChunkingParameters) -> Result<
         let mut hash = 0_u64;
         let mut end = limit;
         for (relative, byte) in plaintext[start..limit].iter().enumerate() {
-            hash = hash
-                .wrapping_shl(1)
-                .wrapping_add(GEAR_TABLE[usize::from(*byte)]);
+            hash = hash.wrapping_shl(1).wrapping_add(table[usize::from(*byte)]);
             let length = relative + 1;
             if length < parameters.minimum_size {
                 continue;
@@ -128,6 +168,75 @@ pub fn chunk_ranges(plaintext: &[u8], parameters: ChunkingParameters) -> Result<
         }
         ranges.push(ChunkRange { start, end });
         start = end;
+    }
+    validate_ranges(plaintext.len(), &ranges, parameters)?;
+    Ok(ranges.into_boxed_slice())
+}
+
+fn chunk_ranges_phte(
+    plaintext: &[u8],
+    parameters: ChunkingParameters,
+    polynomial: u128,
+    aes_key: &[u8; 16],
+) -> Result<Box<[ChunkRange]>> {
+    validate_parameters(parameters)?;
+    if polynomial >= PHTE_MODULUS {
+        return Err(resource("PHTE polynomial is not a canonical field element"));
+    }
+    if plaintext.is_empty() {
+        return Ok(Box::default());
+    }
+    let cipher = Aes128::new(aes_key.into());
+    let target_bits = parameters.target_size.trailing_zeros();
+    let early_mask = mask128(target_bits + 1)?;
+    let late_mask = mask128(target_bits - 1)?;
+    let outgoing_factor = field_pow(polynomial, (PHTE_WINDOW - 1) as u32);
+    let mut state = 0_u128;
+    let mut window = [0_u8; PHTE_WINDOW];
+    let mut seen = 0_usize;
+    let mut ranges = Vec::new();
+    let mut start = 0_usize;
+
+    for (index, byte) in plaintext.iter().copied().enumerate() {
+        if seen < PHTE_WINDOW {
+            state = field_add(field_mul(state, polynomial), u128::from(byte));
+            window[seen] = byte;
+            seen += 1;
+        } else {
+            let slot = index % PHTE_WINDOW;
+            let outgoing = field_mul(u128::from(window[slot]), outgoing_factor);
+            state = field_add(
+                field_mul(field_sub(state, outgoing), polynomial),
+                u128::from(byte),
+            );
+            window[slot] = byte;
+        }
+
+        let length = index + 1 - start;
+        if length < parameters.minimum_size {
+            continue;
+        }
+        let mut block = Block::from(state.to_be_bytes());
+        cipher.encrypt_block(&mut block);
+        let decision = u128::from_be_bytes(block.into());
+        let boundary_mask = if length < parameters.target_size {
+            early_mask
+        } else {
+            late_mask
+        };
+        if decision & boundary_mask == 0 || length == parameters.maximum_size {
+            ranges.push(ChunkRange {
+                start,
+                end: index + 1,
+            });
+            start = index + 1;
+        }
+    }
+    if start < plaintext.len() {
+        ranges.push(ChunkRange {
+            start,
+            end: plaintext.len(),
+        });
     }
     validate_ranges(plaintext.len(), &ranges, parameters)?;
     Ok(ranges.into_boxed_slice())
@@ -153,8 +262,52 @@ pub fn select_parameters(
     selected.ok_or_else(|| resource("chunking policy must contain at least one candidate"))
 }
 
+/// Selects encrypted CDC parameters using the complete framing/dedup cost.
+pub fn select_parameters_encrypted(
+    contents: &[&[u8]],
+    candidates: &[ChunkingParameters],
+    key: &EncryptedBoundaryKey,
+) -> Result<ChunkingEvaluation> {
+    let mut selected = None;
+    for parameters in candidates {
+        let evaluation = evaluate_encrypted(contents, *parameters, key)?;
+        if selected
+            .as_ref()
+            .is_none_or(|current: &ChunkingEvaluation| {
+                evaluation.estimated_cost_bytes < current.estimated_cost_bytes
+            })
+        {
+            selected = Some(evaluation);
+        }
+    }
+    selected.ok_or_else(|| resource("chunking policy must contain at least one candidate"))
+}
+
 /// Evaluates exact archive-wide dedup plus canonical framing/reference overhead.
 pub fn evaluate(contents: &[&[u8]], parameters: ChunkingParameters) -> Result<ChunkingEvaluation> {
+    evaluate_with(contents, parameters, |bytes, parameters| {
+        chunk_ranges(bytes, parameters)
+    })
+}
+
+fn evaluate_encrypted(
+    contents: &[&[u8]],
+    parameters: ChunkingParameters,
+    key: &EncryptedBoundaryKey,
+) -> Result<ChunkingEvaluation> {
+    evaluate_with(contents, parameters, |bytes, parameters| {
+        chunk_ranges_encrypted(bytes, parameters, key)
+    })
+}
+
+fn evaluate_with<F>(
+    contents: &[&[u8]],
+    parameters: ChunkingParameters,
+    mut ranges_for: F,
+) -> Result<ChunkingEvaluation>
+where
+    F: FnMut(&[u8], ChunkingParameters) -> Result<Box<[ChunkRange]>>,
+{
     let mut unique_objects = BTreeSet::<Digest>::new();
     let mut unique_chunks = BTreeMap::<Digest, u64>::new();
     let mut manifest_chunk_references = 0_u64;
@@ -163,7 +316,7 @@ pub fn evaluate(contents: &[&[u8]], parameters: ChunkingParameters) -> Result<Ch
         if !unique_objects.insert(object_id) {
             continue;
         }
-        let ranges = chunk_ranges(plaintext, parameters)?;
+        let ranges = ranges_for(plaintext, parameters)?;
         manifest_chunk_references = manifest_chunk_references
             .checked_add(
                 u64::try_from(ranges.len()).map_err(|_| resource("Chunk refs exceed u64"))?,
@@ -256,6 +409,54 @@ fn mask(bits: u32) -> Result<u64> {
         .checked_shl(bits)
         .map(|value| value - 1)
         .ok_or_else(|| resource("CDC mask width exceeds u64"))
+}
+
+fn mask128(bits: u32) -> Result<u128> {
+    1_u128
+        .checked_shl(bits)
+        .map(|value| value - 1)
+        .ok_or_else(|| resource("PHTE mask width exceeds u128"))
+}
+
+fn field_add(left: u128, right: u128) -> u128 {
+    let sum = left + right;
+    if sum >= PHTE_MODULUS {
+        sum - PHTE_MODULUS
+    } else {
+        sum
+    }
+}
+
+fn field_sub(left: u128, right: u128) -> u128 {
+    if left >= right {
+        left - right
+    } else {
+        PHTE_MODULUS - (right - left)
+    }
+}
+
+fn field_mul(mut left: u128, mut right: u128) -> u128 {
+    let mut product = 0_u128;
+    while right != 0 {
+        if right & 1 != 0 {
+            product = field_add(product, left);
+        }
+        left = field_add(left, left);
+        right >>= 1;
+    }
+    product
+}
+
+fn field_pow(mut base: u128, mut exponent: u32) -> u128 {
+    let mut result = 1_u128;
+    while exponent != 0 {
+        if exponent & 1 != 0 {
+            result = field_mul(result, base);
+        }
+        base = field_mul(base, base);
+        exponent >>= 1;
+    }
+    result
 }
 
 const fn gear_table() -> [u64; 256] {

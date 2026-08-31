@@ -33,9 +33,11 @@ are bounded before allocation.
 
 ## Container
 
-Two physical layouts are implemented, both role `Complete`, unencrypted, and
+Two unencrypted physical layouts are implemented, both role `Complete` and
 with only directory and regular-file entries. They encode the same EAM: LAI,
-PCR, and AUX are identical across layouts and only PCI differs.
+PCR, and AUX are identical across layouts and only PCI differs. Crypto v1 also
+implements metadata-private Complete INDEXED archives; encrypted STREAM remains
+unsupported.
 
 `INDEXED` is the random-access layout and consists of:
 
@@ -105,12 +107,13 @@ it changes only the container's physical organization and access capability. It
 is declared exactly when the preamble's layout discriminant is `2`. See
 [stream-layout-v1.md](stream-layout-v1.md).
 
-Cryptographic architecture is frozen but deliberately not implemented. The
-reserved required incompatibility bits are `0x20` (`encrypted-indexed-v1`),
+Cryptographic architecture is frozen and the encrypted-INDEXED subset is
+implemented. The required incompatibility bits are `0x20` (`encrypted-indexed-v1`),
 `0x40` (`payload-suite-v1`), `0x80` (`recipient-xwing-v1`), `0x100`
 (`recipient-password-v1`), `0x200` (`signature-ed25519-v1`), `0x400`
 (`crypto-padding-v1`), and `0x800` (`keyed-boundary-phte-v1`). Current readers
-continue to reject them as unsupported. Their future canonical records,
+accept the crypto bits only through the crypto-v1 INDEXED reader; `0x200`
+signatures remain unsupported. Canonical records,
 feature constraints, and footer v2 are frozen in
 [crypto-wire-v1.md](crypto-wire-v1.md); primitive and security rules are in
 [crypto-suite-v1.md](crypto-suite-v1.md).
@@ -120,8 +123,8 @@ authenticated encrypted objects: `EBPO` version 1 dispatches one canonical
 record, Chunk frame, or sequence payload; `EBCS` version 1 carries one of nine
 explicitly typed private collections. Crypto record type 22 is
 `RecipientDirectoryEntryV1` and type 27 is `EncryptedIndexEntryV1`. These
-assignments remain unimplemented and therefore unsupported by current readers;
-their exact bytes, limits, and collection ordering are normative only in
+assignments are implemented by the crypto-v1 reader; their exact bytes, limits,
+and collection ordering remain normative in
 [crypto-wire-v1.md](crypto-wire-v1.md).
 
 ## Digests
@@ -174,10 +177,11 @@ Required incompatibility feature bit `0x1` (`cross-file-compression-v1`)
 selects the extended schema: DESCRIPTOR (1), TRANSFORM_PLANS (2), DICTIONARIES
 (3), CHUNK_GROUPS (4), CHUNK_DATA (5), MANIFEST_RECORDS (6), FIDELITY (7), and
 optionally INDEX (8). Both new authoritative sections occur exactly once even
-when empty. The four currently recognized incompatibility bits are `0x1`,
-`0x2`, `0x4`, `0x8`, and `0x10`; readers reject every other unknown required
-bit, including the reserved but unimplemented crypto bits above. `0x2` changes only the
-TransformPlan field-3 item schema and may be combined with `0x1`, as v4 does.
+when empty. The unencrypted reader recognizes incompatibility bits `0x1`,
+`0x2`, `0x4`, `0x8`, and `0x10`; the crypto-v1 INDEXED reader additionally
+recognizes the implemented crypto bits listed above. Both reject every other
+unknown required bit. `0x2` changes only the TransformPlan field-3 item schema
+and may be combined with `0x1`, as v4 does.
 
 With `0x4`, the canonical extended schema is DESCRIPTOR (1), TRANSFORM_PLANS
 (2), DICTIONARIES (3), CHUNK_GROUPS (4), RECONSTRUCTION_DATA (5), CHUNK_DATA
@@ -309,7 +313,7 @@ cannot move them. STREAM selects an object-major frame order and therefore has a
 different `ContentStore::physical_order` than the INDEXED encoding of the same
 model; that field is physical only and participates in no identity.
 
-## Frozen cryptographic extension (not implemented)
+## Encrypted INDEXED cryptographic extension
 
 Crypto v1 is INDEXED-only and uses one non-negotiated PayloadSuite:
 AES-256-GCM-SIV, HKDF-SHA-256, HMAC-SHA-256, and SHA-256. A random 32-byte
@@ -338,8 +342,18 @@ commitment, archive ID) bindings. The precise transcript encodings, feature
 assignments, limits, vectors, and reason codes are normative in
 [crypto-wire-v1.md](crypto-wire-v1.md). The threat model and review record are
 [crypto-threat-model-v1.md](crypto-threat-model-v1.md) and
-[crypto-review-v1.md](crypto-review-v1.md). Reserving these bytes does not make
-the current Rust implementation cryptographically capable.
+[crypto-review-v1.md](crypto-review-v1.md). The implemented encrypted-INDEXED
+subset is recorded in
+[crypto-implementation-v1.md](crypto-implementation-v1.md); signatures and
+encrypted STREAM remain unsupported.
+
+Implementation exposed one frozen-wire contradiction: the canonical type-1
+Descriptor above has no ResourceBudget or DecodeRequirements fields although
+the crypto-v1 prose requires both inside the encrypted Descriptor. The current
+implementation does not invent undocumented fields; it applies public crypto
+limits during authentication, derives and caller-checks actual EAM/decode
+requirements before codec decode, and records the unresolved format issue in
+the implementation note.
 
 ## Index handling
 

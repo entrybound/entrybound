@@ -1,18 +1,20 @@
 # Entrybound cryptographic wire architecture v1
 
-Status: **frozen implementation specification; no production crypto exists**.
-This document assigns the records, feature bits, canonical transcripts, limits,
-and reason codes that the subsequent implementation must use. It extends
+Status: **frozen implementation specification; encrypted-INDEXED subset
+implemented**. This document assigns the records, feature bits, canonical
+transcripts, limits, and reason codes that implementations must use. It extends
 `ecf/bootstrap-v1` under required incompatibility features; it does not
-reinterpret historical unencrypted bytes.
+reinterpret historical unencrypted bytes. See
+[crypto-implementation-v1.md](crypto-implementation-v1.md) for implementation
+status and the unresolved canonical Descriptor resource-declaration mismatch.
 
 ## Numeric registry
 
 ### Required incompatibility features
 
 Existing bits `0x1` through `0x10` retain their meanings. The following values
-are reserved and frozen now but are not included in the current Rust reader's
-supported-feature mask until implemented:
+are frozen; implemented crypto-v1 bits are included in the Rust crypto reader's
+supported-feature mask, while signature bit `0x200` remains unsupported:
 
 | Bit | Name | Rule |
 |---:|---|---|

@@ -101,5 +101,21 @@ materializes only after the whole archive has verified. Do not write unverified
 content into a caller's destination, and do not require the archive plaintext in
 RAM.
 
+Crypto v1 is governed by `docs/crypto-suite-v1.md` and
+`docs/crypto-wire-v1.md`. Do not alter T1 fields, HKDF labels, recipient
+wrapping, segment nonces, associated data, padding buckets, boundary
+derivations, or feature/record assignments to fit an implementation. The
+`entrybound::crypto` module owns this closed suite and uses pinned RustCrypto,
+X-Wing, Argon2, and zeroization dependencies; it must not gain locally written
+cryptographic primitives or user-selectable algorithms. Permanent RFC,
+draft-10, and V1-V6 vectors are the external-conformance gate.
+
+Never print or derive `Debug`/`Display` for AFKs, identity seeds, method
+secrets, passwords, or derived keys. Check attacker-controlled KDF, stanza,
+segment, record, and allocation bounds before expensive work. No plaintext
+from an encrypted archive may reach the filesystem until the full archive has
+authenticated and passed ordinary EAM/identity verification. Encrypted STREAM
+must fail before any output is emitted.
+
 Generated conformance inputs belong in tests as format-building code, not as
 opaque binary fixtures. Each negative case must assert a stable reason code.

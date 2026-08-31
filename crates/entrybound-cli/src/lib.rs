@@ -8,7 +8,12 @@ use std::process::ExitCode;
 use entrybound::archive::{
     ConfinementMode, ExtractionPolicy, PackOptions, default_pack_output,
     default_unpack_destination, explain as compression_explain, inspect, list, plan_directory,
-    unpack, unpack_stream,
+    unpack, unpack_opened, unpack_stream,
+};
+use entrybound::crypto::{
+    BoundaryMode, CryptoPolicy, EncryptedOpenOptions, EncryptedWriteOptions,
+    FEATURE_ENCRYPTED_INDEXED_V1, PaddingMode, Unlock, XWingIdentity, XWingRecipient,
+    inspect_encrypted, open_encrypted, pack_directory_encrypted, verify_encrypted,
 };
 use entrybound::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use entrybound::eam::{ArchiveRole, EntryKind, Layout};
@@ -18,6 +23,7 @@ use entrybound::ecf::{
     open_stream_with_limits, peek_layout, verify,
 };
 use entrybound::planner::CompressionProfile;
+use zeroize::Zeroizing;
 
 const HELP: &str = "\
 Entrybound (experimental native bootstrap)\n\
@@ -26,10 +32,13 @@ Usage:\n\
   ebound pack <input-directory> [output.eb|-] [--layout indexed|stream]\n\
                                 [--stream-window <n>|auto]\n\
                                 [--profile fast|balanced|dense|extreme]\n\
-  ebound unpack <archive.eb|-> [destination]\n\
+                                [--recipient <file> ... | --password]\n\
+                                [--pad bucketed|none|max]\n\
+                                [--chunk-boundary default|keyed-prf]\n\
+  ebound unpack <archive.eb|-> [destination] [--identity <file>|--password]\n\
   ebound list <archive.eb|->\n\
-  ebound inspect <archive.eb|->\n\
-  ebound verify <archive.eb|->\n\
+  ebound inspect <archive.eb|-> [--crypto] [--identity <file>|--password]\n\
+  ebound verify <archive.eb|-> [--identity <file>|--password]\n\
   ebound explain <archive.eb|->\n\
 \n\
 This build supports unencrypted Complete archives in two physical layouts,\n\
@@ -44,6 +53,9 @@ Both layouts encode the same archive model: they produce identical LAI, PCR,\n\
 and AUX and differ only in PCI, physical organization, and access capability.\n\
 STREAM writes without seeking and reads without seeking, carries no Index, and\n\
 cannot resolve one entry without a full sequential pass.\n\
+Crypto v1 adds metadata-private encrypted INDEXED archives using either one\n\
+or more X-Wing draft-10 hybrid recipients, or one password-only Argon2id\n\
+recipient. Encrypted STREAM is deliberately unsupported.\n\
 \n\
 Use `-` for standard input or standard output. When archive bytes go to\n\
 standard output, all status output goes to standard error.\n\
@@ -54,8 +66,12 @@ const PACK_HELP: &str = "\
 Usage: ebound pack <input-directory> [output.eb|-] [--layout indexed|stream]\n\
                                      [--stream-window <n>|auto]\n\
                                      [--profile fast|balanced|dense|extreme]\n\
+                                     [--recipient <file> ... | --password]\n\
+                                     [--pad bucketed|none|max]\n\
+                                     [--chunk-boundary default|keyed-prf]\n\
 \n\
-Creates a deterministic native .eb archive. The default profile is balanced.\n\
+Creates a native .eb archive. Unencrypted output is deterministic; encrypted\n\
+output uses fresh secure randomness. The default profile is balanced.\n\
 Profiles are creation-time policy only; archives record their TransformPlans.\n\
 JPEG reconstruction is opportunistic, bounded, and committed only after an\n\
 exact byte round trip.\n\
@@ -71,7 +87,14 @@ sequential organization requires and declares exactly that minimum. Packing\n\
 fails with a typed diagnostic rather than silently raising a window you asked\n\
 for. Shared dictionaries are declared before use and do not themselves consume\n\
 the window; historical exact-Chunk references and bounded-lookback ChunkGroups\n\
-may require a non-zero window.\n";
+may require a non-zero window.\n\
+\n\
+--recipient may be repeated for X-Wing draft-10 recipients. --password creates\n\
+one password-only archive and prompts twice on the controlling terminal; the\n\
+two recipient modes cannot be mixed. Encryption is INDEXED-only. Encrypted\n\
+padding defaults to bucketed; --pad none is a recorded privacy-reducing opt-out\n\
+and --pad max uses the maximum class. The encrypted boundary default is a\n\
+secret AFK-derived Gear table; --chunk-boundary keyed-prf selects PHTE/AES-128.\n";
 
 fn run(arguments: impl IntoIterator<Item = OsString>) -> Result<()> {
     let mut arguments = arguments.into_iter();
@@ -151,6 +174,130 @@ struct Loaded {
     stream: Option<StreamReport>,
 }
 
+enum OwnedUnlock {
+    Identity(XWingIdentity),
+    Password(Zeroizing<String>),
+}
+
+impl OwnedUnlock {
+    fn borrowed(&self) -> Unlock<'_> {
+        match self {
+            Self::Identity(identity) => Unlock::Identity(identity),
+            Self::Password(password) => Unlock::Password(password.as_bytes()),
+        }
+    }
+}
+
+struct ReadArguments {
+    positionals: Vec<OsString>,
+    unlock: Option<OwnedUnlock>,
+    crypto: bool,
+}
+
+fn parse_read_arguments(
+    command: &str,
+    arguments: Vec<OsString>,
+    allow_crypto_flag: bool,
+) -> Result<ReadArguments> {
+    let mut positionals = Vec::new();
+    let mut identity = None;
+    let mut password = false;
+    let mut crypto = false;
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        let value = &arguments[cursor];
+        if value == "--identity" {
+            if identity.is_some() {
+                return Err(usage(format!("{command} accepts --identity only once")));
+            }
+            cursor += 1;
+            let path = arguments
+                .get(cursor)
+                .ok_or_else(|| usage("--identity requires an identity key file"))?;
+            identity = Some(PathBuf::from(path));
+        } else if value == "--password" {
+            if password {
+                return Err(usage(format!("{command} accepts --password only once")));
+            }
+            password = true;
+        } else if value == "--crypto" && allow_crypto_flag {
+            if crypto {
+                return Err(usage("inspect accepts --crypto only once"));
+            }
+            crypto = true;
+        } else if value.to_string_lossy().starts_with("--") {
+            return Err(usage(format!(
+                "{command} does not recognize option '{}'",
+                value.to_string_lossy()
+            )));
+        } else {
+            positionals.push(value.clone());
+        }
+        cursor += 1;
+    }
+    if password && identity.is_some() {
+        return Err(usage("--identity and --password cannot be combined"));
+    }
+    let unlock = if let Some(path) = identity {
+        warn_identity_permissions(&path);
+        Some(OwnedUnlock::Identity(XWingIdentity::read_file(&path)?))
+    } else if password {
+        Some(OwnedUnlock::Password(Zeroizing::new(prompt_password(
+            "Archive password: ",
+        )?)))
+    } else {
+        None
+    };
+    Ok(ReadArguments {
+        positionals,
+        unlock,
+        crypto,
+    })
+}
+
+#[cfg(unix)]
+fn warn_identity_permissions(path: &Path) {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    if std::fs::metadata(path).is_ok_and(|metadata| metadata.permissions().mode() & 0o077 != 0) {
+        eprintln!(
+            "warning: identity file '{}' is readable by group or other users",
+            path.display()
+        );
+    }
+}
+
+#[cfg(not(unix))]
+fn warn_identity_permissions(_path: &Path) {}
+
+fn prompt_password(prompt: &str) -> Result<String> {
+    rpassword::prompt_password(prompt).map_err(|error| {
+        Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::Io,
+            format!("cannot read password from the controlling terminal: {error}"),
+        )
+    })
+}
+
+fn path_is_encrypted(path: &Path) -> Result<bool> {
+    let mut preamble = [0_u8; 24];
+    let mut file = File::open(path).map_err(|error| read_error(path, &error))?;
+    let mut filled = 0;
+    while filled < preamble.len() {
+        match std::io::Read::read(&mut file, &mut preamble[filled..]) {
+            Ok(0) => break,
+            Ok(count) => filled += count,
+            Err(error) if error.kind() == std::io::ErrorKind::Interrupted => {}
+            Err(error) => return Err(read_error(path, &error)),
+        }
+    }
+    Ok(filled == preamble.len()
+        && &preamble[..8] == entrybound::ecf::MAGIC.as_slice()
+        && u64::from_be_bytes(preamble[16..24].try_into().unwrap()) & FEATURE_ENCRYPTED_INDEXED_V1
+            != 0)
+}
+
 /// Reads only the fixed preamble to learn which reader an archive needs.
 ///
 /// A STREAM archive that happens to sit in a seekable file is still a STREAM
@@ -216,6 +363,10 @@ fn command_pack(arguments: Vec<OsString>) -> Result<()> {
     let mut profile = None;
     let mut layout = None;
     let mut window = None;
+    let mut recipient_paths = Vec::new();
+    let mut password = false;
+    let mut padding = None;
+    let mut boundary = None;
     let mut cursor = 0;
     while cursor < arguments.len() {
         let value = &arguments[cursor];
@@ -259,6 +410,44 @@ fn command_pack(arguments: Vec<OsString>) -> Result<()> {
                     }
                 },
             );
+        } else if value == "--recipient" {
+            cursor += 1;
+            let path = arguments
+                .get(cursor)
+                .ok_or_else(|| usage("--recipient requires a recipient key file"))?;
+            recipient_paths.push(PathBuf::from(path));
+        } else if value == "--password" {
+            if password {
+                return Err(usage("pack accepts --password only once"));
+            }
+            password = true;
+        } else if value == "--pad" {
+            if padding.is_some() {
+                return Err(usage("pack accepts --pad only once"));
+            }
+            cursor += 1;
+            padding = Some(
+                match arguments.get(cursor).and_then(|value| value.to_str()) {
+                    Some("none") => PaddingMode::None,
+                    Some("bucketed") => PaddingMode::Bucketed,
+                    Some("max") => PaddingMode::Maximum,
+                    _ => return Err(usage("--pad requires 'bucketed', 'none', or 'max'")),
+                },
+            );
+        } else if value == "--chunk-boundary" {
+            if boundary.is_some() {
+                return Err(usage("pack accepts --chunk-boundary only once"));
+            }
+            cursor += 1;
+            boundary = Some(
+                match arguments.get(cursor).and_then(|value| value.to_str()) {
+                    Some("default") => BoundaryMode::SecretGearTable,
+                    Some("keyed-prf") => BoundaryMode::PhteAes128,
+                    _ => {
+                        return Err(usage("--chunk-boundary requires 'default' or 'keyed-prf'"));
+                    }
+                },
+            );
         } else if value.to_string_lossy().starts_with("--") {
             return Err(usage(format!(
                 "pack does not recognize option '{}'",
@@ -290,6 +479,26 @@ fn command_pack(arguments: Vec<OsString>) -> Result<()> {
     if window.is_some() && layout != Layout::Stream {
         return Err(usage("--stream-window applies only to --layout stream"));
     }
+    let encrypted = password || !recipient_paths.is_empty();
+    if password && !recipient_paths.is_empty() {
+        return Err(Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::CryptoRecipientPolicyInvalid,
+            "password and hybrid recipients cannot be mixed",
+        ));
+    }
+    if (padding.is_some() || boundary.is_some()) && !encrypted {
+        return Err(usage(
+            "--pad and --chunk-boundary require --recipient or --password",
+        ));
+    }
+    if encrypted && (layout == Layout::Stream || matches!(destination, Destination::Stdout)) {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::CryptoLayoutUnsupported,
+            "crypto v1 supports seekable INDEXED output only; no bytes were emitted",
+        ));
+    }
     let status = Status {
         to_stderr: matches!(destination, Destination::Stdout),
     };
@@ -297,6 +506,57 @@ fn command_pack(arguments: Vec<OsString>) -> Result<()> {
         profile: profile.unwrap_or_default(),
         ..PackOptions::default()
     };
+
+    if encrypted {
+        let recipients = recipient_paths
+            .iter()
+            .map(|path| XWingRecipient::read_file(path))
+            .collect::<Result<Vec<_>>>()?;
+        let password_value = if password {
+            let first = Zeroizing::new(prompt_password("Encryption password: ")?);
+            let second = Zeroizing::new(prompt_password("Confirm encryption password: ")?);
+            if *first != *second {
+                return Err(usage("password confirmation did not match"));
+            }
+            Some(first)
+        } else {
+            None
+        };
+        let encoded = pack_directory_encrypted(
+            &input,
+            options,
+            EncryptedWriteOptions {
+                recipients: &recipients,
+                password: password_value.as_ref().map(|value| value.as_bytes()),
+                padding: padding.unwrap_or_default(),
+                boundary: boundary.unwrap_or_default(),
+                include_index: options.include_index,
+            },
+        )?;
+        let Destination::Path(path) = &destination else {
+            unreachable!("encrypted stdout was rejected before planning")
+        };
+        let mut file = create_exclusive(path)?;
+        if let Err(error) = file
+            .write_all(&encoded.bytes)
+            .map_err(|error| io_error("write encrypted archive output", &error))
+        {
+            drop(file);
+            let _ = std::fs::remove_file(path);
+            return Err(error);
+        }
+        status.line(format!(
+            "OK packed and encrypted {} entries into {}",
+            encoded.archive.entry_set.len(),
+            path.display()
+        ));
+        status.line("layout INDEXED (encrypted crypto-v1)");
+        status.line(format!("padding {:?}", encoded.public.padding));
+        status.line(format!("boundary {:?}", encoded.public.boundary));
+        print_identities(&status, &encoded.identities);
+        status.line(format!("planner {}", encoded.archive.descriptor.planner_id));
+        return Ok(());
+    }
 
     // Planning happens before any output object is created, so a plan that
     // cannot be represented under the requested constraints never leaves a
@@ -406,11 +666,14 @@ fn describe(destination: &Destination) -> String {
 // ---------------------------------------------------------------------------
 
 fn command_unpack(arguments: Vec<OsString>) -> Result<()> {
-    if !(1..=2).contains(&arguments.len()) {
-        return Err(usage("unpack requires <archive.eb|-> [destination]"));
+    let parsed = parse_read_arguments("unpack", arguments, false)?;
+    if !(1..=2).contains(&parsed.positionals.len()) {
+        return Err(usage(
+            "unpack requires <archive.eb|-> [destination] [--identity <file>|--password]",
+        ));
     }
-    let source = Source::parse(&arguments[0]);
-    let destination = match arguments.get(1) {
+    let source = Source::parse(&parsed.positionals[0]);
+    let destination = match parsed.positionals.get(1) {
         Some(value) => PathBuf::from(value),
         None => match &source {
             Source::Stdin => {
@@ -422,6 +685,36 @@ fn command_unpack(arguments: Vec<OsString>) -> Result<()> {
         },
     };
     let status = Status { to_stderr: false };
+    let encrypted = match &source {
+        Source::Path(path) => path_is_encrypted(path)?,
+        Source::Stdin => parsed.unlock.is_some(),
+    };
+    if encrypted {
+        let bytes = read_source_fully(&source)?;
+        let unlock = parsed.unlock.as_ref().map(OwnedUnlock::borrowed);
+        let opened = open_encrypted(&bytes, EncryptedOpenOptions::new(unlock))?;
+        let report = unpack_opened(&opened, &destination, ExtractionPolicy::default())?;
+        status.line(format!(
+            "OK authenticated, verified, and unpacked {} entries and {} logical bytes into {}",
+            report.entries_created,
+            report.logical_bytes_written,
+            destination.display()
+        ));
+        status.line("layout: encrypted INDEXED crypto-v1");
+        status.line(format!(
+            "confinement: {}",
+            match report.confinement {
+                ConfinementMode::KernelEnforced => "kernel-enforced capability-relative",
+                ConfinementMode::WeakerReported => "weaker platform mode (reported)",
+            }
+        ));
+        return Ok(());
+    }
+    if parsed.unlock.is_some() {
+        return Err(usage(
+            "an identity/password was supplied for an unencrypted archive",
+        ));
+    }
     let (report, stream) = match &source {
         Source::Stdin => {
             let (report, stream) = unpack_stream(
@@ -506,9 +799,63 @@ fn command_list(arguments: Vec<OsString>) -> Result<()> {
 }
 
 fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
-    let source = one_source("inspect", arguments)?;
-    let loaded = load(&source, StreamContentPolicy::Verify)?;
-    let view = inspect(&loaded.opened)?;
+    let parsed = parse_read_arguments("inspect", arguments, true)?;
+    if parsed.positionals.len() != 1 {
+        return Err(usage(
+            "inspect requires <archive.eb|-> [--crypto] [--identity <file>|--password]",
+        ));
+    }
+    let source = Source::parse(&parsed.positionals[0]);
+    let encrypted = match &source {
+        Source::Path(path) => path_is_encrypted(path)?,
+        Source::Stdin => parsed.unlock.is_some(),
+    };
+    if parsed.crypto && !encrypted {
+        println!("encrypted: no");
+    }
+    let (view, stream) = if encrypted {
+        let bytes = read_source_fully(&source)?;
+        let result = inspect_encrypted(
+            &bytes,
+            parsed.unlock.as_ref().map(OwnedUnlock::borrowed),
+            CryptoPolicy::default(),
+        )?;
+        println!("encrypted: yes");
+        println!("payload suite: {}", result.public.payload_suite);
+        println!("recipient count: {}", result.public.recipient_count);
+        println!(
+            "recipient stanza types: {}",
+            result.public.recipient_types.join(", ")
+        );
+        println!("padding: {:?}", result.public.padding);
+        if result.public.padding == PaddingMode::None {
+            println!("privacy warning: encrypted-record padding is disabled");
+        }
+        println!("encrypted boundary mode: {:?}", result.public.boundary);
+        println!(
+            "encrypted segment count: {}",
+            result
+                .public
+                .segment_count
+                .expect("public encrypted scan reports segment count")
+        );
+        println!("container bytes: {}", result.public.total_container_bytes);
+        let Some(authenticated) = result.authenticated else {
+            println!(
+                "private archive metadata: locked; supply --identity or --password for authenticated inspection"
+            );
+            return Ok(());
+        };
+        (authenticated, None)
+    } else {
+        if parsed.unlock.is_some() {
+            return Err(usage(
+                "an identity/password was supplied for an unencrypted archive",
+            ));
+        }
+        let loaded = load(&source, StreamContentPolicy::Verify)?;
+        (inspect(&loaded.opened)?, loaded.stream)
+    };
     println!("format: {}", view.format_namespace);
     println!("version: {}.{}", view.version.major, view.version.minor);
     println!("layout: {}", view.layout.as_str());
@@ -640,7 +987,7 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
     println!("AUX: {}", view.identities.aux.0);
     println!("PCI: {}", view.identities.pci.0);
     println!("index: {}", index_status(view.index_status));
-    if let Some(stream) = &loaded.stream {
+    if let Some(stream) = &stream {
         println!(
             "stream body: bytes={}, chunk-frames={}, manifest-records={}, total-bytes={}",
             stream.body_len, stream.chunk_frames, stream.manifest_records, stream.total_len
@@ -812,7 +1159,50 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
 }
 
 fn command_verify(arguments: Vec<OsString>) -> Result<()> {
-    let source = one_source("verify", arguments)?;
+    let parsed = parse_read_arguments("verify", arguments, false)?;
+    if parsed.positionals.len() != 1 {
+        return Err(usage(
+            "verify requires <archive.eb|-> [--identity <file>|--password]",
+        ));
+    }
+    let source = Source::parse(&parsed.positionals[0]);
+    let encrypted = match &source {
+        Source::Path(path) => path_is_encrypted(path)?,
+        Source::Stdin => parsed.unlock.is_some(),
+    };
+    if encrypted {
+        let bytes = read_source_fully(&source)?;
+        let Some(unlock) = parsed.unlock.as_ref().map(OwnedUnlock::borrowed) else {
+            let public = inspect_encrypted(&bytes, None, CryptoPolicy::default())?;
+            println!(
+                "PUBLIC framing valid: encrypted={}, suite={}, recipients={}, padding={:?}, boundary={:?}",
+                public.public.encrypted,
+                public.public.payload_suite,
+                public.public.recipient_count,
+                public.public.padding,
+                public.public.boundary
+            );
+            println!(
+                "PRIVATE CONTENT UNVERIFIED: supply --identity or --password to authenticate and verify the archive"
+            );
+            return Ok(());
+        };
+        let report = verify_encrypted(&bytes, EncryptedOpenOptions::new(Some(unlock)))?;
+        println!(
+            "OK authenticated and verified CryptoEnvelope commitment/MAC, every AEAD DATA/END record, segment order/finality, canonical private ECF, semantic invariants, Chunk/content integrity, LAI, PCR, AUX, and exact-byte PCI"
+        );
+        println!("index: {}", index_status(report.index_status));
+        println!("LAI {}", report.identities.lai.0);
+        println!("PCR {}", report.identities.pcr.0);
+        println!("AUX {}", report.identities.aux.0);
+        println!("PCI {}", report.identities.pci.0);
+        return Ok(());
+    }
+    if parsed.unlock.is_some() {
+        return Err(usage(
+            "an identity/password was supplied for an unencrypted archive",
+        ));
+    }
     let (report, stream) = match &source {
         Source::Stdin => {
             let sequential =
@@ -876,6 +1266,18 @@ fn ensure_no_more(mut arguments: impl Iterator<Item = OsString>) -> Result<()> {
 
 fn read(path: &Path) -> Result<Vec<u8>> {
     std::fs::read(path).map_err(|error| read_error(path, &error))
+}
+
+fn read_source_fully(source: &Source) -> Result<Vec<u8>> {
+    match source {
+        Source::Path(path) => read(path),
+        Source::Stdin => {
+            let mut bytes = Vec::new();
+            std::io::Read::read_to_end(&mut std::io::stdin().lock(), &mut bytes)
+                .map_err(|error| io_error("read encrypted archive from standard input", &error))?;
+            Ok(bytes)
+        }
+    }
 }
 
 fn read_error(path: &Path, error: &std::io::Error) -> Diagnostic {
@@ -984,5 +1386,36 @@ mod tests {
         ]))
         .unwrap_err();
         assert_eq!(error.code(), ReasonCode::CommandUsage);
+    }
+
+    #[test]
+    fn encrypted_stream_is_rejected_before_input_or_output_is_touched() {
+        let error = run(args(&[
+            "ebound",
+            "pack",
+            "input-does-not-exist",
+            "-",
+            "--layout",
+            "stream",
+            "--recipient",
+            "recipient-does-not-exist",
+        ]))
+        .unwrap_err();
+        assert_eq!(error.code(), ReasonCode::CryptoLayoutUnsupported);
+    }
+
+    #[test]
+    fn password_and_hybrid_creation_cannot_be_mixed() {
+        let error = run(args(&[
+            "ebound",
+            "pack",
+            "input-does-not-exist",
+            "output.eb",
+            "--recipient",
+            "recipient-does-not-exist",
+            "--password",
+        ]))
+        .unwrap_err();
+        assert_eq!(error.code(), ReasonCode::CryptoRecipientPolicyInvalid);
     }
 }

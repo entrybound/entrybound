@@ -10,14 +10,26 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+aes = "=0.9.3"
+aes-gcm-siv = "=0.12.1"
+argon2 = "=0.6.0"
 cap-std = "4.0.3"
 crc32fast = "=1.5.0"
+getrandom = "=0.4.3"
+hkdf = "=0.13.0"
+hmac = "=0.13.0"
 jixel = { version = "=0.2.19", default-features = false }
 jxl-oxide = { version = "=0.12.6", default-features = false }
 lz4_flex = { version = "=0.14.0", default-features = false, features = ["std", "safe-encode", "safe-decode", "checked-decode"] }
 lzma-rust2 = { version = "=0.20.0", default-features = false, features = ["std", "encoder"] }
+ml-kem = "=0.3.2"
 preflate-rs = "=0.7.6"
-sha2 = "0.11.0"
+sha2 = "=0.11.0"
+sha3 = "=0.12.0"
+subtle = "=2.6.1"
+x-wing = { version = "=0.1.0", features = ["getrandom", "zeroize"] }
+x25519-dalek = "=3.0.0"
+zeroize = { version = "=1.9.0", features = ["derive"] }
 zstd = { version = "=0.13.3", default-features = false, features = ["zdict_builder"] }
 
 [dev-dependencies]
