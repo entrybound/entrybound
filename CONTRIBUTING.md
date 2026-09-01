@@ -162,3 +162,12 @@ extent, collision, special-file, or resource safety. Preservation feature
 `0x4000` requires conversion feature `0x2000`, keeps type 28 unchanged, and
 stores exact source plus ordered LOM evidence in canonical types 30-36. It may
 change AUX/PCI, never LAI/PCR for the same EAM projection.
+
+Tar and transport adapters use this same LOM/reconciliation boundary. Tar
+parsing independently checks 512-byte records and retains base, pax, and GNU
+claims until strict reconciliation. Compressed tar is composition of exactly
+one gzip/Zstandard/XZ/bzip2 observer with the one tar observer; never add a
+format-specific `tar.gz` semantic parser. Evidence locations are layer-relative
+and a decoded-child SHA-256 binds adjacent layers. Wrapper and tar policy limits
+must be enforced during decode/observation. Compatibility and preservation
+remain ZIP-only until exact runtime matrices are frozen.

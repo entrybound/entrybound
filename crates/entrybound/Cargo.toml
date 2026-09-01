@@ -13,6 +13,7 @@ workspace = true
 aes = "=0.9.3"
 aes-gcm-siv = "=0.12.1"
 argon2 = "=0.6.0"
+bzip2 = "=0.6.1"
 cap-std = "4.0.3"
 cms = { version = "=0.3.0-pre.2", default-features = false, features = ["std"] }
 crc32fast = "=1.5.0"
@@ -25,7 +26,7 @@ hmac = "=0.13.0"
 jixel = { version = "=0.2.19", default-features = false }
 jxl-oxide = { version = "=0.12.6", default-features = false }
 lz4_flex = { version = "=0.14.0", default-features = false, features = ["std", "safe-encode", "safe-decode", "checked-decode"] }
-lzma-rust2 = { version = "=0.20.0", default-features = false, features = ["std", "encoder"] }
+lzma-rust2 = { version = "=0.20.0", default-features = false, features = ["std", "encoder", "xz"] }
 ml-kem = "=0.3.2"
 preflate-rs = "=0.7.6"
 sha2 = "=0.11.0"

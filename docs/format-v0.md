@@ -140,6 +140,13 @@ resolutions. Absence of `0x4000` leaves historical strict conversion bytes
 unchanged. Exact grammar and identity rules are in
 [legacy-preservation-v1.md](legacy-preservation-v1.md).
 
+Strict tar-family and gzip/Zstandard/XZ/bzip2 imports reuse canonical type 28;
+no new native record or feature is required. Layer formats, exact outer source
+digest, decoded-child digest, wrapper integrity/member count, tar refinements,
+and synthesized ancestors are auxiliary conversion evidence. They affect AUX,
+never LAI/PCR. See [tar-import-v1.md](tar-import-v1.md) and
+[compressed-stream-import-v1.md](compressed-stream-import-v1.md).
+
 The crypto-v1 wire correction reserves two self-identifying grammars inside
 authenticated encrypted objects: `EBPO` version 1 dispatches one canonical
 record, Chunk frame, or sequence payload; `EBCS` version 1 carries one of nine

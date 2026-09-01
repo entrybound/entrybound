@@ -26,7 +26,13 @@ use entrybound::ecf::{
     StreamWriteOptions, WriteOptions, bootstrap_sequential_limits, encode, encode_stream, open,
     open_stream_with_limits, peek_layout,
 };
-use entrybound::legacy::zip::{CompatibilityProfileId, ImportPolicy, ZipImportPolicy, import};
+use entrybound::legacy::import::{
+    LegacyConversionReport, LegacyImportPolicy, LegacyImportResult, LegacySourceFormat,
+    detect as detect_legacy, import_strict as import_legacy_strict,
+};
+use entrybound::legacy::zip::{
+    CompatibilityProfileId, ImportPolicy, ZipImportPolicy, import as import_zip,
+};
 use entrybound::planner::CompressionProfile;
 use zeroize::Zeroizing;
 
@@ -40,9 +46,10 @@ Usage:\n\
                                 [--recipient <file> ... | --password]\n\
                                 [--pad bucketed|none|max]\n\
                                 [--chunk-boundary default|keyed-prf]\n\
-  ebound convert <input.zip> <output.eb|-> [--strict|--compat=<versioned-profile>]\n\
+  ebound convert <input> <output.eb|-> [--strict|--compat=<versioned-profile>]\n\
                          [--preserve --compat=<versioned-profile>] [--dry-run]\n\
-                         [--from zip]\n\
+                         [--from zip|tar|gzip|zstd|xz|bzip2|tar.gz|tar.zst|tar.xz|tar.bz2]\n\
+                         [--entry-name <logical-path>]\n\
                          [--layout indexed|stream]\n\
                          [--profile fast|balanced|dense|extreme]\n\
   ebound unpack <archive.eb|-> [destination] [--identity <file>|--password]\n\
@@ -121,18 +128,19 @@ and --pad max uses the maximum class. The encrypted boundary default is a\n\
 secret AFK-derived Gear table; --chunk-boundary keyed-prf selects PHTE/AES-128.\n";
 
 const CONVERT_HELP: &str = "\
-Usage: ebound convert <input.zip> <output.eb|->\n\
+Usage: ebound convert <input> <output.eb|->\n\
                       [--strict | --compat=<versioned-profile>]\n\
                       [--preserve --compat=<versioned-profile>] [--dry-run]\n\
-                      [--from zip]\n\
+                      [--from zip|tar|gzip|zstd|xz|bzip2|tar.gz|tar.zst|tar.xz|tar.bz2]\n\
+                      [--entry-name <logical-path>]\n\
                       [--layout indexed|stream]\n\
                       [--profile fast|balanced|dense|extreme]\n\
 \n\
-All modes consume one independent observation of central-directory, local-header,\n\
-and data-descriptor authorities. Strict refuses divergence. A named, exact-version\n\
-compatibility profile applies its checked behavioral rules; preserve additionally\n\
-retains the exact ZIP and structured evidence. Preserve requires --compat. Unsafe\n\
-paths, unbounded output, encryption, and special files are always refused.\n";
+ZIP modes retain independent central, local, and descriptor observations. Strict\n\
+tar supports ustar, pax, GNU long-name, and base-256 evidence. gzip, Zstandard,\n\
+XZ, and bzip2 are bounded transport layers whose decoded children use the same\n\
+tar adapter. A non-tar stream requires --entry-name. ZIP compatibility and\n\
+preservation remain available only through exact versioned ZIP profiles.\n";
 
 const SIGN_HELP: &str = "\
 Usage: ebound sign <archive.eb> --signing-key <file>\n\
@@ -744,6 +752,7 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
     let mut preserve = false;
     let mut dry_run = false;
     let mut from = None;
+    let mut entry_name = None;
     let mut cursor = 0;
     while cursor < arguments.len() {
         let value = &arguments[cursor];
@@ -782,6 +791,14 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
                     .ok_or_else(|| usage("--compat requires an exact versioned profile"))?
                     .parse::<CompatibilityProfileId>()?,
             );
+        } else if let Some(format) = value
+            .to_str()
+            .and_then(|value| value.strip_prefix("--from="))
+        {
+            if from.is_some() {
+                return Err(usage("convert accepts --from only once"));
+            }
+            from = Some(format.parse::<LegacySourceFormat>()?);
         } else if value == "--from" {
             if from.is_some() {
                 return Err(usage("convert accepts --from only once"));
@@ -791,7 +808,28 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
                 arguments
                     .get(cursor)
                     .and_then(|value| value.to_str())
-                    .ok_or_else(|| usage("--from requires 'zip'"))?,
+                    .ok_or_else(|| usage("--from requires a supported format"))?
+                    .parse::<LegacySourceFormat>()?,
+            );
+        } else if let Some(name) = value
+            .to_str()
+            .and_then(|value| value.strip_prefix("--entry-name="))
+        {
+            if entry_name.is_some() {
+                return Err(usage("convert accepts --entry-name only once"));
+            }
+            entry_name = Some(name.to_owned());
+        } else if value == "--entry-name" {
+            if entry_name.is_some() {
+                return Err(usage("convert accepts --entry-name only once"));
+            }
+            cursor += 1;
+            entry_name = Some(
+                arguments
+                    .get(cursor)
+                    .and_then(|value| value.to_str())
+                    .ok_or_else(|| usage("--entry-name requires a UTF-8 LogicalPath"))?
+                    .to_owned(),
             );
         } else if value == "--profile" {
             if profile.is_some() {
@@ -829,15 +867,8 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
     }
     if positionals.len() != 2 {
         return Err(usage(
-            "convert requires <input.zip> <output.eb|-> [--strict] [--from zip] \
+            "convert requires <input> <output.eb|-> [--strict] [--from <format>] \
              [--layout indexed|stream] [--profile ...]",
-        ));
-    }
-    if from.is_some_and(|value| value != "zip") {
-        return Err(Diagnostic::new(
-            OutcomeClass::Unsupported,
-            ReasonCode::LegacyFormatUnsupported,
-            "strict legacy import currently supports only ZIP",
         ));
     }
     if strict && compat.is_some() {
@@ -862,12 +893,49 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
         Destination::Stdout => Layout::Stream,
         Destination::Path(_) => Layout::Indexed,
     });
-    let imported = import(
-        &read(&input)?,
-        ZipImportPolicy::default(),
-        profile.unwrap_or_default(),
-        import_policy,
-    )?;
+    let source_bytes = read(&input)?;
+    let creation_profile = profile.unwrap_or_default();
+    let imported = if import_policy == ImportPolicy::Strict {
+        import_legacy_strict(
+            &source_bytes,
+            from,
+            entry_name.as_deref(),
+            LegacyImportPolicy::default(),
+            creation_profile,
+        )?
+    } else {
+        if entry_name.is_some() {
+            return Err(usage(
+                "--entry-name is unavailable for ZIP compatibility/preservation",
+            ));
+        }
+        if from.is_some_and(|format| format != LegacySourceFormat::Zip)
+            || detect_legacy(&source_bytes).is_some_and(|format| format != LegacySourceFormat::Zip)
+        {
+            return Err(Diagnostic::new(
+                OutcomeClass::Unsupported,
+                ReasonCode::UnsupportedRequiredFeature,
+                "--compat and --preserve are currently defined only for ZIP",
+            ));
+        }
+        let imported = import_zip(
+            &source_bytes,
+            ZipImportPolicy::default(),
+            creation_profile,
+            import_policy,
+        )?;
+        LegacyImportResult {
+            archive: imported.archive,
+            report: LegacyConversionReport {
+                observation: imported.report.observation,
+                synthesized_ancestors: imported.report.synthesized_ancestors,
+                layers: Box::from(["zip".to_owned()]),
+                wrapper_members: 0,
+                decoded_child_digest: None,
+                projection: "archive".to_owned(),
+            },
+        }
+    };
     let status = Status {
         to_stderr: matches!(destination, Destination::Stdout),
     };
@@ -930,7 +998,12 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
         }
     };
     let observation = &imported.report.observation;
-    status.line("source: ZIP");
+    let provenance = imported
+        .archive
+        .conversion
+        .as_ref()
+        .expect("legacy conversion records provenance");
+    status.line(format!("source: {}", provenance.source_format));
     status.line(format!("mode: {}", import_policy.mode()));
     if let Some(profile) = import_policy.compatibility_profile() {
         status.line(format!("compat-profile: {}", profile.as_str()));
@@ -938,12 +1011,18 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
     if import_policy.preserves_evidence() {
         status.line("preservation: exact-source + observations");
     }
+    status.line(format!("layers: {}", imported.report.layers.join(" -> ")));
+    if imported.report.wrapper_members != 0 {
+        status.line(format!(
+            "wrapper members: {}",
+            imported.report.wrapper_members
+        ));
+    }
+    if let Some(digest) = imported.report.decoded_child_digest {
+        status.line(format!("decoded child digest: {digest}"));
+    }
+    status.line(format!("projection: {}", imported.report.projection));
     status.line(format!("entries observed: {}", observation.entries.len()));
-    let provenance = imported
-        .archive
-        .conversion
-        .as_ref()
-        .expect("strict conversion records provenance");
     status.line(format!(
         "conflicts: omission={}, refinement={}, divergence={}, irreconcilable={}",
         provenance.omission_count,
@@ -1909,6 +1988,19 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
             conversion.resolutions.len(),
             conversion.synthesized_ancestors.len(),
         );
+        if let Some((wrapper, _)) = conversion.source_format.split_once('+') {
+            println!("conversion layers: {wrapper} -> tar");
+        }
+        if let Some(layer) = conversion
+            .resolutions
+            .iter()
+            .find(|resolution| resolution.semantic_field == "layer.transport-decoded-child")
+        {
+            println!("conversion layer integrity: {}", layer.action);
+            if conversion.adapter_id.ends_with("-stream-strict/v1") {
+                println!("conversion projection: single-file ({})", layer.action);
+            }
+        }
         for resolution in conversion.resolutions.iter().take(16) {
             println!(
                 "conversion resolution: class={} field={} action={}",
@@ -2490,6 +2582,60 @@ mod tests {
         bytes
     }
 
+    fn store_tar(name: &[u8], content: &[u8]) -> Vec<u8> {
+        fn octal(field: &mut [u8], value: u64) {
+            field.fill(b'0');
+            let text = format!("{value:o}");
+            let start = field.len() - 1 - text.len();
+            field[start..start + text.len()].copy_from_slice(text.as_bytes());
+            field[field.len() - 1] = 0;
+        }
+        let mut header = [0_u8; 512];
+        header[..name.len()].copy_from_slice(name);
+        octal(&mut header[100..108], 0o100644);
+        octal(&mut header[108..116], 0);
+        octal(&mut header[116..124], 0);
+        octal(&mut header[124..136], content.len() as u64);
+        octal(&mut header[136..148], 1_700_000_000);
+        header[148..156].fill(b' ');
+        header[156] = b'0';
+        header[257..263].copy_from_slice(b"ustar\0");
+        header[263..265].copy_from_slice(b"00");
+        let checksum = header.iter().map(|byte| u64::from(*byte)).sum::<u64>();
+        let checksum = format!("{checksum:06o}\0 ");
+        header[148..156].copy_from_slice(checksum.as_bytes());
+        let mut bytes = header.to_vec();
+        bytes.extend_from_slice(content);
+        bytes.resize(bytes.len().div_ceil(512) * 512, 0);
+        bytes.resize(bytes.len() + 1024, 0);
+        bytes
+    }
+
+    fn gzip(content: &[u8]) -> Vec<u8> {
+        use std::io::Write as _;
+
+        let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
+        encoder.write_all(content).unwrap();
+        encoder.finish().unwrap()
+    }
+
+    fn xz(content: &[u8]) -> Vec<u8> {
+        use std::io::Write as _;
+
+        let mut encoder =
+            lzma_rust2::XzWriter::new(Vec::new(), lzma_rust2::XzOptions::with_preset(1)).unwrap();
+        encoder.write_all(content).unwrap();
+        encoder.finish().unwrap()
+    }
+
+    fn bzip2(content: &[u8]) -> Vec<u8> {
+        use std::io::Write as _;
+
+        let mut encoder = bzip2::write::BzEncoder::new(Vec::new(), bzip2::Compression::fast());
+        encoder.write_all(content).unwrap();
+        encoder.finish().unwrap()
+    }
+
     #[test]
     fn help_is_available() {
         assert!(run(args(&["ebound"])).is_ok());
@@ -2537,6 +2683,139 @@ mod tests {
         assert_eq!(
             std::fs::read(restored.join("nested/file.txt")).unwrap(),
             b"zip conversion"
+        );
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn tar_and_standalone_wrapper_convert_to_indexed_and_stream() {
+        let id = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
+        let root = std::env::temp_dir().join(format!(
+            "entrybound-cli-tar-stream-{}-{id}",
+            std::process::id()
+        ));
+        std::fs::create_dir(&root).unwrap();
+        let tar_input = root.join("source.data");
+        let tar_archive = root.join("tar.eb");
+        let tar_restored = root.join("tar-restored");
+        std::fs::write(&tar_input, store_tar(b"nested/file", b"tar bytes")).unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("convert"),
+            tar_input.as_os_str().to_owned(),
+            tar_archive.as_os_str().to_owned(),
+            OsString::from("--strict"),
+            OsString::from("--from=tar"),
+            OsString::from("--profile"),
+            OsString::from("fast"),
+        ])
+        .unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("unpack"),
+            tar_archive.as_os_str().to_owned(),
+            tar_restored.as_os_str().to_owned(),
+        ])
+        .unwrap();
+        assert_eq!(
+            std::fs::read(tar_restored.join("nested/file")).unwrap(),
+            b"tar bytes"
+        );
+
+        let tar_bytes = store_tar(b"wrapped/file", b"wrapped tar bytes");
+        let wrappers = [
+            ("tar.gz", gzip(&tar_bytes), "indexed"),
+            (
+                "tar.zst",
+                zstd::stream::encode_all(tar_bytes.as_slice(), 1).unwrap(),
+                "indexed",
+            ),
+            ("tar.xz", xz(&tar_bytes), "stream"),
+            ("tar.bz2", bzip2(&tar_bytes), "stream"),
+        ];
+        for (index, (format, source, layout)) in wrappers.into_iter().enumerate() {
+            let input = root.join(format!("wrapped-{index}.data"));
+            let archive = root.join(format!("wrapped-{index}.eb"));
+            let restored = root.join(format!("wrapped-{index}-restored"));
+            std::fs::write(&input, source).unwrap();
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("convert"),
+                input.as_os_str().to_owned(),
+                archive.as_os_str().to_owned(),
+                OsString::from("--strict"),
+                OsString::from(format!("--from={format}")),
+                OsString::from("--layout"),
+                OsString::from(layout),
+                OsString::from("--profile"),
+                OsString::from("fast"),
+            ])
+            .unwrap();
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("verify"),
+                archive.as_os_str().to_owned(),
+            ])
+            .unwrap();
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("inspect"),
+                archive.as_os_str().to_owned(),
+            ])
+            .unwrap();
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("unpack"),
+                archive.as_os_str().to_owned(),
+                restored.as_os_str().to_owned(),
+            ])
+            .unwrap();
+            assert_eq!(
+                std::fs::read(restored.join("wrapped/file")).unwrap(),
+                b"wrapped tar bytes"
+            );
+        }
+
+        let wrapped_input = root.join("payload.data");
+        let stream_archive = root.join("payload.eb");
+        let stream_restored = root.join("payload-restored");
+        std::fs::write(&wrapped_input, gzip(b"standalone bytes")).unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("convert"),
+            wrapped_input.as_os_str().to_owned(),
+            stream_archive.as_os_str().to_owned(),
+            OsString::from("--from=gzip"),
+            OsString::from("--entry-name=payload.bin"),
+            OsString::from("--layout"),
+            OsString::from("stream"),
+            OsString::from("--dry-run"),
+        ])
+        .unwrap();
+        assert!(!stream_archive.exists());
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("convert"),
+            wrapped_input.as_os_str().to_owned(),
+            stream_archive.as_os_str().to_owned(),
+            OsString::from("--from=gzip"),
+            OsString::from("--entry-name=payload.bin"),
+            OsString::from("--layout"),
+            OsString::from("stream"),
+            OsString::from("--profile"),
+            OsString::from("fast"),
+        ])
+        .unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("unpack"),
+            stream_archive.as_os_str().to_owned(),
+            stream_restored.as_os_str().to_owned(),
+        ])
+        .unwrap();
+        assert_eq!(
+            std::fs::read(stream_restored.join("payload.bin")).unwrap(),
+            b"standalone bytes"
         );
         std::fs::remove_dir_all(root).unwrap();
     }

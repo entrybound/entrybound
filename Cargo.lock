@@ -171,6 +171,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f1fe948ff07f4bd06c30984e69f5b4899c516a3ef74f34df92a2df2ab535495"
 
 [[package]]
+name = "bzip2"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f3a53fac24f34a81bc9954b5d6cfce0c21e18ec6959f44f56e8e90e4bb7c346c"
+dependencies = [
+ "libbz2-rs-sys",
+]
+
+[[package]]
 name = "cabac"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -437,6 +446,7 @@ dependencies = [
  "aes",
  "aes-gcm-siv",
  "argon2",
+ "bzip2",
  "cap-std",
  "cms",
  "crc32fast",
@@ -469,10 +479,14 @@ dependencies = [
 name = "entrybound-cli"
 version = "0.1.0"
 dependencies = [
+ "bzip2",
  "crc32fast",
  "entrybound",
+ "flate2",
+ "lzma-rust2",
  "rpassword",
  "zeroize",
+ "zstd",
 ]
 
 [[package]]
@@ -841,6 +855,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "libbz2-rs-sys"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "34b357333733e8260735ba5894eb928c02ecc69c78715f01a8019e7fa7f2db4c"
+
+[[package]]
 name = "libc"
 version = "0.2.189"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -863,6 +883,9 @@ name = "lzma-rust2"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e6effa5c575f68109664a511f378c0e170888e33a426694ee0910a673762bd47"
+dependencies = [
+ "sha2",
+]
 
 [[package]]
 name = "maybe-owned"

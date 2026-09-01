@@ -1,0 +1,51 @@
+{
+  "schema": "entrybound/tar-differential-evidence/v1",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "runtimes": {
+    "python-tarfile": "3.13.5",
+    "system-tar": "bsdtar/libarchive 3.8.8"
+  },
+  "cases": {
+    "ordinary": {
+      "source_sha256": "1cac65075bd82eff6107caabff10930ec6b2c49ecefafada64e2e07b29ff9b96",
+      "python-tarfile": { "outcome": "accepted", "listing": ["file"] },
+      "system-tar": { "outcome": "accepted", "listing": ["file"] },
+      "entrybound-strict": { "outcome": "accepted" }
+    },
+    "duplicate-name": {
+      "source_sha256": "5cf27324abd6413b4dac649f6d835154d9b1d6dcba9aa1a8d999eea9ae4d0e35",
+      "python-tarfile": { "outcome": "accepted", "listing": ["dup", "dup"] },
+      "system-tar": { "outcome": "accepted", "listing": ["dup", "dup"] },
+      "entrybound-strict": { "outcome": "refused", "reason": "EB_DUPLICATE_LOGICAL_PATH" }
+    },
+    "path-traversal": {
+      "source_sha256": "8a31b436b7d7f342f9105de72c2655cc009ccefaa7bb5a8b0d076e036b2c9fca",
+      "python-tarfile": { "outcome": "accepted-listing", "listing": ["../outside"] },
+      "system-tar": { "outcome": "accepted-listing", "listing": ["../outside"] },
+      "entrybound-strict": { "outcome": "refused", "reason": "EB_TAR_UNSAFE_PATH" }
+    },
+    "single-zero-end-block": {
+      "source_sha256": "16e5f92a9f85ba09974f1d171047f0c32ab285485ed857a4836cf15f1a4bac13",
+      "python-tarfile": { "outcome": "accepted", "listing": ["file"] },
+      "system-tar": { "outcome": "accepted", "listing": ["file"] },
+      "entrybound-strict": { "outcome": "refused", "reason": "EB_TAR_STRUCTURE_INVALID" }
+    },
+    "nonzero-after-end": {
+      "source_sha256": "7c73eefcb36a7f79919be44125dc96cc3e61434c6b21eb81e0ba18f899eca306",
+      "python-tarfile": { "outcome": "accepted", "listing": ["file"] },
+      "system-tar": { "outcome": "accepted", "listing": ["file"] },
+      "entrybound-strict": { "outcome": "refused", "reason": "EB_TAR_STRUCTURE_INVALID" }
+    },
+    "bad-checksum": {
+      "source_sha256": "ec5a03483a0f9e56d73afd70fad82cb0e6292219003e8fcc0282de58a4269f60",
+      "python-tarfile": { "outcome": "refused", "error": "ReadError" },
+      "system-tar": { "outcome": "refused", "returncode": 1 },
+      "entrybound-strict": { "outcome": "refused", "reason": "EB_TAR_CHECKSUM_MISMATCH" }
+    }
+  },
+  "notes": [
+    "Python content digests for ordinary/path cases were recorded by the probe but omitted here where the listing result is sufficient.",
+    "Entrybound safety and unique-path invariants intentionally override permissive listing behavior.",
+    "GNU tar was unavailable on this development host; no GNU behavioral claim is frozen by this evidence."
+  ]
+}
