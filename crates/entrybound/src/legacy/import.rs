@@ -2,7 +2,7 @@
 
 use std::str::FromStr;
 
-use super::{stream, tar, zip};
+use super::{sevenz, stream, tar, zip};
 use crate::archive::plan_observed_archive;
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
@@ -17,6 +17,7 @@ use crate::planner::CompressionProfile;
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LegacySourceFormat {
     Zip,
+    SevenZ,
     Tar,
     Gzip,
     Zstandard,
@@ -33,6 +34,7 @@ impl LegacySourceFormat {
     pub const fn as_str(self) -> &'static str {
         match self {
             Self::Zip => "zip",
+            Self::SevenZ => "7z",
             Self::Tar => "tar",
             Self::Gzip => "gzip",
             Self::Zstandard => "zstd",
@@ -51,7 +53,7 @@ impl LegacySourceFormat {
             Self::Zstandard | Self::TarZstandard => Some(stream::TransportFormat::Zstandard),
             Self::Xz | Self::TarXz => Some(stream::TransportFormat::Xz),
             Self::Bzip2 | Self::TarBzip2 => Some(stream::TransportFormat::Bzip2),
-            Self::Zip | Self::Tar => None,
+            Self::Zip | Self::SevenZ | Self::Tar => None,
         }
     }
 
@@ -69,6 +71,7 @@ impl FromStr for LegacySourceFormat {
     fn from_str(value: &str) -> std::result::Result<Self, Self::Err> {
         match value {
             "zip" => Ok(Self::Zip),
+            "7z" => Ok(Self::SevenZ),
             "tar" => Ok(Self::Tar),
             "gzip" => Ok(Self::Gzip),
             "zstd" => Ok(Self::Zstandard),
@@ -91,6 +94,7 @@ impl FromStr for LegacySourceFormat {
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Default)]
 pub struct LegacyImportPolicy {
     pub zip: zip::ZipImportPolicy,
+    pub sevenz: sevenz::SevenZImportPolicy,
     pub tar: tar::TarImportPolicy,
     pub wrapper: stream::WrapperImportPolicy,
 }
@@ -103,6 +107,7 @@ pub struct LegacyConversionReport {
     pub wrapper_members: u64,
     pub decoded_child_digest: Option<crate::eam::Digest>,
     pub projection: String,
+    pub format_statistics: Box<[(String, u64)]>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -118,6 +123,8 @@ pub fn detect(source: &[u8]) -> Option<LegacySourceFormat> {
         || source.starts_with(b"PK\x07\x08")
     {
         Some(LegacySourceFormat::Zip)
+    } else if sevenz::looks_like_sevenz(source) {
+        Some(LegacySourceFormat::SevenZ)
     } else if let Some(format) = stream::detect(source) {
         Some(match format {
             stream::TransportFormat::Gzip => LegacySourceFormat::Gzip,
@@ -148,7 +155,7 @@ pub fn import_strict(
         Diagnostic::new(
             OutcomeClass::Unsupported,
             ReasonCode::LegacyFormatUnsupported,
-            "source is not structurally recognizable as ZIP, tar, gzip, Zstandard, XZ, or bzip2",
+            "source is not structurally recognizable as ZIP, 7z, tar, gzip, Zstandard, XZ, or bzip2",
         )
     })?;
     let selected = explicit_format.unwrap_or(detected);
@@ -171,8 +178,43 @@ pub fn import_strict(
                     wrapper_members: 0,
                     decoded_child_digest: None,
                     projection: "archive".to_owned(),
+                    format_statistics: Box::default(),
                 },
                 archive: imported.archive,
+            })
+        }
+        LegacySourceFormat::SevenZ => {
+            if detected != LegacySourceFormat::SevenZ {
+                return Err(format_mismatch(selected, detected));
+            }
+            if entry_name.is_some() {
+                return Err(usage(
+                    "--entry-name is only valid for standalone compressed streams",
+                ));
+            }
+            let imported = sevenz::import_strict(source, policy.sevenz, profile)?;
+            Ok(LegacyImportResult {
+                archive: imported.archive,
+                report: LegacyConversionReport {
+                    observation: imported.report.observation,
+                    synthesized_ancestors: imported.report.synthesized_ancestors,
+                    layers: Box::from(["7z".to_owned()]),
+                    wrapper_members: 0,
+                    decoded_child_digest: None,
+                    projection: "archive".to_owned(),
+                    format_statistics: Box::from([
+                        ("folders".to_owned(), imported.report.folder_count),
+                        (
+                            "solid-folders".to_owned(),
+                            imported.report.solid_folder_count,
+                        ),
+                        ("coders".to_owned(), imported.report.coder_count),
+                        (
+                            "encoded-header".to_owned(),
+                            u64::from(imported.report.encoded_header),
+                        ),
+                    ]),
+                },
             })
         }
         LegacySourceFormat::Tar => {
@@ -230,6 +272,7 @@ fn map_tar(imported: tar::TarImportResult) -> Result<LegacyImportResult> {
             wrapper_members: imported.report.wrapper_members,
             decoded_child_digest: imported.report.decoded_child_digest,
             projection: "archive".to_owned(),
+            format_statistics: Box::default(),
         },
         archive: imported.archive,
     })
@@ -338,6 +381,7 @@ fn standalone_transport(
             wrapper_members: member_count,
             decoded_child_digest: Some(decoded_digest),
             projection: format!("single-file:{entry_name}"),
+            format_statistics: Box::default(),
         },
     })
 }

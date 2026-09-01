@@ -44,4 +44,5 @@ ed25519-dalek = { version = "=3.0.0", default-features = false, features = ["all
 flate2 = "=1.1.9"
 image = { version = "=0.25.8", default-features = false, features = ["jpeg"] }
 jpeg-encoder = { version = "=0.7.1", default-features = false }
+sevenz-rust2 = { version = "=0.22.2", default-features = false, features = ["bzip2", "compress", "deflate", "util"] }
 x509-cert = { version = "=0.3.0", default-features = false, features = ["builder", "pem", "std"] }

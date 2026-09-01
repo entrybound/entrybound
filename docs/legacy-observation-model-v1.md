@@ -1,7 +1,7 @@
 # Legacy Observation Model v1
 
 Status: implemented experimental adapter contract. This document freezes the
-boundary used by ZIP, tar-family, and compressed-stream import; it does not add
+boundary used by ZIP, 7z, tar-family, and compressed-stream import; it does not add
 foreign semantics to EAM.
 
 ## Pipeline and authority
@@ -29,7 +29,7 @@ prospective semantic field and preserves:
 The generic report uses `LegacyObservedValue` for bytes, unsigned/signed
 integers, text, and booleans. An adapter may retain richer private parsed types;
 the reconciler consumes those parsed observations without reparsing the source.
-This model contains no ZIP- or tar-specific authority names. Layered sources
+This model contains no ZIP-, 7z-, or tar-specific authority names. Layered sources
 add an ordinal/format observation per authority: compressed transport evidence
 remains in outer-byte coordinates while tar evidence remains in decoded-child
 coordinates. The decoded-child digest binds those spaces without flattening
@@ -88,7 +88,8 @@ evidence under feature `0x4000`; it never changes EAM authority. See
 New parser behavior requires a new adapter version. Changed runtime behavior
 requires a new profile ID; strict behavior is never silently updated.
 
-Tar and compressed transports currently implement `Strict` only. ZIP
+7z, tar, and compressed transports currently implement `Strict` only. ZIP
 compatibility/preservation retains its existing three-policy contract. See
 [tar-import-v1.md](tar-import-v1.md) and
+[7z-import-v1.md](7z-import-v1.md) and
 [compressed-stream-import-v1.md](compressed-stream-import-v1.md).

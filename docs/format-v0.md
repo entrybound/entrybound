@@ -147,6 +147,12 @@ and synthesized ancestors are auxiliary conversion evidence. They affect AUX,
 never LAI/PCR. See [tar-import-v1.md](tar-import-v1.md) and
 [compressed-stream-import-v1.md](compressed-stream-import-v1.md).
 
+Strict 7z import also reuses canonical ConversionProvenance type 28 without a
+new required feature. Its source format is 7z and adapter ID is
+entrybound/sevenz-strict-v1; folder/coder/substream reconciliation and
+unsupported FilesInfo metadata remain auxiliary evidence contributing to AUX,
+never LAI/PCR. See [7z-import-v1.md](7z-import-v1.md).
+
 The crypto-v1 wire correction reserves two self-identifying grammars inside
 authenticated encrypted objects: `EBPO` version 1 dispatches one canonical
 record, Chunk frame, or sequence payload; `EBCS` version 1 carries one of nine

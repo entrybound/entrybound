@@ -171,3 +171,13 @@ format-specific `tar.gz` semantic parser. Evidence locations are layer-relative
 and a decoded-child SHA-256 binds adjacent layers. Wrapper and tar policy limits
 must be enforced during decode/observation. Compatibility and preservation
 remain ZIP-only until exact runtime matrices are frozen.
+
+The strict 7z adapter follows the same evidence boundary. Production code must
+parse signature/Next Header, PackInfo, UnpackInfo, SubStreamsInfo, FilesInfo,
+folders, bind pairs, and stream ownership itself. Codec libraries may receive
+one already-bounded packed extent, but a general 7z library must never select
+names, graphs, substreams, or semantic files. Solid folders decode once and
+every output byte is assigned exactly once. Adding a coder or graph shape
+requires a frozen method/property contract, pre-allocation resource derivation,
+generated adversarial cases, and independent differential evidence. See
+docs/7z-import-v1.md.

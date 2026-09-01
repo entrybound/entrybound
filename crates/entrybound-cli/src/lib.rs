@@ -48,7 +48,7 @@ Usage:\n\
                                 [--chunk-boundary default|keyed-prf]\n\
   ebound convert <input> <output.eb|-> [--strict|--compat=<versioned-profile>]\n\
                          [--preserve --compat=<versioned-profile>] [--dry-run]\n\
-                         [--from zip|tar|gzip|zstd|xz|bzip2|tar.gz|tar.zst|tar.xz|tar.bz2]\n\
+                         [--from zip|7z|tar|gzip|zstd|xz|bzip2|tar.gz|tar.zst|tar.xz|tar.bz2]\n\
                          [--entry-name <logical-path>]\n\
                          [--layout indexed|stream]\n\
                          [--profile fast|balanced|dense|extreme]\n\
@@ -131,13 +131,15 @@ const CONVERT_HELP: &str = "\
 Usage: ebound convert <input> <output.eb|->\n\
                       [--strict | --compat=<versioned-profile>]\n\
                       [--preserve --compat=<versioned-profile>] [--dry-run]\n\
-                      [--from zip|tar|gzip|zstd|xz|bzip2|tar.gz|tar.zst|tar.xz|tar.bz2]\n\
+                      [--from zip|7z|tar|gzip|zstd|xz|bzip2|tar.gz|tar.zst|tar.xz|tar.bz2]\n\
                       [--entry-name <logical-path>]\n\
                       [--layout indexed|stream]\n\
                       [--profile fast|balanced|dense|extreme]\n\
 \n\
 ZIP modes retain independent central, local, and descriptor observations. Strict\n\
-tar supports ustar, pax, GNU long-name, and base-256 evidence. gzip, Zstandard,\n\
+7z validates plain/encoded headers, folder graphs, solid streams, and its bounded\n\
+codec/filter subset. Strict tar supports ustar, pax, GNU long-name, and base-256\n\
+evidence. gzip, Zstandard,\n\
 XZ, and bzip2 are bounded transport layers whose decoded children use the same\n\
 tar adapter. A non-tar stream requires --entry-name. ZIP compatibility and\n\
 preservation remain available only through exact versioned ZIP profiles.\n";
@@ -933,6 +935,7 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
                 wrapper_members: 0,
                 decoded_child_digest: None,
                 projection: "archive".to_owned(),
+                format_statistics: Box::default(),
             },
         }
     };
@@ -1022,6 +1025,9 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
         status.line(format!("decoded child digest: {digest}"));
     }
     status.line(format!("projection: {}", imported.report.projection));
+    for (name, value) in &imported.report.format_statistics {
+        status.line(format!("{name}: {value}"));
+    }
     status.line(format!("entries observed: {}", observation.entries.len()));
     status.line(format!(
         "conflicts: omission={}, refinement={}, divergence={}, irreconcilable={}",
@@ -2611,6 +2617,77 @@ mod tests {
         bytes
     }
 
+    fn store_sevenz(name: &str, content: &[u8]) -> Vec<u8> {
+        fn number(value: u64) -> Vec<u8> {
+            for extra in 0..8_u32 {
+                let high_bits = 7 - extra;
+                if u128::from(value) < (1_u128 << (high_bits + extra * 8)) {
+                    let prefix = if extra == 0 {
+                        0
+                    } else {
+                        0xff_u8 << (8 - extra)
+                    };
+                    let mut bytes = vec![prefix | u8::try_from(value >> (extra * 8)).unwrap()];
+                    for index in 0..extra {
+                        bytes.push(u8::try_from((value >> (index * 8)) & 0xff).unwrap());
+                    }
+                    return bytes;
+                }
+            }
+            let mut bytes = vec![0xff];
+            bytes.extend_from_slice(&value.to_le_bytes());
+            bytes
+        }
+
+        let mut header = vec![0x01, 0x04, 0x06];
+        header.extend(number(0));
+        header.extend(number(1));
+        header.push(0x09);
+        header.extend(number(u64::try_from(content.len()).unwrap()));
+        header.push(0);
+        header.push(0x07);
+        header.push(0x0b);
+        header.extend(number(1));
+        header.push(0);
+        header.extend(number(1));
+        header.push(1);
+        header.push(0);
+        header.push(0x0c);
+        header.extend(number(u64::try_from(content.len()).unwrap()));
+        header.push(0x0a);
+        header.push(1);
+        header.extend_from_slice(&crc32fast::hash(content).to_le_bytes());
+        header.push(0);
+        header.push(0x08);
+        header.push(0);
+        header.push(0);
+        header.push(0x05);
+        header.extend(number(1));
+        header.push(0x11);
+        let mut names = vec![0];
+        for unit in name.encode_utf16() {
+            names.extend_from_slice(&unit.to_le_bytes());
+        }
+        names.extend_from_slice(&0_u16.to_le_bytes());
+        header.extend(number(u64::try_from(names.len()).unwrap()));
+        header.extend(names);
+        header.push(0);
+        header.push(0);
+
+        let mut start = Vec::new();
+        start.extend_from_slice(&u64::try_from(content.len()).unwrap().to_le_bytes());
+        start.extend_from_slice(&u64::try_from(header.len()).unwrap().to_le_bytes());
+        start.extend_from_slice(&crc32fast::hash(&header).to_le_bytes());
+        let mut source = Vec::new();
+        source.extend_from_slice(b"7z\xbc\xaf'\x1c");
+        source.extend_from_slice(&[0, 4]);
+        source.extend_from_slice(&crc32fast::hash(&start).to_le_bytes());
+        source.extend(start);
+        source.extend_from_slice(content);
+        source.extend(header);
+        source
+    }
+
     fn gzip(content: &[u8]) -> Vec<u8> {
         use std::io::Write as _;
 
@@ -2684,6 +2761,72 @@ mod tests {
             std::fs::read(restored.join("nested/file.txt")).unwrap(),
             b"zip conversion"
         );
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn sevenz_convert_supports_indexed_stream_and_dry_run() {
+        let id = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
+        let root =
+            std::env::temp_dir().join(format!("entrybound-cli-7z-{}-{id}", std::process::id()));
+        std::fs::create_dir(&root).unwrap();
+        let input = root.join("source.bin");
+        std::fs::write(
+            &input,
+            store_sevenz("nested/file.txt", b"strict 7z conversion"),
+        )
+        .unwrap();
+        for layout in ["indexed", "stream"] {
+            let archive = root.join(format!("{layout}.eb"));
+            let restored = root.join(format!("{layout}-restored"));
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("convert"),
+                input.as_os_str().to_owned(),
+                archive.as_os_str().to_owned(),
+                OsString::from("--strict"),
+                OsString::from("--from=7z"),
+                OsString::from("--layout"),
+                OsString::from(layout),
+                OsString::from("--profile"),
+                OsString::from("fast"),
+            ])
+            .unwrap();
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("verify"),
+                archive.as_os_str().to_owned(),
+            ])
+            .unwrap();
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("inspect"),
+                archive.as_os_str().to_owned(),
+            ])
+            .unwrap();
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("unpack"),
+                archive.as_os_str().to_owned(),
+                restored.as_os_str().to_owned(),
+            ])
+            .unwrap();
+            assert_eq!(
+                std::fs::read(restored.join("nested/file.txt")).unwrap(),
+                b"strict 7z conversion"
+            );
+        }
+        let dry = root.join("dry.eb");
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("convert"),
+            input.as_os_str().to_owned(),
+            dry.as_os_str().to_owned(),
+            OsString::from("--strict"),
+            OsString::from("--dry-run"),
+        ])
+        .unwrap();
+        assert!(!dry.exists());
         std::fs::remove_dir_all(root).unwrap();
     }
 

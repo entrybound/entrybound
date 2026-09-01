@@ -5,6 +5,7 @@
 
 pub mod import;
 pub mod lom;
+pub mod sevenz;
 pub mod stream;
 pub mod tar;
 pub mod zip;
