@@ -1735,6 +1735,121 @@ mod tests {
     }
 
     #[test]
+    fn portable_path_collisions_and_backslashes_are_refused() {
+        let first = b"first".to_vec();
+        let second = b"second".to_vec();
+        let first_digest = sha256_exact(&first);
+        let second_digest = sha256_exact(&second);
+        let collision = plan_observed_archive(
+            vec![
+                Entry::new(
+                    LogicalPath::from_utf8(["Name.txt"]).unwrap(),
+                    EntryData::File {
+                        content: ContentRef::Internal(first_digest),
+                    },
+                    metadata(false, second_timestamp()),
+                    EntryIdentity::default(),
+                ),
+                Entry::new(
+                    LogicalPath::from_utf8(["name.txt"]).unwrap(),
+                    EntryData::File {
+                        content: ContentRef::Internal(second_digest),
+                    },
+                    metadata(false, second_timestamp()),
+                    EntryIdentity::default(),
+                ),
+            ],
+            vec![first.into_boxed_slice(), second.into_boxed_slice()],
+            FidelityReport::default(),
+            conversion(),
+            None,
+            CompressionProfile::Fast,
+        )
+        .unwrap();
+        let collision = prepare_export(
+            &collision,
+            ExportTarget::ZipPortableV1,
+            ExportSourceSecurity::default(),
+        )
+        .unwrap();
+        assert_eq!(collision.analysis.outcome, ExportOutcome::Refused);
+        assert!(
+            collision
+                .analysis
+                .issues
+                .iter()
+                .any(|issue| issue.category == ExportIssueCategory::PathCollision)
+        );
+
+        let bytes = b"backslash".to_vec();
+        let digest = sha256_exact(&bytes);
+        let backslash = plan_observed_archive(
+            vec![Entry::new(
+                LogicalPath::from_utf8([r"unsafe\name"]).unwrap(),
+                EntryData::File {
+                    content: ContentRef::Internal(digest),
+                },
+                metadata(false, second_timestamp()),
+                EntryIdentity::default(),
+            )],
+            vec![bytes.into_boxed_slice()],
+            FidelityReport::default(),
+            conversion(),
+            None,
+            CompressionProfile::Fast,
+        )
+        .unwrap();
+        for target in [ExportTarget::ZipPortableV1, ExportTarget::TarPaxV1] {
+            let prepared =
+                prepare_export(&backslash, target, ExportSourceSecurity::default()).unwrap();
+            assert_eq!(prepared.analysis.outcome, ExportOutcome::Refused);
+            assert!(prepared.bytes.is_none());
+        }
+    }
+
+    #[test]
+    fn long_unicode_paths_use_deterministic_target_framing() {
+        let name = "雪".repeat(60);
+        let path = LogicalPath::from_utf8([name.as_str()]).unwrap();
+        let bytes = b"unicode path".to_vec();
+        let digest = sha256_exact(&bytes);
+        let archive = plan_observed_archive(
+            vec![Entry::new(
+                path,
+                EntryData::File {
+                    content: ContentRef::Internal(digest),
+                },
+                metadata(false, second_timestamp()),
+                EntryIdentity::default(),
+            )],
+            vec![bytes.into_boxed_slice()],
+            FidelityReport::default(),
+            conversion(),
+            None,
+            CompressionProfile::Fast,
+        )
+        .unwrap();
+        for (target, source_format) in [
+            (ExportTarget::ZipPortableV1, LegacySourceFormat::Zip),
+            (ExportTarget::TarPaxV1, LegacySourceFormat::Tar),
+        ] {
+            let artifact = prepare_export(&archive, target, ExportSourceSecurity::default())
+                .unwrap()
+                .accept(false)
+                .unwrap();
+            let imported = import_legacy_strict(
+                &artifact.bytes,
+                Some(source_format),
+                None,
+                LegacyImportPolicy::default(),
+                CompressionProfile::Fast,
+            )
+            .unwrap();
+            assert_eq!(archive.descriptor.lai, imported.archive.descriptor.lai);
+        }
+    }
+
+    #[test]
     fn pax_time_and_record_bytes_are_frozen_and_exact() {
         let timestamp =
             Timestamp::new(-2, 500_000_000, TimestampPrecision::Nanosecond, true).unwrap();
