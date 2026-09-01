@@ -26,6 +26,9 @@ use entrybound::ecf::{
     StreamWriteOptions, WriteOptions, bootstrap_sequential_limits, encode, encode_stream, open,
     open_stream_with_limits, peek_layout,
 };
+use entrybound::legacy::export::{
+    ExportOutcome, ExportProfileId, ExportSourceSecurity, ExportTarget, prepare_export,
+};
 use entrybound::legacy::import::{
     LegacyConversionReport, LegacyImportPolicy, LegacyImportResult, LegacySourceFormat,
     detect as detect_legacy, import_strict as import_legacy_strict,
@@ -52,6 +55,10 @@ Usage:\n\
                          [--entry-name <logical-path>]\n\
                          [--layout indexed|stream]\n\
                          [--profile fast|balanced|dense|extreme]\n\
+  ebound convert <archive.eb|-> <output.zip|output.tar|-> --to zip|tar\n\
+                         [--target-profile zip/portable-v1|tar/pax-v1]\n\
+                         [--dry-run] [--allow-lossy] [--receipt <file>]\n\
+                         [--identity <file>|--password]\n\
   ebound unpack <archive.eb|-> [destination] [--identity <file>|--password]\n\
   ebound list <archive.eb|->\n\
   ebound inspect <archive.eb|-> [--crypto] [--identity <file>|--password]\n\
@@ -128,7 +135,7 @@ and --pad max uses the maximum class. The encrypted boundary default is a\n\
 secret AFK-derived Gear table; --chunk-boundary keyed-prf selects PHTE/AES-128.\n";
 
 const CONVERT_HELP: &str = "\
-Usage: ebound convert <input> <output.eb|->\n\
+Usage (import): ebound convert <input> <output.eb|->\n\
                       [--strict | --compat=<versioned-profile>]\n\
                       [--preserve --compat=<versioned-profile>] [--dry-run]\n\
                       [--from zip|7z|tar|gzip|zstd|xz|bzip2|tar.gz|tar.zst|tar.xz|tar.bz2]\n\
@@ -136,13 +143,22 @@ Usage: ebound convert <input> <output.eb|->\n\
                       [--layout indexed|stream]\n\
                       [--profile fast|balanced|dense|extreme]\n\
 \n\
+Usage (export): ebound convert <archive.eb|-> <output.zip|output.tar|->\n\
+                      --to zip|tar\n\
+                      [--target-profile zip/portable-v1|tar/pax-v1]\n\
+                      [--dry-run] [--allow-lossy] [--receipt <file>]\n\
+                      [--identity <file>|--password]\n\
+\n\
 ZIP modes retain independent central, local, and descriptor observations. Strict\n\
 7z validates plain/encoded headers, folder graphs, solid streams, and its bounded\n\
 codec/filter subset. Strict tar supports ustar, pax, GNU long-name, and base-256\n\
 evidence. gzip, Zstandard,\n\
 XZ, and bzip2 are bounded transport layers whose decoded children use the same\n\
 tar adapter. A non-tar stream requires --entry-name. ZIP compatibility and\n\
-preservation remain available only through exact versioned ZIP profiles.\n";
+preservation remain available only through exact versioned ZIP profiles.\n\
+Export authenticates and verifies the source EAM, then completes a typed\n\
+LOSSLESS/LOSSY/REFUSED preflight before creating output. zip/portable-v1 and\n\
+tar/pax-v1 are deterministic; LOSSY output requires --allow-lossy.\n";
 
 const SIGN_HELP: &str = "\
 Usage: ebound sign <archive.eb> --signing-key <file>\n\
@@ -738,13 +754,337 @@ fn command_pack(arguments: Vec<OsString>) -> Result<()> {
 }
 
 // ---------------------------------------------------------------------------
-// legacy conversion policies
+// deterministic legacy export
+// ---------------------------------------------------------------------------
+
+fn command_export(arguments: Vec<OsString>) -> Result<()> {
+    let mut positionals = Vec::new();
+    let mut target = None;
+    let mut target_profile = None;
+    let mut dry_run = false;
+    let mut allow_lossy = false;
+    let mut receipt = None;
+    let mut identity = None;
+    let mut password = false;
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        let value = &arguments[cursor];
+        if let Some(name) = value.to_str().and_then(|value| value.strip_prefix("--to=")) {
+            if target.is_some() {
+                return Err(usage("export accepts --to only once"));
+            }
+            target = Some(name.parse::<ExportTarget>()?);
+        } else if value == "--to" {
+            if target.is_some() {
+                return Err(usage("export accepts --to only once"));
+            }
+            cursor += 1;
+            target = Some(
+                arguments
+                    .get(cursor)
+                    .and_then(|value| value.to_str())
+                    .ok_or_else(|| usage("--to requires zip or tar"))?
+                    .parse::<ExportTarget>()?,
+            );
+        } else if let Some(name) = value
+            .to_str()
+            .and_then(|value| value.strip_prefix("--target-profile="))
+        {
+            if target_profile.is_some() {
+                return Err(usage("export accepts --target-profile only once"));
+            }
+            target_profile = Some(ExportProfileId::parse(name)?);
+        } else if value == "--target-profile" {
+            if target_profile.is_some() {
+                return Err(usage("export accepts --target-profile only once"));
+            }
+            cursor += 1;
+            target_profile = Some(ExportProfileId::parse(
+                arguments
+                    .get(cursor)
+                    .and_then(|value| value.to_str())
+                    .ok_or_else(|| usage("--target-profile requires a versioned profile"))?,
+            )?);
+        } else if value == "--dry-run" {
+            if dry_run {
+                return Err(usage("export accepts --dry-run only once"));
+            }
+            dry_run = true;
+        } else if value == "--allow-lossy" {
+            if allow_lossy {
+                return Err(usage("export accepts --allow-lossy only once"));
+            }
+            allow_lossy = true;
+        } else if value == "--receipt" {
+            if receipt.is_some() {
+                return Err(usage("export accepts --receipt only once"));
+            }
+            cursor += 1;
+            receipt = Some(PathBuf::from(
+                arguments
+                    .get(cursor)
+                    .ok_or_else(|| usage("--receipt requires a path"))?,
+            ));
+        } else if value == "--identity" {
+            if identity.is_some() {
+                return Err(usage("export accepts --identity only once"));
+            }
+            cursor += 1;
+            identity =
+                Some(PathBuf::from(arguments.get(cursor).ok_or_else(|| {
+                    usage("--identity requires an identity key file")
+                })?));
+        } else if value == "--password" {
+            if password {
+                return Err(usage("export accepts --password only once"));
+            }
+            password = true;
+        } else if value.to_string_lossy().starts_with("--") {
+            return Err(usage(format!(
+                "export does not recognize option '{}'",
+                value.to_string_lossy()
+            )));
+        } else {
+            positionals.push(value.clone());
+        }
+        cursor += 1;
+    }
+    if positionals.len() != 2 {
+        return Err(usage(
+            "export requires <archive.eb|-> <target|-> --to zip|tar",
+        ));
+    }
+    if password && identity.is_some() {
+        return Err(usage("--identity and --password cannot be combined"));
+    }
+    let selected = match (target, target_profile.as_ref()) {
+        (Some(target), Some(profile)) if target != profile.target()? => {
+            return Err(usage("--to and --target-profile select different targets"));
+        }
+        (Some(target), _) => target,
+        (None, Some(profile)) => profile.target()?,
+        (None, None) => return Err(usage("export requires --to or --target-profile")),
+    };
+    let source = Source::parse(&positionals[0]);
+    let destination = if positionals[1] == OsStr::new("-") {
+        Destination::Stdout
+    } else {
+        Destination::Path(PathBuf::from(&positionals[1]))
+    };
+    if dry_run && receipt.is_some() {
+        return Err(usage("--receipt is unavailable during --dry-run"));
+    }
+    if matches!(destination, Destination::Stdout) && receipt.is_some() {
+        return Err(usage(
+            "--receipt with target stdout is unsupported because output cannot be rolled back",
+        ));
+    }
+    if let (Destination::Path(target_path), Some(receipt_path)) = (&destination, &receipt)
+        && target_path == receipt_path
+    {
+        return Err(usage("target and receipt paths must differ"));
+    }
+    let unlock = if let Some(path) = identity {
+        warn_identity_permissions(&path);
+        Some(OwnedUnlock::Identity(XWingIdentity::read_file(&path)?))
+    } else if password {
+        Some(OwnedUnlock::Password(Zeroizing::new(prompt_password(
+            "Archive password: ",
+        )?)))
+    } else {
+        None
+    };
+    let source_bytes = read_source_fully(&source)?;
+    let (opened, source_security) = open_export_source(&source_bytes, unlock.as_ref())?;
+    let prepared = prepare_export(&opened.archive, selected, source_security)?;
+    let status = Status {
+        to_stderr: matches!(destination, Destination::Stdout),
+    };
+    print_export_analysis(&status, &prepared.analysis);
+    if dry_run {
+        if prepared.analysis.outcome == ExportOutcome::Refused {
+            return prepared.accept(allow_lossy).map(|_| ());
+        }
+        status.line("OK dry-run completed full export preflight; no target bytes written");
+        return Ok(());
+    }
+    let artifact = prepared.accept(allow_lossy)?;
+    if source_security.encrypted {
+        status.line("warning: authenticated encrypted source is being exported to an unencrypted legacy target");
+    }
+    write_export_transaction(
+        &destination,
+        receipt.as_deref(),
+        &artifact.bytes,
+        &artifact.receipt.to_canonical_json(),
+    )?;
+    status.line(format!(
+        "OK exported {} entries to {} using {}",
+        artifact.receipt.entry_count,
+        describe(&destination),
+        artifact.receipt.target_profile
+    ));
+    status.line(format!(
+        "target bytes: {}",
+        artifact.receipt.target_byte_length
+    ));
+    status.line(format!(
+        "target SHA-256: {}",
+        artifact.receipt.target_sha256
+    ));
+    if let Some(path) = receipt {
+        status.line(format!("receipt: {}", path.display()));
+    }
+    Ok(())
+}
+
+fn open_export_source(
+    bytes: &[u8],
+    unlock: Option<&OwnedUnlock>,
+) -> Result<(OpenedArchive, ExportSourceSecurity)> {
+    if bytes_are_encrypted(bytes) {
+        let unlock = unlock
+            .map(OwnedUnlock::borrowed)
+            .ok_or_else(|| usage("encrypted export requires --identity or --password"))?;
+        let authenticated =
+            open_encrypted_authenticated(bytes, EncryptedOpenOptions::new(Some(unlock)))?;
+        let current = current_bindings(&authenticated.opened, Some(authenticated.addressing))?;
+        let statuses = authenticated
+            .embedded_signatures
+            .iter()
+            .map(|signature| verify_signature(signature, &current, None))
+            .collect::<Result<Vec<_>>>()?;
+        let mut security = ExportSourceSecurity {
+            encrypted: true,
+            embedded_signature_count: u64::try_from(statuses.len()).unwrap_or(u64::MAX),
+            ..ExportSourceSecurity::default()
+        };
+        for signature in statuses {
+            match signature.cryptographic {
+                CryptographicStatus::Valid => security.signatures_valid += 1,
+                CryptographicStatus::Invalid | CryptographicStatus::Unsupported => {
+                    security.signatures_invalid += 1;
+                }
+            }
+            if [signature.content, signature.physical, signature.addressing]
+                .contains(&BindingStatus::Stale)
+            {
+                security.signatures_stale += 1;
+            }
+        }
+        return Ok((authenticated.opened, security));
+    }
+    if unlock.is_some() {
+        return Err(usage(
+            "an identity/password was supplied for an unencrypted archive",
+        ));
+    }
+    if peek_layout(bytes).unwrap_or(Layout::Indexed) == Layout::Stream {
+        let limits = SequentialLimits {
+            content: StreamContentPolicy::Retain,
+            ..bootstrap_sequential_limits()
+        };
+        let sequential = open_stream_with_limits(std::io::Cursor::new(bytes), limits)?;
+        Ok((sequential.opened, ExportSourceSecurity::default()))
+    } else {
+        Ok((open(bytes)?, ExportSourceSecurity::default()))
+    }
+}
+
+fn bytes_are_encrypted(bytes: &[u8]) -> bool {
+    bytes.len() >= 24
+        && &bytes[..8] == entrybound::ecf::MAGIC.as_slice()
+        && u64::from_be_bytes(bytes[16..24].try_into().expect("checked length"))
+            & FEATURE_ENCRYPTED_INDEXED_V1
+            != 0
+}
+
+fn print_export_analysis(status: &Status, analysis: &entrybound::legacy::export::ExportAnalysis) {
+    status.line(format!("target profile: {}", analysis.profile.as_str()));
+    status.line(format!("outcome: {}", analysis.outcome.as_str()));
+    status.line(format!("entries: {}", analysis.entry_count));
+    status.line(format!("logical bytes: {}", analysis.total_logical_bytes));
+    if let Some(bytes) = analysis.planned_target_bytes {
+        status.line(format!("planned target bytes: {bytes}"));
+    }
+    for issue in &analysis.issues {
+        status.line(format!(
+            "issue {} {} {}: {}",
+            issue.category.as_str(),
+            issue.disposition.as_str(),
+            issue
+                .entry
+                .as_ref()
+                .map_or_else(|| "archive".to_owned(), ToString::to_string),
+            issue.reason
+        ));
+    }
+}
+
+fn write_export_transaction(
+    destination: &Destination,
+    receipt: Option<&Path>,
+    target_bytes: &[u8],
+    receipt_bytes: &[u8],
+) -> Result<()> {
+    match destination {
+        Destination::Stdout => {
+            let stdout = std::io::stdout();
+            let mut handle = stdout.lock();
+            handle
+                .write_all(target_bytes)
+                .map_err(|error| io_error("write exported target to standard output", &error))?;
+            handle
+                .flush()
+                .map_err(|error| io_error("flush exported target", &error))
+        }
+        Destination::Path(path) => {
+            let mut target = create_exclusive(path)?;
+            if let Err(error) = target
+                .write_all(target_bytes)
+                .and_then(|()| target.sync_all())
+                .map_err(|error| io_error("write exported target", &error))
+            {
+                drop(target);
+                let _ = std::fs::remove_file(path);
+                return Err(error);
+            }
+            drop(target);
+            if let Some(receipt_path) = receipt {
+                let receipt_result = (|| {
+                    let mut file = create_exclusive(receipt_path)?;
+                    file.write_all(receipt_bytes)
+                        .and_then(|()| file.sync_all())
+                        .map_err(|error| io_error("write export receipt", &error))
+                })();
+                if let Err(error) = receipt_result {
+                    let _ = std::fs::remove_file(path);
+                    let _ = std::fs::remove_file(receipt_path);
+                    return Err(error);
+                }
+            }
+            Ok(())
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// legacy import conversion policies
 // ---------------------------------------------------------------------------
 
 fn command_convert(arguments: Vec<OsString>) -> Result<()> {
     if arguments.len() == 1 && matches!(arguments[0].to_str(), Some("--help" | "-h")) {
         print!("{CONVERT_HELP}");
         return Ok(());
+    }
+    if arguments.iter().any(|value| {
+        value == "--to"
+            || value == "--target-profile"
+            || value.to_str().is_some_and(|value| {
+                value.starts_with("--to=") || value.starts_with("--target-profile=")
+            })
+    }) {
+        return command_export(arguments);
     }
     let mut positionals = Vec::new();
     let mut profile = None;
@@ -3098,5 +3438,184 @@ mod tests {
         ]))
         .unwrap_err();
         assert_eq!(error.code(), ReasonCode::CryptoRecipientPolicyInvalid);
+    }
+
+    #[test]
+    fn deterministic_zip_tar_export_receipt_dry_run_and_reimport_workflow() {
+        let id = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
+        let root =
+            std::env::temp_dir().join(format!("entrybound-cli-export-{}-{id}", std::process::id()));
+        let input = root.join("input");
+        std::fs::create_dir_all(input.join("nested")).unwrap();
+        std::fs::write(input.join("nested/file.txt"), b"exported bytes").unwrap();
+        let source = root.join("source.eb");
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("pack"),
+            input.as_os_str().to_owned(),
+            source.as_os_str().to_owned(),
+            OsString::from("--profile"),
+            OsString::from("fast"),
+        ])
+        .unwrap();
+
+        let unapproved = root.join("unapproved-lossy.zip");
+        assert_eq!(
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("convert"),
+                source.as_os_str().to_owned(),
+                unapproved.as_os_str().to_owned(),
+                OsString::from("--to=zip"),
+            ])
+            .unwrap_err()
+            .code(),
+            ReasonCode::LegacyExportLossyApprovalRequired
+        );
+        assert!(!unapproved.exists());
+
+        for (name, target) in [("target.zip", "zip"), ("target.tar", "tar")] {
+            let legacy = root.join(name);
+            let receipt = root.join(format!("{name}.receipt.json"));
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("convert"),
+                source.as_os_str().to_owned(),
+                legacy.as_os_str().to_owned(),
+                OsString::from("--to"),
+                OsString::from(target),
+                OsString::from("--allow-lossy"),
+                OsString::from("--receipt"),
+                receipt.as_os_str().to_owned(),
+            ])
+            .unwrap();
+            let receipt_text = std::fs::read_to_string(&receipt).unwrap();
+            let target_hash = entrybound::identity::sha256_exact(&std::fs::read(&legacy).unwrap());
+            assert!(receipt_text.contains(&target_hash.to_string()));
+            assert!(receipt_text.contains("\"deterministic\":true"));
+
+            let original_target = std::fs::read(&legacy).unwrap();
+            assert_eq!(
+                run(vec![
+                    OsString::from("ebound"),
+                    OsString::from("convert"),
+                    source.as_os_str().to_owned(),
+                    legacy.as_os_str().to_owned(),
+                    OsString::from("--to"),
+                    OsString::from(target),
+                    OsString::from("--allow-lossy"),
+                ])
+                .unwrap_err()
+                .code(),
+                ReasonCode::Io
+            );
+            assert_eq!(std::fs::read(&legacy).unwrap(), original_target);
+
+            let reimported = root.join(format!("{name}.eb"));
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("convert"),
+                legacy.as_os_str().to_owned(),
+                reimported.as_os_str().to_owned(),
+                OsString::from("--strict"),
+            ])
+            .unwrap();
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("verify"),
+                reimported.as_os_str().to_owned(),
+            ])
+            .unwrap();
+        }
+
+        let dry = root.join("dry.zip");
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("convert"),
+            source.as_os_str().to_owned(),
+            dry.as_os_str().to_owned(),
+            OsString::from("--target-profile=zip/portable-v1"),
+            OsString::from("--dry-run"),
+        ])
+        .unwrap();
+        assert!(!dry.exists());
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn encrypted_export_requires_authentication_and_records_security_transition() {
+        let id = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
+        let root = std::env::temp_dir().join(format!(
+            "entrybound-cli-encrypted-export-{}-{id}",
+            std::process::id()
+        ));
+        let input = root.join("input");
+        std::fs::create_dir_all(&input).unwrap();
+        std::fs::write(input.join("secret.txt"), b"authenticated export").unwrap();
+        let (identity, recipient) = entrybound::crypto::XWingIdentity::generate().unwrap();
+        let encrypted = entrybound::crypto::pack_directory_encrypted(
+            &input,
+            entrybound::archive::PackOptions::default(),
+            entrybound::crypto::EncryptedWriteOptions {
+                recipients: std::slice::from_ref(&recipient),
+                ..entrybound::crypto::EncryptedWriteOptions::default()
+            },
+        )
+        .unwrap();
+        let source = root.join("encrypted.eb");
+        std::fs::write(&source, encrypted.bytes).unwrap();
+        let identity_path = root.join("identity.key");
+        std::fs::write(&identity_path, identity.encode_file().unwrap().as_slice()).unwrap();
+
+        let refused = root.join("no-key.zip");
+        assert_eq!(
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("convert"),
+                source.as_os_str().to_owned(),
+                refused.as_os_str().to_owned(),
+                OsString::from("--to=zip"),
+                OsString::from("--allow-lossy"),
+            ])
+            .unwrap_err()
+            .code(),
+            ReasonCode::CommandUsage
+        );
+        assert!(!refused.exists());
+
+        let target = root.join("authenticated.zip");
+        let receipt = root.join("authenticated.receipt.json");
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("convert"),
+            source.as_os_str().to_owned(),
+            target.as_os_str().to_owned(),
+            OsString::from("--to=zip"),
+            OsString::from("--allow-lossy"),
+            OsString::from("--identity"),
+            identity_path.as_os_str().to_owned(),
+            OsString::from("--receipt"),
+            receipt.as_os_str().to_owned(),
+        ])
+        .unwrap();
+        let receipt = std::fs::read_to_string(receipt).unwrap();
+        assert!(receipt.contains("\"encrypted\":true"));
+        assert!(receipt.contains("\"target_encrypted\":false"));
+        assert!(target.exists());
+        let plain = entrybound::archive::pack_directory(
+            &input,
+            entrybound::archive::PackOptions::default(),
+        )
+        .unwrap();
+        let plain_target = entrybound::legacy::export::prepare_export(
+            &plain.archive,
+            entrybound::legacy::export::ExportTarget::ZipPortableV1,
+            entrybound::legacy::export::ExportSourceSecurity::default(),
+        )
+        .unwrap()
+        .accept(true)
+        .unwrap();
+        assert_eq!(std::fs::read(&target).unwrap(), plain_target.bytes);
+        std::fs::remove_dir_all(root).unwrap();
     }
 }

@@ -181,3 +181,15 @@ every output byte is assigned exactly once. Adding a coder or graph shape
 requires a frozen method/property contract, pre-allocation resource derivation,
 generated adversarial cases, and independent differential evidence. See
 docs/7z-import-v1.md.
+
+Legacy export is an EAM consumer, never a reverse legacy parser and never an
+unpack-to-temporary-directory workflow. Every target adapter must complete the
+format-neutral representability preflight before output creation, use an exact
+versioned target profile, and return LOSSLESS, LOSSY, or REFUSED. LOSSY bytes
+require explicit caller approval; REFUSED has no override. New target fields
+must state whether they preserve EAM semantics or are deterministic target
+construction constants. Auxiliary provenance, fidelity, crypto, and signature
+state belongs in ExportReceipt rather than being misclassified as legacy
+metadata loss. Determinism tests must vary source ECF layout, physical planning,
+and encryption while holding EAM fixed. See docs/legacy-export-v1.md,
+docs/zip-export-v1.md, and docs/tar-export-v1.md.

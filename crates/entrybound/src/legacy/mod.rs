@@ -3,6 +3,7 @@
 //! Adapters in this module describe foreign evidence. They never make foreign
 //! container structures authoritative EAM state.
 
+pub mod export;
 pub mod import;
 pub mod lom;
 pub mod sevenz;

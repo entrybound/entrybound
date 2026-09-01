@@ -61,7 +61,8 @@ establishes:
   directory creation, collision refusal, and pre-materialization verification;
 - working `pack`, `unpack`, `list`, `inspect`, `verify`, compression `explain`,
   strict ZIP/7z/tar/compressed-stream plus ZIP compatibility/preservation
-  `convert`, `sign`, and authenticated `key` CLI commands;
+  import, deterministic ZIP/tar export, `sign`, and authenticated `key` CLI
+  commands;
 - a format-neutral Legacy Observation Model, independent ZIP local/central/
   descriptor evidence, strict ZIP32/ZIP64 STORE/DEFLATE reconciliation, and an
   AUX-bound in-band conversion provenance plus optional exact-source/LOM
@@ -71,6 +72,9 @@ establishes:
 - independent 7z plain/encoded-header observation, bounded linear folder
   graphs, solid substream mapping, and COPY/LZMA/LZMA2/BZip2/DEFLATE with
   Delta/x86-BCJ decoding;
+- a format-neutral export preflight with typed LOSSLESS/LOSSY/REFUSED outcomes,
+  deterministic `zip/portable-v1` and `tar/pax-v1` writers, and canonical JSON
+  ExportReceipt sidecars;
 - capture and restoration of `core.mtime` and, on Unix, `core.executable`, with
   an in-band FidelityReport for metadata the bootstrap does not preserve;
 - caller-owned resource limits enforced against the archive declaration before
@@ -138,6 +142,18 @@ ebound convert archive.tar.xz archive-xz.eb --strict
 ebound convert archive.tar.bz2 archive-bzip2.eb --strict
 ebound convert payload.zst payload.eb --from zstd \
   --entry-name payload.bin --strict
+```
+
+Verified native archives export directly from EAM/ContentObjects without a
+temporary filesystem extraction. Export completes representability and target
+planning before output creation; LOSSY output requires explicit acceptance.
+
+```sh
+ebound convert archive.eb portable.zip --to zip --receipt portable.receipt.json
+ebound convert archive.eb portable.tar --target-profile tar/pax-v1
+ebound convert archive.eb ignored.zip --to zip --dry-run
+ebound convert private.eb portable.zip --to zip \
+  --identity identity.ebk --allow-lossy
 ```
 
 Encrypted crypto-v1 archives are `INDEXED` only. Recipient and identity files
@@ -232,8 +248,9 @@ pax, GNU long-name, and base-256 forms; links, sparse entries, and special
 files are refused. gzip/Zstandard/XZ/bzip2 transports can wrap tar or one
 explicitly named file. Strict 7z supports regular files/directories with its
 bounded COPY/LZMA/LZMA2/BZip2/DEFLATE and Delta/x86-BCJ subset; encryption,
-PPMd, BCJ2, arbitrary graphs, and special files are refused. There is no
-ZIP/tar/7z export, tar/7z compatibility or preservation, encrypted legacy
+PPMd, BCJ2, arbitrary graphs, and special files are refused. Deterministic ZIP
+and pax tar export supports only the frozen portable-v1/pax-v1 profiles; there
+is no 7z export, tar/7z compatibility or preservation, encrypted legacy
 input, encrypted STREAM layout,
 online TSA request support, general PKI/keychain integration, classical-only
 recipients, remote range access, general
@@ -314,6 +331,9 @@ freshness, timestamp trust, and recipient mutation architecture, and
 [legacy preservation v1](docs/legacy-preservation-v1.md),
 [strict tar import v1](docs/tar-import-v1.md),
 [strict 7z import v1](docs/7z-import-v1.md),
-[compressed stream import v1](docs/compressed-stream-import-v1.md),
-reconciliation, bomb limits, and auxiliary conversion provenance, and
+[compressed stream import v1](docs/compressed-stream-import-v1.md) for
+reconciliation, bomb limits, and auxiliary conversion provenance;
+[legacy export v1](docs/legacy-export-v1.md),
+[ZIP export v1](docs/zip-export-v1.md), and
+[tar export v1](docs/tar-export-v1.md) for deterministic migration; and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.
