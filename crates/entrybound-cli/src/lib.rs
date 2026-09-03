@@ -6,9 +6,12 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use entrybound::archive::{
-    ConfinementMode, ExtractionPolicy, PackOptions, default_pack_output,
-    default_unpack_destination, explain as compression_explain, inspect, list, plan_directory,
-    unpack, unpack_opened, unpack_stream,
+    ArchiveDiffReport, ConfinementMode, DiffChange, DiffIdentityStatus, DiffTier, ExtractionPolicy,
+    IndexPolicy, InspectionSecurity, InspectionViews, PackOptions, RepackMode, RepackOptions,
+    archive_diff, archive_metadata_diff, default_pack_output, default_unpack_destination,
+    explain as compression_explain, inspect, inspection_json, inspection_json_with_security, list,
+    plan_directory, prepare_repack, random_inspection_json, structured_explain, unpack,
+    unpack_opened, unpack_stream,
 };
 use entrybound::crypto::{
     BindingStatus, BoundaryMode, CryptoPolicy, CryptographicStatus, EncryptedOpenOptions,
@@ -85,8 +88,16 @@ Usage:\n\
   ebound read <archive.eb|URL> <logical-path> [--output <file|->]\n\
                                [--identity <file>|--password] [--access-report]\n\
   ebound list <archive.eb|URL|-> [--identity <file>|--password]\n\
-  ebound inspect <archive.eb|URL|-> [--crypto] [--identity <file>|--password]\n\
-                                [--timestamp-trust <anchor.der> ...]\n\
+  ebound repack <source.eb> <output.eb> [--layout indexed|stream]\n\
+                 [--profile fast|balanced|dense|extreme]\n\
+                 [--index preserve|present|absent] [--stream-window <n>|auto] [--dry-run]\n\
+  ebound diff <left.eb|URL> <right.eb|URL> [--json] [--public]\n\
+                 [--left-identity <file>|--left-password]\n\
+                 [--right-identity <file>|--right-password]\n\
+  ebound inspect <archive.eb|URL|-> [--json] [--entries|--plans|--chunks]\n\
+                 [--reconstruction|--provenance|--security|--access]\n\
+                 [--crypto] [--identity <file>|--password]\n\
+                 [--timestamp-trust <anchor.der> ...]\n\
   ebound verify <archive.eb|-> [--identity <file>|--password]\n\
                                [--signatures|--signature <archive.ebsig>]\n\
   ebound sign <archive.eb> --signing-key <file> [--detached [file]|--embed]\n\
@@ -98,7 +109,7 @@ Usage:\n\
   ebound key add <archive.eb> --identity <file> --recipient <recipient.pub>\n\
   ebound key remove <archive.eb> --identity <file> --retain <recipient.pub> ...\n\
   ebound key change-password <archive.eb> --password\n\
-  ebound explain <archive.eb|->\n\
+  ebound explain <archive.eb|-> [logical-path]\n\
 \n\
 This build supports unencrypted Complete archives in two physical layouts,\n\
 INDEXED and STREAM, with directories, regular files, normalized\n\
@@ -209,6 +220,26 @@ The default output is <legacy-artifact>.eb. The source is never modified. The\n\
 sidecar is reopened and verified, including its ConversionProvenance binding to\n\
 the exact source SHA-256, before its final name is published.\n";
 
+const REPACK_HELP: &str = "\
+Usage: ebound repack <source.eb> <output.eb> [--layout indexed|stream]\n\
+               [--profile fast|balanced|dense|extreme]\n\
+               [--index preserve|present|absent]\n\
+               [--stream-window <n>|auto] [--dry-run]\n\
+\n\
+With no --profile, recorded Chunk boundaries, plans, dictionaries, groups,\n\
+reconstruction, and physical order are retained and LAI/AUX/PCR must remain\n\
+equal. Supplying --profile performs a current-v6 replan and requires LAI/AUX\n\
+equality. Encrypted repack is deliberately unsupported.\n";
+
+const DIFF_HELP: &str = "\
+Usage: ebound diff <left.eb|URL> <right.eb|URL> [--json] [--public]\n\
+               [--left-identity <file>|--left-password]\n\
+               [--right-identity <file>|--right-password]\n\
+\n\
+Reports SEMANTIC (LAI), AUXILIARY (AUX), PHYSICAL (PCR), and CONTAINER/PCI\n\
+changes separately. URL inputs use verified range-backed metadata and report\n\
+PCR as NOT_VERIFIED and PCI as NOT_COMPUTED unless fully read.\n";
+
 const SIGN_HELP: &str = "\
 Usage: ebound sign <archive.eb> --signing-key <file>\n\
              [--detached [archive.ebsig] | --embed]\n\
@@ -260,6 +291,8 @@ fn run(arguments: impl IntoIterator<Item = OsString>) -> Result<()> {
         "unpack" => command_unpack(arguments.collect()),
         "read" => command_read(arguments.collect()),
         "list" => command_list(arguments.collect()),
+        "repack" => command_repack(arguments.collect()),
+        "diff" => command_diff(arguments.collect()),
         "inspect" => command_inspect(arguments.collect()),
         "verify" => command_verify(arguments.collect()),
         "sign" => command_sign(arguments.collect()),
@@ -3177,8 +3210,739 @@ fn command_inspect_random(parsed: ReadArguments) -> Result<()> {
     Ok(())
 }
 
+fn command_repack(arguments: Vec<OsString>) -> Result<()> {
+    if arguments.len() == 1 && matches!(arguments[0].to_str(), Some("--help" | "-h")) {
+        print!("{REPACK_HELP}");
+        return Ok(());
+    }
+    let mut positionals = Vec::new();
+    let mut layout = None;
+    let mut profile = None;
+    let mut index = IndexPolicy::Preserve;
+    let mut index_seen = false;
+    let mut stream_window = StreamWindow::Auto;
+    let mut window_seen = false;
+    let mut dry_run = false;
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        let value = &arguments[cursor];
+        if value == "--layout" {
+            cursor += 1;
+            layout = Some(
+                match arguments.get(cursor).and_then(|value| value.to_str()) {
+                    Some("indexed") => Layout::Indexed,
+                    Some("stream") => Layout::Stream,
+                    _ => return Err(usage("--layout requires 'indexed' or 'stream'")),
+                },
+            );
+        } else if value == "--profile" {
+            cursor += 1;
+            profile = Some(
+                arguments
+                    .get(cursor)
+                    .and_then(|value| value.to_str())
+                    .ok_or_else(|| usage("--profile requires a UTF-8 profile"))?
+                    .parse::<CompressionProfile>()?,
+            );
+        } else if value == "--index" {
+            cursor += 1;
+            index = match arguments.get(cursor).and_then(|value| value.to_str()) {
+                Some("preserve") => IndexPolicy::Preserve,
+                Some("present") => IndexPolicy::Present,
+                Some("absent") => IndexPolicy::Absent,
+                _ => return Err(usage("--index requires preserve, present, or absent")),
+            };
+            index_seen = true;
+        } else if value == "--stream-window" {
+            cursor += 1;
+            stream_window = match arguments.get(cursor).and_then(|value| value.to_str()) {
+                Some("auto") => StreamWindow::Auto,
+                Some(value) => StreamWindow::Ceiling(value.parse::<u64>().map_err(|_| {
+                    usage("--stream-window requires a non-negative integer or auto")
+                })?),
+                None => return Err(usage("--stream-window requires a value")),
+            };
+            window_seen = true;
+        } else if value == "--dry-run" {
+            dry_run = true;
+        } else if value.to_string_lossy().starts_with("--") {
+            return Err(usage(format!(
+                "repack does not recognize option '{}'",
+                value.to_string_lossy()
+            )));
+        } else {
+            positionals.push(value.clone());
+        }
+        cursor += 1;
+    }
+    if positionals.len() != 2 {
+        return Err(usage("repack requires <source.eb> <output.eb>"));
+    }
+    let source_path = PathBuf::from(&positionals[0]);
+    let output_path = PathBuf::from(&positionals[1]);
+    if path_is_encrypted(&source_path)? {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::CryptoLayoutUnsupported,
+            "encrypted repack requires a future crypto-aware mutation contract",
+        ));
+    }
+    let loaded = load(
+        &Source::Path(source_path.clone()),
+        StreamContentPolicy::Retain,
+    )?;
+    let target_layout = layout.unwrap_or(loaded.opened.archive.descriptor.layout);
+    if window_seen && target_layout != Layout::Stream {
+        return Err(usage("--stream-window applies only to STREAM output"));
+    }
+    if target_layout == Layout::Stream && index_seen && index != IndexPolicy::Preserve {
+        return Err(usage(
+            "STREAM has no Index; --index present/absent is invalid",
+        ));
+    }
+    let prepared = prepare_repack(
+        &loaded.opened,
+        RepackOptions {
+            mode: profile.map_or(RepackMode::RepresentationOnly, RepackMode::Replan),
+            layout: target_layout,
+            index,
+            stream_window,
+        },
+    )?;
+    print_repack_analysis(&prepared.analysis, dry_run);
+    if dry_run {
+        println!("prospective output only; no file written");
+        return Ok(());
+    }
+    let source_bytes = read(&source_path)?;
+    publish_staged_file(&output_path, &prepared.encoded.bytes)?;
+    if prepared.analysis.mode == RepackMode::RepresentationOnly
+        && source_bytes == prepared.encoded.bytes
+    {
+        println!("exact no-op repack: PCI and bytes reproduced");
+    } else if prepared.analysis.mode == RepackMode::RepresentationOnly {
+        println!("semantic/physical equivalent; container rewritten");
+    }
+    println!(
+        "OK repacked and post-write verified {}",
+        output_path.display()
+    );
+    Ok(())
+}
+
+fn print_repack_analysis(analysis: &entrybound::archive::RepackAnalysis, prospective: bool) {
+    let label = if prospective {
+        "PROSPECTIVE"
+    } else {
+        "VERIFIED"
+    };
+    println!("{label} repack comparison");
+    println!(
+        "mode: {}",
+        match analysis.mode {
+            RepackMode::RepresentationOnly => "representation-only",
+            RepackMode::Replan(_) => "replan",
+        }
+    );
+    println!(
+        "layout: {} -> {}; planner: {} -> {}",
+        analysis.source_layout.as_str(),
+        analysis.target_layout.as_str(),
+        analysis.source_planner,
+        analysis.target_planner
+    );
+    println!(
+        "chunks logical/unique: {}/{} -> {}/{}",
+        analysis.source_chunk_count,
+        analysis.source_unique_chunk_count,
+        analysis.target_chunk_count,
+        analysis.target_unique_chunk_count
+    );
+    println!(
+        "stored bytes: {} -> {}; working set: {} -> {}",
+        analysis.source_stored_bytes,
+        analysis.target_stored_bytes,
+        analysis.source_working_set_bytes,
+        analysis.target_working_set_bytes
+    );
+    println!(
+        "dictionaries/groups/regions: {}/{}/{} -> {}/{}/{}",
+        analysis.source_dictionary_count,
+        analysis.source_group_count,
+        analysis.source_region_count,
+        analysis.target_dictionary_count,
+        analysis.target_group_count,
+        analysis.target_region_count
+    );
+    println!(
+        "LAI equal: {}; AUX equal: {}; PCR equal: {}; prospective container bytes: {}",
+        analysis.lai_equal, analysis.aux_equal, analysis.pcr_equal, analysis.output_bytes
+    );
+    println!("PCR: {} -> {}", analysis.source_pcr, analysis.target_pcr);
+}
+
+fn publish_staged_file(path: &Path, bytes: &[u8]) -> Result<()> {
+    if path.exists() {
+        return Err(Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::Io,
+            format!("output '{}' already exists", path.display()),
+        ));
+    }
+    let temporary = temporary_sibling(path, 0)?;
+    let mut file = create_exclusive(&temporary)?;
+    if let Err(error) = file
+        .write_all(bytes)
+        .and_then(|()| file.sync_all())
+        .map_err(|error| io_error("write and sync staged repack", &error))
+    {
+        drop(file);
+        let _ = std::fs::remove_file(&temporary);
+        return Err(error);
+    }
+    drop(file);
+    let staged_verification = (|| {
+        let staged_bytes = read(&temporary)?;
+        match peek_layout(&staged_bytes)? {
+            Layout::Indexed => {
+                open(&staged_bytes)?;
+            }
+            Layout::Stream => {
+                let limits = SequentialLimits {
+                    content: StreamContentPolicy::Verify,
+                    ..bootstrap_sequential_limits()
+                };
+                open_stream_with_limits(staged_bytes.as_slice(), limits)?;
+            }
+        }
+        Ok(())
+    })();
+    if let Err(error) = staged_verification {
+        let _ = std::fs::remove_file(&temporary);
+        return Err(error);
+    }
+    if let Err(error) = std::fs::hard_link(&temporary, path) {
+        let _ = std::fs::remove_file(&temporary);
+        return Err(io_error("publish staged repack exclusively", &error));
+    }
+    let _ = std::fs::remove_file(&temporary);
+    Ok(())
+}
+
+struct DiffArguments {
+    left: OsString,
+    right: OsString,
+    left_unlock: Option<OwnedUnlock>,
+    right_unlock: Option<OwnedUnlock>,
+    json: bool,
+    public_only: bool,
+}
+
+fn command_diff(arguments: Vec<OsString>) -> Result<()> {
+    if arguments.len() == 1 && matches!(arguments[0].to_str(), Some("--help" | "-h")) {
+        print!("{DIFF_HELP}");
+        return Ok(());
+    }
+    let parsed = parse_diff_arguments(arguments)?;
+    let remote = is_http_source(&parsed.left) || is_http_source(&parsed.right);
+    let report = if parsed.public_only {
+        public_crypto_diff(&parsed.left, &parsed.right)?
+    } else if remote {
+        let (left_metadata, left_report) =
+            open_diff_metadata(&parsed.left, parsed.left_unlock.as_ref())?;
+        let (right_metadata, right_report) =
+            open_diff_metadata(&parsed.right, parsed.right_unlock.as_ref())?;
+        archive_metadata_diff(&left_metadata, &left_report, &right_metadata, &right_report)?
+    } else {
+        let (left, left_security) = open_diff_full(&parsed.left, parsed.left_unlock.as_ref())?;
+        let (right, right_security) = open_diff_full(&parsed.right, parsed.right_unlock.as_ref())?;
+        let mut report = archive_diff(&left, &right)?;
+        append_security_diff(&mut report, &left_security, &right_security);
+        report
+    };
+    if parsed.json {
+        std::io::stdout()
+            .write_all(&report.to_canonical_json())
+            .map_err(|error| io_error("write diff JSON", &error))?;
+    } else {
+        println!("LAI  {}", report.lai.as_str());
+        println!("AUX  {}", report.aux.as_str());
+        println!("PCR  {}", report.pcr.as_str());
+        println!("PCI  {}", report.pci.as_str());
+        println!("{}", report.interpretation);
+        println!("left verification: {}", report.left_scope);
+        println!("right verification: {}", report.right_scope);
+        if let Some(summary) = report.physical_summary {
+            println!(
+                "physical summary: chunks reused={} added={} removed={} boundary-changed-objects={}",
+                summary.chunks_reused,
+                summary.chunks_added,
+                summary.chunks_removed,
+                summary.content_objects_with_boundary_changes
+            );
+        }
+        for change in &report.changes {
+            println!(
+                "{} {} {}: {} -> {}",
+                change.tier.as_str(),
+                change.subject,
+                change.field,
+                change.left.as_deref().unwrap_or("<absent>"),
+                change.right.as_deref().unwrap_or("<absent>")
+            );
+        }
+    }
+    Ok(())
+}
+
+fn parse_diff_arguments(arguments: Vec<OsString>) -> Result<DiffArguments> {
+    let mut positionals = Vec::new();
+    let mut left_identity = None;
+    let mut right_identity = None;
+    let mut left_password = false;
+    let mut right_password = false;
+    let mut json = false;
+    let mut public_only = false;
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        let value = &arguments[cursor];
+        if value == "--json" {
+            json = true;
+        } else if value == "--public" {
+            public_only = true;
+        } else if value == "--left-identity" || value == "--right-identity" {
+            let left = value == "--left-identity";
+            cursor += 1;
+            let path = PathBuf::from(
+                arguments
+                    .get(cursor)
+                    .ok_or_else(|| usage("identity option requires a key file"))?,
+            );
+            if left {
+                left_identity = Some(path);
+            } else {
+                right_identity = Some(path);
+            }
+        } else if value == "--left-password" {
+            left_password = true;
+        } else if value == "--right-password" {
+            right_password = true;
+        } else if value.to_string_lossy().starts_with("--") {
+            return Err(usage(format!(
+                "diff does not recognize option '{}'",
+                value.to_string_lossy()
+            )));
+        } else {
+            positionals.push(value.clone());
+        }
+        cursor += 1;
+    }
+    if positionals.len() != 2 {
+        return Err(usage("diff requires <left.eb|URL> <right.eb|URL>"));
+    }
+    if left_password && left_identity.is_some() || right_password && right_identity.is_some() {
+        return Err(usage(
+            "each side accepts either an identity or a password, not both",
+        ));
+    }
+    if public_only
+        && (left_password || right_password || left_identity.is_some() || right_identity.is_some())
+    {
+        return Err(usage("--public does not accept private unlock material"));
+    }
+    let left_unlock = if let Some(path) = left_identity {
+        Some(OwnedUnlock::Identity(XWingIdentity::read_file(&path)?))
+    } else if left_password {
+        Some(OwnedUnlock::Password(Zeroizing::new(prompt_password(
+            "Left archive password: ",
+        )?)))
+    } else {
+        None
+    };
+    let right_unlock = if let Some(path) = right_identity {
+        Some(OwnedUnlock::Identity(XWingIdentity::read_file(&path)?))
+    } else if right_password {
+        Some(OwnedUnlock::Password(Zeroizing::new(prompt_password(
+            "Right archive password: ",
+        )?)))
+    } else {
+        None
+    };
+    Ok(DiffArguments {
+        left: positionals.remove(0),
+        right: positionals.remove(0),
+        left_unlock,
+        right_unlock,
+        json,
+        public_only,
+    })
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct DiffSecurityContext {
+    encrypted: bool,
+    payload_suite: Option<u16>,
+    recipient_set_digest: Option<entrybound::eam::Digest>,
+    archive_id: Option<entrybound::eam::Digest>,
+    embedded_signature_count: usize,
+    stale_signature_count: usize,
+}
+
+fn public_crypto_diff(left: &OsStr, right: &OsStr) -> Result<ArchiveDiffReport> {
+    let left = inspect_indexed_random_encrypted_public(
+        make_random_source(left)?,
+        RandomAccessPolicy::default(),
+        CryptoPolicy::default(),
+    )?;
+    let right = inspect_indexed_random_encrypted_public(
+        make_random_source(right)?,
+        RandomAccessPolicy::default(),
+        CryptoPolicy::default(),
+    )?;
+    let mut changes = Vec::new();
+    let mut push = |field: &str, left: String, right: String| {
+        if left != right {
+            changes.push(DiffChange {
+                tier: DiffTier::Container,
+                subject: "public-crypto".to_owned(),
+                field: field.to_owned(),
+                left: Some(left),
+                right: Some(right),
+            });
+        }
+    };
+    push(
+        "required_features",
+        format!("{:#x}", left.required_features),
+        format!("{:#x}", right.required_features),
+    );
+    push(
+        "payload_suite",
+        left.public.payload_suite.to_owned(),
+        right.public.payload_suite.to_owned(),
+    );
+    push(
+        "recipient_count",
+        left.public.recipient_count.to_string(),
+        right.public.recipient_count.to_string(),
+    );
+    push(
+        "recipient_types",
+        left.public.recipient_types.join(","),
+        right.public.recipient_types.join(","),
+    );
+    push(
+        "padding",
+        format!("{:?}", left.public.padding),
+        format!("{:?}", right.public.padding),
+    );
+    push(
+        "boundary",
+        format!("{:?}", left.public.boundary),
+        format!("{:?}", right.public.boundary),
+    );
+    push(
+        "segment_count",
+        format!("{:?}", left.public.segment_count),
+        format!("{:?}", right.public.segment_count),
+    );
+    push(
+        "total_container_bytes",
+        left.public.total_container_bytes.to_string(),
+        right.public.total_container_bytes.to_string(),
+    );
+    changes.sort();
+    Ok(ArchiveDiffReport {
+        lai: DiffIdentityStatus::NotVerified,
+        aux: DiffIdentityStatus::NotVerified,
+        pcr: DiffIdentityStatus::NotVerified,
+        pci: DiffIdentityStatus::NotComputed,
+        interpretation:
+            "public encrypted-container framing compared; all private identity tiers locked"
+                .to_owned(),
+        left_scope: format!(
+            "public crypto framing; {} bytes in {} requests",
+            left.bytes_fetched, left.range_request_count
+        ),
+        right_scope: format!(
+            "public crypto framing; {} bytes in {} requests",
+            right.bytes_fetched, right.range_request_count
+        ),
+        physical_summary: None,
+        changes: changes.into_boxed_slice(),
+    })
+}
+
+fn open_diff_full(
+    value: &OsStr,
+    unlock: Option<&OwnedUnlock>,
+) -> Result<(OpenedArchive, DiffSecurityContext)> {
+    let path = PathBuf::from(value);
+    if path_is_encrypted(&path)? {
+        let unlock =
+            unlock.ok_or_else(|| usage("encrypted diff tier requires per-side unlock material"))?;
+        let authenticated = open_encrypted_authenticated(
+            &read(&path)?,
+            EncryptedOpenOptions::new(Some(unlock.borrowed())),
+        )?;
+        let current = current_bindings(&authenticated.opened, Some(authenticated.addressing))?;
+        let statuses = verify_signatures(&authenticated.embedded_signatures, &current, None)?;
+        let stale_signature_count = statuses
+            .iter()
+            .filter(|status| {
+                status.content == BindingStatus::Stale
+                    || status.physical == BindingStatus::Stale
+                    || status.addressing == BindingStatus::Stale
+            })
+            .count();
+        let security = DiffSecurityContext {
+            encrypted: true,
+            payload_suite: Some(authenticated.addressing.payload_suite_id),
+            recipient_set_digest: Some(entrybound::eam::Digest::from_bytes(
+                authenticated.addressing.recipient_set_digest,
+            )),
+            archive_id: Some(entrybound::eam::Digest::from_bytes(
+                authenticated.addressing.archive_id,
+            )),
+            embedded_signature_count: authenticated.embedded_signatures.len(),
+            stale_signature_count,
+        };
+        Ok((authenticated.opened, security))
+    } else {
+        if unlock.is_some() {
+            return Err(usage(
+                "unlock material was supplied for an unencrypted diff side",
+            ));
+        }
+        Ok((
+            load(&Source::Path(path), StreamContentPolicy::Retain)?.opened,
+            DiffSecurityContext {
+                encrypted: false,
+                payload_suite: None,
+                recipient_set_digest: None,
+                archive_id: None,
+                embedded_signature_count: 0,
+                stale_signature_count: 0,
+            },
+        ))
+    }
+}
+
+fn append_security_diff(
+    report: &mut entrybound::archive::ArchiveDiffReport,
+    left: &DiffSecurityContext,
+    right: &DiffSecurityContext,
+) {
+    let mut changes = report.changes.to_vec();
+    let mut push = |field: &str, left: String, right: String| {
+        changes.push(DiffChange {
+            tier: DiffTier::Container,
+            subject: "security".to_owned(),
+            field: field.to_owned(),
+            left: Some(left),
+            right: Some(right),
+        });
+    };
+    if left.encrypted != right.encrypted {
+        push(
+            "encrypted",
+            left.encrypted.to_string(),
+            right.encrypted.to_string(),
+        );
+    }
+    if left.payload_suite != right.payload_suite {
+        push(
+            "payload_suite",
+            left.payload_suite
+                .map_or_else(|| "none".to_owned(), |value| value.to_string()),
+            right
+                .payload_suite
+                .map_or_else(|| "none".to_owned(), |value| value.to_string()),
+        );
+    }
+    if left.recipient_set_digest != right.recipient_set_digest {
+        push(
+            "recipient_set_digest",
+            left.recipient_set_digest
+                .map_or_else(|| "none".to_owned(), |value| value.to_string()),
+            right
+                .recipient_set_digest
+                .map_or_else(|| "none".to_owned(), |value| value.to_string()),
+        );
+    }
+    if left.archive_id != right.archive_id {
+        push(
+            "archive_id",
+            left.archive_id
+                .map_or_else(|| "none".to_owned(), |value| value.to_string()),
+            right
+                .archive_id
+                .map_or_else(|| "none".to_owned(), |value| value.to_string()),
+        );
+    }
+    if left.embedded_signature_count != right.embedded_signature_count {
+        push(
+            "embedded_signature_count",
+            left.embedded_signature_count.to_string(),
+            right.embedded_signature_count.to_string(),
+        );
+    }
+    if left.stale_signature_count != right.stale_signature_count {
+        push(
+            "stale_signature_count",
+            left.stale_signature_count.to_string(),
+            right.stale_signature_count.to_string(),
+        );
+    }
+    changes.sort();
+    report.changes = changes.into_boxed_slice();
+}
+
+fn open_diff_metadata(
+    value: &OsStr,
+    unlock: Option<&OwnedUnlock>,
+) -> Result<(
+    entrybound::ecf::RandomAccessMetadata,
+    RandomAccessVerificationReport,
+)> {
+    if let Some(unlock) = unlock {
+        let archive = open_indexed_random_encrypted(
+            make_random_source(value)?,
+            RandomAccessPolicy::default(),
+            EncryptedOpenOptions::new(Some(unlock.borrowed())),
+        )?;
+        Ok((archive.metadata().clone(), archive.metadata_report()?))
+    } else {
+        let archive =
+            open_indexed_random(make_random_source(value)?, RandomAccessPolicy::default())?;
+        Ok((archive.metadata().clone(), archive.metadata_report()?))
+    }
+}
+
+struct InspectArguments {
+    read: ReadArguments,
+    json: bool,
+    views: InspectionViews,
+}
+
+fn parse_inspect_arguments(arguments: Vec<OsString>) -> Result<InspectArguments> {
+    let mut ordinary = Vec::new();
+    let mut json = false;
+    let mut views = InspectionViews::default();
+    for value in arguments {
+        match value.to_str() {
+            Some("--json") => json = true,
+            Some("--entries") => views.entries = true,
+            Some("--plans") => views.plans = true,
+            Some("--chunks") => views.chunks = true,
+            Some("--reconstruction") => views.reconstruction = true,
+            Some("--provenance") => views.provenance = true,
+            Some("--security") => views.security = true,
+            Some("--access") => views.access = true,
+            _ => ordinary.push(value),
+        }
+    }
+    Ok(InspectArguments {
+        read: parse_read_arguments("inspect", ordinary, true)?,
+        json,
+        views,
+    })
+}
+
+fn command_inspect_json(parsed: InspectArguments) -> Result<()> {
+    if parsed.read.positionals.len() != 1 {
+        return Err(usage("inspect requires <archive.eb|URL|->"));
+    }
+    let value = &parsed.read.positionals[0];
+    if is_http_source(value) {
+        let (metadata, report) = open_diff_metadata(value, parsed.read.unlock.as_ref())?;
+        std::io::stdout()
+            .write_all(&random_inspection_json(&metadata, &report))
+            .map_err(|error| io_error("write inspection JSON", &error))?;
+        return Ok(());
+    }
+    let source = Source::parse(value);
+    let encrypted = match &source {
+        Source::Path(path) => path_is_encrypted(path)?,
+        Source::Stdin => parsed.read.unlock.is_some(),
+    };
+    let bytes = if encrypted {
+        let bytes = read_source_fully(&source)?;
+        let Some(unlock) = parsed.read.unlock.as_ref() else {
+            let public = inspect_encrypted(&bytes, None, CryptoPolicy::default())?;
+            let json = format!(
+                "{{\"format\":\"entrybound/inspection-v1\",\"version\":1,\"verification_scope\":\"public crypto framing only\",\"archive\":{{\"layout\":\"INDEXED\",\"encrypted\":true,\"features\":{}}},\"security\":{{\"payload_suite\":\"{}\",\"recipient_count\":{},\"padding\":\"{:?}\",\"boundary\":\"{:?}\",\"private_metadata_authenticated\":false}},\"identities\":{{\"lai\":null,\"aux\":null,\"pcr\":null,\"pci\":null}},\"whole_archive_verified\":false}}\n",
+                u64::from_be_bytes(bytes[16..24].try_into().unwrap()),
+                public.public.payload_suite,
+                public.public.recipient_count,
+                public.public.padding,
+                public.public.boundary
+            );
+            std::io::stdout()
+                .write_all(json.as_bytes())
+                .map_err(|error| io_error("write public crypto inspection JSON", &error))?;
+            return Ok(());
+        };
+        let authenticated = open_encrypted_authenticated(
+            &bytes,
+            EncryptedOpenOptions::new(Some(unlock.borrowed())),
+        )?;
+        let current = current_bindings(&authenticated.opened, Some(authenticated.addressing))?;
+        let statuses = verify_signatures(&authenticated.embedded_signatures, &current, None)?;
+        let security = InspectionSecurity {
+            encrypted: true,
+            payload_suite: Some("payload-suite-v1".to_owned()),
+            recipient_set_digest: Some(entrybound::eam::Digest::from_bytes(
+                authenticated.addressing.recipient_set_digest,
+            )),
+            archive_id: Some(entrybound::eam::Digest::from_bytes(
+                authenticated.addressing.archive_id,
+            )),
+            embedded_signature_count: authenticated.embedded_signatures.len() as u64,
+            signatures_valid: statuses
+                .iter()
+                .filter(|status| status.cryptographic == CryptographicStatus::Valid)
+                .count() as u64,
+            signatures_invalid: statuses
+                .iter()
+                .filter(|status| status.cryptographic == CryptographicStatus::Invalid)
+                .count() as u64,
+            signatures_unsupported: statuses
+                .iter()
+                .filter(|status| status.cryptographic == CryptographicStatus::Unsupported)
+                .count() as u64,
+            signatures_stale: statuses
+                .iter()
+                .filter(|status| {
+                    status.content == BindingStatus::Stale
+                        || status.physical == BindingStatus::Stale
+                        || status.addressing == BindingStatus::Stale
+                })
+                .count() as u64,
+        };
+        inspection_json_with_security(&authenticated.opened, parsed.views, &security)?
+    } else {
+        if parsed.read.unlock.is_some() {
+            return Err(usage(
+                "unlock material was supplied for an unencrypted archive",
+            ));
+        }
+        let loaded = load(&source, StreamContentPolicy::Retain)?;
+        inspection_json(&loaded.opened, parsed.views)?
+    };
+    std::io::stdout()
+        .write_all(&bytes)
+        .map_err(|error| io_error("write inspection JSON", &error))?;
+    Ok(())
+}
+
 fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
-    let parsed = parse_read_arguments("inspect", arguments, true)?;
+    let inspection = parse_inspect_arguments(arguments)?;
+    if inspection.json {
+        return command_inspect_json(inspection);
+    }
+    let focused_views = inspection.views;
+    let parsed = inspection.read;
     if parsed.positionals.len() != 1 {
         return Err(usage(
             "inspect requires <archive.eb|URL|-> [--crypto] [--identity <file>|--password]",
@@ -3292,6 +4056,16 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
         let loaded = load(&source, StreamContentPolicy::Verify)?;
         (inspect(&loaded.opened)?, loaded.stream)
     };
+    if focused_views.entries
+        || focused_views.plans
+        || focused_views.chunks
+        || focused_views.reconstruction
+        || focused_views.provenance
+        || focused_views.security
+        || focused_views.access
+    {
+        return print_focused_inspection(&view, stream.as_ref(), focused_views, encrypted);
+    }
     println!("format: {}", view.format_namespace);
     println!("version: {}.{}", view.version.major, view.version.minor);
     println!("layout: {}", view.layout.as_str());
@@ -3533,18 +4307,149 @@ fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
     Ok(())
 }
 
+fn print_focused_inspection(
+    view: &entrybound::archive::ArchiveInspection,
+    stream: Option<&StreamReport>,
+    selected: InspectionViews,
+    encrypted: bool,
+) -> Result<()> {
+    println!("inspection scope: whole archive verified");
+    if selected.entries {
+        println!("entries: {}", view.entry_count);
+        println!("total logical bytes: {}", view.total_logical_bytes);
+    }
+    if selected.plans {
+        println!("planner: {}; chunker: {}", view.planner_id, view.chunker_id);
+        for plan in &view.plans {
+            println!(
+                "plan {}: {} codec={} transforms={} dictionary={}",
+                plan.plan_id,
+                plan.identifier,
+                plan.codec,
+                plan.transforms.join(" -> "),
+                plan.dictionary
+                    .map_or_else(|| "none".to_owned(), |value| value.to_string())
+            );
+        }
+    }
+    if selected.chunks {
+        println!(
+            "chunks: unique={} logical-references={} plaintext-bytes={} deduplicated-bytes={}",
+            view.chunks.unique_chunk_count,
+            view.chunks.logical_chunk_references,
+            view.chunks.unique_plaintext_bytes,
+            view.chunks.deduplicated_bytes
+        );
+    }
+    if selected.reconstruction {
+        println!(
+            "reconstruction: data={} regions={} jpeg-regions={} worst-access-chunks={} worst-access-bytes={}",
+            view.reconstruction.object_count,
+            view.whole_object.region_count,
+            view.whole_object.jpeg_region_count,
+            view.whole_object.worst_access_chunks,
+            view.whole_object.worst_access_bytes
+        );
+    }
+    if selected.provenance {
+        match &view.conversion {
+            Some(value) => println!(
+                "conversion: source={} digest={} mode={} resolutions={}",
+                value.source_format,
+                value.source_digest,
+                value.import_mode,
+                value.resolutions.len()
+            ),
+            None => println!("conversion: none"),
+        }
+        println!("legacy preservation: {}", view.preservation.is_some());
+        println!(
+            "fidelity: unavailable={} degraded={}",
+            view.fidelity.unavailable.len(),
+            view.fidelity.degraded.len()
+        );
+    }
+    if selected.security {
+        println!("encrypted: {encrypted}");
+        println!("secret material exposed: false");
+    }
+    if selected.access {
+        println!("layout: {}", view.layout.as_str());
+        println!("random entry lookup: {}", view.random_entry_lookup);
+        println!("index: {}", index_status(view.index_status));
+        println!("stream dedup window: {}", view.stream_dedup_window);
+        println!(
+            "lookback: groups={} maximum={} worst-bytes={}",
+            view.cross_file.chunk_group_count,
+            view.cross_file.maximum_lookback,
+            view.cross_file.worst_random_access_bytes
+        );
+        if let Some(stream) = stream {
+            println!("sequential scan bytes: {}", stream.total_len);
+        }
+    }
+    Ok(())
+}
+
 fn command_explain(arguments: Vec<OsString>) -> Result<()> {
-    let source = one_source("explain", arguments)?;
+    let parsed = parse_read_arguments("explain", arguments, false)?;
+    if !(1..=2).contains(&parsed.positionals.len()) {
+        return Err(usage("explain requires <archive.eb|-> [logical-path]"));
+    }
+    let source = Source::parse(&parsed.positionals[0]);
     // Compression explanation re-derives the alternatives the planner weighed,
     // so a STREAM source must be scanned with a retaining content policy.
-    let loaded = load(&source, StreamContentPolicy::Retain)?;
+    let encrypted = match &source {
+        Source::Path(path) => path_is_encrypted(path)?,
+        Source::Stdin => parsed.unlock.is_some(),
+    };
+    let loaded = if encrypted {
+        let unlock = parsed
+            .unlock
+            .as_ref()
+            .ok_or_else(|| usage("encrypted explain requires --identity or --password"))?;
+        Loaded {
+            opened: open_encrypted_authenticated(
+                &read_source_fully(&source)?,
+                EncryptedOpenOptions::new(Some(unlock.borrowed())),
+            )?
+            .opened,
+            stream: None,
+        }
+    } else {
+        if parsed.unlock.is_some() {
+            return Err(usage(
+                "unlock material was supplied for an unencrypted archive",
+            ));
+        }
+        load(&source, StreamContentPolicy::Retain)?
+    };
     if loaded.stream.is_some() {
         eprintln!(
             "note: STREAM layout has no Index; this explanation required a complete sequential pass"
         );
     }
+    let path = parsed.positionals.get(1).and_then(|value| value.to_str());
+    if parsed.positionals.len() == 2 && path.is_none() {
+        return Err(usage("logical path is not valid UTF-8"));
+    }
+    let structured = structured_explain(&loaded.opened, path)?;
+    println!("evidence classes: RECORDED, DERIVED, AUDIT, NOT_RECORDED");
+    for fact in &structured.facts {
+        println!(
+            "[{}] {} {}: {}",
+            fact.class.as_str(),
+            fact.subject,
+            fact.field,
+            fact.value
+        );
+    }
+    if path.is_some() {
+        return Ok(());
+    }
+    println!("[DERIVED] aggregate compression summary follows");
     let explanation = compression_explain(&loaded.opened)?;
-    println!("planner: {}", explanation.planner_id);
+    println!("[RECORDED] planner: {}", explanation.planner_id);
     println!("total logical bytes: {}", explanation.total_logical_bytes);
     println!(
         "unique plaintext Chunk bytes: {}",
@@ -3588,26 +4493,26 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
         explanation.physical_savings_bytes
     );
     println!(
-        "ordinary independent codec savings: {} bytes",
+        "[NOT_RECORDED] replayed independent-codec comparison estimate: {} bytes",
         explanation.ordinary_codec_savings_bytes
     );
     println!(
-        "shared-dictionary payload savings: {} bytes (dictionary storage: {} bytes)",
+        "[NOT_RECORDED] shared-dictionary payload savings: {} bytes (replayed comparison estimate; recorded dictionary storage: {} bytes)",
         explanation.shared_dictionary_savings_bytes, explanation.dictionary_storage_bytes
     );
     println!(
-        "bounded-lookback payload savings: {} bytes",
+        "[NOT_RECORDED] bounded-lookback payload savings: {} bytes (replayed comparison estimate)",
         explanation.bounded_lookback_savings_bytes
     );
     println!(
-        "reconstructive transform: chunks={}, gross-savings={} bytes, reconstruction-data-overhead={} bytes, net-savings={} bytes",
+        "[NOT_RECORDED] replayed reconstructive comparison: chunks={}, gross-savings={} bytes, recorded reconstruction-data-overhead={} bytes, net-savings={} bytes",
         explanation.reconstructive_chunk_count,
         explanation.reconstructive_gross_savings_bytes,
         explanation.reconstruction_data_overhead_bytes,
         explanation.reconstructive_net_savings_bytes
     );
     println!(
-        "reconstructive fallbacks: chunks={}{}",
+        "[AUDIT] reconstructive fallbacks: chunks={}{}",
         explanation.reconstructive_fallback_chunk_count,
         explanation
             .reconstructive_fallback_reason
@@ -3615,7 +4520,7 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
             .map_or_else(String::new, |reason| format!(" ({reason})"))
     );
     println!(
-        "JPEG reconstruction: gross-savings={} bytes, representation={} bytes, region-overhead={} bytes, net-savings={} bytes{}",
+        "[DERIVED] JPEG reconstruction: gross-savings={} bytes, representation={} bytes, region-overhead={} bytes, net-savings={} bytes{}",
         explanation.jpeg_reconstructive_gross_savings_bytes,
         explanation.jpeg_representation_bytes,
         explanation.jpeg_region_overhead_bytes,
@@ -3626,7 +4531,7 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
             .map_or_else(String::new, |reason| format!(" (fallbacks: {reason})"))
     );
     println!(
-        "structural-transform payload savings: {} bytes (transformed chunks: {}, rejected eligible chunks: {})",
+        "[NOT_RECORDED] replayed structural-transform comparison: {} bytes (recorded transformed chunks: {}, inferred rejected eligible chunks: {})",
         explanation.structural_transform_savings_bytes,
         explanation.transformed_chunk_count,
         explanation.transform_rejected_chunk_count
@@ -3641,7 +4546,7 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
         println!("selected pipeline: {pipeline}");
     }
     if let Some(reason) = explanation.transform_rejection_reason {
-        println!("transform candidate rule: {reason}");
+        println!("[NOT_RECORDED] transform candidate replay rule: {reason}");
     }
     println!(
         "similarity cohorts: count={}, chunks={}, logical-bytes={}, independently-encoded={}",
@@ -3651,7 +4556,7 @@ fn command_explain(arguments: Vec<OsString>) -> Result<()> {
         explanation.independent_similarity_cohort_count
     );
     if let Some(reason) = explanation.independent_cohort_reason {
-        println!("independent cohort decision: {reason}");
+        println!("[NOT_RECORDED] inferred independent cohort decision: {reason}");
     }
     Ok(())
 }
@@ -3911,13 +4816,6 @@ const fn index_status(status: IndexStatus) -> &'static str {
             "not applicable; STREAM layout carries no Index by design"
         }
     }
-}
-
-fn one_source(command: &str, arguments: Vec<OsString>) -> Result<Source> {
-    if arguments.len() != 1 {
-        return Err(usage(format!("{command} requires <archive.eb|->")));
-    }
-    Ok(Source::parse(&arguments[0]))
 }
 
 fn ensure_no_more(mut arguments: impl Iterator<Item = OsString>) -> Result<()> {
@@ -4510,7 +5408,7 @@ mod tests {
 
     #[test]
     fn future_commands_fail_explicitly() {
-        let error = run(args(&["ebound", "repack"])).unwrap_err();
+        let error = run(args(&["ebound", "salvage"])).unwrap_err();
         assert_eq!(error.code(), ReasonCode::CommandNotImplemented);
     }
 
@@ -5051,6 +5949,101 @@ mod tests {
             std::fs::read(encrypted_output).unwrap(),
             b"CLI verified range content"
         );
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn repack_diff_structured_inspect_and_entry_explain_workflow() {
+        let id = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
+        let root = std::env::temp_dir().join(format!(
+            "entrybound-cli-native-tooling-{}-{id}",
+            std::process::id()
+        ));
+        let input = root.join("input");
+        std::fs::create_dir_all(input.join("nested")).unwrap();
+        std::fs::write(
+            input.join("nested/file.txt"),
+            b"native tooling keeps semantic bytes",
+        )
+        .unwrap();
+        let indexed = root.join("source.eb");
+        let stream = root.join("stream.eb");
+        let dense = root.join("dense.eb");
+        let dry = root.join("dry.eb");
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("pack"),
+            input.as_os_str().to_owned(),
+            indexed.as_os_str().to_owned(),
+            OsString::from("--profile"),
+            OsString::from("fast"),
+        ])
+        .unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("repack"),
+            indexed.as_os_str().to_owned(),
+            stream.as_os_str().to_owned(),
+            OsString::from("--layout"),
+            OsString::from("stream"),
+            OsString::from("--stream-window"),
+            OsString::from("auto"),
+        ])
+        .unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("repack"),
+            stream.as_os_str().to_owned(),
+            dense.as_os_str().to_owned(),
+            OsString::from("--layout"),
+            OsString::from("indexed"),
+            OsString::from("--profile"),
+            OsString::from("dense"),
+            OsString::from("--index"),
+            OsString::from("absent"),
+        ])
+        .unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("repack"),
+            indexed.as_os_str().to_owned(),
+            dry.as_os_str().to_owned(),
+            OsString::from("--profile"),
+            OsString::from("balanced"),
+            OsString::from("--dry-run"),
+        ])
+        .unwrap();
+        assert!(!dry.exists());
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("diff"),
+            indexed.as_os_str().to_owned(),
+            stream.as_os_str().to_owned(),
+            OsString::from("--json"),
+        ])
+        .unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("inspect"),
+            dense.as_os_str().to_owned(),
+            OsString::from("--json"),
+            OsString::from("--plans"),
+            OsString::from("--chunks"),
+        ])
+        .unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("explain"),
+            dense.as_os_str().to_owned(),
+            OsString::from("nested/file.txt"),
+        ])
+        .unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("verify"),
+            dense.as_os_str().to_owned(),
+        ])
+        .unwrap();
         std::fs::remove_dir_all(root).unwrap();
     }
 }

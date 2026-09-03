@@ -63,6 +63,7 @@ establishes:
 - capability-relative, component-at-a-time extraction with exclusive file and
   directory creation, collision refusal, and pre-materialization verification;
 - working `pack`, `unpack`, `list`, `inspect`, `verify`, compression `explain`,
+  native `repack`, and identity-tier-aware `diff`,
   strict ZIP/7z/tar/compressed-stream plus ZIP compatibility/preservation
   import, deterministic ZIP/tar/compressed-tar export, transactional
   multi-target publish, verified legacy `.eb` sidecars, signing, and
@@ -108,7 +109,12 @@ ebound pack ./example example-extreme.eb --profile extreme
 ebound verify example.eb
 ebound list example.eb
 ebound inspect example.eb
+ebound inspect example.eb --json --plans --access
 ebound explain example.eb
+ebound explain example.eb path/to/file
+ebound repack example.eb stream.eb --layout stream --stream-window auto
+ebound repack example.eb dense.eb --profile dense
+ebound diff example.eb dense.eb --json
 ebound unpack example.eb ./restored
 ebound read example.eb path/to/file --output restored-file --access-report
 ebound list https://example.invalid/release.eb
@@ -283,8 +289,7 @@ pax tar, and compressed-pax-tar export supports only the frozen versioned
 profiles; there is no 7z export, tar/7z compatibility or preservation, encrypted legacy
 input, encrypted STREAM layout,
 online TSA request support, general PKI/keychain integration, classical-only
-recipients, STREAM random access, general
-`repack`, lossy image recompression, guaranteed
+recipients, STREAM random access, encrypted repack, lossy image recompression, guaranteed
 support for every JPEG producer/marker combination, embedded-stream scanning,
 unbounded solid compression, hardlink
 metadata, ACLs, xattrs, ownership, platform-specific extended metadata,
@@ -371,5 +376,9 @@ parameters, and [migration workflows v1](docs/migration-workflows-v1.md) for
 dual publishing, aggregate reports, transactions, and sidecars;
 [verified random access v1](docs/random-access-v1.md) and
 [HTTP range access v1](docs/http-range-access-v1.md) for partial-verification
-boundaries, dependency closure, revision stability, and transfer policy; and
+boundaries, dependency closure, revision stability, and transfer policy;
+[native repack v1](docs/repack-v1.md),
+[archive diff v1](docs/archive-diff-v1.md), and
+[structured inspection/explanation v1](docs/inspection-explanation-v1.md) for
+identity-tier-preserving native tooling; and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

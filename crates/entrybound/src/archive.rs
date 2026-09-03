@@ -6,6 +6,7 @@ use crate::eam::{DecodeRequirements, ResourceBudget};
 
 mod filesystem;
 mod inspection;
+mod tooling;
 
 pub(crate) use filesystem::{
     plan_directory_encrypted, plan_observed_archive, replan_archive_encrypted,
@@ -13,12 +14,19 @@ pub(crate) use filesystem::{
 
 pub use filesystem::{
     ExtractionReport, PackOptions, default_pack_output, default_unpack_destination, pack_directory,
-    pack_directory_stream, plan_directory, unpack, unpack_opened, unpack_stream,
+    pack_directory_stream, plan_directory, replan_archive, unpack, unpack_opened, unpack_stream,
 };
 pub use inspection::{
     ArchiveInspection, ChunkStatistics, CodecUsage, CompressionExplanation, CrossFileInspection,
     ListedEntry, PlanInspection, ReconstructionInspection, TransformUsage, WholeObjectInspection,
     explain, inspect, list,
+};
+pub use tooling::{
+    ArchiveDiffReport, DiffChange, DiffIdentityStatus, DiffTier, EvidenceClass, ExplanationFact,
+    IndexPolicy, InspectionSecurity, InspectionViews, PhysicalDiffSummary, PreparedRepack,
+    RepackAnalysis, RepackMode, RepackOptions, StructuredExplanation, archive_diff,
+    archive_metadata_diff, inspection_json, inspection_json_with_security, prepare_repack,
+    random_inspection_json, structured_explain,
 };
 
 /// Explicit, deliberately generous limits for the experimental bootstrap CLI.

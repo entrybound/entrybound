@@ -84,6 +84,12 @@ bounds, LAI, PCR, or AUX is a bug in the change, not a property of the layout;
 add the equivalence assertion to `tests/stream_layout.rs` rather than relaxing
 it. Only PCI and `ContentStore::physical_order` may differ between layouts.
 
+Native tooling must preserve identity tiers. Representation-only repack requires
+equal LAI/AUX/PCR; explicit replanning requires equal LAI/AUX. Diff and
+inspection must use `NOT_VERIFIED`/`NOT_COMPUTED` for unfetched physical bytes.
+Explanation text must classify claims as RECORDED, DERIVED, AUDIT, or
+NOT_RECORDED and must never recreate unstored planner history.
+
 Keep single-authority framing. A Chunk frame's own `stored_length` is the sole
 declaration of its extent; never add a second length to the enclosing item or a
 trailing record. Semantic facts are declared exactly once, and STREAM has no

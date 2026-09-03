@@ -445,3 +445,9 @@ is used only if its section digest, canonical encoding, and complete locator map
 match the rebuilt map. Otherwise the reader reports
 `EB_ECF_INDEX_INVALID_REBUILT`; an absent Index reports
 `EB_ECF_INDEX_ABSENT_REBUILT`. Neither outcome changes EAM interpretation.
+
+Native tooling v1 adds no wire records or feature bits. Representation-only
+repack preserves LAI/AUX/PCR while layout and Index changes affect only the
+container; explicit v6 replanning preserves LAI/AUX and may change PCR.
+Inspection and diff reports are external versioned JSON documents and are not
+archive semantic authorities.
