@@ -16,7 +16,8 @@ establishes:
   diagnostics, and archive-operation modules;
 - the thin `entrybound-cli` package, producing the canonical `ebound`
   executable and an `entrybound` compatibility alias;
-- typed EAM foundations for directories, regular files, ContentObjects,
+- typed EAM foundations for directories, regular files, symbolic links,
+  POSIX metadata, ContentObjects,
   content-addressed Chunks, TransformPlans, metadata, FidelityReport, and a
   non-authoritative Index;
 - structural UTF-8 LogicalPaths with canonical ordering, explicit-ancestor,
@@ -58,8 +59,10 @@ establishes:
   declared whole-region access cost;
 - deterministic binary similarity cohorts, cost-qualified shared Zstandard
   dictionaries, and explicitly bounded ChunkGroups for dense/extreme packing;
-- deterministic filesystem packing for UTF-8 directory and regular-file
-  trees, including bounded same-handle source-change detection;
+- deterministic filesystem packing for UTF-8 directory, regular-file, and
+  symbolic-link trees, including no-follow traversal, bounded same-handle
+  source-change detection, inode-independent hardlink groups, and POSIX
+  mode/ownership/xattr/sparse capture on supported Unix systems;
 - capability-relative, component-at-a-time extraction with exclusive file and
   directory creation, collision refusal, and pre-materialization verification;
 - working `pack`, `unpack`, `list`, `inspect`, `verify`, compression `explain`,
@@ -82,8 +85,9 @@ establishes:
   ExportReceipt sidecars;
 - deterministic compressed pax-tar composition, aggregate MigrationReport v1,
   and strict re-import validation before transactional publication;
-- capture and restoration of `core.mtime` and, on Unix, `core.executable`, with
-  an in-band FidelityReport for metadata the bootstrap does not preserve;
+- policy-controlled restoration of symbolic links, hardlinks, POSIX mode and
+  ownership, xattrs, and sparse layout, with an in-band FidelityReport for
+  unavailable platform capabilities;
 - caller-owned resource limits enforced against the archive declaration before
   authoritative records are decoded.
 - metadata-private crypto-v1 `INDEXED` archives using the frozen
@@ -115,7 +119,8 @@ ebound explain example.eb path/to/file
 ebound repack example.eb stream.eb --layout stream --stream-window auto
 ebound repack example.eb dense.eb --profile dense
 ebound diff example.eb dense.eb --json
-ebound unpack example.eb ./restored
+ebound unpack example.eb ./restored \
+  --symlinks safe --xattrs restore --sparse restore
 ebound read example.eb path/to/file --output restored-file --access-report
 ebound list https://example.invalid/release.eb
 ebound inspect https://example.invalid/release.eb
@@ -277,11 +282,13 @@ reconstruction, opportunistic JPEG/JPEG XL whole-object reconstruction, shared
 Zstandard dictionaries, and bounded Zstandard lookback.
 It writes unencrypted Complete archives in INDEXED or STREAM layout and
 encrypted Complete archives in INDEXED layout. It supports UTF-8 directory
-names, directories, and regular files, and deliberately rejects symlinks and
-special files. Strict ZIP import supports single-disk ZIP32/ZIP64 STORE and
+names, directories, regular files, symbolic links, hardlink topology, POSIX
+mode/ownership, xattrs, and sparse layout; special files remain unsupported.
+Strict ZIP import supports single-disk ZIP32/ZIP64 STORE and
 DEFLATE. Strict tar import supports regular files/directories across ustar,
-pax, GNU long-name, and base-256 forms; links, sparse entries, and special
-files are refused. gzip/Zstandard/XZ/bzip2 transports can wrap tar or one
+pax, GNU long-name, and base-256 forms and now projects symbolic/hard links and
+POSIX mode/ownership; sparse and special entries are refused.
+gzip/Zstandard/XZ/bzip2 transports can wrap tar or one
 explicitly named file. Strict 7z supports regular files/directories with its
 bounded COPY/LZMA/LZMA2/BZip2/DEFLATE and Delta/x86-BCJ subset; encryption,
 PPMd, BCJ2, arbitrary graphs, and special files are refused. Deterministic ZIP,
@@ -291,8 +298,9 @@ input, encrypted STREAM layout,
 online TSA request support, general PKI/keychain integration, classical-only
 recipients, STREAM random access, encrypted repack, lossy image recompression, guaranteed
 support for every JPEG producer/marker combination, embedded-stream scanning,
-unbounded solid compression, hardlink
-metadata, ACLs, xattrs, ownership, platform-specific extended metadata,
+unbounded solid compression, canonical ACLs, Windows security descriptors and
+reparse points, macOS-specific metadata, non-UTF-8 LogicalPath components,
+platform-specific special-file semantics,
 mounting, recovery, language bindings, Go compatibility layer, or FFI.
 
 Extraction is rooted in a held capability directory and resolves every
@@ -338,6 +346,9 @@ cargo test -p entrybound -p entrybound-cli
 See [the bootstrap format note](docs/format-v0.md) for the canonical encoding
 and identity choices, [the filesystem bootstrap note](docs/filesystem-bootstrap.md)
 for capture, confinement, and policy behavior,
+[POSIX metadata v1](docs/posix-metadata-v1.md) for the feature-gated Entry and
+Metadata wire model, and [filesystem fidelity v1](docs/filesystem-fidelity-v1.md)
+for no-follow capture and restoration policy,
 [the planner-v1 note](docs/planner-v1.md) for frozen profiles and the
 minimum-gain rule, [the CDC/deduplication note](docs/chunking-v1.md) for v2
 chunking policies and exact physical sharing,

@@ -195,9 +195,10 @@ pub fn list(archive: &Archive) -> Result<Vec<ListedEntry>> {
         .map(|entry| {
             let logical_bytes = match entry.data() {
                 EntryData::Directory => 0,
+                EntryData::Symlink { .. } => 0,
                 EntryData::File {
                     content: ContentRef::Internal(digest),
-                } => object_size(archive, digest)?,
+                } => object_size(archive, *digest)?,
             };
             Ok(ListedEntry {
                 path: entry.path().to_string(),
@@ -933,7 +934,7 @@ fn chunk_statistics(archive: &Archive) -> Result<ChunkStatistics> {
                 else {
                     return Ok(total);
                 };
-                let object = archive.content_store.objects.get(&digest).ok_or_else(|| {
+                let object = archive.content_store.objects.get(digest).ok_or_else(|| {
                     Diagnostic::new(
                         OutcomeClass::Nonconforming,
                         ReasonCode::UnknownContentObject,

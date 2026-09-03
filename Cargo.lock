@@ -581,6 +581,7 @@ dependencies = [
  "ml-kem",
  "preflate-rs",
  "reqwest",
+ "rustix",
  "sevenz-rust2",
  "sha2",
  "sha3 0.12.0",
@@ -589,6 +590,7 @@ dependencies = [
  "x-wing",
  "x25519-dalek",
  "x509-cert",
+ "xattr",
  "zeroize",
  "zstd",
 ]
@@ -2688,6 +2690,16 @@ dependencies = [
  "signature",
  "spki",
  "tls_codec",
+]
+
+[[package]]
+name = "xattr"
+version = "1.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "32e45ad4206f6d2479085147f02bc2ef834ac85886624a23575ae137c8aa8156"
+dependencies = [
+ "libc",
+ "rustix",
 ]
 
 [[package]]

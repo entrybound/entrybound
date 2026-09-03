@@ -9,13 +9,19 @@ the resulting Entries are then ordered and validated by `EntrySet`. A regular
 file is opened once per attempt, its metadata and bytes come from that handle,
 and length, mtime, and executable status are checked again on the same handle.
 Two fresh-handle retries follow the initial attempt. Persistent change returns
-`EB_INPUT_SOURCE_UNSTABLE`. Symlinks and all non-file/non-directory objects are
-rejected without traversal.
+`EB_INPUT_SOURCE_UNSTABLE`. Symlink metadata and exact target bytes are read
+without following the link, and traversal never descends through a symlink.
+Devices, FIFOs, sockets, and other unsupported objects are rejected.
 
-The bootstrap captures `core.mtime` and captures `core.executable` on Unix.
-Platforms without a portable executable bit declare that class unavailable.
-The FidelityReport also declares ACLs, xattrs, ownership, hardlink identity,
-platform-specific metadata, and symlink/special-file semantics unavailable.
+The bootstrap captures `core.mtime`; supported Unix systems additionally
+capture `core.executable`, `posix.mode`, numeric uid/gid, xattrs, and hardlink
+topology. Linux uses `SEEK_DATA`/`SEEK_HOLE` to capture sparse layout without
+inferring holes from zero-filled content. Platform capabilities that cannot be
+observed reliably are declared unavailable in FidelityReport rather than
+fabricated. ACLs, special-file semantics, and other platform-specific metadata
+remain unavailable. The normative feature and policy are defined in
+[posix-metadata-v1.md](posix-metadata-v1.md) and
+[filesystem-fidelity-v1.md](filesystem-fidelity-v1.md).
 New files use normalized Gear-hash content-defined chunking. The default
 `balanced-v6` policy uses 128 KiB minimum, 512 KiB target, and 2 MiB maximum
 Chunks. Exact SHA-256 Chunk deduplication is archive-wide, after which the
@@ -32,10 +38,13 @@ documented in [chunking-v1.md](chunking-v1.md) and
 Extraction fully opens, verifies, and enforces caller resource policy before it
 creates the destination root. It holds that root as a `cap-std` `Dir`, resolves
 each validated UTF-8 LogicalPath component relative to the held handle, creates
-directories explicitly, and creates files exclusively. The only collision
-policy is `Refuse`. File metadata is applied after content; directory metadata
-is applied in reverse Entry order after the tree exists. Any metadata that the
-platform cannot restore is returned in `ExtractionReport`.
+directories and representative files exclusively, then hardlink siblings,
+then symbolic links last. The default `Safe` symlink policy accepts only
+relative targets whose lexical resolution stays beneath the root; `Refuse` and
+explicit `All` are also available. Ownership, xattr, and sparse restoration
+are caller-controlled. Ownership precedes final mode, directory metadata is
+applied after descendants, and timestamps are last. Any metadata that cannot
+be restored is returned in `ExtractionReport`.
 
 The CLI bootstrap policy permits at most 1,000,000 entries, 64 GiB total
 logical bytes, 16 GiB for one file, 4,000,000 distinct Chunks, path depth 1,024,

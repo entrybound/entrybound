@@ -115,3 +115,8 @@ ranges plus cache hit/miss. Trace/cache state never affects identity.
 or stdout emission. Remote `list` and `inspect` label results as range-backed
 metadata views and never print a whole-archive verification claim.
 
+Entry v2 metadata is part of the same verified Manifest lookup. Remote list and
+inspect can therefore expose Symlink kind/target summary without unrelated
+payload ranges. `read` remains a regular-file operation and rejects Directory
+and Symlink Entries. When a requested File carries a sparse map, its verified
+logical bytes are checked against every declared hole before return.

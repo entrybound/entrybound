@@ -97,3 +97,15 @@ STREAM, native compression profile, ciphertext, Chunk physical order, and PCI
 do not affect target bytes. A lossless target strict-reimports with identical
 LAI and exact ContentObject bytes. AUX normally changes because re-import adds
 conversion provenance; PCR may change under new native planning.
+
+## POSIX metadata expansion
+
+The frozen v1 target encoders are not silently broadened by
+`posix-metadata-v1`. `zip/portable-v1` refuses Symlink Entries. Both ZIP and
+`tar/pax-v1` report mode, uid/gid, hardlink topology, xattrs, and sparse maps as
+typed `METADATA_UNSUPPORTED` loss where those authoritative AUX semantics are
+not represented by the frozen profile. Hardlinks may be emitted only as safe
+independent equal files after explicit lossy approval. A Symlink is refused by
+both frozen v1 profiles because neither existing encoder has a canonical link
+record contract. A future `tar/pax-v2`, rather than an in-place edit to v1,
+would be required for full native POSIX fidelity.

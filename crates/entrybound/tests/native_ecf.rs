@@ -5,20 +5,138 @@ use entrybound::diagnostics::{OutcomeClass, ReasonCode};
 use entrybound::eam::{
     Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, DecodeRequirements, Digest,
     DigestAlgorithm, Entry, EntryData, EntryIdentity, EntrySet, FeatureSet, FidelityReport,
-    IdentityProfile, Index, Layout, LogicalPath, MetadataItem, MetadataSet, ResourceBudget,
-    Timestamp, TimestampPrecision, TransformPlan,
+    IdentityProfile, Index, Layout, LinkTarget, LogicalPath, MetadataItem, MetadataSet,
+    ResourceBudget, Timestamp, TimestampPrecision, TransformPlan,
 };
 use entrybound::ecf::{
-    FOOTER_LEN, IndexStatus, PREAMBLE_LEN, SECTION_HEADER_LEN, WriteOptions, encode, open, verify,
+    FEATURE_POSIX_METADATA_V1, FOOTER_LEN, IndexStatus, PREAMBLE_LEN, SECTION_HEADER_LEN,
+    StreamWriteOptions, WriteOptions, bootstrap_sequential_limits, encode, encode_stream, open,
+    open_stream_with_limits, verify,
 };
 use entrybound::identity::{
     BOOTSTRAP_CHUNK_SIZE, STORE_CODEC_IDENTIFIER, STORE_PLAN_ID, STORE_PLAN_IDENTIFIER,
-    build_content, sha256_exact,
+    build_content, hardlink_group_id, sha256_exact,
 };
 
 #[test]
 fn empty_archive_round_trips() {
     assert_round_trip(empty_archive());
+}
+
+#[test]
+fn posix_feature_gates_entry_v2_in_indexed_and_stream() {
+    let mut archive = empty_archive();
+    archive.descriptor.features.incompat |= FEATURE_POSIX_METADATA_V1;
+    archive.entry_set = EntrySet::new(vec![Entry::new(
+        LogicalPath::from_utf8(["link"]).unwrap(),
+        EntryData::Symlink {
+            target: LinkTarget::canonical(b"../preserved-target".to_vec()).unwrap(),
+        },
+        MetadataSet::new(vec![
+            MetadataItem::posix_uid(1000),
+            MetadataItem::posix_gid(100),
+        ])
+        .unwrap(),
+        EntryIdentity::default(),
+    )])
+    .unwrap();
+
+    let indexed = encode(&archive, WriteOptions::default()).unwrap();
+    let opened = open(&indexed.bytes).unwrap();
+    assert_eq!(opened.archive.entry_set, indexed.archive.entry_set);
+    assert_eq!(
+        opened.archive.entry_set.entries()[0].kind(),
+        entrybound::eam::EntryKind::Symlink
+    );
+
+    let mut stream = Vec::new();
+    encode_stream(&archive, StreamWriteOptions::default(), &mut stream).unwrap();
+    let opened_stream =
+        open_stream_with_limits(std::io::Cursor::new(stream), bootstrap_sequential_limits())
+            .unwrap();
+    assert_eq!(
+        opened_stream.opened.archive.entry_set,
+        indexed.archive.entry_set
+    );
+
+    let mut feature_missing = archive.clone();
+    feature_missing.descriptor.features.incompat &= !FEATURE_POSIX_METADATA_V1;
+    assert_eq!(
+        encode(&feature_missing, WriteOptions::default())
+            .unwrap_err()
+            .code(),
+        ReasonCode::UnsupportedRequiredFeature
+    );
+
+    let mut feature_without_semantics = empty_archive();
+    feature_without_semantics.descriptor.features.incompat |= FEATURE_POSIX_METADATA_V1;
+    assert_eq!(
+        encode(&feature_without_semantics, WriteOptions::default())
+            .unwrap_err()
+            .code(),
+        ReasonCode::UnsupportedRequiredFeature
+    );
+}
+
+#[test]
+fn hardlink_members_must_agree_on_inode_scoped_metadata() {
+    let mut archive = complete_fixture(17, false, BOOTSTRAP_CHUNK_SIZE, "fixed-1mib/v1");
+    archive.descriptor.features.incompat |= FEATURE_POSIX_METADATA_V1;
+    let left = LogicalPath::from_utf8(["repeat-a"]).unwrap();
+    let right = LogicalPath::from_utf8(["repeat-b"]).unwrap();
+    let content = match archive
+        .entry_set
+        .entries()
+        .iter()
+        .find(|entry| entry.path() == &left)
+        .unwrap()
+        .data()
+    {
+        EntryData::File {
+            content: ContentRef::Internal(digest),
+        } => *digest,
+        _ => unreachable!(),
+    };
+    let group = hardlink_group_id(content, &[left.clone(), right.clone()]).unwrap();
+    let entries = archive
+        .entry_set
+        .entries()
+        .iter()
+        .cloned()
+        .map(|entry| {
+            let uid = if entry.path() == &left {
+                Some(1000)
+            } else if entry.path() == &right {
+                Some(1001)
+            } else {
+                None
+            };
+            let Some(uid) = uid else {
+                return entry;
+            };
+            Entry::new(
+                entry.path().clone(),
+                entry.data().clone(),
+                MetadataSet::new(vec![
+                    MetadataItem::executable(false),
+                    MetadataItem::mtime(entry.metadata().mtime().unwrap()),
+                    MetadataItem::posix_mode(0o644),
+                    MetadataItem::posix_uid(uid),
+                    MetadataItem::posix_gid(100),
+                    MetadataItem::hardlink_group(group),
+                ])
+                .unwrap(),
+                EntryIdentity::default(),
+            )
+        })
+        .collect::<Vec<_>>();
+    archive.entry_set = EntrySet::new(entries).unwrap();
+    assert_eq!(
+        encode(&archive, WriteOptions::default())
+            .unwrap_err()
+            .code(),
+        ReasonCode::InvalidHardlinkGroup
+    );
 }
 
 #[test]

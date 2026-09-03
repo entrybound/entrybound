@@ -13,6 +13,7 @@ use crate::ecf::{
     WriteOptions, bootstrap_sequential_limits, encode, encode_stream, open,
     open_stream_with_limits,
 };
+use crate::identity::sha256_exact;
 use crate::planner::CompressionProfile;
 
 pub const INSPECTION_FORMAT: &str = "entrybound/inspection-v1";
@@ -670,8 +671,8 @@ fn semantic_changes(left: &Archive, right: &Archive, out: &mut Vec<DiffChange>) 
                             Some(&right_digest.to_string()),
                         );
                     }
-                    let left_size = object_size(left, left_digest)?;
-                    let right_size = object_size(right, right_digest)?;
+                    let left_size = object_size(left, *left_digest)?;
+                    let right_size = object_size(right, *right_digest)?;
                     if left_size != right_size {
                         change(
                             out,
@@ -682,6 +683,33 @@ fn semantic_changes(left: &Archive, right: &Archive, out: &mut Vec<DiffChange>) 
                             Some(&right_size.to_string()),
                         );
                     }
+                }
+                if let (
+                    EntryData::Symlink {
+                        target: left_target,
+                    },
+                    EntryData::Symlink {
+                        target: right_target,
+                    },
+                ) = (left_entry.data(), right_entry.data())
+                    && left_target != right_target
+                {
+                    change(
+                        out,
+                        DiffTier::Semantic,
+                        &path,
+                        "symlink_target",
+                        Some(&format!(
+                            "{} bytes sha256:{}",
+                            left_target.bytes().len(),
+                            sha256_exact(left_target.bytes())
+                        )),
+                        Some(&format!(
+                            "{} bytes sha256:{}",
+                            right_target.bytes().len(),
+                            sha256_exact(right_target.bytes())
+                        )),
+                    );
                 }
             }
             (None, None) => unreachable!(),
@@ -988,6 +1016,7 @@ fn kind_name(kind: crate::eam::EntryKind) -> &'static str {
     match kind {
         crate::eam::EntryKind::Directory => "directory",
         crate::eam::EntryKind::File => "file",
+        crate::eam::EntryKind::Symlink => "symlink",
     }
 }
 fn index_name(status: IndexStatus) -> &'static str {
@@ -1050,6 +1079,35 @@ fn metadata_item_text(item: &crate::eam::MetadataItem) -> String {
         MetadataValue::Bool(value) => value.to_string(),
         MetadataValue::Timestamp(value) => {
             format!("{}.{:09}", value.seconds(), value.nanoseconds())
+        }
+        MetadataValue::PosixMode(value) => format!("0o{value:04o}"),
+        MetadataValue::PosixUid(value) | MetadataValue::PosixGid(value) => value.to_string(),
+        MetadataValue::HardlinkGroup(value) => value.to_string(),
+        MetadataValue::Xattrs(values) => values
+            .iter()
+            .map(|value| {
+                format!(
+                    "{}:{}:{}",
+                    String::from_utf8_lossy(value.name()),
+                    value.value().len(),
+                    crate::identity::sha256_exact(value.value())
+                )
+            })
+            .collect::<Vec<_>>()
+            .join(","),
+        MetadataValue::SparseMap(value) => {
+            let mut bytes = Vec::with_capacity(value.extents().len() * 16 + 8);
+            bytes.extend_from_slice(&value.logical_size().to_be_bytes());
+            for extent in value.extents() {
+                bytes.extend_from_slice(&extent.offset.to_be_bytes());
+                bytes.extend_from_slice(&extent.length.to_be_bytes());
+            }
+            format!(
+                "logical_size={},extents={},sha256:{}",
+                value.logical_size(),
+                value.extents().len(),
+                sha256_exact(&bytes)
+            )
         }
     }
 }
@@ -1197,13 +1255,24 @@ pub fn inspection_json_with_security(
             );
             match entry.data() {
                 EntryData::Directory => out.push_str("null,\"logical_bytes\":0"),
+                EntryData::Symlink { target } => {
+                    out.push_str("null,\"logical_bytes\":0,\"symlink_target\":{");
+                    let _ = write!(
+                        out,
+                        "\"encoding\":\"{:?}\",\"length\":{},\"sha256\":\"{}\"",
+                        target.encoding(),
+                        target.bytes().len(),
+                        sha256_exact(target.bytes())
+                    );
+                    out.push('}');
+                }
                 EntryData::File {
                     content: ContentRef::Internal(digest),
                 } => {
                     let _ = write!(
                         out,
                         "\"{digest}\",\"logical_bytes\":{}",
-                        object_size(&opened.archive, digest)?
+                        object_size(&opened.archive, *digest)?
                     );
                 }
             }
@@ -1226,6 +1295,49 @@ pub fn inspection_json_with_security(
                 }
                 None => out.push_str("null"),
             }
+            out.push_str(",\"posix\":{");
+            let _ = write!(
+                out,
+                "\"mode\":{},\"uid\":{},\"gid\":{},\"hardlink_group\":{},\"sparse_map\":{}",
+                entry
+                    .metadata()
+                    .posix_mode()
+                    .map_or_else(|| "null".to_owned(), |value| value.to_string()),
+                entry
+                    .metadata()
+                    .posix_uid()
+                    .map_or_else(|| "null".to_owned(), |value| value.to_string()),
+                entry
+                    .metadata()
+                    .posix_gid()
+                    .map_or_else(|| "null".to_owned(), |value| value.to_string()),
+                entry
+                    .metadata()
+                    .hardlink_group()
+                    .map_or_else(|| "null".to_owned(), |value| format!("\"{value}\"")),
+                entry.metadata().sparse_map().map_or_else(
+                    || "null".to_owned(),
+                    |value| format!(
+                        "{{\"logical_size\":{},\"extent_count\":{}}}",
+                        value.logical_size(),
+                        value.extents().len()
+                    )
+                )
+            );
+            out.push_str(",\"xattrs\":[");
+            for (attribute_index, attribute) in entry.metadata().xattrs().iter().enumerate() {
+                if attribute_index != 0 {
+                    out.push(',');
+                }
+                let _ = write!(
+                    out,
+                    "{{\"name_hex\":\"{}\",\"length\":{},\"sha256\":\"{}\"}}",
+                    hex_bytes(attribute.name()),
+                    attribute.value().len(),
+                    sha256_exact(attribute.value())
+                );
+            }
+            out.push_str("]}");
             out.push('}');
         }
         out.push_str("],\"content_objects\":[");
@@ -1700,17 +1812,73 @@ pub fn structured_explain(
                     format!("logical path '{path}' is absent"),
                 )
             })?;
+        facts.push(fact(
+            EvidenceClass::Recorded,
+            path,
+            "entry_kind",
+            kind_name(entry.kind()),
+        ));
+        for item in entry.metadata().items() {
+            facts.push(fact(
+                EvidenceClass::Recorded,
+                path,
+                item.name().as_str(),
+                &metadata_item_text(item),
+            ));
+        }
+        facts.push(fact(
+            EvidenceClass::Derived,
+            path,
+            "metadata_restorability",
+            if entry.metadata().uses_posix_v1() {
+                "policy- and platform-dependent"
+            } else {
+                "bootstrap metadata only"
+            },
+        ));
+        if let EntryData::Symlink { target } = entry.data() {
+            facts.push(fact(
+                EvidenceClass::Recorded,
+                path,
+                "symlink_target_encoding",
+                match target.encoding() {
+                    crate::eam::LinkTargetEncoding::Utf8 => "UTF8",
+                    crate::eam::LinkTargetEncoding::PosixBytes => "POSIX_BYTES",
+                },
+            ));
+            facts.push(fact(
+                EvidenceClass::Recorded,
+                path,
+                "symlink_target",
+                &format!(
+                    "{} bytes sha256:{}",
+                    target.bytes().len(),
+                    sha256_exact(target.bytes())
+                ),
+            ));
+        }
         let EntryData::File {
             content: ContentRef::Internal(digest),
         } = entry.data()
         else {
-            return Err(Diagnostic::new(
-                OutcomeClass::PolicyRefused,
-                ReasonCode::RandomAccessEntryNotFile,
-                format!("logical path '{path}' is not a regular file"),
+            facts.push(fact(
+                EvidenceClass::NotRecorded,
+                path,
+                "content_decode_plan",
+                "not applicable to a non-file Entry",
             ));
+            facts.push(fact(
+                EvidenceClass::NotRecorded,
+                "archive",
+                "unselected_candidate_comparisons",
+                "not persisted by this archive",
+            ));
+            return Ok(StructuredExplanation {
+                path: Some(path.to_owned()),
+                facts: facts.into_boxed_slice(),
+            });
         };
-        let object = archive.content_store.objects.get(&digest).ok_or_else(|| {
+        let object = archive.content_store.objects.get(digest).ok_or_else(|| {
             Diagnostic::new(
                 OutcomeClass::Nonconforming,
                 ReasonCode::UnknownContentObject,
@@ -1733,7 +1901,7 @@ pub fn structured_explain(
             EvidenceClass::Derived,
             path,
             "logical_bytes",
-            &object_size(archive, digest)?.to_string(),
+            &object_size(archive, *digest)?.to_string(),
         ));
         let mut dictionaries = BTreeSet::new();
         let mut group_predecessors = BTreeSet::new();
@@ -1789,7 +1957,7 @@ pub fn structured_explain(
             .content_store
             .reconstruction_regions
             .values()
-            .filter(|region| region.content_object == digest)
+            .filter(|region| region.content_object == *digest)
             .collect::<Vec<_>>();
         let closure = requested
             .union(&group_predecessors)
@@ -1971,6 +2139,60 @@ mod tests {
         MetadataItem, MetadataSet,
     };
 
+    fn opened_hardlink_fixture(linked: bool) -> OpenedArchive {
+        let content = Box::<[u8]>::from(b"hardlink topology bytes".as_slice());
+        let content_digest = crate::identity::sha256_exact(&content);
+        let paths = [
+            LogicalPath::from_utf8(["left"]).unwrap(),
+            LogicalPath::from_utf8(["right"]).unwrap(),
+        ];
+        let group = crate::identity::hardlink_group_id(content_digest, &paths).unwrap();
+        let entries = paths
+            .into_iter()
+            .map(|path| {
+                let metadata = if linked {
+                    MetadataSet::new(vec![MetadataItem::hardlink_group(group)]).unwrap()
+                } else {
+                    MetadataSet::default()
+                };
+                Entry::new(
+                    path,
+                    EntryData::File {
+                        content: ContentRef::Internal(content_digest),
+                    },
+                    metadata,
+                    EntryIdentity::default(),
+                )
+            })
+            .collect();
+        let archive = plan_observed_archive(
+            entries,
+            vec![content],
+            FidelityReport::default(),
+            ConversionProvenance {
+                source_format: "test".to_owned(),
+                adapter_id: "entrybound/test-v1".to_owned(),
+                source_digest: Digest::ZERO,
+                import_mode: "strict".to_owned(),
+                source_entry_count: 2,
+                observation_count: 0,
+                omission_count: 0,
+                refinement_count: 0,
+                divergence_count: 0,
+                irreconcilable_count: 0,
+                resolutions: Box::default(),
+                synthesized_ancestors: Box::default(),
+                unsupported_metadata: Box::default(),
+                outcome: "accepted".to_owned(),
+            },
+            None,
+            CompressionProfile::Fast,
+        )
+        .unwrap();
+        let encoded = encode(&archive, WriteOptions::default()).unwrap();
+        open(&encoded.bytes).unwrap()
+    }
+
     fn opened_fixture(profile: CompressionProfile) -> OpenedArchive {
         let content = Box::<[u8]>::from(b"same logical content for native tooling".as_slice());
         let content_digest = crate::identity::sha256_exact(&content);
@@ -2131,6 +2353,24 @@ mod tests {
                 .changes
                 .iter()
                 .any(|item| item.tier == DiffTier::Semantic)
+        );
+    }
+
+    #[test]
+    fn hardlink_topology_is_auxiliary_not_semantic_or_physical() {
+        let independent = opened_hardlink_fixture(false);
+        let linked = opened_hardlink_fixture(true);
+        let report = archive_diff(&independent, &linked).unwrap();
+        assert_eq!(report.lai, DiffIdentityStatus::Same);
+        assert_eq!(report.aux, DiffIdentityStatus::Different);
+        assert_eq!(report.pcr, DiffIdentityStatus::Same);
+        assert!(report.changes.iter().any(|change| {
+            change.tier == DiffTier::Auxiliary && change.field == "posix.hardlink-group"
+        }));
+        assert!(
+            !report.changes.iter().any(
+                |change| change.tier == DiffTier::Semantic || change.tier == DiffTier::Physical
+            )
         );
     }
 

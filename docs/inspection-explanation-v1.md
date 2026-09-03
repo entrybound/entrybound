@@ -35,8 +35,15 @@ worst reconstruction bytes, and a locally derived range-count estimate.
 Candidate rankings that were never stored are explicitly `NOT_RECORDED`; the
 current planner is never rerun and presented as historical intent.
 
+POSIX metadata is reported as `RECORDED`; platform/policy restorability is a
+`DERIVED` conclusion. Generic inspection identifies Symlinks and summarizes
+xattrs by exact name, value length, and SHA-256 rather than exposing values.
+Sparse extents and hardlink group IDs are typed auxiliary facts. Entry-level
+explain accepts Directory and Symlink Entries, reports their recorded metadata
+and link-target digest, and marks a content decode plan `NOT_RECORDED` because
+it is not applicable.
+
 `repack --profile ... --dry-run` is prospective rather than archival evidence.
 It compares source and target planner, Chunk counts, unique Chunks, stored
 bytes, decode working set, dictionary/group/region counts, PCR, and prospective
 container size while predicting and then verifying LAI/AUX equality.
-

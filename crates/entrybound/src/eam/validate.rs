@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::{
     Archive, ArchiveRole, ContentRef, Digest, Entry, EntryData, EntryKind, EntrySet, Layout,
+    MetadataName,
 };
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::identity::sha256_exact;
@@ -50,7 +51,7 @@ impl EntrySet {
                             ancestor.to_string(),
                         ));
                     }
-                    Some(EntryKind::File) => {
+                    Some(EntryKind::File | EntryKind::Symlink) => {
                         return Err(Diagnostic::new(
                             OutcomeClass::Nonconforming,
                             ReasonCode::FileAsAncestor,
@@ -117,6 +118,16 @@ impl Archive {
                 OutcomeClass::Nonconforming,
                 ReasonCode::DuplicateSemanticDeclaration,
                 "legacy-preservation-v1 requires exactly one ConversionProvenance and one preservation object",
+            ));
+        }
+        let posix_feature =
+            self.descriptor.features.incompat & crate::ecf::FEATURE_POSIX_METADATA_V1 != 0;
+        let uses_posix = self.entry_set.entries().iter().any(Entry::uses_posix_v1);
+        if posix_feature != uses_posix {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::UnsupportedRequiredFeature,
+                "posix-metadata-v1 must be declared exactly when Entry-v2 semantics are present",
             ));
         }
         if let Some(preservation) = &self.preservation {
@@ -621,7 +632,7 @@ impl Archive {
             if let EntryData::File {
                 content: ContentRef::Internal(digest),
             } = entry.data()
-                && !self.content_store.objects.contains_key(&digest)
+                && !self.content_store.objects.contains_key(digest)
             {
                 return Err(Diagnostic::new(
                     OutcomeClass::Nonconforming,
@@ -630,6 +641,7 @@ impl Archive {
                 ));
             }
         }
+        self.validate_posix_metadata()?;
         Ok(())
     }
 
@@ -642,6 +654,150 @@ impl Archive {
                     ReasonCode::SectionStructure,
                     "Chunk logical_len differs from its plaintext byte length",
                 ));
+            }
+        }
+        self.validate_sparse_holes()?;
+        Ok(())
+    }
+
+    fn validate_posix_metadata(&self) -> Result<()> {
+        let mut hardlinks = BTreeMap::<Digest, Vec<&Entry>>::new();
+        for entry in self.entry_set.entries() {
+            if let Some(mode) = entry.metadata().posix_mode()
+                && entry
+                    .metadata()
+                    .items()
+                    .iter()
+                    .any(|item| item.name() == MetadataName::CoreExecutable)
+                && entry.metadata().executable() != (mode & 0o111 != 0)
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidPosixMetadata,
+                    format!(
+                        "core.executable and posix.mode disagree for {}",
+                        entry.path()
+                    ),
+                ));
+            }
+            if entry.metadata().sparse_map().is_some()
+                && !matches!(entry.data(), EntryData::File { .. })
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidSparseMap,
+                    format!("sparse map is valid only for File Entry {}", entry.path()),
+                ));
+            }
+            if let Some(group) = entry.metadata().hardlink_group() {
+                if !matches!(entry.data(), EntryData::File { .. }) {
+                    return Err(Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::InvalidHardlinkGroup,
+                        format!(
+                            "hardlink metadata requires a File Entry at {}",
+                            entry.path()
+                        ),
+                    ));
+                }
+                hardlinks.entry(group).or_default().push(entry);
+            }
+        }
+        for (stored_group, members) in hardlinks {
+            if members.len() < 2 {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidHardlinkGroup,
+                    "a hardlink group must contain at least two File Entries",
+                ));
+            }
+            let content = match members[0].data() {
+                EntryData::File {
+                    content: ContentRef::Internal(value),
+                } => *value,
+                _ => unreachable!(),
+            };
+            let baseline = members[0]
+                .metadata()
+                .items()
+                .iter()
+                .filter(|item| item.name() != MetadataName::PosixHardlinkGroup)
+                .collect::<Vec<_>>();
+            let mut paths = Vec::with_capacity(members.len());
+            for member in members {
+                let member_content = match member.data() {
+                    EntryData::File {
+                        content: ContentRef::Internal(value),
+                    } => *value,
+                    _ => unreachable!(),
+                };
+                let metadata = member
+                    .metadata()
+                    .items()
+                    .iter()
+                    .filter(|item| item.name() != MetadataName::PosixHardlinkGroup)
+                    .collect::<Vec<_>>();
+                if member_content != content || metadata != baseline {
+                    return Err(Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::InvalidHardlinkGroup,
+                        "hardlink members must share ContentObject and inode-scoped metadata",
+                    ));
+                }
+                paths.push(member.path().clone());
+            }
+            if crate::identity::hardlink_group_id(content, &paths)? != stored_group {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Corrupt,
+                    ReasonCode::InvalidHardlinkGroup,
+                    "hardlink group ID does not match canonical membership",
+                ));
+            }
+        }
+        Ok(())
+    }
+
+    fn validate_sparse_holes(&self) -> Result<()> {
+        for entry in self.entry_set.entries() {
+            let Some(map) = entry.metadata().sparse_map() else {
+                continue;
+            };
+            let EntryData::File {
+                content: ContentRef::Internal(digest),
+            } = entry.data()
+            else {
+                continue;
+            };
+            let object = &self.content_store.objects[digest];
+            let logical_size = object.chunks.iter().try_fold(0_u64, |total, reference| {
+                total
+                    .checked_add(self.content_store.chunks[&reference.chunk_id].logical_len)
+                    .ok_or_else(|| {
+                        Diagnostic::new(
+                            OutcomeClass::PolicyRefused,
+                            ReasonCode::ResourceLimit,
+                            "sparse ContentObject size overflows u64",
+                        )
+                    })
+            })?;
+            if map.logical_size() != logical_size {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidSparseMap,
+                    format!("sparse logical size disagrees for {}", entry.path()),
+                ));
+            }
+            let mut offset = 0_u64;
+            for reference in &object.chunks {
+                let chunk = &self.content_store.chunks[&reference.chunk_id];
+                map.validate_range(offset, &chunk.plaintext)?;
+                offset = offset.checked_add(chunk.logical_len).ok_or_else(|| {
+                    Diagnostic::new(
+                        OutcomeClass::PolicyRefused,
+                        ReasonCode::ResourceLimit,
+                        "sparse validation offset overflows u64",
+                    )
+                })?;
             }
         }
         Ok(())
@@ -732,7 +888,7 @@ impl Archive {
             else {
                 continue;
             };
-            let object = self.content_store.objects.get(&digest).ok_or_else(|| {
+            let object = self.content_store.objects.get(digest).ok_or_else(|| {
                 Diagnostic::new(
                     OutcomeClass::Nonconforming,
                     ReasonCode::UnknownContentObject,

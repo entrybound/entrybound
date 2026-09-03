@@ -5,13 +5,14 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     ChunkGroup, ConversionProvenance, ConversionResolution, Criticality, DecodeRequirements,
     Dictionary, Digest, Entry, EntryData, EntryIdentity, EntrySet, FidelityIssue, FidelityReport,
-    LegacyPreservation, LogicalPath, MetadataItem, MetadataName, MetadataSet, PathComponent,
-    PathEncoding, PreservedLegacyAuthority, PreservedLegacyConflict, PreservedLegacyLocation,
-    PreservedLegacyObservation, PreservedLegacyResolution, PreservedLegacyValidity,
-    PreservedLegacyValue, ReconstructionAudit, ReconstructionAuditReason,
-    ReconstructionAuditTarget, ReconstructionData, ReconstructionFallbackReason,
-    ReconstructionRegion, RegionAccessCost, ResourceBudget, Restorability, Timestamp,
-    TimestampPrecision, TransformPlan, TransformStep,
+    LegacyPreservation, LinkTarget, LinkTargetEncoding, LogicalPath, MetadataItem, MetadataName,
+    MetadataSet, MetadataValue, PathComponent, PathEncoding, PreservedLegacyAuthority,
+    PreservedLegacyConflict, PreservedLegacyLocation, PreservedLegacyObservation,
+    PreservedLegacyResolution, PreservedLegacyValidity, PreservedLegacyValue, ReconstructionAudit,
+    ReconstructionAuditReason, ReconstructionAuditTarget, ReconstructionData,
+    ReconstructionFallbackReason, ReconstructionRegion, RegionAccessCost, ResourceBudget,
+    Restorability, SparseExtent, SparseMap, Timestamp, TimestampPrecision, TransformPlan,
+    TransformStep, XAttr,
 };
 
 pub(super) const RECORD_DESCRIPTOR: u16 = 1;
@@ -42,6 +43,9 @@ const RECORD_LEGACY_AUTHORITY: u16 = 33;
 const RECORD_LEGACY_VALUE: u16 = 34;
 const RECORD_LEGACY_LOCATION: u16 = 35;
 const RECORD_LEGACY_RESOLUTION: u16 = 36;
+pub(super) const RECORD_XATTR_V1: u16 = 37;
+pub(super) const RECORD_SPARSE_MAP_V1: u16 = 38;
+pub(super) const RECORD_SPARSE_EXTENT_V1: u16 = 39;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct DescriptorBody {
@@ -1017,32 +1021,70 @@ fn encode_entry(entry: &Entry) -> Result<Vec<u8>> {
         .iter()
         .map(encode_path_component)
         .collect::<Result<Vec<_>>>()?;
+    let entry_v2 = entry.uses_posix_v1();
     let metadata = entry
         .metadata()
         .items()
         .iter()
-        .map(|item| encode_metadata_item(*item))
+        .map(|item| encode_metadata_item(item, entry_v2))
         .collect::<Result<Vec<_>>>()?;
-    let mut record = RecordBuilder::new(RECORD_ENTRY);
+    let mut record = if entry_v2 {
+        RecordBuilder::new_version(RECORD_ENTRY, 2)
+    } else {
+        RecordBuilder::new(RECORD_ENTRY)
+    };
     record.sequence(1, &path)?;
-    match entry.data() {
-        EntryData::Directory => {
-            record.u8(2, 1)?.u8(3, 0)?;
+    if entry_v2 {
+        match entry.data() {
+            EntryData::Directory => {
+                record.u8(2, 1)?;
+            }
+            EntryData::File {
+                content: crate::eam::ContentRef::Internal(digest),
+            } => {
+                record.u8(2, 2)?.bytes(3, digest.as_bytes())?;
+            }
+            EntryData::Symlink { target } => {
+                record
+                    .u8(2, 3)?
+                    .u8(
+                        4,
+                        match target.encoding() {
+                            LinkTargetEncoding::Utf8 => 1,
+                            LinkTargetEncoding::PosixBytes => 2,
+                        },
+                    )?
+                    .bytes(5, target.bytes())?;
+            }
         }
-        EntryData::File {
-            content: crate::eam::ContentRef::Internal(digest),
-        } => {
-            record.u8(2, 2)?.u8(3, 1)?.bytes(4, digest.as_bytes())?;
+        record
+            .sequence(6, &metadata)?
+            .bytes(7, entry.identity().identity_digest.as_bytes())?
+            .bytes(8, entry.identity().aux_digest.as_bytes())?;
+    } else {
+        match entry.data() {
+            EntryData::Directory => {
+                record.u8(2, 1)?.u8(3, 0)?;
+            }
+            EntryData::File {
+                content: crate::eam::ContentRef::Internal(digest),
+            } => {
+                record.u8(2, 2)?.u8(3, 1)?.bytes(4, digest.as_bytes())?;
+            }
+            EntryData::Symlink { .. } => unreachable!("symlinks require Entry v2"),
         }
+        record
+            .sequence(5, &metadata)?
+            .bytes(6, entry.identity().identity_digest.as_bytes())?
+            .bytes(7, entry.identity().aux_digest.as_bytes())?;
     }
-    record
-        .sequence(5, &metadata)?
-        .bytes(6, entry.identity().identity_digest.as_bytes())?
-        .bytes(7, entry.identity().aux_digest.as_bytes())?;
     record.finish()
 }
 
 fn decode_entry(record: &Record<'_>) -> Result<Entry> {
+    if record.version == 2 {
+        return decode_entry_v2(record);
+    }
     record.expect_tags(&[1, 2, 3, 5, 6, 7], &[4])?;
     let components = record
         .field(1)?
@@ -1084,7 +1126,7 @@ fn decode_entry(record: &Record<'_>) -> Result<Entry> {
         .field(5)?
         .as_sequence()?
         .into_iter()
-        .map(decode_metadata_item)
+        .map(|bytes| decode_metadata_item(bytes, false))
         .collect::<Result<Vec<_>>>()?;
     Ok(Entry::new(
         path,
@@ -1095,6 +1137,72 @@ fn decode_entry(record: &Record<'_>) -> Result<Entry> {
             aux_digest: digest(record.field(7)?.as_bytes()?)?,
         },
     ))
+}
+
+fn decode_entry_v2(record: &Record<'_>) -> Result<Entry> {
+    record.expect_versioned_tags(2, &[1, 2, 6, 7, 8], &[3, 4, 5])?;
+    let components = record
+        .field(1)?
+        .as_sequence()?
+        .into_iter()
+        .map(decode_path_component)
+        .collect::<Result<Vec<_>>>()?;
+    let path = LogicalPath::new(components)?;
+    let data = match (
+        record.field(2)?.as_u8()?,
+        record.optional_field(3),
+        record.optional_field(4),
+        record.optional_field(5),
+    ) {
+        (1, None, None, None) => EntryData::Directory,
+        (2, Some(content), None, None) => EntryData::File {
+            content: crate::eam::ContentRef::Internal(digest(content.as_bytes()?)?),
+        },
+        (3, None, Some(encoding), Some(target)) => EntryData::Symlink {
+            target: LinkTarget::new(
+                target.as_bytes()?,
+                match encoding.as_u8()? {
+                    1 => LinkTargetEncoding::Utf8,
+                    2 => LinkTargetEncoding::PosixBytes,
+                    _ => {
+                        return Err(Diagnostic::new(
+                            OutcomeClass::Unsupported,
+                            ReasonCode::UnsupportedRequiredFeature,
+                            "unknown symlink target encoding",
+                        ));
+                    }
+                },
+            )?,
+        },
+        _ => {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::UnsupportedEntryKind,
+                format!("Entry-v2 cardinality is invalid for {path}"),
+            ));
+        }
+    };
+    let metadata = record
+        .field(6)?
+        .as_sequence()?
+        .into_iter()
+        .map(|bytes| decode_metadata_item(bytes, true))
+        .collect::<Result<Vec<_>>>()?;
+    let entry = Entry::new(
+        path,
+        data,
+        MetadataSet::new(metadata)?,
+        EntryIdentity {
+            identity_digest: digest(record.field(7)?.as_bytes()?)?,
+            aux_digest: digest(record.field(8)?.as_bytes()?)?,
+        },
+    );
+    if !entry.uses_posix_v1() {
+        return Err(noncanonical(
+            "Entry-v2 must carry a symlink or POSIX metadata-v2 semantic",
+        ));
+    }
+    Ok(entry)
 }
 
 fn encode_path_component(component: &PathComponent) -> Result<Vec<u8>> {
@@ -1126,14 +1234,32 @@ fn decode_path_component(bytes: &[u8]) -> Result<PathComponent> {
     PathComponent::new(record.field(2)?.as_bytes()?, PathEncoding::Utf8)
 }
 
-fn encode_metadata_item(item: MetadataItem) -> Result<Vec<u8>> {
-    let mut record = RecordBuilder::new(RECORD_METADATA_ITEM);
+fn encode_metadata_item(item: &MetadataItem, version_two: bool) -> Result<Vec<u8>> {
+    let mut record = if version_two {
+        RecordBuilder::new_version(RECORD_METADATA_ITEM, 2)
+    } else {
+        if !matches!(
+            item.name(),
+            MetadataName::CoreExecutable | MetadataName::CoreMtime
+        ) {
+            return Err(noncanonical(
+                "MetadataItem-v1 cannot encode POSIX metadata-v2 names",
+            ));
+        }
+        RecordBuilder::new(RECORD_METADATA_ITEM)
+    };
     record
         .u8(
             1,
             match item.name() {
                 MetadataName::CoreExecutable => 1,
                 MetadataName::CoreMtime => 2,
+                MetadataName::PosixMode => 3,
+                MetadataName::PosixUid => 4,
+                MetadataName::PosixGid => 5,
+                MetadataName::PosixHardlinkGroup => 6,
+                MetadataName::PosixXattrs => 7,
+                MetadataName::PosixSparseMap => 8,
             },
         )?
         .u8(
@@ -1151,20 +1277,43 @@ fn encode_metadata_item(item: MetadataItem) -> Result<Vec<u8>> {
             },
         )?;
     match item.value() {
-        crate::eam::MetadataValue::Bool(value) => {
-            record.bool(4, value)?;
+        MetadataValue::Bool(value) => {
+            record.bool(4, *value)?;
         }
-        crate::eam::MetadataValue::Timestamp(value) => {
-            record.bytes(5, &encode_timestamp(value)?)?;
+        MetadataValue::Timestamp(value) => {
+            record.bytes(5, &encode_timestamp(*value)?)?;
+        }
+        MetadataValue::PosixMode(value)
+        | MetadataValue::PosixUid(value)
+        | MetadataValue::PosixGid(value) => {
+            record.u32(6, *value)?;
+        }
+        MetadataValue::HardlinkGroup(value) => {
+            record.bytes(7, value.as_bytes())?;
+        }
+        MetadataValue::Xattrs(value) => {
+            let values = value.iter().map(encode_xattr).collect::<Result<Vec<_>>>()?;
+            record.sequence(8, &values)?;
+        }
+        MetadataValue::SparseMap(value) => {
+            record.bytes(9, &encode_sparse_map(value)?)?;
         }
     }
     record.finish()
 }
 
-fn decode_metadata_item(bytes: &[u8]) -> Result<MetadataItem> {
+fn decode_metadata_item(bytes: &[u8], version_two: bool) -> Result<MetadataItem> {
     let (record, consumed) = decode_record(bytes)?;
     if consumed != bytes.len() || record.kind != RECORD_METADATA_ITEM {
         return Err(noncanonical("metadata item is not a canonical record"));
+    }
+    if version_two && record.version == 2 {
+        return decode_metadata_item_v2(&record);
+    }
+    if version_two || record.version != 1 {
+        return Err(noncanonical(
+            "Entry and nested MetadataItem record versions must agree",
+        ));
     }
     record.expect_tags(&[1, 2, 3], &[4, 5])?;
     if record.field(2)?.as_u8()? != 0 || record.field(3)?.as_u8()? != 1 {
@@ -1183,6 +1332,121 @@ fn decode_metadata_item(bytes: &[u8]) -> Result<MetadataItem> {
         (2, None, Some(value)) => Ok(MetadataItem::mtime(decode_timestamp(value.as_bytes()?)?)),
         _ => Err(noncanonical("metadata name and value type disagree")),
     }
+}
+
+fn decode_metadata_item_v2(record: &Record<'_>) -> Result<MetadataItem> {
+    record.expect_versioned_tags(2, &[1, 2, 3], &[4, 5, 6, 7, 8, 9])?;
+    if record.field(2)?.as_u8()? != 0 || record.field(3)?.as_u8()? != 1 {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedRequiredFeature,
+            "POSIX metadata-v2 is Optional and Restorable",
+        ));
+    }
+    match (
+        record.field(1)?.as_u8()?,
+        record.optional_field(4),
+        record.optional_field(5),
+        record.optional_field(6),
+        record.optional_field(7),
+        record.optional_field(8),
+        record.optional_field(9),
+    ) {
+        (1, Some(value), None, None, None, None, None) => {
+            Ok(MetadataItem::executable(value.as_bool()?))
+        }
+        (2, None, Some(value), None, None, None, None) => {
+            Ok(MetadataItem::mtime(decode_timestamp(value.as_bytes()?)?))
+        }
+        (3, None, None, Some(value), None, None, None) => {
+            let mode = value.as_u32()?;
+            if mode & !0o7777 != 0 {
+                return Err(noncanonical(
+                    "posix.mode includes file-type or reserved bits",
+                ));
+            }
+            Ok(MetadataItem::posix_mode(mode))
+        }
+        (4, None, None, Some(value), None, None, None) => {
+            Ok(MetadataItem::posix_uid(value.as_u32()?))
+        }
+        (5, None, None, Some(value), None, None, None) => {
+            Ok(MetadataItem::posix_gid(value.as_u32()?))
+        }
+        (6, None, None, None, Some(value), None, None) => {
+            Ok(MetadataItem::hardlink_group(digest(value.as_bytes()?)?))
+        }
+        (7, None, None, None, None, Some(value), None) => MetadataItem::xattrs(
+            value
+                .as_sequence()?
+                .into_iter()
+                .map(decode_xattr)
+                .collect::<Result<Vec<_>>>()?,
+        ),
+        (8, None, None, None, None, None, Some(value)) => Ok(MetadataItem::sparse_map(
+            decode_sparse_map(value.as_bytes()?)?,
+        )),
+        _ => Err(noncanonical("metadata-v2 name and typed value disagree")),
+    }
+}
+
+fn encode_xattr(value: &XAttr) -> Result<Vec<u8>> {
+    let mut record = RecordBuilder::new(RECORD_XATTR_V1);
+    record.bytes(1, value.name())?.bytes(2, value.value())?;
+    record.finish()
+}
+
+fn decode_xattr(bytes: &[u8]) -> Result<XAttr> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() || record.kind != RECORD_XATTR_V1 {
+        return Err(noncanonical("xattr item is not a canonical XAttrV1 record"));
+    }
+    record.expect_tags(&[1, 2], &[])?;
+    XAttr::new(record.field(1)?.as_bytes()?, record.field(2)?.as_bytes()?)
+}
+
+fn encode_sparse_map(value: &SparseMap) -> Result<Vec<u8>> {
+    let extents = value
+        .extents()
+        .iter()
+        .map(|extent| {
+            let mut record = RecordBuilder::new(RECORD_SPARSE_EXTENT_V1);
+            record.u64(1, extent.offset)?.u64(2, extent.length)?;
+            record.finish()
+        })
+        .collect::<Result<Vec<_>>>()?;
+    let mut record = RecordBuilder::new(RECORD_SPARSE_MAP_V1);
+    record.u64(1, value.logical_size())?.sequence(2, &extents)?;
+    record.finish()
+}
+
+fn decode_sparse_map(bytes: &[u8]) -> Result<SparseMap> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() || record.kind != RECORD_SPARSE_MAP_V1 {
+        return Err(noncanonical(
+            "sparse map is not a canonical SparseMapV1 record",
+        ));
+    }
+    record.expect_tags(&[1, 2], &[])?;
+    let extents = record
+        .field(2)?
+        .as_sequence()?
+        .into_iter()
+        .map(|bytes| {
+            let (extent, consumed) = decode_record(bytes)?;
+            if consumed != bytes.len() || extent.kind != RECORD_SPARSE_EXTENT_V1 {
+                return Err(noncanonical(
+                    "sparse extent is not a canonical SparseExtentV1 record",
+                ));
+            }
+            extent.expect_tags(&[1, 2], &[])?;
+            Ok(SparseExtent {
+                offset: extent.field(1)?.as_u64()?,
+                length: extent.field(2)?.as_u64()?,
+            })
+        })
+        .collect::<Result<Vec<_>>>()?;
+    SparseMap::new(record.field(1)?.as_u64()?, extents)
 }
 
 fn encode_timestamp(value: Timestamp) -> Result<Vec<u8>> {
@@ -1988,6 +2252,7 @@ mod tests {
 
     use super::*;
     use crate::codec::zstd_transformed_plan;
+    use crate::eam::ContentRef;
     use crate::identity::sha256_exact;
     use crate::transform::{BYTE_SHUFFLE_ID, byte_shuffle_step, delta8_step};
 
@@ -2027,6 +2292,135 @@ mod tests {
             .lines()
             .find_map(|line| line.strip_prefix(&format!("{name}=")))
             .expect("Descriptor vector must exist")
+    }
+
+    fn posix_vector(name: &str) -> &'static str {
+        include_str!("../../../../docs/posix-metadata-v1-vectors.txt")
+            .lines()
+            .find_map(|line| line.strip_prefix(&format!("{name}=")))
+            .expect("POSIX metadata vector must exist")
+    }
+
+    #[test]
+    fn entry_v1_is_unchanged_and_entry_v2_is_canonical() {
+        let path = LogicalPath::from_utf8(["vector"]).unwrap();
+        let historical = Entry::new(
+            path.clone(),
+            EntryData::File {
+                content: ContentRef::Internal(Digest::from_bytes([0x11; 32])),
+            },
+            MetadataSet::new(vec![MetadataItem::executable(true)]).unwrap(),
+            EntryIdentity {
+                identity_digest: Digest::from_bytes([0x22; 32]),
+                aux_digest: Digest::from_bytes([0x33; 32]),
+            },
+        );
+        let v1 = encode_entry_record(&historical).unwrap();
+        assert_eq!(&v1[2..4], &1_u16.to_be_bytes());
+        let (record, consumed) = decode_record(&v1).unwrap();
+        assert_eq!(consumed, v1.len());
+        assert_eq!(decode_entry(&record).unwrap(), historical);
+        assert_eq!(hex(&v1), posix_vector("ENTRY_V1"));
+        assert_eq!(
+            sha256_exact(&v1).to_string(),
+            posix_vector("ENTRY_V1_SHA256")
+        );
+
+        let metadata = MetadataSet::new(vec![
+            MetadataItem::executable(true),
+            MetadataItem::posix_mode(0o4755),
+            MetadataItem::posix_uid(1000),
+            MetadataItem::posix_gid(100),
+            MetadataItem::xattrs(vec![
+                XAttr::new(b"user.empty".to_vec(), Vec::<u8>::new()).unwrap(),
+                XAttr::new(b"user.test".to_vec(), b"\0\xff".to_vec()).unwrap(),
+            ])
+            .unwrap(),
+            MetadataItem::sparse_map(
+                SparseMap::new(
+                    16,
+                    vec![SparseExtent {
+                        offset: 4,
+                        length: 8,
+                    }],
+                )
+                .unwrap(),
+            ),
+        ])
+        .unwrap();
+        let v2_entry = Entry::new(
+            path,
+            EntryData::File {
+                content: ContentRef::Internal(Digest::from_bytes([0x11; 32])),
+            },
+            metadata,
+            EntryIdentity {
+                identity_digest: Digest::from_bytes([0x22; 32]),
+                aux_digest: Digest::from_bytes([0x33; 32]),
+            },
+        );
+        let v2 = encode_entry_record(&v2_entry).unwrap();
+        assert_eq!(&v2[2..4], &2_u16.to_be_bytes());
+        let (record, consumed) = decode_record(&v2).unwrap();
+        assert_eq!(consumed, v2.len());
+        assert_eq!(decode_entry(&record).unwrap(), v2_entry);
+        assert_eq!(hex(&v2), posix_vector("ENTRY_V2"));
+        assert_eq!(
+            sha256_exact(&v2).to_string(),
+            posix_vector("ENTRY_V2_SHA256")
+        );
+
+        let tag_two = descriptor_field_offset(&v2, 2);
+        let mut invalid_cardinality = v2.clone();
+        invalid_cardinality[tag_two + 12] = 1;
+        let (record, _) = decode_record(&invalid_cardinality).unwrap();
+        assert_eq!(
+            decode_entry(&record).unwrap_err().code(),
+            ReasonCode::UnsupportedEntryKind
+        );
+
+        let mut wrong_kind_type = v2.clone();
+        wrong_kind_type[tag_two + 2] = crate::canonical::FieldType::Bytes as u8;
+        let (record, _) = decode_record(&wrong_kind_type).unwrap();
+        assert_eq!(
+            decode_entry(&record).unwrap_err().code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+
+        let tag_six = descriptor_field_offset(&v2, 6);
+        let first_metadata_record = tag_six + 12 + 8 + 8;
+        let mut mixed_nested_version = v2.clone();
+        mixed_nested_version[first_metadata_record + 2..first_metadata_record + 4]
+            .copy_from_slice(&1_u16.to_be_bytes());
+        let (record, _) = decode_record(&mixed_nested_version).unwrap();
+        assert_eq!(
+            decode_entry(&record).unwrap_err().code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+
+        let mut unsupported_entry_version = v2.clone();
+        unsupported_entry_version[2..4].copy_from_slice(&3_u16.to_be_bytes());
+        assert_eq!(
+            decode_record(&unsupported_entry_version)
+                .unwrap_err()
+                .code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+
+        let symlink = Entry::new(
+            LogicalPath::from_utf8(["link"]).unwrap(),
+            EntryData::Symlink {
+                target: LinkTarget::canonical(b"../target".to_vec()).unwrap(),
+            },
+            MetadataSet::default(),
+            EntryIdentity::default(),
+        );
+        let bytes = encode_entry_record(&symlink).unwrap();
+        assert_eq!(hex(&bytes), posix_vector("ENTRY_V2_SYMLINK"));
+        assert_eq!(
+            sha256_exact(&bytes).to_string(),
+            posix_vector("ENTRY_V2_SYMLINK_SHA256")
+        );
     }
 
     #[test]

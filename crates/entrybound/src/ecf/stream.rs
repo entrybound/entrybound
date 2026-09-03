@@ -79,18 +79,18 @@ use super::records::{
 };
 use super::staging::{ChunkStaging, StagingLimits};
 use super::{
-    FEATURE_CONVERSION_PROVENANCE_V1, FEATURE_LEGACY_PRESERVATION_V1, FEATURE_STREAM_LAYOUT_V1,
-    FOOTER_LEN, FORMAT_NAMESPACE, PREAMBLE_LEN,
+    FEATURE_CONVERSION_PROVENANCE_V1, FEATURE_LEGACY_PRESERVATION_V1, FEATURE_POSIX_METADATA_V1,
+    FEATURE_STREAM_LAYOUT_V1, FOOTER_LEN, FORMAT_NAMESPACE, PREAMBLE_LEN,
 };
 use crate::archive::EntryCursorComplexity;
 use crate::codec::{PlanMode, aggregate_archive_decode_requirements, plan_mode, validate_plans};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     Archive, ArchiveDescriptor, ArchiveRole, Chunk, ChunkGroup, ChunkLocation, ContentObject,
-    ContentStore, DecodeRequirements, Dictionary, Digest, DigestAlgorithm, Entry, EntrySet,
-    IdentityProfile, Index, Layout, ReconstructionAudit, ReconstructionAuditTarget,
-    ReconstructionData, ReconstructionFallbackReason, ReconstructionRegion, ResourceBudget,
-    TransformPlan,
+    ContentRef, ContentStore, DecodeRequirements, Dictionary, Digest, DigestAlgorithm, Entry,
+    EntryData, EntrySet, IdentityProfile, Index, Layout, ReconstructionAudit,
+    ReconstructionAuditTarget, ReconstructionData, ReconstructionFallbackReason,
+    ReconstructionRegion, ResourceBudget, TransformPlan,
 };
 use crate::identity::{
     IdentitySet, PhysicalContainerIdentity, apply_native_identities,
@@ -1772,7 +1772,9 @@ impl<R: Read> Scanner<R> {
     /// Each frame is released at most once, so a whole pass costs one release
     /// per Chunk rather than one per record.
     fn release_outside_window(&mut self) {
-        if !matches!(self.limits.content, StreamContentPolicy::Verify) {
+        if !matches!(self.limits.content, StreamContentPolicy::Verify)
+            || self.preamble.features.incompat & FEATURE_POSIX_METADATA_V1 != 0
+        {
             return;
         }
         let retain_from = self
@@ -1785,6 +1787,35 @@ impl<R: Read> Scanner<R> {
             self.staging.release(chunk_id);
         }
         self.released_upto = self.released_upto.max(limit);
+    }
+
+    fn validate_sparse_staging(&mut self, archive: &Archive) -> Result<()> {
+        for entry in archive.entry_set.entries() {
+            let Some(map) = entry.metadata().sparse_map() else {
+                continue;
+            };
+            let EntryData::File {
+                content: ContentRef::Internal(content),
+            } = entry.data()
+            else {
+                continue;
+            };
+            let object = &archive.content_store.objects[content];
+            let mut offset = 0_u64;
+            for reference in &object.chunks {
+                let plaintext = self.staging.read(&reference.chunk_id)?;
+                map.validate_range(offset, &plaintext)?;
+                offset = offset
+                    .checked_add(u64::try_from(plaintext.len()).unwrap_or(u64::MAX))
+                    .ok_or_else(|| resource("sparse staging offset exceeds u64"))?;
+            }
+            if offset != map.logical_size() {
+                return Err(noncanonical(
+                    "sparse map logical size differs from its STREAM ContentObject",
+                ));
+            }
+        }
+        Ok(())
     }
 
     fn accept_entry(&mut self, entry: Entry) -> Result<()> {
@@ -1808,7 +1839,7 @@ impl<R: Read> Scanner<R> {
             content: crate::eam::ContentRef::Internal(logical_digest),
         } = entry.data()
         {
-            let object = self.objects.get(&logical_digest).ok_or_else(|| {
+            let object = self.objects.get(logical_digest).ok_or_else(|| {
                 Diagnostic::new(
                     OutcomeClass::Nonconforming,
                     ReasonCode::StreamForwardReference,
@@ -2006,6 +2037,7 @@ impl<R: Read> Scanner<R> {
             },
         };
         archive.validate_without_retained_plaintext()?;
+        self.validate_sparse_staging(&archive)?;
         validate_feature_model(&archive)?;
         self.validate_region_ownership(&archive)?;
 

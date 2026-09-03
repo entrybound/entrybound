@@ -67,6 +67,8 @@ pub const FEATURE_STREAM_LAYOUT_V1: u64 = 1 << 4;
 pub const FEATURE_CONVERSION_PROVENANCE_V1: u64 = 1 << 13;
 /// Required capability for exact legacy source and structured LOM evidence.
 pub const FEATURE_LEGACY_PRESERVATION_V1: u64 = 1 << 14;
+/// Required capability for Entry-v2 and POSIX metadata-v2 semantics.
+pub const FEATURE_POSIX_METADATA_V1: u64 = 1 << 15;
 pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 = FEATURE_CROSS_FILE_COMPRESSION_V1
     | FEATURE_CODEC_TRANSFORM_V1
     | FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
@@ -74,6 +76,7 @@ pub(crate) const SUPPORTED_INCOMPAT_FEATURES: u64 = FEATURE_CROSS_FILE_COMPRESSI
     | FEATURE_STREAM_LAYOUT_V1
     | FEATURE_CONVERSION_PROVENANCE_V1
     | FEATURE_LEGACY_PRESERVATION_V1
+    | FEATURE_POSIX_METADATA_V1
     | crate::crypto::CRYPTO_FEATURES;
 
 #[cfg(test)]

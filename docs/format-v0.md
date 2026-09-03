@@ -148,6 +148,13 @@ resolutions. Absence of `0x4000` leaves historical strict conversion bytes
 unchanged. Exact grammar and identity rules are in
 [legacy-preservation-v1.md](legacy-preservation-v1.md).
 
+Required incompatibility feature `0x8000` (`posix-metadata-v1`) selects
+canonical Entry type 3/version 2 and MetadataItem type 8/version 2 whenever a
+Symlink Entry or POSIX mode, ownership, hardlink, xattr, or sparse-map metadata
+is present. Entry v1 and MetadataItem v1 are never reinterpreted. Nested record
+types 37–39 encode xattrs and sparse maps. Exact cardinality, identity, and
+feature-presence rules are in [posix-metadata-v1.md](posix-metadata-v1.md).
+
 Strict tar-family and gzip/Zstandard/XZ/bzip2 imports reuse canonical type 28;
 no new native record or feature is required. Layer formats, exact outer source
 digest, decoded-child digest, wrapper integrity/member count, tar refinements,
@@ -238,9 +245,9 @@ selects the extended schema: DESCRIPTOR (1), TRANSFORM_PLANS (2), DICTIONARIES
 (3), CHUNK_GROUPS (4), CHUNK_DATA (5), MANIFEST_RECORDS (6), FIDELITY (7), and
 optionally INDEX (8). Both new authoritative sections occur exactly once even
 when empty. The unencrypted reader recognizes incompatibility bits `0x1`,
-`0x2`, `0x4`, `0x8`, and `0x10`; the crypto-v1 INDEXED reader additionally
+`0x2`, `0x4`, `0x8`, `0x10`, and `0x8000`; the crypto-v1 INDEXED reader additionally
 recognizes the implemented crypto bits listed above. Unencrypted readers also
-recognize `0x2000` and `0x4000`. Both reject every other
+recognize `0x2000` and `0x4000`. All readers reject every other
 unknown required bit. `0x2` changes only the TransformPlan field-3 item schema
 and may be combined with `0x1`, as v4 does.
 
@@ -291,11 +298,13 @@ Record type and strictly increasing field tags are:
 | Descriptor v2 | 1/version 2 | Descriptor-v1 fields(1-8), decode window(9), decode working set(10), decode flags(11), entry count(12), total logical bytes(13), max single-entry logical bytes(14), max expansion ratio milli(15), Chunk count(16), max path depth(17), max metadata bytes(18), max key-derivation cost(19) |
 | TransformPlan | 2 | plan ID(1), identifier(2), transform sequence(3), codec(4), parameters(5), optional dictionary(6), decode window(7), working set(8), flags(9) |
 | Entry | 3 | LogicalPath components(1), kind(2), ContentRef kind(3), optional logical digest(4), MetadataSet(5), identity digest(6), auxiliary digest(7) |
+| Entry v2 | 3/version 2 | LogicalPath components(1), explicit kind(2), optional File content digest(3), optional Symlink target encoding(4), optional Symlink target bytes(5), MetadataItem-v2 sequence(6), identity digest(7), auxiliary digest(8) |
 | ContentObject | 4 | logical digest(1), chunk root(2), ordered Chunk references(3) |
 | FidelityReport | 5 | captured(1), unavailable(2), degraded(3), platform(4), filesystem declarations(5) |
 | Index entry | 6 | Chunk digest(1), absolute frame offset(2), stored length(3) |
 | PathComponent | 7 | encoding(1), bytes(2) |
 | MetadataItem | 8 | name(1), criticality(2), restorability(3), boolean(4) or timestamp(5) |
+| MetadataItem v2 | 8/version 2 | registered name ID(1), Optional criticality(2), Restorable disposition(3), exactly one bool(4), Timestamp record bytes(5), u32(6), digest(7), XAttr sequence(8), or SparseMap bytes(9), as selected by the closed registry |
 | Timestamp | 9 | signed seconds(1), nanoseconds(2), source precision(3), restorable(4) |
 | Fidelity issue | 10 | class(1), reason(2), optional entry scope(3) |
 | Dictionary | 11 | dictionary digest(1), codec(2), format(3), construction(4), exact bytes(5) |
@@ -316,6 +325,9 @@ Record type and strictly increasing field tags are:
 | PreservedValue | 34 | value kind(1), exactly one typed value(2) |
 | PreservedLocation | 35 | source offset(1), length(2) |
 | PreservedLOMResolution | 36 | action(1), optional selected authority(2) |
+| XAttrV1 | 37 | exact name bytes(1), exact value bytes(2) |
+| SparseMapV1 | 38 | logical file size(1), ordered SparseExtent sequence(2) |
+| SparseExtentV1 | 39 | offset(1), nonzero length(2) |
 | ConversionResolution (nested only) | 29 | conflict class(1), semantic field(2), authority names(3), observed values(4), action(5) |
 
 Without `codec-transform-v1`, TransformPlan field 3 remains the historical

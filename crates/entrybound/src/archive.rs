@@ -66,6 +66,44 @@ pub enum CollisionPolicy {
     Refuse,
 }
 
+/// Caller-owned policy for materializing archived symbolic links.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum SymlinkPolicy {
+    /// Refuse every symbolic link.
+    Refuse,
+    /// Permit only relative targets whose lexical resolution stays beneath the extraction root.
+    #[default]
+    Safe,
+    /// Restore exact targets, including absolute and escaping targets.
+    All,
+}
+
+/// Caller-owned ownership restoration policy.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum OwnershipPolicy {
+    #[default]
+    Ignore,
+    Restore,
+}
+
+/// Caller-owned extended-attribute restoration policy.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum XAttrPolicy {
+    #[default]
+    Ignore,
+    Restore,
+}
+
+/// Caller-owned sparse-file restoration policy.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum SparsePolicy {
+    /// Materialize the complete logical byte sequence.
+    #[default]
+    Logical,
+    /// Recreate declared data/hole extents where supported.
+    Restore,
+}
+
 /// The containment guarantee an extractor actually achieved.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ConfinementMode {
@@ -81,6 +119,10 @@ pub struct ExtractionPolicy {
     collision: CollisionPolicy,
     budget: ResourceBudget,
     decode: DecodeRequirements,
+    symlinks: SymlinkPolicy,
+    ownership: OwnershipPolicy,
+    xattrs: XAttrPolicy,
+    sparse: SparsePolicy,
 }
 
 impl ExtractionPolicy {
@@ -91,6 +133,10 @@ impl ExtractionPolicy {
             collision,
             budget,
             decode: bootstrap_decode_policy(),
+            symlinks: SymlinkPolicy::Safe,
+            ownership: OwnershipPolicy::Ignore,
+            xattrs: XAttrPolicy::Ignore,
+            sparse: SparsePolicy::Logical,
         }
     }
 
@@ -105,6 +151,10 @@ impl ExtractionPolicy {
             collision,
             budget,
             decode,
+            symlinks: SymlinkPolicy::Safe,
+            ownership: OwnershipPolicy::Ignore,
+            xattrs: XAttrPolicy::Ignore,
+            sparse: SparsePolicy::Logical,
         }
     }
 
@@ -121,6 +171,50 @@ impl ExtractionPolicy {
     #[must_use]
     pub const fn decode(self) -> DecodeRequirements {
         self.decode
+    }
+
+    #[must_use]
+    pub const fn with_symlinks(mut self, value: SymlinkPolicy) -> Self {
+        self.symlinks = value;
+        self
+    }
+
+    #[must_use]
+    pub const fn with_ownership(mut self, value: OwnershipPolicy) -> Self {
+        self.ownership = value;
+        self
+    }
+
+    #[must_use]
+    pub const fn with_xattrs(mut self, value: XAttrPolicy) -> Self {
+        self.xattrs = value;
+        self
+    }
+
+    #[must_use]
+    pub const fn with_sparse(mut self, value: SparsePolicy) -> Self {
+        self.sparse = value;
+        self
+    }
+
+    #[must_use]
+    pub const fn symlinks(self) -> SymlinkPolicy {
+        self.symlinks
+    }
+
+    #[must_use]
+    pub const fn ownership(self) -> OwnershipPolicy {
+        self.ownership
+    }
+
+    #[must_use]
+    pub const fn xattrs(self) -> XAttrPolicy {
+        self.xattrs
+    }
+
+    #[must_use]
+    pub const fn sparse(self) -> SparsePolicy {
+        self.sparse
     }
 }
 

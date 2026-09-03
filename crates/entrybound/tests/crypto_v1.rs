@@ -9,7 +9,10 @@ use entrybound::crypto::{
     pack_directory_encrypted, reencrypt_recipients, sign_archive, verify_signature,
 };
 use entrybound::diagnostics::ReasonCode;
-use entrybound::ecf::{WriteOptions, encode};
+use entrybound::eam::{
+    Entry, EntryData, EntryIdentity, EntrySet, LinkTarget, LogicalPath, MetadataSet,
+};
+use entrybound::ecf::{FEATURE_POSIX_METADATA_V1, WriteOptions, encode};
 use sha2::{Digest as _, Sha256};
 
 struct Fixture {
@@ -89,6 +92,41 @@ fn encrypted_hybrid_indexed_round_trip_is_metadata_private() {
     assert_eq!(opened.report.identities.lai, encrypted.identities.lai);
     assert_eq!(opened.report.identities.pcr, encrypted.identities.pcr);
     assert_eq!(opened.report.identities.aux, encrypted.identities.aux);
+}
+
+#[test]
+fn encrypted_manifest_keeps_posix_entry_v2_private_and_authenticated() {
+    let fixture = Fixture::new("crypto-posix-manifest");
+    let mut archive = plan_directory(&fixture.source, PackOptions::default()).unwrap();
+    let mut entries = archive.entry_set.entries().to_vec();
+    entries.push(Entry::new(
+        LogicalPath::from_utf8(["private-link"]).unwrap(),
+        EntryData::Symlink {
+            target: LinkTarget::canonical(b"../secret-target".to_vec()).unwrap(),
+        },
+        MetadataSet::default(),
+        EntryIdentity::default(),
+    ));
+    archive.entry_set = EntrySet::new(entries).unwrap();
+    archive.descriptor.features.incompat |= FEATURE_POSIX_METADATA_V1;
+    let (identity, recipient) = XWingIdentity::generate().unwrap();
+    let encrypted = encrypt_archive(
+        &archive,
+        EncryptedWriteOptions {
+            recipients: std::slice::from_ref(&recipient),
+            ..EncryptedWriteOptions::default()
+        },
+    )
+    .unwrap();
+    assert!(!contains(&encrypted.bytes, b"private-link"));
+    assert!(!contains(&encrypted.bytes, b"../secret-target"));
+    let opened = open_identity(&encrypted.bytes, &identity).unwrap();
+    assert!(opened.archive.entry_set.entries().iter().any(|entry| {
+        matches!(
+            entry.data(),
+            EntryData::Symlink { target } if target.bytes() == b"../secret-target"
+        )
+    }));
 }
 
 #[test]

@@ -509,6 +509,17 @@ fn analyze_entries(archive: &Archive, target: ExportTarget) -> Result<Vec<Export
     let mut issues = Vec::new();
     let mut zip_equivalence = BTreeMap::<String, LogicalPath>::new();
     for entry in archive.entry_set.entries() {
+        if matches!(entry.data(), EntryData::Symlink { .. }) {
+            issues.push(issue(
+                ExportIssueCategory::EntryKindUnsupported,
+                Some(entry.path().clone()),
+                "entry.kind",
+                "symlink",
+                target.profile_id(),
+                ExportDisposition::Refused,
+                "the frozen target profile has no native symlink representation",
+            ));
+        }
         let path = target_path(entry.path());
         analyze_path(
             entry.path(),
@@ -522,17 +533,26 @@ fn analyze_entries(archive: &Archive, target: ExportTarget) -> Result<Vec<Export
             match (metadata.name(), metadata.value()) {
                 (MetadataName::CoreExecutable, MetadataValue::Bool(_)) => {}
                 (MetadataName::CoreMtime, MetadataValue::Timestamp(timestamp)) => {
-                    analyze_mtime(entry.path(), timestamp, target, &mut issues);
+                    analyze_mtime(entry.path(), *timestamp, target, &mut issues);
                 }
-                _ => issues.push(issue(
+                (
+                    MetadataName::PosixMode
+                    | MetadataName::PosixUid
+                    | MetadataName::PosixGid
+                    | MetadataName::PosixHardlinkGroup
+                    | MetadataName::PosixXattrs
+                    | MetadataName::PosixSparseMap,
+                    _,
+                ) => issues.push(issue(
                     ExportIssueCategory::MetadataUnsupported,
                     Some(entry.path().clone()),
                     metadata.name().as_str(),
                     format!("{:?}", metadata.value()),
                     target.profile_id(),
-                    ExportDisposition::Refused,
-                    "metadata registry value is not implemented by this target profile",
+                    ExportDisposition::Omitted,
+                    "the frozen v1 target profile exports safe logical bytes but omits this newer AUX semantic",
                 )),
+                _ => unreachable!("MetadataSet validates registry value types"),
             }
         }
         if entry.metadata().mtime().is_none() {
@@ -573,7 +593,7 @@ fn analyze_entries(archive: &Archive, target: ExportTarget) -> Result<Vec<Export
             ));
         }
         if let EntryData::File { content } = entry.data() {
-            let _ = logical_content(archive, content)?;
+            let _ = logical_content(archive, *content)?;
         }
     }
     Ok(issues)
@@ -892,7 +912,12 @@ fn zip_entry_plan(archive: &Archive, entry: &Entry) -> Result<ZipEntryPlan> {
     }
     let plaintext = match entry.data() {
         EntryData::Directory => Vec::new(),
-        EntryData::File { content } => logical_content(archive, content)?,
+        EntryData::File { content } => logical_content(archive, *content)?,
+        EntryData::Symlink { .. } => {
+            return Err(target_limit(
+                "zip/portable-v1 cannot encode a symlink Entry",
+            ));
+        }
     };
     let mut crc = Crc32::new();
     crc.update(&plaintext);
@@ -1341,8 +1366,8 @@ fn validate_strict_reimport(
                     content: actual_content,
                 },
             ) => {
-                if logical_content(source, expected_content)?
-                    != logical_content(&imported.archive, actual_content)?
+                if logical_content(source, *expected_content)?
+                    != logical_content(&imported.archive, *actual_content)?
                 {
                     return Err(reimport_mismatch(target, "regular-file bytes changed"));
                 }
@@ -1399,8 +1424,8 @@ fn ensure_metadata_difference_declared(
 fn executable_claim(entry: &Entry) -> Option<bool> {
     entry.metadata().items().iter().find_map(|item| {
         (item.name() == MetadataName::CoreExecutable).then(|| match item.value() {
-            MetadataValue::Bool(value) => value,
-            MetadataValue::Timestamp(_) => unreachable!("validated core.executable type"),
+            MetadataValue::Bool(value) => *value,
+            _ => unreachable!("validated core.executable type"),
         })
     })
 }
@@ -1445,7 +1470,10 @@ fn write_tar_entry(
     let directory = matches!(entry.data(), EntryData::Directory);
     let plaintext = match entry.data() {
         EntryData::Directory => Vec::new(),
-        EntryData::File { content } => logical_content(archive, content)?,
+        EntryData::File { content } => logical_content(archive, *content)?,
+        EntryData::Symlink { .. } => {
+            return Err(target_limit("tar/pax-v1 cannot encode a symlink Entry"));
+        }
     };
     let size = u64::try_from(plaintext.len()).map_err(|_| target_limit("tar file exceeds u64"))?;
     let mut path = target_path(entry.path());
@@ -1927,7 +1955,7 @@ mod tests {
     use super::*;
     use crate::archive::plan_observed_archive;
     use crate::eam::{
-        ConversionProvenance, EntryIdentity, FidelityReport, MetadataItem, MetadataSet,
+        ConversionProvenance, EntryIdentity, FidelityReport, LinkTarget, MetadataItem, MetadataSet,
     };
     use crate::ecf::{
         SequentialLimits, StreamContentPolicy, StreamWriteOptions, WriteOptions,
@@ -2060,8 +2088,8 @@ mod tests {
                         panic!("file became directory")
                     };
                     assert_eq!(
-                        logical_content(&archive, content).unwrap(),
-                        logical_content(&imported.archive, imported_content).unwrap()
+                        logical_content(&archive, *content).unwrap(),
+                        logical_content(&imported.archive, *imported_content).unwrap()
                     );
                 }
             }
@@ -2265,6 +2293,71 @@ mod tests {
                 prepared.accept(true).unwrap_err().code(),
                 ReasonCode::LegacyExportRefused
             );
+        }
+    }
+
+    #[test]
+    fn frozen_v1_targets_report_new_posix_semantics_without_redefinition() {
+        let bytes = b"same logical bytes".to_vec();
+        let digest = sha256_exact(&bytes);
+        let posix = plan_observed_archive(
+            vec![Entry::new(
+                LogicalPath::from_utf8(["mode.txt"]).unwrap(),
+                EntryData::File {
+                    content: ContentRef::Internal(digest),
+                },
+                MetadataSet::new(vec![
+                    MetadataItem::executable(true),
+                    MetadataItem::mtime(second_timestamp()),
+                    MetadataItem::posix_mode(0o4755),
+                    MetadataItem::posix_uid(1000),
+                ])
+                .unwrap(),
+                EntryIdentity::default(),
+            )],
+            vec![bytes.into_boxed_slice()],
+            FidelityReport::default(),
+            conversion(),
+            None,
+            CompressionProfile::Fast,
+        )
+        .unwrap();
+        for target in [ExportTarget::ZipPortableV1, ExportTarget::TarPaxV1] {
+            let prepared = prepare_export(&posix, target, ExportSourceSecurity::default()).unwrap();
+            assert_eq!(prepared.analysis.outcome, ExportOutcome::Lossy);
+            assert!(prepared.analysis.issues.iter().any(|issue| {
+                issue.category == ExportIssueCategory::MetadataUnsupported
+                    && issue.semantic_field == "posix.mode"
+            }));
+            assert!(prepared.clone().accept(false).is_err());
+            prepared.accept(true).unwrap();
+        }
+
+        let symlink = plan_observed_archive(
+            vec![Entry::new(
+                LogicalPath::from_utf8(["link"]).unwrap(),
+                EntryData::Symlink {
+                    target: LinkTarget::canonical(b"target".to_vec()).unwrap(),
+                },
+                MetadataSet::default(),
+                EntryIdentity::default(),
+            )],
+            Vec::new(),
+            FidelityReport::default(),
+            conversion(),
+            None,
+            CompressionProfile::Fast,
+        )
+        .unwrap();
+        for target in [ExportTarget::ZipPortableV1, ExportTarget::TarPaxV1] {
+            let prepared =
+                prepare_export(&symlink, target, ExportSourceSecurity::default()).unwrap();
+            assert_eq!(prepared.analysis.outcome, ExportOutcome::Refused);
+            assert!(prepared.bytes.is_none());
+            assert!(prepared.analysis.issues.iter().any(|issue| {
+                issue.category == ExportIssueCategory::EntryKindUnsupported
+                    && issue.disposition == ExportDisposition::Refused
+            }));
         }
     }
 

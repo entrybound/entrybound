@@ -7,11 +7,11 @@ use std::process::ExitCode;
 
 use entrybound::archive::{
     ArchiveDiffReport, ConfinementMode, DiffChange, DiffIdentityStatus, DiffTier, ExtractionPolicy,
-    IndexPolicy, InspectionSecurity, InspectionViews, PackOptions, RepackMode, RepackOptions,
-    archive_diff, archive_metadata_diff, default_pack_output, default_unpack_destination,
-    explain as compression_explain, inspect, inspection_json, inspection_json_with_security, list,
-    plan_directory, prepare_repack, random_inspection_json, structured_explain, unpack,
-    unpack_opened, unpack_stream,
+    IndexPolicy, InspectionSecurity, InspectionViews, OwnershipPolicy, PackOptions, RepackMode,
+    RepackOptions, SparsePolicy, SymlinkPolicy, XAttrPolicy, archive_diff, archive_metadata_diff,
+    default_pack_output, default_unpack_destination, explain as compression_explain, inspect,
+    inspection_json, inspection_json_with_security, list, plan_directory, prepare_repack,
+    random_inspection_json, structured_explain, unpack, unpack_opened, unpack_stream,
 };
 use entrybound::crypto::{
     BindingStatus, BoundaryMode, CryptoPolicy, CryptographicStatus, EncryptedOpenOptions,
@@ -85,6 +85,8 @@ Usage:\n\
                          [--layout indexed|stream] [--profile <profile>]\n\
                          [--report <file>]\n\
   ebound unpack <archive.eb|-> [destination] [--identity <file>|--password]\n\
+                [--symlinks refuse|safe|all] [--restore-owner]\n\
+                [--xattrs ignore|restore] [--sparse logical|restore]\n\
   ebound read <archive.eb|URL> <logical-path> [--output <file|->]\n\
                                [--identity <file>|--password] [--access-report]\n\
   ebound list <archive.eb|URL|-> [--identity <file>|--password]\n\
@@ -2320,7 +2322,7 @@ fn describe(destination: &Destination) -> String {
 // ---------------------------------------------------------------------------
 
 fn command_unpack(arguments: Vec<OsString>) -> Result<()> {
-    let parsed = parse_read_arguments("unpack", arguments, false)?;
+    let (parsed, extraction_policy) = parse_unpack_arguments(arguments)?;
     if !(1..=2).contains(&parsed.positionals.len()) {
         return Err(usage(
             "unpack requires <archive.eb|-> [destination] [--identity <file>|--password]",
@@ -2347,7 +2349,7 @@ fn command_unpack(arguments: Vec<OsString>) -> Result<()> {
         let bytes = read_source_fully(&source)?;
         let unlock = parsed.unlock.as_ref().map(OwnedUnlock::borrowed);
         let opened = open_encrypted(&bytes, EncryptedOpenOptions::new(unlock))?;
-        let report = unpack_opened(&opened, &destination, ExtractionPolicy::default())?;
+        let report = unpack_opened(&opened, &destination, extraction_policy)?;
         status.line(format!(
             "OK authenticated, verified, and unpacked {} entries and {} logical bytes into {}",
             report.entries_created,
@@ -2362,6 +2364,7 @@ fn command_unpack(arguments: Vec<OsString>) -> Result<()> {
                 ConfinementMode::WeakerReported => "weaker platform mode (reported)",
             }
         ));
+        report_metadata_restoration(&status, &report);
         return Ok(());
     }
     if parsed.unlock.is_some() {
@@ -2374,7 +2377,7 @@ fn command_unpack(arguments: Vec<OsString>) -> Result<()> {
             let (report, stream) = unpack_stream(
                 std::io::stdin().lock(),
                 &destination,
-                ExtractionPolicy::default(),
+                extraction_policy,
                 bootstrap_sequential_limits(),
             )?;
             (report, Some(stream))
@@ -2384,15 +2387,12 @@ fn command_unpack(arguments: Vec<OsString>) -> Result<()> {
             let (report, stream) = unpack_stream(
                 file,
                 &destination,
-                ExtractionPolicy::default(),
+                extraction_policy,
                 bootstrap_sequential_limits(),
             )?;
             (report, Some(stream))
         }
-        Source::Path(path) => (
-            unpack(&read(path)?, &destination, ExtractionPolicy::default())?,
-            None,
-        ),
+        Source::Path(path) => (unpack(&read(path)?, &destination, extraction_policy)?, None),
     };
     status.line(format!(
         "OK unpacked {} entries and {} logical bytes into {}",
@@ -2419,6 +2419,11 @@ fn command_unpack(arguments: Vec<OsString>) -> Result<()> {
             ConfinementMode::WeakerReported => "weaker platform mode (reported)",
         }
     ));
+    report_metadata_restoration(&status, &report);
+    Ok(())
+}
+
+fn report_metadata_restoration(status: &Status, report: &entrybound::archive::ExtractionReport) {
     if report.metadata_not_restored.is_empty() {
         status.line("metadata restored: all represented and platform-supported items");
     } else {
@@ -2427,7 +2432,50 @@ fn command_unpack(arguments: Vec<OsString>) -> Result<()> {
             report.metadata_not_restored.join("; ")
         ));
     }
-    Ok(())
+}
+
+fn parse_unpack_arguments(arguments: Vec<OsString>) -> Result<(ReadArguments, ExtractionPolicy)> {
+    let mut filtered = Vec::new();
+    let mut policy = ExtractionPolicy::default();
+    let mut cursor = 0_usize;
+    while cursor < arguments.len() {
+        let value = &arguments[cursor];
+        if value == "--symlinks" {
+            cursor += 1;
+            policy = policy.with_symlinks(
+                match arguments.get(cursor).and_then(|value| value.to_str()) {
+                    Some("refuse") => SymlinkPolicy::Refuse,
+                    Some("safe") => SymlinkPolicy::Safe,
+                    Some("all") => SymlinkPolicy::All,
+                    _ => return Err(usage("--symlinks requires refuse, safe, or all")),
+                },
+            );
+        } else if value == "--restore-owner" {
+            policy = policy.with_ownership(OwnershipPolicy::Restore);
+        } else if value == "--xattrs" {
+            cursor += 1;
+            policy = policy.with_xattrs(
+                match arguments.get(cursor).and_then(|value| value.to_str()) {
+                    Some("ignore") => XAttrPolicy::Ignore,
+                    Some("restore") => XAttrPolicy::Restore,
+                    _ => return Err(usage("--xattrs requires ignore or restore")),
+                },
+            );
+        } else if value == "--sparse" {
+            cursor += 1;
+            policy = policy.with_sparse(
+                match arguments.get(cursor).and_then(|value| value.to_str()) {
+                    Some("logical") => SparsePolicy::Logical,
+                    Some("restore") => SparsePolicy::Restore,
+                    _ => return Err(usage("--sparse requires logical or restore")),
+                },
+            );
+        } else {
+            filtered.push(value.clone());
+        }
+        cursor += 1;
+    }
+    Ok((parse_read_arguments("unpack", filtered, false)?, policy))
 }
 
 // ---------------------------------------------------------------------------
@@ -3110,6 +3158,7 @@ fn command_list(arguments: Vec<OsString>) -> Result<()> {
             let kind = match entry.kind() {
                 EntryKind::Directory => "directory",
                 EntryKind::File => "file",
+                EntryKind::Symlink => "symlink",
             };
             println!("{kind}\t{}", entry.path());
         }
@@ -3126,6 +3175,7 @@ fn command_list(arguments: Vec<OsString>) -> Result<()> {
         let kind = match entry.kind {
             EntryKind::Directory => "directory",
             EntryKind::File => "file",
+            EntryKind::Symlink => "symlink",
         };
         println!("{kind}\t{}", entry.path);
     }
@@ -4900,7 +4950,8 @@ pub fn main_entry() -> ExitCode {
 
 #[cfg(test)]
 mod tests {
-    use super::run;
+    use super::{parse_unpack_arguments, run};
+    use entrybound::archive::{OwnershipPolicy, SparsePolicy, SymlinkPolicy, XAttrPolicy};
     use entrybound::diagnostics::ReasonCode;
     use std::ffi::OsString;
     use std::sync::atomic::{AtomicU64, Ordering};
@@ -4909,6 +4960,28 @@ mod tests {
 
     fn args(values: &[&str]) -> Vec<OsString> {
         values.iter().map(OsString::from).collect()
+    }
+
+    #[test]
+    fn unpack_metadata_policies_are_explicit() {
+        let (parsed, policy) = parse_unpack_arguments(args(&[
+            "archive.eb",
+            "destination",
+            "--symlinks",
+            "all",
+            "--restore-owner",
+            "--xattrs",
+            "restore",
+            "--sparse",
+            "restore",
+        ]))
+        .unwrap();
+
+        assert_eq!(parsed.positionals, args(&["archive.eb", "destination"]));
+        assert_eq!(policy.symlinks(), SymlinkPolicy::All);
+        assert_eq!(policy.ownership(), OwnershipPolicy::Restore);
+        assert_eq!(policy.xattrs(), XAttrPolicy::Restore);
+        assert_eq!(policy.sparse(), SparsePolicy::Restore);
     }
 
     fn store_zip(name: &[u8], content: &[u8]) -> Vec<u8> {

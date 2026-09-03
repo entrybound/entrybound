@@ -73,7 +73,7 @@ fn filesystem_round_trip_is_deterministic_and_complete() {
     else {
         panic!("large.bin was not a file")
     };
-    assert!(opened.archive.content_store.objects[&digest].chunks.len() > 1);
+    assert!(opened.archive.content_store.objects[digest].chunks.len() > 1);
 
     let destination = fixture.path.join("restored");
     let report = unpack(&first.bytes, &destination, ExtractionPolicy::default()).unwrap();
@@ -256,15 +256,25 @@ fn partial_failure_never_overwrites_preexisting_files() {
 
 #[cfg(unix)]
 #[test]
-fn pack_rejects_symlinks_without_following_them() {
+fn pack_captures_symlinks_without_following_them() {
     let fixture = Fixture::new("symlink");
     let source = fixture.path.join("source");
     fs::create_dir(&source).unwrap();
-    fs::write(source.join("target"), b"target").unwrap();
-    std::os::unix::fs::symlink("target", source.join("link")).unwrap();
-    let error = pack_directory(&source, PackOptions::default()).unwrap_err();
-    assert_eq!(error.class(), OutcomeClass::Unsupported);
-    assert_eq!(error.code(), ReasonCode::UnsupportedEntryKind);
+    std::os::unix::fs::symlink("../missing-outside-source", source.join("link")).unwrap();
+
+    let packed = pack_directory(&source, PackOptions::default()).unwrap();
+    let opened = open(&packed.bytes).unwrap();
+    let link = opened
+        .archive
+        .entry_set
+        .entries()
+        .iter()
+        .find(|entry| entry.path().to_string() == "link")
+        .unwrap();
+    let EntryData::Symlink { target } = link.data() else {
+        panic!("source symlink was not preserved as a Symlink Entry");
+    };
+    assert_eq!(target.bytes(), b"../missing-outside-source");
 }
 
 fn create_full_source(source: &Path) {

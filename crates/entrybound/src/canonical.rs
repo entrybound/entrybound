@@ -59,9 +59,9 @@ impl RecordBuilder {
 
     /// Constructs one explicitly versioned canonical record.
     ///
-    /// Version 2 is currently assigned only to Descriptor record kind 1. The
-    /// ordinary constructor remains frozen to version 1 for every historical
-    /// writer.
+    /// Version 2 is assigned only to Descriptor (1), Entry (3), and
+    /// MetadataItem (8). The ordinary constructor remains frozen to version 1
+    /// for every historical writer.
     pub(crate) const fn new_version(kind: u16, version: u16) -> Self {
         Self {
             kind,
@@ -139,7 +139,7 @@ impl RecordBuilder {
     pub(crate) fn finish(self) -> Result<Vec<u8>> {
         if self.version == 0
             || self.version > RECORD_VERSION_V2
-            || (self.version == RECORD_VERSION_V2 && self.kind != 1)
+            || (self.version == RECORD_VERSION_V2 && !matches!(self.kind, 1 | 3 | 8))
         {
             return Err(noncanonical("unsupported canonical record version"));
         }
@@ -286,7 +286,10 @@ pub(crate) fn decode_record(input: &[u8]) -> Result<(Record<'_>, usize)> {
     }
     let kind = u16::from_be_bytes(exact(&input[0..2])?);
     let version = u16::from_be_bytes(exact(&input[2..4])?);
-    if version == 0 || version > RECORD_VERSION_V2 || (version == RECORD_VERSION_V2 && kind != 1) {
+    if version == 0
+        || version > RECORD_VERSION_V2
+        || (version == RECORD_VERSION_V2 && !matches!(kind, 1 | 3 | 8))
+    {
         return Err(noncanonical("unsupported canonical record version"));
     }
     if input[4..8] != [0; 4] {
@@ -471,13 +474,16 @@ mod tests {
     }
 
     #[test]
-    fn only_descriptor_may_use_record_version_two() {
-        let mut descriptor = RecordBuilder::new_version(1, 2);
-        descriptor.u8(1, 7).unwrap();
-        let bytes = descriptor.finish().unwrap();
-        let (record, _) = decode_record(&bytes).unwrap();
-        assert_eq!(record.kind, 1);
-        assert_eq!(record.version, 2);
+    fn record_version_two_is_narrowly_assigned() {
+        let mut bytes = Vec::new();
+        for kind in [1, 3, 8] {
+            let mut builder = RecordBuilder::new_version(kind, 2);
+            builder.u8(1, 7).unwrap();
+            bytes = builder.finish().unwrap();
+            let (record, _) = decode_record(&bytes).unwrap();
+            assert_eq!(record.kind, kind);
+            assert_eq!(record.version, 2);
+        }
 
         let mut unrelated = RecordBuilder::new_version(2, 2);
         unrelated.u8(1, 7).unwrap();

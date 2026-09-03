@@ -361,8 +361,8 @@ impl RandomAccessArchive {
         let content_id = match entry.data() {
             EntryData::File {
                 content: ContentRef::Internal(digest),
-            } => digest,
-            EntryData::Directory => {
+            } => *digest,
+            EntryData::Directory | EntryData::Symlink { .. } => {
                 return Err(Diagnostic::new(
                     OutcomeClass::Unsupported,
                     ReasonCode::RandomAccessEntryNotFile,
@@ -370,6 +370,7 @@ impl RandomAccessArchive {
                 ));
             }
         };
+        let sparse_map = entry.metadata().sparse_map().cloned();
         let object = self
             .metadata
             .content_objects
@@ -593,6 +594,9 @@ impl RandomAccessArchive {
                 ReasonCode::ContentDigestMismatch,
                 object.logical_digest.to_string(),
             ));
+        }
+        if let Some(map) = sparse_map {
+            map.validate_plaintext(&output)?;
         }
         self.session.check_stable()?;
         let report = self.report(
@@ -1151,7 +1155,7 @@ fn verify_manifest_references(
         if let EntryData::File {
             content: ContentRef::Internal(digest),
         } = entry.data()
-            && !objects.contains_key(&digest)
+            && !objects.contains_key(digest)
         {
             return Err(dependency(format!(
                 "Entry references unknown ContentObject {digest}"
@@ -1338,8 +1342,8 @@ mod tests {
             .and_then(|entry| match entry.data() {
                 crate::eam::EntryData::File {
                     content: crate::eam::ContentRef::Internal(content),
-                } => planned.content_store.objects.get(&content),
-                crate::eam::EntryData::Directory => None,
+                } => planned.content_store.objects.get(content),
+                crate::eam::EntryData::Directory | crate::eam::EntryData::Symlink { .. } => None,
             })
             .unwrap()
             .chunks[0]

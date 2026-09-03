@@ -81,11 +81,12 @@ impl Layout {
     }
 }
 
-/// The entry kinds supported by the first native slice.
+/// Native entry kinds. Hardlinks remain ordinary Files with auxiliary group metadata.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum EntryKind {
     Directory,
     File,
+    Symlink,
 }
 
 /// The only content reference form supported by a Complete bootstrap archive.
@@ -158,11 +159,269 @@ impl Timestamp {
     }
 }
 
-/// Closed metadata names implemented by this slice.
+/// Canonical encoding for one symbolic-link target.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LinkTargetEncoding {
+    Utf8,
+    PosixBytes,
+}
+
+/// Exact symbolic-link target bytes. A target is not a LogicalPath.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LinkTarget {
+    encoding: LinkTargetEncoding,
+    bytes: Box<[u8]>,
+}
+
+impl LinkTarget {
+    /// Constructs a canonical target. Valid UTF-8 must use the UTF8 encoding.
+    pub fn new(bytes: impl Into<Box<[u8]>>, encoding: LinkTargetEncoding) -> Result<Self> {
+        let bytes = bytes.into();
+        if bytes.len() > 1024 * 1024 {
+            return Err(Diagnostic::new(
+                OutcomeClass::PolicyRefused,
+                ReasonCode::ResourceLimit,
+                "symlink target exceeds the 1 MiB format bound",
+            ));
+        }
+        if bytes.contains(&0) {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidSymlinkTarget,
+                "symlink target contains NUL",
+            ));
+        }
+        match (encoding, std::str::from_utf8(&bytes).is_ok()) {
+            (LinkTargetEncoding::Utf8, false) => {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidSymlinkTarget,
+                    "UTF8 symlink target contains invalid UTF-8",
+                ));
+            }
+            (LinkTargetEncoding::PosixBytes, true) => {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::NoncanonicalEncoding,
+                    "valid UTF-8 symlink targets must use the UTF8 encoding",
+                ));
+            }
+            _ => {}
+        }
+        Ok(Self { encoding, bytes })
+    }
+
+    /// Selects the one canonical encoding for exact target bytes.
+    pub fn canonical(bytes: impl Into<Box<[u8]>>) -> Result<Self> {
+        let bytes = bytes.into();
+        let encoding = if std::str::from_utf8(&bytes).is_ok() {
+            LinkTargetEncoding::Utf8
+        } else {
+            LinkTargetEncoding::PosixBytes
+        };
+        Self::new(bytes, encoding)
+    }
+
+    #[must_use]
+    pub const fn encoding(&self) -> LinkTargetEncoding {
+        self.encoding
+    }
+
+    #[must_use]
+    pub fn bytes(&self) -> &[u8] {
+        &self.bytes
+    }
+}
+
+/// One exact POSIX extended attribute.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct XAttr {
+    name: Box<[u8]>,
+    value: Box<[u8]>,
+}
+
+impl XAttr {
+    pub const MAX_NAME_BYTES: usize = 255;
+    pub const MAX_VALUE_BYTES: usize = 16 * 1024 * 1024;
+
+    pub fn new(name: impl Into<Box<[u8]>>, value: impl Into<Box<[u8]>>) -> Result<Self> {
+        let name = name.into();
+        let value = value.into();
+        if name.is_empty() || name.len() > Self::MAX_NAME_BYTES || name.contains(&0) {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidXattr,
+                "xattr name must be nonempty, NUL-free, and at most 255 bytes",
+            ));
+        }
+        if value.len() > Self::MAX_VALUE_BYTES {
+            return Err(Diagnostic::new(
+                OutcomeClass::PolicyRefused,
+                ReasonCode::ResourceLimit,
+                "xattr value exceeds the 16 MiB format bound",
+            ));
+        }
+        Ok(Self { name, value })
+    }
+
+    #[must_use]
+    pub fn name(&self) -> &[u8] {
+        &self.name
+    }
+
+    #[must_use]
+    pub fn value(&self) -> &[u8] {
+        &self.value
+    }
+}
+
+/// One allocated data extent in a sparse file.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct SparseExtent {
+    pub offset: u64,
+    pub length: u64,
+}
+
+/// Canonical sparse topology for one full logical ContentObject.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SparseMap {
+    logical_size: u64,
+    extents: Box<[SparseExtent]>,
+}
+
+impl SparseMap {
+    pub const MAX_EXTENTS: usize = 1_000_000;
+
+    pub fn new(logical_size: u64, extents: Vec<SparseExtent>) -> Result<Self> {
+        if extents.len() > Self::MAX_EXTENTS {
+            return Err(Diagnostic::new(
+                OutcomeClass::PolicyRefused,
+                ReasonCode::ResourceLimit,
+                "sparse extent count exceeds the format bound",
+            ));
+        }
+        let mut previous_end = 0_u64;
+        for (index, extent) in extents.iter().enumerate() {
+            let end = extent.offset.checked_add(extent.length).ok_or_else(|| {
+                Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidSparseMap,
+                    "sparse extent overflows u64",
+                )
+            })?;
+            if extent.length == 0
+                || end > logical_size
+                || index > 0 && extent.offset <= previous_end
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidSparseMap,
+                    "sparse extents must be nonzero, ordered, nonoverlapping, nonadjacent, and in range",
+                ));
+            }
+            previous_end = end;
+        }
+        Ok(Self {
+            logical_size,
+            extents: extents.into_boxed_slice(),
+        })
+    }
+
+    #[must_use]
+    pub const fn logical_size(&self) -> u64 {
+        self.logical_size
+    }
+
+    #[must_use]
+    pub fn extents(&self) -> &[SparseExtent] {
+        &self.extents
+    }
+
+    /// Verifies that one logical byte range agrees with the declared holes.
+    pub fn validate_range(&self, offset: u64, bytes: &[u8]) -> Result<()> {
+        let end = offset
+            .checked_add(u64::try_from(bytes.len()).unwrap_or(u64::MAX))
+            .ok_or_else(|| {
+                Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidSparseMap,
+                    "sparse validation range overflows u64",
+                )
+            })?;
+        if end > self.logical_size {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidSparseMap,
+                "sparse validation range exceeds logical size",
+            ));
+        }
+        let require_zero = |start: u64, hole_end: u64| -> Result<()> {
+            let local_start = usize::try_from(start - offset).map_err(|_| {
+                Diagnostic::new(
+                    OutcomeClass::PolicyRefused,
+                    ReasonCode::ResourceLimit,
+                    "sparse validation offset exceeds usize",
+                )
+            })?;
+            let local_end = usize::try_from(hole_end - offset).map_err(|_| {
+                Diagnostic::new(
+                    OutcomeClass::PolicyRefused,
+                    ReasonCode::ResourceLimit,
+                    "sparse validation offset exceeds usize",
+                )
+            })?;
+            if bytes[local_start..local_end].iter().any(|byte| *byte != 0) {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Corrupt,
+                    ReasonCode::InvalidSparseMap,
+                    "sparse map declares a hole containing a nonzero logical byte",
+                ));
+            }
+            Ok(())
+        };
+        let mut cursor = offset;
+        for extent in &self.extents {
+            let extent_end = extent.offset + extent.length;
+            if extent_end <= cursor {
+                continue;
+            }
+            if extent.offset >= end {
+                break;
+            }
+            let data_start = extent.offset.max(cursor);
+            require_zero(cursor, data_start)?;
+            cursor = extent_end.min(end);
+            if cursor == end {
+                return Ok(());
+            }
+        }
+        require_zero(cursor, end)
+    }
+
+    /// Verifies one complete logical file against this topology.
+    pub fn validate_plaintext(&self, bytes: &[u8]) -> Result<()> {
+        if u64::try_from(bytes.len()).unwrap_or(u64::MAX) != self.logical_size {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidSparseMap,
+                "sparse map logical size differs from file content",
+            ));
+        }
+        self.validate_range(0, bytes)
+    }
+}
+
+/// Closed metadata names implemented by native metadata v2.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum MetadataName {
     CoreExecutable,
     CoreMtime,
+    PosixMode,
+    PosixUid,
+    PosixGid,
+    PosixHardlinkGroup,
+    PosixXattrs,
+    PosixSparseMap,
 }
 
 impl MetadataName {
@@ -171,6 +430,12 @@ impl MetadataName {
         match self {
             Self::CoreExecutable => "core.executable",
             Self::CoreMtime => "core.mtime",
+            Self::PosixMode => "posix.mode",
+            Self::PosixUid => "posix.uid",
+            Self::PosixGid => "posix.gid",
+            Self::PosixHardlinkGroup => "posix.hardlink-group",
+            Self::PosixXattrs => "posix.xattrs",
+            Self::PosixSparseMap => "posix.sparse-map",
         }
     }
 
@@ -180,11 +445,17 @@ impl MetadataName {
     }
 }
 
-/// Typed values supported by the initial metadata registry.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+/// Typed values supported by the metadata-v2 registry.
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MetadataValue {
     Bool(bool),
     Timestamp(Timestamp),
+    PosixMode(u32),
+    PosixUid(u32),
+    PosixGid(u32),
+    HardlinkGroup(Digest),
+    Xattrs(Box<[XAttr]>),
+    SparseMap(SparseMap),
 }
 
 /// Whether an unaware reader may ignore a metadata item.
@@ -202,7 +473,7 @@ pub enum Restorability {
 }
 
 /// One typed item in a MetadataSet.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MetadataItem {
     name: MetadataName,
     value: MetadataValue,
@@ -232,22 +503,99 @@ impl MetadataItem {
     }
 
     #[must_use]
-    pub const fn name(self) -> MetadataName {
+    pub const fn posix_mode(value: u32) -> Self {
+        Self {
+            name: MetadataName::PosixMode,
+            value: MetadataValue::PosixMode(value & 0o7777),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        }
+    }
+
+    #[must_use]
+    pub const fn posix_uid(value: u32) -> Self {
+        Self {
+            name: MetadataName::PosixUid,
+            value: MetadataValue::PosixUid(value),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        }
+    }
+
+    #[must_use]
+    pub const fn posix_gid(value: u32) -> Self {
+        Self {
+            name: MetadataName::PosixGid,
+            value: MetadataValue::PosixGid(value),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        }
+    }
+
+    #[must_use]
+    pub const fn hardlink_group(value: Digest) -> Self {
+        Self {
+            name: MetadataName::PosixHardlinkGroup,
+            value: MetadataValue::HardlinkGroup(value),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        }
+    }
+
+    pub fn xattrs(mut value: Vec<XAttr>) -> Result<Self> {
+        if value.len() > 4096 {
+            return Err(Diagnostic::new(
+                OutcomeClass::PolicyRefused,
+                ReasonCode::ResourceLimit,
+                "xattr count exceeds the per-entry format bound",
+            ));
+        }
+        value.sort();
+        if value
+            .windows(2)
+            .any(|pair| pair[0].name() == pair[1].name())
+        {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::DuplicateXattr,
+                "xattr names must be unique",
+            ));
+        }
+        Ok(Self {
+            name: MetadataName::PosixXattrs,
+            value: MetadataValue::Xattrs(value.into_boxed_slice()),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        })
+    }
+
+    #[must_use]
+    pub const fn sparse_map(value: SparseMap) -> Self {
+        Self {
+            name: MetadataName::PosixSparseMap,
+            value: MetadataValue::SparseMap(value),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        }
+    }
+
+    #[must_use]
+    pub const fn name(&self) -> MetadataName {
         self.name
     }
 
     #[must_use]
-    pub const fn value(self) -> MetadataValue {
-        self.value
+    pub const fn value(&self) -> &MetadataValue {
+        &self.value
     }
 
     #[must_use]
-    pub const fn criticality(self) -> Criticality {
+    pub const fn criticality(&self) -> Criticality {
         self.criticality
     }
 
     #[must_use]
-    pub const fn restorability(self) -> Restorability {
+    pub const fn restorability(&self) -> Restorability {
         self.restorability
     }
 }
@@ -261,7 +609,7 @@ pub struct MetadataSet {
 impl MetadataSet {
     /// Constructs a canonical MetadataSet and rejects duplicate declarations.
     pub fn new(mut items: Vec<MetadataItem>) -> Result<Self> {
-        items.sort_by_key(|item| item.name());
+        items.sort_by_key(MetadataItem::name);
         if items
             .windows(2)
             .any(|pair| pair[0].name() == pair[1].name())
@@ -282,6 +630,13 @@ impl MetadataSet {
         &self.items
     }
 
+    /// Returns a new canonical set containing one additional unique item.
+    pub fn with_item(&self, item: MetadataItem) -> Result<Self> {
+        let mut items = self.items.to_vec();
+        items.push(item);
+        Self::new(items)
+    }
+
     #[must_use]
     pub fn executable(&self) -> bool {
         self.items
@@ -289,7 +644,7 @@ impl MetadataSet {
             .find_map(|item| {
                 (item.name == MetadataName::CoreExecutable).then_some(match item.value {
                     MetadataValue::Bool(value) => value,
-                    MetadataValue::Timestamp(_) => false,
+                    _ => false,
                 })
             })
             .unwrap_or(false)
@@ -299,11 +654,72 @@ impl MetadataSet {
     pub fn mtime(&self) -> Option<Timestamp> {
         self.items.iter().find_map(|item| {
             if item.name == MetadataName::CoreMtime
-                && let MetadataValue::Timestamp(value) = item.value
+                && let MetadataValue::Timestamp(value) = &item.value
             {
-                return Some(value);
+                return Some(*value);
             }
             None
+        })
+    }
+
+    #[must_use]
+    pub fn posix_mode(&self) -> Option<u32> {
+        self.items.iter().find_map(|item| match item.value() {
+            MetadataValue::PosixMode(value) => Some(*value),
+            _ => None,
+        })
+    }
+
+    #[must_use]
+    pub fn posix_uid(&self) -> Option<u32> {
+        self.items.iter().find_map(|item| match item.value() {
+            MetadataValue::PosixUid(value) => Some(*value),
+            _ => None,
+        })
+    }
+
+    #[must_use]
+    pub fn posix_gid(&self) -> Option<u32> {
+        self.items.iter().find_map(|item| match item.value() {
+            MetadataValue::PosixGid(value) => Some(*value),
+            _ => None,
+        })
+    }
+
+    #[must_use]
+    pub fn hardlink_group(&self) -> Option<Digest> {
+        self.items.iter().find_map(|item| match item.value() {
+            MetadataValue::HardlinkGroup(value) => Some(*value),
+            _ => None,
+        })
+    }
+
+    #[must_use]
+    pub fn xattrs(&self) -> &[XAttr] {
+        self.items
+            .iter()
+            .find_map(|item| match item.value() {
+                MetadataValue::Xattrs(value) => Some(value.as_ref()),
+                _ => None,
+            })
+            .unwrap_or_default()
+    }
+
+    #[must_use]
+    pub fn sparse_map(&self) -> Option<&SparseMap> {
+        self.items.iter().find_map(|item| match item.value() {
+            MetadataValue::SparseMap(value) => Some(value),
+            _ => None,
+        })
+    }
+
+    #[must_use]
+    pub fn uses_posix_v1(&self) -> bool {
+        self.items.iter().any(|item| {
+            !matches!(
+                item.name(),
+                MetadataName::CoreExecutable | MetadataName::CoreMtime
+            )
         })
     }
 }
@@ -316,10 +732,11 @@ pub struct EntryIdentity {
 }
 
 /// Kind-specific Entry data. This prevents directories from carrying content.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum EntryData {
     Directory,
     File { content: ContentRef },
+    Symlink { target: LinkTarget },
 }
 
 /// The sole authority for one archived object.
@@ -353,15 +770,16 @@ impl Entry {
     }
 
     #[must_use]
-    pub const fn data(&self) -> EntryData {
-        self.data
+    pub const fn data(&self) -> &EntryData {
+        &self.data
     }
 
     #[must_use]
     pub const fn kind(&self) -> EntryKind {
-        match self.data {
+        match &self.data {
             EntryData::Directory => EntryKind::Directory,
             EntryData::File { .. } => EntryKind::File,
+            EntryData::Symlink { .. } => EntryKind::Symlink,
         }
     }
 
@@ -373,6 +791,15 @@ impl Entry {
     #[must_use]
     pub const fn identity(&self) -> EntryIdentity {
         self.identity
+    }
+
+    #[must_use]
+    pub fn uses_posix_v1(&self) -> bool {
+        matches!(&self.data, EntryData::Symlink { .. }) || self.metadata.uses_posix_v1()
+    }
+
+    pub(crate) fn replace_metadata(&mut self, metadata: MetadataSet) {
+        self.metadata = metadata;
     }
 }
 
@@ -780,4 +1207,94 @@ pub struct Archive {
     /// Optional exact foreign-source snapshot and structured LOM evidence.
     pub preservation: Option<LegacyPreservation>,
     pub index: Index,
+}
+
+#[cfg(test)]
+mod posix_tests {
+    use super::{LinkTarget, LinkTargetEncoding, MetadataItem, SparseExtent, SparseMap, XAttr};
+    use crate::diagnostics::ReasonCode;
+
+    #[test]
+    fn link_target_encoding_has_one_canonical_form() {
+        assert_eq!(
+            LinkTarget::canonical(b"../absolute/semantics-are-preserved".to_vec())
+                .unwrap()
+                .encoding(),
+            LinkTargetEncoding::Utf8
+        );
+        assert_eq!(
+            LinkTarget::canonical(vec![0xff, b'/', b'x'])
+                .unwrap()
+                .encoding(),
+            LinkTargetEncoding::PosixBytes
+        );
+        assert_eq!(
+            LinkTarget::new(b"valid".to_vec(), LinkTargetEncoding::PosixBytes)
+                .unwrap_err()
+                .code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+        assert_eq!(
+            LinkTarget::new(vec![0xff], LinkTargetEncoding::Utf8)
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidSymlinkTarget
+        );
+        assert_eq!(
+            LinkTarget::canonical(b"bad\0target".to_vec())
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidSymlinkTarget
+        );
+    }
+
+    #[test]
+    fn xattrs_and_sparse_extents_are_closed_and_canonical() {
+        let duplicate = MetadataItem::xattrs(vec![
+            XAttr::new(b"user.a".to_vec(), b"one".to_vec()).unwrap(),
+            XAttr::new(b"user.a".to_vec(), b"two".to_vec()).unwrap(),
+        ])
+        .unwrap_err();
+        assert_eq!(duplicate.code(), ReasonCode::DuplicateXattr);
+        assert_eq!(
+            XAttr::new(Vec::<u8>::new(), Vec::<u8>::new())
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidXattr
+        );
+        for extents in [
+            vec![SparseExtent {
+                offset: 0,
+                length: 0,
+            }],
+            vec![
+                SparseExtent {
+                    offset: 0,
+                    length: 4,
+                },
+                SparseExtent {
+                    offset: 4,
+                    length: 2,
+                },
+            ],
+            vec![SparseExtent {
+                offset: 8,
+                length: 4,
+            }],
+        ] {
+            assert_eq!(
+                SparseMap::new(10, extents).unwrap_err().code(),
+                ReasonCode::InvalidSparseMap
+            );
+        }
+        let all_hole = SparseMap::new(8, Vec::new()).unwrap();
+        all_hole.validate_plaintext(&[0; 8]).unwrap();
+        assert_eq!(
+            all_hole
+                .validate_plaintext(&[0, 0, 1, 0, 0, 0, 0, 0])
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidSparseMap
+        );
+    }
 }

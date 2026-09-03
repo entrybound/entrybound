@@ -345,7 +345,7 @@ fn object_for_path<'a>(archive: &'a Archive, path: &str) -> &'a entrybound::eam:
     else {
         panic!("expected file")
     };
-    &archive.content_store.objects[&digest]
+    &archive.content_store.objects[digest]
 }
 
 fn assert_shared_store_chunk_corruption_is_detected(bytes: &[u8], archive: &Archive) {
@@ -368,8 +368,8 @@ fn assert_shared_store_chunk_corruption_is_detected(bytes: &[u8], archive: &Arch
         .filter_map(|entry| match entry.data() {
             EntryData::File {
                 content: ContentRef::Internal(digest),
-            } => Some(&archive.content_store.objects[&digest]),
-            EntryData::Directory => None,
+            } => Some(&archive.content_store.objects[digest]),
+            EntryData::Directory | EntryData::Symlink { .. } => None,
         })
         .flat_map(|object| object.chunks.iter())
         .filter(|reference| reference.chunk_id == chunk_id)

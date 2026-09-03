@@ -45,10 +45,10 @@ fn selected_multi_chunk_jpeg_region_is_exact_deterministic_and_identity_neutral(
             EntryData::File {
                 content: ContentRef::Internal(digest),
             } => Some(digest),
-            EntryData::Directory => None,
+            EntryData::Directory | EntryData::Symlink { .. } => None,
         })
         .unwrap();
-    assert!(baseline.content_store.objects[&image_object].chunks.len() > 1);
+    assert!(baseline.content_store.objects[image_object].chunks.len() > 1);
 
     let mut ordinary = baseline.clone();
     plan_archive_v5(&mut ordinary, CompressionProfile::Dense).unwrap();

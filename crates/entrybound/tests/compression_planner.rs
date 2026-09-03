@@ -62,7 +62,7 @@ fn planner_selects_codecs_per_chunk_and_round_trips_exactly() {
     else {
         panic!("mixed fixture was not a file")
     };
-    let object = &opened.archive.content_store.objects[&object_id];
+    let object = &opened.archive.content_store.objects[object_id];
     let selected = object
         .chunks
         .iter()

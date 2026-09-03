@@ -15,10 +15,10 @@ use crate::archive::plan_observed_archive;
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     Archive, ContentRef, ConversionProvenance, ConversionResolution, Entry, EntryData,
-    EntryIdentity, FidelityIssue, FidelityReport, LogicalPath, MetadataItem, MetadataSet,
-    Timestamp, TimestampPrecision,
+    EntryIdentity, FidelityIssue, FidelityReport, LinkTarget, LogicalPath, MetadataItem,
+    MetadataSet, Timestamp, TimestampPrecision,
 };
-use crate::identity::sha256_exact;
+use crate::identity::{hardlink_group_id, sha256_exact};
 use crate::planner::CompressionProfile;
 
 const BLOCK: usize = 512;
@@ -140,6 +140,8 @@ struct ObservedTarEntry {
     header_name: Box<[u8]>,
     header_linkname: Box<[u8]>,
     header_mode: u64,
+    header_uid: u64,
+    header_gid: u64,
     header_mtime: i64,
     typeflag: u8,
     global_pax: BTreeMap<String, PaxClaim>,
@@ -149,11 +151,22 @@ struct ObservedTarEntry {
 }
 
 #[derive(Clone, Debug)]
+enum ResolvedKind {
+    Directory,
+    File,
+    Symlink(LinkTarget),
+    Hardlink(LogicalPath),
+}
+
+#[derive(Clone, Debug)]
 struct ResolvedEntry {
     path: LogicalPath,
     components: Vec<String>,
-    directory: bool,
+    kind: ResolvedKind,
     executable: bool,
+    mode: u32,
+    uid: u32,
+    gid: u32,
     mtime: Timestamp,
     plaintext: Box<[u8]>,
 }
@@ -342,13 +355,7 @@ pub fn observe(source: &[u8], policy: TarImportPolicy) -> Result<TarObservation>
         ];
         observation_count =
             observation_count.saturating_add(u64::try_from(fields.len()).unwrap_or(u64::MAX));
-        unsupported_metadata.extend([
-            "tar.uid".to_owned(),
-            "tar.gid".to_owned(),
-            "tar.uname".to_owned(),
-            "tar.gname".to_owned(),
-            "tar.mode-non-executable".to_owned(),
-        ]);
+        unsupported_metadata.extend(["tar.uname".to_owned(), "tar.gname".to_owned()]);
         let payload = &source[payload_offset..payload_offset + payload_size];
         match typeflag {
             b'g' | b'x' => {
@@ -506,6 +513,8 @@ pub fn observe(source: &[u8], policy: TarImportPolicy) -> Result<TarObservation>
                     header_name,
                     header_linkname: linkname,
                     header_mode: mode,
+                    header_uid: uid,
+                    header_gid: gid,
                     header_mtime: mtime,
                     typeflag,
                     global_pax: global_pax.clone(),
@@ -611,7 +620,7 @@ pub fn resolve_strict(
             u64::try_from(resolutions.len()).unwrap_or(u64::MAX) <= policy.max_resolutions,
             "tar resolutions exceed policy",
         )?;
-        if !item.directory {
+        if matches!(item.kind, ResolvedKind::File) {
             total_bytes = total_bytes
                 .checked_add(u64::try_from(item.plaintext.len()).unwrap_or(u64::MAX))
                 .ok_or_else(|| policy_error("tar total file bytes overflow"))?;
@@ -634,7 +643,7 @@ pub fn resolve_strict(
     }
     let mut kinds = by_path
         .iter()
-        .map(|(path, entry)| (path.clone(), entry.directory))
+        .map(|(path, entry)| (path.clone(), matches!(entry.kind, ResolvedKind::Directory)))
         .collect::<BTreeMap<_, _>>();
     let mut synthesized = BTreeSet::new();
     for entry in by_path.values() {
@@ -680,30 +689,108 @@ pub fn resolve_strict(
             )
         })
         .collect::<Vec<_>>();
+    let mut hardlink_sets = BTreeMap::<LogicalPath, Vec<LogicalPath>>::new();
+    for item in by_path.values() {
+        if let ResolvedKind::Hardlink(target) = &item.kind {
+            let target_entry = by_path.get(target).ok_or_else(|| {
+                irreconcilable(format!(
+                    "tar hardlink {} references missing target {target}",
+                    item.path
+                ))
+            })?;
+            if !matches!(target_entry.kind, ResolvedKind::File) {
+                return Err(irreconcilable(format!(
+                    "tar hardlink {} does not reference a regular file",
+                    item.path
+                )));
+            }
+            hardlink_sets
+                .entry(target.clone())
+                .or_insert_with(|| vec![target.clone()])
+                .push(item.path.clone());
+        }
+    }
+    let mut group_by_path = BTreeMap::<LogicalPath, crate::eam::Digest>::new();
+    for (target, mut paths) in hardlink_sets {
+        paths.sort();
+        paths.dedup();
+        let target_entry = &by_path[&target];
+        for path in &paths {
+            let member = &by_path[path];
+            if member.executable != target_entry.executable
+                || member.mode != target_entry.mode
+                || member.uid != target_entry.uid
+                || member.gid != target_entry.gid
+                || member.mtime != target_entry.mtime
+            {
+                return Err(divergence(format!(
+                    "tar hardlink metadata for {path} disagrees with target {target}"
+                )));
+            }
+        }
+        let content = sha256_exact(&target_entry.plaintext);
+        let group = hardlink_group_id(content, &paths)?;
+        for path in paths {
+            group_by_path.insert(path, group);
+        }
+    }
+
     let mut files = Vec::new();
-    for item in by_path.into_values() {
-        let metadata = MetadataSet::new(vec![
+    for item in by_path.values() {
+        let mut metadata_items = vec![
             MetadataItem::executable(item.executable),
             MetadataItem::mtime(item.mtime),
-        ])?;
-        if item.directory {
-            entries.push(Entry::new(
-                item.path,
-                EntryData::Directory,
-                metadata,
-                EntryIdentity::default(),
-            ));
-        } else {
-            let digest = sha256_exact(&item.plaintext);
-            entries.push(Entry::new(
-                item.path,
-                EntryData::File {
-                    content: ContentRef::Internal(digest),
-                },
-                metadata,
-                EntryIdentity::default(),
-            ));
-            files.push(item.plaintext);
+            MetadataItem::posix_mode(item.mode),
+            MetadataItem::posix_uid(item.uid),
+            MetadataItem::posix_gid(item.gid),
+        ];
+        if let Some(group) = group_by_path.get(&item.path) {
+            metadata_items.push(MetadataItem::hardlink_group(*group));
+        }
+        let metadata = MetadataSet::new(metadata_items)?;
+        match &item.kind {
+            ResolvedKind::Directory => {
+                entries.push(Entry::new(
+                    item.path.clone(),
+                    EntryData::Directory,
+                    metadata,
+                    EntryIdentity::default(),
+                ));
+            }
+            ResolvedKind::File => {
+                let digest = sha256_exact(&item.plaintext);
+                entries.push(Entry::new(
+                    item.path.clone(),
+                    EntryData::File {
+                        content: ContentRef::Internal(digest),
+                    },
+                    metadata,
+                    EntryIdentity::default(),
+                ));
+                files.push(item.plaintext.clone());
+            }
+            ResolvedKind::Hardlink(target) => {
+                let target_entry = &by_path[target];
+                let digest = sha256_exact(&target_entry.plaintext);
+                entries.push(Entry::new(
+                    item.path.clone(),
+                    EntryData::File {
+                        content: ContentRef::Internal(digest),
+                    },
+                    metadata,
+                    EntryIdentity::default(),
+                ));
+            }
+            ResolvedKind::Symlink(target) => {
+                entries.push(Entry::new(
+                    item.path.clone(),
+                    EntryData::Symlink {
+                        target: target.clone(),
+                    },
+                    metadata,
+                    EntryIdentity::default(),
+                ));
+            }
         }
     }
     resolutions.sort();
@@ -798,17 +885,18 @@ fn resolve_entry(
         .unwrap_or(header_path);
     let (path, components) = logical_path(&path_text)?;
     let directory_marker = path_text.ends_with('/');
-    let directory = match entry.typeflag {
-        b'5' => true,
-        0 | b'0' | b'7' => false,
-        b'1' => return Err(unsupported_kind(&path, "hard link")),
-        b'2' => return Err(unsupported_kind(&path, "symbolic link")),
+    let kind = match entry.typeflag {
+        b'5' => ResolvedKind::Directory,
+        0 | b'0' | b'7' => ResolvedKind::File,
+        b'1' => ResolvedKind::Hardlink(selected_link_path(entry)?),
+        b'2' => ResolvedKind::Symlink(LinkTarget::canonical(selected_link_bytes(entry)?)?),
         b'3' => return Err(unsupported_kind(&path, "character device")),
         b'4' => return Err(unsupported_kind(&path, "block device")),
         b'6' => return Err(unsupported_kind(&path, "FIFO")),
         b'S' => return Err(unsupported_kind(&path, "GNU sparse file")),
         other => return Err(unsupported_kind(&path, &format!("typeflag 0x{other:02x}"))),
     };
+    let directory = matches!(kind, ResolvedKind::Directory);
     if directory != directory_marker {
         if directory {
             resolutions.push(ConversionResolution {
@@ -820,7 +908,7 @@ fn resolve_entry(
             });
         } else {
             return Err(divergence(format!(
-                "regular-file typeflag conflicts with directory path marker for {path}"
+                "non-directory typeflag conflicts with directory path marker for {path}"
             )));
         }
     }
@@ -852,7 +940,12 @@ fn resolve_entry(
             "pax-selected tar size exceeds the observed payload extent",
         ));
     }
-    let plaintext = if directory {
+    if matches!(kind, ResolvedKind::Symlink(_) | ResolvedKind::Hardlink(_)) && size != 0 {
+        return Err(irreconcilable(format!(
+            "link entry {path} has a nonzero tar payload"
+        )));
+    }
+    let plaintext = if !matches!(kind, ResolvedKind::File) {
         Box::default()
     } else {
         slice(
@@ -865,14 +958,61 @@ fn resolve_entry(
         .into_boxed_slice()
     };
     let mtime = selected_mtime(entry)?;
+    let mode =
+        u32::try_from(entry.header_mode & 0o7777).map_err(|_| structure("tar mode exceeds u32"))?;
+    let uid = u32::try_from(selected_u64(
+        "uid",
+        entry.header_uid,
+        &entry.global_pax,
+        &entry.local_pax,
+    )?)
+    .map_err(|_| structure("tar uid exceeds u32"))?;
+    let gid = u32::try_from(selected_u64(
+        "gid",
+        entry.header_gid,
+        &entry.global_pax,
+        &entry.local_pax,
+    )?)
+    .map_err(|_| structure("tar gid exceeds u32"))?;
     Ok(ResolvedEntry {
         path,
         components,
-        directory,
-        executable: entry.header_mode & 0o111 != 0,
+        kind,
+        executable: mode & 0o111 != 0,
+        mode,
+        uid,
+        gid,
         mtime,
         plaintext,
     })
+}
+
+fn selected_link_bytes(entry: &ObservedTarEntry) -> Result<Box<[u8]>> {
+    let pax = entry
+        .local_pax
+        .get("linkpath")
+        .or_else(|| entry.global_pax.get("linkpath"));
+    if let (Some(pax), Some(gnu)) = (pax, entry.gnu_long_link.as_ref())
+        && pax.value != gnu.value
+    {
+        return Err(divergence(
+            "GNU long-link value conflicts with the normative pax linkpath",
+        ));
+    }
+    if let Some(value) = pax.or(entry.gnu_long_link.as_ref()) {
+        Ok(value.value.as_bytes().to_vec().into_boxed_slice())
+    } else if entry.header_linkname.is_empty() {
+        Err(irreconcilable("tar link entry has no link target"))
+    } else {
+        Ok(entry.header_linkname.clone())
+    }
+}
+
+fn selected_link_path(entry: &ObservedTarEntry) -> Result<LogicalPath> {
+    let bytes = selected_link_bytes(entry)?;
+    let value =
+        std::str::from_utf8(&bytes).map_err(|_| unsafe_path("tar hardlink target is not UTF-8"))?;
+    logical_path(value).map(|(path, _)| path)
 }
 
 fn selected_u64(
@@ -1347,13 +1487,20 @@ fn tar_fidelity(unsupported: &[String]) -> FidelityReport {
         captured: Box::from([
             "core.executable".to_owned(),
             "core.mtime".to_owned(),
+            "posix.mode".to_owned(),
+            "posix.uid".to_owned(),
+            "posix.gid".to_owned(),
+            "posix.hardlink-group".to_owned(),
+            "symlink-target".to_owned(),
             "legacy.conversion-provenance".to_owned(),
         ]),
         unavailable: unsupported
             .iter()
             .map(|class| FidelityIssue {
                 class: class.clone(),
-                reason: "observed as tar/pax evidence but unsupported by the current EAM metadata subset".to_owned(),
+                reason:
+                    "observed as tar/pax evidence but unsupported by the POSIX metadata-v1 subset"
+                        .to_owned(),
                 entry_scope: None,
             })
             .collect::<Vec<_>>()
@@ -1642,6 +1789,28 @@ mod tests {
         output
     }
 
+    fn set_linkname(source: &mut [u8], entry_name: &[u8], linkname: &[u8]) {
+        let mut cursor = 0;
+        loop {
+            let header = &mut source[cursor..cursor + BLOCK];
+            let name_end = header[..100]
+                .iter()
+                .position(|byte| *byte == 0)
+                .unwrap_or(100);
+            let size = unsigned_number(&header[124..136], "test size").unwrap();
+            if &header[..name_end] == entry_name {
+                header[157..257].fill(0);
+                header[157..157 + linkname.len()].copy_from_slice(linkname);
+                header[148..156].fill(b' ');
+                let checksum = header.iter().map(|byte| u64::from(*byte)).sum::<u64>();
+                let text = format!("{checksum:06o}\0 ");
+                header[148..156].copy_from_slice(text.as_bytes());
+                return;
+            }
+            cursor += BLOCK + usize::try_from(size).unwrap().div_ceil(BLOCK) * BLOCK;
+        }
+    }
+
     fn pax(key: &str, value: &str) -> Vec<u8> {
         let body = format!("{key}={value}\n");
         let mut length = body.len() + 2;
@@ -1811,7 +1980,7 @@ mod tests {
             )
             .unwrap_err()
             .code(),
-            ReasonCode::TarUnsupportedFeature
+            ReasonCode::TarConflictIrreconcilable
         );
 
         let mut garbage = base();
@@ -1822,6 +1991,81 @@ mod tests {
                 .unwrap_err()
                 .code(),
             ReasonCode::TarStructureInvalid
+        );
+    }
+
+    #[test]
+    fn symlink_and_hardlink_project_to_native_posix_semantics() {
+        let mut source = archive(&[
+            TestEntry {
+                name: b"target",
+                content: b"shared bytes",
+                typeflag: b'0',
+                mode: 0o644,
+                prefix: b"",
+                base256_size: false,
+            },
+            TestEntry {
+                name: b"alias",
+                content: b"",
+                typeflag: b'1',
+                mode: 0o644,
+                prefix: b"",
+                base256_size: false,
+            },
+            TestEntry {
+                name: b"link",
+                content: b"",
+                typeflag: b'2',
+                mode: 0o777,
+                prefix: b"",
+                base256_size: false,
+            },
+        ]);
+        set_linkname(&mut source, b"alias", b"target");
+        set_linkname(&mut source, b"link", b"../outside-is-semantic-data");
+        let imported = import_strict(
+            &source,
+            TarImportPolicy::default(),
+            CompressionProfile::Fast,
+        )
+        .unwrap();
+        let target = imported
+            .archive
+            .entry_set
+            .entries()
+            .iter()
+            .find(|entry| entry.path().to_string() == "target")
+            .unwrap();
+        let alias = imported
+            .archive
+            .entry_set
+            .entries()
+            .iter()
+            .find(|entry| entry.path().to_string() == "alias")
+            .unwrap();
+        assert_eq!(target.data(), alias.data());
+        assert_eq!(
+            target.metadata().hardlink_group(),
+            alias.metadata().hardlink_group()
+        );
+        assert!(target.metadata().hardlink_group().is_some());
+        let link = imported
+            .archive
+            .entry_set
+            .entries()
+            .iter()
+            .find(|entry| entry.path().to_string() == "link")
+            .unwrap();
+        let EntryData::Symlink { target } = link.data() else {
+            panic!("tar symlink must remain a native Symlink Entry");
+        };
+        assert_eq!(target.bytes(), b"../outside-is-semantic-data");
+
+        let encoded = encode(&imported.archive, WriteOptions::default()).unwrap();
+        assert_eq!(
+            open(&encoded.bytes).unwrap().archive.entry_set,
+            imported.archive.entry_set
         );
     }
 
@@ -1946,7 +2190,7 @@ mod tests {
             ReasonCode::TarStructureInvalid
         );
 
-        for typeflag in *b"1346S" {
+        for typeflag in *b"346S" {
             let special = archive(&[TestEntry {
                 name: b"special",
                 content: b"",
@@ -1966,5 +2210,23 @@ mod tests {
                 ReasonCode::TarUnsupportedFeature
             );
         }
+        let missing_hardlink_target = archive(&[TestEntry {
+            name: b"hardlink",
+            content: b"",
+            typeflag: b'1',
+            mode: 0o644,
+            prefix: b"",
+            base256_size: false,
+        }]);
+        assert_eq!(
+            import_strict(
+                &missing_hardlink_target,
+                TarImportPolicy::default(),
+                CompressionProfile::Fast
+            )
+            .unwrap_err()
+            .code(),
+            ReasonCode::TarConflictIrreconcilable
+        );
     }
 }

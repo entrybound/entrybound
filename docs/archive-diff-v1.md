@@ -33,3 +33,9 @@ RandomReadSource metadata path. Complete verified Manifest/ContentObject
 metadata permits semantic comparison, but unread payload means PCR is
 `NOT_VERIFIED` and PCI is `NOT_COMPUTED`. The report includes transferred bytes
 and request counts. STREAM URLs are not presented as random-access sources.
+
+Under `posix-metadata-v1`, Symlink kind/target and `core.executable` changes are
+SEMANTIC. Mode, uid/gid, hardlink group, xattrs, and sparse-map changes are
+AUXILIARY. Equal ContentObject digests never imply hardlink topology, and a
+hardlink-only or sparse-only change is not PHYSICAL unless the recorded native
+plan independently changed.

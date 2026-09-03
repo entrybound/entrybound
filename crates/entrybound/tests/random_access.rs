@@ -189,7 +189,7 @@ fn path_containing_chunk(
         .find_map(|entry| match entry.data() {
             entrybound::eam::EntryData::File {
                 content: entrybound::eam::ContentRef::Internal(content),
-            } if archive.content_store.objects[&content]
+            } if archive.content_store.objects[content]
                 .chunks
                 .iter()
                 .any(|reference| reference.chunk_id == chunk_id) =>

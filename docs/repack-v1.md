@@ -41,3 +41,7 @@ actually occurs. A historical representation that canonical current writers do
 not reproduce is reported as “semantic/physical equivalent; container
 rewritten.” Encrypted repack is refused rather than silently decrypting.
 
+Representation-only repack copies Entry v2 and every POSIX metadata record at
+the EAM level and requires LAI/AUX/PCR equality. Replanning preserves the same
+Entries, link targets, hardlink groups, xattrs, and sparse maps while rebuilding
+only physical content representation; it requires LAI/AUX equality.

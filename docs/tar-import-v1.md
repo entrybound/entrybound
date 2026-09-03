@@ -35,10 +35,15 @@ compatibility profiles.
 
 ## Projection and safety
 
-Only regular files (`0`, NUL, and compatible regular variants) and directories
-(`5`) project into EAM. Symbolic links, hard links, character/block devices,
-FIFOs, GNU sparse entries, and other special types are observed but refused.
-Entrybound never materializes a link as a regular file.
+Regular files (`0`, NUL, and compatible regular variants), directories (`5`),
+symbolic links (`2`), and hard links (`1`) project into EAM. A symlink target is
+selected by the normative pax `linkpath`, compatible GNU long-link, or base
+header claim and is retained as exact LinkTarget bytes; it is never parsed as a
+LogicalPath. A hardlink target is a safe in-archive LogicalPath, must resolve to
+a regular file, and becomes an ordinary File Entry sharing that ContentObject
+plus deterministic `posix.hardlink-group` metadata. Link payloads must be empty
+and conflicting target authorities fail strict import. Character/block devices,
+FIFOs, GNU sparse entries, and other special types remain observed and refused.
 
 Resolved paths must be UTF-8 Entrybound `LogicalPath` values. Absolute paths,
 Windows-rooted or backslash paths, NUL, empty components, `.`/`..`, duplicates,
@@ -47,18 +52,23 @@ normalized. Missing ancestor directories may be synthesized only when no
 foreign observation contradicts directory kind; every synthesis is an
 `Omission` resolution in conversion provenance.
 
-The current native metadata mapping is deliberately small:
+The native POSIX metadata mapping is:
 
 - any regular execute bit maps to `core.executable`;
 - tar seconds or pax fractional `mtime` maps to `core.mtime`. Native precision
   classes exactly represent 0, 2, 6, 7, or 9 fractional digits; other pax
   granularities retain the exact value using the next suitable class and add
   an explicit fidelity limitation rather than silently claiming exact source
-  precision.
+  precision;
+- permission/special bits map to `posix.mode`, and numeric uid/gid map to
+  `posix.uid`/`posix.gid`;
+- hardlink membership maps to the canonical native group described above.
 
-UID/GID, user/group names, non-executable mode bits, device numbers, access or
-change times, ACL/xattr/security/vendor pax namespaces, and unknown pax keys
-remain auxiliary observations and explicit `FidelityReport` losses.
+User/group names, device numbers, access or change times,
+ACL/xattr/security/vendor pax namespaces, and unknown pax keys remain auxiliary
+observations and explicit `FidelityReport` losses. Tar sparse declarations are
+still refused rather than converted to native sparse metadata because GNU/PAX
+sparse authority has not been frozen for this strict adapter.
 
 Two all-zero blocks terminate the logical archive. Additional trailing zero
 blocks are accepted and observed. Nonzero file padding or any nonzero byte
@@ -83,8 +93,9 @@ ebound convert archive.tar archive-stream.eb --strict --layout stream
 ebound convert archive.tar ignored.eb --strict --dry-run
 ```
 
-Tar compatibility profiles, tar preservation/export, links, special files,
-and sparse-file projection are not defined by v1.
+Tar compatibility profiles, tar preservation, special files, and sparse-file
+projection are not defined by v1. Frozen tar export remains a separate target
+profile and is not broadened by native link support.
 
 ## Differential development evidence
 

@@ -40,6 +40,10 @@ x509-cert = { version = "=0.3.0", default-features = false, features = ["pem", "
 zeroize = { version = "=1.9.0", features = ["derive"] }
 zstd = { version = "=0.13.3", default-features = false, features = ["zdict_builder"] }
 
+[target.'cfg(unix)'.dependencies]
+rustix = { version = "=1.1.4", features = ["fs"] }
+xattr = "=1.6.1"
+
 [dev-dependencies]
 ed25519-dalek = { version = "=3.0.0", default-features = false, features = ["alloc", "fast", "pkcs8", "zeroize"] }
 flate2 = "=1.1.9"

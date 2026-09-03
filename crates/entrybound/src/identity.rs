@@ -15,8 +15,8 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     Archive, Chunk, ChunkRef, ContentObject, ContentRef, ConversionProvenance,
     ConversionResolution, Digest, Entry, EntryData, EntryIdentity, EntrySet, FidelityIssue,
-    FidelityReport, LegacyPreservation, LogicalPath, MetadataItem, MetadataSet, MetadataValue,
-    PreservedLegacyValue, TimestampPrecision,
+    FidelityReport, LegacyPreservation, LinkTargetEncoding, LogicalPath, MetadataItem, MetadataSet,
+    MetadataValue, PreservedLegacyValue, TimestampPrecision,
 };
 
 /// Fixed bootstrap chunk size used only by direct in-memory construction.
@@ -212,7 +212,7 @@ fn compute_native_identities(archive: &Archive) -> Result<(Archive, NativeRoots)
         .map(|entry| {
             Entry::new(
                 entry.path().clone(),
-                entry.data(),
+                entry.data().clone(),
                 entry.metadata().clone(),
                 EntryIdentity {
                     identity_digest: entry_identity_digest(entry),
@@ -330,7 +330,24 @@ fn entry_identity_digest(entry: &Entry) -> Digest {
         EntryData::Directory => (1_u8, 0_u8, None),
         EntryData::File {
             content: ContentRef::Internal(digest),
-        } => (2, 1, Some(digest)),
+        } => (2, 1, Some(*digest)),
+        EntryData::Symlink { target } => {
+            let encoding = [match target.encoding() {
+                LinkTargetEncoding::Utf8 => 1,
+                LinkTargetEncoding::PosixBytes => 2,
+            }];
+            return structured_hash(
+                "entry/identity/v2",
+                &[
+                    b"identity/v1",
+                    &path,
+                    &[3],
+                    &encoding,
+                    target.bytes(),
+                    &identity_metadata,
+                ],
+            );
+        }
     };
     let content = content_digest
         .as_ref()
@@ -350,6 +367,35 @@ fn entry_identity_digest(entry: &Entry) -> Digest {
 
 fn entry_aux_digest(entry: &Entry) -> Digest {
     structured_hash("entry/aux/v1", &[&encode_metadata(entry.metadata(), false)])
+}
+
+/// Computes the inode-independent canonical hardlink group identifier.
+pub fn hardlink_group_id(content: Digest, paths: &[LogicalPath]) -> Result<Digest> {
+    if paths.len() < 2 {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidHardlinkGroup,
+            "a hardlink group requires at least two members",
+        ));
+    }
+    let mut members = paths.to_vec();
+    members.sort();
+    if members.windows(2).any(|pair| pair[0] == pair[1]) {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidHardlinkGroup,
+            "a hardlink group cannot contain duplicate paths",
+        ));
+    }
+    let mut encoded = Vec::new();
+    append_len(&mut encoded, members.len());
+    for path in &members {
+        append_bytes(&mut encoded, &encode_path(path));
+    }
+    Ok(structured_hash(
+        "entrybound/hardlink-group/v1",
+        &[content.as_bytes(), &encoded],
+    ))
 }
 
 /// Verifies all serialized Entry identity digests and the Descriptor LAI using
@@ -777,7 +823,7 @@ fn encode_metadata(metadata: &MetadataSet, identity: bool) -> Vec<u8> {
         .items()
         .iter()
         .filter(|item| item.name().participates_in_identity_v1() == identity)
-        .copied()
+        .cloned()
         .collect::<Vec<_>>();
     let mut encoded = Vec::new();
     append_len(&mut encoded, items.len());
@@ -800,7 +846,7 @@ fn encode_metadata_item(encoded: &mut Vec<u8>, item: MetadataItem) {
     match item.value() {
         MetadataValue::Bool(value) => {
             encoded.push(1);
-            encoded.push(u8::from(value));
+            encoded.push(u8::from(*value));
         }
         MetadataValue::Timestamp(value) => {
             encoded.push(2);
@@ -808,6 +854,39 @@ fn encode_metadata_item(encoded: &mut Vec<u8>, item: MetadataItem) {
             encoded.extend_from_slice(&value.nanoseconds().to_be_bytes());
             encoded.push(timestamp_precision_id(value.source_precision()));
             encoded.push(u8::from(value.restorable()));
+        }
+        MetadataValue::PosixMode(value) => {
+            encoded.push(3);
+            encoded.extend_from_slice(&value.to_be_bytes());
+        }
+        MetadataValue::PosixUid(value) => {
+            encoded.push(4);
+            encoded.extend_from_slice(&value.to_be_bytes());
+        }
+        MetadataValue::PosixGid(value) => {
+            encoded.push(5);
+            encoded.extend_from_slice(&value.to_be_bytes());
+        }
+        MetadataValue::HardlinkGroup(value) => {
+            encoded.push(6);
+            encoded.extend_from_slice(value.as_bytes());
+        }
+        MetadataValue::Xattrs(values) => {
+            encoded.push(7);
+            append_len(encoded, values.len());
+            for value in values {
+                append_bytes(encoded, value.name());
+                append_bytes(encoded, value.value());
+            }
+        }
+        MetadataValue::SparseMap(value) => {
+            encoded.push(8);
+            encoded.extend_from_slice(&value.logical_size().to_be_bytes());
+            append_len(encoded, value.extents().len());
+            for extent in value.extents() {
+                encoded.extend_from_slice(&extent.offset.to_be_bytes());
+                encoded.extend_from_slice(&extent.length.to_be_bytes());
+            }
         }
     }
 }
@@ -901,8 +980,25 @@ fn resource(detail: impl Into<String>) -> Diagnostic {
 
 #[cfg(test)]
 mod tests {
-    use super::{build_content, physical_container_identity, sha256_exact};
-    use crate::eam::Digest;
+    use super::{
+        build_content, entry_aux_digest, entry_identity_digest, hardlink_group_id,
+        physical_container_identity, sha256_exact,
+    };
+    use crate::eam::{
+        ContentRef, Digest, Entry, EntryData, EntryIdentity, LinkTarget, LogicalPath, MetadataItem,
+        MetadataSet, SparseExtent, SparseMap,
+    };
+
+    fn file_entry(path: &str, metadata: MetadataSet) -> Entry {
+        Entry::new(
+            LogicalPath::from_utf8([path]).unwrap(),
+            EntryData::File {
+                content: ContentRef::Internal(sha256_exact(b"same content")),
+            },
+            metadata,
+            EntryIdentity::default(),
+        )
+    }
 
     #[test]
     fn sha256_known_answer() {
@@ -926,6 +1022,94 @@ mod tests {
         assert_ne!(
             physical_container_identity(b"one"),
             physical_container_identity(b"two")
+        );
+    }
+
+    #[test]
+    fn posix_identity_tiers_are_frozen() {
+        let base = file_entry(
+            "a",
+            MetadataSet::new(vec![MetadataItem::executable(false)]).unwrap(),
+        );
+        let mode = file_entry(
+            "a",
+            MetadataSet::new(vec![
+                MetadataItem::executable(false),
+                MetadataItem::posix_mode(0o640),
+            ])
+            .unwrap(),
+        );
+        assert_eq!(entry_identity_digest(&base), entry_identity_digest(&mode));
+        assert_ne!(entry_aux_digest(&base), entry_aux_digest(&mode));
+
+        let executable = file_entry(
+            "a",
+            MetadataSet::new(vec![
+                MetadataItem::executable(true),
+                MetadataItem::posix_mode(0o750),
+            ])
+            .unwrap(),
+        );
+        assert_ne!(
+            entry_identity_digest(&mode),
+            entry_identity_digest(&executable)
+        );
+
+        let sparse = file_entry(
+            "a",
+            MetadataSet::new(vec![
+                MetadataItem::executable(false),
+                MetadataItem::sparse_map(
+                    SparseMap::new(
+                        12,
+                        vec![SparseExtent {
+                            offset: 4,
+                            length: 4,
+                        }],
+                    )
+                    .unwrap(),
+                ),
+            ])
+            .unwrap(),
+        );
+        assert_eq!(entry_identity_digest(&base), entry_identity_digest(&sparse));
+        assert_ne!(entry_aux_digest(&base), entry_aux_digest(&sparse));
+
+        let link_a = Entry::new(
+            LogicalPath::from_utf8(["link"]).unwrap(),
+            EntryData::Symlink {
+                target: LinkTarget::canonical(b"a".to_vec().into_boxed_slice()).unwrap(),
+            },
+            MetadataSet::default(),
+            EntryIdentity::default(),
+        );
+        let link_b = Entry::new(
+            LogicalPath::from_utf8(["link"]).unwrap(),
+            EntryData::Symlink {
+                target: LinkTarget::canonical(b"b".to_vec().into_boxed_slice()).unwrap(),
+            },
+            MetadataSet::default(),
+            EntryIdentity::default(),
+        );
+        assert_ne!(
+            entry_identity_digest(&link_a),
+            entry_identity_digest(&link_b)
+        );
+    }
+
+    #[test]
+    fn hardlink_group_is_path_sorted_and_inode_independent() {
+        let content = sha256_exact(b"payload");
+        let left = LogicalPath::from_utf8(["a"]).unwrap();
+        let right = LogicalPath::from_utf8(["b"]).unwrap();
+        let expected = hardlink_group_id(content, &[left.clone(), right.clone()]).unwrap();
+        assert_eq!(
+            expected,
+            hardlink_group_id(content, &[right, left]).unwrap()
+        );
+        assert_eq!(
+            expected.to_string(),
+            "e7dad4aaaea2d134d9a56c71f5dfa84be64c7b40a2a4a9c953fbeede3437dc61"
         );
     }
 }

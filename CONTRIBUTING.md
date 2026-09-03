@@ -41,6 +41,18 @@ Filesystem tests must use generated trees. Extraction changes need collision,
 containment, preflight-integrity, and resource-policy tests; do not add opaque
 archive fixtures or path-string shortcuts.
 
+POSIX metadata v1 is gated by required incompatibility bit `0x8000`. Entry and
+MetadataItem version 1 bytes are permanent; version 2 is allowed only for
+record types 3 and 8 under that feature. Symbolic-link targets and executable
+state are LAI semantics. Mode, numeric ownership, hardlink topology, xattrs,
+and sparse layout are AUX semantics and must not affect PCR merely by being
+recorded. Never infer hardlinks from equal content, serialize device/inode
+numbers, infer sparse holes from zero runs, or follow a source symlink during
+capture. Extraction must preflight link policy, materialize regular content
+and hardlinks before symlinks, and apply directory-restrictive metadata only
+after descendants exist. See `docs/posix-metadata-v1.md` and
+`docs/filesystem-fidelity-v1.md`.
+
 Compression planner behavior is frozen by planner ID. Do not change the
 candidate levels, probe, cost rule, or parameter encoding of a `*-v1` policy;
 introduce a new planner version. Decoder behavior must depend only on recorded
