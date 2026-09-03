@@ -2062,6 +2062,22 @@ mod tests {
             prepared.verified.report.index_status,
             IndexStatus::RebuiltAbsent
         );
+        let report = archive_diff(&source, &prepared.verified).unwrap();
+        assert_eq!(report.lai, DiffIdentityStatus::Same);
+        assert_eq!(report.aux, DiffIdentityStatus::Same);
+        assert_eq!(report.pcr, DiffIdentityStatus::Different);
+        assert!(
+            report
+                .changes
+                .iter()
+                .any(|item| item.tier == DiffTier::Physical)
+        );
+        assert!(
+            !report
+                .changes
+                .iter()
+                .any(|item| { matches!(item.tier, DiffTier::Semantic | DiffTier::Auxiliary) })
+        );
     }
 
     #[test]
