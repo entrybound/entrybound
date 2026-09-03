@@ -29,6 +29,7 @@ lz4_flex = { version = "=0.14.0", default-features = false, features = ["std", "
 lzma-rust2 = { version = "=0.20.0", default-features = false, features = ["std", "encoder", "xz"] }
 ml-kem = "=0.3.2"
 preflate-rs = "=0.7.6"
+reqwest = { version = "=0.13.4", default-features = false, features = ["blocking", "rustls"] }
 sha2 = "=0.11.0"
 sha3 = "=0.12.0"
 spki = "=0.8.0"

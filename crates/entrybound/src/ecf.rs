@@ -7,8 +7,9 @@ use crate::diagnostics::Result;
 use crate::eam::{ArchiveRole, Layout};
 use crate::eam::{ChunkGroup, Dictionary, Digest, ReconstructionData, TransformPlan};
 
-mod container;
-mod records;
+pub(crate) mod container;
+mod random;
+pub(crate) mod records;
 mod staging;
 mod stream;
 
@@ -16,6 +17,10 @@ pub use container::{
     EncodedArchive, IndexStatus, OpenedArchive, VerificationReport, WriteOptions, encode, open,
     open_with_limits, open_with_policy, peek_layout, verify, verify_with_limits,
     verify_with_policy,
+};
+pub use random::{
+    IdentityVerificationStatus, RandomAccessArchive, RandomAccessIndexStatus, RandomAccessMetadata,
+    RandomAccessRead, RandomAccessSection, RandomAccessVerificationReport, open_indexed_random,
 };
 pub use staging::StagingLimits;
 pub(crate) use stream::StagedChunks;

@@ -4,6 +4,7 @@
 //! crypto-v1 documents. Algorithm choice is not archive- or caller-negotiable.
 
 mod container;
+mod random;
 mod signature;
 mod timestamp;
 mod wire;
@@ -33,6 +34,10 @@ pub use container::{
     RecipientDirectoryEntry, add_recipient, change_password, embed_signature, encrypt_archive,
     inspect_encrypted, open_encrypted, open_encrypted_authenticated, reencrypt_recipients,
     verify_encrypted,
+};
+pub use random::{
+    EncryptedRandomAccessArchive, EncryptedRandomPublicInspection,
+    inspect_indexed_random_encrypted_public, open_indexed_random_encrypted,
 };
 pub use signature::{
     AddressingBinding, BindingStatus, CryptographicStatus, CurrentBindings, SignaturePolicy,

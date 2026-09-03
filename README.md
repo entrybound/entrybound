@@ -30,6 +30,9 @@ establishes:
   section structure, plaintext content, Entry identities, LAI, PCR, AUX, and
   exact-byte PCI;
 - optional Index validation and rebuilding from authoritative CHUNK_DATA.
+- revision-pinned verified random access for local, in-memory, and HTTP(S)
+  Range-backed INDEXED sources, including authenticated encrypted retrieval,
+  bounded dependency closure, partial-verification reports, and `ebound read`;
 - a sequential `stream-layout-v1` writer that needs only `std::io::Write` and a
   sequential reader that needs only `std::io::Read`, with tagged single-authority
   framing, a declared and enforced stream deduplication window, and a
@@ -107,6 +110,9 @@ ebound list example.eb
 ebound inspect example.eb
 ebound explain example.eb
 ebound unpack example.eb ./restored
+ebound read example.eb path/to/file --output restored-file --access-report
+ebound list https://example.invalid/release.eb
+ebound inspect https://example.invalid/release.eb
 ```
 
 Strict ZIP import produces an ordinary native archive after independently
@@ -277,7 +283,7 @@ pax tar, and compressed-pax-tar export supports only the frozen versioned
 profiles; there is no 7z export, tar/7z compatibility or preservation, encrypted legacy
 input, encrypted STREAM layout,
 online TSA request support, general PKI/keychain integration, classical-only
-recipients, remote range access, general
+recipients, STREAM random access, general
 `repack`, lossy image recompression, guaranteed
 support for every JPEG producer/marker combination, embedded-stream scanning,
 unbounded solid compression, hardlink
@@ -362,5 +368,8 @@ reconciliation, bomb limits, and auxiliary conversion provenance;
 [tar export v1](docs/tar-export-v1.md) for deterministic migration,
 [compressed tar export v1](docs/compressed-tar-export-v1.md) for frozen wrapper
 parameters, and [migration workflows v1](docs/migration-workflows-v1.md) for
-dual publishing, aggregate reports, transactions, and sidecars; and
+dual publishing, aggregate reports, transactions, and sidecars;
+[verified random access v1](docs/random-access-v1.md) and
+[HTTP range access v1](docs/http-range-access-v1.md) for partial-verification
+boundaries, dependency closure, revision stability, and transfer policy; and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

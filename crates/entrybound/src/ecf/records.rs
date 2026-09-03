@@ -44,7 +44,7 @@ const RECORD_LEGACY_LOCATION: u16 = 35;
 const RECORD_LEGACY_RESOLUTION: u16 = 36;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(super) struct DescriptorBody {
+pub(crate) struct DescriptorBody {
     pub namespace: String,
     pub identity_profile: u8,
     pub digest_algorithm: u8,
@@ -58,7 +58,7 @@ pub(super) struct DescriptorBody {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(super) struct DescriptorDeclarations {
+pub(crate) struct DescriptorDeclarations {
     pub decode: DecodeRequirements,
     pub budget: ResourceBudget,
 }
@@ -95,7 +95,7 @@ pub(super) fn encode_descriptor(value: &DescriptorBody) -> Result<Vec<u8>> {
     record.finish()
 }
 
-pub(super) fn decode_descriptor(bytes: &[u8]) -> Result<DescriptorBody> {
+pub(crate) fn decode_descriptor(bytes: &[u8]) -> Result<DescriptorBody> {
     let (record, consumed) = decode_record(bytes)?;
     if consumed != bytes.len() || record.kind != RECORD_DESCRIPTOR {
         return Err(noncanonical(
@@ -199,7 +199,7 @@ pub(super) fn encode_transform_plans(
     Ok(encoded)
 }
 
-pub(super) fn decode_transform_plans(
+pub(crate) fn decode_transform_plans(
     bytes: &[u8],
     transform_steps: bool,
 ) -> Result<Box<[TransformPlan]>> {
@@ -326,7 +326,7 @@ pub(super) fn encode_transform_plans_v2(plans: &[TransformPlan]) -> Result<Vec<u
     Ok(encoded)
 }
 
-pub(super) fn decode_transform_plans_v2(bytes: &[u8]) -> Result<Box<[TransformPlan]>> {
+pub(crate) fn decode_transform_plans_v2(bytes: &[u8]) -> Result<Box<[TransformPlan]>> {
     let records = decode_record_stream(bytes)?;
     let mut plans = Vec::with_capacity(records.len());
     let mut previous = None;
@@ -410,7 +410,7 @@ pub(super) fn encode_transform_plans_v3(plans: &[TransformPlan]) -> Result<Vec<u
     encode_transform_plans_with(plans, encode_transform_step_v3)
 }
 
-pub(super) fn decode_transform_plans_v3(bytes: &[u8]) -> Result<Box<[TransformPlan]>> {
+pub(crate) fn decode_transform_plans_v3(bytes: &[u8]) -> Result<Box<[TransformPlan]>> {
     decode_transform_plans_with(bytes, decode_transform_step_v3, encode_transform_plans_v3)
 }
 
@@ -569,7 +569,7 @@ pub(super) fn encode_reconstruction_section(
     Ok(encoded)
 }
 
-pub(super) fn decode_reconstruction_section(
+pub(crate) fn decode_reconstruction_section(
     bytes: &[u8],
 ) -> Result<(
     BTreeMap<Digest, ReconstructionData>,
@@ -660,7 +660,7 @@ pub(super) fn encode_reconstruction_regions(
     Ok(encoded)
 }
 
-pub(super) fn decode_reconstruction_regions(
+pub(crate) fn decode_reconstruction_regions(
     bytes: &[u8],
 ) -> Result<(
     BTreeMap<Digest, ReconstructionRegion>,
@@ -792,7 +792,7 @@ pub(super) fn encode_dictionaries(dictionaries: &BTreeMap<Digest, Dictionary>) -
     Ok(encoded)
 }
 
-pub(super) fn decode_dictionaries(bytes: &[u8]) -> Result<BTreeMap<Digest, Dictionary>> {
+pub(crate) fn decode_dictionaries(bytes: &[u8]) -> Result<BTreeMap<Digest, Dictionary>> {
     let mut dictionaries = BTreeMap::new();
     let mut previous = None;
     for record in decode_record_stream(bytes)? {
@@ -840,7 +840,7 @@ pub(super) fn encode_chunk_groups(groups: &BTreeMap<Digest, ChunkGroup>) -> Resu
     Ok(encoded)
 }
 
-pub(super) fn decode_chunk_groups(bytes: &[u8]) -> Result<BTreeMap<Digest, ChunkGroup>> {
+pub(crate) fn decode_chunk_groups(bytes: &[u8]) -> Result<BTreeMap<Digest, ChunkGroup>> {
     let mut groups = BTreeMap::new();
     let mut previous = None;
     for record in decode_record_stream(bytes)? {
@@ -963,7 +963,7 @@ pub(super) fn decode_manifest_record(bytes: &[u8]) -> Result<ManifestRecord> {
     }
 }
 
-pub(super) fn decode_manifest(
+pub(crate) fn decode_manifest(
     bytes: &[u8],
 ) -> Result<(EntrySet, BTreeMap<Digest, crate::eam::ContentObject>)> {
     let records = decode_record_stream(bytes)?;
@@ -1232,7 +1232,7 @@ pub(super) fn encode_fidelity(value: &FidelityReport) -> Result<Vec<u8>> {
     record.finish()
 }
 
-pub(super) fn decode_fidelity(bytes: &[u8]) -> Result<FidelityReport> {
+pub(crate) fn decode_fidelity(bytes: &[u8]) -> Result<FidelityReport> {
     let (record, consumed) = decode_record(bytes)?;
     if consumed != bytes.len() || record.kind != RECORD_FIDELITY {
         return Err(noncanonical(
@@ -1873,7 +1873,7 @@ pub(super) fn encode_index(index: &BTreeMap<Digest, crate::eam::ChunkLocation>) 
     Ok(bytes)
 }
 
-pub(super) fn decode_index(bytes: &[u8]) -> Result<BTreeMap<Digest, crate::eam::ChunkLocation>> {
+pub(crate) fn decode_index(bytes: &[u8]) -> Result<BTreeMap<Digest, crate::eam::ChunkLocation>> {
     let mut index = BTreeMap::new();
     let mut previous = None;
     for record in decode_record_stream(bytes)? {

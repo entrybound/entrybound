@@ -55,6 +55,14 @@ frames declare stored length once; manifests do not repeat it. The Index only
 caches chunk-frame locators and is ignored and rebuilt when absent or invalid.
 No semantic Entry field appears in the Index.
 
+Verified random readers may reconstruct this physical directory from the fixed
+footer, preamble, and 64-byte section headers without fetching section payloads.
+This adds no wire feature: the Index remains non-authoritative and an absent,
+corrupt, or misdirected Index is rebuilt from Chunk-frame headers within caller
+policy. Partial retrieval verifies requested Chunks and their ContentObject but
+does not claim whole-archive PCR or PCI. See
+[random-access-v1.md](random-access-v1.md).
+
 `STREAM` is the sequential layout selected by required incompatibility feature
 bit `0x10` (`stream-layout-v1`) and layout discriminant `2`. It replaces the
 section sequence with a single tagged `STREAM_BODY`, carries no Index, is

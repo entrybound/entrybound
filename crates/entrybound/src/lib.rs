@@ -16,6 +16,7 @@ pub mod identity;
 mod jpeg_reconstruction;
 pub mod legacy;
 pub mod planner;
+pub mod random_access;
 mod reconstruction;
 pub mod similarity;
 mod transform;

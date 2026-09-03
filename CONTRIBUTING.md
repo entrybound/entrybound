@@ -96,6 +96,15 @@ the guarantee. Never make a sequential reader read its whole source into memory
 and delegate to the INDEXED reader, and never expose an API that looks
 random-access while hiding a full scan.
 
+Random INDEXED access is a separate verification surface. Keep `open` and
+`verify` whole-archive operations; `open_indexed_random` must remain genuinely
+range-backed. Treat Index and EncryptedIndex as locator caches, validate every
+selected frame/object independently, compute bounded dependencies before file
+plaintext release, and always report `whole_archive_verified=false` unless a
+full-reader operation actually consumed and verified the container. Never claim
+PCR or PCI from unread bytes. HTTP sessions require one strong ETag revision and
+exact 206/Content-Range behavior; never hide a 200 whole-body fallback.
+
 Sequential extraction stages decoded content in bounded, spilling storage and
 materializes only after the whole archive has verified. Do not write unverified
 content into a caller's destination, and do not require the archive plaintext in

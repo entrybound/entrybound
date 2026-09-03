@@ -352,6 +352,95 @@ fn entry_aux_digest(entry: &Entry) -> Digest {
     structured_hash("entry/aux/v1", &[&encode_metadata(entry.metadata(), false)])
 }
 
+/// Verifies all serialized Entry identity digests and the Descriptor LAI using
+/// only authenticated/fetched semantic metadata. Chunk plaintext and physical
+/// organization are deliberately outside this check.
+pub(crate) fn verify_metadata_lai(
+    entries: &crate::eam::EntrySet,
+    total_logical: u64,
+    expected_lai: Digest,
+) -> Result<()> {
+    let mut leaves = Vec::with_capacity(entries.len());
+    for entry in entries.entries() {
+        let recomputed = entry_identity_digest(entry);
+        if recomputed != entry.identity().identity_digest {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::EntryIdentityMismatch,
+                entry.path().to_string(),
+            ));
+        }
+        leaves.push(structured_hash("manifest/leaf", &[recomputed.as_bytes()]));
+    }
+    let manifest = merkle_root(&leaves, "manifest/empty", "manifest/node");
+    let entry_count =
+        u64::try_from(entries.len()).map_err(|_| resource("entry count exceeds u64"))?;
+    let actual = structured_hash(
+        "lai/v1",
+        &[
+            b"sha256",
+            manifest.as_bytes(),
+            b"identity/v1",
+            &[1],
+            &entry_count.to_be_bytes(),
+            &total_logical.to_be_bytes(),
+        ],
+    );
+    if actual != expected_lai {
+        return Err(Diagnostic::new(
+            OutcomeClass::Corrupt,
+            ReasonCode::LaiMismatch,
+            "fetched semantic metadata does not match the declared LAI",
+        ));
+    }
+    Ok(())
+}
+
+/// Verifies Entry auxiliary digests and AUX when every AUX-bearing semantic
+/// record was fetched. Random access uses this only for authenticated private
+/// metadata collections that are complete.
+pub(crate) fn verify_metadata_aux(
+    entries: &crate::eam::EntrySet,
+    fidelity: &crate::eam::FidelityReport,
+    expected_aux: Digest,
+) -> Result<()> {
+    let mut leaves = Vec::with_capacity(entries.len());
+    for entry in entries.entries() {
+        let recomputed = entry_aux_digest(entry);
+        if recomputed != entry.identity().aux_digest {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::EntryAuxMismatch,
+                entry.path().to_string(),
+            ));
+        }
+        leaves.push(structured_hash(
+            "aux-manifest/leaf",
+            &[recomputed.as_bytes()],
+        ));
+    }
+    let entry_aux_root = merkle_root(&leaves, "aux-manifest/empty", "aux-manifest/node");
+    let fidelity = structured_hash("fidelity/v1", &[&encode_fidelity(fidelity)]);
+    let conversion = structured_hash("conversion/absent/v1", &[]);
+    let actual = structured_hash(
+        "aux/v1",
+        &[
+            b"sha256",
+            entry_aux_root.as_bytes(),
+            fidelity.as_bytes(),
+            conversion.as_bytes(),
+        ],
+    );
+    if actual != expected_aux {
+        return Err(Diagnostic::new(
+            OutcomeClass::Corrupt,
+            ReasonCode::AuxMismatch,
+            "fetched auxiliary metadata does not match the declared AUX",
+        ));
+    }
+    Ok(())
+}
+
 fn manifest_root(archive: &Archive) -> Digest {
     let leaves = archive
         .entry_set

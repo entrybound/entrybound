@@ -15,15 +15,17 @@ use entrybound::crypto::{
     EncryptedWriteOptions, FEATURE_ENCRYPTED_INDEXED_V1, FEATURE_PRIVATE_RESOURCE_DECLARATION_V1,
     PaddingMode, SignaturePolicy, SignatureRecord, SignatureStatus, SigningKey, TimestampPolicy,
     TimestampStatus, TimestampTrustAnchor, Unlock, XWingIdentity, XWingRecipient, add_recipient,
-    change_password, current_bindings, embed_signature, inspect_encrypted, open_encrypted,
-    open_encrypted_authenticated, pack_directory_encrypted, read_detached_signature,
+    change_password, current_bindings, embed_signature, inspect_encrypted,
+    inspect_indexed_random_encrypted_public, open_encrypted, open_encrypted_authenticated,
+    open_indexed_random_encrypted, pack_directory_encrypted, read_detached_signature,
     reencrypt_recipients, sign_archive, verify_signature,
 };
 use entrybound::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
-use entrybound::eam::{ArchiveRole, EntryKind, Layout};
+use entrybound::eam::{ArchiveRole, EntryKind, Layout, LogicalPath};
 use entrybound::ecf::{
-    IndexStatus, OpenedArchive, SequentialLimits, StreamContentPolicy, StreamReport, StreamWindow,
-    StreamWriteOptions, WriteOptions, bootstrap_sequential_limits, encode, encode_stream, open,
+    IndexStatus, OpenedArchive, RandomAccessVerificationReport, SequentialLimits,
+    StreamContentPolicy, StreamReport, StreamWindow, StreamWriteOptions, WriteOptions,
+    bootstrap_sequential_limits, encode, encode_stream, open, open_indexed_random,
     open_stream_with_limits, peek_layout,
 };
 use entrybound::legacy::export::{
@@ -41,6 +43,10 @@ use entrybound::legacy::zip::{
     CompatibilityProfileId, ImportPolicy, ZipImportPolicy, import as import_zip,
 };
 use entrybound::planner::CompressionProfile;
+use entrybound::random_access::{
+    AccessTraceEntry, HttpRangeSource, LocalFileRandomReadSource, RandomAccessPolicy,
+    RandomReadSource,
+};
 use zeroize::Zeroizing;
 
 const HELP: &str = "\
@@ -76,8 +82,10 @@ Usage:\n\
                          [--layout indexed|stream] [--profile <profile>]\n\
                          [--report <file>]\n\
   ebound unpack <archive.eb|-> [destination] [--identity <file>|--password]\n\
-  ebound list <archive.eb|->\n\
-  ebound inspect <archive.eb|-> [--crypto] [--identity <file>|--password]\n\
+  ebound read <archive.eb|URL> <logical-path> [--output <file|->]\n\
+                               [--identity <file>|--password] [--access-report]\n\
+  ebound list <archive.eb|URL|-> [--identity <file>|--password]\n\
+  ebound inspect <archive.eb|URL|-> [--crypto] [--identity <file>|--password]\n\
                                 [--timestamp-trust <anchor.der> ...]\n\
   ebound verify <archive.eb|-> [--identity <file>|--password]\n\
                                [--signatures|--signature <archive.ebsig>]\n\
@@ -250,6 +258,7 @@ fn run(arguments: impl IntoIterator<Item = OsString>) -> Result<()> {
         "publish" => command_publish(arguments.collect()),
         "sidecar" => command_sidecar(arguments.collect()),
         "unpack" => command_unpack(arguments.collect()),
+        "read" => command_read(arguments.collect()),
         "list" => command_list(arguments.collect()),
         "inspect" => command_inspect(arguments.collect()),
         "verify" => command_verify(arguments.collect()),
@@ -2861,8 +2870,219 @@ fn hex(bytes: &[u8]) -> String {
 // list, inspect, verify, explain
 // ---------------------------------------------------------------------------
 
+struct RandomReadArguments {
+    read: ReadArguments,
+    output: Option<Destination>,
+    access_report: bool,
+}
+
+fn parse_random_read_arguments(arguments: Vec<OsString>) -> Result<RandomReadArguments> {
+    let mut ordinary = Vec::new();
+    let mut output = None;
+    let mut access_report = false;
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        if arguments[cursor] == "--output" {
+            if output.is_some() {
+                return Err(usage("read accepts --output only once"));
+            }
+            cursor += 1;
+            let value = arguments
+                .get(cursor)
+                .ok_or_else(|| usage("--output requires a file or '-'"))?;
+            output = Some(if value == "-" {
+                Destination::Stdout
+            } else {
+                Destination::Path(PathBuf::from(value))
+            });
+        } else if arguments[cursor] == "--access-report" {
+            if access_report {
+                return Err(usage("read accepts --access-report only once"));
+            }
+            access_report = true;
+        } else {
+            ordinary.push(arguments[cursor].clone());
+        }
+        cursor += 1;
+    }
+    Ok(RandomReadArguments {
+        read: parse_read_arguments("read", ordinary, false)?,
+        output,
+        access_report,
+    })
+}
+
+fn is_http_source(value: &OsStr) -> bool {
+    value
+        .to_str()
+        .is_some_and(|value| value.starts_with("https://") || value.starts_with("http://"))
+}
+
+fn make_random_source(value: &OsStr) -> Result<Box<dyn RandomReadSource>> {
+    if value == "-" {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::RandomAccessNotIndexed,
+            "random access requires a seekable local file or an HTTP(S) range source",
+        ));
+    }
+    if is_http_source(value) {
+        let url = value
+            .to_str()
+            .ok_or_else(|| usage("HTTP URL is not valid UTF-8"))?;
+        Ok(Box::new(HttpRangeSource::open(url)?))
+    } else {
+        Ok(Box::new(LocalFileRandomReadSource::open(PathBuf::from(
+            value,
+        ))?))
+    }
+}
+
+fn parse_logical_path(value: &OsStr) -> Result<LogicalPath> {
+    let value = value
+        .to_str()
+        .ok_or_else(|| usage("logical path is not valid UTF-8"))?;
+    LogicalPath::from_utf8(value.split('/'))
+}
+
+fn command_read(arguments: Vec<OsString>) -> Result<()> {
+    let parsed = parse_random_read_arguments(arguments)?;
+    if parsed.read.positionals.len() != 2 {
+        return Err(usage(
+            "read requires <archive.eb|URL> <logical-path> [--output <file|->] [unlock] [--access-report]",
+        ));
+    }
+    let archive_source = &parsed.read.positionals[0];
+    let path = parse_logical_path(&parsed.read.positionals[1])?;
+    let destination = parsed.output.unwrap_or(Destination::Stdout);
+    let source = make_random_source(archive_source)?;
+    let result = if let Some(unlock) = parsed.read.unlock.as_ref() {
+        let mut archive = open_indexed_random_encrypted(
+            source,
+            RandomAccessPolicy::default(),
+            EncryptedOpenOptions::new(Some(unlock.borrowed())),
+        )?;
+        archive.read_entry(&path)?
+    } else {
+        let mut archive = open_indexed_random(source, RandomAccessPolicy::default())?;
+        archive.read_entry(&path)?
+    };
+    write_verified_entry(&destination, &result.bytes)?;
+    let status = Status {
+        to_stderr: matches!(destination, Destination::Stdout),
+    };
+    status.line(format!(
+        "requested entry VERIFIED: {} ({} bytes); whole archive verified: false",
+        path,
+        result.bytes.len()
+    ));
+    if parsed.access_report {
+        print_access_report(&status, &result.report);
+    }
+    Ok(())
+}
+
+fn write_verified_entry(destination: &Destination, bytes: &[u8]) -> Result<()> {
+    match destination {
+        Destination::Stdout => {
+            let mut output = std::io::stdout().lock();
+            output
+                .write_all(bytes)
+                .and_then(|()| output.flush())
+                .map_err(|error| io_error("write verified entry to standard output", &error))
+        }
+        Destination::Path(path) => {
+            let mut output = create_exclusive(path)?;
+            if let Err(error) = output
+                .write_all(bytes)
+                .and_then(|()| output.sync_all())
+                .map_err(|error| io_error("write verified entry", &error))
+            {
+                drop(output);
+                let _ = std::fs::remove_file(path);
+                return Err(error);
+            }
+            Ok(())
+        }
+    }
+}
+
+fn print_access_report(status: &Status, report: &RandomAccessVerificationReport) {
+    status.line("access verification scope: requested object only; not whole-archive verification");
+    status.line(format!(
+        "source revision stable: {}",
+        report.source_revision_stable
+    ));
+    status.line(format!("index: {:?}", report.index_status));
+    status.line(format!(
+        "verified chunks: {}; dependency chunks: {}",
+        report.chunk_count_verified, report.dependency_chunk_count
+    ));
+    status.line(format!(
+        "identity status: LAI={:?} AUX={:?} PCR={:?} PCI={:?}",
+        report.lai, report.aux, report.pcr, report.pci
+    ));
+    status.line(format!(
+        "ranges: {}; transferred bytes: {}; whole_archive_verified=false",
+        report.range_request_count, report.bytes_fetched
+    ));
+    for AccessTraceEntry {
+        offset,
+        length,
+        purpose,
+        cache_hit,
+    } in &*report.access_trace
+    {
+        status.line(format!(
+            "range: offset={offset} bytes={length} purpose={purpose:?} cache={}",
+            if *cache_hit { "hit" } else { "miss" }
+        ));
+    }
+}
+
 fn command_list(arguments: Vec<OsString>) -> Result<()> {
-    let source = one_source("list", arguments)?;
+    let parsed = parse_read_arguments("list", arguments, false)?;
+    if parsed.positionals.len() != 1 {
+        return Err(usage(
+            "list requires <archive.eb|URL|-> [--identity <file>|--password]",
+        ));
+    }
+    if is_http_source(&parsed.positionals[0]) || parsed.unlock.is_some() {
+        let source = make_random_source(&parsed.positionals[0])?;
+        let (entries, report) = if let Some(unlock) = parsed.unlock.as_ref() {
+            let archive = open_indexed_random_encrypted(
+                source,
+                RandomAccessPolicy::default(),
+                EncryptedOpenOptions::new(Some(unlock.borrowed())),
+            )?;
+            (
+                archive.metadata().entries.clone(),
+                archive.metadata_report()?,
+            )
+        } else {
+            let archive = open_indexed_random(source, RandomAccessPolicy::default())?;
+            (
+                archive.metadata().entries.clone(),
+                archive.metadata_report()?,
+            )
+        };
+        eprintln!(
+            "note: range-backed metadata view only; logical entries are authenticated/hashed as reported, but the whole archive was not verified"
+        );
+        eprintln!(
+            "ranges={} bytes={} index={:?} whole_archive_verified=false",
+            report.range_request_count, report.bytes_fetched, report.index_status
+        );
+        for entry in entries.entries() {
+            let kind = match entry.kind() {
+                EntryKind::Directory => "directory",
+                EntryKind::File => "file",
+            };
+            println!("{kind}\t{}", entry.path());
+        }
+        return Ok(());
+    }
+    let source = Source::parse(&parsed.positionals[0]);
     let loaded = load(&source, StreamContentPolicy::Verify)?;
     if loaded.stream.is_some() {
         eprintln!(
@@ -2879,12 +3099,93 @@ fn command_list(arguments: Vec<OsString>) -> Result<()> {
     Ok(())
 }
 
+fn command_inspect_random(parsed: ReadArguments) -> Result<()> {
+    let source_argument = &parsed.positionals[0];
+    if parsed.unlock.is_none() && parsed.crypto {
+        let public = inspect_indexed_random_encrypted_public(
+            make_random_source(source_argument)?,
+            RandomAccessPolicy::default(),
+            CryptoPolicy::default(),
+        )?;
+        println!("inspection scope: public range-backed crypto framing only");
+        println!("encrypted: yes");
+        println!("layout: INDEXED");
+        println!("payload suite: {}", public.public.payload_suite);
+        println!("recipient count: {}", public.public.recipient_count);
+        println!(
+            "recipient stanza types: {}",
+            public.public.recipient_types.join(", ")
+        );
+        println!("padding: {:?}", public.public.padding);
+        println!("encrypted boundary mode: {:?}", public.public.boundary);
+        println!(
+            "encrypted segment count: {}",
+            public.public.segment_count.unwrap_or_default()
+        );
+        println!("required features: {:#x}", public.required_features);
+        println!("source revision: {:?}", public.source_revision);
+        println!("container bytes: {}", public.public.total_container_bytes);
+        println!(
+            "ranges: {}; transferred bytes: {}",
+            public.range_request_count, public.bytes_fetched
+        );
+        println!("private metadata: locked/not fetched");
+        println!("PCR: not fetched");
+        println!("PCI: NOT_COMPUTED");
+        println!("whole_archive_verified: false");
+        return Ok(());
+    }
+    let (metadata, report) = if let Some(unlock) = parsed.unlock.as_ref() {
+        let archive = open_indexed_random_encrypted(
+            make_random_source(source_argument)?,
+            RandomAccessPolicy::default(),
+            EncryptedOpenOptions::new(Some(unlock.borrowed())),
+        )?;
+        (archive.metadata().clone(), archive.metadata_report()?)
+    } else {
+        let archive = open_indexed_random(
+            make_random_source(source_argument)?,
+            RandomAccessPolicy::default(),
+        )?;
+        (archive.metadata().clone(), archive.metadata_report()?)
+    };
+    println!("inspection scope: verified range-backed metadata view");
+    println!("layout: INDEXED");
+    println!("encrypted: {}", metadata.encrypted);
+    println!("source revision: {:?}", metadata.source_revision);
+    println!("container bytes: {}", metadata.source_length);
+    println!("entries: {}", metadata.entries.len());
+    println!("planner: {}", metadata.descriptor.planner_id);
+    println!("chunker: {}", metadata.descriptor.chunker_id);
+    println!("LAI: {} ({:?})", metadata.descriptor.lai, report.lai);
+    println!("AUX: {} ({:?})", metadata.descriptor.aux, report.aux);
+    println!("PCR: {} ({:?})", metadata.descriptor.pcr, report.pcr);
+    println!("PCI: {:?}", report.pci);
+    println!("index: {:?}", report.index_status);
+    println!("physical directory records: {}", metadata.section_count);
+    for section in &*metadata.section_directory {
+        println!(
+            "physical directory: kind={} offset={} payload-bytes={}",
+            section.kind, section.offset, section.payload_length
+        );
+    }
+    println!(
+        "ranges: {}; transferred bytes: {}",
+        report.range_request_count, report.bytes_fetched
+    );
+    println!("whole_archive_verified: false");
+    Ok(())
+}
+
 fn command_inspect(arguments: Vec<OsString>) -> Result<()> {
     let parsed = parse_read_arguments("inspect", arguments, true)?;
     if parsed.positionals.len() != 1 {
         return Err(usage(
-            "inspect requires <archive.eb|-> [--crypto] [--identity <file>|--password]",
+            "inspect requires <archive.eb|URL|-> [--crypto] [--identity <file>|--password]",
         ));
+    }
+    if is_http_source(&parsed.positionals[0]) {
+        return command_inspect_random(parsed);
     }
     let source = Source::parse(&parsed.positionals[0]);
     let encrypted = match &source {
@@ -4676,6 +4977,79 @@ mod tests {
         assert_eq!(
             std::fs::read(publish_dir.join("secure.tar.gz")).unwrap(),
             plain_tar_gzip.bytes
+        );
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn read_command_materializes_only_a_verified_indexed_entry() {
+        let id = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
+        let root = std::env::temp_dir().join(format!(
+            "entrybound-cli-random-read-{}-{id}",
+            std::process::id()
+        ));
+        let input = root.join("input");
+        std::fs::create_dir_all(&input).unwrap();
+        std::fs::write(input.join("wanted.txt"), b"CLI verified range content").unwrap();
+        std::fs::write(input.join("unread.bin"), vec![42_u8; 1024 * 1024]).unwrap();
+        let archive = root.join("source.eb");
+        let output = root.join("wanted.out");
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("pack"),
+            input.as_os_str().to_owned(),
+            archive.as_os_str().to_owned(),
+            OsString::from("--profile"),
+            OsString::from("fast"),
+        ])
+        .unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("read"),
+            archive.as_os_str().to_owned(),
+            OsString::from("wanted.txt"),
+            OsString::from("--output"),
+            output.as_os_str().to_owned(),
+            OsString::from("--access-report"),
+        ])
+        .unwrap();
+        assert_eq!(
+            std::fs::read(output).unwrap(),
+            b"CLI verified range content"
+        );
+        let planned = entrybound::archive::plan_directory(
+            &input,
+            entrybound::archive::PackOptions::default(),
+        )
+        .unwrap();
+        let (identity, recipient) = entrybound::crypto::XWingIdentity::generate().unwrap();
+        let encrypted = entrybound::crypto::encrypt_archive(
+            &planned,
+            entrybound::crypto::EncryptedWriteOptions {
+                recipients: &[recipient],
+                ..entrybound::crypto::EncryptedWriteOptions::default()
+            },
+        )
+        .unwrap();
+        let encrypted_path = root.join("encrypted.eb");
+        let identity_path = root.join("identity.key");
+        let encrypted_output = root.join("encrypted-wanted.out");
+        std::fs::write(&encrypted_path, encrypted.bytes).unwrap();
+        std::fs::write(&identity_path, identity.encode_file().unwrap()).unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("read"),
+            encrypted_path.as_os_str().to_owned(),
+            OsString::from("wanted.txt"),
+            OsString::from("--identity"),
+            identity_path.as_os_str().to_owned(),
+            OsString::from("--output"),
+            encrypted_output.as_os_str().to_owned(),
+        ])
+        .unwrap();
+        assert_eq!(
+            std::fs::read(encrypted_output).unwrap(),
+            b"CLI verified range content"
         );
         std::fs::remove_dir_all(root).unwrap();
     }

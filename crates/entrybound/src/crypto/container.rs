@@ -1198,7 +1198,7 @@ fn scan_public_segments(bytes: &[u8], policy: CryptoPolicy) -> Result<u64> {
     Ok(ordinal)
 }
 
-fn unlock_envelope(
+pub(super) fn unlock_envelope(
     envelope: &wire::CryptoEnvelope,
     features: u64,
     unlock: Unlock<'_>,
@@ -2658,7 +2658,10 @@ fn parse_footer(bytes: &[u8]) -> Result<ParsedFooter> {
     })
 }
 
-fn validate_envelope_policy(envelope: &wire::CryptoEnvelope, features: u64) -> Result<()> {
+pub(super) fn validate_envelope_policy(
+    envelope: &wire::CryptoEnvelope,
+    features: u64,
+) -> Result<()> {
     match envelope.protection_policy {
         1 if !envelope.stanzas.is_empty()
             && envelope
@@ -2699,7 +2702,7 @@ fn validate_envelope_policy(envelope: &wire::CryptoEnvelope, features: u64) -> R
     Ok(())
 }
 
-fn public_inspection(
+pub(super) fn public_inspection(
     envelope: &wire::CryptoEnvelope,
     total: u64,
     segments: Option<u64>,

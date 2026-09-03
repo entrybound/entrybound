@@ -1140,19 +1140,19 @@ pub(crate) fn enforce_decode_policy(
     Ok(())
 }
 
-pub(super) fn has_cross_file_feature(features: FeatureSet) -> bool {
+pub(crate) fn has_cross_file_feature(features: FeatureSet) -> bool {
     features.incompat & FEATURE_CROSS_FILE_COMPRESSION_V1 != 0
 }
 
-pub(super) fn has_codec_transform_feature(features: FeatureSet) -> bool {
+pub(crate) fn has_codec_transform_feature(features: FeatureSet) -> bool {
     features.incompat & FEATURE_CODEC_TRANSFORM_V1 != 0
 }
 
-pub(super) fn has_reconstructive_feature(features: FeatureSet) -> bool {
+pub(crate) fn has_reconstructive_feature(features: FeatureSet) -> bool {
     features.incompat & FEATURE_RECONSTRUCTIVE_TRANSFORM_V1 != 0
 }
 
-pub(super) fn has_whole_object_feature(features: FeatureSet) -> bool {
+pub(crate) fn has_whole_object_feature(features: FeatureSet) -> bool {
     features.incompat & FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1 != 0
 }
 
@@ -1708,17 +1708,17 @@ struct ChunkDecodeModel<'a> {
 
 /// The authoritative fields a Chunk frame header declares exactly once.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(super) struct ChunkFrameHeader {
-    pub(super) stored_len: u64,
-    pub(super) chunk_id: Digest,
-    pub(super) logical_len: u64,
-    pub(super) plan_ref: u64,
-    pub(super) group_ref: Option<Digest>,
-    pub(super) region_owned: bool,
+pub(crate) struct ChunkFrameHeader {
+    pub(crate) stored_len: u64,
+    pub(crate) chunk_id: Digest,
+    pub(crate) logical_len: u64,
+    pub(crate) plan_ref: u64,
+    pub(crate) group_ref: Option<Digest>,
+    pub(crate) region_owned: bool,
 }
 
 /// Returns the Chunk frame header width selected by the archive's features.
-pub(super) const fn chunk_frame_header_len(extended: bool) -> u64 {
+pub(crate) const fn chunk_frame_header_len(extended: bool) -> u64 {
     if extended {
         CHUNK_FRAME_V2_HEADER_LEN
     } else {
@@ -1728,7 +1728,7 @@ pub(super) const fn chunk_frame_header_len(extended: bool) -> u64 {
 
 /// Parses one Chunk frame header. Both layouts share this single authority so
 /// they can never disagree about what a frame declares.
-pub(super) fn parse_chunk_frame_header(
+pub(crate) fn parse_chunk_frame_header(
     header: &[u8],
     extended: bool,
     whole_object: bool,
@@ -1783,7 +1783,7 @@ pub(super) fn parse_chunk_frame_header(
 }
 
 /// Enforces the declared per-Chunk resource bounds shared by both layouts.
-pub(super) fn enforce_chunk_bounds(
+pub(crate) fn enforce_chunk_bounds(
     header: &ChunkFrameHeader,
     declared_budget: ResourceBudget,
 ) -> Result<()> {
@@ -2232,7 +2232,7 @@ pub(super) fn reconstruct_regions(
 /// region's ContentObject record arrives, which is the first moment a
 /// sequential reader knows which Chunks the region owns. `member_lengths` are
 /// the authoritative logical lengths declared by the region-owned Chunk frames.
-pub(super) fn reconstruct_region_members(
+pub(crate) fn reconstruct_region_members(
     region: &crate::eam::ReconstructionRegion,
     object: &crate::eam::ContentObject,
     plans: &BTreeMap<u64, &TransformPlan>,
@@ -2450,7 +2450,7 @@ pub(super) fn physical_prefix(
 /// Both layouts derive their prefix bytes here, so a prefix-coded Chunk decodes
 /// identically whether its predecessors came from a CHUNK_DATA section or from
 /// the sequential reader's bounded group history.
-pub(super) fn physical_prefix_from_slices(history: &[&[u8]], lookback: u32) -> Result<Vec<u8>> {
+pub(crate) fn physical_prefix_from_slices(history: &[&[u8]], lookback: u32) -> Result<Vec<u8>> {
     let lookback = usize::try_from(lookback).map_err(|_| resource("lookback exceeds usize"))?;
     let first = history.len().saturating_sub(lookback);
     let preceding = &history[first..];
@@ -2479,7 +2479,7 @@ pub(super) fn physical_prefix_from_slices(history: &[&[u8]], lookback: u32) -> R
 /// This is the single decode authority shared by the INDEXED section reader and
 /// the sequential STREAM reader. `prefix` carries the bounded-lookback history
 /// for prefix-coded plans and must be `None` for every other plan mode.
-pub(super) fn decode_frame_payload(
+pub(crate) fn decode_frame_payload(
     plan: &TransformPlan,
     stored: &[u8],
     logical_len: u64,
@@ -2678,18 +2678,18 @@ pub(super) fn encode_budget(bytes: &mut [u8], budget: ResourceBudget) {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub(super) struct Preamble {
-    pub(super) version: FormatVersion,
-    pub(super) features: FeatureSet,
-    pub(super) layout: Layout,
-    pub(super) budget_declared: bool,
-    pub(super) budget: ResourceBudget,
-    pub(super) decode: DecodeRequirements,
-    pub(super) stream_dedup_window: u64,
-    pub(super) footer_hint: u64,
+pub(crate) struct Preamble {
+    pub(crate) version: FormatVersion,
+    pub(crate) features: FeatureSet,
+    pub(crate) layout: Layout,
+    pub(crate) budget_declared: bool,
+    pub(crate) budget: ResourceBudget,
+    pub(crate) decode: DecodeRequirements,
+    pub(crate) stream_dedup_window: u64,
+    pub(crate) footer_hint: u64,
 }
 
-pub(super) fn decode_preamble(bytes: &[u8]) -> Result<Preamble> {
+pub(crate) fn decode_preamble(bytes: &[u8]) -> Result<Preamble> {
     if bytes.len() < 8 || bytes[..8] != MAGIC {
         return Err(Diagnostic::new(
             OutcomeClass::Nonconforming,
@@ -3127,7 +3127,7 @@ fn section_id(
     }
 }
 
-fn section_kind(
+pub(super) fn section_kind(
     value: u16,
     extended: bool,
     reconstructive: bool,
