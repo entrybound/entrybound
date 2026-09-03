@@ -133,8 +133,10 @@ fn filesystem_creation_order_cannot_change_cdc_output() {
 
     let first = pack_directory(&first_source, PackOptions::default()).unwrap();
     let second = pack_directory(&second_source, PackOptions::default()).unwrap();
-    assert_eq!(first.bytes, second.bytes);
-    assert_eq!(first.identities, second.identities);
+    // Creation order is now captured on Windows as AUX metadata. It may make
+    // the containers differ, but it must never perturb logical content or CDC.
+    assert_eq!(first.identities.lai, second.identities.lai);
+    assert_eq!(first.identities.pcr, second.identities.pcr);
 }
 
 #[test]

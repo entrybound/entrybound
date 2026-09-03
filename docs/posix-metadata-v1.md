@@ -87,8 +87,10 @@ XAttrV1 is record type 37/version 1: tag 1 exact name bytes, tag 2 exact value
 bytes. Names are nonempty, NUL-free, at most 255 bytes, sorted by raw bytes, and
 unique. Values are at most 16 MiB; an Entry has at most 4096 xattrs. Empty and
 binary values are valid. Generic inspection reports only name, length, and
-SHA-256. ACL/security-named xattrs remain exact POSIX xattrs; no higher-level
-ACL interpretation is introduced here.
+SHA-256. Feature `0x10000` adds a higher-level canonical ACL model. On Linux,
+recognized `system.posix_acl_access` and `system.posix_acl_default` values are
+projected there and are not duplicated in `posix.xattrs`; all other accessible
+xattrs remain exact. Feature-absent archives retain the v2 interpretation.
 
 ## Sparse maps
 
@@ -108,7 +110,9 @@ limits. Canonical sequence framing and checked arithmetic apply before semantic
 construction. INDEXED, STREAM, encrypted private manifests, metadata-first
 random access, representation-only/replanned repack, diff, inspect, and explain
 all use the same Entry/Metadata decoder. Encrypted archives reveal none of this
-private manifest material before authentication.
+private manifest material before authentication. Entry-v3 and MetadataItem-v3
+extend this model without redefining it; see
+[security-metadata-v1.md](security-metadata-v1.md).
 
 Deterministic Entry vectors, including the historical v1 bytes, are in
 [posix-metadata-v1-vectors.txt](posix-metadata-v1-vectors.txt).

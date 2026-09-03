@@ -271,6 +271,8 @@ fn small_cohort_stays_independent_and_v2_v3_remain_readable() {
     assert_eq!(
         reopened.archive.descriptor.features.incompat,
         entrybound::ecf::FEATURE_CROSS_FILE_COMPRESSION_V1
+            | entrybound::ecf::FEATURE_POSIX_METADATA_V1
+            | entrybound::ecf::FEATURE_PLATFORM_SECURITY_METADATA_V1
     );
     verify(&encoded.bytes).unwrap();
 
@@ -280,12 +282,22 @@ fn small_cohort_stays_independent_and_v2_v3_remain_readable() {
     let encoded = encode(&v2, WriteOptions::default()).unwrap();
     let reopened = open(&encoded.bytes).unwrap();
     assert_eq!(reopened.archive.descriptor.planner_id, "balanced-v2");
-    assert_eq!(reopened.archive.descriptor.features.incompat, 0);
+    assert_eq!(
+        reopened.archive.descriptor.features.incompat,
+        entrybound::ecf::FEATURE_POSIX_METADATA_V1
+            | entrybound::ecf::FEATURE_PLATFORM_SECURITY_METADATA_V1
+    );
     verify(&encoded.bytes).unwrap();
 }
 
 fn reset_planning(archive: &mut entrybound::eam::Archive) {
-    archive.descriptor.features = FeatureSet::default();
+    let metadata_features = archive.descriptor.features.incompat
+        & (entrybound::ecf::FEATURE_POSIX_METADATA_V1
+            | entrybound::ecf::FEATURE_PLATFORM_SECURITY_METADATA_V1);
+    archive.descriptor.features = FeatureSet {
+        incompat: metadata_features,
+        ..FeatureSet::default()
+    };
     archive.content_store.dictionaries.clear();
     archive.content_store.chunk_groups.clear();
     archive.content_store.physical_order = archive

@@ -53,6 +53,17 @@ and hardlinks before symlinks, and apply directory-restrictive metadata only
 after descendants exist. See `docs/posix-metadata-v1.md` and
 `docs/filesystem-fidelity-v1.md`.
 
+Platform security metadata v1 is gated by `0x10000` and always requires
+`0x8000`. Entry/Metadata versions 1 and 2 remain permanent; version 3 is
+allowed only for types 3 and 8 and must carry a platform/security semantic.
+ACL, Windows descriptor/attribute/original-reparse, and macOS metadata are AUX;
+opaque ReparsePoint tag/data is LAI. Preserve NFS4 ACE order, canonicalize
+POSIX1E principal order, and never translate Windows descriptors into ACLs.
+Capture and restoration must use safe no-follow wrappers. If exact platform
+bytes cannot be obtained or restored without local unsafe FFI, report the
+capability limitation—do not add unsafe code or claim partial fidelity. See
+`docs/security-metadata-v1.md` and `docs/platform-fidelity-v1.md`.
+
 Compression planner behavior is frozen by planner ID. Do not change the
 candidate levels, probe, cost rule, or parameter encoding of a `*-v1` policy;
 introduce a new planner version. Decoder behavior must depend only on recorded

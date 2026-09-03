@@ -6,9 +6,10 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use entrybound::archive::{
-    ArchiveDiffReport, ConfinementMode, DiffChange, DiffIdentityStatus, DiffTier, ExtractionPolicy,
-    IndexPolicy, InspectionSecurity, InspectionViews, OwnershipPolicy, PackOptions, RepackMode,
-    RepackOptions, SparsePolicy, SymlinkPolicy, XAttrPolicy, archive_diff, archive_metadata_diff,
+    AclPolicy, ArchiveDiffReport, ConfinementMode, DiffChange, DiffIdentityStatus, DiffTier,
+    ExtractionPolicy, IndexPolicy, InspectionSecurity, InspectionViews, OwnershipPolicy,
+    PackOptions, PlatformMetadataPolicy, RepackMode, RepackOptions, ReparsePolicy, SparsePolicy,
+    SymlinkPolicy, WindowsSecurityPolicy, XAttrPolicy, archive_diff, archive_metadata_diff,
     default_pack_output, default_unpack_destination, explain as compression_explain, inspect,
     inspection_json, inspection_json_with_security, list, plan_directory, prepare_repack,
     random_inspection_json, structured_explain, unpack, unpack_opened, unpack_stream,
@@ -87,6 +88,8 @@ Usage:\n\
   ebound unpack <archive.eb|-> [destination] [--identity <file>|--password]\n\
                 [--symlinks refuse|safe|all] [--restore-owner]\n\
                 [--xattrs ignore|restore] [--sparse logical|restore]\n\
+                [--acls ignore|restore] [--windows-security ignore|restore]\n\
+                [--reparse refuse|known-safe|all] [--platform-metadata ignore|restore]\n\
   ebound read <archive.eb|URL> <logical-path> [--output <file|->]\n\
                                [--identity <file>|--password] [--access-report]\n\
   ebound list <archive.eb|URL|-> [--identity <file>|--password]\n\
@@ -2470,6 +2473,43 @@ fn parse_unpack_arguments(arguments: Vec<OsString>) -> Result<(ReadArguments, Ex
                     _ => return Err(usage("--sparse requires logical or restore")),
                 },
             );
+        } else if value == "--acls" {
+            cursor += 1;
+            policy = policy.with_acls(
+                match arguments.get(cursor).and_then(|value| value.to_str()) {
+                    Some("ignore") => AclPolicy::Ignore,
+                    Some("restore") => AclPolicy::Restore,
+                    _ => return Err(usage("--acls requires ignore or restore")),
+                },
+            );
+        } else if value == "--windows-security" {
+            cursor += 1;
+            policy = policy.with_windows_security(
+                match arguments.get(cursor).and_then(|value| value.to_str()) {
+                    Some("ignore") => WindowsSecurityPolicy::Ignore,
+                    Some("restore") => WindowsSecurityPolicy::Restore,
+                    _ => return Err(usage("--windows-security requires ignore or restore")),
+                },
+            );
+        } else if value == "--reparse" {
+            cursor += 1;
+            policy = policy.with_reparse(
+                match arguments.get(cursor).and_then(|value| value.to_str()) {
+                    Some("refuse") => ReparsePolicy::Refuse,
+                    Some("known-safe") => ReparsePolicy::KnownSafe,
+                    Some("all") => ReparsePolicy::All,
+                    _ => return Err(usage("--reparse requires refuse, known-safe, or all")),
+                },
+            );
+        } else if value == "--platform-metadata" {
+            cursor += 1;
+            policy = policy.with_platform_metadata(
+                match arguments.get(cursor).and_then(|value| value.to_str()) {
+                    Some("ignore") => PlatformMetadataPolicy::Ignore,
+                    Some("restore") => PlatformMetadataPolicy::Restore,
+                    _ => return Err(usage("--platform-metadata requires ignore or restore")),
+                },
+            );
         } else {
             filtered.push(value.clone());
         }
@@ -3159,6 +3199,7 @@ fn command_list(arguments: Vec<OsString>) -> Result<()> {
                 EntryKind::Directory => "directory",
                 EntryKind::File => "file",
                 EntryKind::Symlink => "symlink",
+                EntryKind::ReparsePoint => "reparse-point",
             };
             println!("{kind}\t{}", entry.path());
         }
@@ -3176,6 +3217,7 @@ fn command_list(arguments: Vec<OsString>) -> Result<()> {
             EntryKind::Directory => "directory",
             EntryKind::File => "file",
             EntryKind::Symlink => "symlink",
+            EntryKind::ReparsePoint => "reparse-point",
         };
         println!("{kind}\t{}", entry.path);
     }
@@ -4951,7 +4993,10 @@ pub fn main_entry() -> ExitCode {
 #[cfg(test)]
 mod tests {
     use super::{parse_unpack_arguments, run};
-    use entrybound::archive::{OwnershipPolicy, SparsePolicy, SymlinkPolicy, XAttrPolicy};
+    use entrybound::archive::{
+        AclPolicy, OwnershipPolicy, PlatformMetadataPolicy, ReparsePolicy, SparsePolicy,
+        SymlinkPolicy, WindowsSecurityPolicy, XAttrPolicy,
+    };
     use entrybound::diagnostics::ReasonCode;
     use std::ffi::OsString;
     use std::sync::atomic::{AtomicU64, Ordering};
@@ -4974,6 +5019,14 @@ mod tests {
             "restore",
             "--sparse",
             "restore",
+            "--acls",
+            "restore",
+            "--windows-security",
+            "restore",
+            "--reparse",
+            "all",
+            "--platform-metadata",
+            "restore",
         ]))
         .unwrap();
 
@@ -4982,6 +5035,10 @@ mod tests {
         assert_eq!(policy.ownership(), OwnershipPolicy::Restore);
         assert_eq!(policy.xattrs(), XAttrPolicy::Restore);
         assert_eq!(policy.sparse(), SparsePolicy::Restore);
+        assert_eq!(policy.acls(), AclPolicy::Restore);
+        assert_eq!(policy.windows_security(), WindowsSecurityPolicy::Restore);
+        assert_eq!(policy.reparse(), ReparsePolicy::All);
+        assert_eq!(policy.platform_metadata(), PlatformMetadataPolicy::Restore);
     }
 
     fn store_zip(name: &[u8], content: &[u8]) -> Vec<u8> {

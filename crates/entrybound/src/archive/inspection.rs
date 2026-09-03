@@ -195,7 +195,7 @@ pub fn list(archive: &Archive) -> Result<Vec<ListedEntry>> {
         .map(|entry| {
             let logical_bytes = match entry.data() {
                 EntryData::Directory => 0,
-                EntryData::Symlink { .. } => 0,
+                EntryData::Symlink { .. } | EntryData::ReparsePoint { .. } => 0,
                 EntryData::File {
                     content: ContentRef::Internal(digest),
                 } => object_size(archive, *digest)?,

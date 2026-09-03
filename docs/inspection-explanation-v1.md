@@ -43,6 +43,13 @@ explain accepts Directory and Symlink Entries, reports their recorded metadata
 and link-target digest, and marks a content decode plan `NOT_RECORDED` because
 it is not applicable.
 
+Platform-security metadata follows the same evidence rule. ACL counts,
+descriptor/reparse lengths and SHA-256, and platform flags are `RECORDED`;
+platform and privilege restoration capability is `DERIVED`. Generic inspect
+does not dump SID/principal sets, raw descriptors, reparse payloads, or xattr
+values. ReparsePoint is an explicit semantic Entry kind and has no content
+decode plan.
+
 `repack --profile ... --dry-run` is prospective rather than archival evidence.
 It compares source and target planner, Chunk counts, unique Chunks, stored
 bytes, decode working set, dictionary/group/region counts, PCR, and prospective

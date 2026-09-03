@@ -589,6 +589,58 @@ fn semantic_metadata_changes(
                         Some(&right_digest.to_string()),
                     );
                 }
+                if let (
+                    EntryData::Symlink {
+                        target: left_target,
+                    },
+                    EntryData::Symlink {
+                        target: right_target,
+                    },
+                ) = (left_entry.data(), right_entry.data())
+                    && left_target != right_target
+                {
+                    change(
+                        out,
+                        DiffTier::Semantic,
+                        &path,
+                        "symlink_target",
+                        Some(&format!(
+                            "{} bytes sha256:{}",
+                            left_target.bytes().len(),
+                            sha256_exact(left_target.bytes())
+                        )),
+                        Some(&format!(
+                            "{} bytes sha256:{}",
+                            right_target.bytes().len(),
+                            sha256_exact(right_target.bytes())
+                        )),
+                    );
+                }
+                if let (
+                    EntryData::ReparsePoint { value: left_value },
+                    EntryData::ReparsePoint { value: right_value },
+                ) = (left_entry.data(), right_entry.data())
+                    && left_value != right_value
+                {
+                    change(
+                        out,
+                        DiffTier::Semantic,
+                        &path,
+                        "windows_reparse_point",
+                        Some(&format!(
+                            "tag=0x{:08x} {} bytes sha256:{}",
+                            left_value.tag(),
+                            left_value.data().len(),
+                            sha256_exact(left_value.data())
+                        )),
+                        Some(&format!(
+                            "tag=0x{:08x} {} bytes sha256:{}",
+                            right_value.tag(),
+                            right_value.data().len(),
+                            sha256_exact(right_value.data())
+                        )),
+                    );
+                }
             }
             (None, None) => unreachable!(),
         }
@@ -708,6 +760,31 @@ fn semantic_changes(left: &Archive, right: &Archive, out: &mut Vec<DiffChange>) 
                             "{} bytes sha256:{}",
                             right_target.bytes().len(),
                             sha256_exact(right_target.bytes())
+                        )),
+                    );
+                }
+                if let (
+                    EntryData::ReparsePoint { value: left_value },
+                    EntryData::ReparsePoint { value: right_value },
+                ) = (left_entry.data(), right_entry.data())
+                    && left_value != right_value
+                {
+                    change(
+                        out,
+                        DiffTier::Semantic,
+                        &path,
+                        "windows_reparse_point",
+                        Some(&format!(
+                            "tag=0x{:08x} {} bytes sha256:{}",
+                            left_value.tag(),
+                            left_value.data().len(),
+                            sha256_exact(left_value.data())
+                        )),
+                        Some(&format!(
+                            "tag=0x{:08x} {} bytes sha256:{}",
+                            right_value.tag(),
+                            right_value.data().len(),
+                            sha256_exact(right_value.data())
                         )),
                     );
                 }
@@ -1017,6 +1094,7 @@ fn kind_name(kind: crate::eam::EntryKind) -> &'static str {
         crate::eam::EntryKind::Directory => "directory",
         crate::eam::EntryKind::File => "file",
         crate::eam::EntryKind::Symlink => "symlink",
+        crate::eam::EntryKind::ReparsePoint => "reparse-point",
     }
 }
 fn index_name(status: IndexStatus) -> &'static str {
@@ -1109,6 +1187,26 @@ fn metadata_item_text(item: &crate::eam::MetadataItem) -> String {
                 sha256_exact(&bytes)
             )
         }
+        MetadataValue::Acls(values) => format!(
+            "acls={},aces={}",
+            values.len(),
+            values.iter().map(|acl| acl.entries().len()).sum::<usize>()
+        ),
+        MetadataValue::WindowsSecurityDescriptor(value) => format!(
+            "bytes={},dacl_aces={:?},sacl_aces={:?},sha256:{}",
+            value.bytes().len(),
+            value.dacl_entries(),
+            value.sacl_entries(),
+            sha256_exact(value.bytes())
+        ),
+        MetadataValue::WindowsFileAttributes(value) => format!("0x{value:08x}"),
+        MetadataValue::WindowsReparseOriginal(value) => format!(
+            "tag=0x{:08x},bytes={},sha256:{}",
+            value.tag(),
+            value.data().len(),
+            sha256_exact(value.data())
+        ),
+        MetadataValue::MacosFlags(value) => format!("0x{value:08x}"),
     }
 }
 
@@ -1266,6 +1364,17 @@ pub fn inspection_json_with_security(
                     );
                     out.push('}');
                 }
+                EntryData::ReparsePoint { value } => {
+                    out.push_str("null,\"logical_bytes\":0,\"reparse_point\":{");
+                    let _ = write!(
+                        out,
+                        "\"tag\":{},\"length\":{},\"sha256\":\"{}\"",
+                        value.tag(),
+                        value.data().len(),
+                        sha256_exact(value.data())
+                    );
+                    out.push('}');
+                }
                 EntryData::File {
                     content: ContentRef::Internal(digest),
                 } => {
@@ -1338,6 +1447,66 @@ pub fn inspection_json_with_security(
                 );
             }
             out.push_str("]}");
+            let acl_count = entry.metadata().acls().len();
+            let ace_count = entry
+                .metadata()
+                .acls()
+                .iter()
+                .map(|acl| acl.entries().len())
+                .sum::<usize>();
+            let _ = write!(
+                out,
+                ",\"platform_security\":{{\"acl_count\":{acl_count},\"ace_count\":{ace_count},\"windows_security_descriptor\":"
+            );
+            match entry.metadata().windows_security_descriptor() {
+                Some(value) => {
+                    let _ = write!(
+                        out,
+                        "{{\"length\":{},\"dacl_aces\":{},\"sacl_aces\":{},\"sha256\":\"{}\"}}",
+                        value.bytes().len(),
+                        value
+                            .dacl_entries()
+                            .map_or_else(|| "null".to_owned(), |count| count.to_string()),
+                        value
+                            .sacl_entries()
+                            .map_or_else(|| "null".to_owned(), |count| count.to_string()),
+                        sha256_exact(value.bytes())
+                    );
+                }
+                None => out.push_str("null"),
+            }
+            out.push_str(",\"windows_file_attributes\":");
+            match entry.metadata().windows_file_attributes() {
+                Some(value) => {
+                    let _ = write!(out, "{value}");
+                }
+                None => out.push_str("null"),
+            }
+            out.push_str(",\"windows_creation_time\":");
+            write_timestamp_json(&mut out, entry.metadata().windows_creation_time());
+            out.push_str(",\"windows_reparse_original\":");
+            match entry.metadata().windows_reparse_original() {
+                Some(value) => {
+                    let _ = write!(
+                        out,
+                        "{{\"tag\":{},\"length\":{},\"sha256\":\"{}\"}}",
+                        value.tag(),
+                        value.data().len(),
+                        sha256_exact(value.data())
+                    );
+                }
+                None => out.push_str("null"),
+            }
+            out.push_str(",\"macos_flags\":");
+            match entry.metadata().macos_flags() {
+                Some(value) => {
+                    let _ = write!(out, "{value}");
+                }
+                None => out.push_str("null"),
+            }
+            out.push_str(",\"macos_birthtime\":");
+            write_timestamp_json(&mut out, entry.metadata().macos_birthtime());
+            out.push('}');
             out.push('}');
         }
         out.push_str("],\"content_objects\":[");
@@ -1830,7 +1999,10 @@ pub fn structured_explain(
             EvidenceClass::Derived,
             path,
             "metadata_restorability",
-            if entry.metadata().uses_posix_v1() {
+            if entry.metadata().uses_posix_v1()
+                || entry.metadata().uses_platform_security_v1()
+                || matches!(entry.data(), EntryData::ReparsePoint { .. })
+            {
                 "policy- and platform-dependent"
             } else {
                 "bootstrap metadata only"
@@ -1855,6 +2027,25 @@ pub fn structured_explain(
                     target.bytes().len(),
                     sha256_exact(target.bytes())
                 ),
+            ));
+        }
+        if let EntryData::ReparsePoint { value } = entry.data() {
+            facts.push(fact(
+                EvidenceClass::Recorded,
+                path,
+                "windows_reparse_point",
+                &format!(
+                    "tag=0x{:08x} {} bytes sha256:{}",
+                    value.tag(),
+                    value.data().len(),
+                    sha256_exact(value.data())
+                ),
+            ));
+            facts.push(fact(
+                EvidenceClass::Derived,
+                path,
+                "reparse_restorability",
+                "refused by default; exact restoration requires Windows and an explicit policy",
             ));
         }
         let EntryData::File {
@@ -2122,6 +2313,21 @@ fn json_string(out: &mut String, value: &str) {
     out.push('"');
 }
 
+fn write_timestamp_json(out: &mut String, value: Option<crate::eam::Timestamp>) {
+    if let Some(value) = value {
+        let _ = write!(
+            out,
+            "{{\"seconds\":{},\"nanoseconds\":{},\"precision\":\"{:?}\",\"restorable\":{}}}",
+            value.seconds(),
+            value.nanoseconds(),
+            value.source_precision(),
+            value.restorable()
+        );
+    } else {
+        out.push_str("null");
+    }
+}
+
 fn hex_bytes(bytes: &[u8]) -> String {
     let mut output = String::with_capacity(bytes.len().saturating_mul(2));
     for byte in bytes {
@@ -2135,9 +2341,31 @@ mod tests {
     use super::*;
     use crate::archive::plan_observed_archive;
     use crate::eam::{
-        ConversionProvenance, Entry, EntryData, EntryIdentity, FidelityReport, LogicalPath,
-        MetadataItem, MetadataSet,
+        Acl, AclDialect, AclEntry, AclEntryType, AclPrincipal, AclScope, ConversionProvenance,
+        Entry, EntryData, EntryIdentity, FidelityReport, LogicalPath, MetadataItem, MetadataSet,
+        WindowsReparsePoint,
     };
+
+    fn posix_acl(named_permissions: u32) -> Acl {
+        Acl::new(
+            AclDialect::Posix1e,
+            AclScope::Access,
+            vec![
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::UserObj, 6, 0).unwrap(),
+                AclEntry::new(
+                    AclEntryType::Allow,
+                    AclPrincipal::User(1000),
+                    named_permissions,
+                    0,
+                )
+                .unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::GroupObj, 4, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::Mask, 4, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::Other, 0, 0).unwrap(),
+            ],
+        )
+        .unwrap()
+    }
 
     fn opened_hardlink_fixture(linked: bool) -> OpenedArchive {
         let content = Box::<[u8]>::from(b"hardlink topology bytes".as_slice());
@@ -2242,6 +2470,49 @@ mod tests {
             },
         )
         .unwrap();
+        open(&encoded.bytes).unwrap()
+    }
+
+    fn opened_acl_fixture(named_permissions: u32) -> OpenedArchive {
+        let content = Box::<[u8]>::from(b"ACL identity-tier bytes".as_slice());
+        let content_digest = crate::identity::sha256_exact(&content);
+        let archive = plan_observed_archive(
+            vec![Entry::new(
+                LogicalPath::from_utf8(["secured.txt"]).unwrap(),
+                EntryData::File {
+                    content: ContentRef::Internal(content_digest),
+                },
+                MetadataSet::new(vec![
+                    MetadataItem::executable(false),
+                    MetadataItem::posix_mode(0o640),
+                    MetadataItem::acls(vec![posix_acl(named_permissions)]).unwrap(),
+                ])
+                .unwrap(),
+                EntryIdentity::default(),
+            )],
+            vec![content],
+            FidelityReport::default(),
+            ConversionProvenance {
+                source_format: "test".to_owned(),
+                adapter_id: "entrybound/platform-diff-test-v1".to_owned(),
+                source_digest: Digest::ZERO,
+                import_mode: "strict".to_owned(),
+                source_entry_count: 1,
+                observation_count: 0,
+                omission_count: 0,
+                refinement_count: 0,
+                divergence_count: 0,
+                irreconcilable_count: 0,
+                resolutions: Box::default(),
+                synthesized_ancestors: Box::default(),
+                unsupported_metadata: Box::default(),
+                outcome: "accepted".to_owned(),
+            },
+            None,
+            CompressionProfile::Fast,
+        )
+        .unwrap();
+        let encoded = encode(&archive, WriteOptions::default()).unwrap();
         open(&encoded.bytes).unwrap()
     }
 
@@ -2371,6 +2642,67 @@ mod tests {
             !report.changes.iter().any(
                 |change| change.tier == DiffTier::Semantic || change.tier == DiffTier::Physical
             )
+        );
+    }
+
+    #[test]
+    fn platform_security_diff_respects_auxiliary_and_semantic_tiers() {
+        let left = opened_acl_fixture(4);
+        let right = opened_acl_fixture(6);
+        let report = archive_diff(&left, &right).unwrap();
+        assert_eq!(report.lai, DiffIdentityStatus::Same);
+        assert_eq!(report.aux, DiffIdentityStatus::Different);
+        assert_eq!(report.pcr, DiffIdentityStatus::Same);
+        assert!(report.changes.iter().any(|change| {
+            change.tier == DiffTier::Auxiliary && change.field == "security.acls"
+        }));
+        assert!(
+            !report
+                .changes
+                .iter()
+                .any(|change| { matches!(change.tier, DiffTier::Semantic | DiffTier::Physical) })
+        );
+
+        let repacked = prepare_repack(
+            &left,
+            RepackOptions {
+                mode: RepackMode::RepresentationOnly,
+                layout: Layout::Stream,
+                index: IndexPolicy::Preserve,
+                stream_window: StreamWindow::Auto,
+            },
+        )
+        .unwrap();
+        assert_eq!(repacked.verified.archive.entry_set, left.archive.entry_set);
+        assert!(repacked.analysis.lai_equal);
+        assert!(repacked.analysis.aux_equal);
+        assert!(repacked.analysis.pcr_equal);
+
+        let changed = plan_observed_archive(
+            vec![Entry::new(
+                LogicalPath::from_utf8(["secured.txt"]).unwrap(),
+                EntryData::ReparsePoint {
+                    value: WindowsReparsePoint::new(0xa000_001d, b"opaque-v1".to_vec()).unwrap(),
+                },
+                MetadataSet::default(),
+                EntryIdentity::default(),
+            )],
+            Vec::new(),
+            FidelityReport::default(),
+            left.archive.conversion.clone().unwrap(),
+            None,
+            CompressionProfile::Fast,
+        )
+        .unwrap();
+        let encoded = encode(&changed, WriteOptions::default()).unwrap();
+        let reparse = open(&encoded.bytes).unwrap();
+        let report = archive_diff(&left, &reparse).unwrap();
+        assert_eq!(report.lai, DiffIdentityStatus::Different);
+        assert!(
+            report
+                .changes
+                .iter()
+                .any(|change| change.tier == DiffTier::Semantic && change.field == "kind")
         );
     }
 

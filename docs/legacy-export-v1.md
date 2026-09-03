@@ -109,3 +109,12 @@ independent equal files after explicit lossy approval. A Symlink is refused by
 both frozen v1 profiles because neither existing encoder has a canonical link
 record contract. A future `tar/pax-v2`, rather than an in-place edit to v1,
 would be required for full native POSIX fidelity.
+
+## Platform security metadata expansion
+
+The later `platform-security-metadata-v1` feature does not redefine either
+target profile. ACLs, Windows security descriptors and non-semantic file
+attributes/times, original Windows symlink reparse bytes, and macOS
+flags/birthtime produce typed `METADATA_UNSUPPORTED` LOSSY issues. Opaque
+ReparsePoint Entries are REFUSED because neither frozen target profile has an
+equivalent namespace object. Target bytes for older EAMs remain unchanged.

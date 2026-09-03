@@ -155,6 +155,14 @@ is present. Entry v1 and MetadataItem v1 are never reinterpreted. Nested record
 types 37–39 encode xattrs and sparse maps. Exact cardinality, identity, and
 feature-presence rules are in [posix-metadata-v1.md](posix-metadata-v1.md).
 
+Required incompatibility feature `0x10000`
+(`platform-security-metadata-v1`) requires `0x8000` and selects Entry type
+3/version 3 plus MetadataItem type 8/version 3 for canonical ACL,
+Windows-security/reparse, or macOS metadata. New nested types 40–43 carry ACL,
+ACE, self-relative security-descriptor, and reparse objects. Older record
+versions are unchanged. See
+[security-metadata-v1.md](security-metadata-v1.md).
+
 Strict tar-family and gzip/Zstandard/XZ/bzip2 imports reuse canonical type 28;
 no new native record or feature is required. Layer formats, exact outer source
 digest, decoded-child digest, wrapper integrity/member count, tar refinements,
@@ -245,7 +253,7 @@ selects the extended schema: DESCRIPTOR (1), TRANSFORM_PLANS (2), DICTIONARIES
 (3), CHUNK_GROUPS (4), CHUNK_DATA (5), MANIFEST_RECORDS (6), FIDELITY (7), and
 optionally INDEX (8). Both new authoritative sections occur exactly once even
 when empty. The unencrypted reader recognizes incompatibility bits `0x1`,
-`0x2`, `0x4`, `0x8`, `0x10`, and `0x8000`; the crypto-v1 INDEXED reader additionally
+`0x2`, `0x4`, `0x8`, `0x10`, `0x8000`, and `0x10000`; the crypto-v1 INDEXED reader additionally
 recognizes the implemented crypto bits listed above. Unencrypted readers also
 recognize `0x2000` and `0x4000`. All readers reject every other
 unknown required bit. `0x2` changes only the TransformPlan field-3 item schema
@@ -299,12 +307,14 @@ Record type and strictly increasing field tags are:
 | TransformPlan | 2 | plan ID(1), identifier(2), transform sequence(3), codec(4), parameters(5), optional dictionary(6), decode window(7), working set(8), flags(9) |
 | Entry | 3 | LogicalPath components(1), kind(2), ContentRef kind(3), optional logical digest(4), MetadataSet(5), identity digest(6), auxiliary digest(7) |
 | Entry v2 | 3/version 2 | LogicalPath components(1), explicit kind(2), optional File content digest(3), optional Symlink target encoding(4), optional Symlink target bytes(5), MetadataItem-v2 sequence(6), identity digest(7), auxiliary digest(8) |
+| Entry v3 | 3/version 3 | Entry-v2 fields(1-8), kind 4 ReparsePoint, optional canonical WindowsReparsePointV1 bytes(9) |
 | ContentObject | 4 | logical digest(1), chunk root(2), ordered Chunk references(3) |
 | FidelityReport | 5 | captured(1), unavailable(2), degraded(3), platform(4), filesystem declarations(5) |
 | Index entry | 6 | Chunk digest(1), absolute frame offset(2), stored length(3) |
 | PathComponent | 7 | encoding(1), bytes(2) |
 | MetadataItem | 8 | name(1), criticality(2), restorability(3), boolean(4) or timestamp(5) |
 | MetadataItem v2 | 8/version 2 | registered name ID(1), Optional criticality(2), Restorable disposition(3), exactly one bool(4), Timestamp record bytes(5), u32(6), digest(7), XAttr sequence(8), or SparseMap bytes(9), as selected by the closed registry |
+| MetadataItem v3 | 8/version 3 | v2 registry plus ACL sequence(10), WindowsSecurityDescriptor bytes(11), and WindowsReparsePoint bytes(12); timestamp/u32 fields are reused by their closed name IDs |
 | Timestamp | 9 | signed seconds(1), nanoseconds(2), source precision(3), restorable(4) |
 | Fidelity issue | 10 | class(1), reason(2), optional entry scope(3) |
 | Dictionary | 11 | dictionary digest(1), codec(2), format(3), construction(4), exact bytes(5) |
@@ -328,6 +338,10 @@ Record type and strictly increasing field tags are:
 | XAttrV1 | 37 | exact name bytes(1), exact value bytes(2) |
 | SparseMapV1 | 38 | logical file size(1), ordered SparseExtent sequence(2) |
 | SparseExtentV1 | 39 | offset(1), nonzero length(2) |
+| AclV1 | 40 | dialect(1), scope(2), ordered AclEntryV1 sequence(3) |
+| AclEntryV1 | 41 | ACE type(1), principal form(2), optional numeric ID(3), optional UUID(4), permissions(5), flags(6) |
+| WindowsSecurityDescriptorV1 | 42 | exact validated self-relative descriptor bytes(1) |
+| WindowsReparsePointV1 | 43 | nonzero tag(1), exact bounded payload(2) |
 | ConversionResolution (nested only) | 29 | conflict class(1), semantic field(2), authority names(3), observed values(4), action(5) |
 
 Without `codec-transform-v1`, TransformPlan field 3 remains the historical
@@ -378,7 +392,9 @@ The domains used are `chunk-tree/{leaf,empty,node}`,
 
 - Entry identity binds identity profile, component bytes and encodings, kind,
   ContentRef kind, logical digest, and `core.executable`.
-- Entry AUX binds every remaining implemented metadata item (`core.mtime`).
+- Entry AUX binds every remaining implemented metadata item, including mtime,
+  POSIX topology, ACLs, exact Windows security/platform metadata, and macOS
+  flags/birthtime. ReparsePoint tag/data and Symlink target remain LAI facts.
 - LAI binds SHA-256, manifest root, `identity/v1`, Complete role, entry count,
   and total logical size.
 - PCR binds SHA-256, the digest-ordered `(logical_digest, chunk_root)` list,

@@ -6,16 +6,18 @@ use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use cap_std::ambient_authority;
+#[cfg(windows)]
+use cap_std::fs::MetadataExt;
 use cap_std::fs::{Dir, DirEntry, Metadata, OpenOptions};
 #[cfg(unix)]
 use cap_std::fs::{MetadataExt, PermissionsExt};
 
-use super::{
-    CollisionPolicy, ConfinementMode, ExtractionPolicy, SparsePolicy, SymlinkPolicy,
-    bootstrap_resource_policy,
-};
 #[cfg(unix)]
-use super::{OwnershipPolicy, XAttrPolicy};
+use super::{AclPolicy, OwnershipPolicy, XAttrPolicy};
+use super::{
+    CollisionPolicy, ConfinementMode, ExtractionPolicy, PlatformMetadataPolicy, ReparsePolicy,
+    SparsePolicy, SymlinkPolicy, WindowsSecurityPolicy, bootstrap_resource_policy,
+};
 use crate::chunker::{
     EncryptedBoundaryKey, chunk_ranges, chunk_ranges_encrypted, select_parameters,
     select_parameters_encrypted,
@@ -24,16 +26,19 @@ use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 #[cfg(target_os = "linux")]
 use crate::eam::SparseExtent;
 use crate::eam::{
-    Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, ConversionProvenance,
+    Acl, Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, ConversionProvenance,
     DecodeRequirements, Digest, DigestAlgorithm, Entry, EntryData, EntryIdentity, EntrySet,
     FeatureSet, FidelityIssue, FidelityReport, IdentityProfile, Index, Layout, LinkTarget,
     LogicalPath, MetadataItem, MetadataSet, ResourceBudget, SparseMap, Timestamp,
     TimestampPrecision, XAttr,
 };
+#[cfg(target_os = "linux")]
+use crate::eam::{AclDialect, AclEntry, AclEntryType, AclPrincipal, AclScope};
 use crate::ecf::{
-    EncodedArchive, FEATURE_CONVERSION_PROVENANCE_V1, FEATURE_POSIX_METADATA_V1, SequentialLimits,
-    StagedChunks, StreamContentPolicy, StreamReport, StreamWriteOptions, StreamWriteSummary,
-    WriteOptions, encode, encode_stream, open_stream_with_limits, open_with_limits,
+    EncodedArchive, FEATURE_CONVERSION_PROVENANCE_V1, FEATURE_PLATFORM_SECURITY_METADATA_V1,
+    FEATURE_POSIX_METADATA_V1, SequentialLimits, StagedChunks, StreamContentPolicy, StreamReport,
+    StreamWriteOptions, StreamWriteSummary, WriteOptions, encode, encode_stream,
+    open_stream_with_limits, open_with_limits,
 };
 use crate::identity::{build_content_from_ranges, hardlink_group_id, sha256_exact};
 use crate::planner::{CompressionProfile, UNPLANNED_PLAN_ID, plan_archive_v6};
@@ -196,9 +201,7 @@ pub(crate) fn replan_archive_encrypted(
     if source.preservation.is_some() {
         descriptor.features.incompat |= crate::ecf::FEATURE_LEGACY_PRESERVATION_V1;
     }
-    if source.entry_set.entries().iter().any(Entry::uses_posix_v1) {
-        descriptor.features.incompat |= FEATURE_POSIX_METADATA_V1;
-    }
+    apply_metadata_features(source.entry_set.entries(), &mut descriptor.features);
     descriptor.layout = Layout::Indexed;
     descriptor.role = ArchiveRole::Complete;
     descriptor.budget_declared = true;
@@ -320,9 +323,7 @@ pub fn replan_archive(source: &Archive, profile: CompressionProfile) -> Result<A
     if source.preservation.is_some() {
         descriptor.features.incompat |= crate::ecf::FEATURE_LEGACY_PRESERVATION_V1;
     }
-    if source.entry_set.entries().iter().any(Entry::uses_posix_v1) {
-        descriptor.features.incompat |= FEATURE_POSIX_METADATA_V1;
-    }
+    apply_metadata_features(source.entry_set.entries(), &mut descriptor.features);
     descriptor.layout = Layout::Indexed;
     descriptor.role = ArchiveRole::Complete;
     descriptor.budget_declared = true;
@@ -384,6 +385,17 @@ fn build_archive_with_boundary(
             ),
         )
     })?;
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::MetadataExt as _;
+        if root_metadata.file_attributes() & 0x0000_0400 != 0 {
+            return Err(Diagnostic::new(
+                OutcomeClass::Unsupported,
+                ReasonCode::InvalidReparsePoint,
+                "source root is a Windows reparse point; exact no-follow reparse capture is unavailable",
+            ));
+        }
+    }
     if root_metadata.file_type().is_symlink() {
         return Err(unsupported(input.display().to_string(), "symbolic link"));
     }
@@ -571,6 +583,22 @@ fn materialize(
         if let EntryData::Symlink { target } = entry.data() {
             validate_symlink_policy(entry.path(), target, policy.symlinks())?;
         }
+        if matches!(entry.data(), EntryData::ReparsePoint { .. }) {
+            let detail = match policy.reparse() {
+                ReparsePolicy::Refuse => "opaque Windows reparse extraction is refused by policy",
+                ReparsePolicy::KnownSafe => {
+                    "opaque Windows reparse Entries are not a recognized KnownSafe type"
+                }
+                ReparsePolicy::All => {
+                    "exact opaque reparse restoration has no audited safe API in this build"
+                }
+            };
+            return Err(Diagnostic::new(
+                OutcomeClass::Unsupported,
+                ReasonCode::InvalidReparsePoint,
+                format!("{}: {detail}", entry.path()),
+            ));
+        }
     }
 
     match std::fs::create_dir(destination) {
@@ -685,7 +713,7 @@ fn materialize(
                     &mut report,
                 );
             }
-            EntryData::Symlink { .. } => continue,
+            EntryData::Symlink { .. } | EntryData::ReparsePoint { .. } => continue,
         }
         report.entries_created = report
             .entries_created
@@ -916,9 +944,7 @@ impl Scan {
         }
         let entry_set = EntrySet::new(self.entries)?;
         let mut features = FeatureSet::default();
-        if entry_set.entries().iter().any(Entry::uses_posix_v1) {
-            features.incompat |= FEATURE_POSIX_METADATA_V1;
-        }
+        apply_metadata_features(entry_set.entries(), &mut features);
         let mut archive = Archive {
             descriptor: ArchiveDescriptor {
                 format_major: 0,
@@ -1047,6 +1073,14 @@ pub(crate) fn plan_observed_archive(
     Ok(archive)
 }
 
+fn apply_metadata_features(entries: &[Entry], features: &mut FeatureSet) {
+    if entries.iter().any(Entry::uses_platform_security_v1) {
+        features.incompat |= FEATURE_POSIX_METADATA_V1 | FEATURE_PLATFORM_SECURITY_METADATA_V1;
+    } else if entries.iter().any(Entry::uses_posix_v1) {
+        features.incompat |= FEATURE_POSIX_METADATA_V1;
+    }
+}
+
 fn scan_directory(
     directory: &Dir,
     ambient_root: &Path,
@@ -1069,6 +1103,21 @@ fn scan_directory(
         let file_type = source_entry
             .file_type()
             .map_err(|error| io(format!("inspect source entry {path}"), error))?;
+        #[cfg(windows)]
+        {
+            let no_follow = directory
+                .symlink_metadata(source_entry.file_name())
+                .map_err(|error| io(format!("inspect source reparse state {path}"), error))?;
+            if no_follow.file_attributes() & 0x0000_0400 != 0 {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Unsupported,
+                    ReasonCode::InvalidReparsePoint,
+                    format!(
+                        "source entry {path} is a Windows reparse object; exact tag/payload capture requires an audited safe platform API"
+                    ),
+                ));
+            }
+        }
         if file_type.is_symlink() {
             let metadata = directory
                 .symlink_metadata(source_entry.file_name())
@@ -1080,6 +1129,7 @@ fn scan_directory(
             scan.account_metadata_bytes(target.bytes().len())?;
             let source_path = ambient_path(ambient_root, &components);
             let xattrs = captured_xattrs(&source_path, scan)?;
+            let platform = captured_macos_metadata(&source_path, scan)?;
             let after = directory
                 .symlink_metadata(source_entry.file_name())
                 .map_err(|error| io(format!("reinspect source symlink {path}"), error))?;
@@ -1089,7 +1139,7 @@ fn scan_directory(
             scan.entries.push(Entry::new(
                 path,
                 EntryData::Symlink { target },
-                metadata_set(&metadata, xattrs, None)?,
+                metadata_set(&metadata, xattrs, None, None, platform)?,
                 EntryIdentity::default(),
             ));
         } else if file_type.is_dir() {
@@ -1099,7 +1149,10 @@ fn scan_directory(
             let metadata = child
                 .dir_metadata()
                 .map_err(|error| io(format!("inspect source directory {path}"), error))?;
-            let xattrs = captured_xattrs(&ambient_path(ambient_root, &components), scan)?;
+            let source_path = ambient_path(ambient_root, &components);
+            let acls = captured_acls(&source_path, true, scan)?;
+            let xattrs = captured_xattrs(&source_path, scan)?;
+            let platform = captured_macos_metadata(&source_path, scan)?;
             let after = child
                 .dir_metadata()
                 .map_err(|error| io(format!("reinspect source directory {path}"), error))?;
@@ -1109,7 +1162,7 @@ fn scan_directory(
             scan.entries.push(Entry::new(
                 path.clone(),
                 EntryData::Directory,
-                metadata_set(&metadata, xattrs, None)?,
+                metadata_set(&metadata, xattrs, None, acls, platform)?,
                 EntryIdentity::default(),
             ));
             scan_directory(&child, ambient_root, &components, retries, scan)?;
@@ -1123,8 +1176,10 @@ fn scan_directory(
             let (plaintext, metadata) =
                 capture_entry_with_probe(&source_entry, retries, |_| Ok(false))?;
             let source_path = ambient_path(ambient_root, &components);
+            let acls = captured_acls(&source_path, false, scan)?;
             let xattrs = captured_xattrs(&source_path, scan)?;
             let sparse = captured_sparse(&source_entry, metadata.len(), scan)?;
+            let platform = captured_macos_metadata(&source_path, scan)?;
             let after = source_entry
                 .open()
                 .and_then(|file| file.metadata())
@@ -1133,7 +1188,7 @@ fn scan_directory(
                 return Err(source_unstable(path.to_string()));
             }
             let digest = sha256_exact(&plaintext);
-            let metadata_set = metadata_set(&metadata, xattrs, sparse)?;
+            let metadata_set = metadata_set(&metadata, xattrs, sparse, acls, platform)?;
             scan.entries.push(Entry::new(
                 path.clone(),
                 EntryData::File {
@@ -1220,6 +1275,8 @@ fn metadata_set(
     metadata: &Metadata,
     xattrs: Option<Vec<XAttr>>,
     sparse: Option<SparseMap>,
+    acls: Option<Vec<Acl>>,
+    platform: Vec<MetadataItem>,
 ) -> Result<MetadataSet> {
     let modified = metadata
         .modified()
@@ -1243,7 +1300,87 @@ fn metadata_set(
     if let Some(sparse) = sparse {
         items.push(MetadataItem::sparse_map(sparse));
     }
+    if let Some(acls) = acls
+        && !acls.is_empty()
+    {
+        items.push(MetadataItem::acls(acls)?);
+    }
+    items.extend(platform);
+    #[cfg(windows)]
+    capture_windows_portable_metadata(metadata, &mut items)?;
     MetadataSet::new(items)
+}
+
+#[cfg(windows)]
+fn capture_windows_portable_metadata(
+    metadata: &Metadata,
+    items: &mut Vec<MetadataItem>,
+) -> Result<()> {
+    const SEMANTIC_AUTHORITY_BITS: u32 = 0x0000_0010 | 0x0000_0200 | 0x0000_0400;
+    items.push(MetadataItem::windows_file_attributes(
+        metadata.file_attributes() & !SEMANTIC_AUTHORITY_BITS,
+    )?);
+    items.push(MetadataItem::windows_creation_time(windows_filetime(
+        metadata.creation_time(),
+    )?));
+    Ok(())
+}
+
+#[cfg(windows)]
+fn windows_filetime(value: u64) -> Result<Timestamp> {
+    const TICKS_PER_SECOND: u64 = 10_000_000;
+    const WINDOWS_TO_UNIX_SECONDS: i128 = 11_644_473_600;
+    let seconds = i128::from(value / TICKS_PER_SECOND) - WINDOWS_TO_UNIX_SECONDS;
+    let seconds = i64::try_from(seconds).map_err(|_| {
+        Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidWindowsMetadata,
+            "Windows creation time is outside Entrybound's signed-seconds range",
+        )
+    })?;
+    let nanoseconds = u32::try_from(value % TICKS_PER_SECOND)
+        .unwrap_or_default()
+        .saturating_mul(100);
+    Timestamp::new(
+        seconds,
+        nanoseconds,
+        TimestampPrecision::Hectonanosecond,
+        true,
+    )
+}
+
+#[cfg(target_os = "macos")]
+fn captured_macos_metadata(path: &Path, scan: &mut Scan) -> Result<Vec<MetadataItem>> {
+    use std::os::macos::fs::MetadataExt as _;
+
+    let metadata = std::fs::symlink_metadata(path).map_err(|error| {
+        io(
+            format!("capture macOS metadata for {}", path.display()),
+            error,
+        )
+    })?;
+    let nanoseconds = u32::try_from(metadata.st_birthtime_nsec()).map_err(|_| {
+        Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidMacosMetadata,
+            "macOS birthtime nanoseconds are outside the canonical range",
+        )
+    })?;
+    scan.account_metadata_bytes(16)?;
+    Ok(vec![
+        MetadataItem::macos_flags(metadata.st_flags())?,
+        MetadataItem::macos_birthtime(Timestamp::new(
+            metadata.st_birthtime(),
+            nanoseconds,
+            TimestampPrecision::Nanosecond,
+            false,
+        )?),
+    ])
+}
+
+#[cfg(not(target_os = "macos"))]
+fn captured_macos_metadata(_path: &Path, _scan: &mut Scan) -> Result<Vec<MetadataItem>> {
+    Ok(Vec::new())
 }
 
 fn ambient_path(root: &Path, components: &[String]) -> PathBuf {
@@ -1270,6 +1407,123 @@ fn link_target_from_os(value: &OsStr) -> Result<LinkTarget> {
     LinkTarget::canonical(value.as_bytes().to_vec().into_boxed_slice())
 }
 
+#[cfg(target_os = "linux")]
+fn captured_acls(path: &Path, directory: bool, scan: &mut Scan) -> Result<Option<Vec<Acl>>> {
+    let mut acls = Vec::new();
+    for (name, scope) in [
+        ("system.posix_acl_access", AclScope::Access),
+        ("system.posix_acl_default", AclScope::Default),
+    ] {
+        if scope == AclScope::Default && !directory {
+            continue;
+        }
+        let value = match xattr::get(path, name) {
+            Ok(value) => value,
+            Err(error) if matches!(error.raw_os_error(), Some(1 | 13 | 45 | 61 | 95)) => {
+                scan.fidelity_unavailable.insert("security.acls".to_owned());
+                return Ok(None);
+            }
+            Err(error) => return Err(io(format!("read ACL for {}", path.display()), error)),
+        };
+        let Some(value) = value else {
+            continue;
+        };
+        scan.account_metadata_bytes(value.len())?;
+        acls.push(decode_linux_posix_acl(&value, scope)?);
+    }
+    Ok(Some(acls))
+}
+
+#[cfg(not(target_os = "linux"))]
+fn captured_acls(_path: &Path, _directory: bool, scan: &mut Scan) -> Result<Option<Vec<Acl>>> {
+    scan.fidelity_unavailable.insert("security.acls".to_owned());
+    Ok(None)
+}
+
+#[cfg(target_os = "linux")]
+fn decode_linux_posix_acl(bytes: &[u8], scope: AclScope) -> Result<Acl> {
+    if bytes.len() < 4
+        || (bytes.len() - 4) % 8 != 0
+        || u32::from_le_bytes(bytes[0..4].try_into().unwrap_or_default()) != 2
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidAcl,
+            "Linux POSIX ACL xattr framing is malformed",
+        ));
+    }
+    let mut entries = Vec::with_capacity((bytes.len() - 4) / 8);
+    for encoded in bytes[4..].chunks_exact(8) {
+        let tag = u16::from_le_bytes(encoded[0..2].try_into().unwrap_or_default());
+        let permissions = linux_acl_permissions_to_canonical(u16::from_le_bytes(
+            encoded[2..4].try_into().unwrap_or_default(),
+        ))?;
+        let id = u32::from_le_bytes(encoded[4..8].try_into().unwrap_or_default());
+        let principal = match (tag, id) {
+            (0x01, u32::MAX) => AclPrincipal::UserObj,
+            (0x02, value) if value != u32::MAX => AclPrincipal::User(value),
+            (0x04, u32::MAX) => AclPrincipal::GroupObj,
+            (0x08, value) if value != u32::MAX => AclPrincipal::Group(value),
+            (0x10, u32::MAX) => AclPrincipal::Mask,
+            (0x20, u32::MAX) => AclPrincipal::Other,
+            _ => {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidAcl,
+                    "Linux POSIX ACL xattr contains an invalid tag/qualifier",
+                ));
+            }
+        };
+        entries.push(AclEntry::new(
+            AclEntryType::Allow,
+            principal,
+            permissions,
+            0,
+        )?);
+    }
+    Acl::new(AclDialect::Posix1e, scope, entries)
+}
+
+#[cfg(target_os = "linux")]
+fn encode_linux_posix_acl(acl: &Acl) -> Vec<u8> {
+    let mut bytes = Vec::with_capacity(4 + acl.entries().len() * 8);
+    bytes.extend_from_slice(&2_u32.to_le_bytes());
+    for entry in acl.entries() {
+        let (tag, id) = match entry.principal() {
+            AclPrincipal::UserObj => (0x01_u16, u32::MAX),
+            AclPrincipal::User(value) => (0x02, *value),
+            AclPrincipal::GroupObj => (0x04, u32::MAX),
+            AclPrincipal::Group(value) => (0x08, *value),
+            AclPrincipal::Mask => (0x10, u32::MAX),
+            AclPrincipal::Other => (0x20, u32::MAX),
+            _ => unreachable!("POSIX ACL validation screened the principal"),
+        };
+        bytes.extend_from_slice(&tag.to_le_bytes());
+        bytes.extend_from_slice(
+            &canonical_permissions_to_linux_acl(entry.permissions()).to_le_bytes(),
+        );
+        bytes.extend_from_slice(&id.to_le_bytes());
+    }
+    bytes
+}
+
+#[cfg(target_os = "linux")]
+fn linux_acl_permissions_to_canonical(value: u16) -> Result<u32> {
+    if value & !0x7 != 0 {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidAcl,
+            "Linux POSIX ACL xattr contains unknown permission bits",
+        ));
+    }
+    Ok(u32::from(value & 0x2) | u32::from(value & 0x4) >> 2 | u32::from(value & 0x1) << 2)
+}
+
+#[cfg(target_os = "linux")]
+fn canonical_permissions_to_linux_acl(value: u32) -> u16 {
+    u16::try_from((value & 0x2) | (value & 0x1) << 2 | (value & 0x4) >> 2).unwrap_or_default()
+}
+
 #[cfg(unix)]
 fn captured_xattrs(path: &Path, scan: &mut Scan) -> Result<Option<Vec<XAttr>>> {
     use std::os::unix::ffi::OsStrExt as _;
@@ -1289,6 +1543,12 @@ fn captured_xattrs(path: &Path, scan: &mut Scan) -> Result<Option<Vec<XAttr>>> {
     };
     let mut values = Vec::new();
     for name in names {
+        if matches!(
+            name.as_os_str().as_bytes(),
+            b"system.posix_acl_access" | b"system.posix_acl_default"
+        ) {
+            continue;
+        }
         if values.len() == 4096 {
             return Err(resource("xattr count exceeds the per-entry format bound"));
         }
@@ -1447,10 +1707,17 @@ fn bootstrap_fidelity() -> FidelityReport {
         "posix.xattrs".to_owned(),
     ]);
     #[cfg(target_os = "linux")]
-    captured.push("posix.sparse-map".to_owned());
+    captured.extend(["posix.sparse-map".to_owned(), "security.acls".to_owned()]);
+    #[cfg(windows)]
+    captured.extend([
+        "windows.file-attributes".to_owned(),
+        "windows.creation-time".to_owned(),
+    ]);
+    #[cfg(target_os = "macos")]
+    captured.extend(["macos.flags".to_owned(), "macos.birthtime".to_owned()]);
     captured.push("symlink-target".to_owned());
     captured.sort();
-    let mut unavailable = ["acl", "platform-specific-metadata", "special-files"]
+    let mut unavailable = ["special-files"]
         .into_iter()
         .map(|class| FidelityIssue {
             class: class.to_owned(),
@@ -1477,6 +1744,27 @@ fn bootstrap_fidelity() -> FidelityReport {
         reason: "reliable SEEK_DATA/SEEK_HOLE capture is unavailable on this platform".to_owned(),
         entry_scope: None,
     });
+    #[cfg(not(target_os = "linux"))]
+    unavailable.push(FidelityIssue {
+        class: "security.acls".to_owned(),
+        reason: "this build has no audited safe exact ACL capture adapter for the source platform"
+            .to_owned(),
+        entry_scope: None,
+    });
+    #[cfg(windows)]
+    unavailable.extend([
+        FidelityIssue {
+            class: "windows.security-descriptor".to_owned(),
+            reason: "no audited safe wrapper exposes the exact self-relative descriptor bytes"
+                .to_owned(),
+            entry_scope: None,
+        },
+        FidelityIssue {
+            class: "windows.reparse-original".to_owned(),
+            reason: "no audited safe wrapper exposes exact opaque reparse payload bytes".to_owned(),
+            entry_scope: None,
+        },
+    ]);
     unavailable.sort_by(|left, right| left.class.cmp(&right.class));
     FidelityReport {
         captured: captured.into_boxed_slice(),
@@ -1615,8 +1903,31 @@ fn apply_file_metadata(
     policy: ExtractionPolicy,
     report: &mut ExtractionReport,
 ) {
-    #[cfg(not(unix))]
-    let _ = policy;
+    if metadata.windows_security_descriptor().is_some() {
+        let reason = if policy.windows_security() == WindowsSecurityPolicy::Restore {
+            "exact Windows security restoration has no audited safe API in this build"
+        } else {
+            "windows.security-descriptor skipped by policy"
+        };
+        report
+            .metadata_not_restored
+            .push(format!("{path}: {reason}"));
+    }
+    if metadata.windows_file_attributes().is_some()
+        || metadata.windows_creation_time().is_some()
+        || metadata.windows_reparse_original().is_some()
+        || metadata.macos_flags().is_some()
+        || metadata.macos_birthtime().is_some()
+    {
+        let reason = if policy.platform_metadata() == PlatformMetadataPolicy::Restore {
+            "complete platform metadata restoration is unavailable for one or more recorded fields"
+        } else {
+            "platform metadata skipped by policy"
+        };
+        report
+            .metadata_not_restored
+            .push(format!("{path}: {reason}"));
+    }
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt as _;
@@ -1645,6 +1956,38 @@ fn apply_file_metadata(
                 .metadata_not_restored
                 .push(format!("{path}: posix.uid/gid skipped by policy"));
         }
+        if policy.xattrs() == XAttrPolicy::Restore {
+            use std::os::unix::ffi::OsStrExt as _;
+            use xattr::FileExt as _;
+            for attribute in metadata.xattrs() {
+                if let Err(error) =
+                    file.set_xattr(OsStr::from_bytes(attribute.name()), attribute.value())
+                {
+                    report.metadata_not_restored.push(format!(
+                        "{path}: xattr {} ({error})",
+                        String::from_utf8_lossy(attribute.name())
+                    ));
+                }
+            }
+        } else if !metadata.xattrs().is_empty() {
+            report
+                .metadata_not_restored
+                .push(format!("{path}: posix.xattrs skipped by policy"));
+        }
+        if !metadata.acls().is_empty() {
+            if policy.acls() == AclPolicy::Restore {
+                #[cfg(target_os = "linux")]
+                restore_linux_acls(&file, &path, metadata.acls(), report);
+                #[cfg(not(target_os = "linux"))]
+                report.metadata_not_restored.push(format!(
+                    "{path}: ACL restoration is unavailable for this platform/dialect"
+                ));
+            } else {
+                report
+                    .metadata_not_restored
+                    .push(format!("{path}: security.acls skipped by policy"));
+            }
+        }
         match file.metadata() {
             Ok(file_metadata) => {
                 let mut permissions = file_metadata.permissions();
@@ -1668,24 +2011,6 @@ fn apply_file_metadata(
                 .metadata_not_restored
                 .push(format!("{path}: core.executable ({error})")),
         }
-        if policy.xattrs() == XAttrPolicy::Restore {
-            use std::os::unix::ffi::OsStrExt as _;
-            use xattr::FileExt as _;
-            for attribute in metadata.xattrs() {
-                if let Err(error) =
-                    file.set_xattr(OsStr::from_bytes(attribute.name()), attribute.value())
-                {
-                    report.metadata_not_restored.push(format!(
-                        "{path}: xattr {} ({error})",
-                        String::from_utf8_lossy(attribute.name())
-                    ));
-                }
-            }
-        } else if !metadata.xattrs().is_empty() {
-            report
-                .metadata_not_restored
-                .push(format!("{path}: posix.xattrs skipped by policy"));
-        }
     }
     #[cfg(not(unix))]
     if metadata.executable() {
@@ -1708,6 +2033,11 @@ fn apply_file_metadata(
         if !metadata.xattrs().is_empty() {
             report.metadata_not_restored.push(format!(
                 "{path}: posix.xattrs are not restorable on this platform"
+            ));
+        }
+        if !metadata.acls().is_empty() {
+            report.metadata_not_restored.push(format!(
+                "{path}: security.acls are not restorable on this platform"
             ));
         }
     }
@@ -1738,6 +2068,38 @@ fn apply_file_metadata(
             None => report
                 .metadata_not_restored
                 .push(format!("{path}: core.mtime is outside platform range")),
+        }
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn restore_linux_acls(
+    file: &std::fs::File,
+    path: &str,
+    acls: &[Acl],
+    report: &mut ExtractionReport,
+) {
+    use std::ffi::OsStr;
+    use std::os::unix::ffi::OsStrExt as _;
+    use xattr::FileExt as _;
+
+    for acl in acls {
+        if acl.dialect() != AclDialect::Posix1e {
+            report.metadata_not_restored.push(format!(
+                "{path}: NFS4 ACL is incompatible with Linux POSIX1E restoration"
+            ));
+            continue;
+        }
+        let name = match acl.scope() {
+            AclScope::Access => b"system.posix_acl_access".as_slice(),
+            AclScope::Default => b"system.posix_acl_default".as_slice(),
+        };
+        let value = encode_linux_posix_acl(acl);
+        if let Err(error) = file.set_xattr(OsStr::from_bytes(name), &value) {
+            report.metadata_not_restored.push(format!(
+                "{path}: {} ({error})",
+                String::from_utf8_lossy(name)
+            ));
         }
     }
 }
@@ -1902,6 +2264,60 @@ mod tests {
         ] {
             assert_eq!(system_time(timestamp(value).unwrap()), Some(value));
         }
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn linux_acl_xattr_permissions_round_trip_the_canonical_registry() {
+        let acl = Acl::new(
+            AclDialect::Posix1e,
+            AclScope::Access,
+            vec![
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::UserObj, 0x7, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::GroupObj, 0x5, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::Other, 0x1, 0).unwrap(),
+            ],
+        )
+        .unwrap();
+        let encoded = encode_linux_posix_acl(&acl);
+        assert_eq!(
+            decode_linux_posix_acl(&encoded, AclScope::Access).unwrap(),
+            acl
+        );
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn windows_capture_records_bounded_attributes_and_creation_time() {
+        let root_path = std::env::temp_dir().join(format!(
+            "entrybound-windows-metadata-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        std::fs::create_dir(&root_path).unwrap();
+        std::fs::write(root_path.join("file"), b"platform metadata").unwrap();
+
+        let encoded = pack_directory(&root_path, PackOptions::default()).unwrap();
+        let opened = crate::ecf::open(&encoded.bytes).unwrap();
+        let entry = opened
+            .archive
+            .entry_set
+            .entries()
+            .iter()
+            .find(|entry| entry.path().to_string() == "file")
+            .unwrap();
+        assert!(entry.metadata().windows_file_attributes().is_some());
+        assert!(entry.metadata().windows_creation_time().is_some());
+        assert_ne!(
+            opened.archive.descriptor.features.incompat & FEATURE_PLATFORM_SECURITY_METADATA_V1,
+            0
+        );
+        assert_ne!(
+            opened.archive.descriptor.features.incompat & FEATURE_POSIX_METADATA_V1,
+            0
+        );
+
+        std::fs::remove_dir_all(root_path).unwrap();
     }
 
     #[cfg(unix)]

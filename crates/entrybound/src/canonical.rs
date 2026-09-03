@@ -6,6 +6,7 @@ pub(crate) const RECORD_HEADER_LEN: usize = 16;
 const FIELD_HEADER_LEN: usize = 12;
 const RECORD_VERSION_V1: u16 = 1;
 const RECORD_VERSION_V2: u16 = 2;
+const RECORD_VERSION_V3: u16 = 3;
 const MAX_SEQUENCE_ITEMS: u64 = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -60,8 +61,8 @@ impl RecordBuilder {
     /// Constructs one explicitly versioned canonical record.
     ///
     /// Version 2 is assigned only to Descriptor (1), Entry (3), and
-    /// MetadataItem (8). The ordinary constructor remains frozen to version 1
-    /// for every historical writer.
+    /// MetadataItem (8). Version 3 is assigned only to Entry and MetadataItem.
+    /// The ordinary constructor remains frozen to version 1 for historical writers.
     pub(crate) const fn new_version(kind: u16, version: u16) -> Self {
         Self {
             kind,
@@ -138,8 +139,9 @@ impl RecordBuilder {
 
     pub(crate) fn finish(self) -> Result<Vec<u8>> {
         if self.version == 0
-            || self.version > RECORD_VERSION_V2
+            || self.version > RECORD_VERSION_V3
             || (self.version == RECORD_VERSION_V2 && !matches!(self.kind, 1 | 3 | 8))
+            || (self.version == RECORD_VERSION_V3 && !matches!(self.kind, 3 | 8))
         {
             return Err(noncanonical("unsupported canonical record version"));
         }
@@ -287,8 +289,9 @@ pub(crate) fn decode_record(input: &[u8]) -> Result<(Record<'_>, usize)> {
     let kind = u16::from_be_bytes(exact(&input[0..2])?);
     let version = u16::from_be_bytes(exact(&input[2..4])?);
     if version == 0
-        || version > RECORD_VERSION_V2
+        || version > RECORD_VERSION_V3
         || (version == RECORD_VERSION_V2 && !matches!(kind, 1 | 3 | 8))
+        || (version == RECORD_VERSION_V3 && !matches!(kind, 3 | 8))
     {
         return Err(noncanonical("unsupported canonical record version"));
     }
@@ -474,7 +477,7 @@ mod tests {
     }
 
     #[test]
-    fn record_version_two_is_narrowly_assigned() {
+    fn record_versions_two_and_three_are_narrowly_assigned() {
         let mut bytes = Vec::new();
         for kind in [1, 3, 8] {
             let mut builder = RecordBuilder::new_version(kind, 2);
@@ -492,10 +495,24 @@ mod tests {
             ReasonCode::NoncanonicalEncoding
         );
 
-        let mut version_three = bytes;
-        version_three[2..4].copy_from_slice(&3_u16.to_be_bytes());
+        for kind in [3, 8] {
+            let mut builder = RecordBuilder::new_version(kind, 3);
+            builder.u8(1, 7).unwrap();
+            let bytes = builder.finish().unwrap();
+            let (record, _) = decode_record(&bytes).unwrap();
+            assert_eq!((record.kind, record.version), (kind, 3));
+        }
+        let mut invalid_v3 = RecordBuilder::new_version(1, 3);
+        invalid_v3.u8(1, 7).unwrap();
         assert_eq!(
-            decode_record(&version_three).unwrap_err().code(),
+            invalid_v3.finish().unwrap_err().code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+
+        let mut version_four = bytes;
+        version_four[2..4].copy_from_slice(&4_u16.to_be_bytes());
+        assert_eq!(
+            decode_record(&version_four).unwrap_err().code(),
             ReasonCode::NoncanonicalEncoding
         );
     }

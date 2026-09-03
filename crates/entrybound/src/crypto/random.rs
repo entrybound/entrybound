@@ -567,7 +567,7 @@ impl EncryptedRandomAccessArchive {
             EntryData::File {
                 content: ContentRef::Internal(value),
             } => *value,
-            EntryData::Directory | EntryData::Symlink { .. } => {
+            EntryData::Directory | EntryData::Symlink { .. } | EntryData::ReparsePoint { .. } => {
                 return Err(Diagnostic::new(
                     OutcomeClass::Unsupported,
                     ReasonCode::RandomAccessEntryNotFile,
@@ -2138,7 +2138,9 @@ mod tests {
                 EntryData::File {
                     content: ContentRef::Internal(content),
                 } => archive.content_store.objects.get(content),
-                EntryData::Directory | EntryData::Symlink { .. } => None,
+                EntryData::Directory
+                | EntryData::Symlink { .. }
+                | EntryData::ReparsePoint { .. } => None,
             })
             .unwrap()
             .chunks[0]

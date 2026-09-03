@@ -348,6 +348,19 @@ fn entry_identity_digest(entry: &Entry) -> Digest {
                 ],
             );
         }
+        EntryData::ReparsePoint { value } => {
+            return structured_hash(
+                "entry/identity/v3",
+                &[
+                    b"identity/v1",
+                    &path,
+                    &[4],
+                    &value.tag().to_be_bytes(),
+                    value.data(),
+                    &identity_metadata,
+                ],
+            );
+        }
     };
     let content = content_digest
         .as_ref()
@@ -888,6 +901,73 @@ fn encode_metadata_item(encoded: &mut Vec<u8>, item: MetadataItem) {
                 encoded.extend_from_slice(&extent.length.to_be_bytes());
             }
         }
+        MetadataValue::Acls(values) => {
+            encoded.push(9);
+            append_len(encoded, values.len());
+            for acl in values {
+                encoded.push(match acl.dialect() {
+                    crate::eam::AclDialect::Posix1e => 1,
+                    crate::eam::AclDialect::Nfs4 => 2,
+                });
+                encoded.push(match acl.scope() {
+                    crate::eam::AclScope::Access => 1,
+                    crate::eam::AclScope::Default => 2,
+                });
+                append_len(encoded, acl.entries().len());
+                for entry in acl.entries() {
+                    encoded.push(match entry.entry_type() {
+                        crate::eam::AclEntryType::Allow => 1,
+                        crate::eam::AclEntryType::Deny => 2,
+                        crate::eam::AclEntryType::Audit => 3,
+                        crate::eam::AclEntryType::Alarm => 4,
+                    });
+                    encode_acl_principal(encoded, entry.principal());
+                    encoded.extend_from_slice(&entry.permissions().to_be_bytes());
+                    encoded.extend_from_slice(&entry.flags().to_be_bytes());
+                }
+            }
+        }
+        MetadataValue::WindowsSecurityDescriptor(value) => {
+            encoded.push(10);
+            append_bytes(encoded, value.bytes());
+        }
+        MetadataValue::WindowsFileAttributes(value) => {
+            encoded.push(11);
+            encoded.extend_from_slice(&value.to_be_bytes());
+        }
+        MetadataValue::WindowsReparseOriginal(value) => {
+            encoded.push(12);
+            encoded.extend_from_slice(&value.tag().to_be_bytes());
+            append_bytes(encoded, value.data());
+        }
+        MetadataValue::MacosFlags(value) => {
+            encoded.push(13);
+            encoded.extend_from_slice(&value.to_be_bytes());
+        }
+    }
+}
+
+fn encode_acl_principal(encoded: &mut Vec<u8>, principal: &crate::eam::AclPrincipal) {
+    match principal {
+        crate::eam::AclPrincipal::UserObj => encoded.push(1),
+        crate::eam::AclPrincipal::User(value) => {
+            encoded.push(2);
+            encoded.extend_from_slice(&value.to_be_bytes());
+        }
+        crate::eam::AclPrincipal::GroupObj => encoded.push(3),
+        crate::eam::AclPrincipal::Group(value) => {
+            encoded.push(4);
+            encoded.extend_from_slice(&value.to_be_bytes());
+        }
+        crate::eam::AclPrincipal::Mask => encoded.push(5),
+        crate::eam::AclPrincipal::Other => encoded.push(6),
+        crate::eam::AclPrincipal::OwnerAt => encoded.push(7),
+        crate::eam::AclPrincipal::GroupAt => encoded.push(8),
+        crate::eam::AclPrincipal::EveryoneAt => encoded.push(9),
+        crate::eam::AclPrincipal::Uuid(value) => {
+            encoded.push(10);
+            encoded.extend_from_slice(value);
+        }
     }
 }
 
@@ -985,8 +1065,9 @@ mod tests {
         physical_container_identity, sha256_exact,
     };
     use crate::eam::{
-        ContentRef, Digest, Entry, EntryData, EntryIdentity, LinkTarget, LogicalPath, MetadataItem,
-        MetadataSet, SparseExtent, SparseMap,
+        Acl, AclDialect, AclEntry, AclEntryType, AclPrincipal, AclScope, ContentRef, Digest, Entry,
+        EntryData, EntryIdentity, LinkTarget, LogicalPath, MetadataItem, MetadataSet, SparseExtent,
+        SparseMap, WindowsReparsePoint, WindowsSecurityDescriptor,
     };
 
     fn file_entry(path: &str, metadata: MetadataSet) -> Entry {
@@ -1111,5 +1192,108 @@ mod tests {
             expected.to_string(),
             "e7dad4aaaea2d134d9a56c71f5dfa84be64c7b40a2a4a9c953fbeede3437dc61"
         );
+    }
+
+    #[test]
+    fn platform_security_identity_tiers_are_frozen() {
+        let base = file_entry(
+            "a",
+            MetadataSet::new(vec![MetadataItem::executable(false)]).unwrap(),
+        );
+        let acl = Acl::new(
+            AclDialect::Posix1e,
+            AclScope::Access,
+            vec![
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::UserObj, 6, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::GroupObj, 4, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::Other, 0, 0).unwrap(),
+            ],
+        )
+        .unwrap();
+        let acl_entry = file_entry(
+            "a",
+            MetadataSet::new(vec![
+                MetadataItem::executable(false),
+                MetadataItem::acls(vec![acl]).unwrap(),
+            ])
+            .unwrap(),
+        );
+        assert_eq!(
+            entry_identity_digest(&base),
+            entry_identity_digest(&acl_entry)
+        );
+        assert_ne!(entry_aux_digest(&base), entry_aux_digest(&acl_entry));
+
+        let mut descriptor = vec![0_u8; 20];
+        descriptor[0] = 1;
+        descriptor[2..4].copy_from_slice(&0x8000_u16.to_le_bytes());
+        let secured = file_entry(
+            "a",
+            MetadataSet::new(vec![
+                MetadataItem::executable(false),
+                MetadataItem::windows_security_descriptor(
+                    WindowsSecurityDescriptor::new(descriptor).unwrap(),
+                ),
+            ])
+            .unwrap(),
+        );
+        assert_eq!(
+            entry_identity_digest(&base),
+            entry_identity_digest(&secured)
+        );
+        assert_ne!(entry_aux_digest(&base), entry_aux_digest(&secured));
+
+        let flagged = file_entry(
+            "a",
+            MetadataSet::new(vec![
+                MetadataItem::executable(false),
+                MetadataItem::macos_flags(0x2).unwrap(),
+            ])
+            .unwrap(),
+        );
+        assert_eq!(
+            entry_identity_digest(&base),
+            entry_identity_digest(&flagged)
+        );
+        assert_ne!(entry_aux_digest(&base), entry_aux_digest(&flagged));
+
+        let left = Entry::new(
+            LogicalPath::from_utf8(["rp"]).unwrap(),
+            EntryData::ReparsePoint {
+                value: WindowsReparsePoint::new(0x8000_001b, b"one".to_vec()).unwrap(),
+            },
+            MetadataSet::default(),
+            EntryIdentity::default(),
+        );
+        let right = Entry::new(
+            LogicalPath::from_utf8(["rp"]).unwrap(),
+            EntryData::ReparsePoint {
+                value: WindowsReparsePoint::new(0x8000_001b, b"two".to_vec()).unwrap(),
+            },
+            MetadataSet::default(),
+            EntryIdentity::default(),
+        );
+        assert_ne!(entry_identity_digest(&left), entry_identity_digest(&right));
+
+        let symlink = |original: &[u8]| {
+            Entry::new(
+                LogicalPath::from_utf8(["link"]).unwrap(),
+                EntryData::Symlink {
+                    target: LinkTarget::canonical(b"target".to_vec()).unwrap(),
+                },
+                MetadataSet::new(vec![MetadataItem::windows_reparse_original(
+                    WindowsReparsePoint::new(0xa000_000c, original.to_vec()).unwrap(),
+                )])
+                .unwrap(),
+                EntryIdentity::default(),
+            )
+        };
+        let symlink_a = symlink(b"original-a");
+        let symlink_b = symlink(b"original-b");
+        assert_eq!(
+            entry_identity_digest(&symlink_a),
+            entry_identity_digest(&symlink_b)
+        );
+        assert_ne!(entry_aux_digest(&symlink_a), entry_aux_digest(&symlink_b));
     }
 }

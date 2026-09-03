@@ -362,7 +362,7 @@ impl RandomAccessArchive {
             EntryData::File {
                 content: ContentRef::Internal(digest),
             } => *digest,
-            EntryData::Directory | EntryData::Symlink { .. } => {
+            EntryData::Directory | EntryData::Symlink { .. } | EntryData::ReparsePoint { .. } => {
                 return Err(Diagnostic::new(
                     OutcomeClass::Unsupported,
                     ReasonCode::RandomAccessEntryNotFile,
@@ -1343,7 +1343,9 @@ mod tests {
                 crate::eam::EntryData::File {
                     content: crate::eam::ContentRef::Internal(content),
                 } => planned.content_store.objects.get(content),
-                crate::eam::EntryData::Directory | crate::eam::EntryData::Symlink { .. } => None,
+                crate::eam::EntryData::Directory
+                | crate::eam::EntryData::Symlink { .. }
+                | crate::eam::EntryData::ReparsePoint { .. } => None,
             })
             .unwrap()
             .chunks[0]

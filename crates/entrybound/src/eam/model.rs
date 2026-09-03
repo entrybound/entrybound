@@ -87,6 +87,7 @@ pub enum EntryKind {
     Directory,
     File,
     Symlink,
+    ReparsePoint,
 }
 
 /// The only content reference form supported by a Complete bootstrap archive.
@@ -231,6 +232,528 @@ impl LinkTarget {
     pub fn bytes(&self) -> &[u8] {
         &self.bytes
     }
+}
+
+/// A Windows reparse object whose namespace behavior is not projected as a Symlink.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct WindowsReparsePoint {
+    tag: u32,
+    data: Box<[u8]>,
+}
+
+impl WindowsReparsePoint {
+    /// Windows limits a complete reparse buffer to 16 KiB. The stored data is
+    /// the exact payload following the tag/length/reserved header.
+    pub const MAX_DATA_BYTES: usize = 16 * 1024 - 8;
+
+    pub fn new(tag: u32, data: impl Into<Box<[u8]>>) -> Result<Self> {
+        let data = data.into();
+        if tag == 0 {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidReparsePoint,
+                "a Windows reparse tag must be nonzero",
+            ));
+        }
+        if data.len() > Self::MAX_DATA_BYTES {
+            return Err(Diagnostic::new(
+                OutcomeClass::PolicyRefused,
+                ReasonCode::ResourceLimit,
+                "Windows reparse payload exceeds the format bound",
+            ));
+        }
+        Ok(Self { tag, data })
+    }
+
+    #[must_use]
+    pub const fn tag(&self) -> u32 {
+        self.tag
+    }
+
+    #[must_use]
+    pub fn data(&self) -> &[u8] {
+        &self.data
+    }
+}
+
+/// Canonical ACL dialect.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum AclDialect {
+    Posix1e,
+    Nfs4,
+}
+
+/// Canonical ACL scope.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum AclScope {
+    Access,
+    Default,
+}
+
+/// Canonical ACL entry operation.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AclEntryType {
+    Allow,
+    Deny,
+    Audit,
+    Alarm,
+}
+
+/// Principal forms shared by POSIX.1e and ordered NFSv4 ACLs.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum AclPrincipal {
+    UserObj,
+    User(u32),
+    GroupObj,
+    Group(u32),
+    Mask,
+    Other,
+    OwnerAt,
+    GroupAt,
+    EveryoneAt,
+    Uuid([u8; 16]),
+}
+
+/// One canonical access-control entry.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AclEntry {
+    entry_type: AclEntryType,
+    principal: AclPrincipal,
+    permissions: u32,
+    flags: u32,
+}
+
+impl AclEntry {
+    pub const POSIX_READ: u32 = 0x1;
+    pub const POSIX_WRITE: u32 = 0x2;
+    pub const POSIX_EXECUTE: u32 = 0x4;
+    pub const POSIX_PERMISSION_MASK: u32 = 0x7;
+
+    // RFC 7530 / NFSv4 ACE4_* registry used by the macOS mapping.
+    pub const NFS4_PERMISSION_MASK: u32 = 0x001f_01ff;
+    pub const NFS4_FLAG_MASK: u32 = 0x0000_00ff;
+
+    pub fn new(
+        entry_type: AclEntryType,
+        principal: AclPrincipal,
+        permissions: u32,
+        flags: u32,
+    ) -> Result<Self> {
+        Ok(Self {
+            entry_type,
+            principal,
+            permissions,
+            flags,
+        })
+    }
+
+    #[must_use]
+    pub const fn entry_type(&self) -> AclEntryType {
+        self.entry_type
+    }
+
+    #[must_use]
+    pub const fn principal(&self) -> &AclPrincipal {
+        &self.principal
+    }
+
+    #[must_use]
+    pub const fn permissions(&self) -> u32 {
+        self.permissions
+    }
+
+    #[must_use]
+    pub const fn flags(&self) -> u32 {
+        self.flags
+    }
+}
+
+/// One validated ACL. POSIX entries have canonical principal order; NFSv4
+/// entries retain their semantically significant source order.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Acl {
+    dialect: AclDialect,
+    scope: AclScope,
+    entries: Box<[AclEntry]>,
+}
+
+impl Acl {
+    pub const MAX_ENTRIES: usize = 65_536;
+
+    pub fn new(dialect: AclDialect, scope: AclScope, entries: Vec<AclEntry>) -> Result<Self> {
+        if entries.is_empty() || entries.len() > Self::MAX_ENTRIES {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidAcl,
+                "an ACL must contain between 1 and 65536 entries",
+            ));
+        }
+        if dialect == AclDialect::Nfs4 && scope != AclScope::Access {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidAcl,
+                "NFS4 ACLs use ACCESS scope in v1",
+            ));
+        }
+        match dialect {
+            AclDialect::Posix1e => validate_posix_acl_entries(&entries)?,
+            AclDialect::Nfs4 => validate_nfs4_acl_entries(&entries)?,
+        }
+        Ok(Self {
+            dialect,
+            scope,
+            entries: entries.into_boxed_slice(),
+        })
+    }
+
+    #[must_use]
+    pub const fn dialect(&self) -> AclDialect {
+        self.dialect
+    }
+
+    #[must_use]
+    pub const fn scope(&self) -> AclScope {
+        self.scope
+    }
+
+    #[must_use]
+    pub fn entries(&self) -> &[AclEntry] {
+        &self.entries
+    }
+}
+
+fn validate_posix_acl_entries(entries: &[AclEntry]) -> Result<()> {
+    let mut previous = None;
+    let mut user_obj = 0_u8;
+    let mut group_obj = 0_u8;
+    let mut mask = 0_u8;
+    let mut other = 0_u8;
+    let mut named = false;
+    for entry in entries {
+        if entry.entry_type != AclEntryType::Allow
+            || entry.flags != 0
+            || entry.permissions & !AclEntry::POSIX_PERMISSION_MASK != 0
+        {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidAcl,
+                "POSIX1E entries are ALLOW entries with only rwx permissions",
+            ));
+        }
+        let key = posix_principal_key(&entry.principal)?;
+        if previous.is_some_and(|value| value >= key) {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidAcl,
+                "POSIX1E entries must be uniquely ordered by canonical principal",
+            ));
+        }
+        previous = Some(key);
+        match entry.principal {
+            AclPrincipal::UserObj => user_obj += 1,
+            AclPrincipal::User(_) | AclPrincipal::Group(_) => named = true,
+            AclPrincipal::GroupObj => group_obj += 1,
+            AclPrincipal::Mask => mask += 1,
+            AclPrincipal::Other => other += 1,
+            _ => unreachable!("principal was screened by posix_principal_key"),
+        }
+    }
+    if user_obj != 1 || group_obj != 1 || other != 1 || mask != u8::from(named) {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidAcl,
+            "POSIX1E ACL requires USER_OBJ/GROUP_OBJ/OTHER and exactly one MASK for named entries",
+        ));
+    }
+    Ok(())
+}
+
+fn posix_principal_key(principal: &AclPrincipal) -> Result<(u8, u32)> {
+    match principal {
+        AclPrincipal::UserObj => Ok((0, 0)),
+        AclPrincipal::User(id) => Ok((1, *id)),
+        AclPrincipal::GroupObj => Ok((2, 0)),
+        AclPrincipal::Group(id) => Ok((3, *id)),
+        AclPrincipal::Mask => Ok((4, 0)),
+        AclPrincipal::Other => Ok((5, 0)),
+        _ => Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidAcl,
+            "principal is not valid for POSIX1E",
+        )),
+    }
+}
+
+fn validate_nfs4_acl_entries(entries: &[AclEntry]) -> Result<()> {
+    for entry in entries {
+        if !matches!(
+            entry.principal,
+            AclPrincipal::OwnerAt
+                | AclPrincipal::GroupAt
+                | AclPrincipal::EveryoneAt
+                | AclPrincipal::User(_)
+                | AclPrincipal::Group(_)
+                | AclPrincipal::Uuid(_)
+        ) || entry.permissions & !AclEntry::NFS4_PERMISSION_MASK != 0
+            || entry.flags & !AclEntry::NFS4_FLAG_MASK != 0
+        {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidAcl,
+                "NFS4 ACL entry contains an unsupported principal, right, or flag",
+            ));
+        }
+    }
+    Ok(())
+}
+
+/// Exact, validated self-relative Windows security descriptor.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct WindowsSecurityDescriptor {
+    bytes: Box<[u8]>,
+    dacl_entries: Option<u16>,
+    sacl_entries: Option<u16>,
+}
+
+impl WindowsSecurityDescriptor {
+    pub const MAX_BYTES: usize = 1024 * 1024;
+
+    pub fn new(bytes: impl Into<Box<[u8]>>) -> Result<Self> {
+        let bytes = bytes.into();
+        let (dacl_entries, sacl_entries) = validate_self_relative_security_descriptor(&bytes)?;
+        Ok(Self {
+            bytes,
+            dacl_entries,
+            sacl_entries,
+        })
+    }
+
+    #[must_use]
+    pub fn bytes(&self) -> &[u8] {
+        &self.bytes
+    }
+
+    #[must_use]
+    pub const fn dacl_entries(&self) -> Option<u16> {
+        self.dacl_entries
+    }
+
+    #[must_use]
+    pub const fn sacl_entries(&self) -> Option<u16> {
+        self.sacl_entries
+    }
+}
+
+fn validate_self_relative_security_descriptor(bytes: &[u8]) -> Result<(Option<u16>, Option<u16>)> {
+    if bytes.len() < 20 || bytes.len() > WindowsSecurityDescriptor::MAX_BYTES {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidWindowsSecurityDescriptor,
+            "self-relative security descriptor length is invalid",
+        ));
+    }
+    let u16le = |offset: usize| u16::from_le_bytes([bytes[offset], bytes[offset + 1]]);
+    let u32le = |offset: usize| {
+        u32::from_le_bytes([
+            bytes[offset],
+            bytes[offset + 1],
+            bytes[offset + 2],
+            bytes[offset + 3],
+        ])
+    };
+    let control = u16le(2);
+    if bytes[0] != 1 || (bytes[1] != 0 && control & 0x4000 == 0) || control & 0x8000 == 0 {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidWindowsSecurityDescriptor,
+            "descriptor must be revision 1, self-relative, with a valid resource-manager control byte",
+        ));
+    }
+    let owner = usize::try_from(u32le(4)).unwrap_or(usize::MAX);
+    let group = usize::try_from(u32le(8)).unwrap_or(usize::MAX);
+    let sacl = usize::try_from(u32le(12)).unwrap_or(usize::MAX);
+    let dacl = usize::try_from(u32le(16)).unwrap_or(usize::MAX);
+    if sacl != 0 && control & 0x0010 == 0 || dacl != 0 && control & 0x0004 == 0 {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidWindowsSecurityDescriptor,
+            "security descriptor ACL presence flags disagree with component offsets",
+        ));
+    }
+    let mut extents = Vec::new();
+    for offset in [owner, group].into_iter().filter(|value| *value != 0) {
+        let length = sid_length(bytes, offset)?;
+        extents.push((offset, offset + length));
+    }
+    let mut counts = [None, None];
+    for (slot, offset) in [(0, dacl), (1, sacl)] {
+        if offset == 0 {
+            continue;
+        }
+        let (length, count) = acl_length(bytes, offset)?;
+        extents.push((offset, offset + length));
+        counts[slot] = Some(count);
+    }
+    extents.sort_unstable();
+    extents.dedup();
+    if extents
+        .iter()
+        .any(|(start, end)| *start < 20 || start % 4 != 0 || *end > bytes.len() || start >= end)
+        || extents.windows(2).any(|pair| pair[0].1 > pair[1].0)
+        || extents
+            .last()
+            .map_or(bytes.len() != 20, |extent| extent.1 != bytes.len())
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidWindowsSecurityDescriptor,
+            "descriptor component offsets overlap, are unaligned, or leave trailing bytes",
+        ));
+    }
+    Ok((counts[0], counts[1]))
+}
+
+fn sid_length(bytes: &[u8], offset: usize) -> Result<usize> {
+    if offset.checked_add(8).is_none_or(|end| end > bytes.len())
+        || bytes[offset] != 1
+        || bytes[offset + 1] > 15
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidWindowsSecurityDescriptor,
+            "security descriptor contains a malformed SID",
+        ));
+    }
+    let length = 8 + usize::from(bytes[offset + 1]) * 4;
+    if offset
+        .checked_add(length)
+        .is_none_or(|end| end > bytes.len())
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidWindowsSecurityDescriptor,
+            "security descriptor contains a truncated SID",
+        ));
+    }
+    Ok(length)
+}
+
+fn acl_length(bytes: &[u8], offset: usize) -> Result<(usize, u16)> {
+    if offset.checked_add(8).is_none_or(|end| end > bytes.len()) {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidWindowsSecurityDescriptor,
+            "security descriptor contains a truncated ACL",
+        ));
+    }
+    let revision = bytes[offset];
+    let length = usize::from(u16::from_le_bytes([bytes[offset + 2], bytes[offset + 3]]));
+    let count = u16::from_le_bytes([bytes[offset + 4], bytes[offset + 5]]);
+    if !matches!(revision, 2 | 4)
+        || bytes[offset + 1] != 0
+        || bytes[offset + 6] != 0
+        || bytes[offset + 7] != 0
+        || length < 8
+        || offset
+            .checked_add(length)
+            .is_none_or(|end| end > bytes.len())
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidWindowsSecurityDescriptor,
+            "security descriptor ACL header is malformed",
+        ));
+    }
+    let mut cursor = offset + 8;
+    for _ in 0..count {
+        if cursor
+            .checked_add(4)
+            .is_none_or(|end| end > offset + length)
+        {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidWindowsSecurityDescriptor,
+                "security descriptor ACE header is truncated",
+            ));
+        }
+        let ace_len = usize::from(u16::from_le_bytes([bytes[cursor + 2], bytes[cursor + 3]]));
+        if ace_len < 4 || ace_len % 4 != 0 || cursor + ace_len > offset + length {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidWindowsSecurityDescriptor,
+                "security descriptor ACE length is invalid",
+            ));
+        }
+        validate_ace(bytes, cursor, ace_len)?;
+        cursor += ace_len;
+    }
+    if cursor != offset + length {
+        return Err(Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::InvalidWindowsSecurityDescriptor,
+            "security descriptor ACL has unexplained bytes or an ACE-count mismatch",
+        ));
+    }
+    Ok((length, count))
+}
+
+fn validate_ace(bytes: &[u8], offset: usize, length: usize) -> Result<()> {
+    let kind = bytes[offset];
+    let end = offset + length;
+    let (sid_offset, allows_trailing_application_data) = match kind {
+        // ACCESS_ALLOWED, ACCESS_DENIED, SYSTEM_AUDIT, SYSTEM_ALARM.
+        0x00..=0x03 => (offset + 8, false),
+        // ACCESS_ALLOWED_COMPOUND.
+        0x04 => (offset + 12, false),
+        // Object ACEs carry an object-flags word followed by zero, one, or two GUIDs.
+        0x05..=0x08 | 0x0b..=0x0c | 0x0f..=0x10 => {
+            if length < 12 {
+                return Err(invalid_security_descriptor("object ACE is truncated"));
+            }
+            let flags = u32::from_le_bytes(
+                bytes[offset + 8..offset + 12]
+                    .try_into()
+                    .unwrap_or_default(),
+            );
+            if flags & !0x3 != 0 {
+                return Err(invalid_security_descriptor(
+                    "object ACE contains unknown object-presence flags",
+                ));
+            }
+            let guid_bytes = usize::from(flags & 1 != 0) * 16 + usize::from(flags & 2 != 0) * 16;
+            (
+                (offset + 12).saturating_add(guid_bytes),
+                matches!(kind, 0x0b..=0x0c | 0x0f..=0x10),
+            )
+        }
+        // Callback ACEs and the modern label/resource/filter ACE family may
+        // carry application data after their SID.
+        0x09..=0x0a | 0x0d..=0x0e | 0x11..=0x15 => (offset + 8, true),
+        _ => {
+            return Err(invalid_security_descriptor(
+                "security descriptor contains an unsupported ACE type",
+            ));
+        }
+    };
+    if sid_offset >= end {
+        return Err(invalid_security_descriptor("ACE has no complete SID"));
+    }
+    let sid_len = sid_length(bytes, sid_offset)?;
+    let sid_end = sid_offset.saturating_add(sid_len);
+    if sid_end > end || !allows_trailing_application_data && sid_end != end {
+        return Err(invalid_security_descriptor(
+            "ACE SID or application-data framing is malformed",
+        ));
+    }
+    Ok(())
+}
+
+fn invalid_security_descriptor(message: &'static str) -> Diagnostic {
+    Diagnostic::new(
+        OutcomeClass::Nonconforming,
+        ReasonCode::InvalidWindowsSecurityDescriptor,
+        message,
+    )
 }
 
 /// One exact POSIX extended attribute.
@@ -411,7 +934,7 @@ impl SparseMap {
     }
 }
 
-/// Closed metadata names implemented by native metadata v2.
+/// Closed metadata names implemented by native metadata versions 1 through 3.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum MetadataName {
     CoreExecutable,
@@ -422,6 +945,13 @@ pub enum MetadataName {
     PosixHardlinkGroup,
     PosixXattrs,
     PosixSparseMap,
+    SecurityAcls,
+    WindowsSecurityDescriptor,
+    WindowsFileAttributes,
+    WindowsCreationTime,
+    WindowsReparseOriginal,
+    MacosFlags,
+    MacosBirthtime,
 }
 
 impl MetadataName {
@@ -436,6 +966,13 @@ impl MetadataName {
             Self::PosixHardlinkGroup => "posix.hardlink-group",
             Self::PosixXattrs => "posix.xattrs",
             Self::PosixSparseMap => "posix.sparse-map",
+            Self::SecurityAcls => "security.acls",
+            Self::WindowsSecurityDescriptor => "windows.security-descriptor",
+            Self::WindowsFileAttributes => "windows.file-attributes",
+            Self::WindowsCreationTime => "windows.creation-time",
+            Self::WindowsReparseOriginal => "windows.reparse-original",
+            Self::MacosFlags => "macos.flags",
+            Self::MacosBirthtime => "macos.birthtime",
         }
     }
 
@@ -445,7 +982,7 @@ impl MetadataName {
     }
 }
 
-/// Typed values supported by the metadata-v2 registry.
+/// Typed values supported by the closed versioned metadata registry.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MetadataValue {
     Bool(bool),
@@ -456,6 +993,11 @@ pub enum MetadataValue {
     HardlinkGroup(Digest),
     Xattrs(Box<[XAttr]>),
     SparseMap(SparseMap),
+    Acls(Box<[Acl]>),
+    WindowsSecurityDescriptor(WindowsSecurityDescriptor),
+    WindowsFileAttributes(u32),
+    WindowsReparseOriginal(WindowsReparsePoint),
+    MacosFlags(u32),
 }
 
 /// Whether an unaware reader may ignore a metadata item.
@@ -482,6 +1024,13 @@ pub struct MetadataItem {
 }
 
 impl MetadataItem {
+    /// Stable Windows file-attribute bits retained by platform metadata v1.
+    // FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_SPARSE_FILE, and
+    // FILE_ATTRIBUTE_REPARSE_POINT are excluded because Entry kind and the
+    // native sparse/reparse models are their sole semantic authorities.
+    pub const WINDOWS_FILE_ATTRIBUTES_MASK: u32 = 0x005a_f9a7;
+    /// Stable Darwin UF_*/SF_* flags retained by platform metadata v1.
+    pub const MACOS_FLAGS_MASK: u32 = 0x40bf_80ef;
     #[must_use]
     pub const fn executable(value: bool) -> Self {
         Self {
@@ -576,6 +1125,112 @@ impl MetadataItem {
             value: MetadataValue::SparseMap(value),
             criticality: Criticality::Optional,
             restorability: Restorability::Restorable,
+        }
+    }
+
+    pub fn acls(mut value: Vec<Acl>) -> Result<Self> {
+        if value.is_empty() {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidAcl,
+                "security.acls cannot be an empty alternate encoding",
+            ));
+        }
+        if value.len() > 3 {
+            return Err(Diagnostic::new(
+                OutcomeClass::PolicyRefused,
+                ReasonCode::ResourceLimit,
+                "ACL count exceeds the per-entry format bound",
+            ));
+        }
+        value.sort_by_key(|acl| (acl.dialect(), acl.scope()));
+        if value.windows(2).any(|pair| {
+            (pair[0].dialect(), pair[0].scope()) == (pair[1].dialect(), pair[1].scope())
+        }) {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidAcl,
+                "duplicate ACL dialect/scope declaration",
+            ));
+        }
+        Ok(Self {
+            name: MetadataName::SecurityAcls,
+            value: MetadataValue::Acls(value.into_boxed_slice()),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        })
+    }
+
+    #[must_use]
+    pub const fn windows_security_descriptor(value: WindowsSecurityDescriptor) -> Self {
+        Self {
+            name: MetadataName::WindowsSecurityDescriptor,
+            value: MetadataValue::WindowsSecurityDescriptor(value),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        }
+    }
+
+    pub fn windows_file_attributes(value: u32) -> Result<Self> {
+        if value & !Self::WINDOWS_FILE_ATTRIBUTES_MASK != 0 || (value & 0x80 != 0 && value != 0x80)
+        {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidWindowsMetadata,
+                "Windows file attributes contain reserved platform-v1 bits",
+            ));
+        }
+        Ok(Self {
+            name: MetadataName::WindowsFileAttributes,
+            value: MetadataValue::WindowsFileAttributes(value),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        })
+    }
+
+    #[must_use]
+    pub const fn windows_creation_time(value: Timestamp) -> Self {
+        Self {
+            name: MetadataName::WindowsCreationTime,
+            value: MetadataValue::Timestamp(value),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        }
+    }
+
+    #[must_use]
+    pub const fn windows_reparse_original(value: WindowsReparsePoint) -> Self {
+        Self {
+            name: MetadataName::WindowsReparseOriginal,
+            value: MetadataValue::WindowsReparseOriginal(value),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        }
+    }
+
+    pub fn macos_flags(value: u32) -> Result<Self> {
+        if value & !Self::MACOS_FLAGS_MASK != 0 {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::InvalidMacosMetadata,
+                "macOS flags contain reserved platform-v1 bits",
+            ));
+        }
+        Ok(Self {
+            name: MetadataName::MacosFlags,
+            value: MetadataValue::MacosFlags(value),
+            criticality: Criticality::Optional,
+            restorability: Restorability::Restorable,
+        })
+    }
+
+    #[must_use]
+    pub const fn macos_birthtime(value: Timestamp) -> Self {
+        Self {
+            name: MetadataName::MacosBirthtime,
+            value: MetadataValue::Timestamp(value),
+            criticality: Criticality::Optional,
+            restorability: Restorability::CaptureOnly,
         }
     }
 
@@ -714,11 +1369,95 @@ impl MetadataSet {
     }
 
     #[must_use]
+    pub fn acls(&self) -> &[Acl] {
+        self.items
+            .iter()
+            .find_map(|item| match item.value() {
+                MetadataValue::Acls(value) => Some(value.as_ref()),
+                _ => None,
+            })
+            .unwrap_or_default()
+    }
+
+    #[must_use]
+    pub fn windows_security_descriptor(&self) -> Option<&WindowsSecurityDescriptor> {
+        self.items.iter().find_map(|item| match item.value() {
+            MetadataValue::WindowsSecurityDescriptor(value) => Some(value),
+            _ => None,
+        })
+    }
+
+    #[must_use]
+    pub fn windows_file_attributes(&self) -> Option<u32> {
+        self.items.iter().find_map(|item| match item.value() {
+            MetadataValue::WindowsFileAttributes(value) => Some(*value),
+            _ => None,
+        })
+    }
+
+    #[must_use]
+    pub fn windows_creation_time(&self) -> Option<Timestamp> {
+        self.items.iter().find_map(|item| {
+            (item.name() == MetadataName::WindowsCreationTime).then(|| match item.value() {
+                MetadataValue::Timestamp(value) => Some(*value),
+                _ => None,
+            })?
+        })
+    }
+
+    #[must_use]
+    pub fn windows_reparse_original(&self) -> Option<&WindowsReparsePoint> {
+        self.items.iter().find_map(|item| match item.value() {
+            MetadataValue::WindowsReparseOriginal(value) => Some(value),
+            _ => None,
+        })
+    }
+
+    #[must_use]
+    pub fn macos_flags(&self) -> Option<u32> {
+        self.items.iter().find_map(|item| match item.value() {
+            MetadataValue::MacosFlags(value) => Some(*value),
+            _ => None,
+        })
+    }
+
+    #[must_use]
+    pub fn macos_birthtime(&self) -> Option<Timestamp> {
+        self.items.iter().find_map(|item| {
+            (item.name() == MetadataName::MacosBirthtime).then(|| match item.value() {
+                MetadataValue::Timestamp(value) => Some(*value),
+                _ => None,
+            })?
+        })
+    }
+
+    #[must_use]
     pub fn uses_posix_v1(&self) -> bool {
         self.items.iter().any(|item| {
-            !matches!(
+            matches!(
                 item.name(),
-                MetadataName::CoreExecutable | MetadataName::CoreMtime
+                MetadataName::PosixMode
+                    | MetadataName::PosixUid
+                    | MetadataName::PosixGid
+                    | MetadataName::PosixHardlinkGroup
+                    | MetadataName::PosixXattrs
+                    | MetadataName::PosixSparseMap
+            )
+        })
+    }
+
+    #[must_use]
+    pub fn uses_platform_security_v1(&self) -> bool {
+        self.items.iter().any(|item| {
+            matches!(
+                item.name(),
+                MetadataName::SecurityAcls
+                    | MetadataName::WindowsSecurityDescriptor
+                    | MetadataName::WindowsFileAttributes
+                    | MetadataName::WindowsCreationTime
+                    | MetadataName::WindowsReparseOriginal
+                    | MetadataName::MacosFlags
+                    | MetadataName::MacosBirthtime
             )
         })
     }
@@ -737,6 +1476,7 @@ pub enum EntryData {
     Directory,
     File { content: ContentRef },
     Symlink { target: LinkTarget },
+    ReparsePoint { value: WindowsReparsePoint },
 }
 
 /// The sole authority for one archived object.
@@ -780,6 +1520,7 @@ impl Entry {
             EntryData::Directory => EntryKind::Directory,
             EntryData::File { .. } => EntryKind::File,
             EntryData::Symlink { .. } => EntryKind::Symlink,
+            EntryData::ReparsePoint { .. } => EntryKind::ReparsePoint,
         }
     }
 
@@ -796,6 +1537,12 @@ impl Entry {
     #[must_use]
     pub fn uses_posix_v1(&self) -> bool {
         matches!(&self.data, EntryData::Symlink { .. }) || self.metadata.uses_posix_v1()
+    }
+
+    #[must_use]
+    pub fn uses_platform_security_v1(&self) -> bool {
+        matches!(&self.data, EntryData::ReparsePoint { .. })
+            || self.metadata.uses_platform_security_v1()
     }
 
     pub(crate) fn replace_metadata(&mut self, metadata: MetadataSet) {
@@ -1295,6 +2042,148 @@ mod posix_tests {
                 .unwrap_err()
                 .code(),
             ReasonCode::InvalidSparseMap
+        );
+    }
+}
+
+#[cfg(test)]
+mod platform_security_tests {
+    use super::{
+        Acl, AclDialect, AclEntry, AclEntryType, AclPrincipal, AclScope, MetadataItem,
+        WindowsReparsePoint, WindowsSecurityDescriptor,
+    };
+    use crate::diagnostics::ReasonCode;
+
+    fn posix_entry(principal: AclPrincipal, permissions: u32) -> AclEntry {
+        AclEntry::new(AclEntryType::Allow, principal, permissions, 0).unwrap()
+    }
+
+    fn minimal_windows_descriptor() -> Vec<u8> {
+        let mut bytes = vec![0_u8; 20];
+        bytes[0] = 1;
+        bytes[2..4].copy_from_slice(&0x8004_u16.to_le_bytes());
+        bytes[16..20].copy_from_slice(&20_u32.to_le_bytes());
+        bytes.extend_from_slice(&[
+            2, 0, 28, 0, 1, 0, 0, 0, // ACL header
+            0, 0, 20, 0, // ACCESS_ALLOWED_ACE header
+            0xff, 0x01, 0x1f, 0, // access mask
+            1, 1, 0, 0, 0, 0, 0, 5, // SID header/authority
+            32, 0, 0, 0, // SID subauthority
+        ]);
+        bytes
+    }
+
+    #[test]
+    fn posix_and_nfs4_acl_rules_are_closed() {
+        let acl = Acl::new(
+            AclDialect::Posix1e,
+            AclScope::Access,
+            vec![
+                posix_entry(AclPrincipal::UserObj, 7),
+                posix_entry(AclPrincipal::User(42), 6),
+                posix_entry(AclPrincipal::GroupObj, 5),
+                posix_entry(AclPrincipal::Mask, 5),
+                posix_entry(AclPrincipal::Other, 1),
+            ],
+        )
+        .unwrap();
+        assert_eq!(acl.entries().len(), 5);
+
+        let reordered = Acl::new(
+            AclDialect::Posix1e,
+            AclScope::Access,
+            vec![
+                posix_entry(AclPrincipal::GroupObj, 5),
+                posix_entry(AclPrincipal::UserObj, 7),
+                posix_entry(AclPrincipal::Other, 1),
+            ],
+        )
+        .unwrap_err();
+        assert_eq!(reordered.code(), ReasonCode::InvalidAcl);
+
+        let missing_mask = Acl::new(
+            AclDialect::Posix1e,
+            AclScope::Access,
+            vec![
+                posix_entry(AclPrincipal::UserObj, 7),
+                posix_entry(AclPrincipal::User(42), 6),
+                posix_entry(AclPrincipal::GroupObj, 5),
+                posix_entry(AclPrincipal::Other, 1),
+            ],
+        )
+        .unwrap_err();
+        assert_eq!(missing_mask.code(), ReasonCode::InvalidAcl);
+
+        let ordered_nfs4 = Acl::new(
+            AclDialect::Nfs4,
+            AclScope::Access,
+            vec![
+                AclEntry::new(AclEntryType::Deny, AclPrincipal::EveryoneAt, 0x0001_0000, 0)
+                    .unwrap(),
+                AclEntry::new(
+                    AclEntryType::Allow,
+                    AclPrincipal::OwnerAt,
+                    0x001f_01ff,
+                    0x03,
+                )
+                .unwrap(),
+            ],
+        )
+        .unwrap();
+        assert_eq!(ordered_nfs4.entries()[0].entry_type(), AclEntryType::Deny);
+    }
+
+    #[test]
+    fn windows_descriptor_and_platform_bit_registries_are_bounded() {
+        let descriptor = WindowsSecurityDescriptor::new(minimal_windows_descriptor()).unwrap();
+        assert_eq!(descriptor.dacl_entries(), Some(1));
+        assert_eq!(descriptor.sacl_entries(), None);
+
+        let mut empty_with_trailing = vec![0_u8; 21];
+        empty_with_trailing[0] = 1;
+        empty_with_trailing[2..4].copy_from_slice(&0x8000_u16.to_le_bytes());
+        assert_eq!(
+            WindowsSecurityDescriptor::new(empty_with_trailing)
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidWindowsSecurityDescriptor
+        );
+
+        let mut resource_manager_control = vec![0_u8; 20];
+        resource_manager_control[0] = 1;
+        resource_manager_control[1] = 7;
+        resource_manager_control[2..4].copy_from_slice(&0xc000_u16.to_le_bytes());
+        WindowsSecurityDescriptor::new(resource_manager_control).unwrap();
+
+        let mut malformed_sid = minimal_windows_descriptor();
+        malformed_sid[36] = 2;
+        assert_eq!(
+            WindowsSecurityDescriptor::new(malformed_sid)
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidWindowsSecurityDescriptor
+        );
+        assert_eq!(
+            WindowsReparsePoint::new(0, Vec::<u8>::new())
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidReparsePoint
+        );
+        assert_eq!(
+            MetadataItem::windows_file_attributes(0x8000_0000)
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidWindowsMetadata
+        );
+        assert_eq!(
+            MetadataItem::windows_file_attributes(0x80 | 0x20)
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidWindowsMetadata
+        );
+        assert_eq!(
+            MetadataItem::macos_flags(0x0100_0000).unwrap_err().code(),
+            ReasonCode::InvalidMacosMetadata
         );
     }
 }

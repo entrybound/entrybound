@@ -520,6 +520,17 @@ fn analyze_entries(archive: &Archive, target: ExportTarget) -> Result<Vec<Export
                 "the frozen target profile has no native symlink representation",
             ));
         }
+        if matches!(entry.data(), EntryData::ReparsePoint { .. }) {
+            issues.push(issue(
+                ExportIssueCategory::EntryKindUnsupported,
+                Some(entry.path().clone()),
+                "entry.kind",
+                "windows-reparse-point",
+                target.profile_id(),
+                ExportDisposition::Refused,
+                "opaque reparse semantics cannot be represented by the frozen legacy profile",
+            ));
+        }
         let path = target_path(entry.path());
         analyze_path(
             entry.path(),
@@ -541,13 +552,20 @@ fn analyze_entries(archive: &Archive, target: ExportTarget) -> Result<Vec<Export
                     | MetadataName::PosixGid
                     | MetadataName::PosixHardlinkGroup
                     | MetadataName::PosixXattrs
-                    | MetadataName::PosixSparseMap,
+                    | MetadataName::PosixSparseMap
+                    | MetadataName::SecurityAcls
+                    | MetadataName::WindowsSecurityDescriptor
+                    | MetadataName::WindowsFileAttributes
+                    | MetadataName::WindowsCreationTime
+                    | MetadataName::WindowsReparseOriginal
+                    | MetadataName::MacosFlags
+                    | MetadataName::MacosBirthtime,
                     _,
                 ) => issues.push(issue(
                     ExportIssueCategory::MetadataUnsupported,
                     Some(entry.path().clone()),
                     metadata.name().as_str(),
-                    format!("{:?}", metadata.value()),
+                    "recorded",
                     target.profile_id(),
                     ExportDisposition::Omitted,
                     "the frozen v1 target profile exports safe logical bytes but omits this newer AUX semantic",
@@ -916,6 +934,11 @@ fn zip_entry_plan(archive: &Archive, entry: &Entry) -> Result<ZipEntryPlan> {
         EntryData::Symlink { .. } => {
             return Err(target_limit(
                 "zip/portable-v1 cannot encode a symlink Entry",
+            ));
+        }
+        EntryData::ReparsePoint { .. } => {
+            return Err(target_limit(
+                "zip/portable-v1 cannot encode a Windows reparse Entry",
             ));
         }
     };
@@ -1474,6 +1497,11 @@ fn write_tar_entry(
         EntryData::Symlink { .. } => {
             return Err(target_limit("tar/pax-v1 cannot encode a symlink Entry"));
         }
+        EntryData::ReparsePoint { .. } => {
+            return Err(target_limit(
+                "tar/pax-v1 cannot encode a Windows reparse Entry",
+            ));
+        }
     };
     let size = u64::try_from(plaintext.len()).map_err(|_| target_limit("tar file exceeds u64"))?;
     let mut path = target_path(entry.path());
@@ -1955,7 +1983,8 @@ mod tests {
     use super::*;
     use crate::archive::plan_observed_archive;
     use crate::eam::{
-        ConversionProvenance, EntryIdentity, FidelityReport, LinkTarget, MetadataItem, MetadataSet,
+        Acl, AclDialect, AclEntry, AclEntryType, AclPrincipal, AclScope, ConversionProvenance,
+        EntryIdentity, FidelityReport, LinkTarget, MetadataItem, MetadataSet, WindowsReparsePoint,
     };
     use crate::ecf::{
         SequentialLimits, StreamContentPolicy, StreamWriteOptions, WriteOptions,
@@ -2358,6 +2387,75 @@ mod tests {
                 issue.category == ExportIssueCategory::EntryKindUnsupported
                     && issue.disposition == ExportDisposition::Refused
             }));
+        }
+    }
+
+    #[test]
+    fn frozen_targets_report_platform_security_loss_or_refusal() {
+        let bytes = b"secured logical bytes".to_vec();
+        let digest = sha256_exact(&bytes);
+        let acl = Acl::new(
+            AclDialect::Posix1e,
+            AclScope::Access,
+            vec![
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::UserObj, 6, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::GroupObj, 4, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::Other, 0, 0).unwrap(),
+            ],
+        )
+        .unwrap();
+        let secured = plan_observed_archive(
+            vec![Entry::new(
+                LogicalPath::from_utf8(["secured.txt"]).unwrap(),
+                EntryData::File {
+                    content: ContentRef::Internal(digest),
+                },
+                MetadataSet::new(vec![
+                    MetadataItem::executable(false),
+                    MetadataItem::posix_mode(0o640),
+                    MetadataItem::acls(vec![acl]).unwrap(),
+                ])
+                .unwrap(),
+                EntryIdentity::default(),
+            )],
+            vec![bytes.into_boxed_slice()],
+            FidelityReport::default(),
+            conversion(),
+            None,
+            CompressionProfile::Fast,
+        )
+        .unwrap();
+        for target in [ExportTarget::ZipPortableV1, ExportTarget::TarPaxV1] {
+            let prepared =
+                prepare_export(&secured, target, ExportSourceSecurity::default()).unwrap();
+            assert_eq!(prepared.analysis.outcome, ExportOutcome::Lossy);
+            assert!(prepared.analysis.issues.iter().any(|issue| {
+                issue.category == ExportIssueCategory::MetadataUnsupported
+                    && issue.semantic_field == "security.acls"
+            }));
+        }
+
+        let reparse = plan_observed_archive(
+            vec![Entry::new(
+                LogicalPath::from_utf8(["opaque"]).unwrap(),
+                EntryData::ReparsePoint {
+                    value: WindowsReparsePoint::new(0xa000_001d, b"opaque".to_vec()).unwrap(),
+                },
+                MetadataSet::default(),
+                EntryIdentity::default(),
+            )],
+            Vec::new(),
+            FidelityReport::default(),
+            conversion(),
+            None,
+            CompressionProfile::Fast,
+        )
+        .unwrap();
+        for target in [ExportTarget::ZipPortableV1, ExportTarget::TarPaxV1] {
+            let prepared =
+                prepare_export(&reparse, target, ExportSourceSecurity::default()).unwrap();
+            assert_eq!(prepared.analysis.outcome, ExportOutcome::Refused);
+            assert!(prepared.bytes.is_none());
         }
     }
 

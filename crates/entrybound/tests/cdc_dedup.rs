@@ -369,7 +369,9 @@ fn assert_shared_store_chunk_corruption_is_detected(bytes: &[u8], archive: &Arch
             EntryData::File {
                 content: ContentRef::Internal(digest),
             } => Some(&archive.content_store.objects[digest]),
-            EntryData::Directory | EntryData::Symlink { .. } => None,
+            EntryData::Directory | EntryData::Symlink { .. } | EntryData::ReparsePoint { .. } => {
+                None
+            }
         })
         .flat_map(|object| object.chunks.iter())
         .filter(|reference| reference.chunk_id == chunk_id)

@@ -39,6 +39,9 @@ ExtractionPolicy has independent caller-owned choices:
 - xattrs: `Ignore` (default) or `Restore`;
 - sparse: `Logical` (default) or `Restore`.
 
+Canonical ACL and Windows/macOS policy controls extend this list in
+[platform-fidelity-v1.md](platform-fidelity-v1.md).
+
 Safe symlinks require a relative target whose lexical resolution from the
 link's parent stays beneath the extraction root. Absolute, drive/rooted, and
 escaping targets are refused without rewriting the archived target. `All` is

@@ -1,11 +1,19 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use super::{
-    Archive, ArchiveRole, ContentRef, Digest, Entry, EntryData, EntryKind, EntrySet, Layout,
-    MetadataName,
+    AclDialect, AclPrincipal, AclScope, Archive, ArchiveRole, ContentRef, Digest, Entry, EntryData,
+    EntryKind, EntrySet, Layout, MetadataName,
 };
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::identity::sha256_exact;
+
+fn platform_metadata_limit(message: &'static str) -> Diagnostic {
+    Diagnostic::new(
+        OutcomeClass::PolicyRefused,
+        ReasonCode::ResourceLimit,
+        message,
+    )
+}
 
 impl EntrySet {
     /// Sorts enumeration-independent input into canonical order and validates P4/P6.
@@ -51,7 +59,7 @@ impl EntrySet {
                             ancestor.to_string(),
                         ));
                     }
-                    Some(EntryKind::File | EntryKind::Symlink) => {
+                    Some(EntryKind::File | EntryKind::Symlink | EntryKind::ReparsePoint) => {
                         return Err(Diagnostic::new(
                             OutcomeClass::Nonconforming,
                             ReasonCode::FileAsAncestor,
@@ -123,11 +131,33 @@ impl Archive {
         let posix_feature =
             self.descriptor.features.incompat & crate::ecf::FEATURE_POSIX_METADATA_V1 != 0;
         let uses_posix = self.entry_set.entries().iter().any(Entry::uses_posix_v1);
-        if posix_feature != uses_posix {
+        let platform_feature = self.descriptor.features.incompat
+            & crate::ecf::FEATURE_PLATFORM_SECURITY_METADATA_V1
+            != 0;
+        let uses_platform = self
+            .entry_set
+            .entries()
+            .iter()
+            .any(Entry::uses_platform_security_v1);
+        if platform_feature != uses_platform || uses_posix && !posix_feature {
             return Err(Diagnostic::new(
                 OutcomeClass::Nonconforming,
                 ReasonCode::UnsupportedRequiredFeature,
-                "posix-metadata-v1 must be declared exactly when Entry-v2 semantics are present",
+                "metadata feature declarations disagree with Entry-v2/v3 semantics",
+            ));
+        }
+        if platform_feature && !posix_feature {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::UnsupportedRequiredFeature,
+                "platform-security-metadata-v1 requires posix-metadata-v1",
+            ));
+        }
+        if posix_feature && !uses_posix && !platform_feature {
+            return Err(Diagnostic::new(
+                OutcomeClass::Nonconforming,
+                ReasonCode::UnsupportedRequiredFeature,
+                "posix-metadata-v1 is set without versioned metadata semantics",
             ));
         }
         if let Some(preservation) = &self.preservation {
@@ -642,6 +672,7 @@ impl Archive {
             }
         }
         self.validate_posix_metadata()?;
+        self.validate_platform_security_metadata()?;
         Ok(())
     }
 
@@ -753,6 +784,91 @@ impl Archive {
                     "hardlink group ID does not match canonical membership",
                 ));
             }
+        }
+        Ok(())
+    }
+
+    fn validate_platform_security_metadata(&self) -> Result<()> {
+        let mut aggregate = 0_u64;
+        for entry in self.entry_set.entries() {
+            for acl in entry.metadata().acls() {
+                if acl.scope() == AclScope::Default && !matches!(entry.data(), EntryData::Directory)
+                {
+                    return Err(Diagnostic::new(
+                        OutcomeClass::Nonconforming,
+                        ReasonCode::InvalidAcl,
+                        format!("DEFAULT ACL requires Directory Entry {}", entry.path()),
+                    ));
+                }
+                if acl.dialect() == AclDialect::Posix1e && acl.scope() == AclScope::Access {
+                    let mode = entry.metadata().posix_mode().ok_or_else(|| {
+                        Diagnostic::new(
+                            OutcomeClass::Nonconforming,
+                            ReasonCode::InvalidAcl,
+                            format!("POSIX1E ACCESS ACL requires posix.mode on {}", entry.path()),
+                        )
+                    })?;
+                    let permission = |principal: &AclPrincipal| {
+                        acl.entries()
+                            .iter()
+                            .find(|candidate| candidate.principal() == principal)
+                            .map(super::AclEntry::permissions)
+                    };
+                    let owner = permission(&AclPrincipal::UserObj).unwrap_or_default();
+                    let other = permission(&AclPrincipal::Other).unwrap_or_default();
+                    let group = permission(&AclPrincipal::Mask)
+                        .or_else(|| permission(&AclPrincipal::GroupObj))
+                        .unwrap_or_default();
+                    if owner != (mode >> 6) & 7 || group != (mode >> 3) & 7 || other != mode & 7 {
+                        return Err(Diagnostic::new(
+                            OutcomeClass::Nonconforming,
+                            ReasonCode::InvalidAcl,
+                            format!("POSIX1E ACL and posix.mode disagree for {}", entry.path()),
+                        ));
+                    }
+                }
+                aggregate = aggregate
+                    .checked_add(u64::try_from(acl.entries().len()).unwrap_or(u64::MAX) * 32)
+                    .ok_or_else(|| platform_metadata_limit("ACL metadata length overflow"))?;
+            }
+            if entry.metadata().windows_reparse_original().is_some()
+                && !matches!(entry.data(), EntryData::Symlink { .. })
+            {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::InvalidReparsePoint,
+                    format!(
+                        "windows.reparse-original requires Symlink Entry {}",
+                        entry.path()
+                    ),
+                ));
+            }
+            if let Some(value) = entry.metadata().windows_security_descriptor() {
+                aggregate = aggregate
+                    .checked_add(u64::try_from(value.bytes().len()).unwrap_or(u64::MAX))
+                    .ok_or_else(|| platform_metadata_limit("security metadata length overflow"))?;
+            }
+            if let Some(value) = entry.metadata().windows_reparse_original() {
+                aggregate = aggregate
+                    .checked_add(u64::try_from(value.data().len()).unwrap_or(u64::MAX))
+                    .ok_or_else(|| platform_metadata_limit("reparse metadata length overflow"))?;
+            }
+            if let EntryData::ReparsePoint { value } = entry.data() {
+                aggregate = aggregate
+                    .checked_add(u64::try_from(value.data().len()).unwrap_or(u64::MAX))
+                    .ok_or_else(|| platform_metadata_limit("reparse Entry length overflow"))?;
+            }
+        }
+        // A zero budget is the in-memory pre-serialization sentinel. The ECF
+        // writer replaces it with the exact canonical metadata bound, and
+        // readers compare that authenticated declaration with independently
+        // derived section sizes before this model-level validation runs.
+        if self.descriptor.budget.max_metadata_bytes != 0
+            && aggregate > self.descriptor.budget.max_metadata_bytes
+        {
+            return Err(platform_metadata_limit(
+                "platform/security metadata exceeds declared ResourceBudget",
+            ));
         }
         Ok(())
     }
@@ -923,7 +1039,11 @@ impl Archive {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::eam::{Digest, EntryIdentity, LogicalPath, MetadataSet};
+    use crate::eam::{
+        ArchiveDescriptor, ArchiveRole, ContentStore, DecodeRequirements, Digest, DigestAlgorithm,
+        EntryIdentity, FeatureSet, FidelityReport, IdentityProfile, Index, Layout, LogicalPath,
+        MetadataSet, ResourceBudget, WindowsReparsePoint,
+    };
 
     fn directory(path: &[&str]) -> Entry {
         Entry::new(
@@ -980,5 +1100,75 @@ mod tests {
             .map(|entry| entry.path())
             .collect::<Vec<_>>();
         assert_eq!(first_paths, second_paths);
+    }
+
+    fn reparse_archive(features: u64) -> Archive {
+        Archive {
+            descriptor: ArchiveDescriptor {
+                format_major: 0,
+                format_minor: 1,
+                format_namespace: crate::ecf::FORMAT_NAMESPACE.to_owned(),
+                features: FeatureSet {
+                    incompat: features,
+                    ..FeatureSet::default()
+                },
+                layout: Layout::Indexed,
+                role: ArchiveRole::Complete,
+                budget_declared: true,
+                stream_dedup_window: 0,
+                budget: ResourceBudget {
+                    entry_count: 1,
+                    max_path_depth: 1,
+                    max_metadata_bytes: 1024,
+                    max_expansion_ratio_milli: 1000,
+                    ..ResourceBudget::default()
+                },
+                decode: DecodeRequirements::default(),
+                identity_profile: IdentityProfile::IdentityV1,
+                digest_algorithm: DigestAlgorithm::Sha256,
+                planner_id: "test".to_owned(),
+                chunker_id: "test".to_owned(),
+                lai: Digest::ZERO,
+                pcr: Digest::ZERO,
+                aux: Digest::ZERO,
+                pci: None,
+            },
+            entry_set: EntrySet::new(vec![Entry::new(
+                LogicalPath::from_utf8(["opaque"]).unwrap(),
+                EntryData::ReparsePoint {
+                    value: WindowsReparsePoint::new(0x8000_001b, b"opaque".to_vec()).unwrap(),
+                },
+                MetadataSet::default(),
+                EntryIdentity::default(),
+            )])
+            .unwrap(),
+            content_store: ContentStore::default(),
+            transform_plans: Box::default(),
+            fidelity: FidelityReport::default(),
+            conversion: None,
+            preservation: None,
+            index: Index::default(),
+        }
+    }
+
+    #[test]
+    fn platform_security_feature_requires_posix_and_v3_semantics() {
+        let both = crate::ecf::FEATURE_POSIX_METADATA_V1
+            | crate::ecf::FEATURE_PLATFORM_SECURITY_METADATA_V1;
+        reparse_archive(both).validate().unwrap();
+        assert_eq!(
+            reparse_archive(crate::ecf::FEATURE_PLATFORM_SECURITY_METADATA_V1)
+                .validate()
+                .unwrap_err()
+                .code(),
+            ReasonCode::UnsupportedRequiredFeature
+        );
+        assert_eq!(
+            reparse_archive(crate::ecf::FEATURE_POSIX_METADATA_V1)
+                .validate()
+                .unwrap_err()
+                .code(),
+            ReasonCode::UnsupportedRequiredFeature
+        );
     }
 }

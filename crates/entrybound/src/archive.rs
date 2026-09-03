@@ -104,6 +104,35 @@ pub enum SparsePolicy {
     Restore,
 }
 
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum AclPolicy {
+    #[default]
+    Ignore,
+    Restore,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum WindowsSecurityPolicy {
+    #[default]
+    Ignore,
+    Restore,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum ReparsePolicy {
+    #[default]
+    Refuse,
+    KnownSafe,
+    All,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum PlatformMetadataPolicy {
+    #[default]
+    Ignore,
+    Restore,
+}
+
 /// The containment guarantee an extractor actually achieved.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ConfinementMode {
@@ -123,6 +152,10 @@ pub struct ExtractionPolicy {
     ownership: OwnershipPolicy,
     xattrs: XAttrPolicy,
     sparse: SparsePolicy,
+    acls: AclPolicy,
+    windows_security: WindowsSecurityPolicy,
+    reparse: ReparsePolicy,
+    platform_metadata: PlatformMetadataPolicy,
 }
 
 impl ExtractionPolicy {
@@ -137,6 +170,10 @@ impl ExtractionPolicy {
             ownership: OwnershipPolicy::Ignore,
             xattrs: XAttrPolicy::Ignore,
             sparse: SparsePolicy::Logical,
+            acls: AclPolicy::Ignore,
+            windows_security: WindowsSecurityPolicy::Ignore,
+            reparse: ReparsePolicy::Refuse,
+            platform_metadata: PlatformMetadataPolicy::Ignore,
         }
     }
 
@@ -155,6 +192,10 @@ impl ExtractionPolicy {
             ownership: OwnershipPolicy::Ignore,
             xattrs: XAttrPolicy::Ignore,
             sparse: SparsePolicy::Logical,
+            acls: AclPolicy::Ignore,
+            windows_security: WindowsSecurityPolicy::Ignore,
+            reparse: ReparsePolicy::Refuse,
+            platform_metadata: PlatformMetadataPolicy::Ignore,
         }
     }
 
@@ -198,6 +239,30 @@ impl ExtractionPolicy {
     }
 
     #[must_use]
+    pub const fn with_acls(mut self, value: AclPolicy) -> Self {
+        self.acls = value;
+        self
+    }
+
+    #[must_use]
+    pub const fn with_windows_security(mut self, value: WindowsSecurityPolicy) -> Self {
+        self.windows_security = value;
+        self
+    }
+
+    #[must_use]
+    pub const fn with_reparse(mut self, value: ReparsePolicy) -> Self {
+        self.reparse = value;
+        self
+    }
+
+    #[must_use]
+    pub const fn with_platform_metadata(mut self, value: PlatformMetadataPolicy) -> Self {
+        self.platform_metadata = value;
+        self
+    }
+
+    #[must_use]
     pub const fn symlinks(self) -> SymlinkPolicy {
         self.symlinks
     }
@@ -215,6 +280,26 @@ impl ExtractionPolicy {
     #[must_use]
     pub const fn sparse(self) -> SparsePolicy {
         self.sparse
+    }
+
+    #[must_use]
+    pub const fn acls(self) -> AclPolicy {
+        self.acls
+    }
+
+    #[must_use]
+    pub const fn windows_security(self) -> WindowsSecurityPolicy {
+        self.windows_security
+    }
+
+    #[must_use]
+    pub const fn reparse(self) -> ReparsePolicy {
+        self.reparse
+    }
+
+    #[must_use]
+    pub const fn platform_metadata(self) -> PlatformMetadataPolicy {
+        self.platform_metadata
     }
 }
 

@@ -45,3 +45,7 @@ Representation-only repack copies Entry v2 and every POSIX metadata record at
 the EAM level and requires LAI/AUX/PCR equality. Replanning preserves the same
 Entries, link targets, hardlink groups, xattrs, and sparse maps while rebuilding
 only physical content representation; it requires LAI/AUX equality.
+
+Entry-v3 and MetadataItem-v3 platform/security records follow the same rule.
+Opaque ReparsePoint semantics preserve LAI; ACLs, Windows security/platform
+metadata, original reparse bytes, and macOS metadata preserve AUX exactly.

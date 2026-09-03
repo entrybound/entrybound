@@ -3,8 +3,9 @@ use std::collections::BTreeMap;
 use crate::canonical::{Record, RecordBuilder, decode_record, decode_record_stream};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
-    ChunkGroup, ConversionProvenance, ConversionResolution, Criticality, DecodeRequirements,
-    Dictionary, Digest, Entry, EntryData, EntryIdentity, EntrySet, FidelityIssue, FidelityReport,
+    Acl, AclDialect, AclEntry, AclEntryType, AclPrincipal, AclScope, ChunkGroup,
+    ConversionProvenance, ConversionResolution, Criticality, DecodeRequirements, Dictionary,
+    Digest, Entry, EntryData, EntryIdentity, EntrySet, FidelityIssue, FidelityReport,
     LegacyPreservation, LinkTarget, LinkTargetEncoding, LogicalPath, MetadataItem, MetadataName,
     MetadataSet, MetadataValue, PathComponent, PathEncoding, PreservedLegacyAuthority,
     PreservedLegacyConflict, PreservedLegacyLocation, PreservedLegacyObservation,
@@ -12,7 +13,7 @@ use crate::eam::{
     ReconstructionAuditReason, ReconstructionAuditTarget, ReconstructionData,
     ReconstructionFallbackReason, ReconstructionRegion, RegionAccessCost, ResourceBudget,
     Restorability, SparseExtent, SparseMap, Timestamp, TimestampPrecision, TransformPlan,
-    TransformStep, XAttr,
+    TransformStep, WindowsReparsePoint, WindowsSecurityDescriptor, XAttr,
 };
 
 pub(super) const RECORD_DESCRIPTOR: u16 = 1;
@@ -46,6 +47,10 @@ const RECORD_LEGACY_RESOLUTION: u16 = 36;
 pub(super) const RECORD_XATTR_V1: u16 = 37;
 pub(super) const RECORD_SPARSE_MAP_V1: u16 = 38;
 pub(super) const RECORD_SPARSE_EXTENT_V1: u16 = 39;
+pub(super) const RECORD_ACL_V1: u16 = 40;
+pub(super) const RECORD_ACL_ENTRY_V1: u16 = 41;
+pub(super) const RECORD_WINDOWS_SECURITY_DESCRIPTOR_V1: u16 = 42;
+pub(super) const RECORD_WINDOWS_REPARSE_POINT_V1: u16 = 43;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct DescriptorBody {
@@ -1021,20 +1026,27 @@ fn encode_entry(entry: &Entry) -> Result<Vec<u8>> {
         .iter()
         .map(encode_path_component)
         .collect::<Result<Vec<_>>>()?;
-    let entry_v2 = entry.uses_posix_v1();
+    let entry_version = if entry.uses_platform_security_v1() {
+        3
+    } else if entry.uses_posix_v1() {
+        2
+    } else {
+        1
+    };
     let metadata = entry
         .metadata()
         .items()
         .iter()
-        .map(|item| encode_metadata_item(item, entry_v2))
+        .map(|item| encode_metadata_item(item, entry_version))
         .collect::<Result<Vec<_>>>()?;
-    let mut record = if entry_v2 {
-        RecordBuilder::new_version(RECORD_ENTRY, 2)
+    let mut record = if entry_version > 1 {
+        RecordBuilder::new_version(RECORD_ENTRY, entry_version)
     } else {
         RecordBuilder::new(RECORD_ENTRY)
     };
     record.sequence(1, &path)?;
-    if entry_v2 {
+    if entry_version > 1 {
+        let mut reparse = None;
         match entry.data() {
             EntryData::Directory => {
                 record.u8(2, 1)?;
@@ -1056,11 +1068,21 @@ fn encode_entry(entry: &Entry) -> Result<Vec<u8>> {
                     )?
                     .bytes(5, target.bytes())?;
             }
+            EntryData::ReparsePoint { value } if entry_version == 3 => {
+                record.u8(2, 4)?;
+                reparse = Some(encode_windows_reparse(value)?);
+            }
+            EntryData::ReparsePoint { .. } => {
+                return Err(noncanonical("ReparsePoint requires Entry-v3"));
+            }
         }
         record
             .sequence(6, &metadata)?
             .bytes(7, entry.identity().identity_digest.as_bytes())?
             .bytes(8, entry.identity().aux_digest.as_bytes())?;
+        if let Some(reparse) = reparse {
+            record.bytes(9, &reparse)?;
+        }
     } else {
         match entry.data() {
             EntryData::Directory => {
@@ -1072,6 +1094,7 @@ fn encode_entry(entry: &Entry) -> Result<Vec<u8>> {
                 record.u8(2, 2)?.u8(3, 1)?.bytes(4, digest.as_bytes())?;
             }
             EntryData::Symlink { .. } => unreachable!("symlinks require Entry v2"),
+            EntryData::ReparsePoint { .. } => unreachable!("reparse points require Entry v3"),
         }
         record
             .sequence(5, &metadata)?
@@ -1082,6 +1105,9 @@ fn encode_entry(entry: &Entry) -> Result<Vec<u8>> {
 }
 
 fn decode_entry(record: &Record<'_>) -> Result<Entry> {
+    if record.version == 3 {
+        return decode_entry_v3(record);
+    }
     if record.version == 2 {
         return decode_entry_v2(record);
     }
@@ -1126,7 +1152,7 @@ fn decode_entry(record: &Record<'_>) -> Result<Entry> {
         .field(5)?
         .as_sequence()?
         .into_iter()
-        .map(|bytes| decode_metadata_item(bytes, false))
+        .map(|bytes| decode_metadata_item(bytes, 1))
         .collect::<Result<Vec<_>>>()?;
     Ok(Entry::new(
         path,
@@ -1140,7 +1166,20 @@ fn decode_entry(record: &Record<'_>) -> Result<Entry> {
 }
 
 fn decode_entry_v2(record: &Record<'_>) -> Result<Entry> {
-    record.expect_versioned_tags(2, &[1, 2, 6, 7, 8], &[3, 4, 5])?;
+    decode_entry_modern(record, 2)
+}
+
+fn decode_entry_v3(record: &Record<'_>) -> Result<Entry> {
+    decode_entry_modern(record, 3)
+}
+
+fn decode_entry_modern(record: &Record<'_>, version: u16) -> Result<Entry> {
+    let optional = if version == 3 {
+        &[3, 4, 5, 9][..]
+    } else {
+        &[3, 4, 5][..]
+    };
+    record.expect_versioned_tags(version, &[1, 2, 6, 7, 8], optional)?;
     let components = record
         .field(1)?
         .as_sequence()?
@@ -1153,12 +1192,13 @@ fn decode_entry_v2(record: &Record<'_>) -> Result<Entry> {
         record.optional_field(3),
         record.optional_field(4),
         record.optional_field(5),
+        record.optional_field(9),
     ) {
-        (1, None, None, None) => EntryData::Directory,
-        (2, Some(content), None, None) => EntryData::File {
+        (1, None, None, None, None) => EntryData::Directory,
+        (2, Some(content), None, None, None) => EntryData::File {
             content: crate::eam::ContentRef::Internal(digest(content.as_bytes()?)?),
         },
-        (3, None, Some(encoding), Some(target)) => EntryData::Symlink {
+        (3, None, Some(encoding), Some(target), None) => EntryData::Symlink {
             target: LinkTarget::new(
                 target.as_bytes()?,
                 match encoding.as_u8()? {
@@ -1174,6 +1214,9 @@ fn decode_entry_v2(record: &Record<'_>) -> Result<Entry> {
                 },
             )?,
         },
+        (4, None, None, None, Some(value)) if version == 3 => EntryData::ReparsePoint {
+            value: decode_windows_reparse(value.as_bytes()?)?,
+        },
         _ => {
             return Err(Diagnostic::new(
                 OutcomeClass::Nonconforming,
@@ -1186,7 +1229,7 @@ fn decode_entry_v2(record: &Record<'_>) -> Result<Entry> {
         .field(6)?
         .as_sequence()?
         .into_iter()
-        .map(|bytes| decode_metadata_item(bytes, true))
+        .map(|bytes| decode_metadata_item(bytes, version))
         .collect::<Result<Vec<_>>>()?;
     let entry = Entry::new(
         path,
@@ -1197,9 +1240,14 @@ fn decode_entry_v2(record: &Record<'_>) -> Result<Entry> {
             aux_digest: digest(record.field(8)?.as_bytes()?)?,
         },
     );
-    if !entry.uses_posix_v1() {
+    if version == 2 && !entry.uses_posix_v1() {
         return Err(noncanonical(
             "Entry-v2 must carry a symlink or POSIX metadata-v2 semantic",
+        ));
+    }
+    if version == 3 && !entry.uses_platform_security_v1() {
+        return Err(noncanonical(
+            "Entry-v3 must carry a ReparsePoint or platform/security metadata-v1 semantic",
         ));
     }
     Ok(entry)
@@ -1234,20 +1282,25 @@ fn decode_path_component(bytes: &[u8]) -> Result<PathComponent> {
     PathComponent::new(record.field(2)?.as_bytes()?, PathEncoding::Utf8)
 }
 
-fn encode_metadata_item(item: &MetadataItem, version_two: bool) -> Result<Vec<u8>> {
-    let mut record = if version_two {
-        RecordBuilder::new_version(RECORD_METADATA_ITEM, 2)
+fn encode_metadata_item(item: &MetadataItem, version: u16) -> Result<Vec<u8>> {
+    let mut record = if version > 1 {
+        RecordBuilder::new_version(RECORD_METADATA_ITEM, version)
     } else {
         if !matches!(
             item.name(),
             MetadataName::CoreExecutable | MetadataName::CoreMtime
         ) {
             return Err(noncanonical(
-                "MetadataItem-v1 cannot encode POSIX metadata-v2 names",
+                "MetadataItem-v1 cannot encode versioned metadata names",
             ));
         }
         RecordBuilder::new(RECORD_METADATA_ITEM)
     };
+    if version == 2 && item.name() > MetadataName::PosixSparseMap {
+        return Err(noncanonical(
+            "MetadataItem-v2 cannot encode platform/security metadata-v3 names",
+        ));
+    }
     record
         .u8(
             1,
@@ -1260,6 +1313,13 @@ fn encode_metadata_item(item: &MetadataItem, version_two: bool) -> Result<Vec<u8
                 MetadataName::PosixHardlinkGroup => 6,
                 MetadataName::PosixXattrs => 7,
                 MetadataName::PosixSparseMap => 8,
+                MetadataName::SecurityAcls => 9,
+                MetadataName::WindowsSecurityDescriptor => 10,
+                MetadataName::WindowsFileAttributes => 11,
+                MetadataName::WindowsCreationTime => 12,
+                MetadataName::WindowsReparseOriginal => 13,
+                MetadataName::MacosFlags => 14,
+                MetadataName::MacosBirthtime => 15,
             },
         )?
         .u8(
@@ -1298,19 +1358,35 @@ fn encode_metadata_item(item: &MetadataItem, version_two: bool) -> Result<Vec<u8
         MetadataValue::SparseMap(value) => {
             record.bytes(9, &encode_sparse_map(value)?)?;
         }
+        MetadataValue::Acls(value) => {
+            let values = value.iter().map(encode_acl).collect::<Result<Vec<_>>>()?;
+            record.sequence(10, &values)?;
+        }
+        MetadataValue::WindowsSecurityDescriptor(value) => {
+            record.bytes(11, &encode_windows_security_descriptor(value)?)?;
+        }
+        MetadataValue::WindowsFileAttributes(value) | MetadataValue::MacosFlags(value) => {
+            record.u32(6, *value)?;
+        }
+        MetadataValue::WindowsReparseOriginal(value) => {
+            record.bytes(12, &encode_windows_reparse(value)?)?;
+        }
     }
     record.finish()
 }
 
-fn decode_metadata_item(bytes: &[u8], version_two: bool) -> Result<MetadataItem> {
+fn decode_metadata_item(bytes: &[u8], expected_version: u16) -> Result<MetadataItem> {
     let (record, consumed) = decode_record(bytes)?;
     if consumed != bytes.len() || record.kind != RECORD_METADATA_ITEM {
         return Err(noncanonical("metadata item is not a canonical record"));
     }
-    if version_two && record.version == 2 {
+    if expected_version == 3 && record.version == 3 {
+        return decode_metadata_item_v3(&record);
+    }
+    if expected_version == 2 && record.version == 2 {
         return decode_metadata_item_v2(&record);
     }
-    if version_two || record.version != 1 {
+    if expected_version != 1 || record.version != 1 {
         return Err(noncanonical(
             "Entry and nested MetadataItem record versions must agree",
         ));
@@ -1390,6 +1466,103 @@ fn decode_metadata_item_v2(record: &Record<'_>) -> Result<MetadataItem> {
     }
 }
 
+fn decode_metadata_item_v3(record: &Record<'_>) -> Result<MetadataItem> {
+    record.expect_versioned_tags(3, &[1, 2, 3], &[4, 5, 6, 7, 8, 9, 10, 11, 12])?;
+    if record.field(2)?.as_u8()? != 0 || !matches!(record.field(3)?.as_u8()?, 1 | 2) {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedRequiredFeature,
+            "platform/security metadata-v3 has unsupported criticality/restorability",
+        ));
+    }
+    let name = record.field(1)?.as_u8()?;
+    let item = match (
+        name,
+        record.optional_field(4),
+        record.optional_field(5),
+        record.optional_field(6),
+        record.optional_field(7),
+        record.optional_field(8),
+        record.optional_field(9),
+        record.optional_field(10),
+        record.optional_field(11),
+        record.optional_field(12),
+    ) {
+        (1, Some(value), None, None, None, None, None, None, None, None) => {
+            MetadataItem::executable(value.as_bool()?)
+        }
+        (2, None, Some(value), None, None, None, None, None, None, None) => {
+            MetadataItem::mtime(decode_timestamp(value.as_bytes()?)?)
+        }
+        (3, None, None, Some(value), None, None, None, None, None, None) => {
+            let mode = value.as_u32()?;
+            if mode & !0o7777 != 0 {
+                return Err(noncanonical(
+                    "posix.mode includes file-type or reserved bits",
+                ));
+            }
+            MetadataItem::posix_mode(mode)
+        }
+        (4, None, None, Some(value), None, None, None, None, None, None) => {
+            MetadataItem::posix_uid(value.as_u32()?)
+        }
+        (5, None, None, Some(value), None, None, None, None, None, None) => {
+            MetadataItem::posix_gid(value.as_u32()?)
+        }
+        (6, None, None, None, Some(value), None, None, None, None, None) => {
+            MetadataItem::hardlink_group(digest(value.as_bytes()?)?)
+        }
+        (7, None, None, None, None, Some(value), None, None, None, None) => MetadataItem::xattrs(
+            value
+                .as_sequence()?
+                .into_iter()
+                .map(decode_xattr)
+                .collect::<Result<Vec<_>>>()?,
+        )?,
+        (8, None, None, None, None, None, Some(value), None, None, None) => {
+            MetadataItem::sparse_map(decode_sparse_map(value.as_bytes()?)?)
+        }
+        (9, None, None, None, None, None, None, Some(value), None, None) => MetadataItem::acls(
+            value
+                .as_sequence()?
+                .into_iter()
+                .map(decode_acl)
+                .collect::<Result<Vec<_>>>()?,
+        )?,
+        (10, None, None, None, None, None, None, None, Some(value), None) => {
+            MetadataItem::windows_security_descriptor(decode_windows_security_descriptor(
+                value.as_bytes()?,
+            )?)
+        }
+        (11, None, None, Some(value), None, None, None, None, None, None) => {
+            MetadataItem::windows_file_attributes(value.as_u32()?)?
+        }
+        (12, None, Some(value), None, None, None, None, None, None, None) => {
+            MetadataItem::windows_creation_time(decode_timestamp(value.as_bytes()?)?)
+        }
+        (13, None, None, None, None, None, None, None, None, Some(value)) => {
+            MetadataItem::windows_reparse_original(decode_windows_reparse(value.as_bytes()?)?)
+        }
+        (14, None, None, Some(value), None, None, None, None, None, None) => {
+            MetadataItem::macos_flags(value.as_u32()?)?
+        }
+        (15, None, Some(value), None, None, None, None, None, None, None) => {
+            MetadataItem::macos_birthtime(decode_timestamp(value.as_bytes()?)?)
+        }
+        _ => return Err(noncanonical("metadata-v3 name and typed value disagree")),
+    };
+    let expected_restorability = match item.restorability() {
+        Restorability::Restorable => 1,
+        Restorability::CaptureOnly => 2,
+    };
+    if record.field(3)?.as_u8()? != expected_restorability {
+        return Err(noncanonical(
+            "metadata-v3 restorability disagrees with the closed registry",
+        ));
+    }
+    Ok(item)
+}
+
 fn encode_xattr(value: &XAttr) -> Result<Vec<u8>> {
     let mut record = RecordBuilder::new(RECORD_XATTR_V1);
     record.bytes(1, value.name())?.bytes(2, value.value())?;
@@ -1447,6 +1620,177 @@ fn decode_sparse_map(bytes: &[u8]) -> Result<SparseMap> {
         })
         .collect::<Result<Vec<_>>>()?;
     SparseMap::new(record.field(1)?.as_u64()?, extents)
+}
+
+fn encode_acl(value: &Acl) -> Result<Vec<u8>> {
+    let entries = value
+        .entries()
+        .iter()
+        .map(encode_acl_entry)
+        .collect::<Result<Vec<_>>>()?;
+    let mut record = RecordBuilder::new(RECORD_ACL_V1);
+    record
+        .u8(
+            1,
+            match value.dialect() {
+                AclDialect::Posix1e => 1,
+                AclDialect::Nfs4 => 2,
+            },
+        )?
+        .u8(
+            2,
+            match value.scope() {
+                AclScope::Access => 1,
+                AclScope::Default => 2,
+            },
+        )?
+        .sequence(3, &entries)?;
+    record.finish()
+}
+
+fn decode_acl(bytes: &[u8]) -> Result<Acl> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() || record.kind != RECORD_ACL_V1 {
+        return Err(noncanonical("ACL item is not a canonical AclV1 record"));
+    }
+    record.expect_tags(&[1, 2, 3], &[])?;
+    let dialect = match record.field(1)?.as_u8()? {
+        1 => AclDialect::Posix1e,
+        2 => AclDialect::Nfs4,
+        _ => return Err(noncanonical("unknown ACL dialect")),
+    };
+    let scope = match record.field(2)?.as_u8()? {
+        1 => AclScope::Access,
+        2 => AclScope::Default,
+        _ => return Err(noncanonical("unknown ACL scope")),
+    };
+    Acl::new(
+        dialect,
+        scope,
+        record
+            .field(3)?
+            .as_sequence()?
+            .into_iter()
+            .map(decode_acl_entry)
+            .collect::<Result<Vec<_>>>()?,
+    )
+}
+
+fn encode_acl_entry(value: &AclEntry) -> Result<Vec<u8>> {
+    let mut record = RecordBuilder::new(RECORD_ACL_ENTRY_V1);
+    record
+        .u8(
+            1,
+            match value.entry_type() {
+                AclEntryType::Allow => 1,
+                AclEntryType::Deny => 2,
+                AclEntryType::Audit => 3,
+                AclEntryType::Alarm => 4,
+            },
+        )?
+        .u8(
+            2,
+            match value.principal() {
+                AclPrincipal::UserObj => 1,
+                AclPrincipal::User(_) => 2,
+                AclPrincipal::GroupObj => 3,
+                AclPrincipal::Group(_) => 4,
+                AclPrincipal::Mask => 5,
+                AclPrincipal::Other => 6,
+                AclPrincipal::OwnerAt => 7,
+                AclPrincipal::GroupAt => 8,
+                AclPrincipal::EveryoneAt => 9,
+                AclPrincipal::Uuid(_) => 10,
+            },
+        )?;
+    match value.principal() {
+        AclPrincipal::User(id) | AclPrincipal::Group(id) => {
+            record.u32(3, *id)?;
+        }
+        AclPrincipal::Uuid(uuid) => {
+            record.bytes(4, uuid)?;
+        }
+        _ => {}
+    }
+    record.u32(5, value.permissions())?.u32(6, value.flags())?;
+    record.finish()
+}
+
+fn decode_acl_entry(bytes: &[u8]) -> Result<AclEntry> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() || record.kind != RECORD_ACL_ENTRY_V1 {
+        return Err(noncanonical(
+            "ACL entry is not a canonical AclEntryV1 record",
+        ));
+    }
+    record.expect_tags(&[1, 2, 5, 6], &[3, 4])?;
+    let entry_type = match record.field(1)?.as_u8()? {
+        1 => AclEntryType::Allow,
+        2 => AclEntryType::Deny,
+        3 => AclEntryType::Audit,
+        4 => AclEntryType::Alarm,
+        _ => return Err(noncanonical("unknown ACL entry type")),
+    };
+    let numeric = record.optional_field(3);
+    let uuid = record.optional_field(4);
+    let principal = match (record.field(2)?.as_u8()?, numeric, uuid) {
+        (1, None, None) => AclPrincipal::UserObj,
+        (2, Some(value), None) => AclPrincipal::User(value.as_u32()?),
+        (3, None, None) => AclPrincipal::GroupObj,
+        (4, Some(value), None) => AclPrincipal::Group(value.as_u32()?),
+        (5, None, None) => AclPrincipal::Mask,
+        (6, None, None) => AclPrincipal::Other,
+        (7, None, None) => AclPrincipal::OwnerAt,
+        (8, None, None) => AclPrincipal::GroupAt,
+        (9, None, None) => AclPrincipal::EveryoneAt,
+        (10, None, Some(value)) => AclPrincipal::Uuid(
+            value
+                .as_bytes()?
+                .try_into()
+                .map_err(|_| noncanonical("NFS4 UUID principal must contain exactly 16 bytes"))?,
+        ),
+        _ => return Err(noncanonical("ACL principal cardinality is invalid")),
+    };
+    AclEntry::new(
+        entry_type,
+        principal,
+        record.field(5)?.as_u32()?,
+        record.field(6)?.as_u32()?,
+    )
+}
+
+fn encode_windows_security_descriptor(value: &WindowsSecurityDescriptor) -> Result<Vec<u8>> {
+    let mut record = RecordBuilder::new(RECORD_WINDOWS_SECURITY_DESCRIPTOR_V1);
+    record.bytes(1, value.bytes())?;
+    record.finish()
+}
+
+fn decode_windows_security_descriptor(bytes: &[u8]) -> Result<WindowsSecurityDescriptor> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() || record.kind != RECORD_WINDOWS_SECURITY_DESCRIPTOR_V1 {
+        return Err(noncanonical(
+            "security descriptor is not a canonical WindowsSecurityDescriptorV1 record",
+        ));
+    }
+    record.expect_tags(&[1], &[])?;
+    WindowsSecurityDescriptor::new(record.field(1)?.as_bytes()?)
+}
+
+fn encode_windows_reparse(value: &WindowsReparsePoint) -> Result<Vec<u8>> {
+    let mut record = RecordBuilder::new(RECORD_WINDOWS_REPARSE_POINT_V1);
+    record.u32(1, value.tag())?.bytes(2, value.data())?;
+    record.finish()
+}
+
+fn decode_windows_reparse(bytes: &[u8]) -> Result<WindowsReparsePoint> {
+    let (record, consumed) = decode_record(bytes)?;
+    if consumed != bytes.len() || record.kind != RECORD_WINDOWS_REPARSE_POINT_V1 {
+        return Err(noncanonical(
+            "reparse object is not a canonical WindowsReparsePointV1 record",
+        ));
+    }
+    record.expect_tags(&[1, 2], &[])?;
+    WindowsReparsePoint::new(record.field(1)?.as_u32()?, record.field(2)?.as_bytes()?)
 }
 
 fn encode_timestamp(value: Timestamp) -> Result<Vec<u8>> {
@@ -2301,6 +2645,13 @@ mod tests {
             .expect("POSIX metadata vector must exist")
     }
 
+    fn platform_vector(name: &str) -> &'static str {
+        include_str!("../../../../docs/security-metadata-v1-vectors.txt")
+            .lines()
+            .find_map(|line| line.strip_prefix(&format!("{name}=")))
+            .expect("platform security metadata vector must exist")
+    }
+
     #[test]
     fn entry_v1_is_unchanged_and_entry_v2_is_canonical() {
         let path = LogicalPath::from_utf8(["vector"]).unwrap();
@@ -2399,7 +2750,7 @@ mod tests {
         );
 
         let mut unsupported_entry_version = v2.clone();
-        unsupported_entry_version[2..4].copy_from_slice(&3_u16.to_be_bytes());
+        unsupported_entry_version[2..4].copy_from_slice(&4_u16.to_be_bytes());
         assert_eq!(
             decode_record(&unsupported_entry_version)
                 .unwrap_err()
@@ -2420,6 +2771,119 @@ mod tests {
         assert_eq!(
             sha256_exact(&bytes).to_string(),
             posix_vector("ENTRY_V2_SYMLINK_SHA256")
+        );
+    }
+
+    #[test]
+    fn entry_and_metadata_v3_are_canonical_and_closed() {
+        let acl = Acl::new(
+            AclDialect::Posix1e,
+            AclScope::Access,
+            vec![
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::UserObj, 7, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::GroupObj, 5, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::Other, 1, 0).unwrap(),
+            ],
+        )
+        .unwrap();
+        let acl_bytes = encode_acl(&acl).unwrap();
+        let mut descriptor = vec![0_u8; 20];
+        descriptor[0] = 1;
+        descriptor[2..4].copy_from_slice(&0x8004_u16.to_le_bytes());
+        descriptor[16..20].copy_from_slice(&20_u32.to_le_bytes());
+        descriptor.extend_from_slice(&[
+            2, 0, 28, 0, 1, 0, 0, 0, 0, 0, 20, 0, 0xff, 0x01, 0x1f, 0, 1, 1, 0, 0, 0, 0, 0, 5, 32,
+            0, 0, 0,
+        ]);
+        let security = WindowsSecurityDescriptor::new(descriptor).unwrap();
+        let security_bytes = encode_windows_security_descriptor(&security).unwrap();
+        assert_eq!(hex(&acl_bytes), platform_vector("ACL_V1_POSIX_ACCESS"));
+        assert_eq!(
+            sha256_exact(&acl_bytes).to_string(),
+            platform_vector("ACL_V1_POSIX_ACCESS_SHA256")
+        );
+        assert_eq!(
+            hex(&security_bytes),
+            platform_vector("WINDOWS_SECURITY_DESCRIPTOR_V1")
+        );
+        assert_eq!(
+            sha256_exact(&security_bytes).to_string(),
+            platform_vector("WINDOWS_SECURITY_DESCRIPTOR_V1_SHA256")
+        );
+
+        let metadata_item = MetadataItem::windows_file_attributes(0x2).unwrap();
+        let metadata_bytes = encode_metadata_item(&metadata_item, 3).unwrap();
+        assert_eq!(
+            hex(&metadata_bytes),
+            platform_vector("METADATA_V3_WINDOWS_ATTRIBUTES")
+        );
+        assert_eq!(
+            sha256_exact(&metadata_bytes).to_string(),
+            platform_vector("METADATA_V3_WINDOWS_ATTRIBUTES_SHA256")
+        );
+
+        let entry = Entry::new(
+            LogicalPath::from_utf8(["rp"]).unwrap(),
+            EntryData::ReparsePoint {
+                value: WindowsReparsePoint::new(0xa000_000c, vec![1, 2, 3]).unwrap(),
+            },
+            MetadataSet::new(vec![metadata_item]).unwrap(),
+            EntryIdentity {
+                identity_digest: Digest::from_bytes([0x44; 32]),
+                aux_digest: Digest::from_bytes([0x55; 32]),
+            },
+        );
+        let bytes = encode_entry_record(&entry).unwrap();
+        assert_eq!(&bytes[2..4], &3_u16.to_be_bytes());
+        let (record, consumed) = decode_record(&bytes).unwrap();
+        assert_eq!(consumed, bytes.len());
+        assert_eq!(decode_entry(&record).unwrap(), entry);
+        assert_eq!(hex(&bytes), platform_vector("ENTRY_V3_REPARSE"));
+        assert_eq!(
+            sha256_exact(&bytes).to_string(),
+            platform_vector("ENTRY_V3_REPARSE_SHA256")
+        );
+
+        let mut wrong_version = bytes;
+        wrong_version[2..4].copy_from_slice(&2_u16.to_be_bytes());
+        let (record, _) = decode_record(&wrong_version).unwrap();
+        assert_eq!(
+            decode_entry(&record).unwrap_err().code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+
+        let mut wrong_restorability = RecordBuilder::new_version(RECORD_METADATA_ITEM, 3);
+        wrong_restorability
+            .u8(1, 14)
+            .unwrap()
+            .u8(2, 0)
+            .unwrap()
+            .u8(3, 2)
+            .unwrap()
+            .u32(6, 2)
+            .unwrap();
+        assert_eq!(
+            decode_metadata_item(&wrong_restorability.finish().unwrap(), 3)
+                .unwrap_err()
+                .code(),
+            ReasonCode::NoncanonicalEncoding
+        );
+
+        let mut empty_acls = RecordBuilder::new_version(RECORD_METADATA_ITEM, 3);
+        empty_acls
+            .u8(1, 9)
+            .unwrap()
+            .u8(2, 0)
+            .unwrap()
+            .u8(3, 1)
+            .unwrap()
+            .sequence(10, &[])
+            .unwrap();
+        assert_eq!(
+            decode_metadata_item(&empty_acls.finish().unwrap(), 3)
+                .unwrap_err()
+                .code(),
+            ReasonCode::InvalidAcl
         );
     }
 

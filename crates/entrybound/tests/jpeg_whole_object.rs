@@ -45,7 +45,9 @@ fn selected_multi_chunk_jpeg_region_is_exact_deterministic_and_identity_neutral(
             EntryData::File {
                 content: ContentRef::Internal(digest),
             } => Some(digest),
-            EntryData::Directory | EntryData::Symlink { .. } => None,
+            EntryData::Directory | EntryData::Symlink { .. } | EntryData::ReparsePoint { .. } => {
+                None
+            }
         })
         .unwrap();
     assert!(baseline.content_store.objects[image_object].chunks.len() > 1);

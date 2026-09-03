@@ -17,7 +17,8 @@ establishes:
 - the thin `entrybound-cli` package, producing the canonical `ebound`
   executable and an `entrybound` compatibility alias;
 - typed EAM foundations for directories, regular files, symbolic links,
-  POSIX metadata, ContentObjects,
+  opaque Windows reparse objects, POSIX metadata, canonical ACLs,
+  Windows security/platform metadata, macOS flags/birthtime, ContentObjects,
   content-addressed Chunks, TransformPlans, metadata, FidelityReport, and a
   non-authoritative Index;
 - structural UTF-8 LogicalPaths with canonical ordering, explicit-ancestor,
@@ -284,6 +285,11 @@ It writes unencrypted Complete archives in INDEXED or STREAM layout and
 encrypted Complete archives in INDEXED layout. It supports UTF-8 directory
 names, directories, regular files, symbolic links, hardlink topology, POSIX
 mode/ownership, xattrs, and sparse layout; special files remain unsupported.
+The versioned security metadata wire preserves POSIX1E/NFS4 ACLs, exact
+self-relative Windows descriptors, and opaque reparse data. Linux ACL capture
+and restore, Windows attributes/creation time, and macOS flags/birthtime are
+safe-platform integrations; unavailable exact descriptor/reparse or ACL APIs
+are reported through FidelityReport rather than approximated.
 Strict ZIP import supports single-disk ZIP32/ZIP64 STORE and
 DEFLATE. Strict tar import supports regular files/directories across ustar,
 pax, GNU long-name, and base-256 forms and now projects symbolic/hard links and
@@ -298,8 +304,8 @@ input, encrypted STREAM layout,
 online TSA request support, general PKI/keychain integration, classical-only
 recipients, STREAM random access, encrypted repack, lossy image recompression, guaranteed
 support for every JPEG producer/marker combination, embedded-stream scanning,
-unbounded solid compression, canonical ACLs, Windows security descriptors and
-reparse points, macOS-specific metadata, non-UTF-8 LogicalPath components,
+unbounded solid compression, complete cross-platform security/reparse
+restoration on builds without audited safe platform APIs, non-UTF-8 LogicalPath components,
 platform-specific special-file semantics,
 mounting, recovery, language bindings, Go compatibility layer, or FFI.
 
@@ -349,6 +355,9 @@ for capture, confinement, and policy behavior,
 [POSIX metadata v1](docs/posix-metadata-v1.md) for the feature-gated Entry and
 Metadata wire model, and [filesystem fidelity v1](docs/filesystem-fidelity-v1.md)
 for no-follow capture and restoration policy,
+[security metadata v1](docs/security-metadata-v1.md) for ACL, Windows, and
+macOS canonical records, and [platform fidelity v1](docs/platform-fidelity-v1.md)
+for platform capability behavior,
 [the planner-v1 note](docs/planner-v1.md) for frozen profiles and the
 minimum-gain rule, [the CDC/deduplication note](docs/chunking-v1.md) for v2
 chunking policies and exact physical sharing,

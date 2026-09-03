@@ -10,9 +10,11 @@ use entrybound::crypto::{
 };
 use entrybound::diagnostics::ReasonCode;
 use entrybound::eam::{
-    Entry, EntryData, EntryIdentity, EntrySet, LinkTarget, LogicalPath, MetadataSet,
+    Entry, EntryData, EntryIdentity, EntrySet, LinkTarget, LogicalPath, MetadataItem, MetadataSet,
 };
-use entrybound::ecf::{FEATURE_POSIX_METADATA_V1, WriteOptions, encode};
+use entrybound::ecf::{
+    FEATURE_PLATFORM_SECURITY_METADATA_V1, FEATURE_POSIX_METADATA_V1, WriteOptions, encode,
+};
 use sha2::{Digest as _, Sha256};
 
 struct Fixture {
@@ -95,7 +97,7 @@ fn encrypted_hybrid_indexed_round_trip_is_metadata_private() {
 }
 
 #[test]
-fn encrypted_manifest_keeps_posix_entry_v2_private_and_authenticated() {
+fn encrypted_manifest_keeps_versioned_metadata_private_and_authenticated() {
     let fixture = Fixture::new("crypto-posix-manifest");
     let mut archive = plan_directory(&fixture.source, PackOptions::default()).unwrap();
     let mut entries = archive.entry_set.entries().to_vec();
@@ -104,11 +106,12 @@ fn encrypted_manifest_keeps_posix_entry_v2_private_and_authenticated() {
         EntryData::Symlink {
             target: LinkTarget::canonical(b"../secret-target".to_vec()).unwrap(),
         },
-        MetadataSet::default(),
+        MetadataSet::new(vec![MetadataItem::macos_flags(0x2).unwrap()]).unwrap(),
         EntryIdentity::default(),
     ));
     archive.entry_set = EntrySet::new(entries).unwrap();
-    archive.descriptor.features.incompat |= FEATURE_POSIX_METADATA_V1;
+    archive.descriptor.features.incompat |=
+        FEATURE_POSIX_METADATA_V1 | FEATURE_PLATFORM_SECURITY_METADATA_V1;
     let (identity, recipient) = XWingIdentity::generate().unwrap();
     let encrypted = encrypt_archive(
         &archive,
@@ -125,7 +128,7 @@ fn encrypted_manifest_keeps_posix_entry_v2_private_and_authenticated() {
         matches!(
             entry.data(),
             EntryData::Symlink { target } if target.bytes() == b"../secret-target"
-        )
+        ) && entry.metadata().macos_flags() == Some(0x2)
     }));
 }
 
