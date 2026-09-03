@@ -9,9 +9,13 @@ use std::fmt::Write as _;
 use std::io::Write as _;
 use std::str::FromStr;
 
+use bzip2::write::BzEncoder;
 use crc32fast::Hasher as Crc32;
 use flate2::{Compression, write::DeflateEncoder};
+use lzma_rust2::{XzOptions, XzWriter};
 
+use super::import::{LegacyImportPolicy, LegacySourceFormat, import_strict};
+use super::stream::{self, TransportFormat, WrapperImportPolicy};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
     Archive, ContentRef, Digest, Entry, EntryData, LogicalPath, MetadataName, MetadataValue,
@@ -21,8 +25,13 @@ use crate::identity::sha256_exact;
 
 pub const EXPORTER_ID: &str = "entrybound/legacy-export-v1";
 pub const RECEIPT_FORMAT: &str = "entrybound/export-receipt-v1";
+pub const RECEIPT_V2_FORMAT: &str = "entrybound/export-receipt-v2";
 pub const ZIP_PROFILE: &str = "zip/portable-v1";
 pub const TAR_PROFILE: &str = "tar/pax-v1";
+pub const TAR_GZIP_PROFILE: &str = "tar.gz/pax-v1";
+pub const TAR_ZSTD_PROFILE: &str = "tar.zst/pax-v1";
+pub const TAR_XZ_PROFILE: &str = "tar.xz/pax-v1";
+pub const TAR_BZIP2_PROFILE: &str = "tar.bz2/pax-v1";
 
 const ZIP_UTF8_FLAG: u16 = 1 << 11;
 const ZIP_STORE: u16 = 0;
@@ -40,6 +49,10 @@ const TAR_OCTAL_TIME_MAX: u64 = 0o77_777_777_777;
 pub enum ExportTarget {
     ZipPortableV1,
     TarPaxV1,
+    TarGzipPaxV1,
+    TarZstandardPaxV1,
+    TarXzPaxV1,
+    TarBzip2PaxV1,
 }
 
 impl ExportTarget {
@@ -48,6 +61,10 @@ impl ExportTarget {
         match self {
             Self::ZipPortableV1 => ZIP_PROFILE,
             Self::TarPaxV1 => TAR_PROFILE,
+            Self::TarGzipPaxV1 => TAR_GZIP_PROFILE,
+            Self::TarZstandardPaxV1 => TAR_ZSTD_PROFILE,
+            Self::TarXzPaxV1 => TAR_XZ_PROFILE,
+            Self::TarBzip2PaxV1 => TAR_BZIP2_PROFILE,
         }
     }
 
@@ -56,6 +73,57 @@ impl ExportTarget {
         match self {
             Self::ZipPortableV1 => "zip",
             Self::TarPaxV1 => "tar",
+            Self::TarGzipPaxV1 => "tar.gz",
+            Self::TarZstandardPaxV1 => "tar.zst",
+            Self::TarXzPaxV1 => "tar.xz",
+            Self::TarBzip2PaxV1 => "tar.bz2",
+        }
+    }
+
+    /// The semantic target whose representability rules govern this artifact.
+    #[must_use]
+    pub const fn semantic_target(self) -> Self {
+        match self {
+            Self::ZipPortableV1 => Self::ZipPortableV1,
+            Self::TarPaxV1
+            | Self::TarGzipPaxV1
+            | Self::TarZstandardPaxV1
+            | Self::TarXzPaxV1
+            | Self::TarBzip2PaxV1 => Self::TarPaxV1,
+        }
+    }
+
+    #[must_use]
+    pub const fn transport_profile(self) -> Option<&'static str> {
+        match self {
+            Self::ZipPortableV1 | Self::TarPaxV1 => None,
+            Self::TarGzipPaxV1 => Some("gzip-v1"),
+            Self::TarZstandardPaxV1 => Some("zstd-v1"),
+            Self::TarXzPaxV1 => Some("xz-v1"),
+            Self::TarBzip2PaxV1 => Some("bzip2-v1"),
+        }
+    }
+
+    #[must_use]
+    pub const fn extension(self) -> &'static str {
+        match self {
+            Self::ZipPortableV1 => "zip",
+            Self::TarPaxV1 => "tar",
+            Self::TarGzipPaxV1 => "tar.gz",
+            Self::TarZstandardPaxV1 => "tar.zst",
+            Self::TarXzPaxV1 => "tar.xz",
+            Self::TarBzip2PaxV1 => "tar.bz2",
+        }
+    }
+
+    const fn import_format(self) -> LegacySourceFormat {
+        match self {
+            Self::ZipPortableV1 => LegacySourceFormat::Zip,
+            Self::TarPaxV1 => LegacySourceFormat::Tar,
+            Self::TarGzipPaxV1 => LegacySourceFormat::TarGzip,
+            Self::TarZstandardPaxV1 => LegacySourceFormat::TarZstandard,
+            Self::TarXzPaxV1 => LegacySourceFormat::TarXz,
+            Self::TarBzip2PaxV1 => LegacySourceFormat::TarBzip2,
         }
     }
 }
@@ -67,6 +135,10 @@ impl FromStr for ExportTarget {
         match value {
             "zip" | ZIP_PROFILE => Ok(Self::ZipPortableV1),
             "tar" | TAR_PROFILE => Ok(Self::TarPaxV1),
+            "tar.gz" | TAR_GZIP_PROFILE => Ok(Self::TarGzipPaxV1),
+            "tar.zst" | TAR_ZSTD_PROFILE => Ok(Self::TarZstandardPaxV1),
+            "tar.xz" | TAR_XZ_PROFILE => Ok(Self::TarXzPaxV1),
+            "tar.bz2" | TAR_BZIP2_PROFILE => Ok(Self::TarBzip2PaxV1),
             _ => Err(Diagnostic::new(
                 OutcomeClass::Unsupported,
                 ReasonCode::LegacyExportTargetInvalid,
@@ -214,6 +286,17 @@ pub struct ExportAnalysis {
     pub total_logical_bytes: u64,
     pub planned_target_bytes: Option<u64>,
     pub planned_target_digest: Option<Digest>,
+    pub strict_reimport_validated: bool,
+    pub reimport_lai: Option<Digest>,
+}
+
+/// Receipt-v2 transport details for a compressed-tar composition.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct WrappedTargetReceipt {
+    pub semantic_profile: String,
+    pub transport_profile: String,
+    pub inner_tar_byte_length: u64,
+    pub inner_tar_sha256: Digest,
 }
 
 /// Canonical receipt for one accepted export.
@@ -233,6 +316,13 @@ pub struct ExportReceipt {
     pub target_byte_length: u64,
     pub target_sha256: Digest,
     pub deterministic: bool,
+    /// Whether the generated target passed its strict Entrybound re-import.
+    pub strict_reimport_validated: bool,
+    /// Logical identity obtained through strict re-import of the generated target.
+    pub reimport_lai: Option<Digest>,
+    /// Present only for wrapped tar targets. Its presence selects receipt v2;
+    /// bare ZIP/tar receipts retain their frozen v1 bytes.
+    pub wrapped_target: Option<WrappedTargetReceipt>,
 }
 
 /// Fully planned target bytes. Constructing this value performs all compression
@@ -246,6 +336,7 @@ pub struct PreparedExport {
     source_pcr: Digest,
     source_security: ExportSourceSecurity,
     auxiliary: AuxiliaryEvidenceSummary,
+    wrapped_target: Option<WrappedTargetReceipt>,
 }
 
 /// Accepted export bytes and their final receipt.
@@ -302,6 +393,9 @@ impl PreparedExport {
             target_byte_length,
             target_sha256,
             deterministic: true,
+            strict_reimport_validated: self.analysis.strict_reimport_validated,
+            reimport_lai: self.analysis.reimport_lai,
+            wrapped_target: self.wrapped_target,
         };
         Ok(ExportArtifact { bytes, receipt })
     }
@@ -318,18 +412,16 @@ pub fn prepare_export(
     let entry_count = u64::try_from(archive.entry_set.len())
         .map_err(|_| target_limit("entry count exceeds u64"))?;
     let total_logical_bytes = archive.total_logical_size()?;
-    let mut issues = analyze_entries(archive, target)?;
+    let semantic_target = target.semantic_target();
+    let mut issues = analyze_entries(archive, semantic_target)?;
     issues.sort();
     issues.dedup();
     let mut outcome = classify(&issues);
-    let bytes = if outcome == ExportOutcome::Refused {
-        None
+    let (bytes, wrapped_target) = if outcome == ExportOutcome::Refused {
+        (None, None)
     } else {
-        match target {
-            ExportTarget::ZipPortableV1 => encode_zip(archive, &mut issues)?,
-            ExportTarget::TarPaxV1 => encode_tar(archive, &mut issues)?,
-        }
-        .into()
+        let (bytes, wrapped) = encode_target(archive, target, &mut issues)?;
+        (Some(bytes), wrapped)
     };
     issues.sort();
     issues.dedup();
@@ -338,6 +430,10 @@ pub fn prepare_export(
         bytes.as_ref().map_or((None, None), |value| {
             (u64::try_from(value.len()).ok(), Some(sha256_exact(value)))
         });
+    let reimport_lai = bytes
+        .as_deref()
+        .map(|value| validate_strict_reimport(archive, target, value, outcome, &issues))
+        .transpose()?;
     let analysis = ExportAnalysis {
         target,
         profile: ExportProfileId(target.profile_id().to_owned()),
@@ -347,6 +443,8 @@ pub fn prepare_export(
         total_logical_bytes,
         planned_target_bytes,
         planned_target_digest,
+        strict_reimport_validated: reimport_lai.is_some(),
+        reimport_lai,
     };
     Ok(PreparedExport {
         analysis,
@@ -368,6 +466,7 @@ pub fn prepare_export(
             )
             .unwrap_or(u64::MAX),
         },
+        wrapped_target,
     })
 }
 
@@ -445,6 +544,7 @@ fn analyze_entries(archive: &Archive, target: ExportTarget) -> Result<Vec<Export
                 match target {
                     ExportTarget::ZipPortableV1 => "ZIP local headers require a DOS timestamp",
                     ExportTarget::TarPaxV1 => "POSIX tar headers require an mtime field",
+                    _ => unreachable!("semantic target is normalized"),
                 },
                 ExportDisposition::Degraded,
                 match target {
@@ -454,6 +554,7 @@ fn analyze_entries(archive: &Archive, target: ExportTarget) -> Result<Vec<Export
                     ExportTarget::TarPaxV1 => {
                         "tar/pax-v1 emits the deterministic construction value 0 seconds"
                     }
+                    _ => unreachable!("semantic target is normalized"),
                 },
             ));
         }
@@ -613,6 +714,7 @@ fn analyze_mtime(
                 ));
             }
         }
+        _ => unreachable!("semantic target is normalized"),
     }
 }
 
@@ -1080,6 +1182,241 @@ fn target_io(action: &str, error: std::io::Error) -> Diagnostic {
     )
 }
 
+fn encode_target(
+    archive: &Archive,
+    target: ExportTarget,
+    issues: &mut Vec<ExportIssue>,
+) -> Result<(Vec<u8>, Option<WrappedTargetReceipt>)> {
+    match target {
+        ExportTarget::ZipPortableV1 => encode_zip(archive, issues).map(|bytes| (bytes, None)),
+        ExportTarget::TarPaxV1 => encode_tar(archive, issues).map(|bytes| (bytes, None)),
+        ExportTarget::TarGzipPaxV1
+        | ExportTarget::TarZstandardPaxV1
+        | ExportTarget::TarXzPaxV1
+        | ExportTarget::TarBzip2PaxV1 => {
+            let tar = encode_tar(archive, issues)?;
+            let inner_tar_byte_length = u64::try_from(tar.len())
+                .map_err(|_| target_limit("inner tar length exceeds u64"))?;
+            let inner_tar_sha256 = sha256_exact(&tar);
+            let (bytes, transport) = match target {
+                ExportTarget::TarGzipPaxV1 => (encode_gzip_wrapper(&tar)?, TransportFormat::Gzip),
+                ExportTarget::TarZstandardPaxV1 => {
+                    (encode_zstd_wrapper(&tar)?, TransportFormat::Zstandard)
+                }
+                ExportTarget::TarXzPaxV1 => (encode_xz_wrapper(&tar)?, TransportFormat::Xz),
+                ExportTarget::TarBzip2PaxV1 => {
+                    (encode_bzip2_wrapper(&tar)?, TransportFormat::Bzip2)
+                }
+                ExportTarget::ZipPortableV1 | ExportTarget::TarPaxV1 => unreachable!(),
+            };
+            let decoded = stream::decode(&bytes, transport, WrapperImportPolicy::default())?;
+            if decoded.member_count != 1 || decoded.decoded.as_ref() != tar {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Corrupt,
+                    ReasonCode::LegacyExportTargetInvalid,
+                    format!(
+                        "{} self-validation did not reproduce exact tar/pax-v1 bytes",
+                        target.profile_id()
+                    ),
+                ));
+            }
+            Ok((
+                bytes,
+                Some(WrappedTargetReceipt {
+                    semantic_profile: TAR_PROFILE.to_owned(),
+                    transport_profile: target
+                        .transport_profile()
+                        .expect("wrapped target has transport")
+                        .to_owned(),
+                    inner_tar_byte_length,
+                    inner_tar_sha256,
+                }),
+            ))
+        }
+    }
+}
+
+fn encode_gzip_wrapper(tar: &[u8]) -> Result<Vec<u8>> {
+    let mut encoder = DeflateEncoder::new(Vec::new(), Compression::new(6));
+    encoder
+        .write_all(tar)
+        .map_err(|error| target_io("compress deterministic gzip payload", error))?;
+    let deflate = encoder
+        .finish()
+        .map_err(|error| target_io("finish deterministic gzip payload", error))?;
+    let mut crc = Crc32::new();
+    crc.update(tar);
+    let tar_length = u64::try_from(tar.len())
+        .map_err(|_| target_limit("tar payload length does not fit deterministic gzip"))?;
+    let isize = u32::try_from(tar_length & u64::from(u32::MAX))
+        .expect("masking to 32 bits always fits u32");
+    let mut output = Vec::with_capacity(10 + deflate.len() + 8);
+    output.extend_from_slice(&[0x1f, 0x8b, 8, 0]);
+    output.extend_from_slice(&0_u32.to_le_bytes());
+    output.push(0); // XFL: the RFC-defined neutral value for frozen level 6.
+    output.push(255); // OS: unknown, independent of the host.
+    output.extend_from_slice(&deflate);
+    output.extend_from_slice(&crc.finalize().to_le_bytes());
+    output.extend_from_slice(&isize.to_le_bytes());
+    Ok(output)
+}
+
+fn encode_zstd_wrapper(tar: &[u8]) -> Result<Vec<u8>> {
+    let tar_length = u64::try_from(tar.len())
+        .map_err(|_| target_limit("tar payload length does not fit deterministic Zstandard"))?;
+    let mut encoder = zstd::stream::write::Encoder::new(Vec::new(), 9)
+        .map_err(|error| target_io("create deterministic Zstandard encoder", error))?;
+    encoder
+        .include_checksum(true)
+        .and_then(|()| encoder.include_contentsize(true))
+        .and_then(|()| encoder.include_dictid(false))
+        .and_then(|()| encoder.long_distance_matching(false))
+        .and_then(|()| encoder.set_pledged_src_size(Some(tar_length)))
+        .map_err(|error| target_io("configure deterministic Zstandard frame", error))?;
+    encoder
+        .write_all(tar)
+        .map_err(|error| target_io("compress deterministic Zstandard frame", error))?;
+    encoder
+        .finish()
+        .map_err(|error| target_io("finish deterministic Zstandard frame", error))
+}
+
+fn encode_xz_wrapper(tar: &[u8]) -> Result<Vec<u8>> {
+    // Preset 6 freezes its LZMA2 parameters; XzOptions freezes one block and
+    // CRC64 by default in lzma-rust2 0.20.0.
+    let options = XzOptions::with_preset(6);
+    let mut encoder = XzWriter::new(Vec::new(), options)
+        .map_err(|error| target_io("create deterministic XZ encoder", error))?;
+    encoder
+        .write_all(tar)
+        .map_err(|error| target_io("compress deterministic XZ stream", error))?;
+    encoder
+        .finish()
+        .map_err(|error| target_io("finish deterministic XZ stream", error))
+}
+
+fn encode_bzip2_wrapper(tar: &[u8]) -> Result<Vec<u8>> {
+    let mut encoder = BzEncoder::new(Vec::new(), bzip2::Compression::best());
+    encoder
+        .write_all(tar)
+        .map_err(|error| target_io("compress deterministic bzip2 stream", error))?;
+    encoder
+        .finish()
+        .map_err(|error| target_io("finish deterministic bzip2 stream", error))
+}
+
+fn validate_strict_reimport(
+    source: &Archive,
+    target: ExportTarget,
+    bytes: &[u8],
+    outcome: ExportOutcome,
+    issues: &[ExportIssue],
+) -> Result<Digest> {
+    let imported = import_strict(
+        bytes,
+        Some(target.import_format()),
+        None,
+        LegacyImportPolicy::default(),
+        crate::planner::CompressionProfile::Fast,
+    )?;
+    if source.entry_set.len() != imported.archive.entry_set.len() {
+        return Err(reimport_mismatch(target, "entry count changed"));
+    }
+    for (expected, actual) in source
+        .entry_set
+        .entries()
+        .iter()
+        .zip(imported.archive.entry_set.entries())
+    {
+        if expected.path() != actual.path() {
+            return Err(reimport_mismatch(target, "entry path/order changed"));
+        }
+        match (expected.data(), actual.data()) {
+            (EntryData::Directory, EntryData::Directory) => {}
+            (
+                EntryData::File {
+                    content: expected_content,
+                },
+                EntryData::File {
+                    content: actual_content,
+                },
+            ) => {
+                if logical_content(source, expected_content)?
+                    != logical_content(&imported.archive, actual_content)?
+                {
+                    return Err(reimport_mismatch(target, "regular-file bytes changed"));
+                }
+            }
+            _ => return Err(reimport_mismatch(target, "entry kind changed")),
+        }
+        ensure_metadata_difference_declared(expected, actual, outcome, issues, target)?;
+    }
+    let reimport_lai = imported.archive.descriptor.lai;
+    if outcome == ExportOutcome::Lossless && reimport_lai != source.descriptor.lai {
+        return Err(reimport_mismatch(
+            target,
+            "LOSSLESS strict re-import LAI differs from source LAI",
+        ));
+    }
+    Ok(reimport_lai)
+}
+
+fn ensure_metadata_difference_declared(
+    expected: &Entry,
+    actual: &Entry,
+    outcome: ExportOutcome,
+    issues: &[ExportIssue],
+    target: ExportTarget,
+) -> Result<()> {
+    for (field, differs) in [
+        (
+            "core.executable",
+            executable_claim(expected) != executable_claim(actual),
+        ),
+        (
+            "core.mtime",
+            expected.metadata().mtime() != actual.metadata().mtime(),
+        ),
+    ] {
+        if differs
+            && (outcome != ExportOutcome::Lossy
+                || !issues.iter().any(|issue| {
+                    issue.entry.as_ref() == Some(expected.path()) && issue.semantic_field == field
+                }))
+        {
+            return Err(reimport_mismatch(
+                target,
+                format!(
+                    "undeclared {field} semantic difference at {}",
+                    expected.path()
+                ),
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn executable_claim(entry: &Entry) -> Option<bool> {
+    entry.metadata().items().iter().find_map(|item| {
+        (item.name() == MetadataName::CoreExecutable).then(|| match item.value() {
+            MetadataValue::Bool(value) => value,
+            MetadataValue::Timestamp(_) => unreachable!("validated core.executable type"),
+        })
+    })
+}
+
+fn reimport_mismatch(target: ExportTarget, detail: impl Into<String>) -> Diagnostic {
+    Diagnostic::new(
+        OutcomeClass::Corrupt,
+        ReasonCode::LegacyExportTargetInvalid,
+        format!(
+            "{} strict re-import validation failed: {}",
+            target.profile_id(),
+            detail.into()
+        ),
+    )
+}
+
 // ---------------------------------------------------------------------------
 // tar/pax-v1
 // ---------------------------------------------------------------------------
@@ -1336,6 +1673,9 @@ impl ExportReceipt {
     /// whitespace, deterministic issue order, and a final newline.
     #[must_use]
     pub fn to_canonical_json(&self) -> Vec<u8> {
+        if self.wrapped_target.is_some() {
+            return self.to_canonical_json_v2();
+        }
         let mut output = String::new();
         output.push('{');
         json_pair(&mut output, "format", RECEIPT_FORMAT, true);
@@ -1427,6 +1767,130 @@ impl ExportReceipt {
         let _ = write!(output, "\"deterministic\":{}", self.deterministic);
         output.push_str("}\n");
         output.into_bytes()
+    }
+
+    fn to_canonical_json_v2(&self) -> Vec<u8> {
+        let wrapped = self
+            .wrapped_target
+            .as_ref()
+            .expect("receipt v2 is selected only for wrapped targets");
+        let mut output = String::new();
+        output.push('{');
+        json_pair(&mut output, "format", RECEIPT_V2_FORMAT, true);
+        output.push_str("\"version\":2,");
+        json_pair(&mut output, "exporter", EXPORTER_ID, false);
+        json_pair(
+            &mut output,
+            "source_lai",
+            &self.source_lai.to_string(),
+            false,
+        );
+        json_pair(
+            &mut output,
+            "source_aux",
+            &self.source_aux.to_string(),
+            false,
+        );
+        json_pair(
+            &mut output,
+            "source_pcr",
+            &self.source_pcr.to_string(),
+            false,
+        );
+        output.push_str("\"source_security\":{");
+        let _ = write!(
+            output,
+            "\"encrypted\":{},\"embedded_signature_count\":{},\"detached_signature_count\":{},\"signatures_valid\":{},\"signatures_invalid\":{},\"signatures_stale\":{},\"target_encrypted\":false",
+            self.source_security.encrypted,
+            self.source_security.embedded_signature_count,
+            self.source_security.detached_signature_count,
+            self.source_security.signatures_valid,
+            self.source_security.signatures_invalid,
+            self.source_security.signatures_stale,
+        );
+        output.push_str("},\"entrybound_only_evidence\":{");
+        let _ = write!(
+            output,
+            "\"fidelity_issue_count\":{},\"conversion_provenance\":{},\"exact_preserved_source\":{},\"reconstruction_audit_count\":{},\"embedded_in_target\":false",
+            self.auxiliary.fidelity_issue_count,
+            self.auxiliary.conversion_provenance,
+            self.auxiliary.exact_preserved_source,
+            self.auxiliary.reconstruction_audit_count,
+        );
+        output.push_str("},");
+        json_pair(&mut output, "target_format", &self.target_format, false);
+        json_pair(&mut output, "target_profile", &self.target_profile, false);
+        json_pair(
+            &mut output,
+            "semantic_target",
+            &wrapped.semantic_profile,
+            false,
+        );
+        json_pair(
+            &mut output,
+            "transport_target",
+            &wrapped.transport_profile,
+            false,
+        );
+        let _ = write!(
+            output,
+            "\"inner_tar_byte_length\":{},",
+            wrapped.inner_tar_byte_length
+        );
+        json_pair(
+            &mut output,
+            "inner_tar_sha256",
+            &wrapped.inner_tar_sha256.to_string(),
+            false,
+        );
+        json_pair(&mut output, "outcome", self.outcome.as_str(), false);
+        output.push_str("\"issues\":[");
+        write_issues_json(&mut output, &self.issues);
+        output.push_str("],");
+        let _ = write!(
+            output,
+            "\"entry_count\":{},\"total_logical_bytes\":{},\"target_byte_length\":{},",
+            self.entry_count, self.total_logical_bytes, self.target_byte_length
+        );
+        json_pair(
+            &mut output,
+            "target_sha256",
+            &self.target_sha256.to_string(),
+            false,
+        );
+        let _ = write!(
+            output,
+            "\"strict_reimport_validated\":{},",
+            self.strict_reimport_validated
+        );
+        match self.reimport_lai {
+            Some(digest) => json_pair(&mut output, "reimport_lai", &digest.to_string(), false),
+            None => output.push_str("\"reimport_lai\":null,"),
+        }
+        let _ = write!(output, "\"deterministic\":{}", self.deterministic);
+        output.push_str("}\n");
+        output.into_bytes()
+    }
+}
+
+fn write_issues_json(output: &mut String, issues: &[ExportIssue]) {
+    for (index, issue) in issues.iter().enumerate() {
+        if index != 0 {
+            output.push(',');
+        }
+        output.push('{');
+        json_pair(output, "category", issue.category.as_str(), true);
+        match &issue.entry {
+            Some(path) => json_pair(output, "entry", &path.to_string(), false),
+            None => output.push_str("\"entry\":null,"),
+        }
+        json_pair(output, "semantic_field", &issue.semantic_field, false);
+        json_pair(output, "source_value", &issue.source_value, false);
+        json_pair(output, "target_capability", &issue.target_capability, false);
+        json_pair(output, "disposition", issue.disposition.as_str(), false);
+        json_pair(output, "reason", &issue.reason, false);
+        output.pop();
+        output.push('}');
     }
 }
 
@@ -1605,6 +2069,67 @@ mod tests {
     }
 
     #[test]
+    fn compressed_tar_profiles_are_deterministic_compositions() {
+        let archive = test_archive(second_timestamp());
+        let inner = prepare_export(
+            &archive,
+            ExportTarget::TarPaxV1,
+            ExportSourceSecurity::default(),
+        )
+        .unwrap()
+        .accept(false)
+        .unwrap();
+        for (target, transport, prefix) in [
+            (
+                ExportTarget::TarGzipPaxV1,
+                TransportFormat::Gzip,
+                b"\x1f\x8b".as_slice(),
+            ),
+            (
+                ExportTarget::TarZstandardPaxV1,
+                TransportFormat::Zstandard,
+                b"\x28\xb5\x2f\xfd".as_slice(),
+            ),
+            (
+                ExportTarget::TarXzPaxV1,
+                TransportFormat::Xz,
+                b"\xfd7zXZ\0".as_slice(),
+            ),
+            (
+                ExportTarget::TarBzip2PaxV1,
+                TransportFormat::Bzip2,
+                b"BZh9".as_slice(),
+            ),
+        ] {
+            let first = prepare_export(&archive, target, ExportSourceSecurity::default())
+                .unwrap()
+                .accept(false)
+                .unwrap();
+            let second = prepare_export(&archive, target, ExportSourceSecurity::default())
+                .unwrap()
+                .accept(false)
+                .unwrap();
+            assert_eq!(first.bytes, second.bytes);
+            assert!(first.bytes.starts_with(prefix));
+            assert!(first.receipt.strict_reimport_validated);
+            assert_eq!(first.receipt.reimport_lai, Some(archive.descriptor.lai));
+            let wrapped = first.receipt.wrapped_target.as_ref().unwrap();
+            assert_eq!(wrapped.semantic_profile, TAR_PROFILE);
+            assert_eq!(wrapped.inner_tar_sha256, sha256_exact(&inner.bytes));
+            assert_eq!(
+                stream::decode(&first.bytes, transport, WrapperImportPolicy::default())
+                    .unwrap()
+                    .decoded
+                    .as_ref(),
+                inner.bytes.as_slice()
+            );
+            let receipt = String::from_utf8(first.receipt.to_canonical_json()).unwrap();
+            assert!(receipt.contains(RECEIPT_V2_FORMAT));
+            assert!(receipt.contains(target.profile_id()));
+        }
+    }
+
+    #[test]
     fn empty_archive_has_canonical_target_bytes() {
         let archive = plan_observed_archive(
             Vec::new(),
@@ -1697,6 +2222,8 @@ mod tests {
         let json = artifact.receipt.to_canonical_json();
         let text = std::str::from_utf8(&json).unwrap();
         assert!(text.ends_with("}\n"));
+        assert!(text.contains(RECEIPT_FORMAT));
+        assert!(!text.contains(RECEIPT_V2_FORMAT));
         assert!(text.contains("\"outcome\":\"LOSSY\""));
         assert!(text.contains("\"encrypted\":true"));
         assert!(text.contains(&artifact.receipt.target_sha256.to_string()));
@@ -1722,7 +2249,14 @@ mod tests {
             CompressionProfile::Fast,
         )
         .unwrap();
-        for target in [ExportTarget::ZipPortableV1, ExportTarget::TarPaxV1] {
+        for target in [
+            ExportTarget::ZipPortableV1,
+            ExportTarget::TarPaxV1,
+            ExportTarget::TarGzipPaxV1,
+            ExportTarget::TarZstandardPaxV1,
+            ExportTarget::TarXzPaxV1,
+            ExportTarget::TarBzip2PaxV1,
+        ] {
             let prepared =
                 prepare_export(&archive, target, ExportSourceSecurity::default()).unwrap();
             assert_eq!(prepared.analysis.outcome, ExportOutcome::Refused);
@@ -1799,7 +2333,14 @@ mod tests {
             CompressionProfile::Fast,
         )
         .unwrap();
-        for target in [ExportTarget::ZipPortableV1, ExportTarget::TarPaxV1] {
+        for target in [
+            ExportTarget::ZipPortableV1,
+            ExportTarget::TarPaxV1,
+            ExportTarget::TarGzipPaxV1,
+            ExportTarget::TarZstandardPaxV1,
+            ExportTarget::TarXzPaxV1,
+            ExportTarget::TarBzip2PaxV1,
+        ] {
             let prepared =
                 prepare_export(&backslash, target, ExportSourceSecurity::default()).unwrap();
             assert_eq!(prepared.analysis.outcome, ExportOutcome::Refused);
@@ -1905,7 +2446,14 @@ mod tests {
             },
         )
         .unwrap();
-        for target in [ExportTarget::ZipPortableV1, ExportTarget::TarPaxV1] {
+        for target in [
+            ExportTarget::ZipPortableV1,
+            ExportTarget::TarPaxV1,
+            ExportTarget::TarGzipPaxV1,
+            ExportTarget::TarZstandardPaxV1,
+            ExportTarget::TarXzPaxV1,
+            ExportTarget::TarBzip2PaxV1,
+        ] {
             let indexed_target =
                 prepare_export(&indexed.archive, target, ExportSourceSecurity::default())
                     .unwrap()

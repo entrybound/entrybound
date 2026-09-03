@@ -6,6 +6,7 @@
 pub mod export;
 pub mod import;
 pub mod lom;
+pub mod migration;
 pub mod sevenz;
 pub mod stream;
 pub mod tar;

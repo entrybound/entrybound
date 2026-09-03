@@ -14,7 +14,7 @@ verified EAM
 → LOSSLESS | LOSSY | REFUSED
 → explicit caller policy
 → deterministic target bytes
-→ ExportReceipt v1
+→ ExportReceipt v1 or v2
 ```
 
 The complete analysis, target compression decisions, framing, target length,
@@ -80,6 +80,15 @@ newline. It records:
 
 The receipt is external evidence. It is not embedded in the target and does not
 participate in source EAM identity.
+
+Wrapped tar profiles use ExportReceipt v2 rather than extending the frozen v1
+JSON schema in place. V2 records the semantic tar/pax-v1 target, transport
+profile, inner tar length/digest, and strict re-import result. See
+[compressed tar export v1](compressed-tar-export-v1.md).
+
+Multi-target operations use the external canonical
+entrybound/migration-report-v1; sidecar and transaction behavior is frozen in
+[migration workflows v1](migration-workflows-v1.md).
 
 ## Identity and determinism
 

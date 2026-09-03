@@ -33,6 +33,10 @@ use entrybound::legacy::import::{
     LegacyConversionReport, LegacyImportPolicy, LegacyImportResult, LegacySourceFormat,
     detect as detect_legacy, import_strict as import_legacy_strict,
 };
+use entrybound::legacy::migration::{
+    MigrationOutcome, MigrationReportV1, NativeArtifactReport, SidecarMigrationReport,
+    prepare_migration, prepare_sidecar,
+};
 use entrybound::legacy::zip::{
     CompatibilityProfileId, ImportPolicy, ZipImportPolicy, import as import_zip,
 };
@@ -55,10 +59,22 @@ Usage:\n\
                          [--entry-name <logical-path>]\n\
                          [--layout indexed|stream]\n\
                          [--profile fast|balanced|dense|extreme]\n\
-  ebound convert <archive.eb|-> <output.zip|output.tar|-> --to zip|tar\n\
-                         [--target-profile zip/portable-v1|tar/pax-v1]\n\
+  ebound convert <archive.eb|-> <legacy-output|-> --to <target>\n\
+                         [--target-profile <versioned-profile>]\n\
                          [--dry-run] [--allow-lossy] [--receipt <file>]\n\
                          [--identity <file>|--password]\n\
+  ebound publish <archive.eb|directory> --output-dir <directory>\n\
+                         [--native] [--target <target> ...]\n\
+                         [--base-name <name>] [--allow-lossy] [--dry-run]\n\
+                         [--report <file>] [--identity <file>|--password]\n\
+                         [--layout indexed|stream]\n\
+                         [--profile fast|balanced|dense|extreme]\n\
+  ebound sidecar <legacy-artifact> [output.eb]\n\
+                         [--strict|--compat=<versioned-profile>]\n\
+                         [--preserve --compat=<versioned-profile>]\n\
+                         [--from <format>] [--entry-name <logical-path>]\n\
+                         [--layout indexed|stream] [--profile <profile>]\n\
+                         [--report <file>]\n\
   ebound unpack <archive.eb|-> [destination] [--identity <file>|--password]\n\
   ebound list <archive.eb|->\n\
   ebound inspect <archive.eb|-> [--crypto] [--identity <file>|--password]\n\
@@ -143,9 +159,9 @@ Usage (import): ebound convert <input> <output.eb|->\n\
                       [--layout indexed|stream]\n\
                       [--profile fast|balanced|dense|extreme]\n\
 \n\
-Usage (export): ebound convert <archive.eb|-> <output.zip|output.tar|->\n\
-                      --to zip|tar\n\
-                      [--target-profile zip/portable-v1|tar/pax-v1]\n\
+Usage (export): ebound convert <archive.eb|-> <legacy-output|->\n\
+                      --to zip|tar|tar.gz|tar.zst|tar.xz|tar.bz2\n\
+                      [--target-profile <exact-versioned-profile>]\n\
                       [--dry-run] [--allow-lossy] [--receipt <file>]\n\
                       [--identity <file>|--password]\n\
 \n\
@@ -157,8 +173,33 @@ XZ, and bzip2 are bounded transport layers whose decoded children use the same\n
 tar adapter. A non-tar stream requires --entry-name. ZIP compatibility and\n\
 preservation remain available only through exact versioned ZIP profiles.\n\
 Export authenticates and verifies the source EAM, then completes a typed\n\
-LOSSLESS/LOSSY/REFUSED preflight before creating output. zip/portable-v1 and\n\
-tar/pax-v1 are deterministic; LOSSY output requires --allow-lossy.\n";
+LOSSLESS/LOSSY/REFUSED preflight before creating output. zip/portable-v1,\n\
+tar/pax-v1, and the deterministic compressed-tar profiles are strict-reimported\n\
+before publication; LOSSY output requires --allow-lossy.\n";
+
+const PUBLISH_HELP: &str = "\
+Usage: ebound publish <archive.eb|directory> --output-dir <directory>\n\
+               [--native] [--target zip|tar|tar.gz|tar.zst|tar.xz|tar.bz2 ...]\n\
+               [--base-name <name>] [--allow-lossy] [--dry-run]\n\
+               [--report <migration.json>] [--identity <file>|--password]\n\
+               [--layout indexed|stream] [--profile fast|balanced|dense|extreme]\n\
+\n\
+The source is verified/planned once. Every target is fully analyzed, encoded,\n\
+and strict-reimported before any final output name is published. All temporary\n\
+artifacts are removed and newly published names rolled back if the transaction\n\
+cannot complete. Target order does not affect artifact or report bytes.\n";
+
+const SIDECAR_HELP: &str = "\
+Usage: ebound sidecar <legacy-artifact> [output.eb]\n\
+               [--strict|--compat=<versioned-zip-profile>]\n\
+               [--preserve --compat=<versioned-zip-profile>]\n\
+               [--from <format>] [--entry-name <logical-path>]\n\
+               [--layout indexed|stream] [--profile <profile>]\n\
+               [--report <migration.json>]\n\
+\n\
+The default output is <legacy-artifact>.eb. The source is never modified. The\n\
+sidecar is reopened and verified, including its ConversionProvenance binding to\n\
+the exact source SHA-256, before its final name is published.\n";
 
 const SIGN_HELP: &str = "\
 Usage: ebound sign <archive.eb> --signing-key <file>\n\
@@ -206,6 +247,8 @@ fn run(arguments: impl IntoIterator<Item = OsString>) -> Result<()> {
         }
         "pack" => command_pack(arguments.collect()),
         "convert" => command_convert(arguments.collect()),
+        "publish" => command_publish(arguments.collect()),
+        "sidecar" => command_sidecar(arguments.collect()),
         "unpack" => command_unpack(arguments.collect()),
         "list" => command_list(arguments.collect()),
         "inspect" => command_inspect(arguments.collect()),
@@ -783,7 +826,7 @@ fn command_export(arguments: Vec<OsString>) -> Result<()> {
                 arguments
                     .get(cursor)
                     .and_then(|value| value.to_str())
-                    .ok_or_else(|| usage("--to requires zip or tar"))?
+                    .ok_or_else(|| usage("--to requires a supported legacy target"))?
                     .parse::<ExportTarget>()?,
             );
         } else if let Some(name) = value
@@ -851,7 +894,7 @@ fn command_export(arguments: Vec<OsString>) -> Result<()> {
     }
     if positionals.len() != 2 {
         return Err(usage(
-            "export requires <archive.eb|-> <target|-> --to zip|tar",
+            "export requires <archive.eb|-> <target|-> --to <legacy-target>",
         ));
     }
     if password && identity.is_some() {
@@ -1069,6 +1112,782 @@ fn write_export_transaction(
 }
 
 // ---------------------------------------------------------------------------
+// aggregate migration publishing
+// ---------------------------------------------------------------------------
+
+fn command_publish(arguments: Vec<OsString>) -> Result<()> {
+    if arguments.len() == 1 && matches!(arguments[0].to_str(), Some("--help" | "-h")) {
+        print!("{PUBLISH_HELP}");
+        return Ok(());
+    }
+    let mut positionals = Vec::new();
+    let mut output_dir = None;
+    let mut native = false;
+    let mut targets = Vec::new();
+    let mut base_name = None;
+    let mut allow_lossy = false;
+    let mut dry_run = false;
+    let mut report_path = None;
+    let mut identity = None;
+    let mut password = false;
+    let mut layout = None;
+    let mut profile = None;
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        let value = &arguments[cursor];
+        if value == "--output-dir" {
+            cursor += 1;
+            set_once_path(
+                &mut output_dir,
+                arguments.get(cursor),
+                "--output-dir requires a directory",
+            )?;
+        } else if value == "--native" {
+            if native {
+                return Err(usage("publish accepts --native only once"));
+            }
+            native = true;
+        } else if value == "--target" {
+            cursor += 1;
+            targets.push(
+                arguments
+                    .get(cursor)
+                    .and_then(|candidate| candidate.to_str())
+                    .ok_or_else(|| usage("--target requires a supported target"))?
+                    .parse::<ExportTarget>()?,
+            );
+        } else if let Some(candidate) = value
+            .to_str()
+            .and_then(|value| value.strip_prefix("--target="))
+        {
+            targets.push(candidate.parse::<ExportTarget>()?);
+        } else if value == "--base-name" {
+            cursor += 1;
+            if base_name.is_some() {
+                return Err(usage("publish accepts --base-name only once"));
+            }
+            base_name = Some(
+                arguments
+                    .get(cursor)
+                    .and_then(|candidate| candidate.to_str())
+                    .ok_or_else(|| usage("--base-name requires UTF-8 text"))?
+                    .to_owned(),
+            );
+        } else if let Some(candidate) = value
+            .to_str()
+            .and_then(|value| value.strip_prefix("--base-name="))
+        {
+            if base_name.is_some() {
+                return Err(usage("publish accepts --base-name only once"));
+            }
+            base_name = Some(candidate.to_owned());
+        } else if value == "--allow-lossy" {
+            if allow_lossy {
+                return Err(usage("publish accepts --allow-lossy only once"));
+            }
+            allow_lossy = true;
+        } else if value == "--dry-run" {
+            if dry_run {
+                return Err(usage("publish accepts --dry-run only once"));
+            }
+            dry_run = true;
+        } else if value == "--report" {
+            cursor += 1;
+            set_once_path(
+                &mut report_path,
+                arguments.get(cursor),
+                "--report requires a path",
+            )?;
+        } else if value == "--identity" {
+            cursor += 1;
+            set_once_path(
+                &mut identity,
+                arguments.get(cursor),
+                "--identity requires an identity key file",
+            )?;
+        } else if value == "--password" {
+            if password {
+                return Err(usage("publish accepts --password only once"));
+            }
+            password = true;
+        } else if value == "--layout" {
+            if layout.is_some() {
+                return Err(usage("publish accepts --layout only once"));
+            }
+            cursor += 1;
+            layout = Some(parse_layout_option(arguments.get(cursor))?);
+        } else if value == "--profile" {
+            if profile.is_some() {
+                return Err(usage("publish accepts --profile only once"));
+            }
+            cursor += 1;
+            profile = Some(
+                arguments
+                    .get(cursor)
+                    .and_then(|candidate| candidate.to_str())
+                    .ok_or_else(|| usage("--profile requires a UTF-8 profile name"))?
+                    .parse::<CompressionProfile>()?,
+            );
+        } else if value.to_string_lossy().starts_with("--") {
+            return Err(usage(format!(
+                "publish does not recognize option '{}'",
+                value.to_string_lossy()
+            )));
+        } else {
+            positionals.push(value.clone());
+        }
+        cursor += 1;
+    }
+    if positionals.len() != 1 {
+        return Err(usage("publish requires exactly one <archive.eb|directory>"));
+    }
+    let output_dir = output_dir.ok_or_else(|| usage("publish requires --output-dir"))?;
+    if !output_dir.is_dir() {
+        return Err(usage("--output-dir must name an existing directory"));
+    }
+    if !native && targets.is_empty() {
+        return Err(usage(
+            "publish requires --native and/or at least one --target",
+        ));
+    }
+    if password && identity.is_some() {
+        return Err(usage("--identity and --password cannot be combined"));
+    }
+    let source_path = PathBuf::from(&positionals[0]);
+    if source_path == Path::new("-") {
+        return Err(usage("multi-target publish does not accept standard input"));
+    }
+    let base_name = base_name.unwrap_or_else(|| default_publish_base(&source_path));
+    validate_publish_base(&base_name)?;
+    let unlock = load_owned_unlock(identity.as_deref(), password, "Archive password: ")?;
+
+    let directory_source = source_path.is_dir();
+    let source_bytes = if directory_source {
+        Vec::new()
+    } else {
+        read(&source_path)?
+    };
+    let opened;
+    let source_security;
+    let planned;
+    let archive = if directory_source {
+        if unlock.is_some() {
+            return Err(usage(
+                "--identity/--password applies only to an encrypted .eb source",
+            ));
+        }
+        planned = entrybound::identity::apply_native_identities(&plan_directory(
+            &source_path,
+            PackOptions {
+                profile: profile.unwrap_or_default(),
+                ..PackOptions::default()
+            },
+        )?)?
+        .0;
+        source_security = ExportSourceSecurity::default();
+        &planned
+    } else {
+        if profile.is_some() || layout.is_some() {
+            return Err(usage(
+                "--profile/--layout apply only when publishing a directory",
+            ));
+        }
+        let source = open_export_source(&source_bytes, unlock.as_ref())?;
+        opened = source.0;
+        source_security = source.1;
+        &opened.archive
+    };
+
+    let mut prepared = prepare_migration(archive, &targets, source_security, allow_lossy)?;
+    for target in &mut prepared.report.requested_targets {
+        target.output_path = output_dir
+            .join(format!("{base_name}.{}", target.target.extension()))
+            .display()
+            .to_string();
+    }
+
+    let mut pending = Vec::<(PathBuf, Vec<u8>)>::new();
+    if native {
+        let native_path = output_dir.join(format!("{base_name}.eb"));
+        if directory_source {
+            let native_layout = layout.unwrap_or(Layout::Indexed);
+            let bytes = encode_native_archive(archive, native_layout)?;
+            verify_native_bytes(&bytes, native_layout, archive.descriptor.lai)?;
+            prepared.report.native_artifact = Some(NativeArtifactReport {
+                output_path: native_path.display().to_string(),
+                relation: "encoded-from-same-source-eam".to_owned(),
+                byte_length: u64::try_from(bytes.len())
+                    .map_err(|_| usage("native artifact length exceeds u64"))?,
+                sha256: entrybound::identity::sha256_exact(&bytes),
+                produced: false,
+            });
+            pending.push((native_path, bytes));
+        } else if native_path == source_path {
+            prepared.report.native_artifact = Some(NativeArtifactReport {
+                output_path: native_path.display().to_string(),
+                relation: "verified-source-in-place".to_owned(),
+                byte_length: u64::try_from(source_bytes.len())
+                    .map_err(|_| usage("native artifact length exceeds u64"))?,
+                sha256: entrybound::identity::sha256_exact(&source_bytes),
+                produced: true,
+            });
+        } else {
+            prepared.report.native_artifact = Some(NativeArtifactReport {
+                output_path: native_path.display().to_string(),
+                relation: "exact-verified-source-copy".to_owned(),
+                byte_length: u64::try_from(source_bytes.len())
+                    .map_err(|_| usage("native artifact length exceeds u64"))?,
+                sha256: entrybound::identity::sha256_exact(&source_bytes),
+                produced: false,
+            });
+            pending.push((native_path, source_bytes.clone()));
+        }
+    }
+    for (target, artifact) in &prepared.artifacts {
+        let path = output_dir.join(format!("{base_name}.{}", target.extension()));
+        pending.push((path, artifact.bytes.clone()));
+    }
+    validate_transaction_paths(&pending, report_path.as_deref())?;
+
+    if dry_run {
+        println!(
+            "{}",
+            String::from_utf8_lossy(&prepared.report.to_canonical_json()).trim_end()
+        );
+        if !prepared.is_ready() {
+            return Err(migration_not_ready(prepared.report.overall_outcome));
+        }
+        println!("OK dry-run completed aggregate migration preflight; no artifacts written");
+        return Ok(());
+    }
+    if !prepared.is_ready() {
+        return Err(migration_not_ready(prepared.report.overall_outcome));
+    }
+    prepared.mark_published();
+    if let Some(native) = &mut prepared.report.native_artifact {
+        native.produced = true;
+    }
+    if let Some(path) = &report_path {
+        pending.push((path.clone(), prepared.report.to_canonical_json()));
+    }
+    transactional_publish(&pending)?;
+    println!(
+        "OK published {} artifact(s) from one verified EAM",
+        pending.len()
+    );
+    println!("source LAI {}", prepared.report.source_lai);
+    if source_security.encrypted && !prepared.artifacts.is_empty() {
+        println!(
+            "warning: legacy targets are unencrypted; the native .eb retains Entrybound crypto/signature state"
+        );
+    }
+    if let Some(path) = report_path {
+        println!("migration report: {}", path.display());
+    }
+    Ok(())
+}
+
+fn set_once_path(
+    slot: &mut Option<PathBuf>,
+    candidate: Option<&OsString>,
+    missing: &str,
+) -> Result<()> {
+    if slot.is_some() {
+        return Err(usage("option may be supplied only once"));
+    }
+    *slot = Some(PathBuf::from(candidate.ok_or_else(|| usage(missing))?));
+    Ok(())
+}
+
+fn parse_layout_option(candidate: Option<&OsString>) -> Result<Layout> {
+    match candidate.and_then(|value| value.to_str()) {
+        Some("indexed") => Ok(Layout::Indexed),
+        Some("stream") => Ok(Layout::Stream),
+        _ => Err(usage("--layout requires 'indexed' or 'stream'")),
+    }
+}
+
+fn load_owned_unlock(
+    identity: Option<&Path>,
+    password: bool,
+    prompt: &str,
+) -> Result<Option<OwnedUnlock>> {
+    if let Some(path) = identity {
+        warn_identity_permissions(path);
+        return Ok(Some(OwnedUnlock::Identity(XWingIdentity::read_file(path)?)));
+    }
+    if password {
+        return Ok(Some(OwnedUnlock::Password(Zeroizing::new(
+            prompt_password(prompt)?,
+        ))));
+    }
+    Ok(None)
+}
+
+fn default_publish_base(source: &Path) -> String {
+    if source.is_dir() {
+        source
+            .file_name()
+            .and_then(OsStr::to_str)
+            .unwrap_or("release")
+            .to_owned()
+    } else {
+        source
+            .file_stem()
+            .and_then(OsStr::to_str)
+            .unwrap_or("release")
+            .to_owned()
+    }
+}
+
+fn validate_publish_base(base: &str) -> Result<()> {
+    if base.is_empty()
+        || matches!(base, "." | "..")
+        || base
+            .chars()
+            .any(|character| matches!(character, '/' | '\\' | ':' | '\0'))
+    {
+        return Err(usage(
+            "--base-name must be one safe filename stem without path separators or colon",
+        ));
+    }
+    Ok(())
+}
+
+fn encode_native_archive(archive: &entrybound::eam::Archive, layout: Layout) -> Result<Vec<u8>> {
+    match layout {
+        Layout::Indexed => Ok(encode(archive, WriteOptions::default())?.bytes),
+        Layout::Stream => {
+            let mut bytes = Vec::new();
+            encode_stream(archive, StreamWriteOptions::default(), &mut bytes)?;
+            Ok(bytes)
+        }
+    }
+}
+
+fn verify_native_bytes(
+    bytes: &[u8],
+    layout: Layout,
+    expected_lai: entrybound::eam::Digest,
+) -> Result<()> {
+    let actual = match layout {
+        Layout::Indexed => open(bytes)?.archive.descriptor.lai,
+        Layout::Stream => {
+            let limits = SequentialLimits {
+                content: StreamContentPolicy::Retain,
+                ..bootstrap_sequential_limits()
+            };
+            open_stream_with_limits(std::io::Cursor::new(bytes), limits)?
+                .opened
+                .archive
+                .descriptor
+                .lai
+        }
+    };
+    if actual != expected_lai {
+        return Err(Diagnostic::new(
+            OutcomeClass::Corrupt,
+            ReasonCode::LaiMismatch,
+            "native publication validation changed the source LAI",
+        ));
+    }
+    Ok(())
+}
+
+fn migration_not_ready(outcome: MigrationOutcome) -> Diagnostic {
+    match outcome {
+        MigrationOutcome::LossyApprovalRequired => Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::LegacyExportLossyApprovalRequired,
+            "one or more requested targets are LOSSY; no artifacts were written",
+        ),
+        MigrationOutcome::Refused => Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::LegacyExportRefused,
+            "one or more requested targets are REFUSED; no artifacts were written",
+        ),
+        _ => Diagnostic::new(
+            OutcomeClass::Nonconforming,
+            ReasonCode::LegacyExportTargetInvalid,
+            "migration is not ready for publication",
+        ),
+    }
+}
+
+fn validate_transaction_paths(
+    artifacts: &[(PathBuf, Vec<u8>)],
+    report: Option<&Path>,
+) -> Result<()> {
+    let mut paths = std::collections::BTreeSet::new();
+    for path in artifacts
+        .iter()
+        .map(|(path, _)| path.as_path())
+        .chain(report)
+    {
+        if !paths.insert(path.to_path_buf()) {
+            return Err(usage(format!(
+                "publish output collision at {}",
+                path.display()
+            )));
+        }
+        if path.exists() {
+            return Err(Diagnostic::new(
+                OutcomeClass::PolicyRefused,
+                ReasonCode::ExtractionCollision,
+                format!("publish destination already exists: {}", path.display()),
+            ));
+        }
+        if !path.parent().is_some_and(Path::is_dir) {
+            return Err(usage(format!(
+                "publish destination parent does not exist: {}",
+                path.display()
+            )));
+        }
+    }
+    Ok(())
+}
+
+/// Commits prepared siblings without overwriting. A hard-link publication step
+/// keeps each final name exclusive; any mid-commit failure removes every final
+/// name created by this transaction before its temporary siblings are cleaned.
+fn transactional_publish(artifacts: &[(PathBuf, Vec<u8>)]) -> Result<()> {
+    let mut temporary = Vec::with_capacity(artifacts.len());
+    for (ordinal, (final_path, bytes)) in artifacts.iter().enumerate() {
+        let temporary_path = temporary_sibling(final_path, ordinal)?;
+        let write_result = (|| {
+            let mut file = OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&temporary_path)
+                .map_err(|error| io_error("create private publication temporary", &error))?;
+            file.write_all(bytes)
+                .and_then(|()| file.sync_all())
+                .map_err(|error| io_error("write publication temporary", &error))
+        })();
+        if let Err(error) = write_result {
+            let _ = std::fs::remove_file(&temporary_path);
+            for (path, _) in &temporary {
+                let _ = std::fs::remove_file(path);
+            }
+            return Err(error);
+        }
+        temporary.push((temporary_path, final_path.clone()));
+    }
+
+    let mut published = Vec::new();
+    for (temporary_path, final_path) in &temporary {
+        if let Err(error) = std::fs::hard_link(temporary_path, final_path) {
+            for path in &published {
+                let _ = std::fs::remove_file(path);
+            }
+            for (path, _) in &temporary {
+                let _ = std::fs::remove_file(path);
+            }
+            return Err(io_error("atomically publish artifact", &error));
+        }
+        published.push(final_path.clone());
+    }
+    for (path, _) in &temporary {
+        if let Err(error) = std::fs::remove_file(path) {
+            for final_path in &published {
+                let _ = std::fs::remove_file(final_path);
+            }
+            for (temporary_path, _) in &temporary {
+                let _ = std::fs::remove_file(temporary_path);
+            }
+            return Err(io_error("remove publication temporary", &error));
+        }
+    }
+    Ok(())
+}
+
+fn temporary_sibling(final_path: &Path, ordinal: usize) -> Result<PathBuf> {
+    let parent = final_path
+        .parent()
+        .ok_or_else(|| usage("publication output has no parent directory"))?;
+    let name = final_path
+        .file_name()
+        .and_then(OsStr::to_str)
+        .ok_or_else(|| usage("publication output name must be valid UTF-8"))?;
+    let process = std::process::id();
+    for attempt in 0_u32..1024 {
+        let candidate = parent.join(format!(
+            ".{name}.entrybound-tmp-{process}-{ordinal}-{attempt}"
+        ));
+        if !candidate.exists() {
+            return Ok(candidate);
+        }
+    }
+    Err(Diagnostic::new(
+        OutcomeClass::PolicyRefused,
+        ReasonCode::ExtractionCollision,
+        "could not reserve a private publication temporary name",
+    ))
+}
+
+// ---------------------------------------------------------------------------
+// verified legacy-to-Entrybound sidecars
+// ---------------------------------------------------------------------------
+
+fn command_sidecar(arguments: Vec<OsString>) -> Result<()> {
+    if arguments.len() == 1 && matches!(arguments[0].to_str(), Some("--help" | "-h")) {
+        print!("{SIDECAR_HELP}");
+        return Ok(());
+    }
+    let mut positionals = Vec::new();
+    let mut strict = false;
+    let mut compat = None;
+    let mut preserve = false;
+    let mut from = None;
+    let mut entry_name = None;
+    let mut layout = None;
+    let mut profile = None;
+    let mut report_path = None;
+    let mut cursor = 0;
+    while cursor < arguments.len() {
+        let value = &arguments[cursor];
+        if value == "--strict" {
+            if strict {
+                return Err(usage("sidecar accepts --strict only once"));
+            }
+            strict = true;
+        } else if value == "--preserve" {
+            if preserve {
+                return Err(usage("sidecar accepts --preserve only once"));
+            }
+            preserve = true;
+        } else if let Some(profile_id) = value
+            .to_str()
+            .and_then(|value| value.strip_prefix("--compat="))
+        {
+            if compat.is_some() {
+                return Err(usage("sidecar accepts --compat only once"));
+            }
+            compat = Some(profile_id.parse::<CompatibilityProfileId>()?);
+        } else if value == "--compat" {
+            if compat.is_some() {
+                return Err(usage("sidecar accepts --compat only once"));
+            }
+            cursor += 1;
+            compat = Some(
+                arguments
+                    .get(cursor)
+                    .and_then(|candidate| candidate.to_str())
+                    .ok_or_else(|| usage("--compat requires an exact versioned profile"))?
+                    .parse::<CompatibilityProfileId>()?,
+            );
+        } else if value == "--from" {
+            if from.is_some() {
+                return Err(usage("sidecar accepts --from only once"));
+            }
+            cursor += 1;
+            from = Some(
+                arguments
+                    .get(cursor)
+                    .and_then(|candidate| candidate.to_str())
+                    .ok_or_else(|| usage("--from requires a supported format"))?
+                    .parse::<LegacySourceFormat>()?,
+            );
+        } else if let Some(format) = value
+            .to_str()
+            .and_then(|value| value.strip_prefix("--from="))
+        {
+            if from.is_some() {
+                return Err(usage("sidecar accepts --from only once"));
+            }
+            from = Some(format.parse::<LegacySourceFormat>()?);
+        } else if value == "--entry-name" {
+            if entry_name.is_some() {
+                return Err(usage("sidecar accepts --entry-name only once"));
+            }
+            cursor += 1;
+            entry_name = Some(
+                arguments
+                    .get(cursor)
+                    .and_then(|candidate| candidate.to_str())
+                    .ok_or_else(|| usage("--entry-name requires a UTF-8 LogicalPath"))?
+                    .to_owned(),
+            );
+        } else if value == "--layout" {
+            if layout.is_some() {
+                return Err(usage("sidecar accepts --layout only once"));
+            }
+            cursor += 1;
+            layout = Some(parse_layout_option(arguments.get(cursor))?);
+        } else if value == "--profile" {
+            if profile.is_some() {
+                return Err(usage("sidecar accepts --profile only once"));
+            }
+            cursor += 1;
+            profile = Some(
+                arguments
+                    .get(cursor)
+                    .and_then(|candidate| candidate.to_str())
+                    .ok_or_else(|| usage("--profile requires a UTF-8 profile name"))?
+                    .parse::<CompressionProfile>()?,
+            );
+        } else if let Some(candidate) = value
+            .to_str()
+            .and_then(|value| value.strip_prefix("--profile="))
+        {
+            if profile.is_some() {
+                return Err(usage("sidecar accepts --profile only once"));
+            }
+            profile = Some(candidate.parse::<CompressionProfile>()?);
+        } else if value == "--report" {
+            cursor += 1;
+            set_once_path(
+                &mut report_path,
+                arguments.get(cursor),
+                "--report requires a path",
+            )?;
+        } else if value.to_string_lossy().starts_with("--") {
+            return Err(usage(format!(
+                "sidecar does not recognize option '{}'",
+                value.to_string_lossy()
+            )));
+        } else {
+            positionals.push(value.clone());
+        }
+        cursor += 1;
+    }
+    if !(1..=2).contains(&positionals.len()) {
+        return Err(usage(
+            "sidecar requires <legacy-artifact> [output.eb] and import options",
+        ));
+    }
+    if strict && compat.is_some() {
+        return Err(usage("--strict and --compat are mutually exclusive"));
+    }
+    if preserve && compat.is_none() {
+        return Err(usage("--preserve requires --compat=<versioned-profile>"));
+    }
+    let import_policy = match (preserve, compat) {
+        (true, Some(profile)) => ImportPolicy::Preservation(profile),
+        (false, Some(profile)) => ImportPolicy::Compatibility(profile),
+        (false, None) => ImportPolicy::Strict,
+        (true, None) => unreachable!("validated above"),
+    };
+    let source_path = PathBuf::from(&positionals[0]);
+    if source_path == Path::new("-") {
+        return Err(usage("sidecar requires a stable legacy source path"));
+    }
+    let output_path = positionals.get(1).map_or_else(
+        || {
+            let mut name = source_path.as_os_str().to_os_string();
+            name.push(".eb");
+            PathBuf::from(name)
+        },
+        PathBuf::from,
+    );
+    if output_path == source_path {
+        return Err(usage("sidecar output must differ from its legacy source"));
+    }
+    let source_bytes = read_stable_source(&source_path)?;
+    let imported = import_legacy_for_policy(
+        &source_bytes,
+        from,
+        entry_name.as_deref(),
+        profile.unwrap_or_default(),
+        import_policy,
+    )?;
+    let selected_layout = layout.unwrap_or(Layout::Indexed);
+    let sidecar = prepare_sidecar(&imported, &source_bytes, selected_layout)?;
+    let sidecar_bytes = sidecar.bytes;
+    let reopened = sidecar.verified_archive;
+    let source_digest = sidecar.source_digest;
+    let provenance = reopened
+        .conversion
+        .as_ref()
+        .expect("prepare_sidecar verifies ConversionProvenance");
+    let conflict_count = provenance
+        .omission_count
+        .saturating_add(provenance.refinement_count)
+        .saturating_add(provenance.divergence_count)
+        .saturating_add(provenance.irreconcilable_count);
+    let sidecar_sha256 = entrybound::identity::sha256_exact(&sidecar_bytes);
+    let sidecar_length =
+        u64::try_from(sidecar_bytes.len()).map_err(|_| usage("sidecar length exceeds u64"))?;
+    let report = MigrationReportV1 {
+        source_kind: "legacy-sidecar".to_owned(),
+        source_lai: reopened.descriptor.lai,
+        source_aux: reopened.descriptor.aux,
+        source_pcr: reopened.descriptor.pcr,
+        source_security: ExportSourceSecurity::default(),
+        source_has_conversion_evidence: true,
+        source_has_preserved_evidence: reopened.preservation.is_some(),
+        requested_targets: Box::default(),
+        native_artifact: Some(NativeArtifactReport {
+            output_path: output_path.display().to_string(),
+            relation: "native-sidecar-of-exact-legacy-source".to_owned(),
+            byte_length: sidecar_length,
+            sha256: sidecar_sha256,
+            produced: true,
+        }),
+        sidecar: Some(SidecarMigrationReport {
+            source_format: provenance.source_format.clone(),
+            source_sha256: source_digest,
+            import_mode: provenance.import_mode.clone(),
+            compatibility_profile: import_policy
+                .compatibility_profile()
+                .map(|profile| profile.as_str().to_owned()),
+            conflict_count,
+            resolution_count: u64::try_from(provenance.resolutions.len()).unwrap_or(u64::MAX),
+            exact_source_preserved: reopened.preservation.is_some(),
+            sidecar_path: output_path.display().to_string(),
+            sidecar_byte_length: sidecar_length,
+            sidecar_sha256,
+            verification_succeeded: true,
+        }),
+        overall_outcome: MigrationOutcome::Published,
+    };
+    let mut pending = vec![(output_path.clone(), sidecar_bytes)];
+    if let Some(path) = &report_path {
+        pending.push((path.clone(), report.to_canonical_json()));
+    }
+    validate_transaction_paths(&pending, None)?;
+    transactional_publish(&pending)?;
+    println!(
+        "OK created verified sidecar {} for {}",
+        output_path.display(),
+        source_path.display()
+    );
+    println!("sidecar source: {}", source_path.display());
+    println!("source SHA-256: {source_digest}");
+    println!("native LAI: {}", reopened.descriptor.lai);
+    if let Some(path) = report_path {
+        println!("migration report: {}", path.display());
+    }
+    Ok(())
+}
+
+fn read_stable_source(path: &Path) -> Result<Vec<u8>> {
+    let mut file = File::open(path).map_err(|error| read_error(path, &error))?;
+    let before = file.metadata().map_err(|error| read_error(path, &error))?;
+    let mut bytes = Vec::new();
+    std::io::Read::read_to_end(&mut file, &mut bytes).map_err(|error| read_error(path, &error))?;
+    let after = file.metadata().map_err(|error| read_error(path, &error))?;
+    let expected_length = u64::try_from(bytes.len()).map_err(|_| {
+        Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::LegacyResourcePolicyRefused,
+            "legacy source length exceeds u64",
+        )
+    })?;
+    if before.len() != after.len()
+        || after.len() != expected_length
+        || before.modified().ok() != after.modified().ok()
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::PolicyRefused,
+            ReasonCode::SourceUnstable,
+            "legacy source changed while its sidecar snapshot was read",
+        ));
+    }
+    Ok(bytes)
+}
+
+// ---------------------------------------------------------------------------
 // legacy import conversion policies
 // ---------------------------------------------------------------------------
 
@@ -1237,48 +2056,13 @@ fn command_convert(arguments: Vec<OsString>) -> Result<()> {
     });
     let source_bytes = read(&input)?;
     let creation_profile = profile.unwrap_or_default();
-    let imported = if import_policy == ImportPolicy::Strict {
-        import_legacy_strict(
-            &source_bytes,
-            from,
-            entry_name.as_deref(),
-            LegacyImportPolicy::default(),
-            creation_profile,
-        )?
-    } else {
-        if entry_name.is_some() {
-            return Err(usage(
-                "--entry-name is unavailable for ZIP compatibility/preservation",
-            ));
-        }
-        if from.is_some_and(|format| format != LegacySourceFormat::Zip)
-            || detect_legacy(&source_bytes).is_some_and(|format| format != LegacySourceFormat::Zip)
-        {
-            return Err(Diagnostic::new(
-                OutcomeClass::Unsupported,
-                ReasonCode::UnsupportedRequiredFeature,
-                "--compat and --preserve are currently defined only for ZIP",
-            ));
-        }
-        let imported = import_zip(
-            &source_bytes,
-            ZipImportPolicy::default(),
-            creation_profile,
-            import_policy,
-        )?;
-        LegacyImportResult {
-            archive: imported.archive,
-            report: LegacyConversionReport {
-                observation: imported.report.observation,
-                synthesized_ancestors: imported.report.synthesized_ancestors,
-                layers: Box::from(["zip".to_owned()]),
-                wrapper_members: 0,
-                decoded_child_digest: None,
-                projection: "archive".to_owned(),
-                format_statistics: Box::default(),
-            },
-        }
-    };
+    let imported = import_legacy_for_policy(
+        &source_bytes,
+        from,
+        entry_name.as_deref(),
+        creation_profile,
+        import_policy,
+    )?;
     let status = Status {
         to_stderr: matches!(destination, Destination::Stdout),
     };
@@ -1423,6 +2207,56 @@ fn write_archive_destination(destination: &Destination, bytes: &[u8]) -> Result<
             Ok(())
         }
     }
+}
+
+fn import_legacy_for_policy(
+    source_bytes: &[u8],
+    from: Option<LegacySourceFormat>,
+    entry_name: Option<&str>,
+    creation_profile: CompressionProfile,
+    import_policy: ImportPolicy,
+) -> Result<LegacyImportResult> {
+    if import_policy == ImportPolicy::Strict {
+        return import_legacy_strict(
+            source_bytes,
+            from,
+            entry_name,
+            LegacyImportPolicy::default(),
+            creation_profile,
+        );
+    }
+    if entry_name.is_some() {
+        return Err(usage(
+            "--entry-name is unavailable for ZIP compatibility/preservation",
+        ));
+    }
+    if from.is_some_and(|format| format != LegacySourceFormat::Zip)
+        || detect_legacy(source_bytes).is_some_and(|format| format != LegacySourceFormat::Zip)
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedRequiredFeature,
+            "--compat and --preserve are currently defined only for ZIP",
+        ));
+    }
+    let imported = import_zip(
+        source_bytes,
+        ZipImportPolicy::default(),
+        creation_profile,
+        import_policy,
+    )?;
+    Ok(LegacyImportResult {
+        archive: imported.archive,
+        report: LegacyConversionReport {
+            observation: imported.report.observation,
+            synthesized_ancestors: imported.report.synthesized_ancestors,
+            layers: Box::from(["zip".to_owned()]),
+            wrapper_members: 0,
+            decoded_child_digest: None,
+            projection: "archive".to_owned(),
+            format_statistics: Box::default(),
+        },
+    })
 }
 
 fn print_identities(status: &Status, identities: &entrybound::identity::IdentitySet) {
@@ -3543,6 +4377,197 @@ mod tests {
     }
 
     #[test]
+    fn publish_is_canonical_multi_target_and_transactional() {
+        let id = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
+        let root = std::env::temp_dir().join(format!(
+            "entrybound-cli-publish-{}-{id}",
+            std::process::id()
+        ));
+        let input = root.join("input");
+        let first = root.join("first");
+        let second = root.join("second");
+        std::fs::create_dir_all(input.join("nested")).unwrap();
+        std::fs::create_dir(&first).unwrap();
+        std::fs::create_dir(&second).unwrap();
+        std::fs::write(input.join("nested/file.txt"), b"one semantic source").unwrap();
+
+        for (output, targets) in [(&first, ["zip", "tar.zst"]), (&second, ["tar.zst", "zip"])] {
+            let report = output.join("release.migration.json");
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("publish"),
+                input.as_os_str().to_owned(),
+                OsString::from("--output-dir"),
+                output.as_os_str().to_owned(),
+                OsString::from("--native"),
+                OsString::from("--target"),
+                OsString::from(targets[0]),
+                OsString::from("--target"),
+                OsString::from(targets[1]),
+                OsString::from("--base-name"),
+                OsString::from("release"),
+                OsString::from("--profile"),
+                OsString::from("fast"),
+                OsString::from("--allow-lossy"),
+                OsString::from("--report"),
+                report.as_os_str().to_owned(),
+            ])
+            .unwrap();
+            assert!(output.join("release.eb").is_file());
+            assert!(output.join("release.zip").is_file());
+            assert!(output.join("release.tar.zst").is_file());
+            let report = std::fs::read_to_string(report).unwrap();
+            assert!(report.contains("entrybound/migration-report-v1"));
+            assert!(report.contains("\"overall_publish_outcome\":\"PUBLISHED\""));
+            assert!(
+                report.find("tar.zst/pax-v1").unwrap() < report.find("zip/portable-v1").unwrap()
+            );
+        }
+        assert_eq!(
+            std::fs::read(first.join("release.zip")).unwrap(),
+            std::fs::read(second.join("release.zip")).unwrap()
+        );
+        assert_eq!(
+            std::fs::read(first.join("release.tar.zst")).unwrap(),
+            std::fs::read(second.join("release.tar.zst")).unwrap()
+        );
+
+        let blocked = root.join("blocked");
+        std::fs::create_dir(&blocked).unwrap();
+        std::fs::write(blocked.join("release.zip"), b"pre-existing").unwrap();
+        let error = run(vec![
+            OsString::from("ebound"),
+            OsString::from("publish"),
+            input.as_os_str().to_owned(),
+            OsString::from("--output-dir"),
+            blocked.as_os_str().to_owned(),
+            OsString::from("--native"),
+            OsString::from("--target=zip"),
+            OsString::from("--target=tar.zst"),
+            OsString::from("--base-name=release"),
+            OsString::from("--allow-lossy"),
+        ])
+        .unwrap_err();
+        assert_eq!(error.code(), ReasonCode::ExtractionCollision);
+        assert_eq!(
+            std::fs::read(blocked.join("release.zip")).unwrap(),
+            b"pre-existing"
+        );
+        assert!(!blocked.join("release.eb").exists());
+        assert!(!blocked.join("release.tar.zst").exists());
+
+        let staged = root.join("staged");
+        std::fs::create_dir(&staged).unwrap();
+        let first_final = staged.join("first.bin");
+        let missing_final = staged.join("missing").join("last.bin");
+        assert!(
+            super::transactional_publish(&[
+                (first_final.clone(), b"first".to_vec()),
+                (missing_final, b"last".to_vec()),
+            ])
+            .is_err()
+        );
+        assert!(!first_final.exists());
+        assert_eq!(std::fs::read_dir(&staged).unwrap().count(), 0);
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn sidecar_binds_exact_legacy_source_and_verifies_before_publish() {
+        let id = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
+        let root = std::env::temp_dir().join(format!(
+            "entrybound-cli-sidecar-{}-{id}",
+            std::process::id()
+        ));
+        std::fs::create_dir(&root).unwrap();
+        let source = root.join("release.zip");
+        let sidecar = root.join("release.zip.eb");
+        let report = root.join("release.zip.migration.json");
+        let source_bytes = store_zip(b"payload.bin", b"sidecar content");
+        std::fs::write(&source, &source_bytes).unwrap();
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("sidecar"),
+            source.as_os_str().to_owned(),
+            OsString::from("--strict"),
+            OsString::from("--profile"),
+            OsString::from("fast"),
+            OsString::from("--report"),
+            report.as_os_str().to_owned(),
+        ])
+        .unwrap();
+        assert_eq!(std::fs::read(&source).unwrap(), source_bytes);
+        let opened = entrybound::ecf::open(&std::fs::read(&sidecar).unwrap()).unwrap();
+        assert_eq!(
+            opened.archive.conversion.as_ref().unwrap().source_digest,
+            entrybound::identity::sha256_exact(&source_bytes)
+        );
+        let report = std::fs::read_to_string(report).unwrap();
+        assert!(report.contains("\"source_kind\":\"legacy-sidecar\""));
+        assert!(report.contains("\"verification_succeeded\":true"));
+        assert_eq!(
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("sidecar"),
+                source.as_os_str().to_owned(),
+            ])
+            .unwrap_err()
+            .code(),
+            ReasonCode::ExtractionCollision
+        );
+        assert_eq!(std::fs::read(&source).unwrap(), source_bytes);
+        for (name, bytes, explicit, layout) in [
+            (
+                "release.tar.zst",
+                zstd::stream::encode_all(store_tar(b"payload.bin", b"tar sidecar").as_slice(), 1)
+                    .unwrap(),
+                "--from=tar.zst",
+                "stream",
+            ),
+            (
+                "release.7z",
+                store_sevenz("payload.bin", b"7z sidecar"),
+                "--from=7z",
+                "indexed",
+            ),
+        ] {
+            let legacy = root.join(name);
+            std::fs::write(&legacy, &bytes).unwrap();
+            run(vec![
+                OsString::from("ebound"),
+                OsString::from("sidecar"),
+                legacy.as_os_str().to_owned(),
+                OsString::from(explicit),
+                OsString::from("--profile=fast"),
+                OsString::from("--layout"),
+                OsString::from(layout),
+            ])
+            .unwrap();
+            let mut sidecar_name = legacy.as_os_str().to_os_string();
+            sidecar_name.push(".eb");
+            let sidecar_bytes = std::fs::read(std::path::PathBuf::from(sidecar_name)).unwrap();
+            let opened = if layout == "stream" {
+                entrybound::ecf::open_stream_with_limits(
+                    std::io::Cursor::new(sidecar_bytes),
+                    entrybound::ecf::SequentialLimits {
+                        content: entrybound::ecf::StreamContentPolicy::Retain,
+                        ..entrybound::ecf::bootstrap_sequential_limits()
+                    },
+                )
+                .unwrap()
+                .opened
+            } else {
+                entrybound::ecf::open(&sidecar_bytes).unwrap()
+            };
+            assert_eq!(
+                opened.archive.conversion.as_ref().unwrap().source_digest,
+                entrybound::identity::sha256_exact(&bytes)
+            );
+        }
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
     fn encrypted_export_requires_authentication_and_records_security_transition() {
         let id = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
         let root = std::env::temp_dir().join(format!(
@@ -3602,6 +4627,30 @@ mod tests {
         assert!(receipt.contains("\"encrypted\":true"));
         assert!(receipt.contains("\"target_encrypted\":false"));
         assert!(target.exists());
+        let publish_dir = root.join("published");
+        std::fs::create_dir(&publish_dir).unwrap();
+        let migration = publish_dir.join("secure.migration.json");
+        run(vec![
+            OsString::from("ebound"),
+            OsString::from("publish"),
+            source.as_os_str().to_owned(),
+            OsString::from("--output-dir"),
+            publish_dir.as_os_str().to_owned(),
+            OsString::from("--native"),
+            OsString::from("--target=tar.gz"),
+            OsString::from("--base-name=secure"),
+            OsString::from("--allow-lossy"),
+            OsString::from("--identity"),
+            identity_path.as_os_str().to_owned(),
+            OsString::from("--report"),
+            migration.as_os_str().to_owned(),
+        ])
+        .unwrap();
+        assert!(publish_dir.join("secure.eb").is_file());
+        assert!(publish_dir.join("secure.tar.gz").is_file());
+        let migration = std::fs::read_to_string(migration).unwrap();
+        assert!(migration.contains("\"encrypted\":true"));
+        assert!(migration.contains("tar.gz/pax-v1"));
         let plain = entrybound::archive::pack_directory(
             &input,
             entrybound::archive::PackOptions::default(),
@@ -3616,6 +4665,18 @@ mod tests {
         .accept(true)
         .unwrap();
         assert_eq!(std::fs::read(&target).unwrap(), plain_target.bytes);
+        let plain_tar_gzip = entrybound::legacy::export::prepare_export(
+            &plain.archive,
+            entrybound::legacy::export::ExportTarget::TarGzipPaxV1,
+            entrybound::legacy::export::ExportSourceSecurity::default(),
+        )
+        .unwrap()
+        .accept(true)
+        .unwrap();
+        assert_eq!(
+            std::fs::read(publish_dir.join("secure.tar.gz")).unwrap(),
+            plain_tar_gzip.bytes
+        );
         std::fs::remove_dir_all(root).unwrap();
     }
 }

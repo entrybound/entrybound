@@ -61,8 +61,9 @@ establishes:
   directory creation, collision refusal, and pre-materialization verification;
 - working `pack`, `unpack`, `list`, `inspect`, `verify`, compression `explain`,
   strict ZIP/7z/tar/compressed-stream plus ZIP compatibility/preservation
-  import, deterministic ZIP/tar export, `sign`, and authenticated `key` CLI
-  commands;
+  import, deterministic ZIP/tar/compressed-tar export, transactional
+  multi-target publish, verified legacy `.eb` sidecars, signing, and
+  authenticated key-management CLI commands;
 - a format-neutral Legacy Observation Model, independent ZIP local/central/
   descriptor evidence, strict ZIP32/ZIP64 STORE/DEFLATE reconciliation, and an
   AUX-bound in-band conversion provenance plus optional exact-source/LOM
@@ -75,6 +76,8 @@ establishes:
 - a format-neutral export preflight with typed LOSSLESS/LOSSY/REFUSED outcomes,
   deterministic `zip/portable-v1` and `tar/pax-v1` writers, and canonical JSON
   ExportReceipt sidecars;
+- deterministic compressed pax-tar composition, aggregate MigrationReport v1,
+  and strict re-import validation before transactional publication;
 - capture and restoration of `core.mtime` and, on Unix, `core.executable`, with
   an in-band FidelityReport for metadata the bootstrap does not preserve;
 - caller-owned resource limits enforced against the archive declaration before
@@ -151,9 +154,30 @@ planning before output creation; LOSSY output requires explicit acceptance.
 ```sh
 ebound convert archive.eb portable.zip --to zip --receipt portable.receipt.json
 ebound convert archive.eb portable.tar --target-profile tar/pax-v1
+ebound convert archive.eb portable.tar.zst --target-profile tar.zst/pax-v1
 ebound convert archive.eb ignored.zip --to zip --dry-run
 ebound convert private.eb portable.zip --to zip \
   --identity identity.ebk --allow-lossy
+```
+
+One source can be published to a native artifact and several deterministic
+legacy targets as one failure-atomic, no-overwrite transaction:
+
+```sh
+ebound publish ./release --output-dir ./dist --base-name release \
+  --native --target zip --target tar.zst --report ./dist/release.migration.json
+ebound publish private.eb --output-dir ./dist --base-name private \
+  --native --target tar.gz --identity identity.ebk --allow-lossy
+ebound publish release.eb --output-dir ./analysis --target zip \
+  --target tar.xz --dry-run
+```
+
+Create a verified native sidecar without modifying its legacy source:
+
+```sh
+ebound sidecar release.zip
+ebound sidecar archive.tar.zst --report archive.tar.zst.migration.json
+ebound sidecar archive.7z --layout stream
 ```
 
 Encrypted crypto-v1 archives are `INDEXED` only. Recipient and identity files
@@ -248,9 +272,9 @@ pax, GNU long-name, and base-256 forms; links, sparse entries, and special
 files are refused. gzip/Zstandard/XZ/bzip2 transports can wrap tar or one
 explicitly named file. Strict 7z supports regular files/directories with its
 bounded COPY/LZMA/LZMA2/BZip2/DEFLATE and Delta/x86-BCJ subset; encryption,
-PPMd, BCJ2, arbitrary graphs, and special files are refused. Deterministic ZIP
-and pax tar export supports only the frozen portable-v1/pax-v1 profiles; there
-is no 7z export, tar/7z compatibility or preservation, encrypted legacy
+PPMd, BCJ2, arbitrary graphs, and special files are refused. Deterministic ZIP,
+pax tar, and compressed-pax-tar export supports only the frozen versioned
+profiles; there is no 7z export, tar/7z compatibility or preservation, encrypted legacy
 input, encrypted STREAM layout,
 online TSA request support, general PKI/keychain integration, classical-only
 recipients, remote range access, general
@@ -335,5 +359,8 @@ freshness, timestamp trust, and recipient mutation architecture, and
 reconciliation, bomb limits, and auxiliary conversion provenance;
 [legacy export v1](docs/legacy-export-v1.md),
 [ZIP export v1](docs/zip-export-v1.md), and
-[tar export v1](docs/tar-export-v1.md) for deterministic migration; and
+[tar export v1](docs/tar-export-v1.md) for deterministic migration,
+[compressed tar export v1](docs/compressed-tar-export-v1.md) for frozen wrapper
+parameters, and [migration workflows v1](docs/migration-workflows-v1.md) for
+dual publishing, aggregate reports, transactions, and sidecars; and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

@@ -162,6 +162,14 @@ source archive or target artifact identity. See
 [zip-export-v1.md](zip-export-v1.md), and
 [tar-export-v1.md](tar-export-v1.md).
 
+Deterministic compressed-tar targets are transport composition over unchanged
+`tar/pax-v1` bytes and add no ECF record or feature. They use external
+ExportReceipt v2 so the frozen v1 receipt schema remains unchanged. Aggregate
+MigrationReport v1 and legacy-to-Entrybound sidecar reports are likewise
+external canonical JSON and never enter EAM identity. See
+[compressed-tar-export-v1.md](compressed-tar-export-v1.md) and
+[migration-workflows-v1.md](migration-workflows-v1.md).
+
 The crypto-v1 wire correction reserves two self-identifying grammars inside
 authenticated encrypted objects: `EBPO` version 1 dispatches one canonical
 record, Chunk frame, or sequence payload; `EBCS` version 1 carries one of nine

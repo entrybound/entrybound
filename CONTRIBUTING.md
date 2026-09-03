@@ -193,3 +193,17 @@ state belongs in ExportReceipt rather than being misclassified as legacy
 metadata loss. Determinism tests must vary source ECF layout, physical planning,
 and encryption while holding EAM fixed. See docs/legacy-export-v1.md,
 docs/zip-export-v1.md, and docs/tar-export-v1.md.
+
+Compressed tar export is composition only: analyze and encode the frozen
+tar/pax-v1 target once, then apply one deterministic transport profile. Every
+generated wrapper must decode to the exact inner tar bytes and every legacy
+artifact must pass strict re-import before publication. Do not add
+wrapper-specific semantic issues or let target argument order influence
+report/output bytes. See docs/compressed-tar-export-v1.md.
+
+Multi-target publishing must operate on one verified/planned EAM, finish every
+target preflight before output creation, reject the entire requested set on one
+REFUSED or unapproved LOSSY target, and publish only synced temporary siblings
+with exclusive final names and rollback. Sidecars reuse existing import
+policies and must verify ConversionProvenance against the exact source digest
+before their final name appears. See docs/migration-workflows-v1.md.
