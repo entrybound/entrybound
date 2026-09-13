@@ -1,0 +1,574 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f10-heldout-openwrt-25125-ath79-images",
+  "family": "F10",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "openwrt",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "1b09397a70a62611495b75facc0b89c584ea8782ff31727d8b8b28dc9894ba8a",
+  "materialization_key": "a82b21dabcf5059f4e407eea8e6c58b802484ac6be6a7fa4e627a5c30bf1f404",
+  "materialized_utc": "2026-09-13T02:27:37Z",
+  "materialized_relpath": "heldout/f10-heldout-openwrt-25125-ath79-images",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "479f3f2d91e3b87853ade0689c9b55aa8732c522f40b92c6c65ce1108969d7ea",
+    "pinned_utc": "2026-09-13T02:27:37Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 249923003,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "tl-wdr3500-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr3500-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr3500-v1-squashfs-sysupgrade.bin",
+        "sha256": "ffbae28de05990be53102c7a2af23aa1a2bd9abaff0d65057fe3ac974f0c40fd",
+        "size": 7012646,
+        "retrieved_utc": "2026-09-13T02:26:41Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wdr3500-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wdr3600-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr3600-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr3600-v1-squashfs-sysupgrade.bin",
+        "sha256": "9ec5042b5a24433ef5687e9e21e5375f98c177bacc0141d303147dcf1afe8e5b",
+        "size": 7012646,
+        "retrieved_utc": "2026-09-13T02:26:45Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wdr3600-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wdr4300-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr4300-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr4300-v1-squashfs-sysupgrade.bin",
+        "sha256": "426deefaf6c9880cba3cbdb863c1033a001289e1f198cf1062977d2e7208fbe6",
+        "size": 7012646,
+        "retrieved_utc": "2026-09-13T02:26:46Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wdr4300-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wdr4300-v1-il-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr4300-v1-il-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr4300-v1-il-squashfs-sysupgrade.bin",
+        "sha256": "0b6ef907f19150c219899bb3dbc7087a4ee6352b0b6399968d1e47f7eb9dc48a",
+        "size": 7012652,
+        "retrieved_utc": "2026-09-13T02:26:47Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wdr4300-v1-il-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wdr4310-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr4310-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr4310-v1-squashfs-sysupgrade.bin",
+        "sha256": "7e249f460191f44f3666ccc1469d527699cdb0024a534ee558f8bf7d0af58649",
+        "size": 7012646,
+        "retrieved_utc": "2026-09-13T02:26:49Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wdr4310-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wr1043nd-v2-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v2-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v2-squashfs-sysupgrade.bin",
+        "sha256": "bcaae23712aa0f6282e8f38c9211c0e382e49e0ae45c8e09536de04a343be4fe",
+        "size": 7012652,
+        "retrieved_utc": "2026-09-13T02:26:50Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v2-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wr1043nd-v3-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v3-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v3-squashfs-sysupgrade.bin",
+        "sha256": "a15c7eac1e901e4073e19ed414c06cee7fb7b142b6eea35501e0cf3c3fab5a1f",
+        "size": 7012652,
+        "retrieved_utc": "2026-09-13T02:26:51Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v3-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wr1043nd-v4-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v4-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v4-squashfs-sysupgrade.bin",
+        "sha256": "a847c7c4bdfe849da7a20148d577f22d3740f85242b2095936f7a0a12fd44c41",
+        "size": 7012652,
+        "retrieved_utc": "2026-09-13T02:26:52Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v4-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wr1043n-v5-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043n-v5-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043n-v5-squashfs-sysupgrade.bin",
+        "sha256": "934de3915b2e5f71fef3b54d459ca16501318e6818adcb21180098b1c075089e",
+        "size": 6947113,
+        "retrieved_utc": "2026-09-13T02:26:54Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wr1043n-v5-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wr1045nd-v2-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1045nd-v2-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1045nd-v2-squashfs-sysupgrade.bin",
+        "sha256": "03edd4b33095022dc369ce85ecf433f7bf14f5470b1ce3b9e7b3ff2dc5ac05c0",
+        "size": 7012635,
+        "retrieved_utc": "2026-09-13T02:26:55Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wr1045nd-v2-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wr2543-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr2543-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr2543-v1-squashfs-sysupgrade.bin",
+        "sha256": "0850d44e84eacaa60802852efec4ea827b34d189858200d98a138c43396156c5",
+        "size": 7078180,
+        "retrieved_utc": "2026-09-13T02:26:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wr2543-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wr842n-v3-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr842n-v3-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr842n-v3-squashfs-sysupgrade.bin",
+        "sha256": "e92dc849eb6a27e26f0d16eeaa6404300b9306245016fa0b91a29944b15d36f8",
+        "size": 7012646,
+        "retrieved_utc": "2026-09-13T02:26:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wr842n-v3-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "tl-wr810n-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr810n-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr810n-v1-squashfs-sysupgrade.bin",
+        "sha256": "5be7bb0d5dd35bf7fccaf045885fbf330001304e7b645b3bf169c8e0466aba7b",
+        "size": 7012643,
+        "retrieved_utc": "2026-09-13T02:26:59Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_tl-wr810n-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe210-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v1-squashfs-sysupgrade.bin",
+        "sha256": "16f8f101e90de2eae621184264d51bdc87bdd39218af4f9c32f023cd615cea81",
+        "size": 7803398,
+        "retrieved_utc": "2026-09-13T02:27:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe210-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe210-v2-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v2-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v2-squashfs-sysupgrade.bin",
+        "sha256": "77fac6757cafafc18c962be3a4399ca606750e583598f000fbdf899f2fa48715",
+        "size": 7803557,
+        "retrieved_utc": "2026-09-13T02:27:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe210-v2-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe210-v3-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v3-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v3-squashfs-sysupgrade.bin",
+        "sha256": "dacc21f0b2bbd8376b08e76552fd9c188a4efdfc9952e18633a796da91a3bce6",
+        "size": 7803609,
+        "retrieved_utc": "2026-09-13T02:27:04Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe210-v3-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe220-v2-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v2-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v2-squashfs-sysupgrade.bin",
+        "sha256": "41b4b4f29c070781843baa7119d5cab7d1dfb1754e090c458e806dbd229fc251",
+        "size": 7803545,
+        "retrieved_utc": "2026-09-13T02:27:06Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe220-v2-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe220-v3-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v3-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v3-squashfs-sysupgrade.bin",
+        "sha256": "d1cfe5d450584010f5f22b78d7844da93db96fc85678d25476d0b690fab26027",
+        "size": 7803545,
+        "retrieved_utc": "2026-09-13T02:27:08Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe220-v3-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe510-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v1-squashfs-sysupgrade.bin",
+        "sha256": "70925946eefe560e006481bd6fbd4fc656f9414831639d5fddc8d15424baf7d5",
+        "size": 7803460,
+        "retrieved_utc": "2026-09-13T02:27:10Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe510-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe510-v2-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v2-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v2-squashfs-sysupgrade.bin",
+        "sha256": "abca6cf45c3c2785e8480012c40400f8b39d5a1fadb18423e631ef0a24836d11",
+        "size": 7803637,
+        "retrieved_utc": "2026-09-13T02:27:11Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe510-v2-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe510-v3-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v3-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v3-squashfs-sysupgrade.bin",
+        "sha256": "e10b5ccb1236152864ed9af2c8befea5aae42d668f4fa1853fcc81e1a19ffd15",
+        "size": 7803748,
+        "retrieved_utc": "2026-09-13T02:27:12Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe510-v3-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe605-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe605-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe605-v1-squashfs-sysupgrade.bin",
+        "sha256": "001f0964bfc094c1b44c3659607ed14d839fb665e3949bbca23ce033506beb32",
+        "size": 7803292,
+        "retrieved_utc": "2026-09-13T02:27:14Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe605-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe610-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe610-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe610-v1-squashfs-sysupgrade.bin",
+        "sha256": "f857b47b02bf1ef2b416c9e9ab574836819d881d5a60a9afe04181e590b717e7",
+        "size": 7803545,
+        "retrieved_utc": "2026-09-13T02:27:18Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe610-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe610-v2-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe610-v2-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe610-v2-squashfs-sysupgrade.bin",
+        "sha256": "34bf5a915f7cbcb0208d9ace2d62bcd81bd4a2d1c2482260e72aeb29c2941721",
+        "size": 7803545,
+        "retrieved_utc": "2026-09-13T02:27:20Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe610-v2-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "wbs210-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs210-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs210-v1-squashfs-sysupgrade.bin",
+        "sha256": "d888fc26ed796444b1aa05eb83fd3a417c8f746bcd687aca1f001c2a0e052cd8",
+        "size": 7803277,
+        "retrieved_utc": "2026-09-13T02:27:21Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_wbs210-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "wbs210-v2-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs210-v2-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs210-v2-squashfs-sysupgrade.bin",
+        "sha256": "22004cc8341136161cb0c6700323973af253b639d39875844852020536bd2ed6",
+        "size": 7803292,
+        "retrieved_utc": "2026-09-13T02:27:23Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_wbs210-v2-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "wbs510-v1-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs510-v1-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs510-v1-squashfs-sysupgrade.bin",
+        "sha256": "a2f3e4ef59cb5f74bbb9271da5f7ecc982a2988f47665ead0a0c9e4ec2a0eca2",
+        "size": 7803309,
+        "retrieved_utc": "2026-09-13T02:27:24Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_wbs510-v1-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "wbs510-v2-sysupgrade-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs510-v2-squashfs-sysupgrade.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs510-v2-squashfs-sysupgrade.bin",
+        "sha256": "ae432770a3d08d011c038c9bfa4b346e223ec9220b53fd56aae9b499eddf0cbc",
+        "size": 7803332,
+        "retrieved_utc": "2026-09-13T02:27:26Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_wbs510-v2-squashfs-sysupgrade.bin"
+      },
+      {
+        "name": "cpe210-v1-factory-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v1-squashfs-factory.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v1-squashfs-factory.bin",
+        "sha256": "035ecaeca1ca92a5489b01acfb358b1c269aa6fccab7d74f6c6b0dd6528f82aa",
+        "size": 6956974,
+        "retrieved_utc": "2026-09-13T02:27:27Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe210-v1-squashfs-factory.bin"
+      },
+      {
+        "name": "cpe210-v2-factory-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v2-squashfs-factory.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v2-squashfs-factory.bin",
+        "sha256": "bef215be0d5c661c55e661f6afebe71fcc6c32468eb5cbdd22ab6ee4f58dd45f",
+        "size": 6945098,
+        "retrieved_utc": "2026-09-13T02:27:28Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe210-v2-squashfs-factory.bin"
+      },
+      {
+        "name": "cpe210-v3-factory-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v3-squashfs-factory.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v3-squashfs-factory.bin",
+        "sha256": "c4db8e8651095b47a9204b86f950a37129b273bcf61bf1f75402931bd99d923a",
+        "size": 6945150,
+        "retrieved_utc": "2026-09-13T02:27:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe210-v3-squashfs-factory.bin"
+      },
+      {
+        "name": "cpe220-v2-factory-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v2-squashfs-factory.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v2-squashfs-factory.bin",
+        "sha256": "3d9afb0b5c9e0384feb1dce16d2f617118bc20fb054b67d34dba026e738c7ac7",
+        "size": 6957132,
+        "retrieved_utc": "2026-09-13T02:27:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe220-v2-squashfs-factory.bin"
+      },
+      {
+        "name": "cpe220-v3-factory-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v3-squashfs-factory.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v3-squashfs-factory.bin",
+        "sha256": "8a2b3b43a07986aa6807bd05128a40df9b46f7d0c821a34ed8bd0b677d9af1e2",
+        "size": 6945113,
+        "retrieved_utc": "2026-09-13T02:27:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe220-v3-squashfs-factory.bin"
+      },
+      {
+        "name": "cpe510-v1-factory-bin",
+        "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v1-squashfs-factory.bin",
+        "final_url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v1-squashfs-factory.bin",
+        "sha256": "6fb7b9f7a3aa05775eeda7e3345600bdbf9a49994030bd123e1b0df2e84e46be",
+        "size": 6957036,
+        "retrieved_utc": "2026-09-13T02:27:37Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openwrt-25.12.5-ath79-generic-tplink_cpe510-v1-squashfs-factory.bin"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "tl-wdr3500-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wdr3600-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wdr4300-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wdr4300-v1-il-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wdr4310-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wr1043nd-v2-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wr1043nd-v3-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wr1043nd-v4-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wr1043n-v5-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wr1045nd-v2-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wr2543-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wr842n-v3-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "tl-wr810n-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe210-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe210-v2-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe210-v3-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe220-v2-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe220-v3-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe510-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe510-v2-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe510-v3-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe605-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe610-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe610-v2-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "wbs210-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "wbs210-v2-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "wbs510-v1-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "wbs510-v2-sysupgrade-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe210-v1-factory-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe210-v2-factory-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe210-v3-factory-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe220-v2-factory-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe220-v3-factory-bin"
+      },
+      {
+        "op": "copy",
+        "input": "cpe510-v1-factory-bin"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "a9d67846a8cc59908a89591c3349efedea32a5572e82e26461438a31ca8ba58b",
+    "logical_tree_sha256": "479f3f2d91e3b87853ade0689c9b55aa8732c522f40b92c6c65ce1108969d7ea",
+    "content_tree_sha256": "6da700d9bc73eff748c894691d65e16ba2406483e59a99d47136d192f3d01bc4",
+    "extended_tree_sha256": "9f554f2ec5d3880ffad35199515658960ced9100908e3f6965d793646b82f513",
+    "bytes": 249923003,
+    "counts": {
+      "objects": 35,
+      "files": 34,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

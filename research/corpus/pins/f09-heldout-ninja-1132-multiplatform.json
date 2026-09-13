@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f09-heldout-ninja-1132-multiplatform",
+  "inputs": {},
+  "output": {
+    "materialization_key": "2da1e14f20b5b82d870013051513895a2ea964b5e92a1ea8f2f33d884bf9dd10",
+    "logical_tree_sha256": "fa091eeaa17d51788efbb5b47dceb7fd2446ff8b87bb9d5a6080b8421e37c0b5",
+    "pinned_utc": "2026-09-13T02:31:10Z"
+  },
+  "history": []
+}

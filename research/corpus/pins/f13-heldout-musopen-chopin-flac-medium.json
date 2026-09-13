@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-heldout-musopen-chopin-flac-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "406963c4c2ec38ec4e4f330a7e2d1268aebefb92ead0a6b33fb8035e03f1c31d",
+    "logical_tree_sha256": "370fab6193d8bc4f1f845f4112995f13f5555b3704617d92377be9caa676b8dd",
+    "pinned_utc": "2026-09-13T02:29:50Z"
+  },
+  "history": []
+}

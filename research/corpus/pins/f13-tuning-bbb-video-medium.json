@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-tuning-bbb-video-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "62e95741118a690be1edf834ee2dbe71c7279990c115cacc07c9e746066cbfff",
+    "logical_tree_sha256": "3ced0e41fb1fbe9c346b7e9eaf1d05fdd96dcdb9c9075ed84f7f8bed67b86349",
+    "pinned_utc": "2026-09-13T02:29:54Z"
+  },
+  "history": []
+}

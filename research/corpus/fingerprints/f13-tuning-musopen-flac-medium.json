@@ -1,0 +1,129 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-tuning-musopen-flac-medium",
+  "family": "F13",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-musopen-kickstarter-flac",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "fb0638c0cc9ed34b26b84f4bd73061094287dbbe997d9f16f879b4b13189086e",
+  "materialization_key": "3cde9d337a331add1b364f8f73883e197f698ccc932246b4fa22e5d3e26a59b3",
+  "materialized_utc": "2026-09-13T02:29:55Z",
+  "materialized_relpath": "corpus/tuning/f13-tuning-musopen-flac-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "8b65092f480feee5f82bd846d70682fd73b9e816ed3f51a6549af765841e2297",
+    "pinned_utc": "2026-09-13T02:29:55Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 195573344,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ia-musopen-dvd-in-lossless-flac-format-b993edfd9d",
+        "url": "https://archive.org/download/musopen-dvd-in-lossless-flac-format/Borodin%20-%20In%20The%20Steppes%20Of%20Central%20Asia/In%20The%20Steppes%20of%20Central%20Asia.flac",
+        "final_url": "https://dn711107.ca.archive.org/0/items/musopen-dvd-in-lossless-flac-format/Borodin%20-%20In%20The%20Steppes%20Of%20Central%20Asia/In%20The%20Steppes%20of%20Central%20Asia.flac",
+        "sha256": "75db1c8ccfbdee38f8d936bf778b485a71f8f11da4c3856d9f7acc78fee73344",
+        "size": 73922677,
+        "retrieved_utc": "2026-09-13T02:04:27Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ia-musopen-dvd-in-lossless-flac-format-b993edfd9d"
+      },
+      {
+        "name": "ia-musopen-dvd-in-lossless-flac-format-8f69026ff1",
+        "url": "https://archive.org/download/musopen-dvd-in-lossless-flac-format/Brahms%20-%20Symphony%20No%201%20in%20C%20Major/Symphony%20No.%201%20in%20C%20Minor%2C%20Op.%2068%20-%20II.%20Andante%20sostenuto.flac",
+        "final_url": "https://dn711107.ca.archive.org/0/items/musopen-dvd-in-lossless-flac-format/Brahms%20-%20Symphony%20No%201%20in%20C%20Major/Symphony%20No.%201%20in%20C%20Minor%2C%20Op.%2068%20-%20II.%20Andante%20sostenuto.flac",
+        "sha256": "b0e8427aab7c7b0ad2fb6d90dd6967abb0cb3f994fe5900009c29bbd41bc7394",
+        "size": 76072256,
+        "retrieved_utc": "2026-09-13T02:04:08Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ia-musopen-dvd-in-lossless-flac-format-8f69026ff1"
+      },
+      {
+        "name": "ia-musopen-dvd-in-lossless-flac-format-51884c8216",
+        "url": "https://archive.org/download/musopen-dvd-in-lossless-flac-format/Brahms%20-%20Symphony%20No%201%20in%20C%20Major/Symphony%20No.%201%20in%20C%20Minor%2C%20Op.%2068%20-%20III.%20Un%20poco%20allegretto%20e%20grazioso.flac",
+        "final_url": "https://dn711107.ca.archive.org/0/items/musopen-dvd-in-lossless-flac-format/Brahms%20-%20Symphony%20No%201%20in%20C%20Major/Symphony%20No.%201%20in%20C%20Minor%2C%20Op.%2068%20-%20III.%20Un%20poco%20allegretto%20e%20grazioso.flac",
+        "sha256": "4de1308d64909ab0ea019723e0716aa3cff0b591791d3c47ab95db867b719069",
+        "size": 45578411,
+        "retrieved_utc": "2026-09-13T02:04:08Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ia-musopen-dvd-in-lossless-flac-format-51884c8216"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "ia-musopen-dvd-in-lossless-flac-format-b993edfd9d",
+        "dest": "Musopen/In The Steppes of Central Asia.flac"
+      },
+      {
+        "op": "copy",
+        "input": "ia-musopen-dvd-in-lossless-flac-format-8f69026ff1",
+        "dest": "Musopen/Symphony No. 1 in C Minor, Op. 68 - II. Andante sostenuto.flac"
+      },
+      {
+        "op": "copy",
+        "input": "ia-musopen-dvd-in-lossless-flac-format-51884c8216",
+        "dest": "Musopen/Symphony No. 1 in C Minor, Op. 68 - III. Un poco allegretto e grazioso.flac"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "850e07a189f55b4a4aa41579c34ebc7dda806be399acbe535a66af0709644bdb",
+    "logical_tree_sha256": "8b65092f480feee5f82bd846d70682fd73b9e816ed3f51a6549af765841e2297",
+    "content_tree_sha256": "ce4f8c04d6f9fc59866487883eaca187c8c836192a92b7d151afc21bca032fde",
+    "extended_tree_sha256": "200c36312d7dc81acdc2cea1e4f43a3d7dd3d15eb7a63be345ed76b25b3d596d",
+    "bytes": 195573344,
+    "bytes_all_paths": 195573344,
+    "allocated_bytes": 195579904,
+    "counts": {
+      "objects": 5,
+      "files": 3,
+      "unique_file_inodes": 3,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 75,
+      "path_length_bytes": {
+        "min": 7,
+        "max": 83,
+        "mean": 50.75,
+        "p50": 70,
+        "p95": 83
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

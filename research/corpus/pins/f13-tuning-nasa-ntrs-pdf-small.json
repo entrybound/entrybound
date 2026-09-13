@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-tuning-nasa-ntrs-pdf-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "857a955a58608544d67e13005bd77d36eacbdd88f7655bf997fa57cf84bf2461",
+    "logical_tree_sha256": "00ac9e6490cb2f0b2c86c775e27a502a39889327e570f5f74aa5a5da5c784522",
+    "pinned_utc": "2026-09-13T02:29:55Z"
+  },
+  "history": []
+}

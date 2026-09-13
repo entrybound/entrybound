@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f12-tuning-nasa-ivl-photos-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "2cf1d286195ffefd39fd6f869ed1dda0fa78b2a48cc463684c3d7e2a4868adb3",
+    "logical_tree_sha256": "4835190aac2f82a3d96dace58f5fa050146522b7ba67a048c7077f239e584f76",
+    "pinned_utc": "2026-09-13T02:29:10Z"
+  },
+  "history": []
+}

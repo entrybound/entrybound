@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-tuning-kodak-image-codecs-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "ed815c70723b9cad15bb33953152254748c5465d3b1e6f926b18b8e520e888ba",
+    "logical_tree_sha256": "4097f60942bdb767b9ae2a3f91c38ef45040ff598005533d77cdf5aa07b6bd26",
+    "pinned_utc": "2026-09-13T02:28:45Z"
+  },
+  "history": []
+}

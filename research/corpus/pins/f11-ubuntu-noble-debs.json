@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f11-ubuntu-noble-debs",
+  "inputs": {},
+  "output": {
+    "materialization_key": "2b9fb842aaae9637f7106ce5e30a64685adce65cb0db3a7227e84a7053a325f3",
+    "logical_tree_sha256": "67bb0d4a2a5e7416d9f9126a737c8c3cf9b1b027aa8e9198fc7322fc154e0532",
+    "pinned_utc": "2026-09-13T02:29:49Z"
+  },
+  "history": []
+}

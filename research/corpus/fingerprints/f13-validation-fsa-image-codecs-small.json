@@ -1,0 +1,161 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-validation-fsa-image-codecs-small",
+  "family": "F13",
+  "split": "validation",
+  "scale": "small",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "g5-loc-fsa-owi-color",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "e6f5d0d92fe275cb329fc706a6d866583e77930d6b389897fd5c5d56deeb8568",
+  "materialization_key": "327091dea144ceaaa011e10e8cc46243e5cb38dc20b39b943f0e28a501402c25",
+  "materialized_utc": "2026-09-13T02:30:28Z",
+  "materialized_relpath": "corpus/validation/f13-validation-fsa-image-codecs-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "39719d35cdae0ac987741a0af03e38d577ca7467b6dc919ff33794b3ceca904b",
+    "pinned_utc": "2026-09-13T02:30:06Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 10819211,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "commons-68279153",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Sawmill_at_the_Greensboro_Lumber_Co.%2C_Greensboro%2C_Ga._LCCN2017877511.tif",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Sawmill_at_the_Greensboro_Lumber_Co.%2C_Greensboro%2C_Ga._LCCN2017877511.tif",
+        "sha256": "fb4b20058eb225a3c9145df17055e09c8e6e7891c4565e6a20884a4c1213ae5b",
+        "size": 63390168,
+        "retrieved_utc": "2026-09-13T02:16:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "commons-68279153"
+      },
+      {
+        "name": "commons-68280143",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Burley_tobacco_is_placed_on_sticks_to_wilt_after_cutting%2Cbefore_it_is_taken_into_the_barn_for_drying_and_curing%2C_on_the_Russell_Spears%27_farm%2C_vicinity_of_Lexington%2C_Ky._LCCN2017877538.tif",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Burley_tobacco_is_placed_on_sticks_to_wilt_after_cutting%2Cbefore_it_is_taken_into_the_barn_for_drying_and_curing%2C_on_the_Russell_Spears%27_farm%2C_vicinity_of_Lexington%2C_Ky._LCCN2017877538.tif",
+        "sha256": "939d34888f4963197073c9dee7449bfa6308b6ddbb3799fec4bef693c5407ba6",
+        "size": 62885264,
+        "retrieved_utc": "2026-09-13T02:16:14Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "commons-68280143"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g5-media/image_codecs.py",
+      "script_sha256": "ba89a583de0d43a2b0a9e3f3bbab1119177bab9aad9c93bf7b25141f909e5f7c",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 2301,
+      "params": {
+        "tiles": {
+          "count": 1,
+          "size": [
+            768,
+            512
+          ],
+          "reduce": [
+            2
+          ]
+        },
+        "formats": [
+          "webp-q75",
+          "webp-q90-sharpyuv",
+          "webp-lossless",
+          "avif-q60-420",
+          "avif-q80-444",
+          "heic-q50",
+          "heic-q80",
+          "jxl-d1",
+          "jxl-lossless",
+          "jxl-from-jpeg",
+          "jp2-rate20",
+          "png-pil-opt",
+          "png-im-interlaced",
+          "png-pal256",
+          "tiff-lzw",
+          "tiff-zip",
+          "tiff-jpeg",
+          "tiff-none",
+          "gif-256",
+          "bmp"
+        ],
+        "big_formats_max_inputs": 1,
+        "require_tools": {
+          "cwebp": "1.3.2",
+          "avifenc": "Version: 1.0.4 (dav1d [dec]:1.4.1, libgav1 [dec]:0.18.0, aom [enc/dec]:v3.8.2",
+          "heif-enc": "1.17.6",
+          "cjxl": "cjxl v0.7.0",
+          "imagemagick": "ImageMagick 6.9.12-98 Q16",
+          "pillow": "Pillow 12.3.0",
+          "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5",
+          "tiffcp": "LIBTIFF, Version 4.5.1",
+          "cjpeg": "libjpeg-turbo version 2.1.5 (build 20240408)",
+          "pkg:libheif-plugin-x265": "1.17.6-1ubuntu4.8",
+          "pkg:libx265-199": "3.5-2build1",
+          "pkg:libjxl0.7": "0.7.0-10.2ubuntu6.1",
+          "pkg:libwebp7": "1.3.2-0.4build3",
+          "pkg:libopenjp2-7": "2.5.0-2ubuntu0.5"
+        },
+        "max_bytes": 15728640
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "dca0c5408198166d0d016cb159862b45976bbaa8bb36fe42397553abeb9f6b7e",
+    "logical_tree_sha256": "39719d35cdae0ac987741a0af03e38d577ca7467b6dc919ff33794b3ceca904b",
+    "content_tree_sha256": "35d05476970c500d19033861a4ec2ecd60e5891732b2f851b27849141405c843",
+    "extended_tree_sha256": "f656fc5cf6fee21707a58a5eb188067757dd9973cf6c0a4e9442934309906a6e",
+    "bytes": 10819211,
+    "bytes_all_paths": 10819211,
+    "allocated_bytes": 10911744,
+    "counts": {
+      "objects": 59,
+      "files": 38,
+      "unique_file_inodes": 38,
+      "dirs": 20,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 24,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 42,
+        "mean": 26.155,
+        "p50": 32,
+        "p95": 41
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

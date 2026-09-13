@@ -1,0 +1,428 @@
+{
+  "pool": "librivox",
+  "rules": "F13 audiobooks from LibriVox (Internet Archive is LibriVox's distribution host); a different\n    book (and reader set) per split.",
+  "selection_seed": 20260912,
+  "selected_utc": "2026-09-13T02:03:24Z",
+  "entries": [
+    {
+      "key": "ia-1900lastpresident_1904_librivox-6c56f1980e",
+      "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900_librivox.m4b",
+      "name": "1900_librivox.m4b",
+      "dir": "1900 or The Last President",
+      "api_size": 35291450,
+      "api_md5": "eea382c6b87191caeb4928bea79e497b",
+      "api_sha1": "4d96b5c0fd1b52bed4be6cacbc3e9fe6db4fa62c",
+      "format": "Audiobook",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/1900lastpresident_1904_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-librivox-audiobook-medium",
+      "sha256": "2fee842b7ba525bea6cd5dee8dabc17c7aea7b59ebadd6c569c288f427302241",
+      "size": 35291450,
+      "retrieved_utc": "2026-09-13T02:03:51Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900_librivox.m4b"
+    },
+    {
+      "key": "ia-1900lastpresident_1904_librivox-dee7d560b7",
+      "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_01_lockwood.ogg",
+      "name": "1900orthelastpresident_01_lockwood.ogg",
+      "dir": "1900 or The Last President",
+      "api_size": 10331883,
+      "api_md5": "3b6741fa8b2a954e8675763811e8bb66",
+      "api_sha1": "fec0d48ec263e9e674c0e3652cc91b2f247cb937",
+      "format": "Ogg Vorbis",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/1900lastpresident_1904_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-librivox-audiobook-medium",
+      "sha256": "4d156ce9887049e172f39d97c9298123aa4f6817d4bbbfbf69eb28479069961a",
+      "size": 10331883,
+      "retrieved_utc": "2026-09-13T02:03:50Z",
+      "final_url": "https://dn601301.us.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_01_lockwood.ogg"
+    },
+    {
+      "key": "ia-1900lastpresident_1904_librivox-c064c8f3f7",
+      "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_01_lockwood_128kb.mp3",
+      "name": "1900orthelastpresident_01_lockwood_128kb.mp3",
+      "dir": "1900 or The Last President",
+      "api_size": 18089362,
+      "api_md5": "0bb917ac3a38c373bee4a10a8b0e1981",
+      "api_sha1": "11709bc7a1d54871503ea86bcbeb7a5ec07b25c2",
+      "format": "128Kbps MP3",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/1900lastpresident_1904_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-librivox-audiobook-medium",
+      "sha256": "07f7b384725d0a03cd26781cdae82ba87116d75b51b27acd55f39edb67195a4b",
+      "size": 18089362,
+      "retrieved_utc": "2026-09-13T02:03:51Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_01_lockwood_128kb.mp3"
+    },
+    {
+      "key": "ia-1900lastpresident_1904_librivox-65df1e35f0",
+      "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_02_lockwood.ogg",
+      "name": "1900orthelastpresident_02_lockwood.ogg",
+      "dir": "1900 or The Last President",
+      "api_size": 11458569,
+      "api_md5": "665bf4529f16a999085a21d44a7b591e",
+      "api_sha1": "1d5502f536d44d959f1ebc1a9f2abc6251775fec",
+      "format": "Ogg Vorbis",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/1900lastpresident_1904_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-librivox-audiobook-medium",
+      "sha256": "237f73187b68afb904d13e978cdbdfc25d443e348bf1fe6f34de2406dc38889a",
+      "size": 11458569,
+      "retrieved_utc": "2026-09-13T02:03:52Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_02_lockwood.ogg"
+    },
+    {
+      "key": "ia-1900lastpresident_1904_librivox-4b4d6ead38",
+      "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_02_lockwood_128kb.mp3",
+      "name": "1900orthelastpresident_02_lockwood_128kb.mp3",
+      "dir": "1900 or The Last President",
+      "api_size": 19520873,
+      "api_md5": "e2517f5a056cf9ab9a38e05462563f97",
+      "api_sha1": "c5826103589a1f99ba82a0a4aed25b815cb89d28",
+      "format": "128Kbps MP3",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/1900lastpresident_1904_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-librivox-audiobook-medium",
+      "sha256": "5bd97d92f57b9bb699bca5866f7e41c203adac4301431e435e31b7cf985260d4",
+      "size": 19520873,
+      "retrieved_utc": "2026-09-13T02:03:53Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_02_lockwood_128kb.mp3"
+    },
+    {
+      "key": "ia-1900lastpresident_1904_librivox-16ac08342f",
+      "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_03_lockwood.ogg",
+      "name": "1900orthelastpresident_03_lockwood.ogg",
+      "dir": "1900 or The Last President",
+      "api_size": 8586205,
+      "api_md5": "fa8fc141b6da26b67720de0738a8a08a",
+      "api_sha1": "13371c253a49c4c38ecfd544c60c646b65aa5853",
+      "format": "Ogg Vorbis",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/1900lastpresident_1904_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-librivox-audiobook-medium",
+      "sha256": "129f6e2750aadc217e4829321fa6abf6be658b33b9d3b8314c751afc3b04750e",
+      "size": 8586205,
+      "retrieved_utc": "2026-09-13T02:03:54Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_03_lockwood.ogg"
+    },
+    {
+      "key": "ia-1900lastpresident_1904_librivox-cc5a43ce1e",
+      "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_03_lockwood_128kb.mp3",
+      "name": "1900orthelastpresident_03_lockwood_128kb.mp3",
+      "dir": "1900 or The Last President",
+      "api_size": 14882362,
+      "api_md5": "a6bc7a7ea8c402561f0d358293d026ab",
+      "api_sha1": "dd834cc0e60de3291f6924dbf21197990e8565ee",
+      "format": "128Kbps MP3",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/1900lastpresident_1904_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-librivox-audiobook-medium",
+      "sha256": "790eeed279f2d89b5da7b1e82dc6a67d64551d1c4dfffc32f350fe015affd485",
+      "size": 14882362,
+      "retrieved_utc": "2026-09-13T02:03:54Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_03_lockwood_128kb.mp3"
+    },
+    {
+      "key": "ia-1900lastpresident_1904_librivox-ffe96016ac",
+      "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_04_lockwood.ogg",
+      "name": "1900orthelastpresident_04_lockwood.ogg",
+      "dir": "1900 or The Last President",
+      "api_size": 10322594,
+      "api_md5": "d372af76c19db86a0581c78b7f8a6d99",
+      "api_sha1": "f847cd3fbd0bd19a88f8839a277b3cf3904c269d",
+      "format": "Ogg Vorbis",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/1900lastpresident_1904_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-librivox-audiobook-medium",
+      "sha256": "85c6e7765d89233e159838981905dfb118feabd9c6bdb7870c6d1887b5e83fb6",
+      "size": 10322594,
+      "retrieved_utc": "2026-09-13T02:03:55Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_04_lockwood.ogg"
+    },
+    {
+      "key": "ia-1900lastpresident_1904_librivox-5efbfcc247",
+      "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_04_lockwood_128kb.mp3",
+      "name": "1900orthelastpresident_04_lockwood_128kb.mp3",
+      "dir": "1900 or The Last President",
+      "api_size": 17971498,
+      "api_md5": "73a9cf74664c13b4cbe7eca6c48853e9",
+      "api_sha1": "b7a6c3553a02e74d15b2806f28be04d1c8ea13b0",
+      "format": "128Kbps MP3",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/1900lastpresident_1904_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-librivox-audiobook-medium",
+      "sha256": "c880634ddcedbc8813b539be6591b283ce970f768ccbb0c367a7ae56c4b5708c",
+      "size": 17971498,
+      "retrieved_utc": "2026-09-13T02:03:56Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_04_lockwood_128kb.mp3"
+    },
+    {
+      "key": "ia-3sfstoriesbywilliamtenn_1910_librivox-89646960f2",
+      "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_01_tenn.mp3",
+      "name": "3sfstoriesbywilliamtenn_01_tenn.mp3",
+      "dir": "3 SF Stories by William Tenn",
+      "api_size": 55525144,
+      "api_md5": "432b7526373fa1d4efb84464cefce940",
+      "api_sha1": "2dca5a862b51c1e8ca0c78949f50e7f715f4af3e",
+      "format": "VBR MP3",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/3sfstoriesbywilliamtenn_1910_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-validation-librivox-audiobook-medium",
+      "sha256": "7e138e5011533eec0e4341570dff39407434d769605385d02ad01ffe359b98c8",
+      "size": 55525144,
+      "retrieved_utc": "2026-09-13T02:03:57Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_01_tenn.mp3"
+    },
+    {
+      "key": "ia-3sfstoriesbywilliamtenn_1910_librivox-94f59ff203",
+      "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_01_tenn.ogg",
+      "name": "3sfstoriesbywilliamtenn_01_tenn.ogg",
+      "dir": "3 SF Stories by William Tenn",
+      "api_size": 31908885,
+      "api_md5": "fac05e31109b1d2c5eaad0d63cc0312f",
+      "api_sha1": "f8a769019ecc2618becc9c7bec2964d6d2fe84ab",
+      "format": "Ogg Vorbis",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/3sfstoriesbywilliamtenn_1910_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-validation-librivox-audiobook-medium",
+      "sha256": "8c1ab640f17fd5978a987b0029d4f127c7d4c898ea26c0d577214f1f26674534",
+      "size": 31908885,
+      "retrieved_utc": "2026-09-13T02:03:57Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_01_tenn.ogg"
+    },
+    {
+      "key": "ia-3sfstoriesbywilliamtenn_1910_librivox-b880e1dd40",
+      "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_02_tenn.mp3",
+      "name": "3sfstoriesbywilliamtenn_02_tenn.mp3",
+      "dir": "3 SF Stories by William Tenn",
+      "api_size": 18975037,
+      "api_md5": "504f06f5d4ccc87698afe73e3d5d9bf8",
+      "api_sha1": "0e98a6d308dc663df6474887dc3d7635dff15d0a",
+      "format": "VBR MP3",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/3sfstoriesbywilliamtenn_1910_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-validation-librivox-audiobook-medium",
+      "sha256": "b4d818f84a9b268d3b5bd38dd3639e44e85f30e9669c79c97f32cd0787fb58a0",
+      "size": 18975037,
+      "retrieved_utc": "2026-09-13T02:03:57Z",
+      "final_url": "https://dn601209.us.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_02_tenn.mp3"
+    },
+    {
+      "key": "ia-3sfstoriesbywilliamtenn_1910_librivox-05db5088f8",
+      "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_02_tenn.ogg",
+      "name": "3sfstoriesbywilliamtenn_02_tenn.ogg",
+      "dir": "3 SF Stories by William Tenn",
+      "api_size": 10569921,
+      "api_md5": "a012a066f95fc5fc5848cf9c93c8a618",
+      "api_sha1": "510202745216c328edc90596b59219ba8f0496c6",
+      "format": "Ogg Vorbis",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/3sfstoriesbywilliamtenn_1910_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-validation-librivox-audiobook-medium",
+      "sha256": "c945ff851fac806d33c3c419c9d0e5292d0de70d063af43c9a228abcd3d340b1",
+      "size": 10569921,
+      "retrieved_utc": "2026-09-13T02:03:59Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_02_tenn.ogg"
+    },
+    {
+      "key": "ia-3sfstoriesbywilliamtenn_1910_librivox-cc54bd841d",
+      "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_03_tenn.mp3",
+      "name": "3sfstoriesbywilliamtenn_03_tenn.mp3",
+      "dir": "3 SF Stories by William Tenn",
+      "api_size": 42022632,
+      "api_md5": "9879bc460d9b6813f7b10672800133c6",
+      "api_sha1": "e737144b878f93f81eba0d7ee0ad1d175f85d7c5",
+      "format": "VBR MP3",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/3sfstoriesbywilliamtenn_1910_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-validation-librivox-audiobook-medium",
+      "sha256": "fe69107958f334f9e3da2d03af89574a69f5c42098eff4451ac91085ebd9abf5",
+      "size": 42022632,
+      "retrieved_utc": "2026-09-13T02:04:00Z",
+      "final_url": "https://dn601209.us.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_03_tenn.mp3"
+    },
+    {
+      "key": "ia-3sfstoriesbywilliamtenn_1910_librivox-90de7ed16d",
+      "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_03_tenn.ogg",
+      "name": "3sfstoriesbywilliamtenn_03_tenn.ogg",
+      "dir": "3 SF Stories by William Tenn",
+      "api_size": 24209192,
+      "api_md5": "7c4c915c17600e513b5637e06ee6a4a3",
+      "api_sha1": "1ef37cfb6f3e2bcb09a15591914a83d2ae87898b",
+      "format": "Ogg Vorbis",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/3sfstoriesbywilliamtenn_1910_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-validation-librivox-audiobook-medium",
+      "sha256": "292f6f83b6b0ac84be9e719f90dc8ef88174eefc91eb3a141d559db871f38d69",
+      "size": 24209192,
+      "retrieved_utc": "2026-09-13T02:04:00Z",
+      "final_url": "https://dn710703.ca.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_03_tenn.ogg"
+    },
+    {
+      "key": "ia-4sfstoriesbymackreynolds_2105_librivox-5e0e8a0825",
+      "url": "https://archive.org/download/4sfstoriesbymackreynolds_2105_librivox/4SFSroriesReynolds_librivox.m4b",
+      "name": "4SFSroriesReynolds_librivox.m4b",
+      "dir": "4 SF Stories by Mack Reynolds",
+      "api_size": 47775089,
+      "api_md5": "2db65759aa5dcf294300b483c15bf6a3",
+      "api_sha1": "b786703b01c3481b4b7d39a1441295acc7833d4e",
+      "format": "Audiobook",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/4sfstoriesbymackreynolds_2105_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-heldout-librivox-audiobook-medium",
+      "sha256": "e45d3f5316d5b9fcae8939a0dbad8adc394ca8979f2017a91805fbfdb163827a",
+      "size": 47775089,
+      "retrieved_utc": "2026-09-13T02:04:02Z",
+      "final_url": "https://dn721809.ca.archive.org/0/items/4sfstoriesbymackreynolds_2105_librivox/4SFSroriesReynolds_librivox.m4b"
+    },
+    {
+      "key": "ia-4sfstoriesbymackreynolds_2105_librivox-02277b9d60",
+      "url": "https://archive.org/download/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_01_reynolds_128kb.mp3",
+      "name": "4sfstoriesbymackreynolds_01_reynolds_128kb.mp3",
+      "dir": "4 SF Stories by Mack Reynolds",
+      "api_size": 32759312,
+      "api_md5": "be65877a547af0c5bffe7b60cb5f10ac",
+      "api_sha1": "18e3ee3ce11a156663e92569cb99d75eeafe0872",
+      "format": "128Kbps MP3",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/4sfstoriesbymackreynolds_2105_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-heldout-librivox-audiobook-medium",
+      "sha256": "b16c9de682afef863f07f71d31d79fe6263f130d1fb19f393e435b3240b0ad51",
+      "size": 32759312,
+      "retrieved_utc": "2026-09-13T02:04:02Z",
+      "final_url": "https://dn721809.ca.archive.org/0/items/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_01_reynolds_128kb.mp3"
+    },
+    {
+      "key": "ia-4sfstoriesbymackreynolds_2105_librivox-30182c2f0c",
+      "url": "https://archive.org/download/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_02_reynolds_128kb.mp3",
+      "name": "4sfstoriesbymackreynolds_02_reynolds_128kb.mp3",
+      "dir": "4 SF Stories by Mack Reynolds",
+      "api_size": 31301084,
+      "api_md5": "2acf91a7b1ac379116fc12836fa7cd6d",
+      "api_sha1": "67c62e3c28499a1781dcade9e32a1decf7499532",
+      "format": "128Kbps MP3",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/4sfstoriesbymackreynolds_2105_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-heldout-librivox-audiobook-medium",
+      "sha256": "2010e8696b3393b0c464d5928b80293179e1bb5d8eddf1ac2ce8d14ca17873fd",
+      "size": 31301084,
+      "retrieved_utc": "2026-09-13T02:04:02Z",
+      "final_url": "https://dn721809.ca.archive.org/0/items/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_02_reynolds_128kb.mp3"
+    },
+    {
+      "key": "ia-4sfstoriesbymackreynolds_2105_librivox-330b27c2fa",
+      "url": "https://archive.org/download/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_03_reynolds_128kb.mp3",
+      "name": "4sfstoriesbymackreynolds_03_reynolds_128kb.mp3",
+      "dir": "4 SF Stories by Mack Reynolds",
+      "api_size": 18785682,
+      "api_md5": "63eb7bc9e6587c121615877e0f8d6248",
+      "api_sha1": "f88268f88934b349366a01cbaaaaa3d22bdb9ed3",
+      "format": "128Kbps MP3",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/4sfstoriesbymackreynolds_2105_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-heldout-librivox-audiobook-medium",
+      "sha256": "fa64c2e6b2c358c1916330d0dcdf323732759f85918ce0a147ec24a0f7cf7151",
+      "size": 18785682,
+      "retrieved_utc": "2026-09-13T02:04:04Z",
+      "final_url": "https://dn721809.ca.archive.org/0/items/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_03_reynolds_128kb.mp3"
+    },
+    {
+      "key": "ia-4sfstoriesbymackreynolds_2105_librivox-24be343ded",
+      "url": "https://archive.org/download/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_04_reynolds_128kb.mp3",
+      "name": "4sfstoriesbymackreynolds_04_reynolds_128kb.mp3",
+      "dir": "4 SF Stories by Mack Reynolds",
+      "api_size": 13129891,
+      "api_md5": "24a114b5e3bc918703f3091d711c1e56",
+      "api_sha1": "139a4e81f4a76dd5fee9755b6de2c7fd77aa7d0d",
+      "format": "128Kbps MP3",
+      "license": {
+        "spdx_or_name": "Public domain (LibriVox recording; PDM 1.0)",
+        "attribution": "LibriVox volunteers",
+        "source_page": "https://archive.org/details/4sfstoriesbymackreynolds_2105_librivox",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-heldout-librivox-audiobook-medium",
+      "sha256": "4a88f6f8444a49a64e3b0974835424605a520ce22f1dc944330a1686c48b1c83",
+      "size": 13129891,
+      "retrieved_utc": "2026-09-13T02:04:04Z",
+      "final_url": "https://dn721809.ca.archive.org/0/items/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_04_reynolds_128kb.mp3"
+    }
+  ]
+}

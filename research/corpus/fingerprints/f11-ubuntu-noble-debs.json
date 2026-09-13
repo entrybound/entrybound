@@ -1,0 +1,351 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f11-ubuntu-noble-debs",
+  "family": "F11",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "ubuntu-noble",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "9ff797d8b496fdecac5b15e98a7be3bdce2fd50296f3d969f6e0ed59f4257168",
+  "materialization_key": "2b9fb842aaae9637f7106ce5e30a64685adce65cb0db3a7227e84a7053a325f3",
+  "materialized_utc": "2026-09-13T02:29:49Z",
+  "materialized_relpath": "corpus/tuning/f11-ubuntu-noble-debs",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "67bb0d4a2a5e7416d9f9126a737c8c3cf9b1b027aa8e9198fc7322fc154e0532",
+    "pinned_utc": "2026-09-13T02:29:49Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 221835244,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "openjdk-21-jre-headless",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openjdk-21/openjdk-21-jre-headless_21.0.3+9-1ubuntu1_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openjdk-21/openjdk-21-jre-headless_21.0.3+9-1ubuntu1_amd64.deb",
+        "sha256": "4bfdfffb320d3f31a3a90634e17f1f6562ce463989cef111be3402f7b766676d",
+        "size": 46602504,
+        "retrieved_utc": "2026-09-13T02:29:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openjdk-21-jre-headless_21.0.3+9-1ubuntu1_amd64.deb"
+      },
+      {
+        "name": "libllvm18",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/llvm-toolchain-18/libllvm18_18.1.3-1_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/l/llvm-toolchain-18/libllvm18_18.1.3-1_amd64.deb",
+        "sha256": "826621c8e678dd27b4f5c3a9b26d10aae50d5de2d95575695a17c91014f5eaa5",
+        "size": 27545628,
+        "retrieved_utc": "2026-09-13T02:29:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "libllvm18_18.1.3-1_amd64.deb"
+      },
+      {
+        "name": "dotnet-runtime-8-0",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/d/dotnet8/dotnet-runtime-8.0_8.0.4-0ubuntu1_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/d/dotnet8/dotnet-runtime-8.0_8.0.4-0ubuntu1_amd64.deb",
+        "sha256": "9dd1dbe560aacfab90915eabcc3fae97973aba5b9e9ac7b7feeafacf67e11a3a",
+        "size": 23904102,
+        "retrieved_utc": "2026-09-13T02:29:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "dotnet-runtime-8.0_8.0.4-0ubuntu1_amd64.deb"
+      },
+      {
+        "name": "containerd",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/c/containerd-app/containerd_1.7.12-0ubuntu4_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/c/containerd-app/containerd_1.7.12-0ubuntu4_amd64.deb",
+        "sha256": "379c4750e429d470260b15e41bf35cbfac15eddd4e1998f3d41b5db5b584e212",
+        "size": 38580926,
+        "retrieved_utc": "2026-09-13T02:29:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "containerd_1.7.12-0ubuntu4_amd64.deb"
+      },
+      {
+        "name": "libreoffice-core",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/libr/libreoffice/libreoffice-core_24.2.2-0ubuntu1_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/libr/libreoffice/libreoffice-core_24.2.2-0ubuntu1_amd64.deb",
+        "sha256": "5dee8f36c8048949ce6850d0078730d7b0f8f55d0442985b941ebb923c7f821b",
+        "size": 43015572,
+        "retrieved_utc": "2026-09-13T02:29:38Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "libreoffice-core_24.2.2-0ubuntu1_amd64.deb"
+      },
+      {
+        "name": "coreutils",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/c/coreutils/coreutils_9.4-3ubuntu6_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/c/coreutils/coreutils_9.4-3ubuntu6_amd64.deb",
+        "sha256": "0d19c3e94f04ff1aafde46701fe1783da0a068a4904adc3794c30140f1aaeb8f",
+        "size": 1412418,
+        "retrieved_utc": "2026-09-13T02:29:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "coreutils_9.4-3ubuntu6_amd64.deb"
+      },
+      {
+        "name": "bash",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/b/bash/bash_5.2.21-2ubuntu4_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/b/bash/bash_5.2.21-2ubuntu4_amd64.deb",
+        "sha256": "73de311a21e094e29ac01527d2b52226cc87fde0a5b57032902251b426d92c66",
+        "size": 794086,
+        "retrieved_utc": "2026-09-13T02:29:41Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "bash_5.2.21-2ubuntu4_amd64.deb"
+      },
+      {
+        "name": "vim-runtime",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/v/vim/vim-runtime_9.1.0016-1ubuntu7_all.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/v/vim/vim-runtime_9.1.0016-1ubuntu7_all.deb",
+        "sha256": "562d8516367f53f2d5f9021fd232ddfba594a2dc9c014ebcc372cbbd225f97bc",
+        "size": 7279432,
+        "retrieved_utc": "2026-09-13T02:29:41Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "vim-runtime_9.1.0016-1ubuntu7_all.deb"
+      },
+      {
+        "name": "perl-modules-5-38",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/perl/perl-modules-5.38_5.38.2-3.2build2_all.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/p/perl/perl-modules-5.38_5.38.2-3.2build2_all.deb",
+        "sha256": "540b64b1be061236e50f617badc2b96e1af92766f106302b2fc84ba790d39610",
+        "size": 3110036,
+        "retrieved_utc": "2026-09-13T02:29:41Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "perl-modules-5.38_5.38.2-3.2build2_all.deb"
+      },
+      {
+        "name": "libc6",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.39-0ubuntu8_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.39-0ubuntu8_amd64.deb",
+        "sha256": "af36c7ac770770fe3d3c10e85d6bc538e76e57570ba7db7d397fb9f654783ef3",
+        "size": 3264806,
+        "retrieved_utc": "2026-09-13T02:29:42Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "libc6_2.39-0ubuntu8_amd64.deb"
+      },
+      {
+        "name": "git",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/git/git_2.43.0-1ubuntu7_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/git/git_2.43.0-1ubuntu7_amd64.deb",
+        "sha256": "664e394169ca5f1643b096059cf45169e360ced9e96ed378465dd03d47309074",
+        "size": 3673594,
+        "retrieved_utc": "2026-09-13T02:29:43Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "git_2.43.0-1ubuntu7_amd64.deb"
+      },
+      {
+        "name": "openssh-server",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssh/openssh-server_9.6p1-3ubuntu13_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssh/openssh-server_9.6p1-3ubuntu13_amd64.deb",
+        "sha256": "6fe2467aff7aa8ed1cbe91a3521df69a41b90122143392f94037d4225a7098cb",
+        "size": 509904,
+        "retrieved_utc": "2026-09-13T02:29:44Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "openssh-server_9.6p1-3ubuntu13_amd64.deb"
+      },
+      {
+        "name": "systemd",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/s/systemd/systemd_255.4-1ubuntu8_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/s/systemd/systemd_255.4-1ubuntu8_amd64.deb",
+        "sha256": "2c5932214476d783f27df85cc866b8859232dfbd38a73f780fc4693ea9886e70",
+        "size": 3470734,
+        "retrieved_utc": "2026-09-13T02:29:45Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "systemd_255.4-1ubuntu8_amd64.deb"
+      },
+      {
+        "name": "locales",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/locales_2.39-0ubuntu8_all.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/locales_2.39-0ubuntu8_all.deb",
+        "sha256": "de586cb30e40abfe653d5e5b8031deba6d88ea9caff8e2ad75f3ff3e0e416c5b",
+        "size": 4233588,
+        "retrieved_utc": "2026-09-13T02:29:46Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "locales_2.39-0ubuntu8_all.deb"
+      },
+      {
+        "name": "libicu74",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu74_74.2-1ubuntu3_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu74_74.2-1ubuntu3_amd64.deb",
+        "sha256": "d29c97a21a3e3254731cfac186e4d4e611e5e67d2c9a0430f6acfbd9acaefa2e",
+        "size": 10860410,
+        "retrieved_utc": "2026-09-13T02:29:48Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "libicu74_74.2-1ubuntu3_amd64.deb"
+      },
+      {
+        "name": "binutils-x86-64-linux-gnu",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/binutils-x86-64-linux-gnu_2.42-4ubuntu2_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/binutils-x86-64-linux-gnu_2.42-4ubuntu2_amd64.deb",
+        "sha256": "1f3770dce907c26493217393ed24ca7484443381cafd04c81d6a6bef702b7416",
+        "size": 2469014,
+        "retrieved_utc": "2026-09-13T02:29:49Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "binutils-x86-64-linux-gnu_2.42-4ubuntu2_amd64.deb"
+      },
+      {
+        "name": "fonts-dejavu-core",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/f/fonts-dejavu/fonts-dejavu-core_2.37-8_all.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/f/fonts-dejavu/fonts-dejavu-core_2.37-8_all.deb",
+        "sha256": "40049660c194f3b8a2541fc7369efebb10e9f94bdac836a2f38fafedd10fa73a",
+        "size": 835172,
+        "retrieved_utc": "2026-09-13T02:29:49Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "fonts-dejavu-core_2.37-8_all.deb"
+      },
+      {
+        "name": "tzdata",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/t/tzdata/tzdata_2024a-2ubuntu1_all.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/t/tzdata/tzdata_2024a-2ubuntu1_all.deb",
+        "sha256": "f5bca0c788a4fc465c435f7e8a54b2594e9cbf1a22abb263a59e393f1cb666e1",
+        "size": 273318,
+        "retrieved_utc": "2026-09-13T02:29:49Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "tzdata_2024a-2ubuntu1_all.deb"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "openjdk-21-jre-headless"
+      },
+      {
+        "op": "copy",
+        "input": "libllvm18"
+      },
+      {
+        "op": "copy",
+        "input": "dotnet-runtime-8-0"
+      },
+      {
+        "op": "copy",
+        "input": "containerd"
+      },
+      {
+        "op": "copy",
+        "input": "libreoffice-core"
+      },
+      {
+        "op": "copy",
+        "input": "coreutils"
+      },
+      {
+        "op": "copy",
+        "input": "bash"
+      },
+      {
+        "op": "copy",
+        "input": "vim-runtime"
+      },
+      {
+        "op": "copy",
+        "input": "perl-modules-5-38"
+      },
+      {
+        "op": "copy",
+        "input": "libc6"
+      },
+      {
+        "op": "copy",
+        "input": "git"
+      },
+      {
+        "op": "copy",
+        "input": "openssh-server"
+      },
+      {
+        "op": "copy",
+        "input": "systemd"
+      },
+      {
+        "op": "copy",
+        "input": "locales"
+      },
+      {
+        "op": "copy",
+        "input": "libicu74"
+      },
+      {
+        "op": "copy",
+        "input": "binutils-x86-64-linux-gnu"
+      },
+      {
+        "op": "copy",
+        "input": "fonts-dejavu-core"
+      },
+      {
+        "op": "copy",
+        "input": "tzdata"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "f2dbd1eaa70ee73f63a5d2810a6d2b01e990391916a9da18e87de3537c3c6e39",
+    "logical_tree_sha256": "67bb0d4a2a5e7416d9f9126a737c8c3cf9b1b027aa8e9198fc7322fc154e0532",
+    "content_tree_sha256": "7a701ae255da2ab293b90a4fb4a16b706dd3ae13b5613a1a258d8f86d6dfd5c9",
+    "extended_tree_sha256": "b764e39fc8550c93b20a00fba384d9cfa7494f8c3c9f980ad74b5e3e2fa3ed2c",
+    "bytes": 221835244,
+    "bytes_all_paths": 221835244,
+    "allocated_bytes": 221868032,
+    "counts": {
+      "objects": 19,
+      "files": 18,
+      "unique_file_inodes": 18,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 51,
+      "path_length_bytes": {
+        "min": 28,
+        "max": 51,
+        "mean": 35.667,
+        "p50": 32,
+        "p95": 49
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

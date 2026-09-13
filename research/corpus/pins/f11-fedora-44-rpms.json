@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f11-fedora-44-rpms",
+  "inputs": {},
+  "output": {
+    "materialization_key": "45dbfe92ab75f11ae54384f3de79bc08cc97f34bf56fe0fc9ce99d72d6dbd8e7",
+    "logical_tree_sha256": "e00bd408b944578fb4470cac54e3493d8afafd69207de020f2b6b37acd1e2063",
+    "pinned_utc": "2026-09-13T02:28:50Z"
+  },
+  "history": []
+}

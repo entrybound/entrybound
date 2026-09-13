@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f14-apache-maven-3916-bin-tarball",
+  "family": "F14",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "apache-maven",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "cc613c986a5f99a44dd1e13652e239f12769707f05465911b57d3235b2a73758",
+  "materialization_key": "eb093a251c43c45cc6de34537a50663a59240ff9d6f7776f9ee4b15ecc58681e",
+  "materialized_utc": "2026-09-13T02:29:37Z",
+  "materialized_relpath": "corpus/tuning/f14-apache-maven-3916-bin-tarball",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "2746c5313bddd49f9d572a54cc8604f4c6604f82eb77d1b422a92d356cfe4f5b",
+    "pinned_utc": "2026-09-13T02:29:37Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 9278065,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "maven",
+        "url": "https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz",
+        "final_url": "https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz",
+        "sha256": "80ffca22aed9e8b9713a232f3394fd81d7f20322df75efdb2b047dbd3e3a23bb",
+        "size": 9278065,
+        "retrieved_utc": "2026-09-13T02:29:37Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "apache-maven-3.9.16-bin.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "maven"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "d107cfb9cea50200708d3d6a36a9cb4f6d6622f48b108f5de28174183d54b47b",
+    "logical_tree_sha256": "2746c5313bddd49f9d572a54cc8604f4c6604f82eb77d1b422a92d356cfe4f5b",
+    "content_tree_sha256": "bb2d1b49d2dec66dddb6e80e18a643bf8beacbc79944ef09e7a42bdc2d9c80b8",
+    "extended_tree_sha256": "6337bb11d3a0e2affdb7ec93a7cdb9a34236ea2606ba5d49f78d6678130c5080",
+    "bytes": 9278065,
+    "bytes_all_paths": 9278065,
+    "allocated_bytes": 9281536,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 30,
+      "path_length_bytes": {
+        "min": 30,
+        "max": 30,
+        "mean": 30.0,
+        "p50": 30,
+        "p95": 30
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

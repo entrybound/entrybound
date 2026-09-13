@@ -1,0 +1,328 @@
+{
+  "pool": "blender",
+  "rules": "F13 Blender Foundation open movies (download.blender.org; one production per split).",
+  "selection_seed": 20260912,
+  "selected_utc": "2026-09-13T02:03:22Z",
+  "entries": [
+    {
+      "key": "blender-e1c1ae633d45",
+      "url": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4.zip",
+      "name": "BigBuckBunny_320x180.mp4.zip",
+      "api_size": 64657225,
+      "alloc": "f13-tuning-bbb-video-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright 2008, Blender Foundation / www.bigbuckbunny.org",
+        "source_page": "https://download.blender.org/peach/bigbuckbunny_movies/"
+      },
+      "sha256": "109e3ede8790bd633f374ca311d9cc61dce8d7f98f5b0797ca98199c9fbceedf",
+      "size": 64657225,
+      "retrieved_utc": "2026-09-13T02:04:29Z",
+      "final_url": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4.zip"
+    },
+    {
+      "key": "blender-fcbb3c4f70d5",
+      "url": "https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_480p_stereo.ogg.zip",
+      "name": "big_buck_bunny_480p_stereo.ogg.zip",
+      "api_size": 166825977,
+      "alloc": "f13-tuning-bbb-video-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright 2008, Blender Foundation / www.bigbuckbunny.org",
+        "source_page": "https://download.blender.org/peach/bigbuckbunny_movies/"
+      },
+      "sha256": "2b035ca34fe12aabdc3d6e5a6c87413f6e0e25fb3bf76d4c94495f8b036e85bd",
+      "size": 166825977,
+      "retrieved_utc": "2026-09-13T02:04:31Z",
+      "final_url": "https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_480p_stereo.ogg.zip"
+    },
+    {
+      "key": "blender-9e9ce8caeaae",
+      "url": "https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_480p_stereo.avi.zip",
+      "name": "big_buck_bunny_480p_stereo.avi.zip",
+      "api_size": 156506238,
+      "alloc": "f13-tuning-bbb-video-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright 2008, Blender Foundation / www.bigbuckbunny.org",
+        "source_page": "https://download.blender.org/peach/bigbuckbunny_movies/"
+      },
+      "sha256": "3142b0568b965674df4925274fa071b35bf82391c396024bcc955096b14ca38b",
+      "size": 156506238,
+      "retrieved_utc": "2026-09-13T02:04:32Z",
+      "final_url": "https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_480p_stereo.avi.zip"
+    },
+    {
+      "key": "blender-3da0f59ff427",
+      "url": "https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_720p_h264.mov.zip",
+      "name": "big_buck_bunny_720p_h264.mov.zip",
+      "api_size": 416751396,
+      "alloc": "f13-tuning-bbb-video-large",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright 2008, Blender Foundation / www.bigbuckbunny.org",
+        "source_page": "https://download.blender.org/peach/bigbuckbunny_movies/"
+      },
+      "sha256": "b0c9ade80b086179feee41514929de583966eec87c703575d97f051f88b33b67",
+      "size": 416751396,
+      "retrieved_utc": "2026-09-13T02:04:35Z",
+      "final_url": "https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_720p_h264.mov.zip"
+    },
+    {
+      "key": "blender-a608e6f381fe",
+      "url": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v.zip",
+      "name": "BigBuckBunny_640x360.m4v.zip",
+      "api_size": 121284117,
+      "alloc": "f13-tuning-bbb-video-large",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright 2008, Blender Foundation / www.bigbuckbunny.org",
+        "source_page": "https://download.blender.org/peach/bigbuckbunny_movies/"
+      },
+      "sha256": "7118242b6728d40c871479c5b3c0f0fb27d748089df15d7f1b469f297c74a2d6",
+      "size": 121284117,
+      "retrieved_utc": "2026-09-13T02:04:33Z",
+      "final_url": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v.zip"
+    },
+    {
+      "key": "blender-f192355d4a4e",
+      "url": "https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_30fps_normal.mp4.zip",
+      "name": "bbb_sunflower_1080p_30fps_normal.mp4.zip",
+      "api_size": 275524128,
+      "alloc": "f13-tuning-bbb-video-large",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright 2008, Blender Foundation / www.bigbuckbunny.org",
+        "source_page": "https://download.blender.org/demo/movies/BBB/"
+      },
+      "sha256": "e320fef389ec749117d0c1583945039266a40f25483881c2ff0d33207e62b362",
+      "size": 275524128,
+      "retrieved_utc": "2026-09-13T02:04:36Z",
+      "final_url": "https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_30fps_normal.mp4.zip"
+    },
+    {
+      "key": "blender-2bb36eb634c4",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.480p.vp9.webm",
+      "name": "Big_Buck_Bunny_4K.webm.480p.vp9.webm",
+      "api_size": 96645673,
+      "alloc": "f13-tuning-bbb-video-large",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright 2008, Blender Foundation / www.bigbuckbunny.org",
+        "source_page": "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/"
+      },
+      "sha256": "6d6c5ab5862cadec8c61cdba8044526bff3350b715657c7c3a9e575c491769d0",
+      "size": 96645673,
+      "retrieved_utc": "2026-09-13T02:04:36Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.480p.vp9.webm"
+    },
+    {
+      "key": "blender-7a0381655454",
+      "url": "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4",
+      "name": "sintel_trailer-480p.mp4",
+      "api_size": 4372373,
+      "alloc": "f13-validation-sintel-media-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright Blender Foundation | durian.blender.org",
+        "source_page": "https://download.blender.org/durian/trailer/"
+      },
+      "sha256": "b670602fa00934ca27c4351bb0efe7ea7a07fae57284e44226025eeed7c51254",
+      "size": 4372373,
+      "retrieved_utc": "2026-09-13T02:04:36Z",
+      "final_url": "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4"
+    },
+    {
+      "key": "blender-0559e4dc51ee",
+      "url": "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4",
+      "name": "sintel_trailer-720p.mp4",
+      "api_size": 7608204,
+      "alloc": "f13-validation-sintel-media-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright Blender Foundation | durian.blender.org",
+        "source_page": "https://download.blender.org/durian/trailer/"
+      },
+      "sha256": "cb0fe73fc0a7d543459996c0cdab730997e6eac1013d3ede18796f777cb7f273",
+      "size": 7608204,
+      "retrieved_utc": "2026-09-13T02:04:36Z",
+      "final_url": "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4"
+    },
+    {
+      "key": "blender-dd1eccd485fe",
+      "url": "https://download.blender.org/durian/trailer/sintel_trailer-1080p.mp4",
+      "name": "sintel_trailer-1080p.mp4",
+      "api_size": 14621544,
+      "alloc": "f13-validation-sintel-media-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright Blender Foundation | durian.blender.org",
+        "source_page": "https://download.blender.org/durian/trailer/"
+      },
+      "sha256": "34bbd52a4b89fdf63c8ace50b268da26653a59508288100cd3c23de276db7931",
+      "size": 14621544,
+      "retrieved_utc": "2026-09-13T02:04:37Z",
+      "final_url": "https://download.blender.org/durian/trailer/sintel_trailer-1080p.mp4"
+    },
+    {
+      "key": "blender-95180e840ca8",
+      "url": "https://download.blender.org/durian/trailer/sintel_trailer-480p.ogv",
+      "name": "sintel_trailer-480p.ogv",
+      "api_size": 12965718,
+      "alloc": "f13-validation-sintel-media-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright Blender Foundation | durian.blender.org",
+        "source_page": "https://download.blender.org/durian/trailer/"
+      },
+      "sha256": "f41345321f5a57dcf422bf219a4364fa678e1cae238e5dd7be257806a1f47e98",
+      "size": 12965718,
+      "retrieved_utc": "2026-09-13T02:04:37Z",
+      "final_url": "https://download.blender.org/durian/trailer/sintel_trailer-480p.ogv"
+    },
+    {
+      "key": "blender-1f85f0f89517",
+      "url": "https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv",
+      "name": "sintel_trailer-720p.ogv",
+      "api_size": 23477110,
+      "alloc": "f13-validation-sintel-media-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright Blender Foundation | durian.blender.org",
+        "source_page": "https://download.blender.org/durian/trailer/"
+      },
+      "sha256": "78e22a34e10622f1d3a6e793a09d7b9282e2c7172c623efbbe8d407312bf1f1f",
+      "size": 23477110,
+      "retrieved_utc": "2026-09-13T02:04:37Z",
+      "final_url": "https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv"
+    },
+    {
+      "key": "blender-1ecc9b52b768",
+      "url": "https://download.blender.org/durian/trailer/Sintel_Trailer.480p.DivX_Plus_HD.mkv",
+      "name": "Sintel_Trailer.480p.DivX_Plus_HD.mkv",
+      "api_size": 7420639,
+      "alloc": "f13-validation-sintel-media-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright Blender Foundation | durian.blender.org",
+        "source_page": "https://download.blender.org/durian/trailer/"
+      },
+      "sha256": "8331fbd17c0b552a6b2c590275e0ec0b0c7dcaac0e35ce8dfbd29094564a6c85",
+      "size": 7420639,
+      "retrieved_utc": "2026-09-13T02:04:37Z",
+      "final_url": "https://download.blender.org/durian/trailer/Sintel_Trailer.480p.DivX_Plus_HD.mkv"
+    },
+    {
+      "key": "blender-510cb18349f9",
+      "url": "https://download.blender.org/durian/trailer/Sintel_Trailer.720p.DivX_Plus_HD.mkv",
+      "name": "Sintel_Trailer.720p.DivX_Plus_HD.mkv",
+      "api_size": 14625077,
+      "alloc": "f13-validation-sintel-media-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright Blender Foundation | durian.blender.org",
+        "source_page": "https://download.blender.org/durian/trailer/"
+      },
+      "sha256": "7a290684c72015cb748ee0cce1819d620e2befb29a9fae4c95239b143dd70940",
+      "size": 14625077,
+      "retrieved_utc": "2026-09-13T02:04:37Z",
+      "final_url": "https://download.blender.org/durian/trailer/Sintel_Trailer.720p.DivX_Plus_HD.mkv"
+    },
+    {
+      "key": "blender-d8da08f625d6",
+      "url": "https://download.blender.org/durian/movies/sintel-m%2Be-st.flac",
+      "name": "sintel-m+e-st.flac",
+      "api_size": 74266467,
+      "alloc": "f13-validation-sintel-media-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright Blender Foundation | durian.blender.org",
+        "source_page": "https://download.blender.org/durian/movies/"
+      },
+      "sha256": "777f238aed789a0e3a25f8ba156fae182c11a61568c1aa87b7a8bc3b15807785",
+      "size": 74266467,
+      "retrieved_utc": "2026-09-13T02:04:38Z",
+      "final_url": "https://download.blender.org/durian/movies/sintel-m%2Be-st.flac"
+    },
+    {
+      "key": "blender-2b56948c30a2",
+      "url": "https://download.blender.org/demo/movies/ToS/tears_of_steel_1080p.webm.zip",
+      "name": "tears_of_steel_1080p.webm.zip",
+      "api_size": 571346776,
+      "alloc": "f13-heldout-tos-media-large",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(CC) Blender Foundation | mango.blender.org",
+        "source_page": "https://download.blender.org/demo/movies/ToS/"
+      },
+      "sha256": "992ce5ea61b17f0e1b1c0ad8912bc6dd351a6ee7cf4c1612916e6f1a2442619a",
+      "size": 571346776,
+      "retrieved_utc": "2026-09-13T02:04:47Z",
+      "final_url": "https://download.blender.org/demo/movies/ToS/tears_of_steel_1080p.webm.zip"
+    },
+    {
+      "key": "blender-70d40382be8a",
+      "url": "https://download.blender.org/demo/movies/ToS/TOS_DVDSTEREOMIX.aif",
+      "name": "TOS_DVDSTEREOMIX.aif",
+      "api_size": 211392550,
+      "alloc": "f13-heldout-tos-media-large",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(CC) Blender Foundation | mango.blender.org",
+        "source_page": "https://download.blender.org/demo/movies/ToS/"
+      },
+      "sha256": "b4384d67647237d4a92915187caf1b8bded342d0d5c49cb19ff13aae1c602ac8",
+      "size": 211392550,
+      "retrieved_utc": "2026-09-13T02:04:43Z",
+      "final_url": "https://download.blender.org/demo/movies/ToS/TOS_DVDSTEREOMIX.aif"
+    },
+    {
+      "key": "blender-310391a3e02a",
+      "url": "https://download.blender.org/ED/elephantsdream-480-h264-st-aac.mov",
+      "name": "elephantsdream-480-h264-st-aac.mov",
+      "api_size": 103636531,
+      "alloc": "f13-heldout-elephants-dream-media-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-2.5",
+        "attribution": "(c) copyright 2006, Blender Foundation / Netherlands Media Art Institute / www.elephantsdream.org",
+        "source_page": "https://download.blender.org/ED/"
+      },
+      "sha256": "a7dbacae5fa2bc345dbd7b10588575f3e2bba36012e9a93df5346467053b0634",
+      "size": 103636531,
+      "retrieved_utc": "2026-09-13T02:04:40Z",
+      "final_url": "https://download.blender.org/ED/elephantsdream-480-h264-st-aac.mov"
+    },
+    {
+      "key": "blender-35460bd1590f",
+      "url": "https://download.blender.org/ED/elephantsdream-720-h264-st-aac.mov",
+      "name": "elephantsdream-720-h264-st-aac.mov",
+      "api_size": 152496338,
+      "alloc": "f13-heldout-elephants-dream-media-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-2.5",
+        "attribution": "(c) copyright 2006, Blender Foundation / Netherlands Media Art Institute / www.elephantsdream.org",
+        "source_page": "https://download.blender.org/ED/"
+      },
+      "sha256": "6fc295e0e92835316ec95929ccfc664b05ed2434f673e6f5e684f98f7558a547",
+      "size": 152496338,
+      "retrieved_utc": "2026-09-13T02:04:43Z",
+      "final_url": "https://download.blender.org/ED/elephantsdream-720-h264-st-aac.mov"
+    },
+    {
+      "key": "blender-6b236c7f119f",
+      "url": "https://download.blender.org/ED/ED-ME-5.1-DVD.ac3",
+      "name": "ED-ME-5.1-DVD.ac3",
+      "api_size": 37020928,
+      "alloc": "f13-heldout-elephants-dream-media-medium",
+      "license": {
+        "spdx_or_name": "CC-BY-2.5",
+        "attribution": "(c) copyright 2006, Blender Foundation / Netherlands Media Art Institute / www.elephantsdream.org",
+        "source_page": "https://download.blender.org/ED/"
+      },
+      "sha256": "e78c5b5a2f09b3cf85e288d2e1d7101755250388475277bb03a3ea12e63dc22c",
+      "size": 37020928,
+      "retrieved_utc": "2026-09-13T02:04:44Z",
+      "final_url": "https://download.blender.org/ED/ED-ME-5.1-DVD.ac3"
+    }
+  ]
+}

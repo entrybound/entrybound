@@ -1,0 +1,1354 @@
+{
+  "pool": "commons-media",
+  "rules": "F13 small mixed-media sets a/b/c (tuning/validation/held-out): CC0 files from Wikimedia Commons\n    by MIME type; every file in all three sets has a distinct uploader; NASA/LoC/Blender/etc. origins\n    excluded (they are independence groups elsewhere).",
+  "selection_seed": 20260912,
+  "selected_utc": "2026-09-13T02:20:26Z",
+  "entries": [
+    {
+      "key": "commons-14824701",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/46/Red_kurdistan_1923_1929.png",
+      "name": "Red kurdistan 1923 1929.png",
+      "api_size": 405173,
+      "api_sha1": "c664d071b77a10a0932131fcc22bf64385e1a39a",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "WikiEditor2004",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Red_kurdistan_1923_1929.png"
+      },
+      "uploader": "Golden",
+      "meta": {},
+      "width": 1205,
+      "height": 1659,
+      "dir": "images/png",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-17849407",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Fiat_C.R.42_Falco_profiles.png",
+      "name": "Fiat C.R.42 Falco profiles.png",
+      "api_size": 1001845,
+      "api_sha1": "efdd51f8bc8b5d14c363119063a4285389b36246",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "MLWatts",
+        "credit": "Own work (basing upon G. Dicorato, G. Bignozzi, B. Catalanotto, C. Falessi, Storia dell'Aviazione, Milano, Fratelli Fabbri Editori, 1973, p. 375 vol. Profili.)",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Fiat_C.R.42_Falco_profiles.png"
+      },
+      "uploader": "MLWatts",
+      "meta": {
+        "Software": "[{'name': 'x-default', 'value': 'www.inkscape.org'}, {'name': '_type', 'value': "
+      },
+      "width": 4000,
+      "height": 2996,
+      "dir": "images/png",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-72697817",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b7/DnD_Ogre.png",
+      "name": "DnD Ogre.png",
+      "api_size": 1053481,
+      "api_sha1": "bb576a8dc6e2e17e7864bc8baaf44c5ad78d603b",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "LadyofHats",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:DnD_Ogre.png"
+      },
+      "uploader": "LadyofHats",
+      "meta": {},
+      "width": 1240,
+      "height": 1754,
+      "dir": "images/png",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-187145354",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/94/Adrenoglomerulotropin-3d.png",
+      "name": "Adrenoglomerulotropin-3d.png",
+      "api_size": 75857,
+      "api_sha1": "6f1dea348c5ed96610fef8dda14e7fc1f6a08cf2",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "GShk567",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Adrenoglomerulotropin-3d.png"
+      },
+      "uploader": "GShk567",
+      "meta": {},
+      "width": 569,
+      "height": 401,
+      "dir": "images/png",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-168910837",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/80/Alemanya-FB-SV1081.png",
+      "name": "Alemanya-FB-SV1081.png",
+      "api_size": 390819,
+      "api_sha1": "de4f16c5afae9f33651ab2373a61a721eeee5d85",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Lalpino",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Alemanya-FB-SV1081.png"
+      },
+      "uploader": "Lalpino",
+      "meta": {},
+      "width": 1000,
+      "height": 255,
+      "dir": "images/png",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-119032530",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/64/Gem_Radio_Logo.png",
+      "name": "Gem Radio Logo.png",
+      "api_size": 73459,
+      "api_sha1": "65fd22074c99b5660fbb71b7e573c6612207e08d",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Bauer Media Audio UK",
+        "credit": "https://planetradio.co.uk/gem-106/",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Gem_Radio_Logo.png"
+      },
+      "uploader": "CCCC10",
+      "meta": {},
+      "width": 600,
+      "height": 400,
+      "dir": "images/png",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-171014730",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/GCA_Brandmark_Artwork_H_Right-aligned_RGB_Crown_Gold.png",
+      "name": "GCA Brandmark Artwork H Right-aligned RGB Crown Gold.png",
+      "api_size": 108174,
+      "api_sha1": "9321e8efd466e3e2a2c346a78db715ce0cc99e13",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Abdullah Alkhamali",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:GCA_Brandmark_Artwork_H_Right-aligned_RGB_Crown_Gold.png"
+      },
+      "uploader": "Abdullah Alkhamali",
+      "meta": {},
+      "width": 4169,
+      "height": 1592,
+      "dir": "images/png",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-182907308",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/56/Franja.png",
+      "name": "Franja.png",
+      "api_size": 570843,
+      "api_sha1": "dc22dfcbd0f9ae9276dcb960c33a80ac69e56bd0",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Natanaaaelg",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Franja.png"
+      },
+      "uploader": "Natanaaaelg",
+      "meta": {},
+      "width": 806,
+      "height": 1024,
+      "dir": "images/png",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-108337725",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/61/VTCC-C-OCP.png",
+      "name": "VTCC-C-OCP.png",
+      "api_size": 51880,
+      "api_sha1": "f5a457aeeccad272465ae7b62a4d385fd84f24b5",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "HB",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:VTCC-C-OCP.png"
+      },
+      "uploader": "VirginiaTechFan2020",
+      "meta": {},
+      "width": 150,
+      "height": 246,
+      "dir": "images/png",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-179754026",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d5/CAGE-1_Post-Translational_Modifications_Schematic.png",
+      "name": "CAGE-1 Post-Translational Modifications Schematic.png",
+      "api_size": 117874,
+      "api_sha1": "5562e47ff3af2959af869f3571cba28bd671bf5e",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Mtranowski",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:CAGE-1_Post-Translational_Modifications_Schematic.png"
+      },
+      "uploader": "Mtranowski",
+      "meta": {},
+      "width": 960,
+      "height": 720,
+      "dir": "images/png",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-158439666",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/22/TXSG_CGIA_Transparent.png",
+      "name": "TXSG CGIA Transparent.png",
+      "api_size": 349576,
+      "api_sha1": "2cccd0d73364f3930c601cb6a33fa0f00cfe75fd",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Coronel Tejano",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:TXSG_CGIA_Transparent.png"
+      },
+      "uploader": "Coronel Tejano",
+      "meta": {
+        "Software": "Adobe Photoshop 26.2 (Windows)"
+      },
+      "width": 1852,
+      "height": 976,
+      "dir": "images/png",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-55336468",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Map_of_Tatab%C3%A1nya.png",
+      "name": "Map of Tatabánya.png",
+      "api_size": 50668,
+      "api_sha1": "4802e27bda765768eaa5e539dc4ef65854ad6ca2",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Syanarion62",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Map_of_Tatab%C3%A1nya.png"
+      },
+      "uploader": "Syanarion62",
+      "meta": {},
+      "width": 1601,
+      "height": 1025,
+      "dir": "images/png",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-76437291",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/VIA_Rail_Corridor_Schematic_Map.png",
+      "name": "VIA Rail Corridor Schematic Map.png",
+      "api_size": 110058,
+      "api_sha1": "169bd2495c582323ccd332159ef3903b6246fbcc",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Madg2011",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:VIA_Rail_Corridor_Schematic_Map.png"
+      },
+      "uploader": "Madg2011",
+      "meta": {},
+      "width": 2450,
+      "height": 532,
+      "dir": "images/png",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-188686802",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/6f/SAP_BOOMI_ERP_6.png",
+      "name": "SAP BOOMI ERP 6.png",
+      "api_size": 142267,
+      "api_sha1": "e43adc6352a5cc68e1bf0899841d26154937e582",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "C115807",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:SAP_BOOMI_ERP_6.png"
+      },
+      "uploader": "C115807",
+      "meta": {},
+      "width": 1912,
+      "height": 1015,
+      "dir": "images/png",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-170112650",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/cb/Trade_Gothic_Std_specimen.png",
+      "name": "Trade Gothic Std specimen.png",
+      "api_size": 87622,
+      "api_sha1": "6066a0f569cc2faead791d603e3e82d2a0f7bbaf",
+      "mime": "image/png",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Esinconis",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Trade_Gothic_Std_specimen.png"
+      },
+      "uploader": "Esinconis",
+      "meta": {},
+      "width": 1200,
+      "height": 1412,
+      "dir": "images/png",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-10438010",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/da/Knight%27s_tour_anim_2.gif",
+      "name": "Knight's tour anim 2.gif",
+      "api_size": 51088,
+      "api_sha1": "8d0eaeda823cff01169db7cce67d12a9bb1d6a36",
+      "mime": "image/gif",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Ilmari Karonen",
+        "credit": "Own work\n\nSVG frames created by using chesstour-svg.pl with input \"e8 g7 h5 f6 e4 g3 h1 f2 d1 b2 a4 c3 d5 b6 a8 c7 b5 a7 c8 d6 c4 a3 b1 d2 f1 h2 g4 e3 f5 h6 g8 e7 c6 d8 b7 a5 b3 a1 c2 d4 f3 e1 g2 h4 g",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Knight%27s_tour_anim_2.gif"
+      },
+      "uploader": "Olathe",
+      "meta": {},
+      "width": 408,
+      "height": 408,
+      "dir": "images/gif",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-81371518",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/P10220XX.01.49.MESZ.14.08.2019.Berlin.Perseiden.x1.0.gif",
+      "name": "P10220XX.01.49.MESZ.14.08.2019.Berlin.Perseiden.x1.0.gif",
+      "api_size": 95458,
+      "api_sha1": "e41fca08c993308fe5a81b487ebea00e399dfb79",
+      "mime": "image/gif",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Bautsch",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:P10220XX.01.49.MESZ.14.08.2019.Berlin.Perseiden.x1.0.gif"
+      },
+      "uploader": "Bautsch",
+      "meta": {},
+      "width": 610,
+      "height": 432,
+      "dir": "images/gif",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-56936363",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/ManualTransmissionAnimation.gif",
+      "name": "ManualTransmissionAnimation.gif",
+      "api_size": 1215172,
+      "api_sha1": "ce55182d97da4b8c4f0742ffe55bb3f025eb63cf",
+      "mime": "image/gif",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Jahobr",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:ManualTransmissionAnimation.gif"
+      },
+      "uploader": "Jahobr",
+      "meta": {},
+      "width": 640,
+      "height": 655,
+      "dir": "images/gif",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-133582983",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/00/Acceleration_Error_%28Northern_Hemisphere%29.gif",
+      "name": "Acceleration Error (Northern Hemisphere).gif",
+      "api_size": 905013,
+      "api_sha1": "dbd582db4b9c177fff8fbb25c19e758684bff5a6",
+      "mime": "image/gif",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Designism",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Acceleration_Error_(Northern_Hemisphere).gif"
+      },
+      "uploader": "痛",
+      "meta": {},
+      "width": 800,
+      "height": 615,
+      "dir": "images/gif",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-182603746",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/03/Rrfs_retro_maps-20240108-12-2panel_hiresw-hawaii-compareasnow_arw_hawaii_f09.gif",
+      "name": "Rrfs retro maps-20240108-12-2panel hiresw-hawaii-compareasnow arw hawaii f09.gif",
+      "api_size": 80569,
+      "api_sha1": "13f8e359db2831a174cf4e1bb76e4ec7ddc89da0",
+      "mime": "image/gif",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "NOAA / NODD",
+        "credit": "https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_retro_maps/20240108/\nhttps://registry.opendata.aws/noaa-rrfs/",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Rrfs_retro_maps-20240108-12-2panel_hiresw-hawaii-compareasnow_arw_hawaii_f09.gif"
+      },
+      "uploader": "PantheraLeo1359531",
+      "meta": {},
+      "width": 982,
+      "height": 478,
+      "dir": "images/gif",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-26318636",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/67/Particle_exchange_2d_anticlockwise.gif",
+      "name": "Particle exchange 2d anticlockwise.gif",
+      "api_size": 82004,
+      "api_sha1": "66f0e8ca55d7b1127fef677e37d1f2f51c42efbf",
+      "mime": "image/gif",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Maschen",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Particle_exchange_2d_anticlockwise.gif"
+      },
+      "uploader": "Maschen",
+      "meta": {},
+      "width": 243,
+      "height": 480,
+      "dir": "images/gif",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-147294421",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/45/Richardson-Lucy_deconvolution.gif",
+      "name": "Richardson-Lucy deconvolution.gif",
+      "api_size": 243674,
+      "api_sha1": "f50a67c1490389f18d5121eb3c998fef6f0b2169",
+      "mime": "image/gif",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Justinkunimune",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Richardson-Lucy_deconvolution.gif"
+      },
+      "uploader": "Justinkunimune",
+      "meta": {},
+      "width": 630,
+      "height": 315,
+      "dir": "images/gif",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-33960475",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/23/Turkish-clock--animated.gif",
+      "name": "Turkish-clock--animated.gif",
+      "api_size": 105931,
+      "api_sha1": "e2da4f5cbb6cfdc37bab141f202bf6592fbe398b",
+      "mime": "image/gif",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Andrikkos",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Turkish-clock--animated.gif"
+      },
+      "uploader": "Andrikkos",
+      "meta": {},
+      "width": 404,
+      "height": 404,
+      "dir": "images/gif",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-96397950",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/23/%EC%88%99%EC%A2%85%EC%8B%A4%EB%A1%9D_%ED%91%9C%EC%A7%80.gif",
+      "name": "숙종실록 표지.gif",
+      "api_size": 168440,
+      "api_sha1": "a9813135d8eaa0babd653c3ef24b7a5015f34592",
+      "mime": "image/gif",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Joseon Dynasty",
+        "credit": "http://sillok.history.go.kr/intro/haejae.do",
+        "source_page": "https://commons.wikimedia.org/wiki/File:%EC%88%99%EC%A2%85%EC%8B%A4%EB%A1%9D_%ED%91%9C%EC%A7%80.gif"
+      },
+      "uploader": "Sadopaul",
+      "meta": {},
+      "width": 420,
+      "height": 570,
+      "dir": "images/gif",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-120602187",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d4/US_Dollar_Index_DXY.webp",
+      "name": "US Dollar Index DXY.webp",
+      "api_size": 606454,
+      "api_sha1": "877b15b2ec2c393d59c2da9b4c33bfc1dbff068c",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Wikideas1",
+        "credit": "Own work  https://fred.stlouisfed.org/graph/?g=RSys  https://www.investing.com/currencies/usd-gbp-historical-data  https://finance.yahoo.com/quote/DX-Y.NYB/history?period1=31708800&period2=1657929600&",
+        "source_page": "https://commons.wikimedia.org/wiki/File:US_Dollar_Index_DXY.webp"
+      },
+      "uploader": "Wikideas1",
+      "meta": {},
+      "width": 5566,
+      "height": 2114,
+      "dir": "images/webp",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-176631651",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e4/Artisanat_autochtone.webp",
+      "name": "Artisanat autochtone.webp",
+      "api_size": 209460,
+      "api_sha1": "98d71af509a92f7e6ce0a5c58843b21042ff3835",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "ContributeurCulturalQC",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Artisanat_autochtone.webp"
+      },
+      "uploader": "ContributeurCulturalQC",
+      "meta": {},
+      "width": 1100,
+      "height": 1820,
+      "dir": "images/webp",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-169670372",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Malayala_Khattan_raja_of_kottiyur.webp",
+      "name": "Malayala Khattan raja of kottiyur.webp",
+      "api_size": 169382,
+      "api_sha1": "583d0cecfbd8eb5ee693f9e4e5fab2d42af8e388",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Maheshvaliyakoyma",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Malayala_Khattan_raja_of_kottiyur.webp"
+      },
+      "uploader": "Maheshvaliyakoyma",
+      "meta": {},
+      "width": 1080,
+      "height": 2087,
+      "dir": "images/webp",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-145794692",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/54/ImagesTDA2018_02.webp",
+      "name": "ImagesTDA2018 02.webp",
+      "api_size": 233490,
+      "api_sha1": "1acbbb2afd9824fdb962115ca973da79c94e3bc9",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Señor Tini",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:ImagesTDA2018_02.webp"
+      },
+      "uploader": "Señor Tini",
+      "meta": {},
+      "width": 1600,
+      "height": 1200,
+      "dir": "images/webp",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-185301172",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/00/Guidepost_19ca9196351.webp",
+      "name": "Guidepost 19ca9196351.webp",
+      "api_size": 116034,
+      "api_sha1": "2fb56b64e3ee82a16d9cafbb326dc83145433038",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Slugghe",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Guidepost_19ca9196351.webp"
+      },
+      "uploader": "Slugghe",
+      "meta": {},
+      "width": 1536,
+      "height": 2048,
+      "dir": "images/webp",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-174770957",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Novalnet_headquarter.webp",
+      "name": "Novalnet headquarter.webp",
+      "api_size": 255920,
+      "api_sha1": "7802c7fc64bba85666d3cd99f316fdbf23477bbb",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Alexander Burba",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Novalnet_headquarter.webp"
+      },
+      "uploader": "Alexander Burba",
+      "meta": {
+        "Software": "Google"
+      },
+      "width": 471,
+      "height": 354,
+      "dir": "images/webp",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-179045490",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Ayuntamiento_de_Viladecavalls.webp",
+      "name": "Ayuntamiento de Viladecavalls.webp",
+      "api_size": 220856,
+      "api_sha1": "1bdcbaeab37ec69038defa06f85c8df7b7f4c5ba",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Sanchipueblos",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Ayuntamiento_de_Viladecavalls.webp"
+      },
+      "uploader": "Sanchipueblos",
+      "meta": {},
+      "width": 1080,
+      "height": 1440,
+      "dir": "images/webp",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-180585308",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/3d/%D8%AF%DB%8C%D9%88%D8%A7%D9%86-%D9%85%D9%84%D8%A7%D8%AD%D9%82%D8%B9%D9%84%DB%8C-%D8%B3%DB%8C%D8%A7%D9%87%D9%BE%D9%88%D8%B4.webp",
+      "name": "دیوان-ملاحقعلی-سیاهپوش.webp",
+      "api_size": 45366,
+      "api_sha1": "bc856c9dd7e5af520e7c5bdef02950f6d9daa9f4",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Mohammadmehdimirzaii",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:%D8%AF%DB%8C%D9%88%D8%A7%D9%86-%D9%85%D9%84%D8%A7%D8%AD%D9%82%D8%B9%D9%84%DB%8C-%D8%B3%DB%8C%D8%A7%D9%87%D9%BE%D9%88%D8%B4.webp"
+      },
+      "uploader": "Mohammadmehdimirzaii",
+      "meta": {
+        "Software": "Adobe Photoshop 24.0 (Windows)"
+      },
+      "width": 1500,
+      "height": 1000,
+      "dir": "images/webp",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-147207258",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/%D5%80%D5%A1%D5%B5%D5%AF_%D5%95%D6%80%D5%A4%D5%B5%D5%A1%D5%B6.webp",
+      "name": "Հայկ Օրդյան.webp",
+      "api_size": 91498,
+      "api_sha1": "c2ffbe382b138204431b62fed0df0ab0fbaa79de",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Lesyeuxdeg",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:%D5%80%D5%A1%D5%B5%D5%AF_%D5%95%D6%80%D5%A4%D5%B5%D5%A1%D5%B6.webp"
+      },
+      "uploader": "Lesyeuxdeg",
+      "meta": {},
+      "width": 852,
+      "height": 1280,
+      "dir": "images/webp",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-155864845",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/af/Static.webp",
+      "name": "Static.webp",
+      "api_size": 38822,
+      "api_sha1": "6b6b5031037c84d65d01d7fbc11c9f1f16484b6e",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "RytoTechnic",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Static.webp"
+      },
+      "uploader": "RytoTechnic",
+      "meta": {},
+      "width": 200,
+      "height": 200,
+      "dir": "images/webp",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-182315951",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/6e/2025%E5%B9%B4%E3%81%AE%E3%82%AF%E3%83%AA%E3%82%B9%E3%83%9E%E3%82%B9%E4%BB%AE%E8%A3%85.webp",
+      "name": "2025年のクリスマス仮装.webp",
+      "api_size": 372930,
+      "api_sha1": "549e410ff2ec9aae6a1cdc096dfe70984dc7a4f0",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "写窓",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:2025%E5%B9%B4%E3%81%AE%E3%82%AF%E3%83%AA%E3%82%B9%E3%83%9E%E3%82%B9%E4%BB%AE%E8%A3%85.webp"
+      },
+      "uploader": "写窓",
+      "meta": {},
+      "width": 1440,
+      "height": 1440,
+      "dir": "images/webp",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-153703561",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Deutz_Bahnhof_Schiffbr%C3%BCcke_BZ-F_10_029.webp",
+      "name": "Deutz Bahnhof Schiffbrücke BZ-F 10 029.webp",
+      "api_size": 506174,
+      "api_sha1": "adf59d4066dc35a509e1d9a26622b751a04869cb",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Unknown (Architekturmuseum TU Berlin)",
+        "credit": "https://architekturmuseum.ub.tu-berlin.de/P/151201.php",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Deutz_Bahnhof_Schiffbr%C3%BCcke_BZ-F_10_029.webp"
+      },
+      "uploader": "OhneEisen",
+      "meta": {},
+      "width": 3000,
+      "height": 2307,
+      "dir": "images/webp",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-194886889",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Naeem_Rashid.webp",
+      "name": "Naeem Rashid.webp",
+      "api_size": 91232,
+      "api_sha1": "ae392f50c4a3c589ab36f06fa35dbcff8f4536b8",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "PlainWikiUser1",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Naeem_Rashid.webp"
+      },
+      "uploader": "PlainWikiUser1",
+      "meta": {},
+      "width": 962,
+      "height": 962,
+      "dir": "images/webp",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-145025498",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Chapelle_Saint-Psalmet_de_Puy_de_la_Garde_06.webp",
+      "name": "Chapelle Saint-Psalmet de Puy de la Garde 06.webp",
+      "api_size": 113758,
+      "api_sha1": "77128077dcee5f89889e18b34a3a8a84ede6f745",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Hymass",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Chapelle_Saint-Psalmet_de_Puy_de_la_Garde_06.webp"
+      },
+      "uploader": "Hymass",
+      "meta": {},
+      "width": 444,
+      "height": 592,
+      "dir": "images/webp",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-151671755",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/60/Aspray_Arena.webp",
+      "name": "Aspray Arena.webp",
+      "api_size": 34466,
+      "api_sha1": "b994cac736d08b0c1d7570a34d29ce0ebd760890",
+      "mime": "image/webp",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Harold9595959",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Aspray_Arena.webp"
+      },
+      "uploader": "Harold9595959",
+      "meta": {},
+      "width": 806,
+      "height": 605,
+      "dir": "images/webp",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-165843109",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9d/Zwart-witfoto_van_een_archeologische_site_in_Syri%C3%AB%2C_asset_d2LWEJeqFSJeWPhJSTIEMsQL.tif",
+      "name": "Zwart-witfoto van een archeologische site in Syrië, asset d2LWEJeqFSJeWPhJSTIEMsQL.tif",
+      "api_size": 1947124,
+      "api_sha1": "0521c570c48afd972ebf53922497a47c7593f836",
+      "mime": "image/tiff",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Unknown authorUnknown author",
+        "credit": "https://dams.antwerpen.be/asset/d2LWEJeqFSJeWPhJSTIEMsQL",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Zwart-witfoto_van_een_archeologische_site_in_Syri%C3%AB,_asset_d2LWEJeqFSJeWPhJSTIEMsQL.tif"
+      },
+      "uploader": "Mr.Nostalgic",
+      "meta": {},
+      "width": 1408,
+      "height": 858,
+      "dir": "images/tiff",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-92023566",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c2/A3-JS.tif",
+      "name": "A3-JS.tif",
+      "api_size": 679190,
+      "api_sha1": "8fd40a7d3aae0536ef2eb83202ba23469c673ab1",
+      "mime": "image/tiff",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Jura-Simplon-Bahn",
+        "credit": "SBB Historic",
+        "source_page": "https://commons.wikimedia.org/wiki/File:A3-JS.tif"
+      },
+      "uploader": "SBB Historic",
+      "meta": {},
+      "width": 16207,
+      "height": 10570,
+      "dir": "images/tiff",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-146943835",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/76/Naegleriasis_diagram.tif",
+      "name": "Naegleriasis diagram.tif",
+      "api_size": 1152030,
+      "api_sha1": "e77d9f4cdbabbc4451a38f9bc69dcec821929f16",
+      "mime": "image/tiff",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Cle4tle",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Naegleriasis_diagram.tif"
+      },
+      "uploader": "Cle4tle",
+      "meta": {},
+      "width": 373,
+      "height": 772,
+      "dir": "images/tiff",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-136867077",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Menar_20230214_115447.ogg",
+      "name": "Menar 20230214 115447.ogg",
+      "api_size": 716462,
+      "api_sha1": "5fad28285a7b2b3883bc2c3c0d2f7ae85cfc5054",
+      "mime": "application/ogg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Shyamal",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Menar_20230214_115447.ogg"
+      },
+      "uploader": "Shyamal",
+      "meta": {
+        "Software": "[{'name': 0, 'value': 'Xiph.Org libVorbis I 20120203 (Omnipresent)'}]"
+      },
+      "width": 0,
+      "height": 0,
+      "dir": "audio/ogg",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-128097698",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/91/IreneRigauOliver%28veu%29.ogg",
+      "name": "IreneRigauOliver(veu).ogg",
+      "api_size": 571792,
+      "api_sha1": "eaf14a8c16b727e9c0b81b51909fb51d0da8d7d4",
+      "mime": "application/ogg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Eloibg",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:IreneRigauOliver(veu).ogg"
+      },
+      "uploader": "Eloibg",
+      "meta": {
+        "Software": "[{'name': 0, 'value': 'Xiph.Org libVorbis I 20150105 (⛄⛄⛄⛄)'}, {'name': 1, 'valu"
+      },
+      "width": 0,
+      "height": 0,
+      "dir": "audio/ogg",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-91582925",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Gregodactyl_and_Momosaurus_Rex_-_76_-_Headphone_Tada.ogg",
+      "name": "Gregodactyl and Momosaurus Rex - 76 - Headphone Tada.ogg",
+      "api_size": 176341,
+      "api_sha1": "7b977c96a97eb69268702663f61189be07104a2e",
+      "mime": "application/ogg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Gregodactyl and Momosaurus Rex",
+        "credit": "Headphone Tada by Gregodactyl and Momosaurus Rex",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Gregodactyl_and_Momosaurus_Rex_-_76_-_Headphone_Tada.ogg"
+      },
+      "uploader": "ComputerHotline",
+      "meta": {
+        "Software": "[{'name': 0, 'value': 'Lavf58.29.100'}, {'name': 1, 'value': 'Lavc58.54.100 libv"
+      },
+      "width": 0,
+      "height": 0,
+      "dir": "audio/ogg",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-35326171",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9b/SchuetzModulation.ogg",
+      "name": "SchuetzModulation.ogg",
+      "api_size": 291250,
+      "api_sha1": "7804e62f99ac51903272ce57e90ae7358984e8a2",
+      "mime": "application/ogg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Membeth",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:SchuetzModulation.ogg"
+      },
+      "uploader": "Membeth",
+      "meta": {
+        "Software": "[{'name': 0, 'value': 'Xiph.Org libVorbis I 20120203 (Omnipresent)'}]"
+      },
+      "width": 0,
+      "height": 0,
+      "dir": "audio/ogg",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-148478546",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/10/Engenheiro_Pedreira.ogg",
+      "name": "Engenheiro Pedreira.ogg",
+      "api_size": 175656,
+      "api_sha1": "d5e88a6575d79f15bb1641b06d8395176e723dc5",
+      "mime": "application/ogg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Jos Henr",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Engenheiro_Pedreira.ogg"
+      },
+      "uploader": "Jos Henr",
+      "meta": {
+        "Software": "[{'name': 0, 'value': 'Lavf58.76.100'}, {'name': 1, 'value': 'Lavc58.134.100 lib"
+      },
+      "width": 0,
+      "height": 0,
+      "dir": "audio/ogg",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-182355775",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/%D7%AA%D7%95%D7%A1_%D7%A9%D7%91%D7%AA_20_%D7%A7%D7%9C%D7%97_%D7%90_%D7%90%D7%9C%D7%90_%D7%90%D7%9E%D7%A8_%D7%90%D7%91%D7%99%D7%99_%D7%9E%D7%93%D7%A8%D7%91%D7%A0%D7%9F.ogg",
+      "name": "תוס שבת 20 קלח א אלא אמר אביי מדרבנן.ogg",
+      "api_size": 550835,
+      "api_sha1": "98a3a536d4323d9d0ceb78d3b3b0779e09120404",
+      "mime": "application/ogg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "מאירושולי",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:%D7%AA%D7%95%D7%A1_%D7%A9%D7%91%D7%AA_20_%D7%A7%D7%9C%D7%97_%D7%90_%D7%90%D7%9C%D7%90_%D7%90%D7%9E%D7%A8_%D7%90%D7%91%D7%99%D7%99_%D7%9E%D7%93%D7%A8%D7%91%D7%A0%D7%9F.ogg"
+      },
+      "uploader": "מאירושולי",
+      "meta": {
+        "Software": "[{'name': 0, 'value': 'Lavf58.76.100'}, {'name': 1, 'value': 'Lavc58.134.100 lib"
+      },
+      "width": 0,
+      "height": 0,
+      "dir": "audio/ogg",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-193452118",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Unguja.flac",
+      "name": "Unguja.flac",
+      "api_size": 214596,
+      "api_sha1": "4dae265318243e2f23eca5161eb50dae5567070e",
+      "mime": "audio/flac",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Mokeyz14",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Unguja.flac"
+      },
+      "uploader": "Mokeyz14",
+      "meta": {},
+      "width": 0,
+      "height": 0,
+      "dir": "audio/flac",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-187879603",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/ITU_m.219-1_alarm_signal.flac",
+      "name": "ITU m.219-1 alarm signal.flac",
+      "api_size": 918989,
+      "api_sha1": "3fbc741a12482c202c12df470d906c9e7c2e15fd",
+      "mime": "audio/flac",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Mathmitch7",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:ITU_m.219-1_alarm_signal.flac"
+      },
+      "uploader": "Mathmitch7",
+      "meta": {},
+      "width": 0,
+      "height": 0,
+      "dir": "audio/flac",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-193454396",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Mtwara.flac",
+      "name": "Mtwara.flac",
+      "api_size": 234190,
+      "api_sha1": "916593c7535d26270cd13dcbe7e39c9190a05180",
+      "mime": "audio/flac",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Scholarly princess d",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Mtwara.flac"
+      },
+      "uploader": "Scholarly princess d",
+      "meta": {},
+      "width": 0,
+      "height": 0,
+      "dir": "audio/flac",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-179390066",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Ademola_Rasaq_Seriki.wav",
+      "name": "Ademola Rasaq Seriki.wav",
+      "api_size": 460844,
+      "api_sha1": "fc82741d1808af3f653cd428e5f69e2f5e470764",
+      "mime": "audio/wav",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Bamjos",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Ademola_Rasaq_Seriki.wav"
+      },
+      "uploader": "Bamjos",
+      "meta": {},
+      "width": 0,
+      "height": 0,
+      "dir": "audio/wav",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-163323492",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/da/LL-Q150_%28fra%29-Bananax47-%C3%A9cole_%C3%A9l%C3%A9mentaire_Jos%C3%A9phine_Baker_de_M%C3%A9rignac.wav",
+      "name": "LL-Q150 (fra)-Bananax47-école élémentaire Joséphine Baker de Mérignac.wav",
+      "api_size": 520492,
+      "api_sha1": "a8eb6ead7385866812655493be78076507faab92",
+      "mime": "audio/wav",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Speaker: Bananax47\nRecorder: Bananax47",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:LL-Q150_(fra)-Bananax47-%C3%A9cole_%C3%A9l%C3%A9mentaire_Jos%C3%A9phine_Baker_de_M%C3%A9rignac.wav"
+      },
+      "uploader": "Bananax47",
+      "meta": {},
+      "width": 0,
+      "height": 0,
+      "dir": "audio/wav",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-149948730",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Where_is_the_emergency_room.wav",
+      "name": "Where is the emergency room.wav",
+      "api_size": 524444,
+      "api_sha1": "49a1d34c66ff0f2d7269d4dfbd622d65f4ba15a7",
+      "mime": "audio/wav",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Czechcamp",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Where_is_the_emergency_room.wav"
+      },
+      "uploader": "Czechcamp",
+      "meta": {},
+      "width": 0,
+      "height": 0,
+      "dir": "audio/wav",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-118630544",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/XC707075_-_European_Herring_Gull_-_Larus_argentatus.mp3",
+      "name": "XC707075 - European Herring Gull - Larus argentatus.mp3",
+      "api_size": 595428,
+      "api_sha1": "ce240bd56d8930b07729d0f4324548bd10967e88",
+      "mime": "audio/mpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Sonothèque ADVL",
+        "credit": "https://xeno-canto.org/707075",
+        "source_page": "https://commons.wikimedia.org/wiki/File:XC707075_-_European_Herring_Gull_-_Larus_argentatus.mp3"
+      },
+      "uploader": "Frostly",
+      "meta": {},
+      "width": 0,
+      "height": 0,
+      "dir": "audio/mp3",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-83469064",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Navajo_numbers_1_to_10.mp3",
+      "name": "Navajo numbers 1 to 10.mp3",
+      "api_size": 424596,
+      "api_sha1": "df7ad076405008e77c34accc2f225d642e347a3b",
+      "mime": "audio/mpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Kaldari",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Navajo_numbers_1_to_10.mp3"
+      },
+      "uploader": "Kaldari",
+      "meta": {},
+      "width": 0,
+      "height": 0,
+      "dir": "audio/mp3",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-104752032",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/%28Wolfgang_Kindl%29_EG_295_Wohl_denen%2C_die_da_wandeln.mp3",
+      "name": "(Wolfgang Kindl) EG 295 Wohl denen, die da wandeln.mp3",
+      "api_size": 932593,
+      "api_sha1": "670f9c4bd2f823ec938f87acb6c720408451166b",
+      "mime": "audio/mpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Wolfgang Kindl",
+        "credit": "https://evangelisches.online/library/albums/23/",
+        "source_page": "https://commons.wikimedia.org/wiki/File:(Wolfgang_Kindl)_EG_295_Wohl_denen,_die_da_wandeln.mp3"
+      },
+      "uploader": "Gerhardbeck",
+      "meta": {},
+      "width": 0,
+      "height": 0,
+      "dir": "audio/mp3",
+      "alloc": "f13-heldout-commons-media-small"
+    },
+    {
+      "key": "commons-132878561",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e3/LL-Q33302_%28fsl%29-Roy_Batty_82-coquillage.webm",
+      "name": "LL-Q33302 (fsl)-Roy Batty 82-coquillage.webm",
+      "api_size": 1557230,
+      "api_sha1": "c36041368a6fa5a43021bf0add4abb5433f559b7",
+      "mime": "video/webm",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Speaker: Roy Batty 82\nRecorder: Roy Batty 82",
+        "credit": "Own work (Lingua Libre)",
+        "source_page": "https://commons.wikimedia.org/wiki/File:LL-Q33302_(fsl)-Roy_Batty_82-coquillage.webm"
+      },
+      "uploader": "Roy Batty 82",
+      "meta": {
+        "Software": "[{'name': 0, 'value': 'Lavf58.29.100'}]"
+      },
+      "width": 640,
+      "height": 480,
+      "dir": "video/webm",
+      "alloc": "f13-tuning-commons-media-small"
+    },
+    {
+      "key": "commons-132903819",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d4/LL-Q33302_%28fsl%29-Taliba31-livre_cd.webm",
+      "name": "LL-Q33302 (fsl)-Taliba31-livre cd.webm",
+      "api_size": 1012518,
+      "api_sha1": "2e9d42c99e26e11265ebe4575182ea727adcffcd",
+      "mime": "video/webm",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Speaker: Taliba31\nRecorder: Taliba31",
+        "credit": "Own work (Lingua Libre)",
+        "source_page": "https://commons.wikimedia.org/wiki/File:LL-Q33302_(fsl)-Taliba31-livre_cd.webm"
+      },
+      "uploader": "Taliba31",
+      "meta": {
+        "Software": "[{'name': 0, 'value': 'Lavf58.29.100'}]"
+      },
+      "width": 640,
+      "height": 480,
+      "dir": "video/webm",
+      "alloc": "f13-validation-commons-media-small"
+    },
+    {
+      "key": "commons-144638429",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b0/LL-Q33302_%28fsl%29-Hugo_en_r%C3%A9sidence-au_revoir.webm",
+      "name": "LL-Q33302 (fsl)-Hugo en résidence-au revoir.webm",
+      "api_size": 918535,
+      "api_sha1": "581762a6701068996af7be99bcc687d6398f6ad3",
+      "mime": "video/webm",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Speaker: Hugo en résidence\nRecorder: Hugo en résidence",
+        "credit": "Own work (Lingua Libre)",
+        "source_page": "https://commons.wikimedia.org/wiki/File:LL-Q33302_(fsl)-Hugo_en_r%C3%A9sidence-au_revoir.webm"
+      },
+      "uploader": "Hugo en résidence",
+      "meta": {
+        "Software": "[{'name': 0, 'value': 'Lavf58.29.100'}]"
+      },
+      "width": 640,
+      "height": 480,
+      "dir": "video/webm",
+      "alloc": "f13-heldout-commons-media-small"
+    }
+  ]
+}

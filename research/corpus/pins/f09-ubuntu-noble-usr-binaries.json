@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f09-ubuntu-noble-usr-binaries",
+  "inputs": {},
+  "output": {
+    "materialization_key": "9ee18bfde866cea43d85ddfdfc8c756214b20520cca459744f2e1e9da577cfde",
+    "logical_tree_sha256": "fa34c8c7bc1960d0fc8deb8318bffa178f73174689d7ffefd504c2138c4cac71",
+    "pinned_utc": "2026-09-13T02:26:40Z"
+  },
+  "history": []
+}

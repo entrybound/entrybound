@@ -1,0 +1,1492 @@
+{
+  "pool": "commons-cc0-photos",
+  "rules": "F12 validation: Wikimedia Commons Quality/Featured photographs released under CC0, camera JPEGs\n    with EXIF Make, at most 2 files per uploader, stratified by camera make.",
+  "selection_seed": 20260912,
+  "selected_utc": "2026-09-13T02:12:18Z",
+  "entries": [
+    {
+      "key": "commons-22642084",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Iguanidae_head_from_Venezuela.jpg",
+      "name": "Iguanidae head from Venezuela.jpg",
+      "api_size": 7815538,
+      "api_sha1": "da4176752244d0a407b02a44e974649dc29cd7b1",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Wilfredor",
+        "credit": "Own work\nSource materials for this file are available from Commons Archive:\nhttps://archive.org/details/wiki-commonsarchive",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Iguanidae_head_from_Venezuela.jpg"
+      },
+      "uploader": "Wilfredor",
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D300",
+        "Software": "Adobe Photoshop Lightroom 4.1 (Windows)"
+      },
+      "width": 4288,
+      "height": 2848,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-180410157",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Lyon_5e_-_Cath%C3%A9drale_Saint-Jean_-_Statue_de_saint_Fran%C3%A7ois_d%27Assise_%28Jean-Marie_Bonnassieux%29.jpg",
+      "name": "Lyon 5e - Cathédrale Saint-Jean - Statue de saint François d'Assise (Jean-Marie Bonnassieux).jpg",
+      "api_size": 9869547,
+      "api_sha1": "7ad53ede3e81af31a78c8c5d01edb3fc9f5ce513",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Romainbehar",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Lyon_5e_-_Cath%C3%A9drale_Saint-Jean_-_Statue_de_saint_Fran%C3%A7ois_d%27Assise_(Jean-Marie_Bonnassieux).jpg"
+      },
+      "uploader": "Romainbehar",
+      "meta": {
+        "Make": "FUJIFILM",
+        "Model": "X-S20",
+        "Software": "GIMP 3.0.6"
+      },
+      "width": 2229,
+      "height": 3877,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-18942829",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/17/La_mort_Saint-Innocent_Louvre_R.F.2625.jpg",
+      "name": "La mort Saint-Innocent Louvre R.F.2625.jpg",
+      "api_size": 1492029,
+      "api_sha1": "bb4fe833058222c470a01e0b6bb68c2b106d193b",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Jebulon",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:La_mort_Saint-Innocent_Louvre_R.F.2625.jpg"
+      },
+      "uploader": "Jebulon",
+      "meta": {
+        "Make": "SONY",
+        "Model": "DSLR-A550",
+        "Software": "GIMP 2.6.8"
+      },
+      "width": 2004,
+      "height": 3126,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-small"
+    },
+    {
+      "key": "commons-140660731",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Grote_sponszwam_%28Sparassis_crispa%29._09-11-2023._%28d.j.b%29.jpg",
+      "name": "Grote sponszwam (Sparassis crispa). 09-11-2023. (d.j.b).jpg",
+      "api_size": 12625917,
+      "api_sha1": "4b8889a7c04906de816ed903df7f7e1fc18bd65c",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Dominicus Johannes Bergsma",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Grote_sponszwam_(Sparassis_crispa)._09-11-2023._(d.j.b).jpg"
+      },
+      "uploader": "Famberhorst",
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS M",
+        "Software": "Adobe Photoshop Lightroom 5.7 (Windows)"
+      },
+      "width": 4643,
+      "height": 2902,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-14832281",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Common_Pierrot_Castalius_rosimon_by_kadavoor.JPG",
+      "name": "Common Pierrot Castalius rosimon by kadavoor.JPG",
+      "api_size": 1212715,
+      "api_sha1": "ab130e86dc654609e0c27d924569456b905a9088",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Jeevan Jose, Kerala, India",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Common_Pierrot_Castalius_rosimon_by_kadavoor.JPG"
+      },
+      "uploader": "Jkadavoor",
+      "meta": {
+        "Make": "Panasonic",
+        "Model": "DMC-FZ28",
+        "Software": "Adobe Photoshop 7.0"
+      },
+      "width": 2048,
+      "height": 1536,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-small"
+    },
+    {
+      "key": "commons-100803904",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/08/The_dunnock_%28Prunella_modularis%29.jpg",
+      "name": "The dunnock (Prunella modularis).jpg",
+      "api_size": 3036236,
+      "api_sha1": "0228e774c78e1e78e40b64fd65188e9f5973259d",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Hobbyfotowiki\n\n\nCamera location51° 10′ 43.32″ N, 7° 00′ 23.65″ E View this and other nearby images on: OpenStreetMap 51.178700;    7.006570",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:The_dunnock_(Prunella_modularis).jpg"
+      },
+      "uploader": "Hobbyfotowiki",
+      "meta": {
+        "Make": "RICOH IMAGING COMPANY, LTD.",
+        "Model": "PENTAX KP",
+        "Software": "Capture One 21 Windows"
+      },
+      "width": 2477,
+      "height": 1647,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-small"
+    },
+    {
+      "key": "commons-25958014",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Ardea_cinerea_in_flight.jpg",
+      "name": "Ardea cinerea in flight.jpg",
+      "api_size": 2508558,
+      "api_sha1": "145a7e542f20e8e66e197a2c826c9f4575d4387c",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Dinkum",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Ardea_cinerea_in_flight.jpg"
+      },
+      "uploader": "Poco a poco",
+      "meta": {
+        "Make": "PENTAX",
+        "Model": "PENTAX K-30",
+        "Software": "Adobe Photoshop Lightroom 4.4 (Windows)"
+      },
+      "width": 3977,
+      "height": 2142,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-small"
+    },
+    {
+      "key": "commons-173688480",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/25/Columbia_Center.jpg",
+      "name": "Columbia Center.jpg",
+      "api_size": 5711118,
+      "api_sha1": "110295744b6b351989bfb37f60da5c9cf7d63b20",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "WMrapids",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Columbia_Center.jpg"
+      },
+      "uploader": "WMrapids",
+      "meta": {
+        "Make": "DJI",
+        "Model": "FC3682",
+        "Software": "Adobe Lightroom 8.5.1 (Macintosh)"
+      },
+      "width": 3969,
+      "height": 2233,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-99480286",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Sally_Lightfoot_Crab_2019.jpg",
+      "name": "Sally Lightfoot Crab 2019.jpg",
+      "api_size": 1797489,
+      "api_sha1": "e453cff0be8b8bd3533a4b9f028ffd6ae8d6c1a3",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Nosferattus",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Sally_Lightfoot_Crab_2019.jpg"
+      },
+      "uploader": "Nosferattus",
+      "meta": {
+        "Make": "OLYMPUS CORPORATION    ",
+        "Model": "E-M10 Mark III  ",
+        "Software": "Adobe Photoshop CS5 Macintosh"
+      },
+      "width": 3712,
+      "height": 2475,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-small"
+    },
+    {
+      "key": "commons-89073563",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/81/Pr%C3%A9paration_d%27une_tarte_%C3%A0_la_tomate_%2806%29_-_sortie_du_four.jpg",
+      "name": "Préparation d'une tarte à la tomate (06) - sortie du four.jpg",
+      "api_size": 3022211,
+      "api_sha1": "d5a304f65d43b3a0251dbfd5c007d51f303d6557",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Benoît Prieur",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Pr%C3%A9paration_d%27une_tarte_%C3%A0_la_tomate_(06)_-_sortie_du_four.jpg"
+      },
+      "uploader": "Benoît Prieur",
+      "meta": {
+        "Make": "Apple",
+        "Model": "iPhone XS",
+        "Software": "13.3"
+      },
+      "width": 2937,
+      "height": 3095,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-small"
+    },
+    {
+      "key": "commons-11726877",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Great_Wall_of_China_July_2006.JPG",
+      "name": "Great Wall of China July 2006.JPG",
+      "api_size": 754922,
+      "api_sha1": "c0c8b8b84cb0a0d5e88f4985eac657adfc29d610",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Velatrix",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Great_Wall_of_China_July_2006.JPG"
+      },
+      "uploader": "Velatrix",
+      "meta": {
+        "Make": "NIKON",
+        "Model": "E4600",
+        "Software": "E4600v1.1"
+      },
+      "width": 2288,
+      "height": 1712,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-small"
+    },
+    {
+      "key": "commons-49159239",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Main_Range_Track%2C_Kosciuszko_National_Park_12.jpg",
+      "name": "Main Range Track, Kosciuszko National Park 12.jpg",
+      "api_size": 10326016,
+      "api_sha1": "1a0e976df6f5dd8a101708cbb92f2f93990b2fe1",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Dhx1",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Main_Range_Track,_Kosciuszko_National_Park_12.jpg"
+      },
+      "uploader": "Dhx1",
+      "meta": {
+        "Make": "SAMSUNG",
+        "Model": "NX1",
+        "Software": "1.40"
+      },
+      "width": 6480,
+      "height": 4320,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-155344193",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Allamanda_in_Bangladesh.jpg",
+      "name": "Allamanda in Bangladesh.jpg",
+      "api_size": 5962422,
+      "api_sha1": "3c3534750c9d87809b38420c39aa6fbdd44bd583",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Kryesmin",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Allamanda_in_Bangladesh.jpg"
+      },
+      "uploader": "Kryesmin",
+      "meta": {
+        "Make": "Xiaomi",
+        "Model": "Redmi Note 7 Pro"
+      },
+      "width": 4000,
+      "height": 3000,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-33523211",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/42/F-HEPG_Air_France_Airbus_A320-214%28WL%29_takeoff_from_Schiphol_%28AMS_-_EHAM%29%2C_The_Netherlands%2C_11june2014%2C_pic-1.JPG",
+      "name": "F-HEPG Air France Airbus A320-214(WL) takeoff from Schiphol (AMS - EHAM), The Netherlands, 11june2014, pic-1.JPG",
+      "api_size": 1945440,
+      "api_sha1": "659b173b4c7fd6e4f7df6b74f753d519a39cb0d2",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Alf van Beem",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:F-HEPG_Air_France_Airbus_A320-214(WL)_takeoff_from_Schiphol_(AMS_-_EHAM),_The_Netherlands,_11june2014,_pic-1.JPG"
+      },
+      "uploader": "Alfvanbeem",
+      "meta": {
+        "Make": "OLYMPUS IMAGING CORP.  ",
+        "Model": "E-M5            ",
+        "Software": "Version 1.7                    "
+      },
+      "width": 3901,
+      "height": 2920,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-48095355",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/54/CRS-8_%2826239020092%29.jpg",
+      "name": "CRS-8 (26239020092).jpg",
+      "api_size": 795301,
+      "api_sha1": "8f278d9d1b520c997411deecd67ee455f6522743",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "SpaceX Photos",
+        "credit": "CRS-8",
+        "source_page": "https://commons.wikimedia.org/wiki/File:CRS-8_(26239020092).jpg"
+      },
+      "uploader": "Appable",
+      "meta": {
+        "Make": "RED",
+        "Model": "EPIC-M",
+        "Software": "Adobe Photoshop CC 2015 (Macintosh)"
+      },
+      "width": 3000,
+      "height": 2000,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-small"
+    },
+    {
+      "key": "commons-62202478",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/93/Frozen_soap_bubble_behind_fir_twigs_%28Unsplash_BojuZpqw4zM%29.jpg",
+      "name": "Frozen soap bubble behind fir twigs (Unsplash BojuZpqw4zM).jpg",
+      "api_size": 7358570,
+      "api_sha1": "89d7d59cf545b3268ab0b050cd1b68747647878c",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "aaronburden Aaron Burden from Baltimore, Maryland, USA.",
+        "credit": "https://unsplash.com/photos/BojuZpqw4zM\nImage at the Wayback Machine\n\nGallery at the Wayback Machine",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Frozen_soap_bubble_behind_fir_twigs_(Unsplash_BojuZpqw4zM).jpg"
+      },
+      "uploader": "Fæ",
+      "meta": {
+        "Make": "OLYMPUS CORPORATION",
+        "Model": "E-M10MarkII",
+        "Software": "Adobe Photoshop Camera Raw 9.9 (Macintosh)"
+      },
+      "width": 4608,
+      "height": 3456,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-79218054",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/cb/The_Green_and_Golden_Bell_Frog.jpg",
+      "name": "The Green and Golden Bell Frog.jpg",
+      "api_size": 1980997,
+      "api_sha1": "665c2af435cea4b65957ec9351dcfa2798643078",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Bernard Spragg. NZ",
+        "credit": "https://www.flickr.com/photos/volvob12b/15254781805/",
+        "source_page": "https://commons.wikimedia.org/wiki/File:The_Green_and_Golden_Bell_Frog.jpg"
+      },
+      "uploader": "Boothsift",
+      "meta": {
+        "Make": "SONY ",
+        "Model": "DSLR-A300",
+        "Software": "Adobe Photoshop CS2 Windows"
+      },
+      "width": 2308,
+      "height": 1584,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-65426603",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Martinus_R%C3%B8rbye%2C_Portr%C3%A6t_af_maleren_C.A._Lorentzen%2C_1827%2C_0218NMK%2C_Nivaagaards_Malerisamling.jpg",
+      "name": "Martinus Rørbye, Portræt af maleren C.A. Lorentzen, 1827, 0218NMK, Nivaagaards Malerisamling.jpg",
+      "api_size": 4699156,
+      "api_sha1": "10388e4d25834ad2015329ceb7f29e4d88927ee2",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Martinus Rørbye",
+        "credit": "www.nivaagaard.dk",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Martinus_R%C3%B8rbye,_Portr%C3%A6t_af_maleren_C.A._Lorentzen,_1827,_0218NMK,_Nivaagaards_Malerisamling.jpg"
+      },
+      "uploader": "Villy Fink Isaksen",
+      "meta": {
+        "Make": "Hasselblad",
+        "Model": "Hasselblad H3DII-39MS",
+        "Software": "Adobe Photoshop CC 2015 (Macintosh)"
+      },
+      "width": 4616,
+      "height": 5537,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-164595216",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c2/C62_3_Niseko_%282%29.jpg",
+      "name": "C62 3 Niseko (2).jpg",
+      "api_size": 739000,
+      "api_sha1": "d15a9564a72bf55b424d08804b0617e6b5ac04ec",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Shellparakeet",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:C62_3_Niseko_(2).jpg"
+      },
+      "uploader": "Shellparakeet",
+      "meta": {
+        "Make": "Plustek",
+        "Model": "OpticFilm 8200i",
+        "Software": "Adobe Photoshop Elements 20.0 (Windows)"
+      },
+      "width": 1800,
+      "height": 2592,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-small"
+    },
+    {
+      "key": "commons-143766970",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Zicht_op_de_spoorbrug_vanuit_het_verlengde_van_het_spoor%2C_Bestanddeelnr_657_%28cropped%29.jpg",
+      "name": "Zicht op de spoorbrug vanuit het verlengde van het spoor, Bestanddeelnr 657 (cropped).jpg",
+      "api_size": 1697981,
+      "api_sha1": "fb98c4516498e01515b22035d6b3a95cbc184b29",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Nationaal Archief",
+        "credit": "https://proxy.handle.net/10648/af0b4a7a-d0b4-102d-bcf8-003048976d84",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Zicht_op_de_spoorbrug_vanuit_het_verlengde_van_het_spoor,_Bestanddeelnr_657_(cropped).jpg"
+      },
+      "uploader": "LucaLindholm",
+      "meta": {
+        "Make": "Leaf",
+        "Model": "Leaf Aptus-II 12R(LI200495   )/Other",
+        "Software": "Adobe Photoshop CS4 Windows"
+      },
+      "width": 4862,
+      "height": 3149,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-26091551",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Chlosyne_lacinia.jpg",
+      "name": "Chlosyne lacinia.jpg",
+      "api_size": 1360163,
+      "api_sha1": "a221b3bdbd2cf81b5fe9bff34577e98fe905288d",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Wilfredor",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Chlosyne_lacinia.jpg"
+      },
+      "uploader": "Wilfredor",
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D300",
+        "Software": "Adobe Photoshop Lightroom 4.3 (Windows)"
+      },
+      "width": 2000,
+      "height": 1356,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-77321792",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/67/Stiftskirche_in_T%C3%BCbingen_bei_Nacht_2019_mit_Neckarfront.jpg",
+      "name": "Stiftskirche in Tübingen bei Nacht 2019 mit Neckarfront.jpg",
+      "api_size": 11977360,
+      "api_sha1": "f185f133a721fbb480c51c36d31c003621da62e6",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Dktue",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Stiftskirche_in_T%C3%BCbingen_bei_Nacht_2019_mit_Neckarfront.jpg"
+      },
+      "uploader": "Dktue",
+      "meta": {
+        "Make": "FUJIFILM",
+        "Model": "X-T3",
+        "Software": "Adobe Photoshop Lightroom Classic 8.2 (Windows)"
+      },
+      "width": 5995,
+      "height": 5847,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-35906396",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Watch_tower_of_the_dam%2C_Embalse_de_los_Bermejales%2C_Andalusia%2C_Spain.jpg",
+      "name": "Watch tower of the dam, Embalse de los Bermejales, Andalusia, Spain.jpg",
+      "api_size": 8376937,
+      "api_sha1": "b6c6cac8518e2c00132b244592b90dc850ebd900",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Jebulon",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Watch_tower_of_the_dam,_Embalse_de_los_Bermejales,_Andalusia,_Spain.jpg"
+      },
+      "uploader": "Jebulon",
+      "meta": {
+        "Make": "SONY",
+        "Model": "DSLR-A550",
+        "Software": "GIMP 2.8.10"
+      },
+      "width": 3056,
+      "height": 4592,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-140172937",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Scuol-Motta_Naluns%2C_15-09-2023._%28actm.%29_09.jpg",
+      "name": "Scuol-Motta Naluns, 15-09-2023. (actm.) 09.jpg",
+      "api_size": 4763822,
+      "api_sha1": "735926645c08c6328ee1090c4b32b68e015d01f1",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Agnes Monkelbaan",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Scuol-Motta_Naluns,_15-09-2023._(actm.)_09.jpg"
+      },
+      "uploader": "Agnes Monkelbaan",
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS M",
+        "Software": "Adobe Photoshop Lightroom 5.7 (Windows)"
+      },
+      "width": 3774,
+      "height": 2916,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-22032541",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/96/Common_Jezebel_Delias_eucharis_by_kadavoor_3.jpg",
+      "name": "Common Jezebel Delias eucharis by kadavoor 3.jpg",
+      "api_size": 2355646,
+      "api_sha1": "9a5fed1aef4c0ed6b57bdeaec76d6815f2949f01",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Jeevan Jose, Kerala, India",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Common_Jezebel_Delias_eucharis_by_kadavoor_3.jpg"
+      },
+      "uploader": "Jkadavoor",
+      "meta": {
+        "Make": "Panasonic",
+        "Model": "DMC-FZ28",
+        "Software": "Adobe Photoshop 7.0"
+      },
+      "width": 2701,
+      "height": 1920,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-149174649",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/2024_Most_Forteczny_w_K%C5%82odzku_%282%29.jpg",
+      "name": "2024 Most Forteczny w Kłodzku (2).jpg",
+      "api_size": 10150548,
+      "api_sha1": "4302fdae639ec037bfcd6d5795a3524d07d543f9",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Jacek Halicki",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:2024_Most_Forteczny_w_K%C5%82odzku_(2).jpg"
+      },
+      "uploader": "Jacek Halicki",
+      "meta": {
+        "Make": "DJI",
+        "Model": "FC8284",
+        "Software": "Adobe Photoshop 25.9 (Windows)"
+      },
+      "width": 3858,
+      "height": 2712,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-101606609",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/54/Alligator_mississippiensis_113744549.jpg",
+      "name": "Alligator mississippiensis 113744549.jpg",
+      "api_size": 730917,
+      "api_sha1": "07bb3559ad32a934a06ad1ead6fffa60969d49a8",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Zygy",
+        "credit": "https://www.inaturalist.org/photos/113744549",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Alligator_mississippiensis_113744549.jpg"
+      },
+      "uploader": "Nosferattus",
+      "meta": {
+        "Make": "OLYMPUS CORPORATION    ",
+        "Model": "E-M10 Mark III  ",
+        "Software": "Adobe Photoshop CS5 Macintosh"
+      },
+      "width": 2400,
+      "height": 1600,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-143610619",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Mill_Creek_Canyon_Earthworks%2C_Double_Ring_Pond_-_2.jpg",
+      "name": "Mill Creek Canyon Earthworks, Double Ring Pond - 2.jpg",
+      "api_size": 5743705,
+      "api_sha1": "35995a2a06c83ebf24b20b8455fd260d7e910afb",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Roc0ast3r",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Mill_Creek_Canyon_Earthworks,_Double_Ring_Pond_-_2.jpg"
+      },
+      "uploader": "Roc0ast3r",
+      "meta": {
+        "Make": "Apple",
+        "Model": "iPhone 14 Plus",
+        "Software": "17.2.1"
+      },
+      "width": 4032,
+      "height": 3024,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-115128940",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Walter_Francis_White_by_Clara_Sipprell.jpg",
+      "name": "Walter Francis White by Clara Sipprell.jpg",
+      "api_size": 6061381,
+      "api_sha1": "4d9bbe46df212096f15b91efdc8fb1108053ad6b",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Clara Sipprell / Adam Cuerden",
+        "credit": "National Portrait Gallery (United States) Object number NPG.82.197.",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Walter_Francis_White_by_Clara_Sipprell.jpg"
+      },
+      "uploader": "Adam Cuerden",
+      "meta": {
+        "Make": "Hasselblad",
+        "Model": "Hasselblad CF528-22 - Hasselblad H Series",
+        "Software": "GIMP 2.10.0"
+      },
+      "width": 3520,
+      "height": 4536,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-163867240",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/46/Ren%C3%A9_Magritte_in_1961.jpg",
+      "name": "René Magritte in 1961.jpg",
+      "api_size": 3348113,
+      "api_sha1": "015a3fffad22f0010064bc768185d5e8ec2289ff",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Unknown authorUnknown author\n\nRestored by Giovanni Cardinali",
+        "credit": "https://www.parismuseescollections.paris.fr/fr/musee-carnavalet/oeuvres/portrait-en-buste-du-peintre-surrealiste-rene-magritte-1898-1967-le-18#infos-principales",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Ren%C3%A9_Magritte_in_1961.jpg"
+      },
+      "uploader": "Giovanni Cardinali",
+      "meta": {
+        "Make": "Leaf",
+        "Model": "Leaf Aptus 65(LF8471     )/Hasselblad H1",
+        "Software": "GIMP 2.10.36"
+      },
+      "width": 1983,
+      "height": 2614,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-17956146",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/MAP_Expo_Empereur_Ojin_Poup%C3%A9e_03_01_2012.jpg",
+      "name": "MAP Expo Empereur Ojin Poupée 03 01 2012.jpg",
+      "api_size": 2187883,
+      "api_sha1": "304c586e1aaa179bcf27ae11e61bfc2abb60593e",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Vassil",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:MAP_Expo_Empereur_Ojin_Poup%C3%A9e_03_01_2012.jpg"
+      },
+      "uploader": "Paris 16",
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D90",
+        "Software": "Adobe Photoshop CS2 Windows"
+      },
+      "width": 1765,
+      "height": 1763,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-90044392",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/91/Justizgeb%C3%A4ude_in_T%C3%BCbingen_zur_goldenen_Stunde.jpg",
+      "name": "Justizgebäude in Tübingen zur goldenen Stunde.jpg",
+      "api_size": 15171990,
+      "api_sha1": "b286fe3f46ec6e74da6136a4c53be8f1b2854a95",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Dktue",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Justizgeb%C3%A4ude_in_T%C3%BCbingen_zur_goldenen_Stunde.jpg"
+      },
+      "uploader": "Dktue",
+      "meta": {
+        "Make": "FUJIFILM",
+        "Model": "X-T3",
+        "Software": "Adobe Photoshop Lightroom Classic 9.2.1 (Windows)"
+      },
+      "width": 6240,
+      "height": 4160,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-17179743",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Big_Mac_hamburger.jpg",
+      "name": "Big Mac hamburger.jpg",
+      "api_size": 3678991,
+      "api_sha1": "821bb162f836e1f5576498d2812f80f71706b384",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Evan-Amos",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Big_Mac_hamburger.jpg"
+      },
+      "uploader": "Evan-Amos",
+      "meta": {
+        "Make": "SONY",
+        "Model": "DSLR-A700",
+        "Software": "Adobe Photoshop CS5 Windows"
+      },
+      "width": 2640,
+      "height": 2280,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-140530706",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/10/Knolparasolzwammen._09-11-2023._%28d.j.b%29.jpg",
+      "name": "Knolparasolzwammen. 09-11-2023. (d.j.b).jpg",
+      "api_size": 10832927,
+      "api_sha1": "9fd86a60f82881a5832ddbf9ddd4e37845e593ab",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Dominicus Johannes Bergsma",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Knolparasolzwammen._09-11-2023._(d.j.b).jpg"
+      },
+      "uploader": "Famberhorst",
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS M",
+        "Software": "Adobe Photoshop Lightroom 5.7 (Windows)"
+      },
+      "width": 4448,
+      "height": 3274,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-63307887",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Among_the_branches_of_a_potted_jade_plant.jpg",
+      "name": "Among the branches of a potted jade plant.jpg",
+      "api_size": 8816121,
+      "api_sha1": "6947d95311cb8af1b5f0477adbee63df5cf922fb",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "W.carter",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Among_the_branches_of_a_potted_jade_plant.jpg"
+      },
+      "uploader": "W.carter",
+      "meta": {
+        "Make": "Panasonic",
+        "Model": "DMC-FZ1000",
+        "Software": "Adobe Photoshop Elements 7.0 Windows"
+      },
+      "width": 4265,
+      "height": 3094,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-153745269",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/2024_O%C5%82drzychowice_K%C5%82odzkie%2C_ul._K%C5%82odzka_65.jpg",
+      "name": "2024 Ołdrzychowice Kłodzkie, ul. Kłodzka 65.jpg",
+      "api_size": 8767359,
+      "api_sha1": "238c033cf72958176781ca6666b07205eac1e436",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Jacek Halicki",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:2024_O%C5%82drzychowice_K%C5%82odzkie,_ul._K%C5%82odzka_65.jpg"
+      },
+      "uploader": "Jacek Halicki",
+      "meta": {
+        "Make": "DJI",
+        "Model": "FC8282",
+        "Software": "Adobe Photoshop 26.0 (20241002.m.2795 6abd5cf)  (Windows)"
+      },
+      "width": 3697,
+      "height": 3004,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-144876601",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Mam%C3%B5es.jpg",
+      "name": "Mamões.jpg",
+      "api_size": 3194703,
+      "api_sha1": "8a5f839f2119268c8e90f262451d79940d55ac94",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "ArionStar",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Mam%C3%B5es.jpg"
+      },
+      "uploader": "Stephan Sprinz",
+      "meta": {
+        "Make": "Apple",
+        "Model": "iPhone 15 Pro",
+        "Software": "17.2.1"
+      },
+      "width": 4032,
+      "height": 3024,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-179278744",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Sunset_Key_and_Sailboats%2C_Florida%2C_2025.jpg",
+      "name": "Sunset Key and Sailboats, Florida, 2025.jpg",
+      "api_size": 12520519,
+      "api_sha1": "a2405601c7590569b9eea5a1207c270c0084ec61",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Julian Lupyan",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Sunset_Key_and_Sailboats,_Florida,_2025.jpg"
+      },
+      "uploader": "Julian Lupyan",
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "Adobe Photoshop Lightroom Classic 15.0.1 (Windows)"
+      },
+      "width": 6964,
+      "height": 3626,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-48824505",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Mikronisi_as_seen_from_Chrysi.JPG",
+      "name": "Mikronisi as seen from Chrysi.JPG",
+      "api_size": 5717858,
+      "api_sha1": "6ca5ecf551b74326f452abd4b4e98629fe7414b4",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Quim Gil",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Mikronisi_as_seen_from_Chrysi.JPG"
+      },
+      "uploader": "QuimGil",
+      "meta": {
+        "Make": "FUJIFILM",
+        "Model": "X-T1",
+        "Software": "Digital Camera X-T1 Ver1.10"
+      },
+      "width": 4896,
+      "height": 3264,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-14975131",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Church_of_the_virgin_of_the_burgh_Rhodes_14th_century_night.jpg",
+      "name": "Church of the virgin of the burgh Rhodes 14th century night.jpg",
+      "api_size": 5237557,
+      "api_sha1": "75311d39815f67e164f8fa38d47913d7efa1cd98",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Jebulon",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Church_of_the_virgin_of_the_burgh_Rhodes_14th_century_night.jpg"
+      },
+      "uploader": "Leijurv",
+      "meta": {
+        "Make": "SONY",
+        "Model": "DSLR-A550",
+        "Software": "GIMP 2.6.8"
+      },
+      "width": 3595,
+      "height": 2566,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-14727640",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/26/Angela_Merkel_IMG_4162_edit.jpg",
+      "name": "Angela Merkel IMG 4162 edit.jpg",
+      "api_size": 2095831,
+      "api_sha1": "3552ec149a2117cc7f4a28982176a690be3ab753",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Christoph Braun",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Angela_Merkel_IMG_4162_edit.jpg"
+      },
+      "uploader": "Christoph Braun",
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark II",
+        "Software": "Adobe Photoshop CS5 Windows"
+      },
+      "width": 1975,
+      "height": 3253,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-84193032",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/77/C-Train_of_Calgary%2C_Canada%3B_October_2019.jpg",
+      "name": "C-Train of Calgary, Canada; October 2019.jpg",
+      "api_size": 12290684,
+      "api_sha1": "32d6ace16836b03ee27502a02175446921ee848e",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Bernard Spragg. NZ",
+        "credit": "https://www.flickr.com/photos/volvob12b/49097061483/",
+        "source_page": "https://commons.wikimedia.org/wiki/File:C-Train_of_Calgary,_Canada;_October_2019.jpg"
+      },
+      "uploader": "Rachmat04",
+      "meta": {
+        "Make": "Panasonic",
+        "Model": "DC-ZS200",
+        "Software": "Adobe Photoshop Elements 11.0 Windows"
+      },
+      "width": 4761,
+      "height": 3458,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-145845070",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Buda_de_Ibira%C3%A7u_%28B%26W%29.jpg",
+      "name": "Buda de Ibiraçu (B&W).jpg",
+      "api_size": 10848124,
+      "api_sha1": "37e099a634b4fe662bdb69dc4613c4fb306952bc",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "ArionStar",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Buda_de_Ibira%C3%A7u_(B%26W).jpg"
+      },
+      "uploader": "Koavf",
+      "meta": {
+        "Make": "Apple",
+        "Model": "iPhone 15 Pro",
+        "Software": "Adobe Photoshop 25.2 (Macintosh)"
+      },
+      "width": 6400,
+      "height": 4803,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-35194421",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/39/Vitral_em_Igreja_Santa_Efigenia.jpg",
+      "name": "Vitral em Igreja Santa Efigenia.jpg",
+      "api_size": 6609486,
+      "api_sha1": "da039fc1a9e3245733406d93cd6a67005b6226cf",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Wilfredor",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Vitral_em_Igreja_Santa_Efigenia.jpg"
+      },
+      "uploader": "JLPC",
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D300",
+        "Software": "RawTherapee"
+      },
+      "width": 3713,
+      "height": 2607,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-162124914",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Paris_4e_-_Cath%C3%A9drale_Notre-Dame_-_Chapelle_des_%C3%82mes_du_Purgatoire_-_Statue_de_saint_Denys_pr%C3%AAchant_la_Foi_%28Nicolas_Coustou%29.jpg",
+      "name": "Paris 4e - Cathédrale Notre-Dame - Chapelle des Âmes du Purgatoire - Statue de saint Denys prêchant la Foi (Nicolas Coustou).jpg",
+      "api_size": 2312071,
+      "api_sha1": "c753edc12e3cd95883214e1c30a10040def4bae2",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Romainbehar",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Paris_4e_-_Cath%C3%A9drale_Notre-Dame_-_Chapelle_des_%C3%82mes_du_Purgatoire_-_Statue_de_saint_Denys_pr%C3%AAchant_la_Foi_(Nicolas_Coustou).jpg"
+      },
+      "uploader": "Romainbehar",
+      "meta": {
+        "Make": "FUJIFILM",
+        "Model": "X-H1",
+        "Software": "GIMP 2.10.32"
+      },
+      "width": 1951,
+      "height": 2844,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-30469436",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Dome_Cappella_Chigi_from_inside%2C_Santa_Maria_del_Popolo%2C_Rome%2C_Italy.jpg",
+      "name": "Dome Cappella Chigi from inside, Santa Maria del Popolo, Rome, Italy.jpg",
+      "api_size": 6895348,
+      "api_sha1": "e0570431c378ed619f9ff15bdd2d94e2d42bc8fc",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Raphael",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Dome_Cappella_Chigi_from_inside,_Santa_Maria_del_Popolo,_Rome,_Italy.jpg"
+      },
+      "uploader": "Kaganer",
+      "meta": {
+        "Make": "SONY",
+        "Model": "DSLR-A550",
+        "Software": "GIMP 2.8.4"
+      },
+      "width": 3180,
+      "height": 3175,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-77820734",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/20141025_Shockwave_Truck_Alliance_Air_Show_2014-3.jpg",
+      "name": "20141025 Shockwave Truck Alliance Air Show 2014-3.jpg",
+      "api_size": 8983849,
+      "api_sha1": "d191d71d8b3bb412479a68b9ce7cff8f62c79b09",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Balon Greyjoy",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:20141025_Shockwave_Truck_Alliance_Air_Show_2014-3.jpg"
+      },
+      "uploader": "Balon Greyjoy",
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 7D",
+        "Software": "Adobe Photoshop Lightroom Classic 8.2.1 (Windows)"
+      },
+      "width": 4617,
+      "height": 3078,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-117608568",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/95/Staircase_of_the_BGK_Building_%2826620981474%29.jpg",
+      "name": "Staircase of the BGK Building (26620981474).jpg",
+      "api_size": 1336320,
+      "api_sha1": "5f2d507abe0c26168065942374244a70ebed0c80",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Bart Lumber",
+        "credit": "P1200419",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Staircase_of_the_BGK_Building_(26620981474).jpg"
+      },
+      "uploader": "Andrew J.Kurbiko",
+      "meta": {
+        "Make": "Panasonic",
+        "Model": "DMC-GH4",
+        "Software": "Ver.2.4  "
+      },
+      "width": 3840,
+      "height": 2160,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-144961546",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/28/Laranjas-pera.jpg",
+      "name": "Laranjas-pera.jpg",
+      "api_size": 7284918,
+      "api_sha1": "4a0b24ae00334c2ca847c3897f9033c8814ba09b",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "ArionStar",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Laranjas-pera.jpg"
+      },
+      "uploader": "Koavf",
+      "meta": {
+        "Make": "Apple",
+        "Model": "iPhone 15 Pro",
+        "Software": "17.2.1"
+      },
+      "width": 6508,
+      "height": 6044,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-173390477",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Reflection_of_the_Flamingo_Hotel_in_front_of_the_Bellagio.jpg",
+      "name": "Reflection of the Flamingo Hotel in front of the Bellagio.jpg",
+      "api_size": 13466532,
+      "api_sha1": "aa3e056767437fb7f8855dd7eebf843957e07b61",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Julian Lupyan",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Reflection_of_the_Flamingo_Hotel_in_front_of_the_Bellagio.jpg"
+      },
+      "uploader": "Julian Lupyan",
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3500",
+        "Software": "Adobe Photoshop Lightroom Classic 15.0.1 (Windows)"
+      },
+      "width": 5830,
+      "height": 3914,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-144675465",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/AC_-_Protest_wir_sind_Aachen_Nazis_sind_es_nicht_-_3.jpg",
+      "name": "AC - Protest wir sind Aachen Nazis sind es nicht - 3.jpg",
+      "api_size": 15154610,
+      "api_sha1": "7bdc2388e01f740393fb1fc198072348de3b3df3",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Grunpfnul",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:AC_-_Protest_wir_sind_Aachen_Nazis_sind_es_nicht_-_3.jpg"
+      },
+      "uploader": "Grunpfnul",
+      "meta": {
+        "Make": "FUJIFILM",
+        "Model": "X-H2S",
+        "Software": "Capture One 23 Macintosh"
+      },
+      "width": 5563,
+      "height": 3709,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-62409447",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Eriksberg_shipyard_crane.jpg",
+      "name": "Eriksberg shipyard crane.jpg",
+      "api_size": 8623311,
+      "api_sha1": "9c8b576c687048a795be553040974622a0042beb",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "W.carter",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Eriksberg_shipyard_crane.jpg"
+      },
+      "uploader": "W.carter",
+      "meta": {
+        "Make": "SONY",
+        "Model": "DSC-RX100",
+        "Software": "Adobe Photoshop Elements 7.0 Windows"
+      },
+      "width": 4378,
+      "height": 3283,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-37062773",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Playing_with_water%2C_light_and_leaves.jpg",
+      "name": "Playing with water, light and leaves.jpg",
+      "api_size": 6080021,
+      "api_sha1": "bf800a94c97f1af80abebe99afa637078d7deaac",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Lesekreis",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Playing_with_water,_light_and_leaves.jpg"
+      },
+      "uploader": "Heike Huslage-Koch",
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 550D",
+        "Software": "Picasa"
+      },
+      "width": 3718,
+      "height": 3259,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-80379553",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Lion%27s_mane_jellyfish_in_Gullmarn_fjord_at_S%C3%A4mstad_3.jpg",
+      "name": "Lion's mane jellyfish in Gullmarn fjord at Sämstad 3.jpg",
+      "api_size": 8374234,
+      "api_sha1": "4febe1315d49417ca5869f407fe1980bd6c722dc",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "W.carter",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Lion%27s_mane_jellyfish_in_Gullmarn_fjord_at_S%C3%A4mstad_3.jpg"
+      },
+      "uploader": "Charlesjsharp",
+      "meta": {
+        "Make": "Panasonic",
+        "Model": "DMC-FZ1000",
+        "Software": "Adobe Photoshop CC 2018 (Windows)"
+      },
+      "width": 5045,
+      "height": 3342,
+      "group_label": "fp",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    },
+    {
+      "key": "commons-78055805",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Masque_eharo_MHNT_ETH_AC_NB9.jpg",
+      "name": "Masque eharo MHNT ETH AC NB9.jpg",
+      "api_size": 2044730,
+      "api_sha1": "9bc8265d6e60eb36ed341793ba41570e5bf6004a",
+      "mime": "image/jpeg",
+      "license": {
+        "spdx_or_name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "usage_terms": "Creative Commons Zero, Public Domain Dedication",
+        "attribution": "Ruthven",
+        "credit": "Own work",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Masque_eharo_MHNT_ETH_AC_NB9.jpg"
+      },
+      "uploader": "Ruthven",
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D600",
+        "Software": "GIMP 2.10.6"
+      },
+      "width": 4355,
+      "height": 4355,
+      "group_label": "qi",
+      "dir": "photos",
+      "alloc": "f12-validation-commons-cc0-photos-medium"
+    }
+  ]
+}

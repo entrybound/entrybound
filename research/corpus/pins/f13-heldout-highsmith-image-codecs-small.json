@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-heldout-highsmith-image-codecs-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "367e7b818055ed507d8a1beaeeb10ad3494c4233e4055ea119a91438d97701cd",
+    "logical_tree_sha256": "f107f87739b1a0a7c6b4646fe1e00fa8f37053f51ab82c5f4f7cea41f09aa18b",
+    "pinned_utc": "2026-09-13T02:29:49Z"
+  },
+  "history": []
+}

@@ -1,0 +1,1009 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-validation-federal-register-pdf-small",
+  "family": "F13",
+  "split": "validation",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-federal-register-pdf",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "4f2c988ebc8e49e4a5f54b386654a2311444dd74675cb14a47742ab39df4e25a",
+  "materialization_key": "730331f0438693ced857a4c6663a3e04465ede8fd31e880a913541b08491112a",
+  "materialized_utc": "2026-09-13T02:29:55Z",
+  "materialized_relpath": "corpus/validation/f13-validation-federal-register-pdf-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "141e4a79534c98d7eac31bc3ba52fab6eda5cfeaddbeba53d1e14459f5599eb7",
+    "pinned_utc": "2026-09-13T02:29:55Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 15566803,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "fr-2025-03282",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03282.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03282.pdf",
+        "sha256": "bcb489dfaa6258093ba8a029f3f9d85eba2339687ecd7398fe78418b50301d28",
+        "size": 226188,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03282.pdf"
+      },
+      {
+        "name": "fr-2025-03330",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03330.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03330.pdf",
+        "sha256": "08a613a2727ed5c95d129a48641ba1ef55efd080c7dba305aec48f7244581bc6",
+        "size": 178189,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03330.pdf"
+      },
+      {
+        "name": "fr-2025-03333",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03333.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03333.pdf",
+        "sha256": "350d04c453838c536778dbfdc11bc173958ff97cd292943a906aaa9e480ce491",
+        "size": 187991,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03333.pdf"
+      },
+      {
+        "name": "fr-2025-03374",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03374.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03374.pdf",
+        "sha256": "75c3952a3ae3c9a591d15579199bc156de896439834a4fece15b221fe28f63ae",
+        "size": 176062,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03374.pdf"
+      },
+      {
+        "name": "fr-2025-03378",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03378.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03378.pdf",
+        "sha256": "07be33fa1b655807b69ee253f23cd3a89f60e2298e4f6f49f5571ac74ec8b045",
+        "size": 172387,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03378.pdf"
+      },
+      {
+        "name": "fr-2025-03381",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03381.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03381.pdf",
+        "sha256": "57d929a7592c6a2969391ec181b606076fdd3c7c5d09243c42b7ead4cc6a690a",
+        "size": 203502,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03381.pdf"
+      },
+      {
+        "name": "fr-2025-03527",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03527.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03527.pdf",
+        "sha256": "011391f87a265a1f78514bf347703fc0958d8a6f870c811c1755b43b38f73363",
+        "size": 191940,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03527.pdf"
+      },
+      {
+        "name": "fr-2025-03375",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03375.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03375.pdf",
+        "sha256": "db6935a88847515be572895fa61fe4b2bbf6f7bb4db1cae27c149f0c2def0faa",
+        "size": 249278,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03375.pdf"
+      },
+      {
+        "name": "fr-2025-03379",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03379.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03379.pdf",
+        "sha256": "080668277c2d92d84f8b7511231d0b13cdcba474cbb47875e867e248c12b2237",
+        "size": 250436,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03379.pdf"
+      },
+      {
+        "name": "fr-2025-03172",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03172.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03172.pdf",
+        "sha256": "02713c9d4f54291657e953f0c28f347bbfd11e1f4123d79e701ffa3ece458893",
+        "size": 251235,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03172.pdf"
+      },
+      {
+        "name": "fr-2025-03272",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03272.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03272.pdf",
+        "sha256": "321b1215e4d2dde0e9ca6eb5cfedcbf98e1945022ca34ef5c3059194beb55069",
+        "size": 237411,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03272.pdf"
+      },
+      {
+        "name": "fr-2025-03289",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03289.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03289.pdf",
+        "sha256": "b113ad80540541c9a08b9f5f1725ee3ffe5c5ae50d5c0038d29b16dff8ad2e8a",
+        "size": 217439,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03289.pdf"
+      },
+      {
+        "name": "fr-2025-03347",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03347.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-03-03/pdf/2025-03347.pdf",
+        "sha256": "3cb1624a84f7268648621f38d88844f734ca05b132915bdbb3fc6e1b88faa2ad",
+        "size": 172871,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-03347.pdf"
+      },
+      {
+        "name": "fr-2025-09845",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09845.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09845.pdf",
+        "sha256": "4563985bbb5164ad022f82adf06415adc2e1e3a7b4ea06e67db31e5adef2a0e4",
+        "size": 195386,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09845.pdf"
+      },
+      {
+        "name": "fr-2025-09881",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09881.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09881.pdf",
+        "sha256": "d391ae551b2fc946340c6264c58f64319d24f8b10f1514ff4253b4e607c4f16b",
+        "size": 213469,
+        "retrieved_utc": "2026-09-13T02:09:03Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09881.pdf"
+      },
+      {
+        "name": "fr-2025-09903",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09903.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09903.pdf",
+        "sha256": "804c8a77280219103b044fa7c7485e42c585904b2f4c2e9484f7f0ca61e86ae2",
+        "size": 191089,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09903.pdf"
+      },
+      {
+        "name": "fr-2025-09905",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09905.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09905.pdf",
+        "sha256": "80f91d1ee176ca254608cff01d55396d8678e78ee2c478c1c0836c4ad923d5ca",
+        "size": 204350,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09905.pdf"
+      },
+      {
+        "name": "fr-2025-09917",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09917.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09917.pdf",
+        "sha256": "46ebbb9ce00da3cf6c5022456df1a7cf98cf19105021b84f4421ad22036faf4a",
+        "size": 218492,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09917.pdf"
+      },
+      {
+        "name": "fr-2025-09945",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09945.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09945.pdf",
+        "sha256": "38bd3e7c4ddbe38212da4e5959c148dba18673af7955e59cb2add2d201be41a5",
+        "size": 220567,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09945.pdf"
+      },
+      {
+        "name": "fr-2025-09947",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09947.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09947.pdf",
+        "sha256": "269339b839b3e122dc1ea91df67c7fb280bbe79bb8712061b35b5bcbf143e97b",
+        "size": 205241,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09947.pdf"
+      },
+      {
+        "name": "fr-2025-10070",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-10070.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-10070.pdf",
+        "sha256": "20362cf984d9e15b5c6a74af110169ece0b1871fd31bb6323c20b865a4078b99",
+        "size": 174445,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-10070.pdf"
+      },
+      {
+        "name": "fr-2025-09858",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09858.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09858.pdf",
+        "sha256": "b577e11f451add51491bdb10ef6e2ee041b8ccd8e95bcd3ae29fa99425b6b4c2",
+        "size": 251464,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09858.pdf"
+      },
+      {
+        "name": "fr-2025-09892",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09892.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09892.pdf",
+        "sha256": "0850a57c4a131e515f76292ad21599eb9a597d560d173c613fa9c98a2484e73a",
+        "size": 256637,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09892.pdf"
+      },
+      {
+        "name": "fr-2025-09895",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09895.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09895.pdf",
+        "sha256": "5bb071df01964ac62c5796bd4d9a4eb75d031905fda5db8e6d963e2c216d803e",
+        "size": 252534,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09895.pdf"
+      },
+      {
+        "name": "fr-2025-09896",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09896.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09896.pdf",
+        "sha256": "695aefc5a9cf55cd11b4ed100cc1dace4c3064efefdf31b01671597672510652",
+        "size": 248322,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09896.pdf"
+      },
+      {
+        "name": "fr-2025-09931",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09931.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09931.pdf",
+        "sha256": "2f2475a18035efd2ca0ec60177cdcd2ca9d26db84d69cd127aff2533474920bb",
+        "size": 240240,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09931.pdf"
+      },
+      {
+        "name": "fr-2025-09868",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09868.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09868.pdf",
+        "sha256": "15ff6220274c734bb4754bd77a09471d49805bffd22400334e1182f3e47f492c",
+        "size": 235933,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09868.pdf"
+      },
+      {
+        "name": "fr-2025-09876",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09876.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09876.pdf",
+        "sha256": "0bbe1941191455b26468108c8ffbb8e3c6c3c230bce5cc2167b3dd1ce52ca391",
+        "size": 215410,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09876.pdf"
+      },
+      {
+        "name": "fr-2025-09877",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09877.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09877.pdf",
+        "sha256": "6dcd8a93fe7bd57e773a792b4f44088ea23b1a3570708b2b9ade632e8b97f5a9",
+        "size": 220239,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09877.pdf"
+      },
+      {
+        "name": "fr-2025-09878",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09878.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09878.pdf",
+        "sha256": "9e4422c459b8bab3810c5037dc844f093172c1f77340da06ecd408154ca55954",
+        "size": 234447,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09878.pdf"
+      },
+      {
+        "name": "fr-2025-09885",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09885.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09885.pdf",
+        "sha256": "90ec390af24007da1ff73ff216dce7808f48e28533d6873b22a2d415dea3db56",
+        "size": 245142,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09885.pdf"
+      },
+      {
+        "name": "fr-2025-09889",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09889.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09889.pdf",
+        "sha256": "65b976ab7eeaeb74d00eca69756e3e8c7af55b7302350416705b22f0c5832306",
+        "size": 246658,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09889.pdf"
+      },
+      {
+        "name": "fr-2025-09916",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09916.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09916.pdf",
+        "sha256": "ab9c1b08a966ac77749244dafbfe120959b15de372420d79a8ff0fd057bb0cb8",
+        "size": 239106,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09916.pdf"
+      },
+      {
+        "name": "fr-2025-09937",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09937.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-06-02/pdf/2025-09937.pdf",
+        "sha256": "db9f434963d10ea65ef7e70896068562652a4f4197057cd8c2b07c4b7dd78514",
+        "size": 232170,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-09937.pdf"
+      },
+      {
+        "name": "fr-2025-16699",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16699.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16699.pdf",
+        "sha256": "5e5695be12e0e8f9994e0e12f670bd6b92f1fc26125640530073469925bd5d5a",
+        "size": 318264,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16699.pdf"
+      },
+      {
+        "name": "fr-2025-16713",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16713.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16713.pdf",
+        "sha256": "e69f771df059f16f2f6aa7db0596e30f7edbb06cad0fa7b898bd6f18100ba0d7",
+        "size": 328108,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16713.pdf"
+      },
+      {
+        "name": "fr-2025-16729",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16729.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16729.pdf",
+        "sha256": "49bcd19a371db56fc003946e6906a4c94f136c6ab33ae39b7721c48aacf95f04",
+        "size": 288082,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16729.pdf"
+      },
+      {
+        "name": "fr-2025-16736",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16736.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16736.pdf",
+        "sha256": "14613761ffd7566dec4a0eee51783985cc99379471206624d5b95204f42aecfa",
+        "size": 271915,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16736.pdf"
+      },
+      {
+        "name": "fr-2025-16748",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16748.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16748.pdf",
+        "sha256": "e1f2f3b2fe790078d260ec40858a6558ca75e8a3afbb4ad12b59e750b4cf9c86",
+        "size": 308724,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16748.pdf"
+      },
+      {
+        "name": "fr-2025-16750",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16750.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16750.pdf",
+        "sha256": "d3e5b9aad4adf9c0b734ee7c38a67ce0eb88d77ccac284cbae58942f23b57678",
+        "size": 277165,
+        "retrieved_utc": "2026-09-13T02:09:03Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16750.pdf"
+      },
+      {
+        "name": "fr-2025-16759",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16759.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16759.pdf",
+        "sha256": "fb73a86f11d1b7b7bee8c46615a68303cda53b6c174e3a0342421fdfd3917353",
+        "size": 354768,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16759.pdf"
+      },
+      {
+        "name": "fr-2025-16783",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16783.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16783.pdf",
+        "sha256": "d93a0d0fd6082e7c0d04f5edba5e88099b0a388aeb4beca119faf1f7afd0c8ad",
+        "size": 282225,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16783.pdf"
+      },
+      {
+        "name": "fr-2025-16790",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16790.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16790.pdf",
+        "sha256": "1d7b4ebadd7c5e0539a25b5be650a5a3b7b1698bfcffbcd7be0fdd7567022926",
+        "size": 305359,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16790.pdf"
+      },
+      {
+        "name": "fr-2025-16846",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16846.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16846.pdf",
+        "sha256": "00f88352edec01fa6ce6508bdac02ccbc101e191a972a341849f85e0453efab7",
+        "size": 172401,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16846.pdf"
+      },
+      {
+        "name": "fr-2025-16720",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16720.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16720.pdf",
+        "sha256": "1e9ce494efc927af63fb9744d94b1468e58a0031688bb012b4218f64a51f4b38",
+        "size": 484822,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16720.pdf"
+      },
+      {
+        "name": "fr-2025-16723",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16723.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16723.pdf",
+        "sha256": "a884d3dda95013df98b78a393479af55e99dfdfcb3cd4aaafcea6f3721b4719c",
+        "size": 287628,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16723.pdf"
+      },
+      {
+        "name": "fr-2025-16737",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16737.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16737.pdf",
+        "sha256": "3779a16f66267d171674c7d5dacd7debc99acadc571d1dcc4f6740b05a5e4114",
+        "size": 315791,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16737.pdf"
+      },
+      {
+        "name": "fr-2025-16740",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16740.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16740.pdf",
+        "sha256": "2efb38d71d54eb5dab824009c52fafd57ddba2e56863d51d81638a368ed588cc",
+        "size": 870243,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16740.pdf"
+      },
+      {
+        "name": "fr-2025-16801",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16801.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16801.pdf",
+        "sha256": "7cf36350956d84ab05710d351f999a3c39e68bc2b92ff582022d57f7985b1007",
+        "size": 288928,
+        "retrieved_utc": "2026-09-13T02:09:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16801.pdf"
+      },
+      {
+        "name": "fr-2025-16724",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16724.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16724.pdf",
+        "sha256": "accf9829b2a28a94611a23a990346932279abd98543e9f5c0b55beedb54d782e",
+        "size": 291624,
+        "retrieved_utc": "2026-09-13T02:09:03Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16724.pdf"
+      },
+      {
+        "name": "fr-2025-16728",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16728.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16728.pdf",
+        "sha256": "0f3b21e7d6b57ce5adc8ea992976405ef334ab1d2a8efe51feb9cf5e432d12f2",
+        "size": 272473,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16728.pdf"
+      },
+      {
+        "name": "fr-2025-16735",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16735.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16735.pdf",
+        "sha256": "256036a657ca0b4a9e8c1133e991c156f6cbd283c2ce75ad144498f8aac6f6e4",
+        "size": 243393,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16735.pdf"
+      },
+      {
+        "name": "fr-2025-16753",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16753.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16753.pdf",
+        "sha256": "85f1decf99cd318e314f03ca74e6675272854fdc791068f59ae1b1a9de40057d",
+        "size": 263799,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16753.pdf"
+      },
+      {
+        "name": "fr-2025-16754",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16754.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16754.pdf",
+        "sha256": "64d87cb70394074da56b473c05128e94ffa88625af568bd78f0da2cad12e11c6",
+        "size": 253450,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16754.pdf"
+      },
+      {
+        "name": "fr-2025-16755",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16755.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16755.pdf",
+        "sha256": "3d3cc273f0a94a08d172af0ebc6211c49e9bc5ef2368cbabf1fb7f60c64f7409",
+        "size": 253316,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16755.pdf"
+      },
+      {
+        "name": "fr-2025-16757",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16757.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16757.pdf",
+        "sha256": "0e541c09e74c72d9090dafd082786d1b63861c9284f850b0dd8c23501f4f1e79",
+        "size": 220896,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16757.pdf"
+      },
+      {
+        "name": "fr-2025-16771",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16771.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16771.pdf",
+        "sha256": "56f1848a529d16375263255077d7d8bf0919ea5c03f7bac6d22334b23d72f1ea",
+        "size": 245822,
+        "retrieved_utc": "2026-09-13T02:09:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16771.pdf"
+      },
+      {
+        "name": "fr-2025-16809",
+        "url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16809.pdf",
+        "final_url": "https://www.govinfo.gov/content/pkg/FR-2025-09-02/pdf/2025-16809.pdf",
+        "sha256": "cdec4321601270495c3bc42b52b6a1891e180cbe03b17b942ab0ed3f37caf5b8",
+        "size": 911337,
+        "retrieved_utc": "2026-09-13T02:09:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2025-16809.pdf"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "fr-2025-03282",
+        "dest": "2025-03-03/Notice/2025-03282.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03330",
+        "dest": "2025-03-03/Notice/2025-03330.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03333",
+        "dest": "2025-03-03/Notice/2025-03333.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03374",
+        "dest": "2025-03-03/Notice/2025-03374.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03378",
+        "dest": "2025-03-03/Notice/2025-03378.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03381",
+        "dest": "2025-03-03/Notice/2025-03381.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03527",
+        "dest": "2025-03-03/Presidential-Document/2025-03527.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03375",
+        "dest": "2025-03-03/Proposed-Rule/2025-03375.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03379",
+        "dest": "2025-03-03/Proposed-Rule/2025-03379.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03172",
+        "dest": "2025-03-03/Rule/2025-03172.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03272",
+        "dest": "2025-03-03/Rule/2025-03272.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03289",
+        "dest": "2025-03-03/Rule/2025-03289.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-03347",
+        "dest": "2025-03-03/Rule/2025-03347.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09845",
+        "dest": "2025-06-02/Notice/2025-09845.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09881",
+        "dest": "2025-06-02/Notice/2025-09881.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09903",
+        "dest": "2025-06-02/Notice/2025-09903.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09905",
+        "dest": "2025-06-02/Notice/2025-09905.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09917",
+        "dest": "2025-06-02/Notice/2025-09917.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09945",
+        "dest": "2025-06-02/Notice/2025-09945.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09947",
+        "dest": "2025-06-02/Notice/2025-09947.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-10070",
+        "dest": "2025-06-02/Presidential-Document/2025-10070.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09858",
+        "dest": "2025-06-02/Proposed-Rule/2025-09858.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09892",
+        "dest": "2025-06-02/Proposed-Rule/2025-09892.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09895",
+        "dest": "2025-06-02/Proposed-Rule/2025-09895.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09896",
+        "dest": "2025-06-02/Proposed-Rule/2025-09896.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09931",
+        "dest": "2025-06-02/Proposed-Rule/2025-09931.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09868",
+        "dest": "2025-06-02/Rule/2025-09868.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09876",
+        "dest": "2025-06-02/Rule/2025-09876.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09877",
+        "dest": "2025-06-02/Rule/2025-09877.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09878",
+        "dest": "2025-06-02/Rule/2025-09878.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09885",
+        "dest": "2025-06-02/Rule/2025-09885.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09889",
+        "dest": "2025-06-02/Rule/2025-09889.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09916",
+        "dest": "2025-06-02/Rule/2025-09916.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-09937",
+        "dest": "2025-06-02/Rule/2025-09937.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16699",
+        "dest": "2025-09-02/Notice/2025-16699.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16713",
+        "dest": "2025-09-02/Notice/2025-16713.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16729",
+        "dest": "2025-09-02/Notice/2025-16729.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16736",
+        "dest": "2025-09-02/Notice/2025-16736.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16748",
+        "dest": "2025-09-02/Notice/2025-16748.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16750",
+        "dest": "2025-09-02/Notice/2025-16750.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16759",
+        "dest": "2025-09-02/Notice/2025-16759.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16783",
+        "dest": "2025-09-02/Notice/2025-16783.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16790",
+        "dest": "2025-09-02/Notice/2025-16790.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16846",
+        "dest": "2025-09-02/Presidential-Document/2025-16846.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16720",
+        "dest": "2025-09-02/Proposed-Rule/2025-16720.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16723",
+        "dest": "2025-09-02/Proposed-Rule/2025-16723.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16737",
+        "dest": "2025-09-02/Proposed-Rule/2025-16737.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16740",
+        "dest": "2025-09-02/Proposed-Rule/2025-16740.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16801",
+        "dest": "2025-09-02/Proposed-Rule/2025-16801.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16724",
+        "dest": "2025-09-02/Rule/2025-16724.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16728",
+        "dest": "2025-09-02/Rule/2025-16728.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16735",
+        "dest": "2025-09-02/Rule/2025-16735.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16753",
+        "dest": "2025-09-02/Rule/2025-16753.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16754",
+        "dest": "2025-09-02/Rule/2025-16754.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16755",
+        "dest": "2025-09-02/Rule/2025-16755.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16757",
+        "dest": "2025-09-02/Rule/2025-16757.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16771",
+        "dest": "2025-09-02/Rule/2025-16771.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "fr-2025-16809",
+        "dest": "2025-09-02/Rule/2025-16809.pdf"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "fcdbbe1fa746801cc3cee8926a1d3855a4612736e8ded09bd8ce98fbcbcbe560",
+    "logical_tree_sha256": "141e4a79534c98d7eac31bc3ba52fab6eda5cfeaddbeba53d1e14459f5599eb7",
+    "content_tree_sha256": "b12bf755a53a50bbd4d53cf6ebd18950f294b5db6ad64683f78ee3046eb79a96",
+    "extended_tree_sha256": "f015d72216bc2b3bc7106652c53862548c590f15c56c23b7057fc72249f7cc1d",
+    "bytes": 15566803,
+    "bytes_all_paths": 15566803,
+    "allocated_bytes": 15683584,
+    "counts": {
+      "objects": 74,
+      "files": 58,
+      "unique_file_inodes": 58,
+      "dirs": 15,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 3,
+      "max_name_length_bytes": 21,
+      "path_length_bytes": {
+        "min": 10,
+        "max": 47,
+        "mean": 30.644,
+        "p50": 32,
+        "p95": 39
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

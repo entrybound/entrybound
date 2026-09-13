@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-tuning-librivox-audiobook-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "f3abc65ef44863ed49c8f20a4fdd37233a1efd7d23c04bb4f19ae21adb5e2979",
+    "logical_tree_sha256": "cec48e9c26fb26a2a0fded905636088c823744171fb3f3038cf6a580719f7862",
+    "pinned_utc": "2026-09-13T02:29:55Z"
+  },
+  "history": []
+}

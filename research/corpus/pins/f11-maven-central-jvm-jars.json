@@ -1,0 +1,33 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f11-maven-central-jvm-jars",
+  "inputs": {
+    "kotlin-compiler-embeddable": {
+      "url": "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-compiler-embeddable/2.4.20/kotlin-compiler-embeddable-2.4.20.jar",
+      "sha256": "cf97161430683fb9af96dc6a7017ffae1fe8737b80d12eee11f2fe3e76f8ded8",
+      "size": 58593245,
+      "retrieved_utc": "2026-09-13T02:29:20Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "h2": {
+      "url": "https://repo1.maven.org/maven2/com/h2database/h2/2.5.250/h2-2.5.250.jar",
+      "sha256": "82a80a2ac06901b03cdb233c663d21c4f49c884bf6d0cf85022729e8db9ab86f",
+      "size": 2689845,
+      "retrieved_utc": "2026-09-13T02:29:21Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "ecj": {
+      "url": "https://repo1.maven.org/maven2/org/eclipse/jdt/ecj/3.46.100/ecj-3.46.100.jar",
+      "sha256": "74c93172475fee0cd4e6eefb44233516dd40525642da35d009146d97ea598229",
+      "size": 3384534,
+      "retrieved_utc": "2026-09-13T02:29:21Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "00438b5584c82ce958ab6f428b94da4df1f29a5888c7e61274d5ca435f21e29c",
+    "logical_tree_sha256": "b09f69796118d5c53ba633bf7f49c125c46df921013b8b48fb7fafbcfcbd975d",
+    "pinned_utc": "2026-09-13T02:29:21Z"
+  },
+  "history": []
+}

@@ -1,0 +1,105 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f16-alpine-3241-minirootfs-ext4-raw",
+  "family": "F16",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "alpine-linux",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "cde1f6b8b2afbdab2b263c7e61c55992f6089539f38840825c9e8b5d61fe90d6",
+  "materialization_key": "3eb7e80f492ec3c20f73b1d2d43e75d33be81d2f36a790470a3f7a3af312ae03",
+  "materialized_utc": "2026-09-13T02:32:29Z",
+  "materialized_relpath": "corpus/tuning/f16-alpine-3241-minirootfs-ext4-raw",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
+    "pinned_utc": "2026-09-13T02:25:29Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 268435687,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "minirootfs",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/x86_64/alpine-minirootfs-3.24.1-x86_64.tar.gz",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/x86_64/alpine-minirootfs-3.24.1-x86_64.tar.gz",
+        "sha256": "41f73e3cf5fa919b8aa5ca6b30dc48f0da2720776d7423e2a7748211456fe081",
+        "size": 3698422,
+        "retrieved_utc": "2026-09-13T02:25:27Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "alpine-minirootfs-3.24.1-x86_64.tar.gz"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g4-binary/build_ext4_image.sh",
+      "script_sha256": "cb8181df3c42be5fb8eb7aee3452f46cc50783910ede7821455d6ee0a2b27aaa",
+      "interpreter": "bash",
+      "interpreter_path": "/bin/bash",
+      "seed": 0,
+      "params": {
+        "image": "alpine-3.24.1-x86_64-ext4.img",
+        "size_mib": 256,
+        "label": "alpine-root",
+        "uuid": "6c3b3c1e-4f0a-4b8e-9a53-2f5d0e1a4b16",
+        "block_size": 4096
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "ffb741dbe0b40a718e90050360fe3f1d1264d2c781c3acab304026948f019c95",
+    "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
+    "content_tree_sha256": "ee4ba3e20205a3d4e8e43cb50b1c2373ae672c904132dd8ead5ca0475a39a1aa",
+    "extended_tree_sha256": "1d10aaa95e6e4496a1a66dab9f1076197022fa910f219fff8689a3378311a216",
+    "bytes": 268435687,
+    "bytes_all_paths": 268435687,
+    "allocated_bytes": 42360832,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "unique_file_inodes": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 29,
+      "path_length_bytes": {
+        "min": 13,
+        "max": 29,
+        "mean": 21.0,
+        "p50": 13,
+        "p95": 29
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

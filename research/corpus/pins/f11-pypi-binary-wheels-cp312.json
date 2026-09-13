@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f11-pypi-binary-wheels-cp312",
+  "inputs": {},
+  "output": {
+    "materialization_key": "feb621875f620b24204d9ed4e6edf61b38000c768f56df67f1a33b37a568b266",
+    "logical_tree_sha256": "98d65f5ca62fe408da5afa57a40955dd2d4f691e43fcbe0944e7b0539d144ae5",
+    "pinned_utc": "2026-09-13T02:29:23Z"
+  },
+  "history": []
+}

@@ -1,0 +1,13 @@
+[package]
+name = "ebrc-g2-cdc-verify"
+version = "0.0.0"
+edition = "2024"
+publish = false
+description = "Cross-check of the g2-generated gear-norm-v1 reference chunker against entrybound::chunker"
+
+# Standalone: build via ../cdc_verify.sh, which copies this project to scratch, points the path dependency
+# at the repository crate and reuses the workspace Cargo.lock.
+[workspace]
+
+[dependencies]
+entrybound = { path = "ENTRYBOUND_CRATE_PATH" }

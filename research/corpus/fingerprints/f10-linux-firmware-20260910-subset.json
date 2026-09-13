@@ -1,0 +1,135 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f10-linux-firmware-20260910-subset",
+  "family": "F10",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "linux-firmware",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "1fbd212255d23a1a8260d5165474fe2a0f8e5093a66484cf5976bbe4291aebbb",
+  "materialization_key": "7df677376aed7fcb3db48d67760552e05b211bc43ffa891a4cccb5a90a96bac9",
+  "materialized_utc": "2026-09-13T02:30:57Z",
+  "materialized_relpath": "corpus/tuning/f10-linux-firmware-20260910-subset",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "ae4d6ab8ff7235d8bcca3e53bdac6f9a7e8212f4862eed47547829722ec19d3e",
+    "pinned_utc": "2026-09-13T02:30:57Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 496419085,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "firmware",
+        "url": "https://cdn.kernel.org/pub/linux/kernel/firmware/linux-firmware-20260910.tar.xz",
+        "final_url": "https://cdn.kernel.org/pub/linux/kernel/firmware/linux-firmware-20260910.tar.xz",
+        "sha256": "f3937ca282ba256242e2b6dbe523df8a80007d29ffd61f56d270190865492ea8",
+        "size": 656677324,
+        "retrieved_utc": "2026-09-13T02:28:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "linux-firmware-20260910.tar.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "firmware",
+          "format": "tar",
+          "dest": "",
+          "strip_components": 1,
+          "members": [
+            "linux-firmware-20260910/WHENCE",
+            "linux-firmware-20260910/amdgpu/*",
+            "linux-firmware-20260910/i915/*",
+            "linux-firmware-20260910/xe/*",
+            "linux-firmware-20260910/intel/iwlwifi/*",
+            "linux-firmware-20260910/rtw89/*",
+            "linux-firmware-20260910/radeon/*"
+          ]
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "firmware",
+          "format": "tar",
+          "dest": "",
+          "strip_components": 1,
+          "members": [
+            "linux-firmware-20260910/WHENCE",
+            "linux-firmware-20260910/amdgpu/*",
+            "linux-firmware-20260910/i915/*",
+            "linux-firmware-20260910/xe/*",
+            "linux-firmware-20260910/intel/iwlwifi/*",
+            "linux-firmware-20260910/rtw89/*",
+            "linux-firmware-20260910/radeon/*"
+          ]
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "52f6169936eca3bc2fb709c4eff88af44922ca135c235031350412955de8fe91",
+    "logical_tree_sha256": "ae4d6ab8ff7235d8bcca3e53bdac6f9a7e8212f4862eed47547829722ec19d3e",
+    "content_tree_sha256": "713fff82ef12553e635491f34261079d1bfb029cad2be43e9d10b0115b61d9ac",
+    "extended_tree_sha256": "f1ba81493df4985636d4d4d61684406aefdcf8997177a5b86f7a550ca93cdefb",
+    "bytes": 496419085,
+    "bytes_all_paths": 496419085,
+    "allocated_bytes": 499556352,
+    "counts": {
+      "objects": 1309,
+      "files": 1301,
+      "unique_file_inodes": 1301,
+      "dirs": 7,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 3,
+      "max_name_length_bytes": 35,
+      "path_length_bytes": {
+        "min": 2,
+        "max": 47,
+        "mean": 25.43,
+        "p50": 23,
+        "p95": 43
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

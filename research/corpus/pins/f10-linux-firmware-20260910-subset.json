@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f10-linux-firmware-20260910-subset",
+  "inputs": {},
+  "output": {
+    "materialization_key": "7df677376aed7fcb3db48d67760552e05b211bc43ffa891a4cccb5a90a96bac9",
+    "logical_tree_sha256": "ae4d6ab8ff7235d8bcca3e53bdac6f9a7e8212f4862eed47547829722ec19d3e",
+    "pinned_utc": "2026-09-13T02:30:57Z"
+  },
+  "history": []
+}

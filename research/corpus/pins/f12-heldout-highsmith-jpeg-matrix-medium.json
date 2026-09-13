@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f12-heldout-highsmith-jpeg-matrix-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "da09fe852eaad9e213dd1322515896d218f8ed03b82f3245e0e911468cd12420",
+    "logical_tree_sha256": "aacff894169dc599857c6c18ef0044a6eef1599d91d75e5e6603a9752b4a5c13",
+    "pinned_utc": "2026-09-13T02:29:38Z"
+  },
+  "history": []
+}

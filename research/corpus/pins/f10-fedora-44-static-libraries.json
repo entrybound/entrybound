@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f10-fedora-44-static-libraries",
+  "inputs": {},
+  "output": {
+    "materialization_key": "54b5acec549a3c64d3eded8f1056627dfc6884534001deef6c40d1e7d5adffd7",
+    "logical_tree_sha256": "2d7de33fb0bdcad27ea5cecc89b654763f40b3470e1e8911d7a13ac461dbf8c4",
+    "pinned_utc": "2026-09-13T02:27:03Z"
+  },
+  "history": []
+}

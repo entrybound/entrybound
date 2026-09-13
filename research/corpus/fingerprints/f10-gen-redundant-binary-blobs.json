@@ -1,0 +1,88 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f10-gen-redundant-binary-blobs",
+  "family": "F10",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "generate",
+  "real_or_generated": "generated",
+  "independence_group": "gen-g4-redundant-blobs",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "2fc320c56d42a49fec991e2630471cb66709c96806ef184e087a6c9c1f99fd6a",
+  "materialization_key": "7107b96ea53d509b9c2fa042b27e7673c16bed7a718530273e393463ac139440",
+  "materialized_utc": "2026-09-13T02:25:24Z",
+  "materialized_relpath": "corpus/tuning/f10-gen-redundant-binary-blobs",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "722f8bdeae4950dfcb27e3d3c0bab2bd503a15b90f88cb44182ef6c9a849f907",
+    "pinned_utc": "2026-09-13T02:25:24Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 15204352,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g4-binary/gen_redundant_blobs.py",
+      "script_sha256": "2508bcbfc3af33b02b8eda3dbf5187b86e0c2c7d9fc6893cf3205ad38713742c",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 1009,
+      "params": {
+        "profile": "mixed-v1"
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "0e12f5aa51b41de523208492a6d06058740aa0e1520d3cc6d9a3885b18e03b93",
+    "logical_tree_sha256": "722f8bdeae4950dfcb27e3d3c0bab2bd503a15b90f88cb44182ef6c9a849f907",
+    "content_tree_sha256": "a35fdc4dbed031d9312390df140bee956187bc9af4d38873f217211a693fe76e",
+    "extended_tree_sha256": "47c4c935540988a4efd362e1658f9e7f579892bd9870a924037b8f3ee6d08d7b",
+    "bytes": 15204352,
+    "bytes_all_paths": 15204352,
+    "allocated_bytes": 15204352,
+    "counts": {
+      "objects": 11,
+      "files": 10,
+      "unique_file_inodes": 10,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 27,
+      "path_length_bytes": {
+        "min": 12,
+        "max": 27,
+        "mean": 20.5,
+        "p50": 20,
+        "p95": 27
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

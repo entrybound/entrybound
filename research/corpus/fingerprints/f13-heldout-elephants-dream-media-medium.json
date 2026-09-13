@@ -1,0 +1,112 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-heldout-elephants-dream-media-medium",
+  "family": "F13",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-blender-elephants-dream",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "f6d23715cefc6952fda658938b84568aa28338f0a533a24799c23e87882f8f02",
+  "materialization_key": "233cec6faf1c70b9937f1eb4c82509e414bd59622ced9965b95d6640572a7db8",
+  "materialized_utc": "2026-09-13T02:29:39Z",
+  "materialized_relpath": "heldout/f13-heldout-elephants-dream-media-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "899c32e370ecb0a4c2a27ec29b1028dcfa2ebc37f40df0e702f489faec5c548c",
+    "pinned_utc": "2026-09-13T02:29:39Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 293153797,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "blender-6b236c7f119f",
+        "url": "https://download.blender.org/ED/ED-ME-5.1-DVD.ac3",
+        "final_url": "https://download.blender.org/ED/ED-ME-5.1-DVD.ac3",
+        "sha256": "e78c5b5a2f09b3cf85e288d2e1d7101755250388475277bb03a3ea12e63dc22c",
+        "size": 37020928,
+        "retrieved_utc": "2026-09-13T02:04:44Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ED-ME-5.1-DVD.ac3"
+      },
+      {
+        "name": "blender-310391a3e02a",
+        "url": "https://download.blender.org/ED/elephantsdream-480-h264-st-aac.mov",
+        "final_url": "https://download.blender.org/ED/elephantsdream-480-h264-st-aac.mov",
+        "sha256": "a7dbacae5fa2bc345dbd7b10588575f3e2bba36012e9a93df5346467053b0634",
+        "size": 103636531,
+        "retrieved_utc": "2026-09-13T02:04:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "elephantsdream-480-h264-st-aac.mov"
+      },
+      {
+        "name": "blender-35460bd1590f",
+        "url": "https://download.blender.org/ED/elephantsdream-720-h264-st-aac.mov",
+        "final_url": "https://download.blender.org/ED/elephantsdream-720-h264-st-aac.mov",
+        "sha256": "6fc295e0e92835316ec95929ccfc664b05ed2434f673e6f5e684f98f7558a547",
+        "size": 152496338,
+        "retrieved_utc": "2026-09-13T02:04:43Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "elephantsdream-720-h264-st-aac.mov"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "blender-6b236c7f119f",
+        "dest": "ED-ME-5.1-DVD.ac3"
+      },
+      {
+        "op": "copy",
+        "input": "blender-310391a3e02a",
+        "dest": "elephantsdream-480-h264-st-aac.mov"
+      },
+      {
+        "op": "copy",
+        "input": "blender-35460bd1590f",
+        "dest": "elephantsdream-720-h264-st-aac.mov"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "10fdc2c44ac70304a82f86f981b52f63a9ff4dcba89d9894713016f96b1a2962",
+    "logical_tree_sha256": "899c32e370ecb0a4c2a27ec29b1028dcfa2ebc37f40df0e702f489faec5c548c",
+    "content_tree_sha256": "92fdf0309eddac2bbc99df0661b98c5d488f8dfbaa58c3e8c00319d561f55b07",
+    "extended_tree_sha256": "5b6a65cfd98bad529201db121e5fe7bc7f893b9ec3d8cd11a9bcd8c66d489e85",
+    "bytes": 293153797,
+    "counts": {
+      "objects": 4,
+      "files": 3,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

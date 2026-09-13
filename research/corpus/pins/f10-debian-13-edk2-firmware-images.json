@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f10-debian-13-edk2-firmware-images",
+  "inputs": {},
+  "output": {
+    "materialization_key": "c243e3436ba904abda65c9549b7474d988a7b908bc5acf19c08196c0593aa83b",
+    "logical_tree_sha256": "f191fac833b6fd97fe5d5da15cb33455f203bd58c4856838a0272d71fe45a766",
+    "pinned_utc": "2026-09-13T02:26:40Z"
+  },
+  "history": []
+}

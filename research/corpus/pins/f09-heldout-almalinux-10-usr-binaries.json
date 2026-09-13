@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f09-heldout-almalinux-10-usr-binaries",
+  "inputs": {},
+  "output": {
+    "materialization_key": "d88045e7d557f3349519bb994ed04621bc7e19ad5baeba281381e9855ea5d738",
+    "logical_tree_sha256": "86af83928994c5b2c1115a01ec7d2d5180d48673dc99db42b392aa46afaa1e66",
+    "pinned_utc": "2026-09-13T02:26:38Z"
+  },
+  "history": []
+}

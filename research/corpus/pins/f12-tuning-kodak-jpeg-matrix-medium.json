@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f12-tuning-kodak-jpeg-matrix-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "010b458f08cd52e2c6beade07a9eaea60ff708fc824f8bb3ca176c92ecd23bde",
+    "logical_tree_sha256": "bc2398c32694f7b54be3ca4f756fa76978eccb99e3d1f85da7cd6c3f67267236",
+    "pinned_utc": "2026-09-13T02:29:50Z"
+  },
+  "history": []
+}

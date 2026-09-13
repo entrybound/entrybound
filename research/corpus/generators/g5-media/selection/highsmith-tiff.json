@@ -1,0 +1,93 @@
+{
+  "pool": "highsmith-tiff",
+  "rules": "F12/F13 held-out lossless source: Carol M. Highsmith Archive 8-bit master TIFFs ('u' masters) from the\n    Library of Congress (tile.loc.gov), taken directly from LoC because Wikimedia rate-limits original-file\n    downloads.  Seeded random pick among collection result pages; masters of 40-95 MB; item rights advisory must\n    read 'No known restrictions on publication'.",
+  "selection_seed": 20260912,
+  "selected_utc": "2026-09-13T02:27:04Z",
+  "entries": [
+    {
+      "key": "loc-highsm-02603",
+      "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/02600/02603u.tif",
+      "name": "highsm-02603u.tif",
+      "api_size": 78474306,
+      "alloc": "highsmith",
+      "title": "Architectural art \"Vortex, Stream, and Confluence\" at Lloyd D. George U.S. Courthouse, Las Vegas, Nevada",
+      "license": {
+        "spdx_or_name": "Public domain (LoC: No known restrictions on publication.)",
+        "attribution": "Carol M. Highsmith Archive, Library of Congress, Prints and Photographs Division",
+        "source_page": "http://www.loc.gov/item/2010719996/"
+      },
+      "sha256": "d9a652adec7c8cae8e033efbe461d2e346126cef93e99d74d55346f72274ff8c",
+      "size": 78474306,
+      "retrieved_utc": "2026-09-13T02:27:35Z",
+      "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/02600/02603u.tif"
+    },
+    {
+      "key": "loc-highsm-03656",
+      "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03656u.tif",
+      "name": "highsm-03656u.tif",
+      "api_size": 73932722,
+      "alloc": "highsmith",
+      "title": "Sculpture \"Urns of Justice\" at exterior entrance plinith of the John M. Shaw U.S. Courthouse, Lafayette, Louisiana",
+      "license": {
+        "spdx_or_name": "Public domain (LoC: No known restrictions on publication.)",
+        "attribution": "Carol M. Highsmith Archive, Library of Congress, Prints and Photographs Division",
+        "source_page": "http://www.loc.gov/item/2010720415/"
+      },
+      "sha256": "27911428d69279b0fe688eb31cb5e2292b559c18716fedf8259ca945d7dfbe5e",
+      "size": 73932722,
+      "retrieved_utc": "2026-09-13T02:27:35Z",
+      "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03656u.tif"
+    },
+    {
+      "key": "loc-highsm-04606",
+      "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/04600/04606u.tif",
+      "name": "highsm-04606u.tif",
+      "api_size": 75521024,
+      "alloc": "highsmith",
+      "title": "Badlands National Park, in southwest South Dakota",
+      "license": {
+        "spdx_or_name": "Public domain (LoC: No known restrictions on publication.)",
+        "attribution": "Carol M. Highsmith Archive, Library of Congress, Prints and Photographs Division",
+        "source_page": "http://www.loc.gov/item/2010630590/"
+      },
+      "sha256": "6001f6d4881ae2aa2ef31aadbc2d8baecfb525cb8453804782c189b7dae775d9",
+      "size": 75521024,
+      "retrieved_utc": "2026-09-13T02:27:35Z",
+      "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/04600/04606u.tif"
+    },
+    {
+      "key": "loc-highsm-04634",
+      "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/04600/04634u.tif",
+      "name": "highsm-04634u.tif",
+      "api_size": 75523490,
+      "alloc": "highsmith",
+      "title": "Aerial view of Mount Rushmore, South Dakota",
+      "license": {
+        "spdx_or_name": "Public domain (LoC: No known restrictions on publication.)",
+        "attribution": "Carol M. Highsmith Archive, Library of Congress, Prints and Photographs Division",
+        "source_page": "http://www.loc.gov/item/2010630618/"
+      },
+      "sha256": "c79c7ae22b6a89d34bbfc0c3c4fd47bfbd9c2174588096ae002cd22211a2055b",
+      "size": 75523490,
+      "retrieved_utc": "2026-09-13T02:27:36Z",
+      "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/04600/04634u.tif"
+    },
+    {
+      "key": "loc-highsm-03632",
+      "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03632u.tif",
+      "name": "highsm-03632u.tif",
+      "api_size": 51266504,
+      "alloc": "highsmith",
+      "title": "Painting \"Three Sets of Twelve\" at interior main lobby of the U.S. Courthouse, Seattle, Washington",
+      "license": {
+        "spdx_or_name": "Public domain (LoC: No known restrictions on publication.)",
+        "attribution": "Carol M. Highsmith Archive, Library of Congress, Prints and Photographs Division",
+        "source_page": "http://www.loc.gov/item/2010720391/"
+      },
+      "sha256": "2acc9a649ffccaef644d7e16e21438a0300f81f33b396e958ea6ae9edaa62fcd",
+      "size": 51266504,
+      "retrieved_utc": "2026-09-13T02:27:36Z",
+      "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03632u.tif"
+    }
+  ]
+}

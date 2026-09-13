@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f14-pyspark-420-sdist",
+  "inputs": {},
+  "output": {
+    "materialization_key": "1feaa7f3361f8433cf1fda44506465a7cbcf584398cebdbab7b9831a99b6bff4",
+    "logical_tree_sha256": "7a5a65a9b59a4b21e1769de09502511137e6fd3c3c8944b9dc509e918f10651c",
+    "pinned_utc": "2026-09-13T02:29:57Z"
+  },
+  "history": []
+}

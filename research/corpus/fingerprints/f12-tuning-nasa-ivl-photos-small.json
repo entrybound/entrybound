@@ -1,0 +1,209 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f12-tuning-nasa-ivl-photos-small",
+  "family": "F12",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-nasa-ivl-photos",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "351146e0c945a9a425c355e26cd2b3063b31afa2d81edca7ad3f541dfeda43c9",
+  "materialization_key": "2cf1d286195ffefd39fd6f869ed1dda0fa78b2a48cc463684c3d7e2a4868adb3",
+  "materialized_utc": "2026-09-13T02:29:10Z",
+  "materialized_relpath": "corpus/tuning/f12-tuning-nasa-ivl-photos-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "4835190aac2f82a3d96dace58f5fa050146522b7ba67a048c7077f239e584f76",
+    "pinned_utc": "2026-09-13T02:29:10Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 12683069,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "nasa-ed14-0222-088",
+        "url": "https://images-assets.nasa.gov/image/ED14-0222-088/ED14-0222-088~orig.jpg",
+        "final_url": "https://images-assets.nasa.gov/image/ED14-0222-088/ED14-0222-088~orig.jpg",
+        "sha256": "34cb97530d353a7e886904d08b75b9ca04818cd782a47e79729ee979417c755a",
+        "size": 2399424,
+        "retrieved_utc": "2026-09-13T02:08:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "nasa-ed14-0222-088"
+      },
+      {
+        "name": "nasa-gsfc-20150723-2015-13352-015",
+        "url": "https://images-assets.nasa.gov/image/GSFC_20150723_2015-13352_015/GSFC_20150723_2015-13352_015~orig.jpg",
+        "final_url": "https://images-assets.nasa.gov/image/GSFC_20150723_2015-13352_015/GSFC_20150723_2015-13352_015~orig.jpg",
+        "sha256": "222fe462bb09cecd5f1f7b21b46805dd27803d71e9284b418cfe8656f7d778b3",
+        "size": 884216,
+        "retrieved_utc": "2026-09-13T02:08:38Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "nasa-gsfc-20150723-2015-13352-015"
+      },
+      {
+        "name": "nasa-gsfc-20150926-2015-16869-207",
+        "url": "https://images-assets.nasa.gov/image/GSFC_20150926_2015-16869_207/GSFC_20150926_2015-16869_207~orig.jpg",
+        "final_url": "https://images-assets.nasa.gov/image/GSFC_20150926_2015-16869_207/GSFC_20150926_2015-16869_207~orig.jpg",
+        "sha256": "4ecf26abf0172b46c3bc5942056dd25b36f6aec85675900e71088835849cd5ea",
+        "size": 882450,
+        "retrieved_utc": "2026-09-13T02:08:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "nasa-gsfc-20150926-2015-16869-207"
+      },
+      {
+        "name": "nasa-dscn0130",
+        "url": "https://images-assets.nasa.gov/image/DSCN0130/DSCN0130~orig.jpg",
+        "final_url": "https://images-assets.nasa.gov/image/DSCN0130/DSCN0130~orig.jpg",
+        "sha256": "ae29ddbc720d6d04e2d2b2cbc441f4178fa4480e046a85581e66528547db2cd9",
+        "size": 1551329,
+        "retrieved_utc": "2026-09-13T02:08:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "nasa-dscn0130"
+      },
+      {
+        "name": "nasa-nhq201711120011",
+        "url": "https://images-assets.nasa.gov/image/NHQ201711120011/NHQ201711120011~orig.jpg",
+        "final_url": "https://images-assets.nasa.gov/image/NHQ201711120011/NHQ201711120011~orig.jpg",
+        "sha256": "168d05d2456fca63e9676fd0a4483cf6f08724e63f2852fe0fe45471ecc0c973",
+        "size": 2246620,
+        "retrieved_utc": "2026-09-13T02:08:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "nasa-nhq201711120011"
+      },
+      {
+        "name": "nasa-jsc2013e048224",
+        "url": "https://images-assets.nasa.gov/image/jsc2013e048224/jsc2013e048224~orig.jpg",
+        "final_url": "https://images-assets.nasa.gov/image/jsc2013e048224/jsc2013e048224~orig.jpg",
+        "sha256": "db6356e31bb5670f4e212f497322ba3bbbd9780515d2f361bdfd7848bcf78a10",
+        "size": 2106019,
+        "retrieved_utc": "2026-09-13T02:08:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "nasa-jsc2013e048224"
+      },
+      {
+        "name": "nasa-jsc2024e013669",
+        "url": "https://images-assets.nasa.gov/image/jsc2024e013669/jsc2024e013669~orig.jpg",
+        "final_url": "https://images-assets.nasa.gov/image/jsc2024e013669/jsc2024e013669~orig.jpg",
+        "sha256": "5866521f6a31937d7ac1e0ef6326a042fbba726592e3ebb00cd71f413ddb7818",
+        "size": 2029558,
+        "retrieved_utc": "2026-09-13T02:08:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "nasa-jsc2024e013669"
+      },
+      {
+        "name": "nasa-ssc-20250218-s00143",
+        "url": "https://images-assets.nasa.gov/image/SSC-20250218-s00143/SSC-20250218-s00143~orig.jpg",
+        "final_url": "https://images-assets.nasa.gov/image/SSC-20250218-s00143/SSC-20250218-s00143~orig.jpg",
+        "sha256": "96a2e1baf1cbf46297af2ac62a835fcd28301055f4d5dfc7b7116b71414b3639",
+        "size": 583453,
+        "retrieved_utc": "2026-09-13T02:08:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "nasa-ssc-20250218-s00143"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "nasa-ed14-0222-088",
+        "dest": "AFRC/2014/ED14-0222-088.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "nasa-gsfc-20150723-2015-13352-015",
+        "dest": "GSFC/2015/GSFC_20150723_2015-13352_015.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "nasa-gsfc-20150926-2015-16869-207",
+        "dest": "GSFC/2015/GSFC_20150926_2015-16869_207.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "nasa-dscn0130",
+        "dest": "GSFC/2023/DSCN0130.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "nasa-nhq201711120011",
+        "dest": "HQ/2017/NHQ201711120011.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "nasa-jsc2013e048224",
+        "dest": "JSC/2013/jsc2013e048224.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "nasa-jsc2024e013669",
+        "dest": "JSC/2024/jsc2024e013669.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "nasa-ssc-20250218-s00143",
+        "dest": "SSC/2025/SSC-20250218-s00143.jpg"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "8640c2bdc5e777fd3c9b8b4909fb1cf11104b0edd03a1e8e945f01106473c914",
+    "logical_tree_sha256": "4835190aac2f82a3d96dace58f5fa050146522b7ba67a048c7077f239e584f76",
+    "content_tree_sha256": "a444cb04ab253f290a8f6d4f1621123b40c749431ccd345bc6a10ba983ae4c7c",
+    "extended_tree_sha256": "3471ce4525599f8b310bc11686bdcc6a863286e644dbc93d10c3f43deabd8479",
+    "bytes": 12683069,
+    "bytes_all_paths": 12683069,
+    "allocated_bytes": 12697600,
+    "counts": {
+      "objects": 21,
+      "files": 8,
+      "unique_file_inodes": 8,
+      "dirs": 12,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 3,
+      "max_name_length_bytes": 32,
+      "path_length_bytes": {
+        "min": 2,
+        "max": 42,
+        "mean": 16.0,
+        "p50": 9,
+        "p95": 42
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

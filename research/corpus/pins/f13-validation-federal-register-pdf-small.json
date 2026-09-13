@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-validation-federal-register-pdf-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "730331f0438693ced857a4c6663a3e04465ede8fd31e880a913541b08491112a",
+    "logical_tree_sha256": "141e4a79534c98d7eac31bc3ba52fab6eda5cfeaddbeba53d1e14459f5599eb7",
+    "pinned_utc": "2026-09-13T02:29:55Z"
+  },
+  "history": []
+}

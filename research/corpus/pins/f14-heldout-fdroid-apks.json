@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f14-heldout-fdroid-apks",
+  "inputs": {},
+  "output": {
+    "materialization_key": "7968e8ad3e5e99ba4688628d6ac3c353a1e39e2c6df705298eceae4a5297615c",
+    "logical_tree_sha256": "b4c7faf55fc215cd6816f3a7dcd65d84dcb46f3c4df105b43f85dcac1a76b2a9",
+    "pinned_utc": "2026-09-13T02:29:57Z"
+  },
+  "history": []
+}

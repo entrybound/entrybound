@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f12-tuning-kodak-jpeg-edge-cases-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "4d7a4ae5193553ef4bc4df09cf31f82a3bd1535a1af77959eacff163e2b88e6c",
+    "logical_tree_sha256": "e22ad66d20acf48ff779fad94f1e9d3518a46c822e0386c653ca73e49c3a5785",
+    "pinned_utc": "2026-09-13T02:28:44Z"
+  },
+  "history": []
+}

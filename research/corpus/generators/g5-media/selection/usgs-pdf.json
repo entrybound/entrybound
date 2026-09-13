@@ -1,0 +1,188 @@
+{
+  "pool": "usgs-pdf",
+  "rules": "F13 held-out PDFs: USGS Publications Warehouse numbered-series reports (USGS-authored, public domain).",
+  "selection_seed": 20260912,
+  "selected_utc": "2026-09-13T02:08:01Z",
+  "entries": [
+    {
+      "key": "usgs-pp1842Q",
+      "url": "https://pubs.usgs.gov/pp/1842/q/pp1842q.pdf",
+      "name": "pp1842q.pdf",
+      "dir": "Professional-Paper",
+      "series": "Professional Paper",
+      "license": {
+        "spdx_or_name": "US Government work (USGS), public domain",
+        "attribution": "U.S. Geological Survey",
+        "source_page": "https://pubs.usgs.gov/publication/pp1842Q"
+      },
+      "api_size": 2076833,
+      "alloc": "f13-heldout-usgs-pdf-small",
+      "sha256": "c911ccb4e98aa13d612fd260741e9ce11753958dcab522ad9a8c150b80f9e9a1",
+      "size": 2076833,
+      "retrieved_utc": "2026-09-13T02:16:01Z",
+      "final_url": "https://pubs.usgs.gov/pp/1842/q/pp1842q.pdf"
+    },
+    {
+      "key": "usgs-sir20205123",
+      "url": "https://pubs.usgs.gov/sir/2020/5123/sir20205123.pdf",
+      "name": "sir20205123.pdf",
+      "dir": "Scientific-Investigations-Report",
+      "series": "Scientific Investigations Report",
+      "license": {
+        "spdx_or_name": "US Government work (USGS), public domain",
+        "attribution": "U.S. Geological Survey",
+        "source_page": "https://pubs.usgs.gov/publication/sir20205123"
+      },
+      "api_size": 984972,
+      "alloc": "f13-heldout-usgs-pdf-small",
+      "sha256": "668ed31094766539d1e04f945f222989fbbfd17b77f5f35d5880188690326b05",
+      "size": 984972,
+      "retrieved_utc": "2026-09-13T02:16:02Z",
+      "final_url": "https://pubs.usgs.gov/sir/2020/5123/sir20205123.pdf"
+    },
+    {
+      "key": "usgs-ofr20211109",
+      "url": "https://pubs.usgs.gov/of/2021/1109/ofr20211109.pdf",
+      "name": "ofr20211109.pdf",
+      "dir": "Open-File-Report",
+      "series": "Open-File Report",
+      "license": {
+        "spdx_or_name": "US Government work (USGS), public domain",
+        "attribution": "U.S. Geological Survey",
+        "source_page": "https://pubs.usgs.gov/publication/ofr20211109"
+      },
+      "api_size": 2484316,
+      "alloc": "f13-heldout-usgs-pdf-small",
+      "sha256": "8fb1d347659fed1c26a0a467377debdaaed816fde44c8d7cfc6d6fe43ab4662b",
+      "size": 2484316,
+      "retrieved_utc": "2026-09-13T02:16:02Z",
+      "final_url": "https://pubs.usgs.gov/of/2021/1109/ofr20211109.pdf"
+    },
+    {
+      "key": "usgs-fs20223079",
+      "url": "https://pubs.usgs.gov/fs/2022/3079/fs20223079.pdf",
+      "name": "fs20223079.pdf",
+      "dir": "Fact-Sheet",
+      "series": "Fact Sheet",
+      "license": {
+        "spdx_or_name": "US Government work (USGS), public domain",
+        "attribution": "U.S. Geological Survey",
+        "source_page": "https://pubs.usgs.gov/publication/fs20223079"
+      },
+      "api_size": 1013724,
+      "alloc": "f13-heldout-usgs-pdf-small",
+      "sha256": "4864799bd1a7c562c207144eb9d8f6619f6730c3ef071e5ee9bb0a0a62695327",
+      "size": 1013724,
+      "retrieved_utc": "2026-09-13T02:16:03Z",
+      "final_url": "https://pubs.usgs.gov/fs/2022/3079/fs20223079.pdf"
+    },
+    {
+      "key": "usgs-dr1164",
+      "url": "https://pubs.usgs.gov/dr/1164/dr1164.pdf",
+      "name": "dr1164.pdf",
+      "dir": "Data-Report",
+      "series": "Data Report",
+      "license": {
+        "spdx_or_name": "US Government work (USGS), public domain",
+        "attribution": "U.S. Geological Survey",
+        "source_page": "https://pubs.usgs.gov/publication/dr1164"
+      },
+      "api_size": 1075001,
+      "alloc": "f13-heldout-usgs-pdf-small",
+      "sha256": "c6e1e0d18ad208c01b7954020d5ee6db11cd8871369642df319ded27a5850832",
+      "size": 1075001,
+      "retrieved_utc": "2026-09-13T02:16:03Z",
+      "final_url": "https://pubs.usgs.gov/dr/1164/dr1164.pdf"
+    },
+    {
+      "key": "usgs-sim3509",
+      "url": "https://pubs.usgs.gov/sim/3509/sim3509.pdf",
+      "name": "sim3509.pdf",
+      "dir": "Scientific-Investigations-Map",
+      "series": "Scientific Investigations Map",
+      "license": {
+        "spdx_or_name": "US Government work (USGS), public domain",
+        "attribution": "U.S. Geological Survey",
+        "source_page": "https://pubs.usgs.gov/publication/sim3509"
+      },
+      "api_size": 2986990,
+      "alloc": "f13-heldout-usgs-pdf-small",
+      "sha256": "407e67b4e5a64e5c376bfbcb275ea0c5a23183593ac00d91e9fb798590d54350",
+      "size": 2986990,
+      "retrieved_utc": "2026-09-13T02:16:04Z",
+      "final_url": "https://pubs.usgs.gov/sim/3509/sim3509.pdf"
+    },
+    {
+      "key": "usgs-gip216",
+      "url": "https://pubs.usgs.gov/gip/216/gip216.pdf",
+      "name": "gip216.pdf",
+      "dir": "General-Information-Product",
+      "series": "General Information Product",
+      "license": {
+        "spdx_or_name": "US Government work (USGS), public domain",
+        "attribution": "U.S. Geological Survey",
+        "source_page": "https://pubs.usgs.gov/publication/gip216"
+      },
+      "api_size": 1619314,
+      "alloc": "f13-heldout-usgs-pdf-small",
+      "sha256": "0d81464edbc4875fc2b908dd556771957d23e34cbcab82c3e9fcb33d53410f48",
+      "size": 1619314,
+      "retrieved_utc": "2026-09-13T02:16:04Z",
+      "final_url": "https://pubs.usgs.gov/gip/216/gip216.pdf"
+    },
+    {
+      "key": "usgs-dr1166",
+      "url": "https://pubs.usgs.gov/dr/1166/dr1166.pdf",
+      "name": "dr1166.pdf",
+      "dir": "Data-Report",
+      "series": "Data Report",
+      "license": {
+        "spdx_or_name": "US Government work (USGS), public domain",
+        "attribution": "U.S. Geological Survey",
+        "source_page": "https://pubs.usgs.gov/publication/dr1166"
+      },
+      "api_size": 1856767,
+      "alloc": "f13-heldout-usgs-pdf-small",
+      "sha256": "4c6085bc8082a30ce07bf9608079dd8e15e616b7a5139678cb0cfd798b18b298",
+      "size": 1856767,
+      "retrieved_utc": "2026-09-13T02:16:06Z",
+      "final_url": "https://pubs.usgs.gov/dr/1166/dr1166.pdf"
+    },
+    {
+      "key": "usgs-tm9A6.2",
+      "url": "https://pubs.usgs.gov/tm/09/a6.2/tm9a6.2.pdf",
+      "name": "tm9a6.2.pdf",
+      "dir": "Techniques-and-Methods",
+      "series": "Techniques and Methods",
+      "license": {
+        "spdx_or_name": "US Government work (USGS), public domain",
+        "attribution": "U.S. Geological Survey",
+        "source_page": "https://pubs.usgs.gov/publication/tm9A6.2"
+      },
+      "api_size": 1091336,
+      "alloc": "f13-heldout-usgs-pdf-small",
+      "sha256": "c1da95a8f3ec163cea63d4d936b7b430825a7018d1c44e97647709522f58007c",
+      "size": 1091336,
+      "retrieved_utc": "2026-09-13T02:16:04Z",
+      "final_url": "https://pubs.usgs.gov/tm/09/a6.2/tm9a6.2.pdf"
+    },
+    {
+      "key": "usgs-gip218",
+      "url": "https://pubs.usgs.gov/gip/218/gip218.pdf",
+      "name": "gip218.pdf",
+      "dir": "General-Information-Product",
+      "series": "General Information Product",
+      "license": {
+        "spdx_or_name": "US Government work (USGS), public domain",
+        "attribution": "U.S. Geological Survey",
+        "source_page": "https://pubs.usgs.gov/publication/gip218"
+      },
+      "api_size": 246088,
+      "alloc": "f13-heldout-usgs-pdf-small",
+      "sha256": "df9369c1fb29c538a6d56b2fa1e2c3adbc2e177cbf0091e1670913040b050e04",
+      "size": 246088,
+      "retrieved_utc": "2026-09-13T02:16:05Z",
+      "final_url": "https://pubs.usgs.gov/gip/218/gip218.pdf"
+    }
+  ]
+}

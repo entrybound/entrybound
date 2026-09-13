@@ -1,0 +1,261 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f11-fedora-44-rpms",
+  "family": "F11",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "fedora",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "e6470364a084527e9cac8611ae74b2b14766403503dfd6528bdb17ddd1be9ff5",
+  "materialization_key": "45dbfe92ab75f11ae54384f3de79bc08cc97f34bf56fe0fc9ce99d72d6dbd8e7",
+  "materialized_utc": "2026-09-13T02:28:50Z",
+  "materialized_relpath": "corpus/validation/f11-fedora-44-rpms",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "e00bd408b944578fb4470cac54e3493d8afafd69207de020f2b6b37acd1e2063",
+    "pinned_utc": "2026-09-13T02:28:50Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 325845759,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "gcc",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/gcc-16.0.1-0.10.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/gcc-16.0.1-0.10.fc44.x86_64.rpm",
+        "sha256": "5410123363bb8a6e3ac5d00448619957f8062e4769a434ba28cf61e9f2524871",
+        "size": 45161684,
+        "retrieved_utc": "2026-09-13T02:28:42Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "gcc-16.0.1-0.10.fc44.x86_64.rpm"
+      },
+      {
+        "name": "gcc-c",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/gcc-c++-16.0.1-0.10.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/gcc-c++-16.0.1-0.10.fc44.x86_64.rpm",
+        "sha256": "1a59b2eb05e808abe6e801da4d2107aeeca8fac1d8d0e528bca7f08ecb93bb15",
+        "size": 18035753,
+        "retrieved_utc": "2026-09-13T02:28:43Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "gcc-c++-16.0.1-0.10.fc44.x86_64.rpm"
+      },
+      {
+        "name": "kernel-core",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-core-6.19.10-300.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-core-6.19.10-300.fc44.x86_64.rpm",
+        "sha256": "a69aebcfe61ed91a593926dd008a5178e0a84dff04b3700cf25b4d92032c4b6d",
+        "size": 21394553,
+        "retrieved_utc": "2026-09-13T02:28:43Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "kernel-core-6.19.10-300.fc44.x86_64.rpm"
+      },
+      {
+        "name": "kernel-modules-core",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-modules-core-6.19.10-300.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-modules-core-6.19.10-300.fc44.x86_64.rpm",
+        "sha256": "97c409946fa6eeaf5d026bdb214a709d40a7a9204a3efb38ff23a59f518239d3",
+        "size": 76562633,
+        "retrieved_utc": "2026-09-13T02:28:44Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "kernel-modules-core-6.19.10-300.fc44.x86_64.rpm"
+      },
+      {
+        "name": "python3-libs",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/p/python3-libs-3.14.3-2.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/p/python3-libs-3.14.3-2.fc44.x86_64.rpm",
+        "sha256": "130aad43ab0ccca75d52c89d9862701a0c55136cb6b8aba4e34d21d3fd8b2849",
+        "size": 10591012,
+        "retrieved_utc": "2026-09-13T02:28:45Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "python3-libs-3.14.3-2.fc44.x86_64.rpm"
+      },
+      {
+        "name": "qt6-qtbase",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/q/qt6-qtbase-6.10.2-2.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/q/qt6-qtbase-6.10.2-2.fc44.x86_64.rpm",
+        "sha256": "b7542686d152d4a6546b3d06e9ec7f042735340ba2ec7a8aad1e2978ea40ccea",
+        "size": 4548649,
+        "retrieved_utc": "2026-09-13T02:28:45Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "qt6-qtbase-6.10.2-2.fc44.x86_64.rpm"
+      },
+      {
+        "name": "emacs-common",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/e/emacs-common-30.2-16.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/e/emacs-common-30.2-16.fc44.x86_64.rpm",
+        "sha256": "5be147cdd016d17f6666123beca18e71c7cc7beadaeab45f3dcc130b58eda2c7",
+        "size": 45055520,
+        "retrieved_utc": "2026-09-13T02:28:46Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "emacs-common-30.2-16.fc44.x86_64.rpm"
+      },
+      {
+        "name": "webkitgtk6-0",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/w/webkitgtk6.0-2.52.1-1.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/w/webkitgtk6.0-2.52.1-1.fc44.x86_64.rpm",
+        "sha256": "c2e0ca83e31b3e188b9dc3abd5bbfcebd768d171ba5f774a38fed9e195a57854",
+        "size": 29084597,
+        "retrieved_utc": "2026-09-13T02:28:47Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "webkitgtk6.0-2.52.1-1.fc44.x86_64.rpm"
+      },
+      {
+        "name": "r-core",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/r/R-core-4.5.3-1.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/r/R-core-4.5.3-1.fc44.x86_64.rpm",
+        "sha256": "786872050382a63ca1d6e54c625554393099fc6176ae5bb49bd357636f9abd97",
+        "size": 64586898,
+        "retrieved_utc": "2026-09-13T02:28:48Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "R-core-4.5.3-1.fc44.x86_64.rpm"
+      },
+      {
+        "name": "php-cli",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/p/php-cli-8.5.4-1.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/p/php-cli-8.5.4-1.fc44.x86_64.rpm",
+        "sha256": "decd5f74c8695738729d9fd8cc9b60a6587f21acdb25de02b3d90b9f3fcb7d42",
+        "size": 6338608,
+        "retrieved_utc": "2026-09-13T02:28:49Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "php-cli-8.5.4-1.fc44.x86_64.rpm"
+      },
+      {
+        "name": "poppler",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/p/poppler-26.01.0-3.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/p/poppler-26.01.0-3.fc44.x86_64.rpm",
+        "sha256": "4a7de5b6cd1d6254a40922064d98f7383e8963ba94c7ae0a1f09d5af2b715278",
+        "size": 1433284,
+        "retrieved_utc": "2026-09-13T02:28:49Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "poppler-26.01.0-3.fc44.x86_64.rpm"
+      },
+      {
+        "name": "texlive-base",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/t/texlive-base-20260301-105.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/t/texlive-base-20260301-105.fc44.x86_64.rpm",
+        "sha256": "2a33f064e62bc73a1909531255b9abb2d32a06fdcde579f9b1792155ef769931",
+        "size": 3052568,
+        "retrieved_utc": "2026-09-13T02:28:49Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "texlive-base-20260301-105.fc44.x86_64.rpm"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "gcc"
+      },
+      {
+        "op": "copy",
+        "input": "gcc-c"
+      },
+      {
+        "op": "copy",
+        "input": "kernel-core"
+      },
+      {
+        "op": "copy",
+        "input": "kernel-modules-core"
+      },
+      {
+        "op": "copy",
+        "input": "python3-libs"
+      },
+      {
+        "op": "copy",
+        "input": "qt6-qtbase"
+      },
+      {
+        "op": "copy",
+        "input": "emacs-common"
+      },
+      {
+        "op": "copy",
+        "input": "webkitgtk6-0"
+      },
+      {
+        "op": "copy",
+        "input": "r-core"
+      },
+      {
+        "op": "copy",
+        "input": "php-cli"
+      },
+      {
+        "op": "copy",
+        "input": "poppler"
+      },
+      {
+        "op": "copy",
+        "input": "texlive-base"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "61fe325032070b374960201a965aab5a9da61391b596540f9677a5a88937ba1d",
+    "logical_tree_sha256": "e00bd408b944578fb4470cac54e3493d8afafd69207de020f2b6b37acd1e2063",
+    "content_tree_sha256": "24409a26c0a440acfea2a9babf6edf774adac77cd3f4561c046992effb7e7da4",
+    "extended_tree_sha256": "cd0930632b19931cd119672a2325419a8ebd1129098307027539e512b3c81db4",
+    "bytes": 325845759,
+    "bytes_all_paths": 325845759,
+    "allocated_bytes": 325869568,
+    "counts": {
+      "objects": 13,
+      "files": 12,
+      "unique_file_inodes": 12,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 47,
+      "path_length_bytes": {
+        "min": 30,
+        "max": 47,
+        "mean": 36.0,
+        "p50": 36,
+        "p95": 41
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

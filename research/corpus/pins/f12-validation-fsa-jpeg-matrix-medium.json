@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f12-validation-fsa-jpeg-matrix-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "3ba7f4a90302da952eef906a99053e35d080ee93d626bf18ce01a664fc0c45e1",
+    "logical_tree_sha256": "6a01d60afeabfb8d7cc94ecfb7138af02c1cabad753e4974f40e492163f05e5b",
+    "pinned_utc": "2026-09-13T02:30:02Z"
+  },
+  "history": []
+}

@@ -1,0 +1,82 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f16-heldout-freebsd-151-ufs-vmdk",
+  "family": "F16",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "freebsd",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "93501c7ab1744eae775e4f2db67a07ec190e83cade8c24d61ee0d771b3ce7951",
+  "materialization_key": "19871bc86afc34b38956f23dd8676aca4dc86f98852548d03b951e513e198c31",
+  "materialized_utc": "2026-09-13T02:35:41Z",
+  "materialized_relpath": "heldout/f16-heldout-freebsd-151-ufs-vmdk",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "1c14e9af20e30280d4c13cff0b8fca19dda4a3e10eef7c79e3c6c92ae2c49612",
+    "pinned_utc": "2026-09-13T02:35:41Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 2643361792,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "vmdk-xz",
+        "url": "https://download.freebsd.org/releases/VM-IMAGES/15.1-RELEASE/amd64/Latest/FreeBSD-15.1-RELEASE-amd64-ufs.vmdk.xz",
+        "final_url": "https://download.freebsd.org/releases/VM-IMAGES/15.1-RELEASE/amd64/Latest/FreeBSD-15.1-RELEASE-amd64-ufs.vmdk.xz",
+        "sha256": "1bc19a845ddfba9f85c6a44e2c14d074ed232abb0040b2e6f51c4af1ff349565",
+        "size": 665305636,
+        "retrieved_utc": "2026-09-13T02:34:54Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "FreeBSD-15.1-RELEASE-amd64-ufs.vmdk.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "vmdk-xz",
+        "dest": "FreeBSD-15.1-RELEASE-amd64-ufs.vmdk",
+        "format": "xz"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "xz": "xz (XZ Utils) 5.4.5",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "e37501d18ed542301abd9bde4b508841e84075392853a32515cb043a7faf3d8c",
+    "logical_tree_sha256": "1c14e9af20e30280d4c13cff0b8fca19dda4a3e10eef7c79e3c6c92ae2c49612",
+    "content_tree_sha256": "76c740a2d9aff639430720df5c777e36fd92f7ed87f47cc60fa14bd951e7c6f7",
+    "extended_tree_sha256": "a533c664b2e6ef8f262af48b71e92d9b273df99e4bf16173133172143af1046b",
+    "bytes": 2643361792,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

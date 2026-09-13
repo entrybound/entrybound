@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f10-heldout-openwrt-25125-ath79-images",
+  "inputs": {},
+  "output": {
+    "materialization_key": "a82b21dabcf5059f4e407eea8e6c58b802484ac6be6a7fa4e627a5c30bf1f404",
+    "logical_tree_sha256": "479f3f2d91e3b87853ade0689c9b55aa8732c522f40b92c6c65ce1108969d7ea",
+    "pinned_utc": "2026-09-13T02:27:37Z"
+  },
+  "history": []
+}

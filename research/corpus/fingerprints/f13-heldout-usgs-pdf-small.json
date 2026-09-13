@@ -1,0 +1,224 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-heldout-usgs-pdf-small",
+  "family": "F13",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-usgs-pubs-pdf",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "514b1af73009debfc0aa7da0c94e871e068dabe7b64e994bcee1e0de9f5284f9",
+  "materialization_key": "bbec8dfbc213602832785e0a238b1739a5b4f39cee87e649a1a4826583bf36e4",
+  "materialized_utc": "2026-09-13T02:29:50Z",
+  "materialized_relpath": "heldout/f13-heldout-usgs-pdf-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "d4b1555f3f929cbe5b46e642851e52744939aad0258454b474a518746e3a282a",
+    "pinned_utc": "2026-09-13T02:29:50Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 15435341,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "usgs-dr1164",
+        "url": "https://pubs.usgs.gov/dr/1164/dr1164.pdf",
+        "final_url": "https://pubs.usgs.gov/dr/1164/dr1164.pdf",
+        "sha256": "c6e1e0d18ad208c01b7954020d5ee6db11cd8871369642df319ded27a5850832",
+        "size": 1075001,
+        "retrieved_utc": "2026-09-13T02:16:03Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "dr1164.pdf"
+      },
+      {
+        "name": "usgs-dr1166",
+        "url": "https://pubs.usgs.gov/dr/1166/dr1166.pdf",
+        "final_url": "https://pubs.usgs.gov/dr/1166/dr1166.pdf",
+        "sha256": "4c6085bc8082a30ce07bf9608079dd8e15e616b7a5139678cb0cfd798b18b298",
+        "size": 1856767,
+        "retrieved_utc": "2026-09-13T02:16:06Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "dr1166.pdf"
+      },
+      {
+        "name": "usgs-fs20223079",
+        "url": "https://pubs.usgs.gov/fs/2022/3079/fs20223079.pdf",
+        "final_url": "https://pubs.usgs.gov/fs/2022/3079/fs20223079.pdf",
+        "sha256": "4864799bd1a7c562c207144eb9d8f6619f6730c3ef071e5ee9bb0a0a62695327",
+        "size": 1013724,
+        "retrieved_utc": "2026-09-13T02:16:03Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "fs20223079.pdf"
+      },
+      {
+        "name": "usgs-gip216",
+        "url": "https://pubs.usgs.gov/gip/216/gip216.pdf",
+        "final_url": "https://pubs.usgs.gov/gip/216/gip216.pdf",
+        "sha256": "0d81464edbc4875fc2b908dd556771957d23e34cbcab82c3e9fcb33d53410f48",
+        "size": 1619314,
+        "retrieved_utc": "2026-09-13T02:16:04Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "gip216.pdf"
+      },
+      {
+        "name": "usgs-gip218",
+        "url": "https://pubs.usgs.gov/gip/218/gip218.pdf",
+        "final_url": "https://pubs.usgs.gov/gip/218/gip218.pdf",
+        "sha256": "df9369c1fb29c538a6d56b2fa1e2c3adbc2e177cbf0091e1670913040b050e04",
+        "size": 246088,
+        "retrieved_utc": "2026-09-13T02:16:05Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "gip218.pdf"
+      },
+      {
+        "name": "usgs-ofr20211109",
+        "url": "https://pubs.usgs.gov/of/2021/1109/ofr20211109.pdf",
+        "final_url": "https://pubs.usgs.gov/of/2021/1109/ofr20211109.pdf",
+        "sha256": "8fb1d347659fed1c26a0a467377debdaaed816fde44c8d7cfc6d6fe43ab4662b",
+        "size": 2484316,
+        "retrieved_utc": "2026-09-13T02:16:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ofr20211109.pdf"
+      },
+      {
+        "name": "usgs-pp1842q",
+        "url": "https://pubs.usgs.gov/pp/1842/q/pp1842q.pdf",
+        "final_url": "https://pubs.usgs.gov/pp/1842/q/pp1842q.pdf",
+        "sha256": "c911ccb4e98aa13d612fd260741e9ce11753958dcab522ad9a8c150b80f9e9a1",
+        "size": 2076833,
+        "retrieved_utc": "2026-09-13T02:16:01Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "pp1842q.pdf"
+      },
+      {
+        "name": "usgs-sim3509",
+        "url": "https://pubs.usgs.gov/sim/3509/sim3509.pdf",
+        "final_url": "https://pubs.usgs.gov/sim/3509/sim3509.pdf",
+        "sha256": "407e67b4e5a64e5c376bfbcb275ea0c5a23183593ac00d91e9fb798590d54350",
+        "size": 2986990,
+        "retrieved_utc": "2026-09-13T02:16:04Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sim3509.pdf"
+      },
+      {
+        "name": "usgs-sir20205123",
+        "url": "https://pubs.usgs.gov/sir/2020/5123/sir20205123.pdf",
+        "final_url": "https://pubs.usgs.gov/sir/2020/5123/sir20205123.pdf",
+        "sha256": "668ed31094766539d1e04f945f222989fbbfd17b77f5f35d5880188690326b05",
+        "size": 984972,
+        "retrieved_utc": "2026-09-13T02:16:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sir20205123.pdf"
+      },
+      {
+        "name": "usgs-tm9a6-2",
+        "url": "https://pubs.usgs.gov/tm/09/a6.2/tm9a6.2.pdf",
+        "final_url": "https://pubs.usgs.gov/tm/09/a6.2/tm9a6.2.pdf",
+        "sha256": "c1da95a8f3ec163cea63d4d936b7b430825a7018d1c44e97647709522f58007c",
+        "size": 1091336,
+        "retrieved_utc": "2026-09-13T02:16:04Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "tm9a6.2.pdf"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "usgs-dr1164",
+        "dest": "Data-Report/dr1164.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "usgs-dr1166",
+        "dest": "Data-Report/dr1166.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "usgs-fs20223079",
+        "dest": "Fact-Sheet/fs20223079.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "usgs-gip216",
+        "dest": "General-Information-Product/gip216.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "usgs-gip218",
+        "dest": "General-Information-Product/gip218.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "usgs-ofr20211109",
+        "dest": "Open-File-Report/ofr20211109.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "usgs-pp1842q",
+        "dest": "Professional-Paper/pp1842q.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "usgs-sim3509",
+        "dest": "Scientific-Investigations-Map/sim3509.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "usgs-sir20205123",
+        "dest": "Scientific-Investigations-Report/sir20205123.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "usgs-tm9a6-2",
+        "dest": "Techniques-and-Methods/tm9a6.2.pdf"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "2063843f54a6b82cafc94dbe6dd31242c7bd7e74efc7258ad277704323d6a6d2",
+    "logical_tree_sha256": "d4b1555f3f929cbe5b46e642851e52744939aad0258454b474a518746e3a282a",
+    "content_tree_sha256": "29c3e797e2fae3d1d82cc0b88ad197e02d645bf6d3a6e50a644f21004e230007",
+    "extended_tree_sha256": "7300ef470b6c0d2944f91c69f2ad22790c13ce0a5a73166f9ba2ceb51599452e",
+    "bytes": 15435341,
+    "counts": {
+      "objects": 19,
+      "files": 10,
+      "dirs": 8,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

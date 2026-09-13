@@ -1,0 +1,321 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f11-alpine-324-apks",
+  "family": "F11",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "alpine-linux",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "071ca056c1eea740d525e06b0232591615b364b9eb46778dcfcbd67ac71b577c",
+  "materialization_key": "2e1f42327b0344bceb7bba45494ccb0b241132a6a21362095281034e92d0496e",
+  "materialized_utc": "2026-09-13T02:28:41Z",
+  "materialized_relpath": "corpus/tuning/f11-alpine-324-apks",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "4243996682d67d39c0396f0bda9b0259f221c1d63aaa6fee672a4f5c840e892c",
+    "pinned_utc": "2026-09-13T02:28:41Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 10071278,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "busybox",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/busybox-1.37.0-r31.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/busybox-1.37.0-r31.apk",
+        "sha256": "0e626fa97cf937fda7bba4ed4dde8e2f2dbb5083ac34e02180cec0c4eba9351b",
+        "size": 504769,
+        "retrieved_utc": "2026-09-13T02:28:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "busybox-1.37.0-r31.apk"
+      },
+      {
+        "name": "musl",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/musl-1.2.6-r2.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/musl-1.2.6-r2.apk",
+        "sha256": "573712e2f49c15bfc20a2699f204acdfc74c772722b15e7353d768057fae0e71",
+        "size": 415475,
+        "retrieved_utc": "2026-09-13T02:28:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "musl-1.2.6-r2.apk"
+      },
+      {
+        "name": "libcrypto3",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcrypto3-3.5.8-r0.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcrypto3-3.5.8-r0.apk",
+        "sha256": "161223a16f042b8e469e9441291e071464fd91d4f4bbe6f496ee8d0abd4e0701",
+        "size": 1978546,
+        "retrieved_utc": "2026-09-13T02:28:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "libcrypto3-3.5.8-r0.apk"
+      },
+      {
+        "name": "libssl3",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libssl3-3.5.8-r0.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libssl3-3.5.8-r0.apk",
+        "sha256": "aca521e5ae4a321322a9d47ed64a1775f5ab1ffd215d1e9fc0433c58f7bfd037",
+        "size": 379265,
+        "retrieved_utc": "2026-09-13T02:28:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "libssl3-3.5.8-r0.apk"
+      },
+      {
+        "name": "zlib",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zlib-1.3.2-r0.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zlib-1.3.2-r0.apk",
+        "sha256": "b636306cbf8a0c15493b38de608ba11605fd8f11ade631f5ece6f7fdf5a1e09e",
+        "size": 56195,
+        "retrieved_utc": "2026-09-13T02:28:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "zlib-1.3.2-r0.apk"
+      },
+      {
+        "name": "zstd-libs",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zstd-libs-1.5.7-r2.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zstd-libs-1.5.7-r2.apk",
+        "sha256": "23c6065b0049b2406441564bcf0032515a43f78e80d76fcb85535a3803ef5d4e",
+        "size": 376646,
+        "retrieved_utc": "2026-09-13T02:28:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "zstd-libs-1.5.7-r2.apk"
+      },
+      {
+        "name": "xz-libs",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/xz-libs-5.8.4-r0.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/xz-libs-5.8.4-r0.apk",
+        "sha256": "ab362dd515ead04c31a6c302163248da7aa4813e283c971e6dd3f789b453a1d9",
+        "size": 118503,
+        "retrieved_utc": "2026-09-13T02:28:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "xz-libs-5.8.4-r0.apk"
+      },
+      {
+        "name": "libcurl",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcurl-8.22.0-r0.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcurl-8.22.0-r0.apk",
+        "sha256": "40b2a8e15a8d24bc95a5f42aaeb018313a1ff457cee71d8e15aaf1328da765e8",
+        "size": 358307,
+        "retrieved_utc": "2026-09-13T02:28:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "libcurl-8.22.0-r0.apk"
+      },
+      {
+        "name": "git",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/git-2.54.0-r0.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/git-2.54.0-r0.apk",
+        "sha256": "5a2c6782774d2e891fc2fc3fdc50c3c2743b8eb2dc7cda69b6b723af2eedcf78",
+        "size": 3546724,
+        "retrieved_utc": "2026-09-13T02:28:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "git-2.54.0-r0.apk"
+      },
+      {
+        "name": "sqlite-libs",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/sqlite-libs-3.53.4-r0.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/sqlite-libs-3.53.4-r0.apk",
+        "sha256": "a8a216e53d22faa3f04d2e3650c1991af66f8d0b42fadff5afcdb9afb60b19e5",
+        "size": 877769,
+        "retrieved_utc": "2026-09-13T02:28:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "sqlite-libs-3.53.4-r0.apk"
+      },
+      {
+        "name": "ncurses-terminfo-base",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/ncurses-terminfo-base-6.6_p20260516-r0.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/ncurses-terminfo-base-6.6_p20260516-r0.apk",
+        "sha256": "ce83be6d0bd10584a53c3a5868cc1595ce5f0f8e0b621f8f7f70b6144e521fc9",
+        "size": 22172,
+        "retrieved_utc": "2026-09-13T02:28:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "ncurses-terminfo-base-6.6_p20260516-r0.apk"
+      },
+      {
+        "name": "readline",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/readline-8.3.3-r1.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/readline-8.3.3-r1.apk",
+        "sha256": "766911ecb986a6c5cf0841a6b556cd1e9dbbf22b3559726de32416486cd15c81",
+        "size": 127194,
+        "retrieved_utc": "2026-09-13T02:28:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "readline-8.3.3-r1.apk"
+      },
+      {
+        "name": "bash",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/bash-5.3.9-r1.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/bash-5.3.9-r1.apk",
+        "sha256": "4ad962f26fb3c68365171233fe61e3c51bbee1cab35e8dc661198233daeab0dd",
+        "size": 480961,
+        "retrieved_utc": "2026-09-13T02:28:41Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "bash-5.3.9-r1.apk"
+      },
+      {
+        "name": "openssh-client-default",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/openssh-client-default-10.3_p1-r1.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/openssh-client-default-10.3_p1-r1.apk",
+        "sha256": "14132eba5d98eda8c57c103aad9ead0de982ba14a67bfadd15f56130f6a73634",
+        "size": 350769,
+        "retrieved_utc": "2026-09-13T02:28:41Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "openssh-client-default-10.3_p1-r1.apk"
+      },
+      {
+        "name": "pcre2",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/pcre2-10.48-r0.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/pcre2-10.48-r0.apk",
+        "sha256": "cffaedb6cf404647619a8b0323958d293d9cd240e8f887c16bdf4b0a039f993a",
+        "size": 322467,
+        "retrieved_utc": "2026-09-13T02:28:41Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "pcre2-10.48-r0.apk"
+      },
+      {
+        "name": "jq",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/jq-1.8.2-r0.apk",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/jq-1.8.2-r0.apk",
+        "sha256": "63bc58e20566fcf6215b9d2160a76af18def4f73c354dc8ea6d6004e0d0331ac",
+        "size": 155516,
+        "retrieved_utc": "2026-09-13T02:28:41Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "jq-1.8.2-r0.apk"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "busybox"
+      },
+      {
+        "op": "copy",
+        "input": "musl"
+      },
+      {
+        "op": "copy",
+        "input": "libcrypto3"
+      },
+      {
+        "op": "copy",
+        "input": "libssl3"
+      },
+      {
+        "op": "copy",
+        "input": "zlib"
+      },
+      {
+        "op": "copy",
+        "input": "zstd-libs"
+      },
+      {
+        "op": "copy",
+        "input": "xz-libs"
+      },
+      {
+        "op": "copy",
+        "input": "libcurl"
+      },
+      {
+        "op": "copy",
+        "input": "git"
+      },
+      {
+        "op": "copy",
+        "input": "sqlite-libs"
+      },
+      {
+        "op": "copy",
+        "input": "ncurses-terminfo-base"
+      },
+      {
+        "op": "copy",
+        "input": "readline"
+      },
+      {
+        "op": "copy",
+        "input": "bash"
+      },
+      {
+        "op": "copy",
+        "input": "openssh-client-default"
+      },
+      {
+        "op": "copy",
+        "input": "pcre2"
+      },
+      {
+        "op": "copy",
+        "input": "jq"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "f404cd1db45deec04c001af510b23c4bc091869b7a67f8e95e73a5845eb4ccbd",
+    "logical_tree_sha256": "4243996682d67d39c0396f0bda9b0259f221c1d63aaa6fee672a4f5c840e892c",
+    "content_tree_sha256": "39855dd11cdf93b2256aba3ac43d51d23d1e70a92d9be4fa9da508cc74f1d89e",
+    "extended_tree_sha256": "7b9643b442444b675fac2429e8aec7b2844fb1dd78d711068137b623506cbf96",
+    "bytes": 10071278,
+    "bytes_all_paths": 10071278,
+    "allocated_bytes": 10100736,
+    "counts": {
+      "objects": 17,
+      "files": 16,
+      "unique_file_inodes": 16,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 42,
+      "path_length_bytes": {
+        "min": 15,
+        "max": 42,
+        "mean": 22.125,
+        "p50": 21,
+        "p95": 37
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

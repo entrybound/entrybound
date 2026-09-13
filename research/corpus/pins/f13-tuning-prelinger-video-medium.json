@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-tuning-prelinger-video-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "2da127b1750e44b880abcf9e27f844f2f52b5a9a13006ee4241ba4e9c86aeda8",
+    "logical_tree_sha256": "5312b094c2b7fbf64c18f32b7445fce8ac2841d58d1a402fe46602220b5e526f",
+    "pinned_utc": "2026-09-13T02:29:56Z"
+  },
+  "history": []
+}

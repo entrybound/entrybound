@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f10-gen-redundant-binary-blobs",
+  "inputs": {},
+  "output": {
+    "materialization_key": "7107b96ea53d509b9c2fa042b27e7673c16bed7a718530273e393463ac139440",
+    "logical_tree_sha256": "722f8bdeae4950dfcb27e3d3c0bab2bd503a15b90f88cb44182ef6c9a849f907",
+    "pinned_utc": "2026-09-13T02:25:24Z"
+  },
+  "history": []
+}

@@ -1,0 +1,19 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-debian-13-nocloud-20260831-qcow2",
+  "inputs": {
+    "nocloud": {
+      "url": "https://cloud.debian.org/images/cloud/trixie/20260831-2587/debian-13-nocloud-amd64-20260831-2587.qcow2",
+      "sha256": "0f4b9f5f254f9d9207c975d37af59ea89ed3f7be156b0d8d98bd5d2e77f6dc06",
+      "size": 406716416,
+      "retrieved_utc": "2026-09-13T02:30:19Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "d5b6357afd94b6ae4ac78ae64a7dd80a13cbcccc61162c6aa7d8bfc7d68ab3eb",
+    "logical_tree_sha256": "cf58e83693e527d99adecd5cc9a1cf4c3f94fcd29672ebeaf0b71ce8707e04f2",
+    "pinned_utc": "2026-09-13T02:30:20Z"
+  },
+  "history": []
+}

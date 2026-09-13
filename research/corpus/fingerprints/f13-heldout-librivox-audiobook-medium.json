@@ -1,0 +1,144 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-heldout-librivox-audiobook-medium",
+  "family": "F13",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-librivox-reynolds-sf-stories",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "111a2676f59b1f6c25aa5946be98d60c7fb9b943b028f6c80f9cc16f34a300ec",
+  "materialization_key": "4f7bd0c22f8d9ff53b382d43e5ae10e02e5ae42fc9336d868cc8e7e598b52d15",
+  "materialized_utc": "2026-09-13T02:29:49Z",
+  "materialized_relpath": "heldout/f13-heldout-librivox-audiobook-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "0ea965c6c45b6c63d3030594b700cffc0c9e18e097799a5d41627f07c7956309",
+    "pinned_utc": "2026-09-13T02:29:49Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 143751058,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ia-4sfstoriesbymackreynolds-2105-librivox-5e0e8a0825",
+        "url": "https://archive.org/download/4sfstoriesbymackreynolds_2105_librivox/4SFSroriesReynolds_librivox.m4b",
+        "final_url": "https://dn721809.ca.archive.org/0/items/4sfstoriesbymackreynolds_2105_librivox/4SFSroriesReynolds_librivox.m4b",
+        "sha256": "e45d3f5316d5b9fcae8939a0dbad8adc394ca8979f2017a91805fbfdb163827a",
+        "size": 47775089,
+        "retrieved_utc": "2026-09-13T02:04:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "4SFSroriesReynolds_librivox.m4b"
+      },
+      {
+        "name": "ia-4sfstoriesbymackreynolds-2105-librivox-02277b9d60",
+        "url": "https://archive.org/download/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_01_reynolds_128kb.mp3",
+        "final_url": "https://dn721809.ca.archive.org/0/items/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_01_reynolds_128kb.mp3",
+        "sha256": "b16c9de682afef863f07f71d31d79fe6263f130d1fb19f393e435b3240b0ad51",
+        "size": 32759312,
+        "retrieved_utc": "2026-09-13T02:04:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "4sfstoriesbymackreynolds_01_reynolds_128kb.mp3"
+      },
+      {
+        "name": "ia-4sfstoriesbymackreynolds-2105-librivox-30182c2f0c",
+        "url": "https://archive.org/download/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_02_reynolds_128kb.mp3",
+        "final_url": "https://dn721809.ca.archive.org/0/items/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_02_reynolds_128kb.mp3",
+        "sha256": "2010e8696b3393b0c464d5928b80293179e1bb5d8eddf1ac2ce8d14ca17873fd",
+        "size": 31301084,
+        "retrieved_utc": "2026-09-13T02:04:02Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "4sfstoriesbymackreynolds_02_reynolds_128kb.mp3"
+      },
+      {
+        "name": "ia-4sfstoriesbymackreynolds-2105-librivox-330b27c2fa",
+        "url": "https://archive.org/download/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_03_reynolds_128kb.mp3",
+        "final_url": "https://dn721809.ca.archive.org/0/items/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_03_reynolds_128kb.mp3",
+        "sha256": "fa64c2e6b2c358c1916330d0dcdf323732759f85918ce0a147ec24a0f7cf7151",
+        "size": 18785682,
+        "retrieved_utc": "2026-09-13T02:04:04Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "4sfstoriesbymackreynolds_03_reynolds_128kb.mp3"
+      },
+      {
+        "name": "ia-4sfstoriesbymackreynolds-2105-librivox-24be343ded",
+        "url": "https://archive.org/download/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_04_reynolds_128kb.mp3",
+        "final_url": "https://dn721809.ca.archive.org/0/items/4sfstoriesbymackreynolds_2105_librivox/4sfstoriesbymackreynolds_04_reynolds_128kb.mp3",
+        "sha256": "4a88f6f8444a49a64e3b0974835424605a520ce22f1dc944330a1686c48b1c83",
+        "size": 13129891,
+        "retrieved_utc": "2026-09-13T02:04:04Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "4sfstoriesbymackreynolds_04_reynolds_128kb.mp3"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "ia-4sfstoriesbymackreynolds-2105-librivox-5e0e8a0825",
+        "dest": "4 SF Stories by Mack Reynolds/4SFSroriesReynolds_librivox.m4b"
+      },
+      {
+        "op": "copy",
+        "input": "ia-4sfstoriesbymackreynolds-2105-librivox-02277b9d60",
+        "dest": "4 SF Stories by Mack Reynolds/4sfstoriesbymackreynolds_01_reynolds_128kb.mp3"
+      },
+      {
+        "op": "copy",
+        "input": "ia-4sfstoriesbymackreynolds-2105-librivox-30182c2f0c",
+        "dest": "4 SF Stories by Mack Reynolds/4sfstoriesbymackreynolds_02_reynolds_128kb.mp3"
+      },
+      {
+        "op": "copy",
+        "input": "ia-4sfstoriesbymackreynolds-2105-librivox-330b27c2fa",
+        "dest": "4 SF Stories by Mack Reynolds/4sfstoriesbymackreynolds_03_reynolds_128kb.mp3"
+      },
+      {
+        "op": "copy",
+        "input": "ia-4sfstoriesbymackreynolds-2105-librivox-24be343ded",
+        "dest": "4 SF Stories by Mack Reynolds/4sfstoriesbymackreynolds_04_reynolds_128kb.mp3"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "b957652f1d4835a1a5bfa6cff8630954293c5b2fc8ab2183bd1255152c121777",
+    "logical_tree_sha256": "0ea965c6c45b6c63d3030594b700cffc0c9e18e097799a5d41627f07c7956309",
+    "content_tree_sha256": "534ab2baeef72f434c36fbcf5e8cf6a8374b138a07d728a77a422d87992a826d",
+    "extended_tree_sha256": "bb87ee4648f582d89137057546832290ef2d73c47faa93c2ad333bc65dc01322",
+    "bytes": 143751058,
+    "counts": {
+      "objects": 7,
+      "files": 5,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

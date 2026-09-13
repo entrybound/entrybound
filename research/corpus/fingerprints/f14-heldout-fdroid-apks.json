@@ -1,0 +1,169 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f14-heldout-fdroid-apks",
+  "family": "F14",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "f-droid-apps",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "fc405d2c4e6e38d335cb7bb60ea890d8efc65e339046b1d56e0271ee78d9e30f",
+  "materialization_key": "7968e8ad3e5e99ba4688628d6ac3c353a1e39e2c6df705298eceae4a5297615c",
+  "materialized_utc": "2026-09-13T02:29:57Z",
+  "materialized_relpath": "heldout/f14-heldout-fdroid-apks",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "b4c7faf55fc215cd6816f3a7dcd65d84dcb46f3c4df105b43f85dcac1a76b2a9",
+    "pinned_utc": "2026-09-13T02:29:57Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 276570255,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "org-schabi-newpipe",
+        "url": "https://f-droid.org/repo/org.schabi.newpipe_1015_cb84069.apk",
+        "final_url": "https://f-droid.org/repo/org.schabi.newpipe_1015_cb84069.apk",
+        "sha256": "18447bfb1e06d113edc88df93f471827280de06f6f3d4dc42f56f28b9c1bab79",
+        "size": 11507122,
+        "retrieved_utc": "2026-09-13T02:29:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "org.schabi.newpipe_1015_cb84069.apk"
+      },
+      {
+        "name": "de-danoeh-antennapod",
+        "url": "https://f-droid.org/repo/de.danoeh.antennapod_3120195.apk",
+        "final_url": "https://f-droid.org/repo/de.danoeh.antennapod_3120195.apk",
+        "sha256": "11b38c20b555b445a301c12028ccb912af24dce1d8b85532658b797b85d52638",
+        "size": 17733444,
+        "retrieved_utc": "2026-09-13T02:29:41Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "de.danoeh.antennapod_3120195.apk"
+      },
+      {
+        "name": "org-wikipedia",
+        "url": "https://f-droid.org/repo/org.wikipedia_50605.apk",
+        "final_url": "https://f-droid.org/repo/org.wikipedia_50605.apk",
+        "sha256": "85b7a91561fc8558331185657e55f00b99f064273410424b1bb5d4c268b7af61",
+        "size": 82518241,
+        "retrieved_utc": "2026-09-13T02:29:45Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "org.wikipedia_50605.apk"
+      },
+      {
+        "name": "org-kde-kdeconnect_tp",
+        "url": "https://f-droid.org/repo/org.kde.kdeconnect_tp_13513.apk",
+        "final_url": "https://f-droid.org/repo/org.kde.kdeconnect_tp_13513.apk",
+        "sha256": "87949c72a22bae97e019ce81cdb41496999254ca9a53cc6647ea802c3d5506f4",
+        "size": 6794284,
+        "retrieved_utc": "2026-09-13T02:29:46Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "org.kde.kdeconnect_tp_13513.apk"
+      },
+      {
+        "name": "com-nextcloud-client",
+        "url": "https://f-droid.org/repo/com.nextcloud.client_350000051.apk",
+        "final_url": "https://f-droid.org/repo/com.nextcloud.client_350000051.apk",
+        "sha256": "ccc70b2534201eb7d60f44dd50ea4abbc1c3721b6046d9a89842cf9505709ac9",
+        "size": 95314568,
+        "retrieved_utc": "2026-09-13T02:29:51Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "com.nextcloud.client_350000051.apk"
+      },
+      {
+        "name": "org-fdroid-fdroid",
+        "url": "https://f-droid.org/repo/org.fdroid.fdroid_2000041.apk",
+        "final_url": "https://f-droid.org/repo/org.fdroid.fdroid_2000041.apk",
+        "sha256": "36b343514ea2cdd353b7554c14b3da3f4309653b67be5ceb2e912b25597e3d85",
+        "size": 13257686,
+        "retrieved_utc": "2026-09-13T02:29:53Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "org.fdroid.fdroid_2000041.apk"
+      },
+      {
+        "name": "org-videolan-vlc",
+        "url": "https://f-droid.org/repo/org.videolan.vlc_13070108.apk",
+        "final_url": "https://f-droid.org/repo/org.videolan.vlc_13070108.apk",
+        "sha256": "4a9144fadfd8606cc5c0e9db892fd24846b7b2efeb1630db5377955d1612b119",
+        "size": 49444910,
+        "retrieved_utc": "2026-09-13T02:29:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "org.videolan.vlc_13070108.apk"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "org-schabi-newpipe"
+      },
+      {
+        "op": "copy",
+        "input": "de-danoeh-antennapod"
+      },
+      {
+        "op": "copy",
+        "input": "org-wikipedia"
+      },
+      {
+        "op": "copy",
+        "input": "org-kde-kdeconnect_tp"
+      },
+      {
+        "op": "copy",
+        "input": "com-nextcloud-client"
+      },
+      {
+        "op": "copy",
+        "input": "org-fdroid-fdroid"
+      },
+      {
+        "op": "copy",
+        "input": "org-videolan-vlc"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "7b2003f65b7598b733fddc98ae3894e9c3c2a048bbd53878870a2c87c77332e1",
+    "logical_tree_sha256": "b4c7faf55fc215cd6816f3a7dcd65d84dcb46f3c4df105b43f85dcac1a76b2a9",
+    "content_tree_sha256": "4bf5888ea2bda4658986b3b2e77327d2bdf85d5e61f1b3789887258392af011d",
+    "extended_tree_sha256": "2bd796569d0a7dee63ddcbd7d8e726c257171eedc5609435f21b08dbb55117e4",
+    "bytes": 276570255,
+    "counts": {
+      "objects": 8,
+      "files": 7,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

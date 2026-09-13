@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-validation-librivox-audiobook-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "510713700db7ff7f06d0ac12ebcb7e59bbb2f3efe1bac168394eac20125a8556",
+    "logical_tree_sha256": "a2a115a3b71d36434a44e65b88d90778e68ab24600ccd4349956d262d4beb32c",
+    "pinned_utc": "2026-09-13T02:29:56Z"
+  },
+  "history": []
+}

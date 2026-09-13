@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f12-validation-fsa-jpeg-edge-cases-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "956492e3263a7ca890b4bd083db3fcbb0a325939b80cec50b38ddf72cb0c84d4",
+    "logical_tree_sha256": "636dc6013c7bc617899a371b5be8b3b5ac8ed56c3c013d77b33f8609d1cfb206",
+    "pinned_utc": "2026-09-13T02:29:23Z"
+  },
+  "history": []
+}

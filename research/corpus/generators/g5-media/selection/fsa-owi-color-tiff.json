@@ -1,0 +1,133 @@
+{
+  "pool": "fsa-owi-color-tiff",
+  "rules": "F12/F13 validation lossless source: Library of Congress FSA/OWI color transparency scans (TIFF,\n    1939-1945, public domain) via Wikimedia Commons.",
+  "selection_seed": 20260912,
+  "selected_utc": "2026-09-13T02:14:50Z",
+  "entries": [
+    {
+      "key": "commons-68299219",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9d/Marine_lieutenants_studying_glider_piloting_at_Page_Field%2C_Parris_Island%2C_S.C._LCCN2017878628.tif",
+      "name": "Marine lieutenants studying glider piloting at Page Field, Parris Island, S.C. LCCN2017878628.tif",
+      "api_size": 49268174,
+      "api_sha1": "fa990444c51e025203d568f3738e44773d51dc60",
+      "mime": "image/tiff",
+      "license": {
+        "spdx_or_name": "Public domain",
+        "url": "",
+        "usage_terms": "Public domain",
+        "attribution": "Palmer, Alfred T., photographer",
+        "credit": "Library of Congress\n\nCatalog: https://lccn.loc.gov/2017878628\nImage download: https://cdn.loc.gov/master/pnp/fsac/1a35000/1a35100/1a35112u.tif\nOriginal url: https://www.loc.gov/pictures/item/201787862",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Marine_lieutenants_studying_glider_piloting_at_Page_Field,_Parris_Island,_S.C._LCCN2017878628.tif"
+      },
+      "uploader": "Fæ",
+      "meta": {},
+      "width": 4789,
+      "height": 3429,
+      "alloc": "fsa",
+      "sha256": "e064ad3a830c44e9c03bbbfc41f8a6a29f8743dfa045a8598356bcd069f06147",
+      "size": 49268174,
+      "retrieved_utc": "2026-09-13T02:16:08Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9d/Marine_lieutenants_studying_glider_piloting_at_Page_Field%2C_Parris_Island%2C_S.C._LCCN2017878628.tif"
+    },
+    {
+      "key": "commons-68280143",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Burley_tobacco_is_placed_on_sticks_to_wilt_after_cutting%2Cbefore_it_is_taken_into_the_barn_for_drying_and_curing%2C_on_the_Russell_Spears%27_farm%2C_vicinity_of_Lexington%2C_Ky._LCCN2017877538.tif",
+      "name": "Burley tobacco is placed on sticks to wilt after cutting,before it is taken into the barn for drying and curing, on the Russell Spears' farm, vicinity of Lexington, Ky. LCCN2017877",
+      "api_size": 62885264,
+      "api_sha1": "50587ab377eeb3b6ce2780be28bc47bed42c66c3",
+      "mime": "image/tiff",
+      "license": {
+        "spdx_or_name": "Public domain",
+        "url": "",
+        "usage_terms": "Public domain",
+        "attribution": "Wolcott, Marion Post, 1910-1990, photographer",
+        "credit": "Library of Congress\n\nCatalog: https://lccn.loc.gov/2017877538\nImage download: https://cdn.loc.gov/master/pnp/fsac/1a34000/1a34300/1a34374u.tif\nOriginal url: https://www.loc.gov/pictures/item/201787753",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Burley_tobacco_is_placed_on_sticks_to_wilt_after_cutting,before_it_is_taken_into_the_barn_for_drying_and_curing,_on_the_Russell_Spears%27_farm,_vicinity_of_Lexington,_Ky._LCCN2017877538.tif"
+      },
+      "uploader": "Fæ",
+      "meta": {},
+      "width": 5446,
+      "height": 3849,
+      "alloc": "fsa",
+      "sha256": "939d34888f4963197073c9dee7449bfa6308b6ddbb3799fec4bef693c5407ba6",
+      "size": 62885264,
+      "retrieved_utc": "2026-09-13T02:16:14Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Burley_tobacco_is_placed_on_sticks_to_wilt_after_cutting%2Cbefore_it_is_taken_into_the_barn_for_drying_and_curing%2C_on_the_Russell_Spears%27_farm%2C_vicinity_of_Lexington%2C_Ky._LCCN2017877538.tif"
+    },
+    {
+      "key": "commons-68286136",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Men_of_the_community_of_Pie_Town%2C_New_Mexico_eating_at_the_barbeque_LCCN2017877734.tif",
+      "name": "Men of the community of Pie Town, New Mexico eating at the barbeque LCCN2017877734.tif",
+      "api_size": 49948718,
+      "api_sha1": "fd19a65a2cb2512cc0b9efcf385e5c23d901db04",
+      "mime": "image/tiff",
+      "license": {
+        "spdx_or_name": "Public domain",
+        "url": "",
+        "usage_terms": "Public domain",
+        "attribution": "Lee, Russell, 1903-1986, photographer",
+        "credit": "Library of Congress\n\nCatalog: https://lccn.loc.gov/2017877734\nImage download: https://cdn.loc.gov/master/pnp/fsac/1a34000/1a34100/1a34146u.tif\nOriginal url: https://www.loc.gov/pictures/item/201787773",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Men_of_the_community_of_Pie_Town,_New_Mexico_eating_at_the_barbeque_LCCN2017877734.tif"
+      },
+      "uploader": "Fæ",
+      "meta": {},
+      "width": 4864,
+      "height": 3423,
+      "alloc": "fsa",
+      "sha256": "071c54fcf83670a58ae89f227d114e509c832bf2e005b7e4d63bd0bf11a92f52",
+      "size": 49948718,
+      "retrieved_utc": "2026-09-13T02:16:20Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Men_of_the_community_of_Pie_Town%2C_New_Mexico_eating_at_the_barbeque_LCCN2017877734.tif"
+    },
+    {
+      "key": "commons-68283405",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Farmland_in_the_vicinity_of_Mt._Sneffels%2C_Ouray_County%2C_Colorado_LCCN2017877628.tif",
+      "name": "Farmland in the vicinity of Mt. Sneffels, Ouray County, Colorado LCCN2017877628.tif",
+      "api_size": 49373654,
+      "api_sha1": "f743c80db95568bb83cd6b2032f80d4bbcb7245f",
+      "mime": "image/tiff",
+      "license": {
+        "spdx_or_name": "Public domain",
+        "url": "",
+        "usage_terms": "Public domain",
+        "attribution": "Lee, Russell, 1903-1986, photographer",
+        "credit": "Library of Congress\n\nCatalog: https://lccn.loc.gov/2017877628\nImage download: https://cdn.loc.gov/master/pnp/fsac/1a34000/1a34100/1a34182u.tif\nOriginal url: https://www.loc.gov/pictures/item/201787762",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Farmland_in_the_vicinity_of_Mt._Sneffels,_Ouray_County,_Colorado_LCCN2017877628.tif"
+      },
+      "uploader": "Fæ",
+      "meta": {},
+      "width": 4808,
+      "height": 3423,
+      "alloc": "fsa",
+      "sha256": "26a4a4ee5214702f3088de49dce3e6789424f02429142783bc159bf6716b199b",
+      "size": 49373654,
+      "retrieved_utc": "2026-09-13T02:16:28Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Farmland_in_the_vicinity_of_Mt._Sneffels%2C_Ouray_County%2C_Colorado_LCCN2017877628.tif"
+    },
+    {
+      "key": "commons-68279153",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Sawmill_at_the_Greensboro_Lumber_Co.%2C_Greensboro%2C_Ga._LCCN2017877511.tif",
+      "name": "Sawmill at the Greensboro Lumber Co., Greensboro, Ga. LCCN2017877511.tif",
+      "api_size": 63390168,
+      "api_sha1": "4553601ab5b5d2504248ec5ca33d8ebd7065cfb3",
+      "mime": "image/tiff",
+      "license": {
+        "spdx_or_name": "Public domain",
+        "url": "",
+        "usage_terms": "Public domain",
+        "attribution": "Jack Delano",
+        "credit": "Library of Congress\n\nCatalog: https://lccn.loc.gov/2017877511\nImage download: https://cdn.loc.gov/master/pnp/fsac/1a33000/1a33800/1a33885u.tif\nOriginal url: https://www.loc.gov/pictures/item/201787751",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Sawmill_at_the_Greensboro_Lumber_Co.,_Greensboro,_Ga._LCCN2017877511.tif"
+      },
+      "uploader": "Fæ",
+      "meta": {},
+      "width": 5411,
+      "height": 3905,
+      "alloc": "fsa",
+      "sha256": "fb4b20058eb225a3c9145df17055e09c8e6e7891c4565e6a20884a4c1213ae5b",
+      "size": 63390168,
+      "retrieved_utc": "2026-09-13T02:16:34Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Sawmill_at_the_Greensboro_Lumber_Co.%2C_Greensboro%2C_Ga._LCCN2017877511.tif"
+    }
+  ]
+}

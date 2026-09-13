@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f09-heldout-uutils-coreutils-0110-macos",
+  "inputs": {},
+  "output": {
+    "materialization_key": "1c40fdfba8fc4d8d5785370b46e95476e00cbbdd426cb2f841be1824bc1f62d4",
+    "logical_tree_sha256": "3b100eac30e835ad87defb83a32031816b3960059458599589531231013621af",
+    "pinned_utc": "2026-09-13T02:26:31Z"
+  },
+  "history": []
+}

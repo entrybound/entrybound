@@ -1,0 +1,141 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f09-ubuntu-noble-usr-binaries",
+  "family": "F09",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "docker-export",
+  "real_or_generated": "real",
+  "independence_group": "ubuntu-noble",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "ff8efad7949eff20c28bb2d14d998301c75a5e5f83777d20ff8545bf140a3808",
+  "materialization_key": "9ee18bfde866cea43d85ddfdfc8c756214b20520cca459744f2e1e9da577cfde",
+  "materialized_utc": "2026-09-13T02:32:28Z",
+  "materialized_relpath": "corpus/tuning/f09-ubuntu-noble-usr-binaries",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "fa34c8c7bc1960d0fc8deb8318bffa178f73174689d7ffefd504c2138c4cac71",
+    "pinned_utc": "2026-09-13T02:26:40Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 71861744,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "docker": {
+      "image": "ubuntu:24.04@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254",
+      "platform": "linux/amd64",
+      "emulated": false,
+      "image_inspect": "sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254 linux/amd64",
+      "export_tar_sha256": "54da033578fde2b13a71081d3b548c04532c5f6f1b4fd5085a539a101c2feaec",
+      "export_tar_bytes": 80688640,
+      "docker_version": "client 29.7.2 server 29.7.2"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "docker-rootfs",
+        "format": "tar"
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/prune_tree.py",
+        "params": {
+          "keep": [
+            "bin",
+            "sbin",
+            "lib",
+            "lib64",
+            "usr/bin",
+            "usr/sbin",
+            "usr/lib",
+            "usr/lib64",
+            "usr/libexec"
+          ],
+          "require": [
+            "usr/bin",
+            "usr/lib"
+          ]
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g4-binary/prune_tree.py",
+        "script_sha256": "71eb5132ec883b935f6f8c819902172c46446ca8a71d04a92099bbb1f2574b5b",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "keep": [
+            "bin",
+            "sbin",
+            "lib",
+            "lib64",
+            "usr/bin",
+            "usr/sbin",
+            "usr/lib",
+            "usr/lib64",
+            "usr/libexec"
+          ],
+          "require": [
+            "usr/bin",
+            "usr/lib"
+          ]
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "a97908bf422d3ac134382ee1fc8601a784a2ece36c02632b28c778a2e35aae9f",
+    "logical_tree_sha256": "fa34c8c7bc1960d0fc8deb8318bffa178f73174689d7ffefd504c2138c4cac71",
+    "content_tree_sha256": "30799a0adbfdf7520aa88ff193c1e85e658ba3995414eec0a55b289a8882d6c0",
+    "extended_tree_sha256": "31e51f06ccd454fe5ae775c6601f9c87fee9d2f4f1ddfe11ab68efa3dd87ef78",
+    "bytes": 71861744,
+    "bytes_all_paths": 75887498,
+    "allocated_bytes": 75157504,
+    "counts": {
+      "objects": 1687,
+      "files": 1441,
+      "unique_file_inodes": 1439,
+      "dirs": 141,
+      "symlinks": 104,
+      "hardlink_groups": 2,
+      "hardlink_extra_paths": 2,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 8,
+      "max_name_length_bytes": 25,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 71,
+        "mean": 39.85,
+        "p50": 43,
+        "p95": 58
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

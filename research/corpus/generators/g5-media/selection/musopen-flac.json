@@ -1,0 +1,176 @@
+{
+  "pool": "musopen-flac",
+  "rules": "F13 FLAC: Musopen public-domain recordings (Internet Archive).  Tuning: Kickstarter orchestral DVD\n    compilation (PDM); held-out: Chopin complete works piano recordings (CC0).",
+  "selection_seed": 20260912,
+  "selected_utc": "2026-09-13T02:03:25Z",
+  "entries": [
+    {
+      "key": "ia-musopen-dvd-in-lossless-flac-format-b993edfd9d",
+      "url": "https://archive.org/download/musopen-dvd-in-lossless-flac-format/Borodin%20-%20In%20The%20Steppes%20Of%20Central%20Asia/In%20The%20Steppes%20of%20Central%20Asia.flac",
+      "name": "In The Steppes of Central Asia.flac",
+      "dir": "Musopen",
+      "api_size": 73922677,
+      "api_md5": "50b536346362e9062b72a5e449f3681a",
+      "api_sha1": "305f903564076ab9f4c88fd48630f67f6260f4bb",
+      "format": "24bit Flac",
+      "license": {
+        "spdx_or_name": "Public domain (PDM 1.0; Musopen Kickstarter recordings)",
+        "attribution": "Musopen / Czech National Symphony Orchestra",
+        "source_page": "https://archive.org/details/musopen-dvd-in-lossless-flac-format",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-musopen-flac-medium",
+      "sha256": "75db1c8ccfbdee38f8d936bf778b485a71f8f11da4c3856d9f7acc78fee73344",
+      "size": 73922677,
+      "retrieved_utc": "2026-09-13T02:04:27Z",
+      "final_url": "https://dn711107.ca.archive.org/0/items/musopen-dvd-in-lossless-flac-format/Borodin%20-%20In%20The%20Steppes%20Of%20Central%20Asia/In%20The%20Steppes%20of%20Central%20Asia.flac"
+    },
+    {
+      "key": "ia-musopen-dvd-in-lossless-flac-format-8f69026ff1",
+      "url": "https://archive.org/download/musopen-dvd-in-lossless-flac-format/Brahms%20-%20Symphony%20No%201%20in%20C%20Major/Symphony%20No.%201%20in%20C%20Minor%2C%20Op.%2068%20-%20II.%20Andante%20sostenuto.flac",
+      "name": "Symphony No. 1 in C Minor, Op. 68 - II. Andante sostenuto.flac",
+      "dir": "Musopen",
+      "api_size": 76072256,
+      "api_md5": "bef9b43b41010f31d0069347be03ffb6",
+      "api_sha1": "4f1f3acc9ae266fb8e7405b324b65a697819e96e",
+      "format": "24bit Flac",
+      "license": {
+        "spdx_or_name": "Public domain (PDM 1.0; Musopen Kickstarter recordings)",
+        "attribution": "Musopen / Czech National Symphony Orchestra",
+        "source_page": "https://archive.org/details/musopen-dvd-in-lossless-flac-format",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-musopen-flac-medium",
+      "sha256": "b0e8427aab7c7b0ad2fb6d90dd6967abb0cb3f994fe5900009c29bbd41bc7394",
+      "size": 76072256,
+      "retrieved_utc": "2026-09-13T02:04:08Z",
+      "final_url": "https://dn711107.ca.archive.org/0/items/musopen-dvd-in-lossless-flac-format/Brahms%20-%20Symphony%20No%201%20in%20C%20Major/Symphony%20No.%201%20in%20C%20Minor%2C%20Op.%2068%20-%20II.%20Andante%20sostenuto.flac"
+    },
+    {
+      "key": "ia-musopen-dvd-in-lossless-flac-format-51884c8216",
+      "url": "https://archive.org/download/musopen-dvd-in-lossless-flac-format/Brahms%20-%20Symphony%20No%201%20in%20C%20Major/Symphony%20No.%201%20in%20C%20Minor%2C%20Op.%2068%20-%20III.%20Un%20poco%20allegretto%20e%20grazioso.flac",
+      "name": "Symphony No. 1 in C Minor, Op. 68 - III. Un poco allegretto e grazioso.flac",
+      "dir": "Musopen",
+      "api_size": 45578411,
+      "api_md5": "0477a5f5a41b25798311066ac204b2b3",
+      "api_sha1": "248635e9ac60658a58347788a85783e5068b4554",
+      "format": "24bit Flac",
+      "license": {
+        "spdx_or_name": "Public domain (PDM 1.0; Musopen Kickstarter recordings)",
+        "attribution": "Musopen / Czech National Symphony Orchestra",
+        "source_page": "https://archive.org/details/musopen-dvd-in-lossless-flac-format",
+        "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"
+      },
+      "alloc": "f13-tuning-musopen-flac-medium",
+      "sha256": "4de1308d64909ab0ea019723e0716aa3cff0b591791d3c47ab95db867b719069",
+      "size": 45578411,
+      "retrieved_utc": "2026-09-13T02:04:08Z",
+      "final_url": "https://dn711107.ca.archive.org/0/items/musopen-dvd-in-lossless-flac-format/Brahms%20-%20Symphony%20No%201%20in%20C%20Major/Symphony%20No.%201%20in%20C%20Minor%2C%20Op.%2068%20-%20III.%20Un%20poco%20allegretto%20e%20grazioso.flac"
+    },
+    {
+      "key": "ia-musopen-chopin-complete-works-flac-c99adadfac",
+      "url": "https://archive.org/download/musopen-chopin-complete-works-flac/Albumleaf%20in%20E%20major.flac",
+      "name": "Albumleaf in E major.flac",
+      "dir": "Chopin",
+      "api_size": 13684762,
+      "api_md5": "0a229280c78e5716ca9966e3ff144006",
+      "api_sha1": "4f64582e9c7af77edd9b4c987944b35b8eb5b6fa",
+      "format": "24bit Flac",
+      "license": {
+        "spdx_or_name": "CC0-1.0",
+        "attribution": "Musopen (Chopin complete works, various pianists)",
+        "source_page": "https://archive.org/details/musopen-chopin-complete-works-flac",
+        "licenseurl": "https://creativecommons.org/publicdomain/zero/1.0/"
+      },
+      "alloc": "f13-heldout-musopen-chopin-flac-medium",
+      "sha256": "b14ad1732e8f8bd621af492647c91ddc68b22a0006792295338e06314c0c05ef",
+      "size": 13684762,
+      "retrieved_utc": "2026-09-13T02:04:10Z",
+      "final_url": "https://dn721802.ca.archive.org/0/items/musopen-chopin-complete-works-flac/Albumleaf%20in%20E%20major.flac"
+    },
+    {
+      "key": "ia-musopen-chopin-complete-works-flac-5610843224",
+      "url": "https://archive.org/download/musopen-chopin-complete-works-flac/Andantino%20%27Spring%27%2C%20B.%20117.flac",
+      "name": "Andantino 'Spring', B. 117.flac",
+      "dir": "Chopin",
+      "api_size": 11852221,
+      "api_md5": "4a5e23393a2dfc7a3ca695c7faeba1fc",
+      "api_sha1": "1bb3039fc0be678a724d259aa5ac4746697b8732",
+      "format": "24bit Flac",
+      "license": {
+        "spdx_or_name": "CC0-1.0",
+        "attribution": "Musopen (Chopin complete works, various pianists)",
+        "source_page": "https://archive.org/details/musopen-chopin-complete-works-flac",
+        "licenseurl": "https://creativecommons.org/publicdomain/zero/1.0/"
+      },
+      "alloc": "f13-heldout-musopen-chopin-flac-medium",
+      "sha256": "98618905761636a250cbfe7e858e23041e5c05ad0d12b74ebbc0ae9a918d52b8",
+      "size": 11852221,
+      "retrieved_utc": "2026-09-13T02:04:10Z",
+      "final_url": "https://dn721802.ca.archive.org/0/items/musopen-chopin-complete-works-flac/Andantino%20%27Spring%27%2C%20B.%20117.flac"
+    },
+    {
+      "key": "ia-musopen-chopin-complete-works-flac-9ab60e7839",
+      "url": "https://archive.org/download/musopen-chopin-complete-works-flac/Barcarolle%20Op.%2060.flac",
+      "name": "Barcarolle Op. 60.flac",
+      "dir": "Chopin",
+      "api_size": 68723739,
+      "api_md5": "c179d7ac7291cb195f732329e0ce843f",
+      "api_sha1": "1a17af68513a737891eac1dfb40d11e43c0781aa",
+      "format": "24bit Flac",
+      "license": {
+        "spdx_or_name": "CC0-1.0",
+        "attribution": "Musopen (Chopin complete works, various pianists)",
+        "source_page": "https://archive.org/details/musopen-chopin-complete-works-flac",
+        "licenseurl": "https://creativecommons.org/publicdomain/zero/1.0/"
+      },
+      "alloc": "f13-heldout-musopen-chopin-flac-medium",
+      "sha256": "890523fd1638616ce84089423ce94808fe4801fea102c3ac554a5e436c9228ea",
+      "size": 68723739,
+      "retrieved_utc": "2026-09-13T02:04:14Z",
+      "final_url": "https://ia600508.us.archive.org/28/items/musopen-chopin-complete-works-flac/Barcarolle%20Op.%2060.flac"
+    },
+    {
+      "key": "ia-musopen-chopin-complete-works-flac-e2af348dcc",
+      "url": "https://archive.org/download/musopen-chopin-complete-works-flac/Berceuse%20in%20D-flat%20major%2C%20Op.%2057%20.flac",
+      "name": "Berceuse in D-flat major, Op. 57 .flac",
+      "dir": "Chopin",
+      "api_size": 33657677,
+      "api_md5": "2985eff2df1b221bfdc6ca99389c39bc",
+      "api_sha1": "33e58b6471d9d7f20a53255e858e155e7d315c29",
+      "format": "24bit Flac",
+      "license": {
+        "spdx_or_name": "CC0-1.0",
+        "attribution": "Musopen (Chopin complete works, various pianists)",
+        "source_page": "https://archive.org/details/musopen-chopin-complete-works-flac",
+        "licenseurl": "https://creativecommons.org/publicdomain/zero/1.0/"
+      },
+      "alloc": "f13-heldout-musopen-chopin-flac-medium",
+      "sha256": "4d25e5746c555f20e8e41827f01672800a39a92c26f8126cc059d1463972a652",
+      "size": 33657677,
+      "retrieved_utc": "2026-09-13T02:04:13Z",
+      "final_url": "https://ia800508.us.archive.org/28/items/musopen-chopin-complete-works-flac/Berceuse%20in%20D-flat%20major%2C%20Op.%2057%20.flac"
+    },
+    {
+      "key": "ia-musopen-chopin-complete-works-flac-72f9ed5dcd",
+      "url": "https://archive.org/download/musopen-chopin-complete-works-flac/Bolero%2C%20Op.%2019.flac",
+      "name": "Bolero, Op. 19.flac",
+      "dir": "Chopin",
+      "api_size": 68322928,
+      "api_md5": "3750773ec55c5010aa5d3ed594b561d2",
+      "api_sha1": "d0292862b5c075f0485bef0bf53cf63099c270c1",
+      "format": "24bit Flac",
+      "license": {
+        "spdx_or_name": "CC0-1.0",
+        "attribution": "Musopen (Chopin complete works, various pianists)",
+        "source_page": "https://archive.org/details/musopen-chopin-complete-works-flac",
+        "licenseurl": "https://creativecommons.org/publicdomain/zero/1.0/"
+      },
+      "alloc": "f13-heldout-musopen-chopin-flac-medium",
+      "sha256": "b09aca4f803be45a657612923b2cd7e3a180d923535279c32966611a9f4db10e",
+      "size": 68322928,
+      "retrieved_utc": "2026-09-13T02:04:17Z",
+      "final_url": "https://dn721802.ca.archive.org/0/items/musopen-chopin-complete-works-flac/Bolero%2C%20Op.%2019.flac"
+    }
+  ]
+}

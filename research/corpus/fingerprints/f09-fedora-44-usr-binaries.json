@@ -1,0 +1,141 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f09-fedora-44-usr-binaries",
+  "family": "F09",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "docker-export",
+  "real_or_generated": "real",
+  "independence_group": "fedora",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "db7325eddd2a3390582945e7d6eb74a7440946b4cd6f400b3370b54111b64cf6",
+  "materialization_key": "ab447ea54d8354c7a1fb24088f0f6760b33d12f61033d4b63626049f65b758e3",
+  "materialized_utc": "2026-09-13T02:26:39Z",
+  "materialized_relpath": "corpus/validation/f09-fedora-44-usr-binaries",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "d375f5ae347c4f99336718905ca11668f6cf3abf0ba7c1bb440bfdb4693c836c",
+    "pinned_utc": "2026-09-13T02:26:39Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 108520189,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "docker": {
+      "image": "fedora:44@sha256:43b29f65a41eb9c35e1cd5323e3bdf3b655c2357a9f4f1ff2f9c2798e5045d80",
+      "platform": "linux/amd64",
+      "emulated": false,
+      "image_inspect": "sha256:43b29f65a41eb9c35e1cd5323e3bdf3b655c2357a9f4f1ff2f9c2798e5045d80 linux/amd64",
+      "export_tar_sha256": "d6705d94b8df6d24a7f4d1fd67db11ad14d25812d13be05b23076d804cc33f7d",
+      "export_tar_bytes": 189811712,
+      "docker_version": "client 29.7.2 server 29.7.2"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "docker-rootfs",
+        "format": "tar"
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/prune_tree.py",
+        "params": {
+          "keep": [
+            "bin",
+            "sbin",
+            "lib",
+            "lib64",
+            "usr/bin",
+            "usr/sbin",
+            "usr/lib",
+            "usr/lib64",
+            "usr/libexec"
+          ],
+          "require": [
+            "usr/bin",
+            "usr/lib64"
+          ]
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g4-binary/prune_tree.py",
+        "script_sha256": "71eb5132ec883b935f6f8c819902172c46446ca8a71d04a92099bbb1f2574b5b",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "keep": [
+            "bin",
+            "sbin",
+            "lib",
+            "lib64",
+            "usr/bin",
+            "usr/sbin",
+            "usr/lib",
+            "usr/lib64",
+            "usr/libexec"
+          ],
+          "require": [
+            "usr/bin",
+            "usr/lib64"
+          ]
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c98e79df6173b34ab945c8a23a24d619aecc9e0d145daa7d7065295f58a8d424",
+    "logical_tree_sha256": "d375f5ae347c4f99336718905ca11668f6cf3abf0ba7c1bb440bfdb4693c836c",
+    "content_tree_sha256": "0d9fdb5f817980c278d29e52899e436dd4fe342b55095faa59bed1d2690c1a8c",
+    "extended_tree_sha256": "9da32bb717b6991dadbe0ee16522e7fcd5801aacd1d52c7a8392046c5e65aeaf",
+    "bytes": 108520189,
+    "bytes_all_paths": 108601207,
+    "allocated_bytes": 109817856,
+    "counts": {
+      "objects": 1866,
+      "files": 744,
+      "unique_file_inodes": 732,
+      "dirs": 391,
+      "symlinks": 730,
+      "hardlink_groups": 6,
+      "hardlink_extra_paths": 12,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 6,
+      "max_name_length_bytes": 40,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 82,
+        "mean": 34.22,
+        "p50": 29,
+        "p95": 59
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

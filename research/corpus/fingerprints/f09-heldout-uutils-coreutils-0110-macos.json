@@ -1,0 +1,97 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f09-heldout-uutils-coreutils-0110-macos",
+  "family": "F09",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "uutils-coreutils",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "b7a539b0f2901112f3c08365efc24beae0e7448e7eaf8c74264b89507f0b8838",
+  "materialization_key": "1c40fdfba8fc4d8d5785370b46e95476e00cbbdd426cb2f841be1824bc1f62d4",
+  "materialized_utc": "2026-09-13T02:26:31Z",
+  "materialized_relpath": "heldout/f09-heldout-uutils-coreutils-0110-macos",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "3b100eac30e835ad87defb83a32031816b3960059458599589531231013621af",
+    "pinned_utc": "2026-09-13T02:26:31Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 24955726,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "coreutils-0-11-0-x86_64-apple-darwin-tar-gz",
+        "url": "https://github.com/uutils/coreutils/releases/download/0.11.0/coreutils-0.11.0-x86_64-apple-darwin.tar.gz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/11847500/008d84a4-6514-4e41-99f3-030202644f80?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-13T03%3A16%3A17Z&rscd=attachment%3B+filename%3Dcoreutils-0.11.0-x86_64-apple-darwin.tar.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-13T02%3A15%3A30Z&ske=2026-09-13T03%3A16%3A17Z&sks=b&skv=2018-11-09&sig=31WQw661dxfBm0mqNun%2FqxczhO1d3iyvvOEtTfv26F8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTI2NjY5MiwibmJmIjoxNzg5MjY2MzkyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.hXK83q1f4MSt2MbnKlnd189kIjujlrXSua11_2mib10&response-content-disposition=attachment%3B%20filename%3Dcoreutils-0.11.0-x86_64-apple-darwin.tar.gz&response-content-type=application%2Foctet-stream",
+        "sha256": "75e3f1fe855beae6c4bd6f2f8c6306bc0fec5102d6aedb2d539fd9a025c889a8",
+        "size": 5901007,
+        "retrieved_utc": "2026-09-13T02:26:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "coreutils-0.11.0-x86_64-apple-darwin.tar.gz"
+      },
+      {
+        "name": "coreutils-0-11-0-aarch64-apple-darwin-tar-gz",
+        "url": "https://github.com/uutils/coreutils/releases/download/0.11.0/coreutils-0.11.0-aarch64-apple-darwin.tar.gz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/11847500/3c05451a-a7bd-4d8d-8731-7a835bf02c4a?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-13T03%3A13%3A25Z&rscd=attachment%3B+filename%3Dcoreutils-0.11.0-aarch64-apple-darwin.tar.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-13T02%3A12%3A51Z&ske=2026-09-13T03%3A13%3A25Z&sks=b&skv=2018-11-09&sig=8OH7h5vorJy%2BhigDsLmiuOezWjrOMmgANOxKsc%2FcTIs%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTI2NjY5MywibmJmIjoxNzg5MjY2MzkzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.cu1G1Mn5-zfxGYB4X85M7abzzKyTwDMNrP2xRUKBq9E&response-content-disposition=attachment%3B%20filename%3Dcoreutils-0.11.0-aarch64-apple-darwin.tar.gz&response-content-type=application%2Foctet-stream",
+        "sha256": "9001127a01891f6e32547a72c0e27156d686310b0b42fdf23da567288666abb5",
+        "size": 4878124,
+        "retrieved_utc": "2026-09-13T02:26:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "coreutils-0.11.0-aarch64-apple-darwin.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "coreutils-0-11-0-x86_64-apple-darwin-tar-gz",
+        "dest": "x86_64-apple-darwin"
+      },
+      {
+        "op": "extract",
+        "input": "coreutils-0-11-0-aarch64-apple-darwin-tar-gz",
+        "dest": "aarch64-apple-darwin"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "11b575a00087ec250558552758ededbd0fd1faf5af0eb1cae4b88397e1b30a15",
+    "logical_tree_sha256": "3b100eac30e835ad87defb83a32031816b3960059458599589531231013621af",
+    "content_tree_sha256": "e25720fea3bb5e76f5695c03dfb6d05ab37a106184fd6b62984e09c7203471b5",
+    "extended_tree_sha256": "e063d1e2f276c70718f1ea7aae29e8ff84b8f5abc246218152e0ae95cdc80c30",
+    "bytes": 24955726,
+    "counts": {
+      "objects": 13,
+      "files": 8,
+      "dirs": 4,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

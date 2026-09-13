@@ -1,0 +1,209 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-validation-sintel-media-medium",
+  "family": "F13",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-blender-sintel",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "1224a8591d6c39aeb9a1c725c10a5553048017096c065ce8682237c7c97fc874",
+  "materialization_key": "17b65b134b4903964d81445be3217170b5aaea428cb7d097f894081181ee3f26",
+  "materialized_utc": "2026-09-13T02:29:57Z",
+  "materialized_relpath": "corpus/validation/f13-validation-sintel-media-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "adb75f485cdbfa8f496774ba5f885d34079d435b1ac17718dba0f30901ba2bff",
+    "pinned_utc": "2026-09-13T02:29:57Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 159357132,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "blender-1ecc9b52b768",
+        "url": "https://download.blender.org/durian/trailer/Sintel_Trailer.480p.DivX_Plus_HD.mkv",
+        "final_url": "https://download.blender.org/durian/trailer/Sintel_Trailer.480p.DivX_Plus_HD.mkv",
+        "sha256": "8331fbd17c0b552a6b2c590275e0ec0b0c7dcaac0e35ce8dfbd29094564a6c85",
+        "size": 7420639,
+        "retrieved_utc": "2026-09-13T02:04:37Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Sintel_Trailer.480p.DivX_Plus_HD.mkv"
+      },
+      {
+        "name": "blender-510cb18349f9",
+        "url": "https://download.blender.org/durian/trailer/Sintel_Trailer.720p.DivX_Plus_HD.mkv",
+        "final_url": "https://download.blender.org/durian/trailer/Sintel_Trailer.720p.DivX_Plus_HD.mkv",
+        "sha256": "7a290684c72015cb748ee0cce1819d620e2befb29a9fae4c95239b143dd70940",
+        "size": 14625077,
+        "retrieved_utc": "2026-09-13T02:04:37Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Sintel_Trailer.720p.DivX_Plus_HD.mkv"
+      },
+      {
+        "name": "blender-d8da08f625d6",
+        "url": "https://download.blender.org/durian/movies/sintel-m%2Be-st.flac",
+        "final_url": "https://download.blender.org/durian/movies/sintel-m%2Be-st.flac",
+        "sha256": "777f238aed789a0e3a25f8ba156fae182c11a61568c1aa87b7a8bc3b15807785",
+        "size": 74266467,
+        "retrieved_utc": "2026-09-13T02:04:38Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sintel-m+e-st.flac"
+      },
+      {
+        "name": "blender-dd1eccd485fe",
+        "url": "https://download.blender.org/durian/trailer/sintel_trailer-1080p.mp4",
+        "final_url": "https://download.blender.org/durian/trailer/sintel_trailer-1080p.mp4",
+        "sha256": "34bbd52a4b89fdf63c8ace50b268da26653a59508288100cd3c23de276db7931",
+        "size": 14621544,
+        "retrieved_utc": "2026-09-13T02:04:37Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sintel_trailer-1080p.mp4"
+      },
+      {
+        "name": "blender-7a0381655454",
+        "url": "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4",
+        "final_url": "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4",
+        "sha256": "b670602fa00934ca27c4351bb0efe7ea7a07fae57284e44226025eeed7c51254",
+        "size": 4372373,
+        "retrieved_utc": "2026-09-13T02:04:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sintel_trailer-480p.mp4"
+      },
+      {
+        "name": "blender-95180e840ca8",
+        "url": "https://download.blender.org/durian/trailer/sintel_trailer-480p.ogv",
+        "final_url": "https://download.blender.org/durian/trailer/sintel_trailer-480p.ogv",
+        "sha256": "f41345321f5a57dcf422bf219a4364fa678e1cae238e5dd7be257806a1f47e98",
+        "size": 12965718,
+        "retrieved_utc": "2026-09-13T02:04:37Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sintel_trailer-480p.ogv"
+      },
+      {
+        "name": "blender-0559e4dc51ee",
+        "url": "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4",
+        "final_url": "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4",
+        "sha256": "cb0fe73fc0a7d543459996c0cdab730997e6eac1013d3ede18796f777cb7f273",
+        "size": 7608204,
+        "retrieved_utc": "2026-09-13T02:04:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sintel_trailer-720p.mp4"
+      },
+      {
+        "name": "blender-1f85f0f89517",
+        "url": "https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv",
+        "final_url": "https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv",
+        "sha256": "78e22a34e10622f1d3a6e793a09d7b9282e2c7172c623efbbe8d407312bf1f1f",
+        "size": 23477110,
+        "retrieved_utc": "2026-09-13T02:04:37Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sintel_trailer-720p.ogv"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "blender-1ecc9b52b768",
+        "dest": "Sintel_Trailer.480p.DivX_Plus_HD.mkv"
+      },
+      {
+        "op": "copy",
+        "input": "blender-510cb18349f9",
+        "dest": "Sintel_Trailer.720p.DivX_Plus_HD.mkv"
+      },
+      {
+        "op": "copy",
+        "input": "blender-d8da08f625d6",
+        "dest": "sintel-m+e-st.flac"
+      },
+      {
+        "op": "copy",
+        "input": "blender-dd1eccd485fe",
+        "dest": "sintel_trailer-1080p.mp4"
+      },
+      {
+        "op": "copy",
+        "input": "blender-7a0381655454",
+        "dest": "sintel_trailer-480p.mp4"
+      },
+      {
+        "op": "copy",
+        "input": "blender-95180e840ca8",
+        "dest": "sintel_trailer-480p.ogv"
+      },
+      {
+        "op": "copy",
+        "input": "blender-0559e4dc51ee",
+        "dest": "sintel_trailer-720p.mp4"
+      },
+      {
+        "op": "copy",
+        "input": "blender-1f85f0f89517",
+        "dest": "sintel_trailer-720p.ogv"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "6b6f48fbcaeb6e461bb60ecdff853417dc2d9e46fbfcb64758d60da180baa268",
+    "logical_tree_sha256": "adb75f485cdbfa8f496774ba5f885d34079d435b1ac17718dba0f30901ba2bff",
+    "content_tree_sha256": "2eb6f9f7feeecc964f75e5badaf4522c0dbd647869fe71d788a72e289b7d416e",
+    "extended_tree_sha256": "84b0bf798290db858d0da4d6976562a1fadf891f4f940c788e1e814484865815",
+    "bytes": 159357132,
+    "bytes_all_paths": 159357132,
+    "allocated_bytes": 159371264,
+    "counts": {
+      "objects": 9,
+      "files": 8,
+      "unique_file_inodes": 8,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 36,
+      "path_length_bytes": {
+        "min": 18,
+        "max": 36,
+        "mean": 25.75,
+        "p50": 23,
+        "p95": 36
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

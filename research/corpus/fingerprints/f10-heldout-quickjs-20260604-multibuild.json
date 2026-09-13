@@ -1,0 +1,93 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f10-heldout-quickjs-20260604-multibuild",
+  "family": "F10",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "quickjs",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "ce9d86b604b808c79a82cfcdfb6664157f1824c45630d75742b658c2923f3517",
+  "materialization_key": "dcde60bf3efeeda8cf5eb950b9329a2adea2997852e057a3f19989b318497325",
+  "materialized_utc": "2026-09-13T02:33:47Z",
+  "materialized_relpath": "heldout/f10-heldout-quickjs-20260604-multibuild",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "60949f1340ffb58d5be42de62d31efa36e9dcf15c72f39663e0e2d9256b1ac02",
+    "pinned_utc": "2026-09-13T02:29:19Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 43055941,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "quickjs",
+        "url": "https://bellard.org/quickjs/quickjs-2026-06-04.tar.xz",
+        "final_url": "https://bellard.org/quickjs/quickjs-2026-06-04.tar.xz",
+        "sha256": "b376e839b322978313d929fd20663b11ba58b75df5a46c126dd19ea2fa70ad2a",
+        "size": 621500,
+        "retrieved_utc": "2026-09-13T02:26:44Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-pinned",
+        "filename": "quickjs-2026-06-04.tar.xz"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g4-binary/build_c_multibuild.sh",
+      "script_sha256": "4033b0747c114295cdf1cb5f77af7e4b3f8983a64607b72882ddf91d5dff2be3",
+      "interpreter": "bash",
+      "interpreter_path": "/bin/bash",
+      "seed": 0,
+      "params": {
+        "variants": {
+          "O0-g3": "-O0 -g3",
+          "O2-g": "-O2 -g",
+          "Os-g": "-Os -g",
+          "O2-nodebug": "-O2"
+        },
+        "targets": [
+          "qjs",
+          "libquickjs.a"
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c2f84801766801860946413f35c123384297b2a947f319852a9ad3bd7f6fa2c3",
+    "logical_tree_sha256": "60949f1340ffb58d5be42de62d31efa36e9dcf15c72f39663e0e2d9256b1ac02",
+    "content_tree_sha256": "aada42faa99c0d5a57bf1e594c47d3b5af0852a623ce33c96f4a76f003c71644",
+    "extended_tree_sha256": "77f8db530d5c14085a938930c74ee2b31db8deda934cffe5a0c1d8f221ede50a",
+    "bytes": 43055941,
+    "counts": {
+      "objects": 14,
+      "files": 9,
+      "dirs": 4,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

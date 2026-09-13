@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f14-jenkins-25683-war",
+  "inputs": {},
+  "output": {
+    "materialization_key": "1fc00ab88cb3799119493309067c693c9c1af7a170fa054a6ab6313ad29a46d3",
+    "logical_tree_sha256": "32354499b6ae27734e6d6ac3e8ebc4fa976f308d24a2799d84a8cfd058cf6090",
+    "pinned_utc": "2026-09-13T02:29:52Z"
+  },
+  "history": []
+}

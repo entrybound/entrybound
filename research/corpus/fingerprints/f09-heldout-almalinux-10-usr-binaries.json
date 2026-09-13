@@ -1,0 +1,122 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f09-heldout-almalinux-10-usr-binaries",
+  "family": "F09",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "docker-export",
+  "real_or_generated": "real",
+  "independence_group": "almalinux",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "447f3bbb0bb170d4c1647d5c260fc554f7f495beb2044a0d54ae4e81a0899bc2",
+  "materialization_key": "d88045e7d557f3349519bb994ed04621bc7e19ad5baeba281381e9855ea5d738",
+  "materialized_utc": "2026-09-13T02:26:38Z",
+  "materialized_relpath": "heldout/f09-heldout-almalinux-10-usr-binaries",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "86af83928994c5b2c1115a01ec7d2d5180d48673dc99db42b392aa46afaa1e66",
+    "pinned_utc": "2026-09-13T02:26:38Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 159895922,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "docker": {
+      "image": "almalinux:10@sha256:957738702313e6ee452cdb17bc1431542c467be9a4e2f4da3b8e551b0ebb9677",
+      "platform": "linux/amd64",
+      "emulated": false,
+      "image_inspect": "sha256:957738702313e6ee452cdb17bc1431542c467be9a4e2f4da3b8e551b0ebb9677 linux/amd64",
+      "export_tar_sha256": "c5cedea2d073553ac4bcab3bf6e46ffc8d79171136680767142f43f7f3f55cbb",
+      "export_tar_bytes": 193587712,
+      "docker_version": "client 29.7.2 server 29.7.2"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "docker-rootfs",
+        "format": "tar"
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/prune_tree.py",
+        "params": {
+          "keep": [
+            "bin",
+            "sbin",
+            "lib",
+            "lib64",
+            "usr/bin",
+            "usr/sbin",
+            "usr/lib",
+            "usr/lib64",
+            "usr/libexec"
+          ],
+          "require": [
+            "usr/bin"
+          ]
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g4-binary/prune_tree.py",
+        "script_sha256": "71eb5132ec883b935f6f8c819902172c46446ca8a71d04a92099bbb1f2574b5b",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "keep": [
+            "bin",
+            "sbin",
+            "lib",
+            "lib64",
+            "usr/bin",
+            "usr/sbin",
+            "usr/lib",
+            "usr/lib64",
+            "usr/libexec"
+          ],
+          "require": [
+            "usr/bin"
+          ]
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "9c34c7602c14daf1e929db2b547e2bc8f0393f0a9a789c2fb6897ad981503a98",
+    "logical_tree_sha256": "86af83928994c5b2c1115a01ec7d2d5180d48673dc99db42b392aa46afaa1e66",
+    "content_tree_sha256": "a4a704c9d0e6e6d7bfb3b0415d75b1df35fa97419fcc6e2c08da75078d517020",
+    "extended_tree_sha256": "0718ca09a0e66fa85ed1f581b2fd1baf56a32877b79d262231297d990e61097e",
+    "bytes": 159895922,
+    "counts": {
+      "objects": 4989,
+      "files": 3642,
+      "dirs": 547,
+      "symlinks": 799,
+      "hardlink_groups": 515
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

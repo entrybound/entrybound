@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f16-heldout-almalinux-10-genericcloud-qcow2",
+  "family": "F16",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "almalinux",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "cf7605bf0c065276b9e8b9f27239630b29e790026e27d4617604da70e8619315",
+  "materialization_key": "69766fc3435cb37e3f3479427cfe2d68ebfc5204397a0410443e01f857986b54",
+  "materialized_utc": "2026-09-13T02:30:06Z",
+  "materialized_relpath": "heldout/f16-heldout-almalinux-10-genericcloud-qcow2",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "5f0ec0f24bef8e8089e762e8a982ffc1fa8fe1c4b2f0920c2dfe76e2fb30bd8d",
+    "pinned_utc": "2026-09-13T02:30:06Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 496631808,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "genericcloud",
+        "url": "https://repo.almalinux.org/almalinux/10/cloud/x86_64/images/AlmaLinux-10-GenericCloud-10.2-20260817.0.x86_64.qcow2",
+        "final_url": "https://repo.almalinux.org/almalinux/10/cloud/x86_64/images/AlmaLinux-10-GenericCloud-10.2-20260817.0.x86_64.qcow2",
+        "sha256": "bc59485c4828861a15887e30ff1bb913f0f16202fd7286208518f4814da1e10a",
+        "size": 496631808,
+        "retrieved_utc": "2026-09-13T02:30:05Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "AlmaLinux-10-GenericCloud-10.2-20260817.0.x86_64.qcow2"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "genericcloud"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "dee2c0b9ceae851879133bb25541499c70bbb8cad192f453a5cc3608876ab559",
+    "logical_tree_sha256": "5f0ec0f24bef8e8089e762e8a982ffc1fa8fe1c4b2f0920c2dfe76e2fb30bd8d",
+    "content_tree_sha256": "6c9c9eccd3b4e603a471495a68f5540d24332742e4010616e6929fb861ad5e88",
+    "extended_tree_sha256": "08e2fe037ee1c87e231ec90fa58aa6e57975312ca1cd4e7aba47c482da11b7ac",
+    "bytes": 496631808,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

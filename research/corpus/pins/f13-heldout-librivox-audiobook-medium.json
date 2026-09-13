@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-heldout-librivox-audiobook-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "4f7bd0c22f8d9ff53b382d43e5ae10e02e5ae42fc9336d868cc8e7e598b52d15",
+    "logical_tree_sha256": "0ea965c6c45b6c63d3030594b700cffc0c9e18e097799a5d41627f07c7956309",
+    "pinned_utc": "2026-09-13T02:29:49Z"
+  },
+  "history": []
+}

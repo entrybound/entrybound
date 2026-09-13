@@ -1,0 +1,222 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f12-validation-fsa-jpeg-edge-cases-small",
+  "family": "F12",
+  "split": "validation",
+  "scale": "small",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "g5-loc-fsa-owi-color",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "56de66f2a5f9585ada635d9e09f5ae2ae75c17c319f491c5ad0072046ab684a2",
+  "materialization_key": "956492e3263a7ca890b4bd083db3fcbb0a325939b80cec50b38ddf72cb0c84d4",
+  "materialized_utc": "2026-09-13T02:30:28Z",
+  "materialized_relpath": "corpus/validation/f12-validation-fsa-jpeg-edge-cases-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "636dc6013c7bc617899a371b5be8b3b5ac8ed56c3c013d77b33f8609d1cfb206",
+    "pinned_utc": "2026-09-13T02:29:23Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 7043701,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "commons-68279153",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Sawmill_at_the_Greensboro_Lumber_Co.%2C_Greensboro%2C_Ga._LCCN2017877511.tif",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Sawmill_at_the_Greensboro_Lumber_Co.%2C_Greensboro%2C_Ga._LCCN2017877511.tif",
+        "sha256": "fb4b20058eb225a3c9145df17055e09c8e6e7891c4565e6a20884a4c1213ae5b",
+        "size": 63390168,
+        "retrieved_utc": "2026-09-13T02:16:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "commons-68279153"
+      },
+      {
+        "name": "commons-68280143",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Burley_tobacco_is_placed_on_sticks_to_wilt_after_cutting%2Cbefore_it_is_taken_into_the_barn_for_drying_and_curing%2C_on_the_Russell_Spears%27_farm%2C_vicinity_of_Lexington%2C_Ky._LCCN2017877538.tif",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Burley_tobacco_is_placed_on_sticks_to_wilt_after_cutting%2Cbefore_it_is_taken_into_the_barn_for_drying_and_curing%2C_on_the_Russell_Spears%27_farm%2C_vicinity_of_Lexington%2C_Ky._LCCN2017877538.tif",
+        "sha256": "939d34888f4963197073c9dee7449bfa6308b6ddbb3799fec4bef693c5407ba6",
+        "size": 62885264,
+        "retrieved_utc": "2026-09-13T02:16:14Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "commons-68280143"
+      },
+      {
+        "name": "commons-68283405",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Farmland_in_the_vicinity_of_Mt._Sneffels%2C_Ouray_County%2C_Colorado_LCCN2017877628.tif",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Farmland_in_the_vicinity_of_Mt._Sneffels%2C_Ouray_County%2C_Colorado_LCCN2017877628.tif",
+        "sha256": "26a4a4ee5214702f3088de49dce3e6789424f02429142783bc159bf6716b199b",
+        "size": 49373654,
+        "retrieved_utc": "2026-09-13T02:16:28Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "commons-68283405"
+      },
+      {
+        "name": "commons-68286136",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Men_of_the_community_of_Pie_Town%2C_New_Mexico_eating_at_the_barbeque_LCCN2017877734.tif",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Men_of_the_community_of_Pie_Town%2C_New_Mexico_eating_at_the_barbeque_LCCN2017877734.tif",
+        "sha256": "071c54fcf83670a58ae89f227d114e509c832bf2e005b7e4d63bd0bf11a92f52",
+        "size": 49948718,
+        "retrieved_utc": "2026-09-13T02:16:20Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "commons-68286136"
+      },
+      {
+        "name": "commons-68299219",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/9d/Marine_lieutenants_studying_glider_piloting_at_Page_Field%2C_Parris_Island%2C_S.C._LCCN2017878628.tif",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9d/Marine_lieutenants_studying_glider_piloting_at_Page_Field%2C_Parris_Island%2C_S.C._LCCN2017878628.tif",
+        "sha256": "e064ad3a830c44e9c03bbbfc41f8a6a29f8743dfa045a8598356bcd069f06147",
+        "size": 49268174,
+        "retrieved_utc": "2026-09-13T02:16:08Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "commons-68299219"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g5-media/jpeg_matrix.py",
+      "script_sha256": "1950c258aee43ab5eebfb7e2e842235747be638de9faa2300a187d79ae294b28",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 2202,
+      "params": {
+        "mode": "edge",
+        "inputs": [
+          "commons-68279153",
+          "commons-68280143",
+          "commons-68283405",
+          "commons-68286136",
+          "commons-68299219"
+        ],
+        "tiles": {
+          "count": 1,
+          "size": [
+            384,
+            256
+          ],
+          "reduce": [
+            2
+          ]
+        },
+        "edge_cases": [
+          "trunc-25pct",
+          "trunc-75pct",
+          "trunc-95pct",
+          "trunc-prog-30pct",
+          "corrupt-bitflip-4",
+          "corrupt-bitflip-32",
+          "dims-2x2",
+          "dims-33x17",
+          "dims-3x2049",
+          "trunc-no-eoi",
+          "trunc-header",
+          "trunc-after-ff",
+          "corrupt-zero-4k",
+          "corrupt-random-block-4k",
+          "corrupt-rst-missing",
+          "corrupt-rst-order",
+          "corrupt-dht",
+          "corrupt-sof-height-zero",
+          "corrupt-early-eoi",
+          "trail-random-4k",
+          "trail-zeros-64k",
+          "trail-text",
+          "trail-zip",
+          "trail-jpeg-concat",
+          "lead-junk-512",
+          "pad-ff-fill",
+          "multi-com",
+          "huge-app-tiny-image",
+          "app-after-dqt",
+          "gray-ljt",
+          "gray-im",
+          "cmyk-im",
+          "cmyk-pil",
+          "ycck-tj",
+          "cmyk-im-large-icc",
+          "scans-noninterleaved",
+          "scans-progressive-custom",
+          "arith-sequential",
+          "arith-progressive",
+          "exif-orientation-6",
+          "exif-thumb-large",
+          "exif-heavy",
+          "exif-camera",
+          "q100-444-optimized",
+          "q1-420",
+          "jt-rot90-perfect-or-trim",
+          "duplicate-identical"
+        ],
+        "require_tools": {
+          "cjpeg": "libjpeg-turbo version 2.1.5 (build 20240408)",
+          "mozjpeg": "mozjpeg version 4.1.5",
+          "imagemagick": "ImageMagick 6.9.12-98 Q16",
+          "pillow": "Pillow 12.3.0 libjpeg-turbo 3.1.4.1",
+          "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5",
+          "exiftool": "exiftool 12.76",
+          "libturbojpeg": "libturbojpeg 1:2.1.5-2ubuntu2",
+          "icc-profiles-free": "icc-profiles-free 2.0.1+dfsg-1.1"
+        },
+        "max_bytes": 15728640
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "73439c514ffb56d99cac69a9b506047ad56e2e0402ae4adc10d45d06eafdd1ab",
+    "logical_tree_sha256": "636dc6013c7bc617899a371b5be8b3b5ac8ed56c3c013d77b33f8609d1cfb206",
+    "content_tree_sha256": "9c22f66b31ea0ac66108f944af577917d4f0a3278c5f632ecaa9f7559f19ebd9",
+    "extended_tree_sha256": "314bc533ba75099a40ce3f8610fa559009983fdf1a8ac2c6ffd77173f3ddbeac",
+    "bytes": 7043701,
+    "bytes_all_paths": 7043701,
+    "allocated_bytes": 7565312,
+    "counts": {
+      "objects": 283,
+      "files": 235,
+      "unique_file_inodes": 235,
+      "dirs": 47,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 24,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 48,
+        "mean": 34.043,
+        "p50": 35,
+        "p95": 47
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

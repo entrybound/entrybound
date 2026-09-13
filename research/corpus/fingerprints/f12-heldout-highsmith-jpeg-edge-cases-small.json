@@ -1,0 +1,205 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f12-heldout-highsmith-jpeg-edge-cases-small",
+  "family": "F12",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "g5-loc-highsmith",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "ea83c0841b7d7f5a22a8986b89e93c26499c0d22157768cf99598c1970d8861f",
+  "materialization_key": "a78ff0602d1b2d200429e1aa503bb04bc95c1971533b29d11252ef6c104be5d8",
+  "materialized_utc": "2026-09-13T02:29:05Z",
+  "materialized_relpath": "heldout/f12-heldout-highsmith-jpeg-edge-cases-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "3e657c2f1734d21ac3cc2b4d7681374ca901b2c7e8c9fca87ebf132ae6b062b5",
+    "pinned_utc": "2026-09-13T02:29:05Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 8254037,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "loc-highsm-02603",
+        "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/02600/02603u.tif",
+        "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/02600/02603u.tif",
+        "sha256": "d9a652adec7c8cae8e033efbe461d2e346126cef93e99d74d55346f72274ff8c",
+        "size": 78474306,
+        "retrieved_utc": "2026-09-13T02:27:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "02603u.tif"
+      },
+      {
+        "name": "loc-highsm-03632",
+        "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03632u.tif",
+        "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03632u.tif",
+        "sha256": "2acc9a649ffccaef644d7e16e21438a0300f81f33b396e958ea6ae9edaa62fcd",
+        "size": 51266504,
+        "retrieved_utc": "2026-09-13T02:27:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "03632u.tif"
+      },
+      {
+        "name": "loc-highsm-03656",
+        "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03656u.tif",
+        "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03656u.tif",
+        "sha256": "27911428d69279b0fe688eb31cb5e2292b559c18716fedf8259ca945d7dfbe5e",
+        "size": 73932722,
+        "retrieved_utc": "2026-09-13T02:27:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "03656u.tif"
+      },
+      {
+        "name": "loc-highsm-04606",
+        "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/04600/04606u.tif",
+        "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/04600/04606u.tif",
+        "sha256": "6001f6d4881ae2aa2ef31aadbc2d8baecfb525cb8453804782c189b7dae775d9",
+        "size": 75521024,
+        "retrieved_utc": "2026-09-13T02:27:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "04606u.tif"
+      },
+      {
+        "name": "loc-highsm-04634",
+        "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/04600/04634u.tif",
+        "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/04600/04634u.tif",
+        "sha256": "c79c7ae22b6a89d34bbfc0c3c4fd47bfbd9c2174588096ae002cd22211a2055b",
+        "size": 75523490,
+        "retrieved_utc": "2026-09-13T02:27:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "04634u.tif"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g5-media/jpeg_matrix.py",
+      "script_sha256": "1950c258aee43ab5eebfb7e2e842235747be638de9faa2300a187d79ae294b28",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 3202,
+      "params": {
+        "mode": "edge",
+        "inputs": [
+          "loc-highsm-02603",
+          "loc-highsm-03632",
+          "loc-highsm-03656",
+          "loc-highsm-04606",
+          "loc-highsm-04634"
+        ],
+        "tiles": {
+          "count": 1,
+          "size": [
+            384,
+            256
+          ],
+          "reduce": [
+            3
+          ]
+        },
+        "edge_cases": [
+          "trunc-33pct",
+          "trunc-67pct",
+          "trunc-97pct",
+          "trunc-prog-80pct",
+          "corrupt-bitflip-2",
+          "corrupt-bitflip-16",
+          "dims-1x7",
+          "dims-15x31",
+          "dims-2047x5",
+          "trunc-no-eoi",
+          "trunc-header",
+          "trunc-after-ff",
+          "corrupt-zero-4k",
+          "corrupt-random-block-4k",
+          "corrupt-rst-missing",
+          "corrupt-rst-order",
+          "corrupt-dht",
+          "corrupt-sof-height-zero",
+          "corrupt-early-eoi",
+          "trail-random-4k",
+          "trail-zeros-64k",
+          "trail-text",
+          "trail-zip",
+          "trail-jpeg-concat",
+          "lead-junk-512",
+          "pad-ff-fill",
+          "multi-com",
+          "huge-app-tiny-image",
+          "app-after-dqt",
+          "gray-ljt",
+          "gray-im",
+          "cmyk-im",
+          "cmyk-pil",
+          "ycck-tj",
+          "cmyk-im-large-icc",
+          "scans-noninterleaved",
+          "scans-progressive-custom",
+          "arith-sequential",
+          "arith-progressive",
+          "exif-orientation-6",
+          "exif-thumb-large",
+          "exif-heavy",
+          "exif-camera",
+          "q100-444-optimized",
+          "q1-420",
+          "jt-rot90-perfect-or-trim",
+          "duplicate-identical"
+        ],
+        "require_tools": {
+          "cjpeg": "libjpeg-turbo version 2.1.5 (build 20240408)",
+          "mozjpeg": "mozjpeg version 4.1.5",
+          "imagemagick": "ImageMagick 6.9.12-98 Q16",
+          "pillow": "Pillow 12.3.0 libjpeg-turbo 3.1.4.1",
+          "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5",
+          "exiftool": "exiftool 12.76",
+          "libturbojpeg": "libturbojpeg 1:2.1.5-2ubuntu2",
+          "icc-profiles-free": "icc-profiles-free 2.0.1+dfsg-1.1"
+        },
+        "max_bytes": 15728640
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "93e1eb7e0c0702b81b99054eae6a0612cd4f93507e7e37a345c13550711ca57c",
+    "logical_tree_sha256": "3e657c2f1734d21ac3cc2b4d7681374ca901b2c7e8c9fca87ebf132ae6b062b5",
+    "content_tree_sha256": "83aaca0bdef3a4284ee022ef6ff37b0a5ded50550654f46fdf9393893b371154",
+    "extended_tree_sha256": "edc80e9e9e6c4f440c3c72552daad72ad3a6b11c2fedb6443ce04a915f70d8f7",
+    "bytes": 8254037,
+    "counts": {
+      "objects": 283,
+      "files": 235,
+      "dirs": 47,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

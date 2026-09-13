@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-heldout-gen-gpt-disk",
+  "inputs": {},
+  "output": {
+    "materialization_key": "c6356abc22833473d3bdec58445aedae7d9f4d122a902bc6b049aa99ccb7f36c",
+    "logical_tree_sha256": "df4b4551b7f4bb69b761a40275e1254dce574e686e399699b24e06973be98ad1",
+    "pinned_utc": "2026-09-13T02:25:31Z"
+  },
+  "history": []
+}

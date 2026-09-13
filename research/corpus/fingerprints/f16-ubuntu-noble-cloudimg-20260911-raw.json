@@ -1,0 +1,104 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f16-ubuntu-noble-cloudimg-20260911-raw",
+  "family": "F16",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "ubuntu-noble",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "86287351ffe1758ad6ee96ea1213ab7a5f7b094da5053f62b66423b913fa2ba1",
+  "materialization_key": "784000ce9eb5899af850caa9ded9105c85062ecb8556cf1999cff5f843ae914c",
+  "materialized_utc": "2026-09-13T02:33:01Z",
+  "materialized_relpath": "corpus/tuning/f16-ubuntu-noble-cloudimg-20260911-raw",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "2af6901b7701c599a7d1410ba242185f5816e83a4f7935768ebfdc47fba2d7a5",
+    "pinned_utc": "2026-09-13T02:31:00Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 3758096669,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "cloudimg",
+        "url": "https://cloud-images.ubuntu.com/releases/noble/release-20260911/ubuntu-24.04-server-cloudimg-amd64.img",
+        "final_url": "https://cloud-images.ubuntu.com/releases/noble/release-20260911/ubuntu-24.04-server-cloudimg-amd64.img",
+        "sha256": "612b2c0cc1bc413a6cb8c38fd611794caf0f2b436c50013d8b3794db12ad7354",
+        "size": 625256960,
+        "retrieved_utc": "2026-09-13T02:30:25Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ubuntu-24.04-server-cloudimg-amd64.img"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g4-binary/convert_image.sh",
+      "script_sha256": "22b8eae713ea8bfb30a6a99ac33d97f65313c1f6aa7a832e58585a219b3b3775",
+      "interpreter": "bash",
+      "interpreter_path": "/bin/bash",
+      "seed": 0,
+      "params": {
+        "input": "cloudimg",
+        "src_format": "qcow2",
+        "dst": "ubuntu-24.04-server-cloudimg-amd64.raw",
+        "dst_format": "raw"
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "4452d3c31fe41908d45bcf381d7586056e8bdb10134417f9ae5ec5df0e1c2502",
+    "logical_tree_sha256": "2af6901b7701c599a7d1410ba242185f5816e83a4f7935768ebfdc47fba2d7a5",
+    "content_tree_sha256": "66893a16e943b487272d02828eb5574b9dfb09bb84a8b0ed15e695a364ae4e1d",
+    "extended_tree_sha256": "4e227dfa43cec5364947ac71a8c8eb27492f9dee3089f2147cb155f1f7e1b3ab",
+    "bytes": 3758096669,
+    "bytes_all_paths": 3758096669,
+    "allocated_bytes": 1876447232,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "unique_file_inodes": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 38,
+      "path_length_bytes": {
+        "min": 15,
+        "max": 38,
+        "mean": 26.5,
+        "p50": 15,
+        "p95": 38
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

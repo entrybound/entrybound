@@ -1,0 +1,147 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f10-debian-13-edk2-firmware-images",
+  "family": "F10",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "debian-trixie",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "6b4eaf57b48f3cf59878c8577a252d9e301f92667f1687c77730a9ce2fbaeb8e",
+  "materialization_key": "c243e3436ba904abda65c9549b7474d988a7b908bc5acf19c08196c0593aa83b",
+  "materialized_utc": "2026-09-13T02:26:40Z",
+  "materialized_relpath": "corpus/validation/f10-debian-13-edk2-firmware-images",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "f191fac833b6fd97fe5d5da15cb33455f203bd58c4856838a0272d71fe45a766",
+    "pinned_utc": "2026-09-13T02:26:40Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 422658915,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ovmf",
+        "url": "https://deb.debian.org/debian/pool/main/e/edk2/ovmf_2025.02-8+deb13u1_all.deb",
+        "final_url": "https://deb.debian.org/debian/pool/main/e/edk2/ovmf_2025.02-8+deb13u1_all.deb",
+        "sha256": "78e0d54df11fc77406cb7a0bc9a39e5bca6d1cbe06556b91d9a73491c52decdf",
+        "size": 5779964,
+        "retrieved_utc": "2026-09-13T02:26:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ovmf_2025.02-8+deb13u1_all.deb"
+      },
+      {
+        "name": "qemu-efi-aarch64",
+        "url": "https://deb.debian.org/debian/pool/main/e/edk2/qemu-efi-aarch64_2025.02-8+deb13u1_all.deb",
+        "final_url": "https://deb.debian.org/debian/pool/main/e/edk2/qemu-efi-aarch64_2025.02-8+deb13u1_all.deb",
+        "sha256": "a00b2411a79c8aeafd95a7c868ac3cd1aab592f1af9fff965f02d81a625276ed",
+        "size": 5122856,
+        "retrieved_utc": "2026-09-13T02:26:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "qemu-efi-aarch64_2025.02-8+deb13u1_all.deb"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "ovmf",
+          "format": "deb",
+          "dest": "ovmf"
+        }
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "qemu-efi-aarch64",
+          "format": "deb",
+          "dest": "qemu-efi-aarch64"
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "ovmf",
+          "format": "deb",
+          "dest": "ovmf"
+        }
+      },
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "qemu-efi-aarch64",
+          "format": "deb",
+          "dest": "qemu-efi-aarch64"
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "8233243d63427b8d833b02d3c7edcb3948cdd7e9d72b6804e7eb7cc7628f7034",
+    "logical_tree_sha256": "f191fac833b6fd97fe5d5da15cb33455f203bd58c4856838a0272d71fe45a766",
+    "content_tree_sha256": "f960fa2c522f5e5f121cd151e56b7e17cc3cd151a8be921eca47ae437fe2a960",
+    "extended_tree_sha256": "035d116c3f95fbcc8438092a06c4da68394bfc3f3e39e0515e3dc4316f72cc7c",
+    "bytes": 422658915,
+    "bytes_all_paths": 422658915,
+    "allocated_bytes": 422715392,
+    "counts": {
+      "objects": 59,
+      "files": 34,
+      "unique_file_inodes": 34,
+      "dirs": 18,
+      "symlinks": 6,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 6,
+      "max_name_length_bytes": 36,
+      "path_length_bytes": {
+        "min": 4,
+        "max": 77,
+        "mean": 41.845,
+        "p50": 43,
+        "p95": 64
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

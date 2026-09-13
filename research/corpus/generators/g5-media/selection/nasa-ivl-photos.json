@@ -1,0 +1,3957 @@
+{
+  "pool": "nasa-ivl-photos",
+  "rules": "F12 tuning: NASA Image and Video Library photographs from NASA centers, camera-produced JPEG\n    originals (~orig.jpg) with EXIF producer tags; stratified by (Make, Model, Software, coding).",
+  "selection_seed": 20260912,
+  "selected_utc": "2026-09-13T02:06:49Z",
+  "entries": [
+    {
+      "key": "nasa-AFRC2019-0290-13",
+      "url": "https://images-assets.nasa.gov/image/AFRC2019-0290-13/AFRC2019-0290-13~orig.jpg",
+      "name": "AFRC2019-0290-13.jpg",
+      "dir": "AFRC/2019",
+      "api_size": 21855227,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Ken Ulbrich",
+        "source_page": "https://images.nasa.gov/details/AFRC2019-0290-13"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "Adobe Photoshop CC 2019 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2019-11-21"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "3453cf8a3fd8a028bdb8b0c52c00419b1385a304a9bb83cdbf0198878d8f214e",
+      "size": 21855227,
+      "retrieved_utc": "2026-09-13T02:08:30Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2019-0290-13/AFRC2019-0290-13~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2018-0287-010",
+      "url": "https://images-assets.nasa.gov/image/AFRC2018-0287-010/AFRC2018-0287-010~orig.jpg",
+      "name": "AFRC2018-0287-010.jpg",
+      "dir": "AFRC/2018",
+      "api_size": 6905904,
+      "api_md5": "94da827f9e61ea77d582ec02e8a43523",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Josh Valcarcel-JSC Houston",
+        "source_page": "https://images.nasa.gov/details/AFRC2018-0287-010"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D5",
+        "Software": "Adobe Photoshop CC 2018 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2018-11-02"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "6f04755e126eb15d0d35ef4ce8866252e1cb88c48d605a830e6f97bcc124cc82",
+      "size": 6905904,
+      "retrieved_utc": "2026-09-13T02:08:30Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2018-0287-010/AFRC2018-0287-010~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2017-0116-07",
+      "url": "https://images-assets.nasa.gov/image/AFRC2017-0116-07/AFRC2017-0116-07~orig.jpg",
+      "name": "AFRC2017-0116-07.jpg",
+      "dir": "AFRC/2017",
+      "api_size": 3813213,
+      "api_md5": "c9ecd72344a780653daeaf70f1d503fc",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Lauren Hughes",
+        "source_page": "https://images.nasa.gov/details/AFRC2017-0116-07"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "NIKON D810 Ver.1.02",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2017-01-31"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "1232e0c0d7ff2ffcde5b33fb5c7c4ad9f2d30b4836d5d1c975250693953d2313",
+      "size": 3813213,
+      "retrieved_utc": "2026-09-13T02:08:30Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2017-0116-07/AFRC2017-0116-07~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2023-C-02095",
+      "url": "https://images-assets.nasa.gov/image/GRC-2023-C-02095/GRC-2023-C-02095~orig.jpg",
+      "name": "GRC-2023-C-02095.jpg",
+      "dir": "GRC/2023",
+      "api_size": 10896102,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GRC/Jordan Salkin",
+        "source_page": "https://images.nasa.gov/details/GRC-2023-C-02095"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "Adobe Photoshop Camera Raw 16.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2023-02-23"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "eaadd0bb42032b24412c2f51f66d80b1e7afeedda39eb8afe68371d4b7c5f8c6",
+      "size": 10896102,
+      "retrieved_utc": "2026-09-13T02:08:31Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2023-C-02095/GRC-2023-C-02095~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20191003-PH-KLS03_0033",
+      "url": "https://images-assets.nasa.gov/image/KSC-20191003-PH-KLS03_0033/KSC-20191003-PH-KLS03_0033~orig.jpg",
+      "name": "KSC-20191003-PH-KLS03_0033.jpg",
+      "dir": "KSC/2019",
+      "api_size": 15079476,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Kim Shiflett",
+        "source_page": "https://images.nasa.gov/details/KSC-20191003-PH-KLS03_0033"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark II",
+        "Software": "Adobe Photoshop Lightroom Classic 7.4 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2019-10-03"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "4e7381e272a34d69bcb85d6c776d64d6606ff366ffd806a80d85939b280c1666",
+      "size": 15079476,
+      "retrieved_utc": "2026-09-13T02:08:30Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20191003-PH-KLS03_0033/KSC-20191003-PH-KLS03_0033~orig.jpg"
+    },
+    {
+      "key": "nasa-ED15-0193-069",
+      "url": "https://images-assets.nasa.gov/image/ED15-0193-069/ED15-0193-069~orig.jpg",
+      "name": "ED15-0193-069.jpg",
+      "dir": "AFRC/2015",
+      "api_size": 4224034,
+      "api_md5": "bf9234931b9acb1cfc330923ea3ea122",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Nicole Gillian",
+        "source_page": "https://images.nasa.gov/details/ED15-0193-069"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D2X",
+        "Software": "Adobe Photoshop CS6 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2015-06-25"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "a715980ed2d88c427c2a39e38982b609ec7be21517ca6ec3e553578e35c07a2d",
+      "size": 4224034,
+      "retrieved_utc": "2026-09-13T02:08:30Z",
+      "final_url": "https://images-assets.nasa.gov/image/ED15-0193-069/ED15-0193-069~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD25-0023-043",
+      "url": "https://images-assets.nasa.gov/image/ACD25-0023-043/ACD25-0023-043~orig.jpg",
+      "name": "ACD25-0023-043.jpg",
+      "dir": "ARC/2025",
+      "api_size": 11407881,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Don Richey",
+        "source_page": "https://images.nasa.gov/details/ACD25-0023-043"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D750",
+        "Software": "Adobe Photoshop Lightroom Classic 14.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2025-03-13"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "1a1f4ab4209c3d4b2e4293182ed8225227e59895aeccab0e4df5414473ffce8b",
+      "size": 11407881,
+      "retrieved_utc": "2026-09-13T02:08:31Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD25-0023-043/ACD25-0023-043~orig.jpg"
+    },
+    {
+      "key": "nasa-jsc2024e013669",
+      "url": "https://images-assets.nasa.gov/image/jsc2024e013669/jsc2024e013669~orig.jpg",
+      "name": "jsc2024e013669.jpg",
+      "dir": "JSC/2024",
+      "api_size": 2029558,
+      "api_md5": "1a6d55847957c0745299a77642f1a7c6",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Josh Valcarcel – NASA – John",
+        "source_page": "https://images.nasa.gov/details/jsc2024e013669"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 9",
+        "Software": "Adobe Photoshop 24.7 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2024-02-08"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-small",
+      "sha256": "5866521f6a31937d7ac1e0ef6326a042fbba726592e3ebb00cd71f413ddb7818",
+      "size": 2029558,
+      "retrieved_utc": "2026-09-13T02:08:31Z",
+      "final_url": "https://images-assets.nasa.gov/image/jsc2024e013669/jsc2024e013669~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ201711120011",
+      "url": "https://images-assets.nasa.gov/image/NHQ201711120011/NHQ201711120011~orig.jpg",
+      "name": "NHQ201711120011.jpg",
+      "dir": "HQ/2017",
+      "api_size": 2246620,
+      "api_md5": "33e4d8834bfa7138c88c97cc05b6b553",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Bill Ingalls",
+        "source_page": "https://images.nasa.gov/details/NHQ201711120011"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 6D",
+        "Software": "Adobe Photoshop Lightroom 6.10 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2017-11-12"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-small",
+      "sha256": "168d05d2456fca63e9676fd0a4483cf6f08724e63f2852fe0fe45471ecc0c973",
+      "size": 2246620,
+      "retrieved_utc": "2026-09-13T02:08:31Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ201711120011/NHQ201711120011~orig.jpg"
+    },
+    {
+      "key": "nasa-iss047e136530",
+      "url": "https://images-assets.nasa.gov/image/iss047e136530/iss047e136530~orig.jpg",
+      "name": "iss047e136530.jpg",
+      "dir": "JSC/2016",
+      "api_size": 5235972,
+      "api_md5": "73d106767fdfc312eb02bb4376c5c792",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/SAM",
+        "source_page": "https://images.nasa.gov/details/iss047e136530"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D800E",
+        "Software": "Adobe Photoshop CC 2015 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2016-06-02"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "fe67deb232d4f334993be95516ab06957595ddca81de5cd20e7733f0089f90ef",
+      "size": 5235972,
+      "retrieved_utc": "2026-09-13T02:08:31Z",
+      "final_url": "https://images-assets.nasa.gov/image/iss047e136530/iss047e136530~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20150926_2015-16869_207",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20150926_2015-16869_207/GSFC_20150926_2015-16869_207~orig.jpg",
+      "name": "GSFC_20150926_2015-16869_207.jpg",
+      "dir": "GSFC/2015",
+      "api_size": 882450,
+      "api_md5": "b3860690cfe54145195c6b4342c9c9de",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GSFC/Debora McCallum",
+        "source_page": "https://images.nasa.gov/details/GSFC_20150926_2015-16869_207"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D4S",
+        "Software": "Adobe Photoshop CC 2015.5 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2015-09-26"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-small",
+      "sha256": "4ecf26abf0172b46c3bc5942056dd25b36f6aec85675900e71088835849cd5ea",
+      "size": 882450,
+      "retrieved_utc": "2026-09-13T02:08:31Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20150926_2015-16869_207/GSFC_20150926_2015-16869_207~orig.jpg"
+    },
+    {
+      "key": "nasa-ED14-0222-088",
+      "url": "https://images-assets.nasa.gov/image/ED14-0222-088/ED14-0222-088~orig.jpg",
+      "name": "ED14-0222-088.jpg",
+      "dir": "AFRC/2014",
+      "api_size": 2399424,
+      "api_md5": "aa09c35f7ccb46ec3f343e26c7d82d2c",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Tom Tschida",
+        "source_page": "https://images.nasa.gov/details/ED14-0222-088"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3X",
+        "Software": "Adobe Photoshop CS6 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2014-08-08"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-small",
+      "sha256": "34cb97530d353a7e886904d08b75b9ca04818cd782a47e79729ee979417c755a",
+      "size": 2399424,
+      "retrieved_utc": "2026-09-13T02:08:31Z",
+      "final_url": "https://images-assets.nasa.gov/image/ED14-0222-088/ED14-0222-088~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD23-0003-007",
+      "url": "https://images-assets.nasa.gov/image/ACD23-0003-007/ACD23-0003-007~orig.jpg",
+      "name": "ACD23-0003-007.jpg",
+      "dir": "ARC/2023",
+      "api_size": 19375617,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Dominic Hart",
+        "source_page": "https://images.nasa.gov/details/ACD23-0003-007"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 7_2",
+        "Software": "Adobe Photoshop Lightroom Classic 12.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2023-01-19"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "7c1c7eef637f6048fec88b27bd6652a6959cc49d6319e7a00cdf451dc8b8a786",
+      "size": 19375617,
+      "retrieved_utc": "2026-09-13T02:08:32Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD23-0003-007/ACD23-0003-007~orig.jpg"
+    },
+    {
+      "key": "nasa-jsc2013e048224",
+      "url": "https://images-assets.nasa.gov/image/jsc2013e048224/jsc2013e048224~orig.jpg",
+      "name": "jsc2013e048224.jpg",
+      "dir": "JSC/2013",
+      "api_size": 2106019,
+      "api_md5": "1c7319f670cc9f0e78f897e902b3f6cd",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Lauren Harnett",
+        "source_page": "https://images.nasa.gov/details/jsc2013e048224"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D4",
+        "Software": "Adobe Photoshop CS6 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2013-05-21"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-small",
+      "sha256": "db6356e31bb5670f4e212f497322ba3bbbd9780515d2f361bdfd7848bcf78a10",
+      "size": 2106019,
+      "retrieved_utc": "2026-09-13T02:08:32Z",
+      "final_url": "https://images-assets.nasa.gov/image/jsc2013e048224/jsc2013e048224~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20250218-s00143",
+      "url": "https://images-assets.nasa.gov/image/SSC-20250218-s00143/SSC-20250218-s00143~orig.jpg",
+      "name": "SSC-20250218-s00143.jpg",
+      "dir": "SSC/2025",
+      "api_size": 583453,
+      "api_md5": "25822fc7067d916dc0a02f65a55da4fe",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Danny Nowlin",
+        "source_page": "https://images.nasa.gov/details/SSC-20250218-s00143"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D6",
+        "Software": "Adobe Photoshop 26.3 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2025-02-18"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-small",
+      "sha256": "96a2e1baf1cbf46297af2ac62a835fcd28301055f4d5dfc7b7116b71414b3639",
+      "size": 583453,
+      "retrieved_utc": "2026-09-13T02:08:32Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20250218-s00143/SSC-20250218-s00143~orig.jpg"
+    },
+    {
+      "key": "nasa-SLS_on_Pad39b_220824_SL-7",
+      "url": "https://images-assets.nasa.gov/image/SLS_on_Pad39b_220824_SL-7/SLS_on_Pad39b_220824_SL-7~orig.jpg",
+      "name": "SLS_on_Pad39b_220824_SL-7.jpg",
+      "dir": "MSFC/2022",
+      "api_size": 9907801,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Sam Lott",
+        "source_page": "https://images.nasa.gov/details/SLS_on_Pad39b_220824_SL-7"
+      },
+      "meta": {
+        "Make": "SONY",
+        "Model": "ILCE-7M3",
+        "Software": "Adobe Photoshop 23.5 (Macintosh)",
+        "EncodingProcess": "Progressive DCT, Huffman coding",
+        "center": "MSFC",
+        "date": "2022-08-24"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "344de2ddd06e063df8df32d89a0cf087a448e12be6c82e42c4e98c2360d137c4",
+      "size": 9907801,
+      "retrieved_utc": "2026-09-13T02:08:32Z",
+      "final_url": "https://images-assets.nasa.gov/image/SLS_on_Pad39b_220824_SL-7/SLS_on_Pad39b_220824_SL-7~orig.jpg"
+    },
+    {
+      "key": "nasa-DSCN0130",
+      "url": "https://images-assets.nasa.gov/image/DSCN0130/DSCN0130~orig.jpg",
+      "name": "DSCN0130.jpg",
+      "dir": "GSFC/2023",
+      "api_size": 1551329,
+      "api_md5": "fdfa6c29464ea9f5cf13d51001edadcb",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Molly Wasser",
+        "source_page": "https://images.nasa.gov/details/DSCN0130"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "COOLPIX P950",
+        "Software": "COOLPIX P950   V1.3",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2023-11-08"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-small",
+      "sha256": "ae29ddbc720d6d04e2d2b2cbc441f4178fa4480e046a85581e66528547db2cd9",
+      "size": 1551329,
+      "retrieved_utc": "2026-09-13T02:08:32Z",
+      "final_url": "https://images-assets.nasa.gov/image/DSCN0130/DSCN0130~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2022-C-05389",
+      "url": "https://images-assets.nasa.gov/image/GRC-2022-C-05389/GRC-2022-C-05389~orig.jpg",
+      "name": "GRC-2022-C-05389.jpg",
+      "dir": "GRC/2022",
+      "api_size": 17546678,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GRC",
+        "source_page": "https://images.nasa.gov/details/GRC-2022-C-05389"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "Adobe Photoshop Camera Raw 14.0 (Macintosh)",
+        "EncodingProcess": "Progressive DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2022-05-27"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "765d439f4d9ec6cb8d67bece9b0dc2296bd8148393aefddce8158af08c3e63c0",
+      "size": 17546678,
+      "retrieved_utc": "2026-09-13T02:08:32Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2022-C-05389/GRC-2022-C-05389~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20190528_2019-16021_001",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20190528_2019-16021_001/GSFC_20190528_2019-16021_001~orig.jpg",
+      "name": "GSFC_20190528_2019-16021_001.jpg",
+      "dir": "GSFC/2019",
+      "api_size": 6397159,
+      "api_md5": "3a7b6b91f3f1cb3eac733ff204f0ffa8",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Taylor Mickal",
+        "source_page": "https://images.nasa.gov/details/GSFC_20190528_2019-16021_001"
+      },
+      "meta": {
+        "Make": "SONY",
+        "Model": "ILCE-7M3",
+        "Software": "Adobe Photoshop CC (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2019-05-28"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "a70218b9e58a975ee242cb9891b9a76d094a00a3737ed98292e809ed1a3271bd",
+      "size": 6397159,
+      "retrieved_utc": "2026-09-13T02:08:32Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20190528_2019-16021_001/GSFC_20190528_2019-16021_001~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202102180040",
+      "url": "https://images-assets.nasa.gov/image/NHQ202102180040/NHQ202102180040~orig.jpg",
+      "name": "NHQ202102180040.jpg",
+      "dir": "HQ/2021",
+      "api_size": 8308173,
+      "api_md5": "5c0bb913863ac59a6b054e3dbe55130a",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Bill Ingalls",
+        "source_page": "https://images.nasa.gov/details/NHQ202102180040"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 6",
+        "Software": "Adobe Photoshop Lightroom Classic 10.1.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2021-02-18"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "35f9dfbf625219f5182649648b07c8b2d90e01b03afb58474a41244e54710ee9",
+      "size": 8308173,
+      "retrieved_utc": "2026-09-13T02:08:32Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202102180040/NHQ202102180040~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202303300023",
+      "url": "https://images-assets.nasa.gov/image/NHQ202303300023/NHQ202303300023~orig.jpg",
+      "name": "NHQ202303300023.jpg",
+      "dir": "HQ/2023",
+      "api_size": 9416370,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Keegan Barber",
+        "source_page": "https://images.nasa.gov/details/NHQ202303300023"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 6_2",
+        "Software": "Adobe Photoshop Lightroom Classic 11.3 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2023-03-30"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "79519158f4b8ab4d44053e14d0a3977b9edbf9dc79eb3f08c61698e71e13bee2",
+      "size": 9416370,
+      "retrieved_utc": "2026-09-13T02:08:32Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202303300023/NHQ202303300023~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2018-0287-173",
+      "url": "https://images-assets.nasa.gov/image/AFRC2018-0287-173/AFRC2018-0287-173~orig.jpg",
+      "name": "AFRC2018-0287-173.jpg",
+      "dir": "AFRC/2018",
+      "api_size": 5283550,
+      "api_md5": "f5137ce1d7bafb0bac4a5c77510eac2a",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Josh Valcarcel-JSC Houston",
+        "source_page": "https://images.nasa.gov/details/AFRC2018-0287-173"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D5",
+        "Software": "NIKON D5 Ver.1.10",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2018-11-05"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "1015017c10c230aa004d124611e43bc18077e1f23fe102a55671215b3bb84838",
+      "size": 5283550,
+      "retrieved_utc": "2026-09-13T02:08:32Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2018-0287-173/AFRC2018-0287-173~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2016-0054-110",
+      "url": "https://images-assets.nasa.gov/image/AFRC2016-0054-110/AFRC2016-0054-110~orig.jpg",
+      "name": "AFRC2016-0054-110.jpg",
+      "dir": "AFRC/2016",
+      "api_size": 25801814,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA AFRC/Carla Thomas",
+        "source_page": "https://images.nasa.gov/details/AFRC2016-0054-110"
+      },
+      "meta": {
+        "Make": "Apple",
+        "Model": "iPhone 6s",
+        "Software": "Adobe Photoshop 21.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2016-02-23"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "25b4f6b0d3465ba5f87fcdbd9551bca5eb11970790e45457f8643d6187df67fe",
+      "size": 25801814,
+      "retrieved_utc": "2026-09-13T02:08:33Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2016-0054-110/AFRC2016-0054-110~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20211007-PH-ILW01_0282",
+      "url": "https://images-assets.nasa.gov/image/KSC-20211007-PH-ILW01_0282/KSC-20211007-PH-ILW01_0282~orig.jpg",
+      "name": "KSC-20211007-PH-ILW01_0282.jpg",
+      "dir": "KSC/2021",
+      "api_size": 15438719,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Isaac Watson",
+        "source_page": "https://images.nasa.gov/details/KSC-20211007-PH-ILW01_0282"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark IV",
+        "Software": "Adobe Photoshop Lightroom Classic 10.4 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2021-10-07"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "3eec03e6437d9e13f2135cab985531e9f9d2dda2f78b4a1718a69d3c4de7e3a5",
+      "size": 15438719,
+      "retrieved_utc": "2026-09-13T02:08:33Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20211007-PH-ILW01_0282/KSC-20211007-PH-ILW01_0282~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2024-0075-46",
+      "url": "https://images-assets.nasa.gov/image/AFRC2024-0075-46/AFRC2024-0075-46~orig.jpg",
+      "name": "AFRC2024-0075-46.jpg",
+      "dir": "AFRC/2024",
+      "api_size": 9406166,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Jim Ross",
+        "source_page": "https://images.nasa.gov/details/AFRC2024-0075-46"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "NIKON D850 Ver.1.11",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2024-05-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "d1442ef98460831d6ddd39ef26249556866396ab0edea65207f6582a4a270e8f",
+      "size": 9406166,
+      "retrieved_utc": "2026-09-13T02:08:33Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2024-0075-46/AFRC2024-0075-46~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20170314-PH_CSH01_0002",
+      "url": "https://images-assets.nasa.gov/image/KSC-20170314-PH_CSH01_0002/KSC-20170314-PH_CSH01_0002~orig.jpg",
+      "name": "KSC-20170314-PH_CSH01_0002.jpg",
+      "dir": "KSC/2017",
+      "api_size": 18488459,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Cory Huston",
+        "source_page": "https://images.nasa.gov/details/KSC-20170314-PH_CSH01_0002"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark III",
+        "Software": "Adobe Photoshop Lightroom 6.8 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2017-03-14"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "1d9d2ed25d354b51f92665a4714a2236e0baa670c67d0f4a0920f065faa1f52f",
+      "size": 18488459,
+      "retrieved_utc": "2026-09-13T02:08:34Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20170314-PH_CSH01_0002/KSC-20170314-PH_CSH01_0002~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202201080031",
+      "url": "https://images-assets.nasa.gov/image/NHQ202201080031/NHQ202201080031~orig.jpg",
+      "name": "NHQ202201080031.jpg",
+      "dir": "HQ/2022",
+      "api_size": 20687275,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Bill Ingalls",
+        "source_page": "https://images.nasa.gov/details/NHQ202201080031"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 7",
+        "Software": "Adobe Photoshop Lightroom Classic 11.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2022-01-08"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "65c84e3837af5cde495dc2b64a16b8f1ad96ecd0b40cb488e69014bd0c5bef2f",
+      "size": 20687275,
+      "retrieved_utc": "2026-09-13T02:08:33Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202201080031/NHQ202201080031~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2017-0271-13",
+      "url": "https://images-assets.nasa.gov/image/AFRC2017-0271-13/AFRC2017-0271-13~orig.jpg",
+      "name": "AFRC2017-0271-13.jpg",
+      "dir": "AFRC/2017",
+      "api_size": 11234314,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Ken Ulbrich",
+        "source_page": "https://images.nasa.gov/details/AFRC2017-0271-13"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3X",
+        "Software": "Ver.1.02",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2017-09-28"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "bf3460bf3d2e683993be34c73e46e502f0b5663f6511c8755936ab98c6a505ed",
+      "size": 11234314,
+      "retrieved_utc": "2026-09-13T02:08:34Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2017-0271-13/AFRC2017-0271-13~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2016-C-10092",
+      "url": "https://images-assets.nasa.gov/image/GRC-2016-C-10092/GRC-2016-C-10092~orig.jpg",
+      "name": "GRC-2016-C-10092.jpg",
+      "dir": "GRC/2016",
+      "api_size": 5025934,
+      "api_md5": "67982e8b0c49fcbb2ca507f8dbe37147",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/GRC",
+        "source_page": "https://images.nasa.gov/details/GRC-2016-C-10092"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D800",
+        "Software": "Adobe Photoshop Lightroom 6.7 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2016-12-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "7db602a6365f56ce34db14d1d7236031ec1acb84af5e74af118a7b25c2c111f7",
+      "size": 5025934,
+      "retrieved_utc": "2026-09-13T02:08:34Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2016-C-10092/GRC-2016-C-10092~orig.jpg"
+    },
+    {
+      "key": "nasa-iss036e015549",
+      "url": "https://images-assets.nasa.gov/image/iss036e015549/iss036e015549~orig.jpg",
+      "name": "iss036e015549.jpg",
+      "dir": "JSC/2013",
+      "api_size": 1331245,
+      "api_md5": "fca017bef66be1165dad79f17cccbba8",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Karen Nyberg",
+        "source_page": "https://images.nasa.gov/details/iss036e015549"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D2Xs",
+        "Software": "Adobe Photoshop CS6 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2013-07-05"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "a0e93c04d46992b5155865aa941b3726c08dd98103ecca5a399d5ff701b9a90e",
+      "size": 1331245,
+      "retrieved_utc": "2026-09-13T02:08:34Z",
+      "final_url": "https://images-assets.nasa.gov/image/iss036e015549/iss036e015549~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20241119-s01152",
+      "url": "https://images-assets.nasa.gov/image/SSC-20241119-s01152/SSC-20241119-s01152~orig.jpg",
+      "name": "SSC-20241119-s01152.jpg",
+      "dir": "SSC/2024",
+      "api_size": 2936693,
+      "api_md5": "7a63a9b9456fba9fc550310d87c65d70",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA Stennis",
+        "source_page": "https://images.nasa.gov/details/SSC-20241119-s01152"
+      },
+      "meta": {
+        "Make": "samsung",
+        "Model": "Galaxy S24+",
+        "Software": "S926USQS3AXI1",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2024-11-03"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "d1a5e40d1c2b9f54fcedfe814e825116faa15a5d199c3df88180f832a8b96a71",
+      "size": 2936693,
+      "retrieved_utc": "2026-09-13T02:08:34Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20241119-s01152/SSC-20241119-s01152~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20240408_Eclipse_005",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20240408_Eclipse_005/GSFC_20240408_Eclipse_005~orig.jpg",
+      "name": "GSFC_20240408_Eclipse_005.jpg",
+      "dir": "GSFC/2024",
+      "api_size": 6237283,
+      "api_md5": "36b6ea9f1b4374ebb73cf78c12ff02d9",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Denny Henry",
+        "source_page": "https://images.nasa.gov/details/GSFC_20240408_Eclipse_005"
+      },
+      "meta": {
+        "Make": "SONY",
+        "Model": "ILCE-9M2",
+        "Software": "Adobe Photoshop Lightroom Classic 13.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2024-04-08"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "71147750dc2dc70f37e32a967f55c07b7d3fde5c415ead3b83ff854f37adaea9",
+      "size": 6237283,
+      "retrieved_utc": "2026-09-13T02:08:34Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20240408_Eclipse_005/GSFC_20240408_Eclipse_005~orig.jpg"
+    },
+    {
+      "key": "nasa-ED12-0172-051",
+      "url": "https://images-assets.nasa.gov/image/ED12-0172-051/ED12-0172-051~orig.jpg",
+      "name": "ED12-0172-051.jpg",
+      "dir": "AFRC/2012",
+      "api_size": 1245254,
+      "api_md5": "90a906ad32ef5b095ca16e83224e366c",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/TOM TSCHIDA",
+        "source_page": "https://images.nasa.gov/details/ED12-0172-051"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3X",
+        "Software": "Ver.1.01",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2012-05-31"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "9d46c4cd7f36a32119e8f91d6bb3d86ae67a153b86882f164053d1512d8d8ba4",
+      "size": 1245254,
+      "retrieved_utc": "2026-09-13T02:08:34Z",
+      "final_url": "https://images-assets.nasa.gov/image/ED12-0172-051/ED12-0172-051~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20150926_2015-16869_258",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20150926_2015-16869_258/GSFC_20150926_2015-16869_258~orig.jpg",
+      "name": "GSFC_20150926_2015-16869_258.jpg",
+      "dir": "GSFC/2015",
+      "api_size": 8005054,
+      "api_md5": "ba8a33d4d5e3fd988451735438462319",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GSFC/Melissa Meyers",
+        "source_page": "https://images.nasa.gov/details/GSFC_20150926_2015-16869_258"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 60D",
+        "Software": "Adobe Photoshop Lightroom 6.1.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2015-09-26"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "bc08f816ccd481d42608fb442a819bd83be1d4a1ba62b86cf431d1de39ad65d3",
+      "size": 8005054,
+      "retrieved_utc": "2026-09-13T02:08:35Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20150926_2015-16869_258/GSFC_20150926_2015-16869_258~orig.jpg"
+    },
+    {
+      "key": "nasa-jsc2012e048058",
+      "url": "https://images-assets.nasa.gov/image/jsc2012e048058/jsc2012e048058~orig.jpg",
+      "name": "jsc2012e048058.jpg",
+      "dir": "JSC/2012",
+      "api_size": 2473876,
+      "api_md5": "727e3d7bbd351a784f024fafa02ef369",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/REGAN GEESEMAN",
+        "source_page": "https://images.nasa.gov/details/jsc2012e048058"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3",
+        "Software": "Adobe Photoshop CS4 Windows",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2012-03-22"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "8f764f89dc914d52436ad9f2860fe68428a037321a2f0eb4c37803ddd45cdb82",
+      "size": 2473876,
+      "retrieved_utc": "2026-09-13T02:08:35Z",
+      "final_url": "https://images-assets.nasa.gov/image/jsc2012e048058/jsc2012e048058~orig.jpg"
+    },
+    {
+      "key": "nasa-IMG_2973",
+      "url": "https://images-assets.nasa.gov/image/IMG_2973/IMG_2973~orig.jpg",
+      "name": "IMG_2973.jpg",
+      "dir": "MSFC/2025",
+      "api_size": 3097694,
+      "api_md5": "4d0dd7b400133d377d4440832010b157",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA",
+        "source_page": "https://images.nasa.gov/details/IMG_2973"
+      },
+      "meta": {
+        "Make": "Apple",
+        "Model": "iPhone 13 Pro",
+        "Software": "18.3.2",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "MSFC",
+        "date": "2025-04-09"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "c13e94c49e1c603f4beaa738b40e555b246658441dca2f1e7ec2521de93fa072",
+      "size": 3097694,
+      "retrieved_utc": "2026-09-13T02:08:35Z",
+      "final_url": "https://images-assets.nasa.gov/image/IMG_2973/IMG_2973~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2017-0233-004",
+      "url": "https://images-assets.nasa.gov/image/AFRC2017-0233-004/AFRC2017-0233-004~orig.jpg",
+      "name": "AFRC2017-0233-004.jpg",
+      "dir": "AFRC/2017",
+      "api_size": 3706066,
+      "api_md5": "78968e76f17fd4683cded85bd45081f2",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Carla Thomas",
+        "source_page": "https://images.nasa.gov/details/AFRC2017-0233-004"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D7100",
+        "Software": "Adobe Photoshop CC 2017 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2017-08-21"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "e91d09b5a9434adfdd050d527294eea5fd49997c650345742eae6373b2285fdc",
+      "size": 3706066,
+      "retrieved_utc": "2026-09-13T02:08:35Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2017-0233-004/AFRC2017-0233-004~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20250111-s00043",
+      "url": "https://images-assets.nasa.gov/image/SSC-20250111-s00043/SSC-20250111-s00043~orig.jpg",
+      "name": "SSC-20250111-s00043.jpg",
+      "dir": "SSC/2025",
+      "api_size": 3835243,
+      "api_md5": "ac39a409afb12b62e7224b2c017cbb2b",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Troy Frisbie/Patricia White",
+        "source_page": "https://images.nasa.gov/details/SSC-20250111-s00043"
+      },
+      "meta": {
+        "Make": "Apple",
+        "Model": "iPhone 12",
+        "Software": "18.2.1",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2025-01-12"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "1e674aaf5accf7955d7e52b1375d540359952a53be32bb9fa2e9efb7c63b7a5e",
+      "size": 3835243,
+      "retrieved_utc": "2026-09-13T02:08:35Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20250111-s00043/SSC-20250111-s00043~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2025-0190-14",
+      "url": "https://images-assets.nasa.gov/image/AFRC2025-0190-14/AFRC2025-0190-14~orig.jpg",
+      "name": "AFRC2025-0190-14.jpg",
+      "dir": "AFRC/2025",
+      "api_size": 10131361,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Christopher LC Clark",
+        "source_page": "https://images.nasa.gov/details/AFRC2025-0190-14"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 9",
+        "Software": "NIKON Z 9 Ver.05.00",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2025-12-22"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "f8816c84525cd05bb73c8637f769b2998f538559773ab9ffd496c4238004e120",
+      "size": 10131361,
+      "retrieved_utc": "2026-09-13T02:08:36Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2025-0190-14/AFRC2025-0190-14~orig.jpg"
+    },
+    {
+      "key": "nasa-MAF_20230213_CS2_ES2Final06",
+      "url": "https://images-assets.nasa.gov/image/MAF_20230213_CS2_ES2Final06/MAF_20230213_CS2_ES2Final06~orig.jpg",
+      "name": "MAF_20230213_CS2_ES2Final06.jpg",
+      "dir": "MSFC/2023",
+      "api_size": 25296637,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Michael DeMocker",
+        "source_page": "https://images.nasa.gov/details/MAF_20230213_CS2_ES2Final06"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS R5",
+        "Software": "Adobe Photoshop 24.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "MSFC",
+        "date": "2023-02-13"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "d7f17045d1f349c284062e039dae5a4586b10598caa2f7ce645f964276600b99",
+      "size": 25296637,
+      "retrieved_utc": "2026-09-13T02:08:35Z",
+      "final_url": "https://images-assets.nasa.gov/image/MAF_20230213_CS2_ES2Final06/MAF_20230213_CS2_ES2Final06~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2025-0074-184",
+      "url": "https://images-assets.nasa.gov/image/AFRC2025-0074-184/AFRC2025-0074-184~orig.jpg",
+      "name": "AFRC2025-0074-184.jpg",
+      "dir": "AFRC/2025",
+      "api_size": 5103366,
+      "api_md5": "47ec06a4e2c4b86f65aaaf4b33dbd743",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Jim Ross",
+        "source_page": "https://images.nasa.gov/details/AFRC2025-0074-184"
+      },
+      "meta": {
+        "Make": "GoPro",
+        "Model": "HERO10 Black",
+        "Software": "Adobe Photoshop Camera Raw 17.3.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2025-04-30"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "08beaac88ce5f7669b32ef2e8064fa1f26f149d8e225a2a01c7f22ca90f519d3",
+      "size": 5103366,
+      "retrieved_utc": "2026-09-13T02:08:36Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2025-0074-184/AFRC2025-0074-184~orig.jpg"
+    },
+    {
+      "key": "nasa-ED13-0220-153",
+      "url": "https://images-assets.nasa.gov/image/ED13-0220-153/ED13-0220-153~orig.jpg",
+      "name": "ED13-0220-153.jpg",
+      "dir": "AFRC/2013",
+      "api_size": 16452342,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Carla Thomas",
+        "source_page": "https://images.nasa.gov/details/ED13-0220-153"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D4",
+        "Software": "NIKON D4 Ver.1.02",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2013-07-17"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "52d1f0ba8d3e7c36d112272aa179c76c9fffb9ee3131116bb52a4c3097b2b6ae",
+      "size": 16452342,
+      "retrieved_utc": "2026-09-13T02:08:36Z",
+      "final_url": "https://images-assets.nasa.gov/image/ED13-0220-153/ED13-0220-153~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20240117_PACE_001205",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20240117_PACE_001205/GSFC_20240117_PACE_001205~orig.jpg",
+      "name": "GSFC_20240117_PACE_001205.jpg",
+      "dir": "GSFC/2024",
+      "api_size": 12220541,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Denny Henry",
+        "source_page": "https://images.nasa.gov/details/GSFC_20240117_PACE_001205"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 8",
+        "Software": "Adobe Photoshop Lightroom Classic 13.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2024-01-17"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "3382063c5720ebea4c525f63120ea2d51b1484e45d684db810b8cae6b802dd72",
+      "size": 12220541,
+      "retrieved_utc": "2026-09-13T02:08:36Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20240117_PACE_001205/GSFC_20240117_PACE_001205~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2017-0233-007",
+      "url": "https://images-assets.nasa.gov/image/AFRC2017-0233-007/AFRC2017-0233-007~orig.jpg",
+      "name": "AFRC2017-0233-007.jpg",
+      "dir": "AFRC/2017",
+      "api_size": 7156937,
+      "api_md5": "fb940aa7489cf4df14f5bcb824f50e1d",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Carla Thomas",
+        "source_page": "https://images.nasa.gov/details/AFRC2017-0233-007"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D7100",
+        "Software": "Ver.1.01",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2017-08-21"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "1ef167ee08e4cb86a155e4e728b3174848de698b8f7b106cb5c8f76bea567d8a",
+      "size": 7156937,
+      "retrieved_utc": "2026-09-13T02:08:37Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2017-0233-007/AFRC2017-0233-007~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202209030004",
+      "url": "https://images-assets.nasa.gov/image/NHQ202209030004/NHQ202209030004~orig.jpg",
+      "name": "NHQ202209030004.jpg",
+      "dir": "HQ/2022",
+      "api_size": 4821694,
+      "api_md5": "e592f70a9aafc4fb50c9c272f836a1f1",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Joel Kowsky",
+        "source_page": "https://images.nasa.gov/details/NHQ202209030004"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS M5",
+        "Software": "Adobe Photoshop Lightroom Classic 11.5 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2022-09-03"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "65af49d5f3b96c68a7e36233f24e91f5e2709a58d3e39a2aa308d6f6e12431f1",
+      "size": 4821694,
+      "retrieved_utc": "2026-09-13T02:08:36Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202209030004/NHQ202209030004~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20180812-PH_AWG04_0011",
+      "url": "https://images-assets.nasa.gov/image/KSC-20180812-PH_AWG04_0011/KSC-20180812-PH_AWG04_0011~orig.jpg",
+      "name": "KSC-20180812-PH_AWG04_0011.jpg",
+      "dir": "KSC/2018",
+      "api_size": 5111862,
+      "api_md5": "8940d36cd40867a078d67ce0edc66a52",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Tony Gray and Tim Powers",
+        "source_page": "https://images.nasa.gov/details/KSC-20180812-PH_AWG04_0011"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D700",
+        "Software": "Ver.1.02",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2018-08-12"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "2aa48fd2666cb0d61f6c35a219f11f69d330018cf52466361ff3d474676284ed",
+      "size": 5111862,
+      "retrieved_utc": "2026-09-13T02:08:36Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20180812-PH_AWG04_0011/KSC-20180812-PH_AWG04_0011~orig.jpg"
+    },
+    {
+      "key": "nasa-2012-2794",
+      "url": "https://images-assets.nasa.gov/image/2012-2794/2012-2794~orig.jpg",
+      "name": "2012-2794.jpg",
+      "dir": "KSC/2012",
+      "api_size": 3317005,
+      "api_md5": "3a014ab1883617544098e54c97f25f0c",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/KSC",
+        "source_page": "https://images.nasa.gov/details/2012-2794"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 7D",
+        "Software": "Adobe Photoshop CS4 Windows",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2012-05-12"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "b84dd1bac42aed27701413eaa98d5ef6cb18d73c590d8f97d3c19ca5fc83c436",
+      "size": 3317005,
+      "retrieved_utc": "2026-09-13T02:08:36Z",
+      "final_url": "https://images-assets.nasa.gov/image/2012-2794/2012-2794~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20250104-s00146",
+      "url": "https://images-assets.nasa.gov/image/SSC-20250104-s00146/SSC-20250104-s00146~orig.jpg",
+      "name": "SSC-20250104-s00146.jpg",
+      "dir": "SSC/2025",
+      "api_size": 1791435,
+      "api_md5": "d202339f1e37501e4b1990a26ac38ae0",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Danny Nowlin",
+        "source_page": "https://images.nasa.gov/details/SSC-20250104-s00146"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D300",
+        "Software": "Adobe Photoshop 26.2 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2025-01-04"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "4ab14ec49614bf812c677c607d784bcfd5f03c4dab0c101b721ede71a298562d",
+      "size": 1791435,
+      "retrieved_utc": "2026-09-13T02:08:37Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20250104-s00146/SSC-20250104-s00146~orig.jpg"
+    },
+    {
+      "key": "nasa-jsc2017e067114",
+      "url": "https://images-assets.nasa.gov/image/jsc2017e067114/jsc2017e067114~orig.jpg",
+      "name": "jsc2017e067114.jpg",
+      "dir": "JSC/2017",
+      "api_size": 2314525,
+      "api_md5": "044fc95a7f2ec3acc6eb8d4b7c11a352",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Robert Markowitz - NASA - Johnso",
+        "source_page": "https://images.nasa.gov/details/jsc2017e067114"
+      },
+      "meta": {
+        "Make": "Hasselblad",
+        "Model": "Hasselblad H3D",
+        "Software": "Adobe Photoshop CC 2017 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2017-06-06"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "0172f219f15566c26e3408da85ced39021e1c062a6af74735c6efe2fd584e674",
+      "size": 2314525,
+      "retrieved_utc": "2026-09-13T02:08:37Z",
+      "final_url": "https://images-assets.nasa.gov/image/jsc2017e067114/jsc2017e067114~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2018-0287-275",
+      "url": "https://images-assets.nasa.gov/image/AFRC2018-0287-275/AFRC2018-0287-275~orig.jpg",
+      "name": "AFRC2018-0287-275.jpg",
+      "dir": "AFRC/2018",
+      "api_size": 15487958,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Carla Thomas",
+        "source_page": "https://images.nasa.gov/details/AFRC2018-0287-275"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "Adobe Photoshop CC 2018 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2018-11-05"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "7bf6c539697170bf09c43ffba46de0f70e2dbed8ea11afcacab10be61b74c6e5",
+      "size": 15487958,
+      "retrieved_utc": "2026-09-13T02:08:37Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2018-0287-275/AFRC2018-0287-275~orig.jpg"
+    },
+    {
+      "key": "nasa-iss056e094532",
+      "url": "https://images-assets.nasa.gov/image/iss056e094532/iss056e094532~orig.jpg",
+      "name": "iss056e094532.jpg",
+      "dir": "JSC/2018",
+      "api_size": 3743138,
+      "api_md5": "4c930ebc1561c9c5e3378b32caf5fb79",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Ricky Arnold",
+        "source_page": "https://images.nasa.gov/details/iss056e094532"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D5",
+        "Software": "Adobe Photoshop CC 2018 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2018-07-10"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "feadfe7c480c51375f3645a6243c44fe7cd214eb90078bdba48146cddaf17397",
+      "size": 3743138,
+      "retrieved_utc": "2026-09-13T02:08:37Z",
+      "final_url": "https://images-assets.nasa.gov/image/iss056e094532/iss056e094532~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2017-0233-019",
+      "url": "https://images-assets.nasa.gov/image/AFRC2017-0233-019/AFRC2017-0233-019~orig.jpg",
+      "name": "AFRC2017-0233-019.jpg",
+      "dir": "AFRC/2017",
+      "api_size": 7249927,
+      "api_md5": "94027d4475471295b807c4bfdcfa472f",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Carla Thomas",
+        "source_page": "https://images.nasa.gov/details/AFRC2017-0233-019"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "NIKON D810 Ver.1.02",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2017-08-21"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "f6f7645fa1d7c84d69b7c5827e414cbc01d753dc256e9b5fa77740e3be1f487a",
+      "size": 7249927,
+      "retrieved_utc": "2026-09-13T02:08:37Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2017-0233-019/AFRC2017-0233-019~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2021-C-00702",
+      "url": "https://images-assets.nasa.gov/image/GRC-2021-C-00702/GRC-2021-C-00702~orig.jpg",
+      "name": "GRC-2021-C-00702.jpg",
+      "dir": "GRC/2021",
+      "api_size": 8958242,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GRC/ Bridget Caswell",
+        "source_page": "https://images.nasa.gov/details/GRC-2021-C-00702"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "Adobe Photoshop Camera Raw 13.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2021-03-12"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "76342a7be7e5176a7dee30bc3cf93f385f2c91ed474f81c6b65baf414e631a0b",
+      "size": 8958242,
+      "retrieved_utc": "2026-09-13T02:08:38Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2021-C-00702/GRC-2021-C-00702~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-315D-0365_0008",
+      "url": "https://images-assets.nasa.gov/image/KSC-315D-0365_0008/KSC-315D-0365_0008~orig.jpg",
+      "name": "KSC-315D-0365_0008.jpg",
+      "dir": "KSC/2015",
+      "api_size": 10657540,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/KSC",
+        "source_page": "https://images.nasa.gov/details/KSC-315D-0365_0008"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark II",
+        "Software": "Adobe Photoshop Camera Raw 9.7 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2015-09-11"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "cdca810b3ec7806a46e76c7c666bf1ceb18b4ba884e335bcc8c8d216a0fd78d0",
+      "size": 10657540,
+      "retrieved_utc": "2026-09-13T02:08:38Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-315D-0365_0008/KSC-315D-0365_0008~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20180926_2018-29149_034",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20180926_2018-29149_034/GSFC_20180926_2018-29149_034~orig.jpg",
+      "name": "GSFC_20180926_2018-29149_034.jpg",
+      "dir": "GSFC/2018",
+      "api_size": 3678648,
+      "api_md5": "a4141c2f9ea60ed8cf56f2a7c7e1da80",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GSFC/Taylor Mickal",
+        "source_page": "https://images.nasa.gov/details/GSFC_20180926_2018-29149_034"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3S",
+        "Software": "Adobe Photoshop Lightroom Classic 7.0 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2018-09-26"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "fbc282080f3a21d79b739ee3256c19d7ebdb0c5c9d01ad6b811931789690c3df",
+      "size": 3678648,
+      "retrieved_utc": "2026-09-13T02:08:38Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20180926_2018-29149_034/GSFC_20180926_2018-29149_034~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD17-0017-015",
+      "url": "https://images-assets.nasa.gov/image/ACD17-0017-015/ACD17-0017-015~orig.jpg",
+      "name": "ACD17-0017-015.jpg",
+      "dir": "ARC/2017",
+      "api_size": 8369589,
+      "api_md5": "d30109402e657e06295530bf0810afae",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Don Richey",
+        "source_page": "https://images.nasa.gov/details/ACD17-0017-015"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D750",
+        "Software": "Adobe Photoshop Lightroom 6.7 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2017-02-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "8a91be1ab27e056d6761b7c8b57b1c6a54d56033e1da6b34173bf72fa450dec7",
+      "size": 8369589,
+      "retrieved_utc": "2026-09-13T02:08:38Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD17-0017-015/ACD17-0017-015~orig.jpg"
+    },
+    {
+      "key": "nasa-jsc2024e013586",
+      "url": "https://images-assets.nasa.gov/image/jsc2024e013586/jsc2024e013586~orig.jpg",
+      "name": "jsc2024e013586.jpg",
+      "dir": "JSC/2024",
+      "api_size": 2704270,
+      "api_md5": "ccc5ea04eee96cb66f42ef74aed4135b",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Josh Valcarcel – NASA – John",
+        "source_page": "https://images.nasa.gov/details/jsc2024e013586"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 9",
+        "Software": "Adobe Photoshop 24.7 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2024-02-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "227f456bcbd13383969094b169a74bb5f39d198a5db6641a75ea8e64446b4873",
+      "size": 2704270,
+      "retrieved_utc": "2026-09-13T02:08:38Z",
+      "final_url": "https://images-assets.nasa.gov/image/jsc2024e013586/jsc2024e013586~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFCRR2021071534",
+      "url": "https://images-assets.nasa.gov/image/GSFCRR2021071534/GSFCRR2021071534~orig.jpg",
+      "name": "GSFCRR2021071534.jpg",
+      "dir": "GSFC/2021",
+      "api_size": 25802067,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Rebecca Roth",
+        "source_page": "https://images.nasa.gov/details/GSFCRR2021071534"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D800E",
+        "Software": "Adobe Photoshop Lightroom Classic 10.3 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2021-07-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "a9371f5b4618e1468e7b294e9f677237f4a5796aec19736c6771f6ecdd6e86b0",
+      "size": 25802067,
+      "retrieved_utc": "2026-09-13T02:08:38Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFCRR2021071534/GSFCRR2021071534~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20150723_2015-13352_015",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20150723_2015-13352_015/GSFC_20150723_2015-13352_015~orig.jpg",
+      "name": "GSFC_20150723_2015-13352_015.jpg",
+      "dir": "GSFC/2015",
+      "api_size": 884216,
+      "api_md5": "617ad2804c283deb5c29586e87ff9d48",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GSFC/Bill Hrybyk",
+        "source_page": "https://images.nasa.gov/details/GSFC_20150723_2015-13352_015"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D4S",
+        "Software": "Adobe Photoshop CC 2015.5 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2015-07-23"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-small",
+      "sha256": "222fe462bb09cecd5f1f7b21b46805dd27803d71e9284b418cfe8656f7d778b3",
+      "size": 884216,
+      "retrieved_utc": "2026-09-13T02:08:38Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20150723_2015-13352_015/GSFC_20150723_2015-13352_015~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2016-0143-01",
+      "url": "https://images-assets.nasa.gov/image/AFRC2016-0143-01/AFRC2016-0143-01~orig.jpg",
+      "name": "AFRC2016-0143-01.jpg",
+      "dir": "AFRC/2016",
+      "api_size": 9744669,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Carla Thomas",
+        "source_page": "https://images.nasa.gov/details/AFRC2016-0143-01"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3X",
+        "Software": "Adobe Photoshop CC 2018 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2016-05-12"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "499111c48b1de84bbe7e3f24ed257367530246f31a56d2d3ad046e40bda9e06a",
+      "size": 9744669,
+      "retrieved_utc": "2026-09-13T02:08:39Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2016-0143-01/AFRC2016-0143-01~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD23-0003-025",
+      "url": "https://images-assets.nasa.gov/image/ACD23-0003-025/ACD23-0003-025~orig.jpg",
+      "name": "ACD23-0003-025.jpg",
+      "dir": "ARC/2023",
+      "api_size": 15049308,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Dominic Hart",
+        "source_page": "https://images.nasa.gov/details/ACD23-0003-025"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 7_2",
+        "Software": "Adobe Photoshop Lightroom Classic 12.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2023-01-19"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "0a2090585c6e8bf666c35dfc06cf1f2ddc9f9810d39420367fc14e7e0a0735d7",
+      "size": 15049308,
+      "retrieved_utc": "2026-09-13T02:08:39Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD23-0003-025/ACD23-0003-025~orig.jpg"
+    },
+    {
+      "key": "nasa-2012-2667",
+      "url": "https://images-assets.nasa.gov/image/2012-2667/2012-2667~orig.jpg",
+      "name": "2012-2667.jpg",
+      "dir": "KSC/2012",
+      "api_size": 1756756,
+      "api_md5": "da6611c32da5f28933a675212d37406e",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/KSC",
+        "source_page": "https://images.nasa.gov/details/2012-2667"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 50D",
+        "Software": "Adobe Photoshop CS4 Windows",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2012-05-03"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "e4ced130e9f02f7439bde8900719bf36a481f70e63732e021f2414890aa7165a",
+      "size": 1756756,
+      "retrieved_utc": "2026-09-13T02:08:39Z",
+      "final_url": "https://images-assets.nasa.gov/image/2012-2667/2012-2667~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD22-0036-009",
+      "url": "https://images-assets.nasa.gov/image/ACD22-0036-009/ACD22-0036-009~orig.jpg",
+      "name": "ACD22-0036-009.jpg",
+      "dir": "ARC/2022",
+      "api_size": 8194387,
+      "api_md5": "1dd8394153793ef4a3c6d7495ac4816c",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Dominic Hart",
+        "source_page": "https://images.nasa.gov/details/ACD22-0036-009"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D4",
+        "Software": "Adobe Photoshop Lightroom Classic 11.4.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2022-06-23"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "9bcf8d29c5af985c264a77db98939c03c032b7037d0a7047e9223a3747831f65",
+      "size": 8194387,
+      "retrieved_utc": "2026-09-13T02:08:39Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD22-0036-009/ACD22-0036-009~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20240807-s00816",
+      "url": "https://images-assets.nasa.gov/image/SSC-20240807-s00816/SSC-20240807-s00816~orig.jpg",
+      "name": "SSC-20240807-s00816.jpg",
+      "dir": "SSC/2024",
+      "api_size": 418930,
+      "api_md5": "ed5a7d84b7a0f8b8616a08cdcbe0b61b",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Danny Nowlin",
+        "source_page": "https://images.nasa.gov/details/SSC-20240807-s00816"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D6",
+        "Software": "Adobe Photoshop 25.11 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2024-08-07"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "bad70d78fd32721cf3f90325cb689946d2bc1792ade4c1351c545836b9051536",
+      "size": 418930,
+      "retrieved_utc": "2026-09-13T02:08:39Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20240807-s00816/SSC-20240807-s00816~orig.jpg"
+    },
+    {
+      "key": "nasa-SLS_on_Pad39b_220824_SL-4",
+      "url": "https://images-assets.nasa.gov/image/SLS_on_Pad39b_220824_SL-4/SLS_on_Pad39b_220824_SL-4~orig.jpg",
+      "name": "SLS_on_Pad39b_220824_SL-4.jpg",
+      "dir": "MSFC/2022",
+      "api_size": 10123896,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Sam Lott",
+        "source_page": "https://images.nasa.gov/details/SLS_on_Pad39b_220824_SL-4"
+      },
+      "meta": {
+        "Make": "SONY",
+        "Model": "ILCE-7M3",
+        "Software": "Adobe Photoshop 23.5 (Macintosh)",
+        "EncodingProcess": "Progressive DCT, Huffman coding",
+        "center": "MSFC",
+        "date": "2022-08-24"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "6dee56e7c0274bd2670228e6fcdeaa2004216aedbc998b7789461d4dd85ba316",
+      "size": 10123896,
+      "retrieved_utc": "2026-09-13T02:08:40Z",
+      "final_url": "https://images-assets.nasa.gov/image/SLS_on_Pad39b_220824_SL-4/SLS_on_Pad39b_220824_SL-4~orig.jpg"
+    },
+    {
+      "key": "nasa-DSCN0135",
+      "url": "https://images-assets.nasa.gov/image/DSCN0135/DSCN0135~orig.jpg",
+      "name": "DSCN0135.jpg",
+      "dir": "GSFC/2023",
+      "api_size": 1299787,
+      "api_md5": "92c5619b0be12e390bfd6c764e64d0e0",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Molly Wasser",
+        "source_page": "https://images.nasa.gov/details/DSCN0135"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "COOLPIX P950",
+        "Software": "COOLPIX P950   V1.3",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2023-11-08"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "b7a1539e70fecc0600d4516c2857a84c56203eb98224da17b3c69eb5584b7c9e",
+      "size": 1299787,
+      "retrieved_utc": "2026-09-13T02:08:39Z",
+      "final_url": "https://images-assets.nasa.gov/image/DSCN0135/DSCN0135~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20220215_2022-7206-1_021",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20220215_2022-7206-1_021/GSFC_20220215_2022-7206-1_021~orig.jpg",
+      "name": "GSFC_20220215_2022-7206-1_021.jpg",
+      "dir": "GSFC/2022",
+      "api_size": 14317303,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Taylor Mickal",
+        "source_page": "https://images.nasa.gov/details/GSFC_20220215_2022-7206-1_021"
+      },
+      "meta": {
+        "Make": "SONY",
+        "Model": "ILCE-7M3",
+        "Software": "Adobe Photoshop Lightroom Classic 11.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2022-02-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "f1a85fb801f505b98422c5666f166989be65fb47473a74b602e75407e1caa1d3",
+      "size": 14317303,
+      "retrieved_utc": "2026-09-13T02:08:40Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20220215_2022-7206-1_021/GSFC_20220215_2022-7206-1_021~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202204050110",
+      "url": "https://images-assets.nasa.gov/image/NHQ202204050110/NHQ202204050110~orig.jpg",
+      "name": "NHQ202204050110.jpg",
+      "dir": "HQ/2022",
+      "api_size": 6609661,
+      "api_md5": "e95b32cc6aba0edcde4e7782a19c348d",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Bill Ingalls",
+        "source_page": "https://images.nasa.gov/details/NHQ202204050110"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 6",
+        "Software": "Adobe Photoshop Lightroom Classic 11.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2022-04-05"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "a50d2e553f69b0640d437bf77f0ee3ff1ceb1e982c38ee8f159dbe8f38caa092",
+      "size": 6609661,
+      "retrieved_utc": "2026-09-13T02:08:40Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202204050110/NHQ202204050110~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202311060001",
+      "url": "https://images-assets.nasa.gov/image/NHQ202311060001/NHQ202311060001~orig.jpg",
+      "name": "NHQ202311060001.jpg",
+      "dir": "HQ/2023",
+      "api_size": 12220129,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Keegan Barber",
+        "source_page": "https://images.nasa.gov/details/NHQ202311060001"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 6_2",
+        "Software": "Adobe Photoshop Lightroom Classic 13.0.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2023-11-06"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "37f997b94fcdc6463a911ada9b11db25ea9f1f239503529850a9ce7905986d80",
+      "size": 12220129,
+      "retrieved_utc": "2026-09-13T02:08:40Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202311060001/NHQ202311060001~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2018-0287-134",
+      "url": "https://images-assets.nasa.gov/image/AFRC2018-0287-134/AFRC2018-0287-134~orig.jpg",
+      "name": "AFRC2018-0287-134.jpg",
+      "dir": "AFRC/2018",
+      "api_size": 6824283,
+      "api_md5": "228385656fbfdf00cfb0e71c982d7426",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Josh Valcarcel-JSC Houston",
+        "source_page": "https://images.nasa.gov/details/AFRC2018-0287-134"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D5",
+        "Software": "NIKON D5 Ver.1.10",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2018-11-05"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "58928a7d7ac9d80865a0bd278692ba4044040833b014c12cbb497eb9186003ea",
+      "size": 6824283,
+      "retrieved_utc": "2026-09-13T02:08:40Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2018-0287-134/AFRC2018-0287-134~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20220527-PH-JBS01_0008",
+      "url": "https://images-assets.nasa.gov/image/KSC-20220527-PH-JBS01_0008/KSC-20220527-PH-JBS01_0008~orig.jpg",
+      "name": "KSC-20220527-PH-JBS01_0008.jpg",
+      "dir": "KSC/2022",
+      "api_size": 23932144,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Ben Smegelsky",
+        "source_page": "https://images.nasa.gov/details/KSC-20220527-PH-JBS01_0008"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark IV",
+        "Software": "Adobe Photoshop Lightroom Classic 11.3.1 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2022-05-27"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "78c9164ec0d61746796f114093ae5322003f4c1580b813ff44ed9a89ac74d63a",
+      "size": 23932144,
+      "retrieved_utc": "2026-09-13T02:08:40Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20220527-PH-JBS01_0008/KSC-20220527-PH-JBS01_0008~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2021-C-03346",
+      "url": "https://images-assets.nasa.gov/image/GRC-2021-C-03346/GRC-2021-C-03346~orig.jpg",
+      "name": "GRC-2021-C-03346.jpg",
+      "dir": "GRC/2021",
+      "api_size": 21140265,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GRC/Quentin Schwinn",
+        "source_page": "https://images.nasa.gov/details/GRC-2021-C-03346"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "NIKON D850 Ver.1.20",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2021-10-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "e6e3310e3267ceb677e37b0341c70708b9da177f58576bccda020552885560e7",
+      "size": 21140265,
+      "retrieved_utc": "2026-09-13T02:08:40Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2021-C-03346/GRC-2021-C-03346~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20191115-PH-JBS01_0031",
+      "url": "https://images-assets.nasa.gov/image/KSC-20191115-PH-JBS01_0031/KSC-20191115-PH-JBS01_0031~orig.jpg",
+      "name": "KSC-20191115-PH-JBS01_0031.jpg",
+      "dir": "KSC/2019",
+      "api_size": 12535505,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Ben Smegelsky",
+        "source_page": "https://images.nasa.gov/details/KSC-20191115-PH-JBS01_0031"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark III",
+        "Software": "Adobe Photoshop Lightroom Classic 9.2 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2019-11-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "4b7b54f34dc0365e4a22fe05b8e45d4d69af60ecc53112bf8bd076a7528855f7",
+      "size": 12535505,
+      "retrieved_utc": "2026-09-13T02:08:42Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20191115-PH-JBS01_0031/KSC-20191115-PH-JBS01_0031~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202102170028",
+      "url": "https://images-assets.nasa.gov/image/NHQ202102170028/NHQ202102170028~orig.jpg",
+      "name": "NHQ202102170028.jpg",
+      "dir": "HQ/2021",
+      "api_size": 16002021,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Bill Ingalls",
+        "source_page": "https://images.nasa.gov/details/NHQ202102170028"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 7",
+        "Software": "Adobe Photoshop Lightroom Classic 10.1.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2021-02-17"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "fc297cab63adf5f6878512d4aeff45b1365767f880f01650727bf835f4ce9edb",
+      "size": 16002021,
+      "retrieved_utc": "2026-09-13T02:08:41Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202102170028/NHQ202102170028~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2015-C-05325",
+      "url": "https://images-assets.nasa.gov/image/GRC-2015-C-05325/GRC-2015-C-05325~orig.jpg",
+      "name": "GRC-2015-C-05325.jpg",
+      "dir": "GRC/2015",
+      "api_size": 5540759,
+      "api_md5": "feda26e8027aa897db93c2a76ebc3401",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GRC/BRIDGET CASWELL",
+        "source_page": "https://images.nasa.gov/details/GRC-2015-C-05325"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D800",
+        "Software": "Adobe Photoshop 23.0 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2015-07-08"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "e536eca16debc77a4e45be62da902a532d2518cc27fc3a75809196540d05166c",
+      "size": 5540759,
+      "retrieved_utc": "2026-09-13T02:08:41Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2015-C-05325/GRC-2015-C-05325~orig.jpg"
+    },
+    {
+      "key": "nasa-jsc2012e035400",
+      "url": "https://images-assets.nasa.gov/image/jsc2012e035400/jsc2012e035400~orig.jpg",
+      "name": "jsc2012e035400.jpg",
+      "dir": "JSC/2012",
+      "api_size": 1684898,
+      "api_md5": "588cd541df0552456d6163031484ddd4",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/REGAN GEESEMAN",
+        "source_page": "https://images.nasa.gov/details/jsc2012e035400"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3",
+        "Software": "Adobe Photoshop CS4 Windows",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2012-03-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "5f92fc620697a377bf36d24789477b6288895e9fcdea7b2d2d4c26d3cab5f95a",
+      "size": 1684898,
+      "retrieved_utc": "2026-09-13T02:08:41Z",
+      "final_url": "https://images-assets.nasa.gov/image/jsc2012e035400/jsc2012e035400~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20250111-s00044",
+      "url": "https://images-assets.nasa.gov/image/SSC-20250111-s00044/SSC-20250111-s00044~orig.jpg",
+      "name": "SSC-20250111-s00044.jpg",
+      "dir": "SSC/2025",
+      "api_size": 3599095,
+      "api_md5": "0369ee76de45845b1bda75d40a376a65",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Troy Frisbie/Patricia White",
+        "source_page": "https://images.nasa.gov/details/SSC-20250111-s00044"
+      },
+      "meta": {
+        "Make": "Apple",
+        "Model": "iPhone 12",
+        "Software": "18.2.1",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2025-01-12"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "8371e6adf3986899fa2a7422a63e085de7a91aaa2b844fb90d402a5c62998cfa",
+      "size": 3599095,
+      "retrieved_utc": "2026-09-13T02:08:41Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20250111-s00044/SSC-20250111-s00044~orig.jpg"
+    },
+    {
+      "key": "nasa-MAF_20250425_CS3_Lox6toN03",
+      "url": "https://images-assets.nasa.gov/image/MAF_20250425_CS3_Lox6toN03/MAF_20250425_CS3_Lox6toN03~orig.jpg",
+      "name": "MAF_20250425_CS3_Lox6toN03.jpg",
+      "dir": "MSFC/2025",
+      "api_size": 23300415,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Michael DeMocker",
+        "source_page": "https://images.nasa.gov/details/MAF_20250425_CS3_Lox6toN03"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS R5",
+        "Software": "Adobe Photoshop 25.12 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "MSFC",
+        "date": "2025-04-25"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "f11ce60b63ed28e538deeab970be98fbfc3e5454717a9caeef95ae8936f26235",
+      "size": 23300415,
+      "retrieved_utc": "2026-09-13T02:08:42Z",
+      "final_url": "https://images-assets.nasa.gov/image/MAF_20250425_CS3_Lox6toN03/MAF_20250425_CS3_Lox6toN03~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2019-0062-003",
+      "url": "https://images-assets.nasa.gov/image/AFRC2019-0062-003/AFRC2019-0062-003~orig.jpg",
+      "name": "AFRC2019-0062-003.jpg",
+      "dir": "AFRC/2019",
+      "api_size": 18639862,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Ken Ulbrich",
+        "source_page": "https://images.nasa.gov/details/AFRC2019-0062-003"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "Adobe Photoshop CC 2018 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2019-04-01"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "761dfefc8964ff5a68a064b7da0bbb862bce15c1db6809e9261d4ab6a580ea81",
+      "size": 18639862,
+      "retrieved_utc": "2026-09-13T02:08:43Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2019-0062-003/AFRC2019-0062-003~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2018-0287-036",
+      "url": "https://images-assets.nasa.gov/image/AFRC2018-0287-036/AFRC2018-0287-036~orig.jpg",
+      "name": "AFRC2018-0287-036.jpg",
+      "dir": "AFRC/2018",
+      "api_size": 6313749,
+      "api_md5": "d1b2e08425fdf1ada64a839ff526684a",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Josh Valcarcel-JSC Houston",
+        "source_page": "https://images.nasa.gov/details/AFRC2018-0287-036"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D5",
+        "Software": "Adobe Photoshop CC 2018 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2018-11-02"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "815638c6391eace5955aa8bae3533c46c5563355b758ed249113df20f249e81f",
+      "size": 6313749,
+      "retrieved_utc": "2026-09-13T02:08:42Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2018-0287-036/AFRC2018-0287-036~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2018-0287-007",
+      "url": "https://images-assets.nasa.gov/image/AFRC2018-0287-007/AFRC2018-0287-007~orig.jpg",
+      "name": "AFRC2018-0287-007.jpg",
+      "dir": "AFRC/2018",
+      "api_size": 14236129,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Carla Thomas",
+        "source_page": "https://images.nasa.gov/details/AFRC2018-0287-007"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "NIKON D810 Ver.1.02",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2018-11-02"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "65a9724189afff1d45e0c36b059bdc7c02434e5ffb2a4379c74fdc0c921bd32e",
+      "size": 14236129,
+      "retrieved_utc": "2026-09-13T02:08:42Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2018-0287-007/AFRC2018-0287-007~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2020-C-02432",
+      "url": "https://images-assets.nasa.gov/image/GRC-2020-C-02432/GRC-2020-C-02432~orig.jpg",
+      "name": "GRC-2020-C-02432.jpg",
+      "dir": "GRC/2020",
+      "api_size": 8441321,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GRC/Bridget Caswell",
+        "source_page": "https://images.nasa.gov/details/GRC-2020-C-02432"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "Adobe Photoshop Camera Raw 10.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2020-03-11"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "ea3c99b9e85ce72d5ebfe3c912e454068c729446d2b79d915551d149fc8a1932",
+      "size": 8441321,
+      "retrieved_utc": "2026-09-13T02:08:42Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2020-C-02432/GRC-2020-C-02432~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202103180001",
+      "url": "https://images-assets.nasa.gov/image/NHQ202103180001/NHQ202103180001~orig.jpg",
+      "name": "NHQ202103180001.jpg",
+      "dir": "HQ/2021",
+      "api_size": 9710051,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Robert Markowitz",
+        "source_page": "https://images.nasa.gov/details/NHQ202103180001"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark II",
+        "Software": "Adobe Photoshop Lightroom Classic 10.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2021-03-18"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "b7285fd3878c848bc0ee1cac41a74a72c6ca6742518d91d51ab04e762b551e3c",
+      "size": 9710051,
+      "retrieved_utc": "2026-09-13T02:08:43Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202103180001/NHQ202103180001~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2020-C-02777",
+      "url": "https://images-assets.nasa.gov/image/GRC-2020-C-02777/GRC-2020-C-02777~orig.jpg",
+      "name": "GRC-2020-C-02777.jpg",
+      "dir": "GRC/2020",
+      "api_size": 3416703,
+      "api_md5": "1fac930587ba405cbe118606cb2352bc",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GRC/Bridget Caswell",
+        "source_page": "https://images.nasa.gov/details/GRC-2020-C-02777"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D750",
+        "Software": "Adobe Photoshop Camera Raw 10.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2020-09-28"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "6c52171057e749439c7a446242845394d1e1fecdb5f12844f1ca79421e087470",
+      "size": 3416703,
+      "retrieved_utc": "2026-09-13T02:08:43Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2020-C-02777/GRC-2020-C-02777~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202206020005",
+      "url": "https://images-assets.nasa.gov/image/NHQ202206020005/NHQ202206020005~orig.jpg",
+      "name": "NHQ202206020005.jpg",
+      "dir": "HQ/2022",
+      "api_size": 19254654,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Bill Ingalls",
+        "source_page": "https://images.nasa.gov/details/NHQ202206020005"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 9",
+        "Software": "Adobe Photoshop Lightroom Classic 11.3.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2022-06-02"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "16103b71dfa65544ef5ea26074b4a4efed9105ef6bf7bc32c58d96c8295cd3da",
+      "size": 19254654,
+      "retrieved_utc": "2026-09-13T02:08:43Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202206020005/NHQ202206020005~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2016-0154-071",
+      "url": "https://images-assets.nasa.gov/image/AFRC2016-0154-071/AFRC2016-0154-071~orig.jpg",
+      "name": "AFRC2016-0154-071.jpg",
+      "dir": "AFRC/2016",
+      "api_size": 3074104,
+      "api_md5": "1cd43ae90361de568134a16eb7cc198c",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Lauren Hughes",
+        "source_page": "https://images.nasa.gov/details/AFRC2016-0154-071"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3X",
+        "Software": "Adobe Photoshop CS5.1 Macintosh",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2016-05-31"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "31d4f5416c7d212a16665c752452a8594a51217ed6d7d645a9131f166e579bd6",
+      "size": 3074104,
+      "retrieved_utc": "2026-09-13T02:08:43Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2016-0154-071/AFRC2016-0154-071~orig.jpg"
+    },
+    {
+      "key": "nasa-CEB_0354",
+      "url": "https://images-assets.nasa.gov/image/CEB_0354/CEB_0354~orig.jpg",
+      "name": "CEB_0354.jpg",
+      "dir": "MSFC/2025",
+      "api_size": 2362886,
+      "api_md5": "72a1be85149285b152390a049e3b2979",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Charles Beason",
+        "source_page": "https://images.nasa.gov/details/CEB_0354"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 7_2",
+        "Software": "Adobe Photoshop 26.8 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "MSFC",
+        "date": "2025-07-19"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "69e120edf275dec259fc6b4d568b3886fea4bc9b47b7032bf13f745574c99282",
+      "size": 2362886,
+      "retrieved_utc": "2026-09-13T02:08:43Z",
+      "final_url": "https://images-assets.nasa.gov/image/CEB_0354/CEB_0354~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD16-0072-022",
+      "url": "https://images-assets.nasa.gov/image/ACD16-0072-022/ACD16-0072-022~orig.jpg",
+      "name": "ACD16-0072-022.jpg",
+      "dir": "ARC/2016",
+      "api_size": 7410003,
+      "api_md5": "19a39e1db34655308a453f41a8784e65",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Dominic Hart",
+        "source_page": "https://images.nasa.gov/details/ACD16-0072-022"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D4",
+        "Software": "Adobe Photoshop Lightroom 6.3 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2016-05-02"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "03f24eb43a01ae93c71fa5eb0326809d5d705638cfcdc0fdede34466f8530d38",
+      "size": 7410003,
+      "retrieved_utc": "2026-09-13T02:08:44Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD16-0072-022/ACD16-0072-022~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20241030-s01111",
+      "url": "https://images-assets.nasa.gov/image/SSC-20241030-s01111/SSC-20241030-s01111~orig.jpg",
+      "name": "SSC-20241030-s01111.jpg",
+      "dir": "SSC/2024",
+      "api_size": 642477,
+      "api_md5": "811b48d5283c029aebef1cd5e212e847",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Danny Nowlin",
+        "source_page": "https://images.nasa.gov/details/SSC-20241030-s01111"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D6",
+        "Software": "Adobe Photoshop 26.0 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2024-10-30"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "958aa071c386ace70023c3cd1785df346a0fa385e1f0dd000b82eb26a0157d3d",
+      "size": 642477,
+      "retrieved_utc": "2026-09-13T02:08:44Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20241030-s01111/SSC-20241030-s01111~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202102180051",
+      "url": "https://images-assets.nasa.gov/image/NHQ202102180051/NHQ202102180051~orig.jpg",
+      "name": "NHQ202102180051.jpg",
+      "dir": "HQ/2021",
+      "api_size": 6881396,
+      "api_md5": "851abe769854b91f9be008c475eaa067",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Bill Ingalls",
+        "source_page": "https://images.nasa.gov/details/NHQ202102180051"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 6",
+        "Software": "Adobe Photoshop Lightroom Classic 10.1.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2021-02-18"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "6c3652ce802a5988ca3e62b124158b087564c73f26a321ea4c57508fd580fece",
+      "size": 6881396,
+      "retrieved_utc": "2026-09-13T02:08:44Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202102180051/NHQ202102180051~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ20230724ARMD07",
+      "url": "https://images-assets.nasa.gov/image/NHQ20230724ARMD07/NHQ20230724ARMD07~orig.jpg",
+      "name": "NHQ20230724ARMD07.jpg",
+      "dir": "HQ/2023",
+      "api_size": 14850509,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Andrew Carlsen",
+        "source_page": "https://images.nasa.gov/details/NHQ20230724ARMD07"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 6_2",
+        "Software": "Adobe Lightroom 6.4 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2023-07-24"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "cbe5dae1b1e3cd151d9320f105c66a9ea5501bde94ec9da6fb46a6315be46a1a",
+      "size": 14850509,
+      "retrieved_utc": "2026-09-13T02:08:44Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ20230724ARMD07/NHQ20230724ARMD07~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2018-0287-153",
+      "url": "https://images-assets.nasa.gov/image/AFRC2018-0287-153/AFRC2018-0287-153~orig.jpg",
+      "name": "AFRC2018-0287-153.jpg",
+      "dir": "AFRC/2018",
+      "api_size": 6730322,
+      "api_md5": "7ea179a17c20df25123f7fd8cd8b2351",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Josh Valcarcel-JSC Houston",
+        "source_page": "https://images.nasa.gov/details/AFRC2018-0287-153"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D5",
+        "Software": "NIKON D5 Ver.1.10",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2018-11-05"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "f4ab357b81269f4e3279aa83740d688ca141c325e4c938ec369afcb06996ff94",
+      "size": 6730322,
+      "retrieved_utc": "2026-09-13T02:08:45Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2018-0287-153/AFRC2018-0287-153~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20210615-PH-JBS01_0001",
+      "url": "https://images-assets.nasa.gov/image/KSC-20210615-PH-JBS01_0001/KSC-20210615-PH-JBS01_0001~orig.jpg",
+      "name": "KSC-20210615-PH-JBS01_0001.jpg",
+      "dir": "KSC/2021",
+      "api_size": 2027452,
+      "api_md5": "83e370a49efa9d823adf3310d7d9e505",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Ben Smegelsky",
+        "source_page": "https://images.nasa.gov/details/KSC-20210615-PH-JBS01_0001"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark IV",
+        "Software": "Adobe Photoshop Lightroom Classic 10.3 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2021-06-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "be4c78aabf824ab209b4b32e780a6466cdd54ea3cc46c5a59385f708bf6aa6e7",
+      "size": 2027452,
+      "retrieved_utc": "2026-09-13T02:08:44Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20210615-PH-JBS01_0001/KSC-20210615-PH-JBS01_0001~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2022-0081-11",
+      "url": "https://images-assets.nasa.gov/image/AFRC2022-0081-11/AFRC2022-0081-11~orig.jpg",
+      "name": "AFRC2022-0081-11.jpg",
+      "dir": "AFRC/2022",
+      "api_size": 15018077,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Joshua Fisher",
+        "source_page": "https://images.nasa.gov/details/AFRC2022-0081-11"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "NIKON D850 Ver.1.11",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2022-06-23"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "3aeef025affd47644f88781a02ae24863292753d02a8862fddc5ba332530bac3",
+      "size": 15018077,
+      "retrieved_utc": "2026-09-13T02:08:44Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2022-0081-11/AFRC2022-0081-11~orig.jpg"
+    },
+    {
+      "key": "nasa-G-2012-0045-018",
+      "url": "https://images-assets.nasa.gov/image/G-2012-0045-018/G-2012-0045-018~orig.jpg",
+      "name": "G-2012-0045-018.jpg",
+      "dir": "GSFC/2012",
+      "api_size": 654805,
+      "api_md5": "c68c0ddf8224f7f1b2bc116c64cf049b",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GSFC/Bill Hrybyk",
+        "source_page": "https://images.nasa.gov/details/G-2012-0045-018"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3",
+        "Software": "Adobe Photoshop CS4 Macintosh",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2012-02-28"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "088d78382e847fbada7026f3ce893a81b8de09b007af8d451674631e51c9eb33",
+      "size": 654805,
+      "retrieved_utc": "2026-09-13T02:08:44Z",
+      "final_url": "https://images-assets.nasa.gov/image/G-2012-0045-018/G-2012-0045-018~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20250111-s00048",
+      "url": "https://images-assets.nasa.gov/image/SSC-20250111-s00048/SSC-20250111-s00048~orig.jpg",
+      "name": "SSC-20250111-s00048.jpg",
+      "dir": "SSC/2025",
+      "api_size": 3312735,
+      "api_md5": "72bb48f28720fd1e9772e39192916d36",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Troy Frisbie/Patricia White",
+        "source_page": "https://images.nasa.gov/details/SSC-20250111-s00048"
+      },
+      "meta": {
+        "Make": "Apple",
+        "Model": "iPhone 12",
+        "Software": "18.2.1",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2025-01-12"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "d02ca1fc2cb91c14c56b0e11e422012f2a5adbef1bba40a6f0ce72baa7889d29",
+      "size": 3312735,
+      "retrieved_utc": "2026-09-13T02:08:44Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20250111-s00048/SSC-20250111-s00048~orig.jpg"
+    },
+    {
+      "key": "nasa-MAF_20240312_CS5_YRing05",
+      "url": "https://images-assets.nasa.gov/image/MAF_20240312_CS5_YRing05/MAF_20240312_CS5_YRing05~orig.jpg",
+      "name": "MAF_20240312_CS5_YRing05.jpg",
+      "dir": "MSFC/2024",
+      "api_size": 16151740,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Michael DeMocker",
+        "source_page": "https://images.nasa.gov/details/MAF_20240312_CS5_YRing05"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS R5",
+        "Software": "Adobe Photoshop 25.6 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "MSFC",
+        "date": "2024-03-12"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "54bb797157590c01c779bc588bb712b7aa85660b114d0a63a9e9abd0f9b5b453",
+      "size": 16151740,
+      "retrieved_utc": "2026-09-13T02:08:45Z",
+      "final_url": "https://images-assets.nasa.gov/image/MAF_20240312_CS5_YRing05/MAF_20240312_CS5_YRing05~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2020-0012-40",
+      "url": "https://images-assets.nasa.gov/image/AFRC2020-0012-40/AFRC2020-0012-40~orig.jpg",
+      "name": "AFRC2020-0012-40.jpg",
+      "dir": "AFRC/2020",
+      "api_size": 16309286,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Ken Ulbrich",
+        "source_page": "https://images.nasa.gov/details/AFRC2020-0012-40"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "Adobe Photoshop CC 2019 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2020-01-21"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "e337032f35251f6b1cfad7c433639e5f4c82ea3f1d0c01fc9cb650620cb5d699",
+      "size": 16309286,
+      "retrieved_utc": "2026-09-13T02:08:45Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2020-0012-40/AFRC2020-0012-40~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2019-C-05316",
+      "url": "https://images-assets.nasa.gov/image/GRC-2019-C-05316/GRC-2019-C-05316~orig.jpg",
+      "name": "GRC-2019-C-05316.jpg",
+      "dir": "GRC/2019",
+      "api_size": 1975690,
+      "api_md5": "fc58f3ae7851f43cc70c7366f6e6b2e7",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GRC/Rami Daud",
+        "source_page": "https://images.nasa.gov/details/GRC-2019-C-05316"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D5",
+        "Software": "Adobe Photoshop Lightroom Classic 8.3 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2019-07-10"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "3facfafca0384e6ff7b34552ff0c819e5397037c4bf70ee1d1d02c16844351e0",
+      "size": 1975690,
+      "retrieved_utc": "2026-09-13T02:08:45Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2019-C-05316/GRC-2019-C-05316~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2018-0287-258",
+      "url": "https://images-assets.nasa.gov/image/AFRC2018-0287-258/AFRC2018-0287-258~orig.jpg",
+      "name": "AFRC2018-0287-258.jpg",
+      "dir": "AFRC/2018",
+      "api_size": 7933074,
+      "api_md5": "9f52761641b87527b2c7254d46412017",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Carla Thomas",
+        "source_page": "https://images.nasa.gov/details/AFRC2018-0287-258"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "NIKON D810 Ver.1.02",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2018-11-05"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "259de0b27191564abc48c18b73040ce25a04378492a2691acdad3f822ae82b67",
+      "size": 7933074,
+      "retrieved_utc": "2026-09-13T02:08:45Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2018-0287-258/AFRC2018-0287-258~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2018-C-09018",
+      "url": "https://images-assets.nasa.gov/image/GRC-2018-C-09018/GRC-2018-C-09018~orig.jpg",
+      "name": "GRC-2018-C-09018.jpg",
+      "dir": "GRC/2018",
+      "api_size": 14879735,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA Photo by Marvin Smith",
+        "source_page": "https://images.nasa.gov/details/GRC-2018-C-09018"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "Adobe Photoshop Camera Raw 10.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2018-11-07"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "bae1fdc11054cb678dd857cb4b55e1ee08f2044977d624a48c91c59fb06926ce",
+      "size": 14879735,
+      "retrieved_utc": "2026-09-13T02:08:45Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2018-C-09018/GRC-2018-C-09018~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20160325-PH-JBS02_0007",
+      "url": "https://images-assets.nasa.gov/image/KSC-20160325-PH-JBS02_0007/KSC-20160325-PH-JBS02_0007~orig.jpg",
+      "name": "KSC-20160325-PH-JBS02_0007.jpg",
+      "dir": "KSC/2016",
+      "api_size": 743447,
+      "api_md5": "fbb742cbbca845646c2dabf78019f3b7",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Ben Smegelsky",
+        "source_page": "https://images.nasa.gov/details/KSC-20160325-PH-JBS02_0007"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark II",
+        "Software": "Adobe Photoshop CC 2015 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2016-03-25"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "9206fc15c6e563d81981ec81bae858f8ced2c8b20ee2b004d662be43998905c0",
+      "size": 743447,
+      "retrieved_utc": "2026-09-13T02:08:45Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20160325-PH-JBS02_0007/KSC-20160325-PH-JBS02_0007~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20210318-s00151",
+      "url": "https://images-assets.nasa.gov/image/SSC-20210318-s00151/SSC-20210318-s00151~orig.jpg",
+      "name": "SSC-20210318-s00151.jpg",
+      "dir": "SSC/2021",
+      "api_size": 1014019,
+      "api_md5": "b5883fd019096ef2c0202274e76860e8",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Danny Nowlin",
+        "source_page": "https://images.nasa.gov/details/SSC-20210318-s00151"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3S",
+        "Software": "Adobe Photoshop 22.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2021-03-18"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "24c17dcbeafd60a802a69de45a9d0c95bde2e750c58715431173ba08d9ba0beb",
+      "size": 1014019,
+      "retrieved_utc": "2026-09-13T02:08:45Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20210318-s00151/SSC-20210318-s00151~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD17-0015-010",
+      "url": "https://images-assets.nasa.gov/image/ACD17-0015-010/ACD17-0015-010~orig.jpg",
+      "name": "ACD17-0015-010.jpg",
+      "dir": "ARC/2017",
+      "api_size": 9230416,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Don Richey",
+        "source_page": "https://images.nasa.gov/details/ACD17-0015-010"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D750",
+        "Software": "Adobe Photoshop Lightroom 6.7 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2017-02-08"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "81e4ec3b36bb4c944a95c1206106ad28f2544b85fae88771c4dc11c5f49ab18a",
+      "size": 9230416,
+      "retrieved_utc": "2026-09-13T02:08:46Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD17-0015-010/ACD17-0015-010~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2025-0148-03",
+      "url": "https://images-assets.nasa.gov/image/AFRC2025-0148-03/AFRC2025-0148-03~orig.jpg",
+      "name": "AFRC2025-0148-03.jpg",
+      "dir": "AFRC/2025",
+      "api_size": 22834454,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Christopher LC Clark",
+        "source_page": "https://images.nasa.gov/details/AFRC2025-0148-03"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 9",
+        "Software": "Adobe Photoshop 26.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2025-09-03"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "5dc83378753067654a7d6dac16ebf68e4d4cf1fb7c030e5d73d84ee0df4dd69c",
+      "size": 22834454,
+      "retrieved_utc": "2026-09-13T02:08:46Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2025-0148-03/AFRC2025-0148-03~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20160908_2016-17905_033",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20160908_2016-17905_033/GSFC_20160908_2016-17905_033~orig.jpg",
+      "name": "GSFC_20160908_2016-17905_033.jpg",
+      "dir": "GSFC/2016",
+      "api_size": 7097058,
+      "api_md5": "bf97765134bf4519da55c34db3e1b033",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GSFC/Bill Hrybyk",
+        "source_page": "https://images.nasa.gov/details/GSFC_20160908_2016-17905_033"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D4S",
+        "Software": "Adobe Photoshop Lightroom 6.6.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2016-09-08"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "089330fcb55b9b3d2d3fe50d1b3aedfd20b59d62c7e792fbf8c1d8dd127df8cb",
+      "size": 7097058,
+      "retrieved_utc": "2026-09-13T02:08:46Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20160908_2016-17905_033/GSFC_20160908_2016-17905_033~orig.jpg"
+    },
+    {
+      "key": "nasa-ED12-0317-060",
+      "url": "https://images-assets.nasa.gov/image/ED12-0317-060/ED12-0317-060~orig.jpg",
+      "name": "ED12-0317-060.jpg",
+      "dir": "AFRC/2012",
+      "api_size": 13368304,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Jim Ross",
+        "source_page": "https://images.nasa.gov/details/ED12-0317-060"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3X",
+        "Software": "Adobe Photoshop CS4 Macintosh",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2012-09-21"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "c99af806bd58890aee3853102466a1333ec9a86a37fac2de8126745bdbd74c9c",
+      "size": 13368304,
+      "retrieved_utc": "2026-09-13T02:08:47Z",
+      "final_url": "https://images-assets.nasa.gov/image/ED12-0317-060/ED12-0317-060~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD23-0003-024",
+      "url": "https://images-assets.nasa.gov/image/ACD23-0003-024/ACD23-0003-024~orig.jpg",
+      "name": "ACD23-0003-024.jpg",
+      "dir": "ARC/2023",
+      "api_size": 14420921,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Dominic Hart",
+        "source_page": "https://images.nasa.gov/details/ACD23-0003-024"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 7_2",
+        "Software": "Adobe Photoshop Lightroom Classic 12.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2023-01-19"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "b7845fac1b394e6dddf175accb08ba32b55923de946d00e2d5d46e2fa50cf01c",
+      "size": 14420921,
+      "retrieved_utc": "2026-09-13T02:08:46Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD23-0003-024/ACD23-0003-024~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202203170053",
+      "url": "https://images-assets.nasa.gov/image/NHQ202203170053/NHQ202203170053~orig.jpg",
+      "name": "NHQ202203170053.jpg",
+      "dir": "HQ/2022",
+      "api_size": 7754921,
+      "api_md5": "c0977adf4040fc8c0addb9df643b6039",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Joel Kowsky",
+        "source_page": "https://images.nasa.gov/details/NHQ202203170053"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D6",
+        "Software": "Adobe Photoshop Lightroom Classic 11.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2022-03-17"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "85c3892f1dab211f147f02eb2aea091d361d900541442251f29e6986abe5e1a6",
+      "size": 7754921,
+      "retrieved_utc": "2026-09-13T02:08:46Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202203170053/NHQ202203170053~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202104210044",
+      "url": "https://images-assets.nasa.gov/image/NHQ202104210044/NHQ202104210044~orig.jpg",
+      "name": "NHQ202104210044.jpg",
+      "dir": "HQ/2021",
+      "api_size": 7712002,
+      "api_md5": "cc2193ff34a933462b215e0677dad738",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Bill Ingalls",
+        "source_page": "https://images.nasa.gov/details/NHQ202104210044"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 6",
+        "Software": "Adobe Photoshop Lightroom Classic 10.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2021-04-21"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "22e24a07a49fac0486998f8baf15f6474a76f417b257503f86cd496582eeaf6a",
+      "size": 7712002,
+      "retrieved_utc": "2026-09-13T02:08:47Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202104210044/NHQ202104210044~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20231207-PH-KLS01_0018",
+      "url": "https://images-assets.nasa.gov/image/KSC-20231207-PH-KLS01_0018/KSC-20231207-PH-KLS01_0018~orig.jpg",
+      "name": "KSC-20231207-PH-KLS01_0018.jpg",
+      "dir": "KSC/2023",
+      "api_size": 23677125,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Kim Shiflett",
+        "source_page": "https://images.nasa.gov/details/KSC-20231207-PH-KLS01_0018"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark IV",
+        "Software": "Adobe Photoshop Lightroom Classic 13.0.2 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2023-12-07"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "3d2c985e5ae1c7462ad4eea0fc11989a9f9d99f3d72002c74aabe6551cf073b7",
+      "size": 23677125,
+      "retrieved_utc": "2026-09-13T02:08:47Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20231207-PH-KLS01_0018/KSC-20231207-PH-KLS01_0018~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2022-0081-19",
+      "url": "https://images-assets.nasa.gov/image/AFRC2022-0081-19/AFRC2022-0081-19~orig.jpg",
+      "name": "AFRC2022-0081-19.jpg",
+      "dir": "AFRC/2022",
+      "api_size": 17943660,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Joshua Fisher",
+        "source_page": "https://images.nasa.gov/details/AFRC2022-0081-19"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "NIKON D850 Ver.1.11",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2022-06-23"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "75914cdce1b9062ffca1b8a87351a718397d450ae99eab8105dfd9e1a6506f10",
+      "size": 17943660,
+      "retrieved_utc": "2026-09-13T02:08:47Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2022-0081-19/AFRC2022-0081-19~orig.jpg"
+    },
+    {
+      "key": "nasa-jsc2012e036076",
+      "url": "https://images-assets.nasa.gov/image/jsc2012e036076/jsc2012e036076~orig.jpg",
+      "name": "jsc2012e036076.jpg",
+      "dir": "JSC/2012",
+      "api_size": 978975,
+      "api_md5": "83d8abb9601fd80ca175e8ca2eeda165",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/James Blair - NASA - JSC",
+        "source_page": "https://images.nasa.gov/details/jsc2012e036076"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3",
+        "Software": "Adobe Photoshop CS4 Windows",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2012-03-20"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "00b544c87e30f2ff264285f4e902d6009f3ec0d6b754f89917851009df6617ab",
+      "size": 978975,
+      "retrieved_utc": "2026-09-13T02:08:47Z",
+      "final_url": "https://images-assets.nasa.gov/image/jsc2012e036076/jsc2012e036076~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20250111-s00046",
+      "url": "https://images-assets.nasa.gov/image/SSC-20250111-s00046/SSC-20250111-s00046~orig.jpg",
+      "name": "SSC-20250111-s00046.jpg",
+      "dir": "SSC/2025",
+      "api_size": 3620725,
+      "api_md5": "8d5758b34b9917a899e2ac8643bc7bac",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Troy Frisbie/Patricia White",
+        "source_page": "https://images.nasa.gov/details/SSC-20250111-s00046"
+      },
+      "meta": {
+        "Make": "Apple",
+        "Model": "iPhone 12",
+        "Software": "18.2.1",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2025-01-12"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "e66032145eb799388547fc80a519f14fdce598c65a9407e845e66ee8e7b758cf",
+      "size": 3620725,
+      "retrieved_utc": "2026-09-13T02:08:47Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20250111-s00046/SSC-20250111-s00046~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2018-0287-237",
+      "url": "https://images-assets.nasa.gov/image/AFRC2018-0287-237/AFRC2018-0287-237~orig.jpg",
+      "name": "AFRC2018-0287-237.jpg",
+      "dir": "AFRC/2018",
+      "api_size": 15707765,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Carla Thomas",
+        "source_page": "https://images.nasa.gov/details/AFRC2018-0287-237"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "Adobe Photoshop CC 2018 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2018-11-05"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "6f7e3c54069757a69c7dcf5de86626284dc47ba9ac31ea2b4741d331de5884b6",
+      "size": 15707765,
+      "retrieved_utc": "2026-09-13T02:08:48Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2018-0287-237/AFRC2018-0287-237~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC20210116_GR9345",
+      "url": "https://images-assets.nasa.gov/image/SSC20210116_GR9345/SSC20210116_GR9345~orig.jpg",
+      "name": "SSC20210116_GR9345.jpg",
+      "dir": "SSC/2021",
+      "api_size": 1839619,
+      "api_md5": "e60824fbd37b6c3806eda19c04d8e264",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Danny Nowlin",
+        "source_page": "https://images.nasa.gov/details/SSC20210116_GR9345"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D5",
+        "Software": "Adobe Photoshop 21.0 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2021-01-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "16645035dcf89c4203787fe86035583245da07e388f23b6f8128b56f70af2eb5",
+      "size": 1839619,
+      "retrieved_utc": "2026-09-13T02:08:47Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC20210116_GR9345/SSC20210116_GR9345~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2023-0087-05",
+      "url": "https://images-assets.nasa.gov/image/AFRC2023-0087-05/AFRC2023-0087-05~orig.jpg",
+      "name": "AFRC2023-0087-05.jpg",
+      "dir": "AFRC/2023",
+      "api_size": 16363775,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Steve Freeman",
+        "source_page": "https://images.nasa.gov/details/AFRC2023-0087-05"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "Adobe Photoshop 24.4 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2023-05-25"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "4619c5dec6978115b153fcff03798da2c32a4c14641b58208f1f299824a45a3c",
+      "size": 16363775,
+      "retrieved_utc": "2026-09-13T02:08:48Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2023-0087-05/AFRC2023-0087-05~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20200310-PH-AJW01_0081",
+      "url": "https://images-assets.nasa.gov/image/KSC-20200310-PH-AJW01_0081/KSC-20200310-PH-AJW01_0081~orig.jpg",
+      "name": "KSC-20200310-PH-AJW01_0081.jpg",
+      "dir": "KSC/2020",
+      "api_size": 13031929,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Amber Jean Watson",
+        "source_page": "https://images.nasa.gov/details/KSC-20200310-PH-AJW01_0081"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark II",
+        "Software": "Adobe Photoshop Lightroom Classic 9.2 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2020-03-10"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "204f1356779bd98af05246498023ed05f3a8215bc7be0f28911d323a116deb24",
+      "size": 13031929,
+      "retrieved_utc": "2026-09-13T02:08:48Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20200310-PH-AJW01_0081/KSC-20200310-PH-AJW01_0081~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD24-0128-002",
+      "url": "https://images-assets.nasa.gov/image/ACD24-0128-002/ACD24-0128-002~orig.jpg",
+      "name": "ACD24-0128-002.jpg",
+      "dir": "ARC/2024",
+      "api_size": 6406987,
+      "api_md5": "5df378d67e8893eec25ba12018511f0e",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Don Richey",
+        "source_page": "https://images.nasa.gov/details/ACD24-0128-002"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D750",
+        "Software": "Adobe Photoshop Lightroom Classic 13.5 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2024-08-14"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "fd72f105cc9949e5cdbcec8894be0ea120d06f0293e782aa40aee019367a9e30",
+      "size": 6406987,
+      "retrieved_utc": "2026-09-13T02:08:48Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD24-0128-002/ACD24-0128-002~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202508050022",
+      "url": "https://images-assets.nasa.gov/image/NHQ202508050022/NHQ202508050022~orig.jpg",
+      "name": "NHQ202508050022.jpg",
+      "dir": "HQ/2025",
+      "api_size": 24440722,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Aubrey Gemignani",
+        "source_page": "https://images.nasa.gov/details/NHQ202508050022"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 9",
+        "Software": "Adobe Photoshop Lightroom Classic 14.4 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2025-08-05"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "e6db74bb56c58a05c7d7643cd4f7f60ee702ce01021d996afc0c9657b00d5a89",
+      "size": 24440722,
+      "retrieved_utc": "2026-09-13T02:08:50Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202508050022/NHQ202508050022~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20150930_2015-15958_054",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20150930_2015-15958_054/GSFC_20150930_2015-15958_054~orig.jpg",
+      "name": "GSFC_20150930_2015-15958_054.jpg",
+      "dir": "GSFC/2015",
+      "api_size": 1937005,
+      "api_md5": "502be33c6068758a0109f9a41643b2eb",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GSFC/Bill Hrybyk",
+        "source_page": "https://images.nasa.gov/details/GSFC_20150930_2015-15958_054"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D4S",
+        "Software": "Adobe Photoshop Lightroom 6.1.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2015-10-01"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "f65275b63f9d7370259588178a234024d271a2a99f9263a8e354a3fe2b064fbe",
+      "size": 1937005,
+      "retrieved_utc": "2026-09-13T02:08:48Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20150930_2015-15958_054/GSFC_20150930_2015-15958_054~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD15-0057-008",
+      "url": "https://images-assets.nasa.gov/image/ACD15-0057-008/ACD15-0057-008~orig.jpg",
+      "name": "ACD15-0057-008.jpg",
+      "dir": "ARC/2015",
+      "api_size": 10405902,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Dominic Hart",
+        "source_page": "https://images.nasa.gov/details/ACD15-0057-008"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3X",
+        "Software": "Adobe Photoshop Lightroom 4.4 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2015-04-07"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "867a0ecd5f1db4166684fc6525e3bdc869cd717e710676a4d930238a2ad61bc9",
+      "size": 10405902,
+      "retrieved_utc": "2026-09-13T02:08:48Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD15-0057-008/ACD15-0057-008~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD23-0003-015",
+      "url": "https://images-assets.nasa.gov/image/ACD23-0003-015/ACD23-0003-015~orig.jpg",
+      "name": "ACD23-0003-015.jpg",
+      "dir": "ARC/2023",
+      "api_size": 18189122,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Dominic Hart",
+        "source_page": "https://images.nasa.gov/details/ACD23-0003-015"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 7_2",
+        "Software": "Adobe Photoshop Lightroom Classic 12.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2023-01-19"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "611fa618450f5a051fb9539cc015675cef5697e33da7a7cfac07448bb427488b",
+      "size": 18189122,
+      "retrieved_utc": "2026-09-13T02:08:49Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD23-0003-015/ACD23-0003-015~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD17-0011-002",
+      "url": "https://images-assets.nasa.gov/image/ACD17-0011-002/ACD17-0011-002~orig.jpg",
+      "name": "ACD17-0011-002.jpg",
+      "dir": "ARC/2017",
+      "api_size": 6848020,
+      "api_md5": "e5017fc07faaac9d6cad42e78c12ac4f",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Dominic Hart",
+        "source_page": "https://images.nasa.gov/details/ACD17-0011-002"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D4",
+        "Software": "Adobe Photoshop Camera Raw 7.0 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2017-02-01"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "1126494fe0c88d6ab4e4f195f14cfaee3ab01536317adc776ed4231d0b023444",
+      "size": 6848020,
+      "retrieved_utc": "2026-09-13T02:08:49Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD17-0011-002/ACD17-0011-002~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20250207-s00087",
+      "url": "https://images-assets.nasa.gov/image/SSC-20250207-s00087/SSC-20250207-s00087~orig.jpg",
+      "name": "SSC-20250207-s00087.jpg",
+      "dir": "SSC/2025",
+      "api_size": 428215,
+      "api_md5": "bb0dde750aab20bde74f778f73c7eee3",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Danny Nowlin",
+        "source_page": "https://images.nasa.gov/details/SSC-20250207-s00087"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D6",
+        "Software": "Adobe Photoshop 26.3 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2025-02-07"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-medium",
+      "sha256": "8fdda582821dd9e56bfccae5fea3e5095f3a6e2e490efcda2b92aca8d7ab5b65",
+      "size": 428215,
+      "retrieved_utc": "2026-09-13T02:08:49Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20250207-s00087/SSC-20250207-s00087~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202104210041",
+      "url": "https://images-assets.nasa.gov/image/NHQ202104210041/NHQ202104210041~orig.jpg",
+      "name": "NHQ202104210041.jpg",
+      "dir": "HQ/2021",
+      "api_size": 7173953,
+      "api_md5": "5243af59d7a1c82e6856e87b0e85ed9d",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Bill Ingalls",
+        "source_page": "https://images.nasa.gov/details/NHQ202104210041"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 6",
+        "Software": "Adobe Photoshop Lightroom Classic 10.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2021-04-21"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "9ea6a449bf0452310a892cb9a81287824b1411c4981ab39be2592bd7bd2e05c4",
+      "size": 7173953,
+      "retrieved_utc": "2026-09-13T02:08:49Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202104210041/NHQ202104210041~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20221209-PH-JBS01_0001",
+      "url": "https://images-assets.nasa.gov/image/KSC-20221209-PH-JBS01_0001/KSC-20221209-PH-JBS01_0001~orig.jpg",
+      "name": "KSC-20221209-PH-JBS01_0001.jpg",
+      "dir": "KSC/2022",
+      "api_size": 23253194,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Ben Smegelsky",
+        "source_page": "https://images.nasa.gov/details/KSC-20221209-PH-JBS01_0001"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark IV",
+        "Software": "Adobe Photoshop Lightroom Classic 12.0.1 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2022-12-09"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "0281bb2b7c6aa176e46d3faa3b29472304034c78cce4af6b3bfd8493cd2fd168",
+      "size": 23253194,
+      "retrieved_utc": "2026-09-13T02:08:49Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20221209-PH-JBS01_0001/KSC-20221209-PH-JBS01_0001~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2022-C-00101",
+      "url": "https://images-assets.nasa.gov/image/GRC-2022-C-00101/GRC-2022-C-00101~orig.jpg",
+      "name": "GRC-2022-C-00101.jpg",
+      "dir": "GRC/2022",
+      "api_size": 24102559,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GRC/Marvin Smith",
+        "source_page": "https://images.nasa.gov/details/GRC-2022-C-00101"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "NIKON D850 Ver.1.10",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2022-01-06"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "030cc13984d2d1a41b6848013b7565fd81e88c9aa9cede741d50b4978e589dcf",
+      "size": 24102559,
+      "retrieved_utc": "2026-09-13T02:08:50Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2022-C-00101/GRC-2022-C-00101~orig.jpg"
+    },
+    {
+      "key": "nasa-jsc2012e018667",
+      "url": "https://images-assets.nasa.gov/image/jsc2012e018667/jsc2012e018667~orig.jpg",
+      "name": "jsc2012e018667.jpg",
+      "dir": "JSC/2012",
+      "api_size": 976096,
+      "api_md5": "15fe8a384be10ddfabf14d9ce5078b9f",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/ROBERT MARKOWITZ",
+        "source_page": "https://images.nasa.gov/details/jsc2012e018667"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3",
+        "Software": "Adobe Photoshop CS4 Windows",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2012-01-11"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "81596b935c9e3e24f1c8caed0145ad921b17d0bcf2dd4036e800a7c5a169f729",
+      "size": 976096,
+      "retrieved_utc": "2026-09-13T02:08:49Z",
+      "final_url": "https://images-assets.nasa.gov/image/jsc2012e018667/jsc2012e018667~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2019-0242-56",
+      "url": "https://images-assets.nasa.gov/image/AFRC2019-0242-56/AFRC2019-0242-56~orig.jpg",
+      "name": "AFRC2019-0242-56.jpg",
+      "dir": "AFRC/2019",
+      "api_size": 15724521,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Lauren Hughes",
+        "source_page": "https://images.nasa.gov/details/AFRC2019-0242-56"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "Adobe Photoshop CC 2019 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2019-10-02"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "9b0c509bbc66d10514505d9fdba89ed87a541a596785ee3273fd3c15aef58bfb",
+      "size": 15724521,
+      "retrieved_utc": "2026-09-13T02:08:50Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2019-0242-56/AFRC2019-0242-56~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202109210010",
+      "url": "https://images-assets.nasa.gov/image/NHQ202109210010/NHQ202109210010~orig.jpg",
+      "name": "NHQ202109210010.jpg",
+      "dir": "HQ/2021",
+      "api_size": 9229828,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Aubrey Gemignani",
+        "source_page": "https://images.nasa.gov/details/NHQ202109210010"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D5",
+        "Software": "Adobe Photoshop Lightroom Classic 11.5 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2021-09-21"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "0b4ee215d0a5df9b097b38419464ed30faca9c21c393b499d50a5b48098e007a",
+      "size": 9229828,
+      "retrieved_utc": "2026-09-13T02:08:50Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202109210010/NHQ202109210010~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2021-0158-17",
+      "url": "https://images-assets.nasa.gov/image/AFRC2021-0158-17/AFRC2021-0158-17~orig.jpg",
+      "name": "AFRC2021-0158-17.jpg",
+      "dir": "AFRC/2021",
+      "api_size": 14379524,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Joshua Fisher",
+        "source_page": "https://images.nasa.gov/details/AFRC2021-0158-17"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "Adobe Photoshop 22.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2021-12-08"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "e93b0ce8c4f029bdcc1b48b3523d801daf4fe80ab66352ff7d2e3316476dd5b3",
+      "size": 14379524,
+      "retrieved_utc": "2026-09-13T02:08:53Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2021-0158-17/AFRC2021-0158-17~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20221028-PH-KLS01_0020",
+      "url": "https://images-assets.nasa.gov/image/KSC-20221028-PH-KLS01_0020/KSC-20221028-PH-KLS01_0020~orig.jpg",
+      "name": "KSC-20221028-PH-KLS01_0020.jpg",
+      "dir": "KSC/2022",
+      "api_size": 16232186,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Kim Shiflett",
+        "source_page": "https://images.nasa.gov/details/KSC-20221028-PH-KLS01_0020"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark II",
+        "Software": "Adobe Photoshop Lightroom Classic 12.0 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2022-10-28"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "1884c1aef5e371112afd14fe05479dcf83917e963933b4c6b5ca3fc26d87c5de",
+      "size": 16232186,
+      "retrieved_utc": "2026-09-13T02:08:53Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20221028-PH-KLS01_0020/KSC-20221028-PH-KLS01_0020~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD25-0023-030",
+      "url": "https://images-assets.nasa.gov/image/ACD25-0023-030/ACD25-0023-030~orig.jpg",
+      "name": "ACD25-0023-030.jpg",
+      "dir": "ARC/2025",
+      "api_size": 13331281,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Don Richey",
+        "source_page": "https://images.nasa.gov/details/ACD25-0023-030"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D750",
+        "Software": "Adobe Photoshop Lightroom Classic 14.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2025-03-13"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "6d59c9b915c8c97a91f77d8c65e17a3db90d22c438920fbcfb93f27a41d02c61",
+      "size": 13331281,
+      "retrieved_utc": "2026-09-13T02:08:53Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD25-0023-030/ACD25-0023-030~orig.jpg"
+    },
+    {
+      "key": "nasa-NHQ202208280012",
+      "url": "https://images-assets.nasa.gov/image/NHQ202208280012/NHQ202208280012~orig.jpg",
+      "name": "NHQ202208280012.jpg",
+      "dir": "HQ/2022",
+      "api_size": 11367623,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Bill Ingalls",
+        "source_page": "https://images.nasa.gov/details/NHQ202208280012"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 9",
+        "Software": "Adobe Photoshop Lightroom Classic 11.5 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "HQ",
+        "date": "2022-08-28"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "f714a42927e9c1acde476e96ec044c02b929d7b87dd6433e562179efb23f10f5",
+      "size": 11367623,
+      "retrieved_utc": "2026-09-13T02:08:54Z",
+      "final_url": "https://images-assets.nasa.gov/image/NHQ202208280012/NHQ202208280012~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2016-0192-30",
+      "url": "https://images-assets.nasa.gov/image/AFRC2016-0192-30/AFRC2016-0192-30~orig.jpg",
+      "name": "AFRC2016-0192-30.jpg",
+      "dir": "AFRC/2016",
+      "api_size": 7948071,
+      "api_md5": "02342583d9be243cc9b93b3b844961b7",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Ken Ulbrich",
+        "source_page": "https://images.nasa.gov/details/AFRC2016-0192-30"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3X",
+        "Software": "Adobe Photoshop CS5.1 Macintosh",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2016-07-07"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "cd8038de53fd714f9939c7c5edb3471a36ffc271a27a01182e76b534facdadcc",
+      "size": 7948071,
+      "retrieved_utc": "2026-09-13T02:08:54Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2016-0192-30/AFRC2016-0192-30~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD25-0023-001",
+      "url": "https://images-assets.nasa.gov/image/ACD25-0023-001/ACD25-0023-001~orig.jpg",
+      "name": "ACD25-0023-001.jpg",
+      "dir": "ARC/2025",
+      "api_size": 23426167,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Brandon Torres",
+        "source_page": "https://images.nasa.gov/details/ACD25-0023-001"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON Z 7_2",
+        "Software": "Adobe Photoshop Lightroom Classic 13.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2025-03-13"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "62160ea0e94893ab4fd6484f1453cf10f1931260d5286d46d6b39e44fa01bb5c",
+      "size": 23426167,
+      "retrieved_utc": "2026-09-13T02:08:54Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD25-0023-001/ACD25-0023-001~orig.jpg"
+    },
+    {
+      "key": "nasa-ACD22-0036-002",
+      "url": "https://images-assets.nasa.gov/image/ACD22-0036-002/ACD22-0036-002~orig.jpg",
+      "name": "ACD22-0036-002.jpg",
+      "dir": "ARC/2022",
+      "api_size": 7418990,
+      "api_md5": "793966239f086bee214bcf6151723f86",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Dominic Hart",
+        "source_page": "https://images.nasa.gov/details/ACD22-0036-002"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D4",
+        "Software": "Adobe Photoshop Lightroom Classic 11.4.1 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "ARC",
+        "date": "2022-06-23"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "2de640fc55f4ab396787ff6f3f225e49da6bbed893eda10e3a0592d0c6d22ede",
+      "size": 7418990,
+      "retrieved_utc": "2026-09-13T02:08:54Z",
+      "final_url": "https://images-assets.nasa.gov/image/ACD22-0036-002/ACD22-0036-002~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20240725-s00795",
+      "url": "https://images-assets.nasa.gov/image/SSC-20240725-s00795/SSC-20240725-s00795~orig.jpg",
+      "name": "SSC-20240725-s00795.jpg",
+      "dir": "SSC/2024",
+      "api_size": 779343,
+      "api_md5": "00eb99b6b974b0b1d6f048372aa3c1c5",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Danny Nowlin",
+        "source_page": "https://images.nasa.gov/details/SSC-20240725-s00795"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D6",
+        "Software": "Adobe Photoshop 24.7 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2024-07-25"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "cb877040c7455b4abf837f40fcb2a16b25f105e6a99aefe592d19df15df12d37",
+      "size": 779343,
+      "retrieved_utc": "2026-09-13T02:08:54Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20240725-s00795/SSC-20240725-s00795~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-20220324-PH-JBS01_0050",
+      "url": "https://images-assets.nasa.gov/image/KSC-20220324-PH-JBS01_0050/KSC-20220324-PH-JBS01_0050~orig.jpg",
+      "name": "KSC-20220324-PH-JBS01_0050.jpg",
+      "dir": "KSC/2022",
+      "api_size": 20866603,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Ben Smegelsky",
+        "source_page": "https://images.nasa.gov/details/KSC-20220324-PH-JBS01_0050"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark IV",
+        "Software": "Adobe Photoshop Lightroom Classic 11.2 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2022-03-24"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "d64e28ac8a021a5ea401c5a892a2c3e4c78d197299bce7f0378c314e61e9e139",
+      "size": 20866603,
+      "retrieved_utc": "2026-09-13T02:08:55Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-20220324-PH-JBS01_0050/KSC-20220324-PH-JBS01_0050~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2021-0096-05",
+      "url": "https://images-assets.nasa.gov/image/AFRC2021-0096-05/AFRC2021-0096-05~orig.jpg",
+      "name": "AFRC2021-0096-05.jpg",
+      "dir": "AFRC/2021",
+      "api_size": 9739781,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Joshua Fisher",
+        "source_page": "https://images.nasa.gov/details/AFRC2021-0096-05"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "NIKON D850 Ver.1.11",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2021-07-19"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "de86988c5ed75e0e99206493807dd8c0d65d44e19d093f7caad1e91cfeaaa8fa",
+      "size": 9739781,
+      "retrieved_utc": "2026-09-13T02:08:55Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2021-0096-05/AFRC2021-0096-05~orig.jpg"
+    },
+    {
+      "key": "nasa-jsc2012e105494",
+      "url": "https://images-assets.nasa.gov/image/jsc2012e105494/jsc2012e105494~orig.jpg",
+      "name": "jsc2012e105494.jpg",
+      "dir": "JSC/2012",
+      "api_size": 1710350,
+      "api_md5": "a167e9827cffe41730453bc49aedc3f8",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/BILL STAFFORD",
+        "source_page": "https://images.nasa.gov/details/jsc2012e105494"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3",
+        "Software": "Adobe Photoshop CS4 Windows",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "JSC",
+        "date": "2012-07-25"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "35a35bff8bfe99c8915fd561b3515fa804f6d031b14b49f62ff530cbf4841c59",
+      "size": 1710350,
+      "retrieved_utc": "2026-09-13T02:08:54Z",
+      "final_url": "https://images-assets.nasa.gov/image/jsc2012e105494/jsc2012e105494~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2021-0024-67",
+      "url": "https://images-assets.nasa.gov/image/AFRC2021-0024-67/AFRC2021-0024-67~orig.jpg",
+      "name": "AFRC2021-0024-67.jpg",
+      "dir": "AFRC/2021",
+      "api_size": 21499145,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Ken Ulbrich",
+        "source_page": "https://images.nasa.gov/details/AFRC2021-0024-67"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D810",
+        "Software": "Adobe Photoshop 22.2 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2021-03-11"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "3a6e2ba8da09e932e161248b26dfe7be3a028d39aa6693a35c61937ed24c6ebb",
+      "size": 21499145,
+      "retrieved_utc": "2026-09-13T02:08:55Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2021-0024-67/AFRC2021-0024-67~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20180131-s00030",
+      "url": "https://images-assets.nasa.gov/image/SSC-20180131-s00030/SSC-20180131-s00030~orig.jpg",
+      "name": "SSC-20180131-s00030.jpg",
+      "dir": "SSC/2018",
+      "api_size": 5504221,
+      "api_md5": "93acddf146e85432c32e7f179176063a",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Danny Nowlin",
+        "source_page": "https://images.nasa.gov/details/SSC-20180131-s00030"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D5",
+        "Software": "Adobe Photoshop CC 2018 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2018-01-31"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "f49b051ff40c1e90abcf9d4b79d18bf423ae14fc7ceeafd62eb6d14af0ab1c56",
+      "size": 5504221,
+      "retrieved_utc": "2026-09-13T02:08:55Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20180131-s00030/SSC-20180131-s00030~orig.jpg"
+    },
+    {
+      "key": "nasa-AFRC2024-0048-22",
+      "url": "https://images-assets.nasa.gov/image/AFRC2024-0048-22/AFRC2024-0048-22~orig.jpg",
+      "name": "AFRC2024-0048-22.jpg",
+      "dir": "AFRC/2024",
+      "api_size": 23508496,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/Steve Freeman",
+        "source_page": "https://images.nasa.gov/details/AFRC2024-0048-22"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D850",
+        "Software": "Adobe Photoshop 25.6 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "AFRC",
+        "date": "2024-04-01"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "9a1273eb1084bea690ba84ac5414ad184ea1e2b792c6afa71a291b748463b32f",
+      "size": 23508496,
+      "retrieved_utc": "2026-09-13T02:08:55Z",
+      "final_url": "https://images-assets.nasa.gov/image/AFRC2024-0048-22/AFRC2024-0048-22~orig.jpg"
+    },
+    {
+      "key": "nasa-KSC-314D-0541_0113",
+      "url": "https://images-assets.nasa.gov/image/KSC-314D-0541_0113/KSC-314D-0541_0113~orig.jpg",
+      "name": "KSC-314D-0541_0113.jpg",
+      "dir": "KSC/2014",
+      "api_size": 13011195,
+      "api_md5": null,
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/KSC",
+        "source_page": "https://images.nasa.gov/details/KSC-314D-0541_0113"
+      },
+      "meta": {
+        "Make": "Canon",
+        "Model": "Canon EOS 5D Mark II",
+        "Software": "Adobe Photoshop Camera Raw 9.6 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "KSC",
+        "date": "2014-12-04"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "f4671185ba274dd23f7b033ee7a7d60dfa85b34b6be3be4ec91379a306ae2d06",
+      "size": 13011195,
+      "retrieved_utc": "2026-09-13T02:08:55Z",
+      "final_url": "https://images-assets.nasa.gov/image/KSC-314D-0541_0113/KSC-314D-0541_0113~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20180926_2018-28102_116",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20180926_2018-28102_116/GSFC_20180926_2018-28102_116~orig.jpg",
+      "name": "GSFC_20180926_2018-28102_116.jpg",
+      "dir": "GSFC/2018",
+      "api_size": 5540566,
+      "api_md5": "ad84abff225c29e46b7fa28ee0c040c6",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GSFC/Taylor Mickal",
+        "source_page": "https://images.nasa.gov/details/GSFC_20180926_2018-28102_116"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D3S",
+        "Software": "Adobe Photoshop Lightroom Classic 7.0 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2018-09-26"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "3a20a2f5b115ddf6a163dc80e9554e9e3f7980226db05401a0de1fcc826d03af",
+      "size": 5540566,
+      "retrieved_utc": "2026-09-13T02:08:56Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20180926_2018-28102_116/GSFC_20180926_2018-28102_116~orig.jpg"
+    },
+    {
+      "key": "nasa-GRC-2020-C-02583",
+      "url": "https://images-assets.nasa.gov/image/GRC-2020-C-02583/GRC-2020-C-02583~orig.jpg",
+      "name": "GRC-2020-C-02583.jpg",
+      "dir": "GRC/2020",
+      "api_size": 4915094,
+      "api_md5": "4bbbe818fe56fcf4b88693dd1d3b0cbc",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/NASA/GRC/Jef Janis",
+        "source_page": "https://images.nasa.gov/details/GRC-2020-C-02583"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D750",
+        "Software": "Adobe Photoshop Camera Raw 12.0 (Macintosh)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GRC",
+        "date": "2020-03-11"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "e8cf5ebc6efcab2c6d02ef542535305af135f7b6c53fbfd424f5298a525dcdb8",
+      "size": 4915094,
+      "retrieved_utc": "2026-09-13T02:08:55Z",
+      "final_url": "https://images-assets.nasa.gov/image/GRC-2020-C-02583/GRC-2020-C-02583~orig.jpg"
+    },
+    {
+      "key": "nasa-GSFC_20161104_2016-20302_031",
+      "url": "https://images-assets.nasa.gov/image/GSFC_20161104_2016-20302_031/GSFC_20161104_2016-20302_031~orig.jpg",
+      "name": "GSFC_20161104_2016-20302_031.jpg",
+      "dir": "GSFC/2016",
+      "api_size": 516712,
+      "api_md5": "9c8dffbfdfe482ea7dcede1862ee43dd",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Debora McCallum",
+        "source_page": "https://images.nasa.gov/details/GSFC_20161104_2016-20302_031"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D4S",
+        "Software": "Adobe Photoshop CS4 Macintosh",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "GSFC",
+        "date": "2016-11-04"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "ca0b0d5eebdea2432831099a30350bc34db40cb7523493f149f8de4daa3e4f7d",
+      "size": 516712,
+      "retrieved_utc": "2026-09-13T02:08:56Z",
+      "final_url": "https://images-assets.nasa.gov/image/GSFC_20161104_2016-20302_031/GSFC_20161104_2016-20302_031~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20250211-s00121",
+      "url": "https://images-assets.nasa.gov/image/SSC-20250211-s00121/SSC-20250211-s00121~orig.jpg",
+      "name": "SSC-20250211-s00121.jpg",
+      "dir": "SSC/2025",
+      "api_size": 708865,
+      "api_md5": "00441e451dd66afaf529e6969a2241be",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Danny Nowlin",
+        "source_page": "https://images.nasa.gov/details/SSC-20250211-s00121"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D6",
+        "Software": "Adobe Photoshop 26.3 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2025-02-18"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "4c752c11580c77fa5ce282e3ab7e29ddb7519813b4650c76e6e8c20e08f5c51c",
+      "size": 708865,
+      "retrieved_utc": "2026-09-13T02:08:56Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20250211-s00121/SSC-20250211-s00121~orig.jpg"
+    },
+    {
+      "key": "nasa-SSC-20250115-s00148",
+      "url": "https://images-assets.nasa.gov/image/SSC-20250115-s00148/SSC-20250115-s00148~orig.jpg",
+      "name": "SSC-20250115-s00148.jpg",
+      "dir": "SSC/2025",
+      "api_size": 436876,
+      "api_md5": "bf69bf988be43d16e3632049f0a0ebe4",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/Danny Nowlin",
+        "source_page": "https://images.nasa.gov/details/SSC-20250115-s00148"
+      },
+      "meta": {
+        "Make": "NIKON CORPORATION",
+        "Model": "NIKON D6",
+        "Software": "Adobe Photoshop 26.2 (Windows)",
+        "EncodingProcess": "Baseline DCT, Huffman coding",
+        "center": "SSC",
+        "date": "2025-01-15"
+      },
+      "alloc": "f12-tuning-nasa-ivl-photos-large",
+      "sha256": "6fdc48a89b8bdbd80f0de1126a9eff4d4f58967734bf4777c0f1bbab9736dd8a",
+      "size": 436876,
+      "retrieved_utc": "2026-09-13T02:08:56Z",
+      "final_url": "https://images-assets.nasa.gov/image/SSC-20250115-s00148/SSC-20250115-s00148~orig.jpg"
+    }
+  ],
+  "post_filter": {
+    "applied_utc": "2026-09-13T00:00:00Z",
+    "reason": "removed photos credited to non-NASA astronauts / Roscosmos photographers (license may not be US-Government public domain)",
+    "removed_keys": [
+      "nasa-iss040e102490",
+      "nasa-jsc2013e088572",
+      "nasa-jsc2022e044614",
+      "nasa-jsc2022e045905",
+      "nasa-jsc2022e045029",
+      "nasa-iss030e078393",
+      "nasa-iss040e103496",
+      "nasa-NHQ202104090018",
+      "nasa-jsc2022e045432",
+      "nasa-jsc2022e043724",
+      "nasa-iss041e067016",
+      "nasa-iss050e010908",
+      "nasa-jsc2022e043748",
+      "nasa-iss041e067086",
+      "nasa-iss040e093981",
+      "nasa-iss040e081305",
+      "nasa-NHQ202103220019"
+    ]
+  }
+}

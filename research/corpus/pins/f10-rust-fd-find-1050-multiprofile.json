@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f10-rust-fd-find-1050-multiprofile",
+  "inputs": {},
+  "output": {
+    "materialization_key": "5fbd97587d064a9b3f0de80123183fdc332cc800591ce04a332012b2ba024add",
+    "logical_tree_sha256": "19c7a503eac31c5e02f1b0380d84574dc5a46e89170ef2f1f045b3c4d1b39fe3",
+    "pinned_utc": "2026-09-13T02:30:05Z"
+  },
+  "history": []
+}

@@ -1,0 +1,199 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f10-heldout-raspberrypi-firmware-pi4-variants",
+  "family": "F10",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "raspberrypi-firmware",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "088a8f3ee08401817ed5bfaeb07eee842fa3f96e866c12036dc862dcd4cdee3c",
+  "materialization_key": "291587278a65e29594a4afb0124b7dfdfa808989e27cc21e2572c7e37f444719",
+  "materialized_utc": "2026-09-13T02:33:58Z",
+  "materialized_relpath": "heldout/f10-heldout-raspberrypi-firmware-pi4-variants",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "252b7830fb7669c1b9634c45f80004c5aa256d894cb9cf30c6ba30dd26975d6f",
+    "pinned_utc": "2026-09-13T02:33:58Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 10012426,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "start4-elf",
+        "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4.elf",
+        "final_url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4.elf",
+        "sha256": "43a5993684a46a65280d128ce9b8c68bcde1e83e2e5791c9bb0271e4a2aa0e39",
+        "size": 2298560,
+        "retrieved_utc": "2026-09-13T02:33:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "start4.elf"
+      },
+      {
+        "name": "start4x-elf",
+        "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4x.elf",
+        "final_url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4x.elf",
+        "sha256": "65f537363b717b48bb00c81b747b79185f00e589e203a47eb2b3c4d1743500bd",
+        "size": 3045800,
+        "retrieved_utc": "2026-09-13T02:33:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "start4x.elf"
+      },
+      {
+        "name": "start4cd-elf",
+        "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4cd.elf",
+        "final_url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4cd.elf",
+        "sha256": "8898e18aa9f1f50085eade4d0445472aabd6b109d9f3f958aeafb70efcf7ffa4",
+        "size": 844156,
+        "retrieved_utc": "2026-09-13T02:33:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "start4cd.elf"
+      },
+      {
+        "name": "start4db-elf",
+        "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4db.elf",
+        "final_url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4db.elf",
+        "sha256": "82c86aea7dff2f659eec57a12a604c0abfac9f61ac9feb4392b1d371d50fb0c7",
+        "size": 3796520,
+        "retrieved_utc": "2026-09-13T02:33:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "start4db.elf"
+      },
+      {
+        "name": "fixup4-dat",
+        "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4.dat",
+        "final_url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4.dat",
+        "sha256": "f5e57d4f49d8eaf5381e0f83b0171f03a938931fc6c79f36a93df0d67910a098",
+        "size": 5512,
+        "retrieved_utc": "2026-09-13T02:33:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "fixup4.dat"
+      },
+      {
+        "name": "fixup4x-dat",
+        "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4x.dat",
+        "final_url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4x.dat",
+        "sha256": "cafc03e13fcf14c6a593f45f198c0d44e0c2f01299abbb287c24208b35871019",
+        "size": 8501,
+        "retrieved_utc": "2026-09-13T02:33:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "fixup4x.dat"
+      },
+      {
+        "name": "fixup4cd-dat",
+        "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4cd.dat",
+        "final_url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4cd.dat",
+        "sha256": "8e9665d2a050d05c3c482094db81b3549a76c650d0af21f2eb8f0bd6e2e6e1ec",
+        "size": 3282,
+        "retrieved_utc": "2026-09-13T02:33:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "fixup4cd.dat"
+      },
+      {
+        "name": "fixup4db-dat",
+        "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4db.dat",
+        "final_url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4db.dat",
+        "sha256": "12d0904ff698eb57e19bc61c701dc196298e47762ce500be09c786b752281591",
+        "size": 8501,
+        "retrieved_utc": "2026-09-13T02:33:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "fixup4db.dat"
+      },
+      {
+        "name": "licence-broadcom",
+        "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/LICENCE.broadcom",
+        "final_url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/LICENCE.broadcom",
+        "sha256": "c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b",
+        "size": 1594,
+        "retrieved_utc": "2026-09-13T02:33:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "LICENCE.broadcom"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "start4-elf"
+      },
+      {
+        "op": "copy",
+        "input": "start4x-elf"
+      },
+      {
+        "op": "copy",
+        "input": "start4cd-elf"
+      },
+      {
+        "op": "copy",
+        "input": "start4db-elf"
+      },
+      {
+        "op": "copy",
+        "input": "fixup4-dat"
+      },
+      {
+        "op": "copy",
+        "input": "fixup4x-dat"
+      },
+      {
+        "op": "copy",
+        "input": "fixup4cd-dat"
+      },
+      {
+        "op": "copy",
+        "input": "fixup4db-dat"
+      },
+      {
+        "op": "copy",
+        "input": "licence-broadcom"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "d74810296b14fddb66c30f585727e79481d09352f63f0b3e80a9beca7c1c7f9a",
+    "logical_tree_sha256": "252b7830fb7669c1b9634c45f80004c5aa256d894cb9cf30c6ba30dd26975d6f",
+    "content_tree_sha256": "71732a3439d58da32791abae53939098442a4bdd59151aee3ac14bae4fda53a7",
+    "extended_tree_sha256": "4e57e8cd632dc02c3523eddd5d4657f0db57182ead300394738fba9dc541130c",
+    "bytes": 10012426,
+    "counts": {
+      "objects": 10,
+      "files": 9,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

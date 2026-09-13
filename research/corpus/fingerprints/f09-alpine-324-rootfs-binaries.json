@@ -1,0 +1,135 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f09-alpine-324-rootfs-binaries",
+  "family": "F09",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "docker-export",
+  "real_or_generated": "real",
+  "independence_group": "alpine-linux",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "c6c3fc7e305fc00619c95cf2c6c6232656b3ff436d13a6328e028d030079c049",
+  "materialization_key": "9a9cc0bae1e9e3fcce31ed40e3c6c969edfa710d2e18874106dcdd78d3dc631d",
+  "materialized_utc": "2026-09-13T02:25:28Z",
+  "materialized_relpath": "corpus/tuning/f09-alpine-324-rootfs-binaries",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "d75a3cbcaac6e90c57b1a01d9f1f97422b12681c5a5472add719a772b589b40c",
+    "pinned_utc": "2026-09-13T02:25:28Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 8159205,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "docker": {
+      "image": "alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b",
+      "platform": "linux/amd64",
+      "emulated": false,
+      "image_inspect": "sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b linux/amd64",
+      "export_tar_sha256": "9dee1d5c1f95d781f13fd630b83009751d84264634a4afe1e19cc1f0fc99fda6",
+      "export_tar_bytes": 8699392,
+      "docker_version": "client 29.7.2 server 29.7.2"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "docker-rootfs",
+        "format": "tar"
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/prune_tree.py",
+        "params": {
+          "keep": [
+            "bin",
+            "sbin",
+            "lib",
+            "usr/bin",
+            "usr/sbin",
+            "usr/lib",
+            "usr/libexec"
+          ],
+          "require": [
+            "usr/lib"
+          ]
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g4-binary/prune_tree.py",
+        "script_sha256": "71eb5132ec883b935f6f8c819902172c46446ca8a71d04a92099bbb1f2574b5b",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "keep": [
+            "bin",
+            "sbin",
+            "lib",
+            "usr/bin",
+            "usr/sbin",
+            "usr/lib",
+            "usr/libexec"
+          ],
+          "require": [
+            "usr/lib"
+          ]
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "9d04927fbab89279ce6f24eb57ada62558878202f4084087681288ce06fc2af1",
+    "logical_tree_sha256": "d75a3cbcaac6e90c57b1a01d9f1f97422b12681c5a5472add719a772b589b40c",
+    "content_tree_sha256": "6d52f535fc510ee9e9ca09fe347b7720c6bc47d492cca51124781a014e480fb2",
+    "extended_tree_sha256": "23cea6e3df4906928f197e1ae2632b53ffd7b67975c1b17072b254b6abe0e5ef",
+    "bytes": 8159205,
+    "bytes_all_paths": 8159205,
+    "allocated_bytes": 8216576,
+    "counts": {
+      "objects": 348,
+      "files": 24,
+      "unique_file_inodes": 24,
+      "dirs": 17,
+      "symlinks": 306,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 4,
+      "max_name_length_bytes": 21,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 33,
+        "mean": 12.64,
+        "p50": 12,
+        "p95": 19
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

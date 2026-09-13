@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-heldout-usgs-pdf-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "bbec8dfbc213602832785e0a238b1739a5b4f39cee87e649a1a4826583bf36e4",
+    "logical_tree_sha256": "d4b1555f3f929cbe5b46e642851e52744939aad0258454b474a518746e3a282a",
+    "pinned_utc": "2026-09-13T02:29:50Z"
+  },
+  "history": []
+}

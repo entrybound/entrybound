@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f14-pyspark-420-sdist",
+  "family": "F14",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "apache-spark",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "74acfcd1fc60a8c59bc53e215e08764a5c5e4414bf08248c0810ab81531cc63f",
+  "materialization_key": "1feaa7f3361f8433cf1fda44506465a7cbcf584398cebdbab7b9831a99b6bff4",
+  "materialized_utc": "2026-09-13T02:29:57Z",
+  "materialized_relpath": "corpus/validation/f14-pyspark-420-sdist",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "7a5a65a9b59a4b21e1769de09502511137e6fd3c3c8944b9dc509e918f10651c",
+    "pinned_utc": "2026-09-13T02:29:57Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 450129423,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "pyspark",
+        "url": "https://files.pythonhosted.org/packages/c3/33/c987434f5d50aa802779a004ca0fd45ee4350caab50554ad7283d5a22b50/pyspark-4.2.0.tar.gz",
+        "final_url": "https://files.pythonhosted.org/packages/c3/33/c987434f5d50aa802779a004ca0fd45ee4350caab50554ad7283d5a22b50/pyspark-4.2.0.tar.gz",
+        "sha256": "5ad689d53570ee1674193fd4f9bda065f0db3be9363a27d2a3406cc457b70b61",
+        "size": 450129423,
+        "retrieved_utc": "2026-09-13T02:29:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "pyspark-4.2.0.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "pyspark"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "a460706ec5173b2ffe64f6a176272a312dcbe7a9b706b2ce8a205ec51de071d6",
+    "logical_tree_sha256": "7a5a65a9b59a4b21e1769de09502511137e6fd3c3c8944b9dc509e918f10651c",
+    "content_tree_sha256": "9bf6966d8db40a42960c6be4b4e1321e373265b6bc72fc1102e7e1d5cd201a59",
+    "extended_tree_sha256": "931d03994b4190bdffa5e8bae97cc1287c3974feff2c753445630d57c998169a",
+    "bytes": 450129423,
+    "bytes_all_paths": 450129423,
+    "allocated_bytes": 450129920,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 20,
+      "path_length_bytes": {
+        "min": 20,
+        "max": 20,
+        "mean": 20.0,
+        "p50": 20,
+        "p95": 20
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

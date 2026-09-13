@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f09-git-for-windows-portable-2550",
+  "inputs": {},
+  "output": {
+    "materialization_key": "a9855dfdc827b52c22efc4728eabb18a1c1efab896579de72921a764cb917fe8",
+    "logical_tree_sha256": "2cf5be549399dad4fbe97b5b773f5760bb78b2fd2cc9d8474fe5c551ca60cfe9",
+    "pinned_utc": "2026-09-13T02:26:27Z"
+  },
+  "history": []
+}

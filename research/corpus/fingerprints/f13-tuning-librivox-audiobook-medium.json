@@ -1,0 +1,225 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-tuning-librivox-audiobook-medium",
+  "family": "F13",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-librivox-1900-last-president",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "4264b9b0d239ae9fc99495256acbdcb5c2e9568d7677130e7efd3d519806869c",
+  "materialization_key": "f3abc65ef44863ed49c8f20a4fdd37233a1efd7d23c04bb4f19ae21adb5e2979",
+  "materialized_utc": "2026-09-13T02:29:55Z",
+  "materialized_relpath": "corpus/tuning/f13-tuning-librivox-audiobook-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "cec48e9c26fb26a2a0fded905636088c823744171fb3f3038cf6a580719f7862",
+    "pinned_utc": "2026-09-13T02:29:55Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 146454796,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ia-1900lastpresident-1904-librivox-6c56f1980e",
+        "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900_librivox.m4b",
+        "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900_librivox.m4b",
+        "sha256": "2fee842b7ba525bea6cd5dee8dabc17c7aea7b59ebadd6c569c288f427302241",
+        "size": 35291450,
+        "retrieved_utc": "2026-09-13T02:03:51Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1900_librivox.m4b"
+      },
+      {
+        "name": "ia-1900lastpresident-1904-librivox-dee7d560b7",
+        "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_01_lockwood.ogg",
+        "final_url": "https://dn601301.us.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_01_lockwood.ogg",
+        "sha256": "4d156ce9887049e172f39d97c9298123aa4f6817d4bbbfbf69eb28479069961a",
+        "size": 10331883,
+        "retrieved_utc": "2026-09-13T02:03:50Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1900orthelastpresident_01_lockwood.ogg"
+      },
+      {
+        "name": "ia-1900lastpresident-1904-librivox-c064c8f3f7",
+        "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_01_lockwood_128kb.mp3",
+        "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_01_lockwood_128kb.mp3",
+        "sha256": "07f7b384725d0a03cd26781cdae82ba87116d75b51b27acd55f39edb67195a4b",
+        "size": 18089362,
+        "retrieved_utc": "2026-09-13T02:03:51Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1900orthelastpresident_01_lockwood_128kb.mp3"
+      },
+      {
+        "name": "ia-1900lastpresident-1904-librivox-65df1e35f0",
+        "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_02_lockwood.ogg",
+        "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_02_lockwood.ogg",
+        "sha256": "237f73187b68afb904d13e978cdbdfc25d443e348bf1fe6f34de2406dc38889a",
+        "size": 11458569,
+        "retrieved_utc": "2026-09-13T02:03:52Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1900orthelastpresident_02_lockwood.ogg"
+      },
+      {
+        "name": "ia-1900lastpresident-1904-librivox-4b4d6ead38",
+        "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_02_lockwood_128kb.mp3",
+        "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_02_lockwood_128kb.mp3",
+        "sha256": "5bd97d92f57b9bb699bca5866f7e41c203adac4301431e435e31b7cf985260d4",
+        "size": 19520873,
+        "retrieved_utc": "2026-09-13T02:03:53Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1900orthelastpresident_02_lockwood_128kb.mp3"
+      },
+      {
+        "name": "ia-1900lastpresident-1904-librivox-16ac08342f",
+        "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_03_lockwood.ogg",
+        "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_03_lockwood.ogg",
+        "sha256": "129f6e2750aadc217e4829321fa6abf6be658b33b9d3b8314c751afc3b04750e",
+        "size": 8586205,
+        "retrieved_utc": "2026-09-13T02:03:54Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1900orthelastpresident_03_lockwood.ogg"
+      },
+      {
+        "name": "ia-1900lastpresident-1904-librivox-cc5a43ce1e",
+        "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_03_lockwood_128kb.mp3",
+        "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_03_lockwood_128kb.mp3",
+        "sha256": "790eeed279f2d89b5da7b1e82dc6a67d64551d1c4dfffc32f350fe015affd485",
+        "size": 14882362,
+        "retrieved_utc": "2026-09-13T02:03:54Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1900orthelastpresident_03_lockwood_128kb.mp3"
+      },
+      {
+        "name": "ia-1900lastpresident-1904-librivox-ffe96016ac",
+        "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_04_lockwood.ogg",
+        "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_04_lockwood.ogg",
+        "sha256": "85c6e7765d89233e159838981905dfb118feabd9c6bdb7870c6d1887b5e83fb6",
+        "size": 10322594,
+        "retrieved_utc": "2026-09-13T02:03:55Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1900orthelastpresident_04_lockwood.ogg"
+      },
+      {
+        "name": "ia-1900lastpresident-1904-librivox-5efbfcc247",
+        "url": "https://archive.org/download/1900lastpresident_1904_librivox/1900orthelastpresident_04_lockwood_128kb.mp3",
+        "final_url": "https://dn710703.ca.archive.org/0/items/1900lastpresident_1904_librivox/1900orthelastpresident_04_lockwood_128kb.mp3",
+        "sha256": "c880634ddcedbc8813b539be6591b283ce970f768ccbb0c367a7ae56c4b5708c",
+        "size": 17971498,
+        "retrieved_utc": "2026-09-13T02:03:56Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1900orthelastpresident_04_lockwood_128kb.mp3"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "ia-1900lastpresident-1904-librivox-6c56f1980e",
+        "dest": "1900 or The Last President/1900_librivox.m4b"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1900lastpresident-1904-librivox-dee7d560b7",
+        "dest": "1900 or The Last President/1900orthelastpresident_01_lockwood.ogg"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1900lastpresident-1904-librivox-c064c8f3f7",
+        "dest": "1900 or The Last President/1900orthelastpresident_01_lockwood_128kb.mp3"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1900lastpresident-1904-librivox-65df1e35f0",
+        "dest": "1900 or The Last President/1900orthelastpresident_02_lockwood.ogg"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1900lastpresident-1904-librivox-4b4d6ead38",
+        "dest": "1900 or The Last President/1900orthelastpresident_02_lockwood_128kb.mp3"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1900lastpresident-1904-librivox-16ac08342f",
+        "dest": "1900 or The Last President/1900orthelastpresident_03_lockwood.ogg"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1900lastpresident-1904-librivox-cc5a43ce1e",
+        "dest": "1900 or The Last President/1900orthelastpresident_03_lockwood_128kb.mp3"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1900lastpresident-1904-librivox-ffe96016ac",
+        "dest": "1900 or The Last President/1900orthelastpresident_04_lockwood.ogg"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1900lastpresident-1904-librivox-5efbfcc247",
+        "dest": "1900 or The Last President/1900orthelastpresident_04_lockwood_128kb.mp3"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "5bdc3075f9b2a3b4dade0ef1241e62046c4e0a6a0106cc504642a53b7aef710d",
+    "logical_tree_sha256": "cec48e9c26fb26a2a0fded905636088c823744171fb3f3038cf6a580719f7862",
+    "content_tree_sha256": "1618744a44623b642c5e496c2c5fa8c6c8df2253df7afdb5222fddafdf9e09dd",
+    "extended_tree_sha256": "d0fd223b5f7bce4d34e6e96c7d84050c990ab0adf31d9f0dcc380ffc87ddf9d9",
+    "bytes": 146454796,
+    "bytes_all_paths": 146454796,
+    "allocated_bytes": 146481152,
+    "counts": {
+      "objects": 11,
+      "files": 9,
+      "unique_file_inodes": 9,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 44,
+      "path_length_bytes": {
+        "min": 26,
+        "max": 71,
+        "mean": 61.4,
+        "p50": 65,
+        "p95": 71
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

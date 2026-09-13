@@ -1,0 +1,273 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-tuning-prelinger-video-medium",
+  "family": "F13",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-prelinger-archives",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "59552289428f8885485b09f620e7202d11cfde14b295404bafcb641e1d46590e",
+  "materialization_key": "2da127b1750e44b880abcf9e27f844f2f52b5a9a13006ee4241ba4e9c86aeda8",
+  "materialized_utc": "2026-09-13T02:29:56Z",
+  "materialized_relpath": "corpus/tuning/f13-tuning-prelinger-video-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "5312b094c2b7fbf64c18f32b7445fce8ac2841d58d1a402fe46602220b5e526f",
+    "pinned_utc": "2026-09-13T02:29:56Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 425193129,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ia-1935-comedy-mallinckrodt-0503f2f7",
+        "url": "https://archive.org/download/1935_comedy_mallinckrodt/1935_comedy_mallinckrodt.mp4",
+        "final_url": "https://dn790000.ca.archive.org/0/items/1935_comedy_mallinckrodt/1935_comedy_mallinckrodt.mp4",
+        "sha256": "57c5056deb1677109f7d551769601ababcf8b009334f113ae86d04da0e83c37d",
+        "size": 51458306,
+        "retrieved_utc": "2026-09-13T02:27:21Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1935_comedy_mallinckrodt.mp4"
+      },
+      {
+        "name": "ia-1935-comedy-mallinckrodt-ec170cc6",
+        "url": "https://archive.org/download/1935_comedy_mallinckrodt/1935_comedy_mallinckrodt.ogv",
+        "final_url": "https://dn790000.ca.archive.org/0/items/1935_comedy_mallinckrodt/1935_comedy_mallinckrodt.ogv",
+        "sha256": "e98199d519f5566120f45ec3a415573e1e4f5082e27911df6fd97e00693cf4bd",
+        "size": 37960578,
+        "retrieved_utc": "2026-09-13T02:27:24Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1935_comedy_mallinckrodt.ogv"
+      },
+      {
+        "name": "ia-1935-comedy-mallinckrodt-e9c93da0",
+        "url": "https://archive.org/download/1935_comedy_mallinckrodt/1935_comedy_mallinckrodt_512kb.mp4",
+        "final_url": "https://dn600206.us.archive.org/0/items/1935_comedy_mallinckrodt/1935_comedy_mallinckrodt_512kb.mp4",
+        "sha256": "d43207114fde9286aae1f4b2d371c828130341eceb0e25df972654a4b10c8b4c",
+        "size": 36073700,
+        "retrieved_utc": "2026-09-13T02:27:19Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1935_comedy_mallinckrodt_512kb.mp4"
+      },
+      {
+        "name": "ia-1936pittsburg-8fc1fc60",
+        "url": "https://archive.org/download/1936Pittsburg/1936Pittsburg.mp4",
+        "final_url": "https://dn790002.ca.archive.org/0/items/1936Pittsburg/1936Pittsburg.mp4",
+        "sha256": "83d01bb22acb61019018c0971c88d3b5b0d014b4b93be084014ce06977a0b3b8",
+        "size": 17628957,
+        "retrieved_utc": "2026-09-13T02:27:22Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1936Pittsburg.mp4"
+      },
+      {
+        "name": "ia-1936pittsburg-f9648e14",
+        "url": "https://archive.org/download/1936Pittsburg/1936Pittsburg.ogv",
+        "final_url": "https://dn790002.ca.archive.org/0/items/1936Pittsburg/1936Pittsburg.ogv",
+        "sha256": "bd0255c2f454cc761a04b43c092922d2b629b32f413e54f9ed3d69d4fe391ca9",
+        "size": 11972829,
+        "retrieved_utc": "2026-09-13T02:27:24Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1936Pittsburg.ogv"
+      },
+      {
+        "name": "ia-1936pittsburg-43960f7d",
+        "url": "https://archive.org/download/1936Pittsburg/1936Pittsburg_512kb.mp4",
+        "final_url": "https://dn800203.us.archive.org/0/items/1936Pittsburg/1936Pittsburg_512kb.mp4",
+        "sha256": "bf221e2c65aa98da6bfb9dd59282bdac03f2e77b360149babc709a14ec59c082",
+        "size": 13949037,
+        "retrieved_utc": "2026-09-13T02:27:24Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1936Pittsburg_512kb.mp4"
+      },
+      {
+        "name": "ia-1955chev1955-9e5c6e46",
+        "url": "https://archive.org/download/1955Chev1955/1955Chev1955.mp4",
+        "final_url": "https://dn790001.ca.archive.org/0/items/1955Chev1955/1955Chev1955.mp4",
+        "sha256": "d58ac5b41fa193920eea5675fe8782e15cb0f5ed969e28ae9a6847a57fbf70d8",
+        "size": 54852362,
+        "retrieved_utc": "2026-09-13T02:27:27Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1955Chev1955.mp4"
+      },
+      {
+        "name": "ia-1955chev1955-05bb09c2",
+        "url": "https://archive.org/download/1955Chev1955/1955Chev1955.ogv",
+        "final_url": "https://dn790001.ca.archive.org/0/items/1955Chev1955/1955Chev1955.ogv",
+        "sha256": "3dc0f207dc8f145890613e6ac3fcc47404a346281d7ec3df91736e1913452b03",
+        "size": 37396969,
+        "retrieved_utc": "2026-09-13T02:27:27Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1955Chev1955.ogv"
+      },
+      {
+        "name": "ia-1955chev1955-240b2a43",
+        "url": "https://archive.org/download/1955Chev1955/1955Chev1955_512kb.mp4",
+        "final_url": "https://dn800306.us.archive.org/0/items/1955Chev1955/1955Chev1955_512kb.mp4",
+        "sha256": "60fcbb2496c602bf7f8a0b5fe4efb25a0e2acd9f93488081c46ca6fe9cce5b2a",
+        "size": 37344324,
+        "retrieved_utc": "2026-09-13T02:27:26Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1955Chev1955_512kb.mp4"
+      },
+      {
+        "name": "ia-a-bomb-blast-effects-5a5dd016",
+        "url": "https://archive.org/download/a-bomb_blast_effects/a-bomb_blast_effects.mp4",
+        "final_url": "https://dn790002.ca.archive.org/0/items/a-bomb_blast_effects/a-bomb_blast_effects.mp4",
+        "sha256": "cbbf79c1a288c7ab2852a5cd481c8f31fe86bae7f6d13e147c5c7319f87692a1",
+        "size": 51937490,
+        "retrieved_utc": "2026-09-13T02:27:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "a-bomb_blast_effects.mp4"
+      },
+      {
+        "name": "ia-a-bomb-blast-effects-f25ab33d",
+        "url": "https://archive.org/download/a-bomb_blast_effects/a-bomb_blast_effects.ogv",
+        "final_url": "https://dn790002.ca.archive.org/0/items/a-bomb_blast_effects/a-bomb_blast_effects.ogv",
+        "sha256": "929a739246488df7e552daa4257c5bd459309999e40e0c803eac7e4d1c88299f",
+        "size": 38407015,
+        "retrieved_utc": "2026-09-13T02:27:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "a-bomb_blast_effects.ogv"
+      },
+      {
+        "name": "ia-a-bomb-blast-effects-20c0c26e",
+        "url": "https://archive.org/download/a-bomb_blast_effects/a-bomb_blast_effects_512kb.mp4",
+        "final_url": "https://dn601204.us.archive.org/0/items/a-bomb_blast_effects/a-bomb_blast_effects_512kb.mp4",
+        "sha256": "d7debaf66c56649746cbeadd500f9c7ebe3f3be0d31bfaa504e2bc24c60094e0",
+        "size": 36211562,
+        "retrieved_utc": "2026-09-13T02:27:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "a-bomb_blast_effects_512kb.mp4"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "ia-1935-comedy-mallinckrodt-0503f2f7",
+        "dest": "1935_comedy_mallinckrodt/1935_comedy_mallinckrodt.mp4"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1935-comedy-mallinckrodt-ec170cc6",
+        "dest": "1935_comedy_mallinckrodt/1935_comedy_mallinckrodt.ogv"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1935-comedy-mallinckrodt-e9c93da0",
+        "dest": "1935_comedy_mallinckrodt/1935_comedy_mallinckrodt_512kb.mp4"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1936pittsburg-8fc1fc60",
+        "dest": "1936Pittsburg/1936Pittsburg.mp4"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1936pittsburg-f9648e14",
+        "dest": "1936Pittsburg/1936Pittsburg.ogv"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1936pittsburg-43960f7d",
+        "dest": "1936Pittsburg/1936Pittsburg_512kb.mp4"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1955chev1955-9e5c6e46",
+        "dest": "1955Chev1955/1955Chev1955.mp4"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1955chev1955-05bb09c2",
+        "dest": "1955Chev1955/1955Chev1955.ogv"
+      },
+      {
+        "op": "copy",
+        "input": "ia-1955chev1955-240b2a43",
+        "dest": "1955Chev1955/1955Chev1955_512kb.mp4"
+      },
+      {
+        "op": "copy",
+        "input": "ia-a-bomb-blast-effects-5a5dd016",
+        "dest": "a-bomb_blast_effects/a-bomb_blast_effects.mp4"
+      },
+      {
+        "op": "copy",
+        "input": "ia-a-bomb-blast-effects-f25ab33d",
+        "dest": "a-bomb_blast_effects/a-bomb_blast_effects.ogv"
+      },
+      {
+        "op": "copy",
+        "input": "ia-a-bomb-blast-effects-20c0c26e",
+        "dest": "a-bomb_blast_effects/a-bomb_blast_effects_512kb.mp4"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "2bcc82454937e4511032b368b17a6bf8d68eddda8c276108a4b2ee210b227b61",
+    "logical_tree_sha256": "5312b094c2b7fbf64c18f32b7445fce8ac2841d58d1a402fe46602220b5e526f",
+    "content_tree_sha256": "020725c5cfda30a6fee8022d585dc6b806ab66d5c30bc50708fde8a6509a1e22",
+    "extended_tree_sha256": "a99d7560ab22afeca8b0424b987d497562bfaa03a9fe57ebf260ed3703311373",
+    "bytes": 425193129,
+    "bytes_all_paths": 425193129,
+    "allocated_bytes": 425222144,
+    "counts": {
+      "objects": 17,
+      "files": 12,
+      "unique_file_inodes": 12,
+      "dirs": 4,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 34,
+      "path_length_bytes": {
+        "min": 12,
+        "max": 59,
+        "mean": 35.438,
+        "p50": 35,
+        "p95": 53
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

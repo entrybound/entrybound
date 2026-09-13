@@ -1,0 +1,273 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-tuning-nasa-ntrs-pdf-small",
+  "family": "F13",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-nasa-ntrs-pdf",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "8ad3a9a6cb41390e76ef720cb245cf481558343abeeb61078c3659e3847b676c",
+  "materialization_key": "857a955a58608544d67e13005bd77d36eacbdd88f7655bf997fa57cf84bf2461",
+  "materialized_utc": "2026-09-13T02:29:55Z",
+  "materialized_relpath": "corpus/tuning/f13-tuning-nasa-ntrs-pdf-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "00ac9e6490cb2f0b2c86c775e27a502a39889327e570f5f74aa5a5da5c784522",
+    "pinned_utc": "2026-09-13T02:29:55Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 15375890,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ntrs-20190001427",
+        "url": "https://ntrs.nasa.gov/api/citations/20190001427/downloads/20190001427.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20190001427/downloads/20190001427.pdf",
+        "sha256": "80a70a0491fa13b1830306cfffafa8baf46d4eee737667d7f16fd4087fe76389",
+        "size": 2084917,
+        "retrieved_utc": "2026-09-13T02:08:59Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "20190001427.pdf"
+      },
+      {
+        "name": "ntrs-20190002273",
+        "url": "https://ntrs.nasa.gov/api/citations/20190002273/downloads/20190002273.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20190002273/downloads/20190002273.pdf",
+        "sha256": "0d5a297503815b549e27a1129fbcb48e80ffb774e5766cf515e54d2b01aed175",
+        "size": 620835,
+        "retrieved_utc": "2026-09-13T02:08:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "20190002273.pdf"
+      },
+      {
+        "name": "ntrs-20190011719",
+        "url": "https://ntrs.nasa.gov/api/citations/20190011719/downloads/20190011719.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20190011719/downloads/20190011719.pdf",
+        "sha256": "ebbaca93e93f05e692770a329ed514b7f556a89ec2c76509afd5d40073ecd814",
+        "size": 2834499,
+        "retrieved_utc": "2026-09-13T02:08:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "20190011719.pdf"
+      },
+      {
+        "name": "ntrs-20190032489",
+        "url": "https://ntrs.nasa.gov/api/citations/20190032489/downloads/20190032489.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20190032489/downloads/20190032489.pdf",
+        "sha256": "4c6f089a7e5d9c327d516a55fc157f9432a9172cf9e8fbaf922d456cb682da34",
+        "size": 1617042,
+        "retrieved_utc": "2026-09-13T02:08:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "20190032489.pdf"
+      },
+      {
+        "name": "ntrs-20190033088",
+        "url": "https://ntrs.nasa.gov/api/citations/20190033088/downloads/20190033088.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20190033088/downloads/20190033088.pdf",
+        "sha256": "982da2b45666605f458071a70850aff5c04657f3c5dcb18cb02d489cf2cd78dc",
+        "size": 560871,
+        "retrieved_utc": "2026-09-13T02:08:59Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "20190033088.pdf"
+      },
+      {
+        "name": "ntrs-20230009771",
+        "url": "https://ntrs.nasa.gov/api/citations/20230009771/downloads/OPA847_OpAmp_LBNL_20221111_SEE-TestReport_v3.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20230009771/downloads/OPA847_OpAmp_LBNL_20221111_SEE-TestReport_v3.pdf",
+        "sha256": "66a23bacddf8dac5384884c5f4eafbb95a04f8d25db83c2e977656787e7dd34e",
+        "size": 446930,
+        "retrieved_utc": "2026-09-13T02:08:59Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "OPA847_OpAmp_LBNL_20221111_SEE-TestReport_v3.pdf"
+      },
+      {
+        "name": "ntrs-20190027256",
+        "url": "https://ntrs.nasa.gov/api/citations/20190027256/downloads/20190027256.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20190027256/downloads/20190027256.pdf",
+        "sha256": "3acf4d257a86f02ca6da5c5ff39f8660efcd302050be7bdb0898a354a2bebbaa",
+        "size": 1301775,
+        "retrieved_utc": "2026-09-13T02:08:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "20190027256.pdf"
+      },
+      {
+        "name": "ntrs-20190031727",
+        "url": "https://ntrs.nasa.gov/api/citations/20190031727/downloads/20190031727.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20190031727/downloads/20190031727.pdf",
+        "sha256": "0cee73a0f9f99fd795da24059d9e7f6ecd773a79bafd120008ad48c6a4b40c97",
+        "size": 778127,
+        "retrieved_utc": "2026-09-13T02:08:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "20190031727.pdf"
+      },
+      {
+        "name": "ntrs-20200001895",
+        "url": "https://ntrs.nasa.gov/api/citations/20200001895/downloads/20200001895.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20200001895/downloads/20200001895.pdf",
+        "sha256": "02fbe6931928bf94c9ce03597da6b04305b5c2127e3621c2f8630fd4c72a71a0",
+        "size": 2785271,
+        "retrieved_utc": "2026-09-13T02:08:59Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "20200001895.pdf"
+      },
+      {
+        "name": "ntrs-20230003603",
+        "url": "https://ntrs.nasa.gov/api/citations/20230003603/downloads/3603-NASA%20TP-20220000355%20app3%5B8%5D.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20230003603/downloads/3603-NASA%20TP-20220000355%20app3%5B8%5D.pdf",
+        "sha256": "6609efa5a9a9872201923915632c506c617dd12f28bdaf61d94d914690aaa8ea",
+        "size": 891874,
+        "retrieved_utc": "2026-09-13T02:08:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ntrs-20230003603"
+      },
+      {
+        "name": "ntrs-20240007399",
+        "url": "https://ntrs.nasa.gov/api/citations/20240007399/downloads/20240007399%20PRO.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20240007399/downloads/20240007399%20PRO.pdf",
+        "sha256": "96d844f938b737a7863146cf33c9bf572a768b38e520ef6402fc0e313e414244",
+        "size": 695617,
+        "retrieved_utc": "2026-09-13T02:08:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ntrs-20240007399"
+      },
+      {
+        "name": "ntrs-20250003143",
+        "url": "https://ntrs.nasa.gov/api/citations/20250003143/downloads/Crew%20Deep%20Space%20Human%20Rating%20Rqmts%20RevB.pdf",
+        "final_url": "https://ntrs.nasa.gov/api/citations/20250003143/downloads/Crew%20Deep%20Space%20Human%20Rating%20Rqmts%20RevB.pdf",
+        "sha256": "d21f80f58d031c81506d4bab69a367c35e3c90bd90db6797d364b049fd6759f0",
+        "size": 758132,
+        "retrieved_utc": "2026-09-13T02:08:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ntrs-20250003143"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "ntrs-20190001427",
+        "dest": "Technical Memorandum/20190001427.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "ntrs-20190002273",
+        "dest": "Technical Memorandum/20190002273.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "ntrs-20190011719",
+        "dest": "Technical Memorandum/20190011719.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "ntrs-20190032489",
+        "dest": "Technical Memorandum/20190032489.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "ntrs-20190033088",
+        "dest": "Technical Memorandum/20190033088.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "ntrs-20230009771",
+        "dest": "Technical Memorandum/20230009771.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "ntrs-20190027256",
+        "dest": "Technical Publication/20190027256.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "ntrs-20190031727",
+        "dest": "Technical Publication/20190031727.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "ntrs-20200001895",
+        "dest": "Technical Publication/20200001895.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "ntrs-20230003603",
+        "dest": "Technical Publication/20230003603.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "ntrs-20240007399",
+        "dest": "Technical Publication/20240007399.pdf"
+      },
+      {
+        "op": "copy",
+        "input": "ntrs-20250003143",
+        "dest": "Technical Publication/20250003143.pdf"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "2c999e218e4a1b7f53e03722c5f41bf573c18284ede0181963313b887245fbed",
+    "logical_tree_sha256": "00ac9e6490cb2f0b2c86c775e27a502a39889327e570f5f74aa5a5da5c784522",
+    "content_tree_sha256": "f93e6f63a4e96c7bf9b11ca605bc8e5819d516554581828840509953b2f34ae8",
+    "extended_tree_sha256": "a8d4dd0be7626752a6a71878ef29a342d7c3ffa9dd5844474964d5fe71845701",
+    "bytes": 15375890,
+    "bytes_all_paths": 15375890,
+    "allocated_bytes": 15396864,
+    "counts": {
+      "objects": 15,
+      "files": 12,
+      "unique_file_inodes": 12,
+      "dirs": 2,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 21,
+      "path_length_bytes": {
+        "min": 20,
+        "max": 37,
+        "mean": 34.214,
+        "p50": 36,
+        "p95": 37
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

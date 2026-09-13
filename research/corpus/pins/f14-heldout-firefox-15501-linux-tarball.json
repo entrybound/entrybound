@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f14-heldout-firefox-15501-linux-tarball",
+  "inputs": {},
+  "output": {
+    "materialization_key": "1de3956cd6cbaa265a2a1811acb3f19f3d2a99f14267499cd18e6bf12eae34fe",
+    "logical_tree_sha256": "722d5b6336866035b0e12f5ac2af2a9dea856acc415a04adc856754e3cdc900d",
+    "pinned_utc": "2026-09-13T02:29:51Z"
+  },
+  "history": []
+}

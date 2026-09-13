@@ -1,0 +1,154 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f11-heldout-7zip-2603-release-archives",
+  "family": "F11",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "7-zip",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "d009de59e6274285ee680dda45999278d65c30e4673dd9e794e630663bfc675f",
+  "materialization_key": "7dbe3b1f1f4df53bce28318b9cfab03adfd58000c014ba1cb10c78e2b667eda1",
+  "materialized_utc": "2026-09-13T02:33:59Z",
+  "materialized_relpath": "heldout/f11-heldout-7zip-2603-release-archives",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "1a705f7309b2171923d782a746cd25b8366139155513d158e829571219eebd92",
+    "pinned_utc": "2026-09-13T02:33:59Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 10079500,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "7z2603-src-7z",
+        "url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-src.7z",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/466446150/9c110a04-11bf-4918-9108-a3f8e546f1bf?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-13T03%3A23%3A28Z&rscd=attachment%3B+filename%3D7z2603-src.7z&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-13T02%3A22%3A51Z&ske=2026-09-13T03%3A23%3A28Z&sks=b&skv=2018-11-09&sig=ZEb6b8Y%2BxFCTBtQ9zVWLydJs3hKzQg9sM9gTMmRDAlM%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTI2NzEzOCwibmJmIjoxNzg5MjY2ODM4LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.5HN3iyJlhCUvBUexoj5qkGnJyErdsji0N5NatAVVxmo&response-content-disposition=attachment%3B%20filename%3D7z2603-src.7z&response-content-type=application%2Foctet-stream",
+        "sha256": "41e2a7c0e9f838351c625e01f0f581a2188bb3dda10c8e0b4a852da26546ffe2",
+        "size": 1539219,
+        "retrieved_utc": "2026-09-13T02:33:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "7z2603-src.7z"
+      },
+      {
+        "name": "7z2603-src-tar-xz",
+        "url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-src.tar.xz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/466446150/4c2f0380-96b9-4d0b-8434-1fffef464a42?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-13T03%3A10%3A07Z&rscd=attachment%3B+filename%3D7z2603-src.tar.xz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-13T02%3A09%3A17Z&ske=2026-09-13T03%3A10%3A07Z&sks=b&skv=2018-11-09&sig=%2B0lz0xTUkYrmynO76WoNOZThc3bx4rx8JclJpT2dxaU%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTI2NzEzOCwibmJmIjoxNzg5MjY2ODM4LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.5HN3iyJlhCUvBUexoj5qkGnJyErdsji0N5NatAVVxmo&response-content-disposition=attachment%3B%20filename%3D7z2603-src.tar.xz&response-content-type=application%2Foctet-stream",
+        "sha256": "9cbde5099c6deb73691b0579063da5827522ccbbcba3f0020fd04e8c8c16c0d4",
+        "size": 1552200,
+        "retrieved_utc": "2026-09-13T02:33:58Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "7z2603-src.tar.xz"
+      },
+      {
+        "name": "lzma2603-7z",
+        "url": "https://github.com/ip7z/7zip/releases/download/26.03/lzma2603.7z",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/466446150/2322d3a5-a044-4ddf-89cb-c10acd300af4?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-13T03%3A13%3A34Z&rscd=attachment%3B+filename%3Dlzma2603.7z&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-13T02%3A13%3A11Z&ske=2026-09-13T03%3A13%3A34Z&sks=b&skv=2018-11-09&sig=nt2At%2FEbOEJuNqoCkPPHgmhwHkUTQntU4pf3WjDM1j8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTI2NzEzOSwibmJmIjoxNzg5MjY2ODM5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.eiXddttpBavmG4TMrqqPdRTO23t4omnPGXLxgU4dKEA&response-content-disposition=attachment%3B%20filename%3Dlzma2603.7z&response-content-type=application%2Foctet-stream",
+        "sha256": "86c213f752520ab5325c310f50bef63ec344b56dd1c80b0246d06dc6cec953b2",
+        "size": 1785639,
+        "retrieved_utc": "2026-09-13T02:33:59Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lzma2603.7z"
+      },
+      {
+        "name": "7z2603-extra-7z",
+        "url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-extra.7z",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/466446150/6d1ffc8d-cede-4d25-8e1f-4ded29d18a1f?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-13T03%3A07%3A06Z&rscd=attachment%3B+filename%3D7z2603-extra.7z&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-13T02%3A06%3A11Z&ske=2026-09-13T03%3A07%3A06Z&sks=b&skv=2018-11-09&sig=M%2B%2FBOYqC%2BVqVX%2BThyS2JczirEI24vBzBWQFIyy4UT5g%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTI2NzEzOSwibmJmIjoxNzg5MjY2ODM5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.eiXddttpBavmG4TMrqqPdRTO23t4omnPGXLxgU4dKEA&response-content-disposition=attachment%3B%20filename%3D7z2603-extra.7z&response-content-type=application%2Foctet-stream",
+        "sha256": "191894e6acb3647ffb69ce630479ff318523b2e2b9890aa7f05c1127c2e59b8f",
+        "size": 1764178,
+        "retrieved_utc": "2026-09-13T02:33:59Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "7z2603-extra.7z"
+      },
+      {
+        "name": "7z2603-linux-x64-tar-xz",
+        "url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-linux-x64.tar.xz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/466446150/3a837eb4-8df0-4b50-8d5b-27eb69a0352f?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-13T03%3A07%3A35Z&rscd=attachment%3B+filename%3D7z2603-linux-x64.tar.xz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-13T02%3A07%3A29Z&ske=2026-09-13T03%3A07%3A35Z&sks=b&skv=2018-11-09&sig=eQbX2THQFthdWFRSQd2dp8QQM%2BoNWmIxR5LhJMySkpA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTI2NzEzOSwibmJmIjoxNzg5MjY2ODM5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.eiXddttpBavmG4TMrqqPdRTO23t4omnPGXLxgU4dKEA&response-content-disposition=attachment%3B%20filename%3D7z2603-linux-x64.tar.xz&response-content-type=application%2Foctet-stream",
+        "sha256": "dc99eff5008f1ab79bd7084c68513701547a808a89502bf4133683535ab3c695",
+        "size": 1575072,
+        "retrieved_utc": "2026-09-13T02:33:59Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "7z2603-linux-x64.tar.xz"
+      },
+      {
+        "name": "7z2603-mac-tar-xz",
+        "url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-mac.tar.xz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/466446150/0e817e49-457f-4cfc-b6a0-9a96c9df87ff?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-13T03%3A31%3A00Z&rscd=attachment%3B+filename%3D7z2603-mac.tar.xz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-13T02%3A30%3A45Z&ske=2026-09-13T03%3A31%3A00Z&sks=b&skv=2018-11-09&sig=0o%2FUJgFeW%2F7vjWLOUZPooOiDuXDXzo%2Bu2f4omEDtsOI%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTI2NzE0MCwibmJmIjoxNzg5MjY2ODQwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.mzgoWks_Giuq1kT-xgKOuJqrB3tsrTngDJ6yU79hYVk&response-content-disposition=attachment%3B%20filename%3D7z2603-mac.tar.xz&response-content-type=application%2Foctet-stream",
+        "sha256": "5ca87677072c59f5602e5c49baa27d4694bacd2259b4e507f0094249d4281480",
+        "size": 1863192,
+        "retrieved_utc": "2026-09-13T02:33:59Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "7z2603-mac.tar.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "7z2603-src-7z"
+      },
+      {
+        "op": "copy",
+        "input": "7z2603-src-tar-xz"
+      },
+      {
+        "op": "copy",
+        "input": "lzma2603-7z"
+      },
+      {
+        "op": "copy",
+        "input": "7z2603-extra-7z"
+      },
+      {
+        "op": "copy",
+        "input": "7z2603-linux-x64-tar-xz"
+      },
+      {
+        "op": "copy",
+        "input": "7z2603-mac-tar-xz"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "f3a4e03c8b42fd51b228c5975d405cfc7eb500123172c43ff95d5e8c01ba6da5",
+    "logical_tree_sha256": "1a705f7309b2171923d782a746cd25b8366139155513d158e829571219eebd92",
+    "content_tree_sha256": "e08f1d8b80e5704081b6d9e6a4e93b025b7d18dc4b13157398c90fe679c13558",
+    "extended_tree_sha256": "d1187d46042b5ac6f0f44931ce31497f79591ee7787ffb3f7b14cfd4a01ae56d",
+    "bytes": 10079500,
+    "counts": {
+      "objects": 7,
+      "files": 6,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

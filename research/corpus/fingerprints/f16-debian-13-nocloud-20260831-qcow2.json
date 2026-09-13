@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f16-debian-13-nocloud-20260831-qcow2",
+  "family": "F16",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "debian-trixie",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "a5760febebe2376a9d4a929cad6910e9085c32888366350629056c7d5fa82c04",
+  "materialization_key": "d5b6357afd94b6ae4ac78ae64a7dd80a13cbcccc61162c6aa7d8bfc7d68ab3eb",
+  "materialized_utc": "2026-09-13T02:30:20Z",
+  "materialized_relpath": "corpus/validation/f16-debian-13-nocloud-20260831-qcow2",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "cf58e83693e527d99adecd5cc9a1cf4c3f94fcd29672ebeaf0b71ce8707e04f2",
+    "pinned_utc": "2026-09-13T02:30:20Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 406716416,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "nocloud",
+        "url": "https://cloud.debian.org/images/cloud/trixie/20260831-2587/debian-13-nocloud-amd64-20260831-2587.qcow2",
+        "final_url": "https://chuangtzu.ftp.acc.umu.se/images/cloud/trixie/20260831-2587/debian-13-nocloud-amd64-20260831-2587.qcow2",
+        "sha256": "0f4b9f5f254f9d9207c975d37af59ea89ed3f7be156b0d8d98bd5d2e77f6dc06",
+        "size": 406716416,
+        "retrieved_utc": "2026-09-13T02:30:19Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "debian-13-nocloud-amd64-20260831-2587.qcow2"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "nocloud"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "7bbc633ba959f7f9c4d16ec415152b8926a2e2df2cbfa95c48573e82e965a4cc",
+    "logical_tree_sha256": "cf58e83693e527d99adecd5cc9a1cf4c3f94fcd29672ebeaf0b71ce8707e04f2",
+    "content_tree_sha256": "0efa2976587d6e62e4ad24f364a4528284ad07a76bc759e57a4439af70b4bd62",
+    "extended_tree_sha256": "9b988588e42e87f87a665fb11ecc691318d7ebc393ac94d4cca6ef25cca60c42",
+    "bytes": 406716416,
+    "bytes_all_paths": 406716416,
+    "allocated_bytes": 406716416,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 43,
+      "path_length_bytes": {
+        "min": 43,
+        "max": 43,
+        "mean": 43.0,
+        "p50": 43,
+        "p95": 43
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

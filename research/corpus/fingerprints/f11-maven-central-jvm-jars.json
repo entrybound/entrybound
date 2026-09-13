@@ -1,0 +1,171 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f11-maven-central-jvm-jars",
+  "family": "F11",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "maven-central-jvm-jars",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "10e70793f1266064836b1301748d8669652478f3dbb9aeeaacb7b4a6bfa230dd",
+  "materialization_key": "00438b5584c82ce958ab6f428b94da4df1f29a5888c7e61274d5ca435f21e29c",
+  "materialized_utc": "2026-09-13T02:29:21Z",
+  "materialized_relpath": "corpus/validation/f11-maven-central-jvm-jars",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "b09f69796118d5c53ba633bf7f49c125c46df921013b8b48fb7fafbcfcbd975d",
+    "pinned_utc": "2026-09-13T02:29:21Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 126735725,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "kotlin-compiler-embeddable",
+        "url": "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-compiler-embeddable/2.4.20/kotlin-compiler-embeddable-2.4.20.jar",
+        "final_url": "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-compiler-embeddable/2.4.20/kotlin-compiler-embeddable-2.4.20.jar",
+        "sha256": "cf97161430683fb9af96dc6a7017ffae1fe8737b80d12eee11f2fe3e76f8ded8",
+        "size": 58593245,
+        "retrieved_utc": "2026-09-13T02:29:20Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "kotlin-compiler-embeddable-2.4.20.jar"
+      },
+      {
+        "name": "jython-standalone",
+        "url": "https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.5b1/jython-standalone-2.7.5b1.jar",
+        "final_url": "https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.5b1/jython-standalone-2.7.5b1.jar",
+        "sha256": "0b3af15fad90dd3a887a88ee4fb9af082cb335cff19a54f5927673e328761290",
+        "size": 53034903,
+        "retrieved_utc": "2026-09-13T02:29:21Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "jython-standalone-2.7.5b1.jar"
+      },
+      {
+        "name": "h2",
+        "url": "https://repo1.maven.org/maven2/com/h2database/h2/2.5.250/h2-2.5.250.jar",
+        "final_url": "https://repo1.maven.org/maven2/com/h2database/h2/2.5.250/h2-2.5.250.jar",
+        "sha256": "82a80a2ac06901b03cdb233c663d21c4f49c884bf6d0cf85022729e8db9ab86f",
+        "size": 2689845,
+        "retrieved_utc": "2026-09-13T02:29:21Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "h2-2.5.250.jar"
+      },
+      {
+        "name": "clojure",
+        "url": "https://repo1.maven.org/maven2/org/clojure/clojure/1.13.0-alpha6/clojure-1.13.0-alpha6.jar",
+        "final_url": "https://repo1.maven.org/maven2/org/clojure/clojure/1.13.0-alpha6/clojure-1.13.0-alpha6.jar",
+        "sha256": "815832a9d38df21728d8dca27807269572708e73e60fa47a01a297c403df873a",
+        "size": 4289046,
+        "retrieved_utc": "2026-09-13T02:29:21Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "clojure-1.13.0-alpha6.jar"
+      },
+      {
+        "name": "lucene-core",
+        "url": "https://repo1.maven.org/maven2/org/apache/lucene/lucene-core/10.5.1/lucene-core-10.5.1.jar",
+        "final_url": "https://repo1.maven.org/maven2/org/apache/lucene/lucene-core/10.5.1/lucene-core-10.5.1.jar",
+        "sha256": "2b4912cc792f462e8e7b350f7c958f538ee7ec42da4cf4b65902fb9d546bba53",
+        "size": 4744152,
+        "retrieved_utc": "2026-09-13T02:29:21Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lucene-core-10.5.1.jar"
+      },
+      {
+        "name": "ecj",
+        "url": "https://repo1.maven.org/maven2/org/eclipse/jdt/ecj/3.46.100/ecj-3.46.100.jar",
+        "final_url": "https://repo1.maven.org/maven2/org/eclipse/jdt/ecj/3.46.100/ecj-3.46.100.jar",
+        "sha256": "74c93172475fee0cd4e6eefb44233516dd40525642da35d009146d97ea598229",
+        "size": 3384534,
+        "retrieved_utc": "2026-09-13T02:29:21Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "ecj-3.46.100.jar"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "kotlin-compiler-embeddable"
+      },
+      {
+        "op": "copy",
+        "input": "jython-standalone"
+      },
+      {
+        "op": "copy",
+        "input": "h2"
+      },
+      {
+        "op": "copy",
+        "input": "clojure"
+      },
+      {
+        "op": "copy",
+        "input": "lucene-core"
+      },
+      {
+        "op": "copy",
+        "input": "ecj"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "0d3f58ef2a41718541898458715c8d3e7c357ebd3b71a7a43848b2648157c8df",
+    "logical_tree_sha256": "b09f69796118d5c53ba633bf7f49c125c46df921013b8b48fb7fafbcfcbd975d",
+    "content_tree_sha256": "23daad58680048a523eb229ff39b13b5be921ceb0ca07ea613d249cb7f908027",
+    "extended_tree_sha256": "c856a0edd8a57ad7f8249beb178e1d53494e42ea0f6bfdcfd33478d3602a489b",
+    "bytes": 126735725,
+    "bytes_all_paths": 126735725,
+    "allocated_bytes": 126746624,
+    "counts": {
+      "objects": 7,
+      "files": 6,
+      "unique_file_inodes": 6,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 37,
+      "path_length_bytes": {
+        "min": 14,
+        "max": 37,
+        "mean": 23.833,
+        "p50": 22,
+        "p95": 37
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

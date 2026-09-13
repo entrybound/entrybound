@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f14-gen-office-documents",
+  "inputs": {},
+  "output": {
+    "materialization_key": "185f26f0d73a4768e2aa177b1f2dbef65906272d5d27bbeb192e39f564718510",
+    "logical_tree_sha256": "594cdb250c00b0a0018097ebbe9e41c2a868682fc0a837827ed3159de45b7087",
+    "pinned_utc": "2026-09-13T02:25:26Z"
+  },
+  "history": []
+}

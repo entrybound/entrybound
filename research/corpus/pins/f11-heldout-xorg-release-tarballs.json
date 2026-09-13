@@ -1,0 +1,117 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f11-heldout-xorg-release-tarballs",
+  "inputs": {
+    "xorg-server-21-1-24-tar-xz": {
+      "url": "https://www.x.org/releases/individual/xserver/xorg-server-21.1.24.tar.xz",
+      "sha256": "1a4eb36ca65cc3b1b936566d677a9786e13c11cd5806e951ac55f3f5ce3984af",
+      "size": 5072780,
+      "retrieved_utc": "2026-09-13T02:29:15Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "xorg-server-21-1-24-tar-gz": {
+      "url": "https://www.x.org/releases/individual/xserver/xorg-server-21.1.24.tar.gz",
+      "sha256": "d01ccd7ba48ec9d6815aeef5fb408d0c307ab6be21d20ff0b54b11f1c2b8a075",
+      "size": 9036382,
+      "retrieved_utc": "2026-09-13T02:29:17Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "xorg-server-1-20-11-tar-bz2": {
+      "url": "https://www.x.org/releases/individual/xserver/xorg-server-1.20.11.tar.bz2",
+      "sha256": "914c796e3ffabe1af48071d40ccc85e92117c97a9082ed1df29e4d64e3c34c49",
+      "size": 6476116,
+      "retrieved_utc": "2026-09-13T02:29:19Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "xorg-server-1-10-6-tar-gz": {
+      "url": "https://www.x.org/releases/individual/xserver/xorg-server-1.10.6.tar.gz",
+      "sha256": "582b003a60f9d2f814ffd67d405663dd558f78bf1861676458607f24e1200461",
+      "size": 7316775,
+      "retrieved_utc": "2026-09-13T02:29:21Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "libx11-1-8-13-tar-xz": {
+      "url": "https://www.x.org/releases/individual/lib/libX11-1.8.13.tar.xz",
+      "sha256": "69606f485c2c07c14ef64f75b7bb326d48587af33795d9ab3e607c0b5f94f11c",
+      "size": 1803464,
+      "retrieved_utc": "2026-09-13T02:29:22Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "libx11-1-8-13-tar-gz": {
+      "url": "https://www.x.org/releases/individual/lib/libX11-1.8.13.tar.gz",
+      "sha256": "acf0e7cd7541110e6330ecb539441a2d53061f386ec7be6906dfde0de2598470",
+      "size": 3217264,
+      "retrieved_utc": "2026-09-13T02:29:24Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "libx11-1-7-2-tar-bz2": {
+      "url": "https://www.x.org/releases/individual/lib/libX11-1.7.2.tar.bz2",
+      "sha256": "1cfa35e37aaabbe4792e9bb690468efefbfbf6b147d9c69d6f90d13c3092ea6c",
+      "size": 2392982,
+      "retrieved_utc": "2026-09-13T02:29:29Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "libxt-1-3-1-tar-xz": {
+      "url": "https://www.x.org/releases/individual/lib/libXt-1.3.1.tar.xz",
+      "sha256": "e0a774b33324f4d4c05b199ea45050f87206586d81655f8bef4dba434d931288",
+      "size": 691200,
+      "retrieved_utc": "2026-09-13T02:29:29Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "libxaw-1-0-16-tar-xz": {
+      "url": "https://www.x.org/releases/individual/lib/libXaw-1.0.16.tar.xz",
+      "sha256": "731d572b54c708f81e197a6afa8016918e2e06dfd3025e066ca642a5b8c39c8f",
+      "size": 602848,
+      "retrieved_utc": "2026-09-13T02:29:30Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "libxcb-1-17-0-tar-xz": {
+      "url": "https://www.x.org/releases/individual/lib/libxcb-1.17.0.tar.xz",
+      "sha256": "599ebf9996710fea71622e6e184f3a8ad5b43d0e5fa8c4e407123c88a59a6d55",
+      "size": 455208,
+      "retrieved_utc": "2026-09-13T02:29:31Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "libxfont2-2-0-9-tar-xz": {
+      "url": "https://www.x.org/releases/individual/lib/libXfont2-2.0.9.tar.xz",
+      "sha256": "f042a370666815e7b941e9b7019024755bd1c6c2954afbfa515af378251799e2",
+      "size": 478844,
+      "retrieved_utc": "2026-09-13T02:29:32Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "twm-1-0-13-1-tar-xz": {
+      "url": "https://www.x.org/releases/individual/app/twm-1.0.13.1.tar.xz",
+      "sha256": "a52534755aa8b492c884e52fa988bac84ab4d54641954679b9aaf08e323df2c5",
+      "size": 272456,
+      "retrieved_utc": "2026-09-13T02:29:32Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "font-misc-misc-1-1-3-tar-xz": {
+      "url": "https://www.x.org/releases/individual/font/font-misc-misc-1.1.3.tar.xz",
+      "sha256": "79abe361f58bb21ade9f565898e486300ce1cc621d5285bec26e14b6a8618fed",
+      "size": 1563776,
+      "retrieved_utc": "2026-09-13T02:29:33Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "xkeyboard-config-2-48-tar-xz": {
+      "url": "https://www.x.org/releases/individual/data/xkeyboard-config/xkeyboard-config-2.48.tar.xz",
+      "sha256": "b77041324f0109f77161ee43743fe04baa485866af8460d31e476ad3f7648fd5",
+      "size": 953316,
+      "retrieved_utc": "2026-09-13T02:29:34Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "xkeyboard-config-2-34-tar-bz2": {
+      "url": "https://www.x.org/releases/individual/data/xkeyboard-config/xkeyboard-config-2.34.tar.bz2",
+      "sha256": "b321d27686ee7e6610ffe7b56e28d5bbf60625a1f595124cd320c0caa717b8ce",
+      "size": 1763558,
+      "retrieved_utc": "2026-09-13T02:29:36Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "088e87f05ecc93773815d4eac025889bda34cbca5a324ca61dc167b3d54078a7",
+    "logical_tree_sha256": "386bd13014ca9b2be62624d25fcf3d7c233d25b575e34649cf0cb36dd246cd93",
+    "pinned_utc": "2026-09-13T02:29:36Z"
+  },
+  "history": []
+}

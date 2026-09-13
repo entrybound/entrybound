@@ -1,0 +1,97 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-heldout-tos-media-large",
+  "family": "F13",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-blender-tears-of-steel",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "e68b761499366c9b84e081172d51decb88c26e4811dbf1bcb877b865ea279800",
+  "materialization_key": "dc07d9b1ae2c46b00c227549c14845458c7accc2e808b16f637d4d9fda62e3fd",
+  "materialized_utc": "2026-09-13T02:29:53Z",
+  "materialized_relpath": "heldout/f13-heldout-tos-media-large",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "2fab22d784034050e1952fd404b7f746f556d4df40d60e01b8e850338b6f1b0f",
+    "pinned_utc": "2026-09-13T02:29:53Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 782739126,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "blender-70d40382be8a",
+        "url": "https://download.blender.org/demo/movies/ToS/TOS_DVDSTEREOMIX.aif",
+        "final_url": "https://download.blender.org/demo/movies/ToS/TOS_DVDSTEREOMIX.aif",
+        "sha256": "b4384d67647237d4a92915187caf1b8bded342d0d5c49cb19ff13aae1c602ac8",
+        "size": 211392550,
+        "retrieved_utc": "2026-09-13T02:04:43Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "TOS_DVDSTEREOMIX.aif"
+      },
+      {
+        "name": "blender-2b56948c30a2",
+        "url": "https://download.blender.org/demo/movies/ToS/tears_of_steel_1080p.webm.zip",
+        "final_url": "https://download.blender.org/demo/movies/ToS/tears_of_steel_1080p.webm.zip",
+        "sha256": "992ce5ea61b17f0e1b1c0ad8912bc6dd351a6ee7cf4c1612916e6f1a2442619a",
+        "size": 571346776,
+        "retrieved_utc": "2026-09-13T02:04:47Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "tears_of_steel_1080p.webm.zip"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "blender-70d40382be8a",
+        "dest": "TOS_DVDSTEREOMIX.aif"
+      },
+      {
+        "op": "extract",
+        "input": "blender-2b56948c30a2",
+        "format": "zip"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "bsdtar": "bsdtar 3.7.2 - libarchive 3.7.2 zlib/1.3 liblzma/5.4.5 bz2lib/1.0.8 liblz4/1.9.4 libzstd/1.5.5",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "e25ddd64783ef72f34cdf87ed1e6266528e7081bb3bc42dda9dd263092cc91d5",
+    "logical_tree_sha256": "2fab22d784034050e1952fd404b7f746f556d4df40d60e01b8e850338b6f1b0f",
+    "content_tree_sha256": "c711b9a85f9690043bcff321f955513c4d3830c159f541d5ae85fdf720d32b43",
+    "extended_tree_sha256": "3e24f651dc2408618658841666ad8fa02a559a722b0d5d819a0955f6558d3167",
+    "bytes": 782739126,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

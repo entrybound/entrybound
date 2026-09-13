@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f11-heldout-7zip-2603-release-archives",
+  "inputs": {},
+  "output": {
+    "materialization_key": "7dbe3b1f1f4df53bce28318b9cfab03adfd58000c014ba1cb10c78e2b667eda1",
+    "logical_tree_sha256": "1a705f7309b2171923d782a746cd25b8366139155513d158e829571219eebd92",
+    "pinned_utc": "2026-09-13T02:33:59Z"
+  },
+  "history": []
+}

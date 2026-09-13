@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-heldout-tos-media-large",
+  "inputs": {},
+  "output": {
+    "materialization_key": "dc07d9b1ae2c46b00c227549c14845458c7accc2e808b16f637d4d9fda62e3fd",
+    "logical_tree_sha256": "2fab22d784034050e1952fd404b7f746f556d4df40d60e01b8e850338b6f1b0f",
+    "pinned_utc": "2026-09-13T02:29:53Z"
+  },
+  "history": []
+}

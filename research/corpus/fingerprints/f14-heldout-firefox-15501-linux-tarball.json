@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f14-heldout-firefox-15501-linux-tarball",
+  "family": "F14",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "mozilla-firefox",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "feeee7287fcbcd12adf8d582c00519becb4137ffc39a48107bf92f6a0b42924b",
+  "materialization_key": "1de3956cd6cbaa265a2a1811acb3f19f3d2a99f14267499cd18e6bf12eae34fe",
+  "materialized_utc": "2026-09-13T02:29:51Z",
+  "materialized_relpath": "heldout/f14-heldout-firefox-15501-linux-tarball",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "722d5b6336866035b0e12f5ac2af2a9dea856acc415a04adc856754e3cdc900d",
+    "pinned_utc": "2026-09-13T02:29:51Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 87372544,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "firefox",
+        "url": "https://ftp.mozilla.org/pub/firefox/releases/155.0.1/linux-x86_64/en-US/firefox-155.0.1.tar.xz",
+        "final_url": "https://ftp.mozilla.org/pub/firefox/releases/155.0.1/linux-x86_64/en-US/firefox-155.0.1.tar.xz",
+        "sha256": "642ab731354a5ca790b894d4556dfb5028c61d0c24eb10d10e10a111a69c89bf",
+        "size": 87372544,
+        "retrieved_utc": "2026-09-13T02:29:51Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "firefox-155.0.1.tar.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "firefox"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "3708eb03261ce8b0fd59ebdbba7b720954edd9f8b5039a7e8882b6008de39d2f",
+    "logical_tree_sha256": "722d5b6336866035b0e12f5ac2af2a9dea856acc415a04adc856754e3cdc900d",
+    "content_tree_sha256": "447e8e5ef25b796be93bba957cf2bdf077b27694e5fa4e00efc3bb7053d3ab37",
+    "extended_tree_sha256": "8e8420a1acbdf1355660f908828ee39e8f3895c06a369539399afa1bc583c7db",
+    "bytes": 87372544,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

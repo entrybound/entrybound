@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f14-jenkins-25683-war",
+  "family": "F14",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "jenkins",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "c93d1a4f9f04f773003246b08c0ddd68bb68ad57b591c6eccbb070d96977dbf2",
+  "materialization_key": "1fc00ab88cb3799119493309067c693c9c1af7a170fa054a6ab6313ad29a46d3",
+  "materialized_utc": "2026-09-13T02:29:52Z",
+  "materialized_relpath": "corpus/tuning/f14-jenkins-25683-war",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "32354499b6ae27734e6d6ac3e8ebc4fa976f308d24a2799d84a8cfd058cf6090",
+    "pinned_utc": "2026-09-13T02:29:52Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 101130898,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "jenkins-war",
+        "url": "https://get.jenkins.io/war-stable/2.568.3/jenkins.war",
+        "final_url": "https://ftp-chi.osuosl.org/pub/jenkins/war-stable/2.568.3/jenkins.war",
+        "sha256": "ccdbfdceade83489e34285a4d57c12134ffea0a09ca20062282e580cbfa5f09e",
+        "size": 101130898,
+        "retrieved_utc": "2026-09-13T02:29:52Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "jenkins.war"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "jenkins-war"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "af8c3dd98e62bcbc7a9ac05faff71898e1ca922f80cc5309796205ffd5a02d91",
+    "logical_tree_sha256": "32354499b6ae27734e6d6ac3e8ebc4fa976f308d24a2799d84a8cfd058cf6090",
+    "content_tree_sha256": "961c31edd4216c3f881246c324fec906d2de362c545e5e00a5e33bc5ef458ed9",
+    "extended_tree_sha256": "f852cfe4473025b012a6ed8dfa4b7f4e76076242a17701c6acbea7acd00bbaac",
+    "bytes": 101130898,
+    "bytes_all_paths": 101130898,
+    "allocated_bytes": 101134336,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 11,
+      "path_length_bytes": {
+        "min": 11,
+        "max": 11,
+        "mean": 11.0,
+        "p50": 11,
+        "p95": 11
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

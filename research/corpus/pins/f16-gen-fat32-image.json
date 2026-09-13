@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-gen-fat32-image",
+  "inputs": {},
+  "output": {
+    "materialization_key": "8455c35108e96bfd4f2253bebcf4fa6267f53980ca04dfe87c3d4186c0023db2",
+    "logical_tree_sha256": "2ccffa4cf35119de521864f5a8ed76cbc19903abefa848daedf7d2bf677a1b1a",
+    "pinned_utc": "2026-09-13T02:25:31Z"
+  },
+  "history": []
+}

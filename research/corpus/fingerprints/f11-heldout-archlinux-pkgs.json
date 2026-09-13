@@ -1,0 +1,229 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f11-heldout-archlinux-pkgs",
+  "family": "F11",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "archlinux",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "5fcbe6dd7f9b34733801b691b9fee9e6417ffd1ccb5863c0e6548622ef6d2864",
+  "materialization_key": "6155a5a5752a740e56d42c37b1f09e2151761381b2894adecad157c842170f5b",
+  "materialized_utc": "2026-09-13T02:29:14Z",
+  "materialized_relpath": "heldout/f11-heldout-archlinux-pkgs",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "9142b4295480a72cee863ac1932bf25f8a42b12e680486bda6f95307220ede80",
+    "pinned_utc": "2026-09-13T02:29:14Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 175733001,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "boost-libs",
+        "url": "https://archive.archlinux.org/packages/b/boost-libs/boost-libs-1.92.0-1-x86_64.pkg.tar.zst",
+        "final_url": "https://archive.archlinux.org/packages/b/boost-libs/boost-libs-1.92.0-1-x86_64.pkg.tar.zst",
+        "sha256": "4b1392e578e46c1b23910d1c26956927d7e986d6afd5090be59045afb3c04f8d",
+        "size": 6460100,
+        "retrieved_utc": "2026-09-13T02:28:51Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "boost-libs-1.92.0-1-x86_64.pkg.tar.zst"
+      },
+      {
+        "name": "ruby",
+        "url": "https://archive.archlinux.org/packages/r/ruby/ruby-3.4.10-1-x86_64.pkg.tar.zst",
+        "final_url": "https://archive.archlinux.org/packages/r/ruby/ruby-3.4.10-1-x86_64.pkg.tar.zst",
+        "sha256": "be09c30c49390151bfd67c146bf0a64a81843dae3ac5f695d2613eac1984cb92",
+        "size": 4374231,
+        "retrieved_utc": "2026-09-13T02:28:55Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "ruby-3.4.10-1-x86_64.pkg.tar.zst"
+      },
+      {
+        "name": "nodejs",
+        "url": "https://archive.archlinux.org/packages/n/nodejs/nodejs-26.8.2-1-x86_64.pkg.tar.zst",
+        "final_url": "https://archive.archlinux.org/packages/n/nodejs/nodejs-26.8.2-1-x86_64.pkg.tar.zst",
+        "sha256": "484856409acf57e8a31e029ec9f7013140d96c8e739a14f4e382dd5d4e007622",
+        "size": 17081101,
+        "retrieved_utc": "2026-09-13T02:28:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "nodejs-26.8.2-1-x86_64.pkg.tar.zst"
+      },
+      {
+        "name": "gtk4",
+        "url": "https://archive.archlinux.org/packages/g/gtk4/gtk4-1%3A4.22.5-1-x86_64.pkg.tar.zst",
+        "final_url": "https://archive.archlinux.org/packages/g/gtk4/gtk4-1%3A4.22.5-1-x86_64.pkg.tar.zst",
+        "sha256": "7386543a425d523b76f08a8269b530dcbebc45a53a68cfdef5251e8238d60dc9",
+        "size": 9743414,
+        "retrieved_utc": "2026-09-13T02:28:59Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "gtk4-1_4.22.5-1-x86_64.pkg.tar.zst"
+      },
+      {
+        "name": "gimp",
+        "url": "https://archive.archlinux.org/packages/g/gimp/gimp-3.2.6-1-x86_64.pkg.tar.zst",
+        "final_url": "https://archive.archlinux.org/packages/g/gimp/gimp-3.2.6-1-x86_64.pkg.tar.zst",
+        "sha256": "9b8c4c89ea921486901713f89fe7f7e78bdcffb1267351f8d0c7e0b61c12602f",
+        "size": 24907325,
+        "retrieved_utc": "2026-09-13T02:29:03Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "gimp-3.2.6-1-x86_64.pkg.tar.zst"
+      },
+      {
+        "name": "inkscape",
+        "url": "https://archive.archlinux.org/packages/i/inkscape/inkscape-1.4.4-6-x86_64.pkg.tar.zst",
+        "final_url": "https://archive.archlinux.org/packages/i/inkscape/inkscape-1.4.4-6-x86_64.pkg.tar.zst",
+        "sha256": "d8daaa7367421a9c8f9d67fc6add0b833d663cb1e99cb63ac7051bbe11414240",
+        "size": 25783509,
+        "retrieved_utc": "2026-09-13T02:29:05Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "inkscape-1.4.4-6-x86_64.pkg.tar.zst"
+      },
+      {
+        "name": "mesa",
+        "url": "https://archive.archlinux.org/packages/m/mesa/mesa-1%3A26.2.2-1-x86_64.pkg.tar.zst",
+        "final_url": "https://archive.archlinux.org/packages/m/mesa/mesa-1%3A26.2.2-1-x86_64.pkg.tar.zst",
+        "sha256": "1e5647af7458f07c0859f04ad33d8b2f57a6e95545d31f96ea9caedc73169bcb",
+        "size": 14153319,
+        "retrieved_utc": "2026-09-13T02:29:07Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "mesa-1_26.2.2-1-x86_64.pkg.tar.zst"
+      },
+      {
+        "name": "ghostscript",
+        "url": "https://archive.archlinux.org/packages/g/ghostscript/ghostscript-10.08.0-1-x86_64.pkg.tar.zst",
+        "final_url": "https://archive.archlinux.org/packages/g/ghostscript/ghostscript-10.08.0-1-x86_64.pkg.tar.zst",
+        "sha256": "869b22230802a93bcde28bd53f8fa91a5ab2d1a1b96ff8b94627b9119b391bf4",
+        "size": 21009787,
+        "retrieved_utc": "2026-09-13T02:29:08Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "ghostscript-10.08.0-1-x86_64.pkg.tar.zst"
+      },
+      {
+        "name": "erlang",
+        "url": "https://archive.archlinux.org/packages/e/erlang/erlang-29.0.6-1-x86_64.pkg.tar.zst",
+        "final_url": "https://archive.archlinux.org/packages/e/erlang/erlang-29.0.6-1-x86_64.pkg.tar.zst",
+        "sha256": "bd4974af5eec79ee8b8b98504e07cb67af4be89e6cb540cb33b0a963e1bf6b18",
+        "size": 3835,
+        "retrieved_utc": "2026-09-13T02:29:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "erlang-29.0.6-1-x86_64.pkg.tar.zst"
+      },
+      {
+        "name": "kicad",
+        "url": "https://archive.archlinux.org/packages/k/kicad/kicad-10.0.6-2-x86_64.pkg.tar.zst",
+        "final_url": "https://archive.archlinux.org/packages/k/kicad/kicad-10.0.6-2-x86_64.pkg.tar.zst",
+        "sha256": "2a80b02fd7124f1f77d8a6f8db2883e2edab26321219f1de01bccfe8c4e1b345",
+        "size": 49990175,
+        "retrieved_utc": "2026-09-13T02:29:12Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "kicad-10.0.6-2-x86_64.pkg.tar.zst"
+      },
+      {
+        "name": "texinfo",
+        "url": "https://archive.archlinux.org/packages/t/texinfo/texinfo-7.3-1-x86_64.pkg.tar.zst",
+        "final_url": "https://archive.archlinux.org/packages/t/texinfo/texinfo-7.3-1-x86_64.pkg.tar.zst",
+        "sha256": "9abef101e4e04d5f9e3fd943631ceb47102898cce909382b17ccff22d71486aa",
+        "size": 2226205,
+        "retrieved_utc": "2026-09-13T02:29:14Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "texinfo-7.3-1-x86_64.pkg.tar.zst"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "boost-libs"
+      },
+      {
+        "op": "copy",
+        "input": "ruby"
+      },
+      {
+        "op": "copy",
+        "input": "nodejs"
+      },
+      {
+        "op": "copy",
+        "input": "gtk4"
+      },
+      {
+        "op": "copy",
+        "input": "gimp"
+      },
+      {
+        "op": "copy",
+        "input": "inkscape"
+      },
+      {
+        "op": "copy",
+        "input": "mesa"
+      },
+      {
+        "op": "copy",
+        "input": "ghostscript"
+      },
+      {
+        "op": "copy",
+        "input": "erlang"
+      },
+      {
+        "op": "copy",
+        "input": "kicad"
+      },
+      {
+        "op": "copy",
+        "input": "texinfo"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "f1ce5e78186b0b2ac0c2e7234c9972618439f4f2b2a76722f5d3880a8549ace0",
+    "logical_tree_sha256": "9142b4295480a72cee863ac1932bf25f8a42b12e680486bda6f95307220ede80",
+    "content_tree_sha256": "6a7b0f02fcdbb12608c7b6d85139a65a88b4d6c308750a005b18303250f71e10",
+    "extended_tree_sha256": "a593cb14f3626af22b8d86e48a2a9a1dcee0083a2a9e71860cc26a25e05e58dc",
+    "bytes": 175733001,
+    "counts": {
+      "objects": 12,
+      "files": 11,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

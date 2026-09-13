@@ -1,0 +1,19 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f09-cpython-3147-embed-win-amd64",
+  "inputs": {
+    "python-embed": {
+      "url": "https://www.python.org/ftp/python/3.14.7/python-3.14.7-embed-amd64.zip",
+      "sha256": "d297e5ff019966817ad8502465176139f2d3d840fa4ed84b13bed399a6ab1f15",
+      "size": 12673227,
+      "retrieved_utc": "2026-09-13T02:25:24Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "ec506a4cc91d1c0700c077ba88c0e18f0fe95268723387e56975d0e15fd7a282",
+    "logical_tree_sha256": "f86cd9cae5b6307a99057e59b3274ab571bcc6cc342f89dba57c2d5756a34199",
+    "pinned_utc": "2026-09-13T02:26:14Z"
+  },
+  "history": []
+}

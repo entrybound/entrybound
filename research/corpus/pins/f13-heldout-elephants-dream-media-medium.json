@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-heldout-elephants-dream-media-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "233cec6faf1c70b9937f1eb4c82509e414bd59622ced9965b95d6640572a7db8",
+    "logical_tree_sha256": "899c32e370ecb0a4c2a27ec29b1028dcfa2ebc37f40df0e702f489faec5c548c",
+    "pinned_utc": "2026-09-13T02:29:39Z"
+  },
+  "history": []
+}

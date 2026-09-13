@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-ubuntu-noble-cloudimg-20260911-raw",
+  "inputs": {},
+  "output": {
+    "materialization_key": "784000ce9eb5899af850caa9ded9105c85062ecb8556cf1999cff5f843ae914c",
+    "logical_tree_sha256": "2af6901b7701c599a7d1410ba242185f5816e83a4f7935768ebfdc47fba2d7a5",
+    "pinned_utc": "2026-09-13T02:31:00Z"
+  },
+  "history": []
+}

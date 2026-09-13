@@ -1,0 +1,144 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-heldout-musopen-chopin-flac-medium",
+  "family": "F13",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-musopen-chopin-flac",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "25802d3fcb10e1f8b533b4c967ebd4d8f023ca69e13be1d1e682cd6fede7a821",
+  "materialization_key": "406963c4c2ec38ec4e4f330a7e2d1268aebefb92ead0a6b33fb8035e03f1c31d",
+  "materialized_utc": "2026-09-13T02:29:50Z",
+  "materialized_relpath": "heldout/f13-heldout-musopen-chopin-flac-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "370fab6193d8bc4f1f845f4112995f13f5555b3704617d92377be9caa676b8dd",
+    "pinned_utc": "2026-09-13T02:29:50Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 196241327,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ia-musopen-chopin-complete-works-flac-c99adadfac",
+        "url": "https://archive.org/download/musopen-chopin-complete-works-flac/Albumleaf%20in%20E%20major.flac",
+        "final_url": "https://dn721802.ca.archive.org/0/items/musopen-chopin-complete-works-flac/Albumleaf%20in%20E%20major.flac",
+        "sha256": "b14ad1732e8f8bd621af492647c91ddc68b22a0006792295338e06314c0c05ef",
+        "size": 13684762,
+        "retrieved_utc": "2026-09-13T02:04:10Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ia-musopen-chopin-complete-works-flac-c99adadfac"
+      },
+      {
+        "name": "ia-musopen-chopin-complete-works-flac-5610843224",
+        "url": "https://archive.org/download/musopen-chopin-complete-works-flac/Andantino%20%27Spring%27%2C%20B.%20117.flac",
+        "final_url": "https://dn721802.ca.archive.org/0/items/musopen-chopin-complete-works-flac/Andantino%20%27Spring%27%2C%20B.%20117.flac",
+        "sha256": "98618905761636a250cbfe7e858e23041e5c05ad0d12b74ebbc0ae9a918d52b8",
+        "size": 11852221,
+        "retrieved_utc": "2026-09-13T02:04:10Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ia-musopen-chopin-complete-works-flac-5610843224"
+      },
+      {
+        "name": "ia-musopen-chopin-complete-works-flac-9ab60e7839",
+        "url": "https://archive.org/download/musopen-chopin-complete-works-flac/Barcarolle%20Op.%2060.flac",
+        "final_url": "https://ia600508.us.archive.org/28/items/musopen-chopin-complete-works-flac/Barcarolle%20Op.%2060.flac",
+        "sha256": "890523fd1638616ce84089423ce94808fe4801fea102c3ac554a5e436c9228ea",
+        "size": 68723739,
+        "retrieved_utc": "2026-09-13T02:04:14Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ia-musopen-chopin-complete-works-flac-9ab60e7839"
+      },
+      {
+        "name": "ia-musopen-chopin-complete-works-flac-e2af348dcc",
+        "url": "https://archive.org/download/musopen-chopin-complete-works-flac/Berceuse%20in%20D-flat%20major%2C%20Op.%2057%20.flac",
+        "final_url": "https://ia800508.us.archive.org/28/items/musopen-chopin-complete-works-flac/Berceuse%20in%20D-flat%20major%2C%20Op.%2057%20.flac",
+        "sha256": "4d25e5746c555f20e8e41827f01672800a39a92c26f8126cc059d1463972a652",
+        "size": 33657677,
+        "retrieved_utc": "2026-09-13T02:04:13Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ia-musopen-chopin-complete-works-flac-e2af348dcc"
+      },
+      {
+        "name": "ia-musopen-chopin-complete-works-flac-72f9ed5dcd",
+        "url": "https://archive.org/download/musopen-chopin-complete-works-flac/Bolero%2C%20Op.%2019.flac",
+        "final_url": "https://dn721802.ca.archive.org/0/items/musopen-chopin-complete-works-flac/Bolero%2C%20Op.%2019.flac",
+        "sha256": "b09aca4f803be45a657612923b2cd7e3a180d923535279c32966611a9f4db10e",
+        "size": 68322928,
+        "retrieved_utc": "2026-09-13T02:04:17Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ia-musopen-chopin-complete-works-flac-72f9ed5dcd"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "ia-musopen-chopin-complete-works-flac-c99adadfac",
+        "dest": "Chopin/Albumleaf in E major.flac"
+      },
+      {
+        "op": "copy",
+        "input": "ia-musopen-chopin-complete-works-flac-5610843224",
+        "dest": "Chopin/Andantino 'Spring', B. 117.flac"
+      },
+      {
+        "op": "copy",
+        "input": "ia-musopen-chopin-complete-works-flac-9ab60e7839",
+        "dest": "Chopin/Barcarolle Op. 60.flac"
+      },
+      {
+        "op": "copy",
+        "input": "ia-musopen-chopin-complete-works-flac-e2af348dcc",
+        "dest": "Chopin/Berceuse in D-flat major, Op. 57 .flac"
+      },
+      {
+        "op": "copy",
+        "input": "ia-musopen-chopin-complete-works-flac-72f9ed5dcd",
+        "dest": "Chopin/Bolero, Op. 19.flac"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "0fb272919d065d739d0052e539522683ce0e70dd1f0dd8c917359851022c8566",
+    "logical_tree_sha256": "370fab6193d8bc4f1f845f4112995f13f5555b3704617d92377be9caa676b8dd",
+    "content_tree_sha256": "f0108fa62c39c75c3dead1b9adb24a6a5b6bedbbac919423c5282a4af7c685b8",
+    "extended_tree_sha256": "3aaf3f4e5c5d255158f2883af53f89edec0a77ce1286b8de83c80d4e06d3db6d",
+    "bytes": 196241327,
+    "counts": {
+      "objects": 7,
+      "files": 5,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

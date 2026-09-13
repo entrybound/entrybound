@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f09-heldout-powershell-766-win-x64",
+  "inputs": {},
+  "output": {
+    "materialization_key": "deac8fb2293cc85cd0d4c7df714286f7d4ebdc75dc7fdc6d1b06d3fbb652b756",
+    "logical_tree_sha256": "fa6fcc97efd8c2872c6e3f20863ec867b01decf1a5d41f79b4da3052a3c299b0",
+    "pinned_utc": "2026-09-13T02:26:30Z"
+  },
+  "history": []
+}

@@ -1,0 +1,129 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f09-git-for-windows-portable-2550",
+  "family": "F09",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "git-for-windows",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "ff36a1f899c8cec2fdd701427d69af0d2b261a7e010a255d7b54a2115c3b40aa",
+  "materialization_key": "a9855dfdc827b52c22efc4728eabb18a1c1efab896579de72921a764cb917fe8",
+  "materialized_utc": "2026-09-13T02:26:27Z",
+  "materialized_relpath": "corpus/validation/f09-git-for-windows-portable-2550",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "2cf5be549399dad4fbe97b5b773f5760bb78b2fd2cc9d8474fe5c551ca60cfe9",
+    "pinned_utc": "2026-09-13T02:26:27Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 291996899,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "portablegit-2-55-0-5-64-bit-7z-exe",
+        "url": "https://github.com/git-for-windows/git/releases/download/v2.55.0.windows.5/PortableGit-2.55.0.5-64-bit.7z.exe",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/23216272/4554a8aa-1ef4-4826-93f1-84059991c080?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-13T03%3A20%3A42Z&rscd=attachment%3B+filename%3DPortableGit-2.55.0.5-64-bit.7z.exe&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-13T02%3A20%3A41Z&ske=2026-09-13T03%3A20%3A42Z&sks=b&skv=2018-11-09&sig=cBM33PYc1doqIc92Adijsxi3o3nhsO1Vqp%2BDNRBELZk%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTI2ODE3NSwibmJmIjoxNzg5MjY2Mzc1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.e-O3FZMECUF6-WILShLo6CMo8tPh-aCerVTTEziPo2E&response-content-disposition=attachment%3B%20filename%3DPortableGit-2.55.0.5-64-bit.7z.exe&response-content-type=application%2Foctet-stream",
+        "sha256": "5aa8a20f6e9abb2c755f0e73c91c687701a46b309ad84a0ca6509380fa4ae290",
+        "size": 58960208,
+        "retrieved_utc": "2026-09-13T02:26:15Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "PortableGit-2.55.0.5-64-bit.7z.exe"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "portablegit-2-55-0-5-64-bit-7z-exe",
+          "format": "7z",
+          "dest": "",
+          "include": [
+            "mingw64/bin/**",
+            "mingw64/libexec/**",
+            "usr/bin/**",
+            "usr/lib/**"
+          ],
+          "normalize_modes": true
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "portablegit-2-55-0-5-64-bit-7z-exe",
+          "format": "7z",
+          "dest": "",
+          "include": [
+            "mingw64/bin/**",
+            "mingw64/libexec/**",
+            "usr/bin/**",
+            "usr/lib/**"
+          ],
+          "normalize_modes": true
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "253994558aa6a3002912b43092773a2a6bc7964bb27fd1a62f9eb9dd7a97d059",
+    "logical_tree_sha256": "2cf5be549399dad4fbe97b5b773f5760bb78b2fd2cc9d8474fe5c551ca60cfe9",
+    "content_tree_sha256": "4c1b42df5ead0bb02383203d95ac6757a5341b4933f6fbbebf3e844b2f553513",
+    "extended_tree_sha256": "2c3e876b8abe2a44af9ba8327db9d39e548b93c94314ada1464b24979d1d5646",
+    "bytes": 291996899,
+    "bytes_all_paths": 291996899,
+    "allocated_bytes": 294641664,
+    "counts": {
+      "objects": 1348,
+      "files": 1180,
+      "unique_file_inodes": 1180,
+      "dirs": 167,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 9,
+      "max_name_length_bytes": 46,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 71,
+        "mean": 31.988,
+        "p50": 31,
+        "p95": 55
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-alpine-3241-minirootfs-ext4-raw",
+  "inputs": {},
+  "output": {
+    "materialization_key": "3eb7e80f492ec3c20f73b1d2d43e75d33be81d2f36a790470a3f7a3af312ae03",
+    "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
+    "pinned_utc": "2026-09-13T02:25:29Z"
+  },
+  "history": []
+}

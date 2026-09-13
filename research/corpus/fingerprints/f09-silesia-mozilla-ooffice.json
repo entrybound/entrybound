@@ -1,0 +1,115 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f09-silesia-mozilla-ooffice",
+  "family": "F09",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "silesia-corpus",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "830635a0ef07e04c48edcb14703a23a1bce2b49c0e6fdd46561bc0eb467ff226",
+  "materialization_key": "0975951fab7f0aee4cfc958d607a0d30ff29daff5b1f5752a7a0ead4aed44008",
+  "materialized_utc": "2026-09-13T02:25:30Z",
+  "materialized_relpath": "corpus/tuning/f09-silesia-mozilla-ooffice",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "c499d6b5f02d05bcf65adf0f3f4a60a973ed2bceeccae0c250bdd611dc18438d",
+    "pinned_utc": "2026-09-13T02:25:30Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 57372672,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "mozilla-bz2",
+        "url": "https://sun.aei.polsl.pl/~sdeor/corpus/mozilla.bz2",
+        "final_url": "https://sun.aei.polsl.pl/~sdeor/corpus/mozilla.bz2",
+        "sha256": "3f1375c1f9ec1a3d9cef9e9fe8dbdc3e8872c176590d8e06e14d507a6935b430",
+        "size": 17914392,
+        "retrieved_utc": "2026-09-13T02:25:26Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "mozilla.bz2"
+      },
+      {
+        "name": "ooffice-bz2",
+        "url": "https://sun.aei.polsl.pl/~sdeor/corpus/ooffice.bz2",
+        "final_url": "https://sun.aei.polsl.pl/~sdeor/corpus/ooffice.bz2",
+        "sha256": "cc3873fadefb2b0cf64318fa517ef8dd6265808c3f4a602320673754a3ffd176",
+        "size": 2862526,
+        "retrieved_utc": "2026-09-13T02:25:27Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "tofu-first-retrieval",
+        "filename": "ooffice.bz2"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "mozilla-bz2",
+        "dest": "mozilla",
+        "format": "bz2"
+      },
+      {
+        "op": "decompress",
+        "input": "ooffice-bz2",
+        "dest": "ooffice",
+        "format": "bz2"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "59d5ffd9c749439c9385f62c8b8344edc94f1035368841c39d557524a7f04d1b",
+    "logical_tree_sha256": "c499d6b5f02d05bcf65adf0f3f4a60a973ed2bceeccae0c250bdd611dc18438d",
+    "content_tree_sha256": "5b4e16ed4658aaebb65580982e467ae8f21d5c872873aeab96237e634f77b677",
+    "extended_tree_sha256": "5a93e297a0f622ef326762c5fbaac82afbedfd3c427e502c5fdedce0daa5dcf2",
+    "bytes": 57372672,
+    "bytes_all_paths": 57372672,
+    "allocated_bytes": 57372672,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "unique_file_inodes": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 7,
+      "path_length_bytes": {
+        "min": 7,
+        "max": 7,
+        "mean": 7.0,
+        "p50": 7,
+        "p95": 7
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

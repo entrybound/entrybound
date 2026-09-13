@@ -1,0 +1,144 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-heldout-highsmith-image-codecs-small",
+  "family": "F13",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "g5-loc-highsmith",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "a00fb0137a284a393e44019e6c1050d3ab05d0e8e4394248e96783354136c5db",
+  "materialization_key": "367e7b818055ed507d8a1beaeeb10ad3494c4233e4055ea119a91438d97701cd",
+  "materialized_utc": "2026-09-13T02:29:49Z",
+  "materialized_relpath": "heldout/f13-heldout-highsmith-image-codecs-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "f107f87739b1a0a7c6b4646fe1e00fa8f37053f51ab82c5f4f7cea41f09aa18b",
+    "pinned_utc": "2026-09-13T02:29:49Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 9774689,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "loc-highsm-02603",
+        "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/02600/02603u.tif",
+        "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/02600/02603u.tif",
+        "sha256": "d9a652adec7c8cae8e033efbe461d2e346126cef93e99d74d55346f72274ff8c",
+        "size": 78474306,
+        "retrieved_utc": "2026-09-13T02:27:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "02603u.tif"
+      },
+      {
+        "name": "loc-highsm-03632",
+        "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03632u.tif",
+        "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03632u.tif",
+        "sha256": "2acc9a649ffccaef644d7e16e21438a0300f81f33b396e958ea6ae9edaa62fcd",
+        "size": 51266504,
+        "retrieved_utc": "2026-09-13T02:27:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "03632u.tif"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g5-media/image_codecs.py",
+      "script_sha256": "ba89a583de0d43a2b0a9e3f3bbab1119177bab9aad9c93bf7b25141f909e5f7c",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 3301,
+      "params": {
+        "tiles": {
+          "count": 1,
+          "size": [
+            768,
+            512
+          ],
+          "reduce": [
+            3
+          ]
+        },
+        "formats": [
+          "webp-q75",
+          "webp-q90-sharpyuv",
+          "webp-lossless",
+          "avif-q60-420",
+          "avif-q80-444",
+          "heic-q50",
+          "heic-q80",
+          "jxl-d1",
+          "jxl-lossless",
+          "jxl-from-jpeg",
+          "jp2-rate20",
+          "png-pil-opt",
+          "png-im-interlaced",
+          "png-pal256",
+          "tiff-lzw",
+          "tiff-zip",
+          "tiff-jpeg",
+          "tiff-none",
+          "gif-256",
+          "bmp"
+        ],
+        "big_formats_max_inputs": 1,
+        "require_tools": {
+          "cwebp": "1.3.2",
+          "avifenc": "Version: 1.0.4 (dav1d [dec]:1.4.1, libgav1 [dec]:0.18.0, aom [enc/dec]:v3.8.2",
+          "heif-enc": "1.17.6",
+          "cjxl": "cjxl v0.7.0",
+          "imagemagick": "ImageMagick 6.9.12-98 Q16",
+          "pillow": "Pillow 12.3.0",
+          "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5",
+          "tiffcp": "LIBTIFF, Version 4.5.1",
+          "cjpeg": "libjpeg-turbo version 2.1.5 (build 20240408)",
+          "pkg:libheif-plugin-x265": "1.17.6-1ubuntu4.8",
+          "pkg:libx265-199": "3.5-2build1",
+          "pkg:libjxl0.7": "0.7.0-10.2ubuntu6.1",
+          "pkg:libwebp7": "1.3.2-0.4build3",
+          "pkg:libopenjp2-7": "2.5.0-2ubuntu0.5"
+        },
+        "max_bytes": 15728640
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "463f78b3c39b27d5bc72951a954b3c497507d3b346d9f06f4bb25cf649cd7735",
+    "logical_tree_sha256": "f107f87739b1a0a7c6b4646fe1e00fa8f37053f51ab82c5f4f7cea41f09aa18b",
+    "content_tree_sha256": "036ed7193784d790fa724b4835879c730211d2818922e5924d3751bfe63ef908",
+    "extended_tree_sha256": "33f66354a37083c21c3acdcffbdb2291f8ee1025928ea126364f6eae0d74ad0a",
+    "bytes": 9774689,
+    "counts": {
+      "objects": 59,
+      "files": 38,
+      "dirs": 20,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

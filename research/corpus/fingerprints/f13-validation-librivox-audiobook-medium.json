@@ -1,0 +1,177 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-validation-librivox-audiobook-medium",
+  "family": "F13",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-librivox-tenn-sf-stories",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "f1f7616874887940cb0a339456553b94d8b321b6307358852efd889c601f4aea",
+  "materialization_key": "510713700db7ff7f06d0ac12ebcb7e59bbb2f3efe1bac168394eac20125a8556",
+  "materialized_utc": "2026-09-13T02:29:56Z",
+  "materialized_relpath": "corpus/validation/f13-validation-librivox-audiobook-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "a2a115a3b71d36434a44e65b88d90778e68ab24600ccd4349956d262d4beb32c",
+    "pinned_utc": "2026-09-13T02:29:56Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 183210811,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ia-3sfstoriesbywilliamtenn-1910-librivox-89646960f2",
+        "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_01_tenn.mp3",
+        "final_url": "https://dn710703.ca.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_01_tenn.mp3",
+        "sha256": "7e138e5011533eec0e4341570dff39407434d769605385d02ad01ffe359b98c8",
+        "size": 55525144,
+        "retrieved_utc": "2026-09-13T02:03:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "3sfstoriesbywilliamtenn_01_tenn.mp3"
+      },
+      {
+        "name": "ia-3sfstoriesbywilliamtenn-1910-librivox-94f59ff203",
+        "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_01_tenn.ogg",
+        "final_url": "https://dn710703.ca.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_01_tenn.ogg",
+        "sha256": "8c1ab640f17fd5978a987b0029d4f127c7d4c898ea26c0d577214f1f26674534",
+        "size": 31908885,
+        "retrieved_utc": "2026-09-13T02:03:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "3sfstoriesbywilliamtenn_01_tenn.ogg"
+      },
+      {
+        "name": "ia-3sfstoriesbywilliamtenn-1910-librivox-b880e1dd40",
+        "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_02_tenn.mp3",
+        "final_url": "https://dn601209.us.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_02_tenn.mp3",
+        "sha256": "b4d818f84a9b268d3b5bd38dd3639e44e85f30e9669c79c97f32cd0787fb58a0",
+        "size": 18975037,
+        "retrieved_utc": "2026-09-13T02:03:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "3sfstoriesbywilliamtenn_02_tenn.mp3"
+      },
+      {
+        "name": "ia-3sfstoriesbywilliamtenn-1910-librivox-05db5088f8",
+        "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_02_tenn.ogg",
+        "final_url": "https://dn710703.ca.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_02_tenn.ogg",
+        "sha256": "c945ff851fac806d33c3c419c9d0e5292d0de70d063af43c9a228abcd3d340b1",
+        "size": 10569921,
+        "retrieved_utc": "2026-09-13T02:03:59Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "3sfstoriesbywilliamtenn_02_tenn.ogg"
+      },
+      {
+        "name": "ia-3sfstoriesbywilliamtenn-1910-librivox-cc54bd841d",
+        "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_03_tenn.mp3",
+        "final_url": "https://dn601209.us.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_03_tenn.mp3",
+        "sha256": "fe69107958f334f9e3da2d03af89574a69f5c42098eff4451ac91085ebd9abf5",
+        "size": 42022632,
+        "retrieved_utc": "2026-09-13T02:04:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "3sfstoriesbywilliamtenn_03_tenn.mp3"
+      },
+      {
+        "name": "ia-3sfstoriesbywilliamtenn-1910-librivox-90de7ed16d",
+        "url": "https://archive.org/download/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_03_tenn.ogg",
+        "final_url": "https://dn710703.ca.archive.org/0/items/3sfstoriesbywilliamtenn_1910_librivox/3sfstoriesbywilliamtenn_03_tenn.ogg",
+        "sha256": "292f6f83b6b0ac84be9e719f90dc8ef88174eefc91eb3a141d559db871f38d69",
+        "size": 24209192,
+        "retrieved_utc": "2026-09-13T02:04:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "3sfstoriesbywilliamtenn_03_tenn.ogg"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "ia-3sfstoriesbywilliamtenn-1910-librivox-89646960f2",
+        "dest": "3 SF Stories by William Tenn/3sfstoriesbywilliamtenn_01_tenn.mp3"
+      },
+      {
+        "op": "copy",
+        "input": "ia-3sfstoriesbywilliamtenn-1910-librivox-94f59ff203",
+        "dest": "3 SF Stories by William Tenn/3sfstoriesbywilliamtenn_01_tenn.ogg"
+      },
+      {
+        "op": "copy",
+        "input": "ia-3sfstoriesbywilliamtenn-1910-librivox-b880e1dd40",
+        "dest": "3 SF Stories by William Tenn/3sfstoriesbywilliamtenn_02_tenn.mp3"
+      },
+      {
+        "op": "copy",
+        "input": "ia-3sfstoriesbywilliamtenn-1910-librivox-05db5088f8",
+        "dest": "3 SF Stories by William Tenn/3sfstoriesbywilliamtenn_02_tenn.ogg"
+      },
+      {
+        "op": "copy",
+        "input": "ia-3sfstoriesbywilliamtenn-1910-librivox-cc54bd841d",
+        "dest": "3 SF Stories by William Tenn/3sfstoriesbywilliamtenn_03_tenn.mp3"
+      },
+      {
+        "op": "copy",
+        "input": "ia-3sfstoriesbywilliamtenn-1910-librivox-90de7ed16d",
+        "dest": "3 SF Stories by William Tenn/3sfstoriesbywilliamtenn_03_tenn.ogg"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "a7f912191e9738a59664583b0fc9717e122a8739d6ceada1e5b12835053c2475",
+    "logical_tree_sha256": "a2a115a3b71d36434a44e65b88d90778e68ab24600ccd4349956d262d4beb32c",
+    "content_tree_sha256": "9e32751f9a813d9d835d498278a7c6219bd1d270ba468e5f2386f3e94138b83d",
+    "extended_tree_sha256": "82ccdcdd044081edd9ebe65c471a4061f0f20847de25ae1ed42d9c45587cd426",
+    "bytes": 183210811,
+    "bytes_all_paths": 183210811,
+    "allocated_bytes": 183222272,
+    "counts": {
+      "objects": 8,
+      "files": 6,
+      "unique_file_inodes": 6,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 35,
+      "path_length_bytes": {
+        "min": 28,
+        "max": 64,
+        "mean": 58.857,
+        "p50": 64,
+        "p95": 64
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

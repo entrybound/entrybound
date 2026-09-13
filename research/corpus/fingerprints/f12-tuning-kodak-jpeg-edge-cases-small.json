@@ -1,0 +1,207 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f12-tuning-kodak-jpeg-edge-cases-small",
+  "family": "F12",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "g5-kodak-photocd-suite",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "6fa9de40d837590658847eeb99c5be3671f717a72382db51cc0780f556e34300",
+  "materialization_key": "4d7a4ae5193553ef4bc4df09cf31f82a3bd1535a1af77959eacff163e2b88e6c",
+  "materialized_utc": "2026-09-13T02:28:44Z",
+  "materialized_relpath": "corpus/tuning/f12-tuning-kodak-jpeg-edge-cases-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "e22ad66d20acf48ff779fad94f1e9d3518a46c822e0386c653ca73e49c3a5785",
+    "pinned_utc": "2026-09-13T02:28:44Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 9116188,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "kodim03",
+        "url": "https://r0k.us/graphics/kodak/kodak/kodim03.png",
+        "final_url": "https://r0k.us/graphics/kodak/kodak/kodim03.png",
+        "sha256": "e25ca1ff2f0c0cb5fdfd5f9b0a0bb21ac4c3de3c84a67f35b09a85d3306249db",
+        "size": 502888,
+        "retrieved_utc": "2026-09-13T02:03:45Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "kodim03.png"
+      },
+      {
+        "name": "kodim08",
+        "url": "https://r0k.us/graphics/kodak/kodak/kodim08.png",
+        "final_url": "https://r0k.us/graphics/kodak/kodak/kodim08.png",
+        "sha256": "ba23983c76b4832ee0e8af0592664756841a16779acd69f792e268fb6d13d6e7",
+        "size": 788470,
+        "retrieved_utc": "2026-09-13T02:03:46Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "kodim08.png"
+      },
+      {
+        "name": "kodim15",
+        "url": "https://r0k.us/graphics/kodak/kodak/kodim15.png",
+        "final_url": "https://r0k.us/graphics/kodak/kodak/kodim15.png",
+        "sha256": "7538cbb80cb9103606c48b806eae57d56c885c7f90b9b3be70a41160f9cbb683",
+        "size": 612582,
+        "retrieved_utc": "2026-09-13T02:03:47Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "kodim15.png"
+      },
+      {
+        "name": "kodim20",
+        "url": "https://r0k.us/graphics/kodak/kodak/kodim20.png",
+        "final_url": "https://r0k.us/graphics/kodak/kodak/kodim20.png",
+        "sha256": "3b46c71e3b92a563820ba32936be8330c586c41f938efd94be938386aae4328a",
+        "size": 492462,
+        "retrieved_utc": "2026-09-13T02:03:47Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "kodim20.png"
+      },
+      {
+        "name": "kodim23",
+        "url": "https://r0k.us/graphics/kodak/kodak/kodim23.png",
+        "final_url": "https://r0k.us/graphics/kodak/kodak/kodim23.png",
+        "sha256": "e3111a2fd4da24af15d6459ef9eacfe54106b38e27b4a21821b75c3f5d2d5baf",
+        "size": 557596,
+        "retrieved_utc": "2026-09-13T02:03:47Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "kodim23.png"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g5-media/jpeg_matrix.py",
+      "script_sha256": "1950c258aee43ab5eebfb7e2e842235747be638de9faa2300a187d79ae294b28",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 1202,
+      "params": {
+        "mode": "edge",
+        "reduce": 2,
+        "edge_cases": [
+          "trunc-10pct",
+          "trunc-50pct",
+          "trunc-90pct",
+          "trunc-99pct",
+          "trunc-prog-50pct",
+          "corrupt-bitflip-1",
+          "corrupt-bitflip-64",
+          "dims-1x1",
+          "dims-17x9",
+          "dims-4097x3",
+          "trunc-no-eoi",
+          "trunc-header",
+          "trunc-after-ff",
+          "corrupt-zero-4k",
+          "corrupt-random-block-4k",
+          "corrupt-rst-missing",
+          "corrupt-rst-order",
+          "corrupt-dht",
+          "corrupt-sof-height-zero",
+          "corrupt-early-eoi",
+          "trail-random-4k",
+          "trail-zeros-64k",
+          "trail-text",
+          "trail-zip",
+          "trail-jpeg-concat",
+          "lead-junk-512",
+          "pad-ff-fill",
+          "multi-com",
+          "huge-app-tiny-image",
+          "app-after-dqt",
+          "gray-ljt",
+          "gray-im",
+          "cmyk-im",
+          "cmyk-pil",
+          "ycck-tj",
+          "cmyk-im-large-icc",
+          "scans-noninterleaved",
+          "scans-progressive-custom",
+          "arith-sequential",
+          "arith-progressive",
+          "exif-orientation-6",
+          "exif-thumb-large",
+          "exif-heavy",
+          "exif-camera",
+          "q100-444-optimized",
+          "q1-420",
+          "jt-rot90-perfect-or-trim",
+          "duplicate-identical"
+        ],
+        "require_tools": {
+          "cjpeg": "libjpeg-turbo version 2.1.5 (build 20240408)",
+          "mozjpeg": "mozjpeg version 4.1.5",
+          "imagemagick": "ImageMagick 6.9.12-98 Q16",
+          "pillow": "Pillow 12.3.0 libjpeg-turbo 3.1.4.1",
+          "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5",
+          "exiftool": "exiftool 12.76",
+          "libturbojpeg": "libturbojpeg 1:2.1.5-2ubuntu2",
+          "icc-profiles-free": "icc-profiles-free 2.0.1+dfsg-1.1"
+        },
+        "max_bytes": 15728640
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "5e9c8b23346217e1fb5ac56e0503ed6f65717e0657e43f7175083590244700c6",
+    "logical_tree_sha256": "e22ad66d20acf48ff779fad94f1e9d3518a46c822e0386c653ca73e49c3a5785",
+    "content_tree_sha256": "588d945f9c10bd6b38decdea68e58e95465599c5b5ac200a3181015ef2975822",
+    "extended_tree_sha256": "607a6c42757a849c6c0bf4ce61f3f667866daa184347630480d3abbf2a8e7a8a",
+    "bytes": 9116188,
+    "bytes_all_paths": 9116188,
+    "allocated_bytes": 9666560,
+    "counts": {
+      "objects": 289,
+      "files": 240,
+      "unique_file_inodes": 240,
+      "dirs": 48,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 24,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 36,
+        "mean": 23.958,
+        "p50": 23,
+        "p95": 35
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

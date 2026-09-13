@@ -1,0 +1,443 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f10-fedora-44-static-libraries",
+  "family": "F10",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "fedora",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "ba6983824b88f41a60079d9f11cb7dbd26aa0edaac203fd2cd11753d718d7ddd",
+  "materialization_key": "54b5acec549a3c64d3eded8f1056627dfc6884534001deef6c40d1e7d5adffd7",
+  "materialized_utc": "2026-09-13T02:27:03Z",
+  "materialized_relpath": "corpus/validation/f10-fedora-44-static-libraries",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "2d7de33fb0bdcad27ea5cecc89b654763f40b3470e1e8911d7a13ac461dbf8c4",
+    "pinned_utc": "2026-09-13T02:27:03Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 462017058,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "glibc-static",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/glibc-static-2.43-2.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/glibc-static-2.43-2.fc44.x86_64.rpm",
+        "sha256": "7f8a798a536492e8f9e118af17ef83b5e96dbf8310439dfda56d363fd7d2142a",
+        "size": 7079385,
+        "retrieved_utc": "2026-09-13T02:26:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "glibc-static-2.43-2.fc44.x86_64.rpm"
+      },
+      {
+        "name": "libstdc---static",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/l/libstdc++-static-16.0.1-0.10.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/l/libstdc++-static-16.0.1-0.10.fc44.x86_64.rpm",
+        "sha256": "badf30e193205555ef04f49324a3c049eac91fb5b00dd06f0d7d0ea7725d9324",
+        "size": 8361981,
+        "retrieved_utc": "2026-09-13T02:26:45Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "libstdc++-static-16.0.1-0.10.fc44.x86_64.rpm"
+      },
+      {
+        "name": "zlib-ng-compat-static",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/z/zlib-ng-compat-static-2.3.3-3.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/z/zlib-ng-compat-static-2.3.3-3.fc44.x86_64.rpm",
+        "sha256": "779f4602639dd1cb19bca1da897f4ec6fc7d6b6fd7df2a4590b9ce2816e17d1a",
+        "size": 494874,
+        "retrieved_utc": "2026-09-13T02:26:45Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "zlib-ng-compat-static-2.3.3-3.fc44.x86_64.rpm"
+      },
+      {
+        "name": "ghc-base-devel",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/ghc-base-devel-4.20.2.0-155.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/ghc-base-devel-4.20.2.0-155.fc44.x86_64.rpm",
+        "sha256": "ab5629a652465981a899dfb5cec8cbc887c2559a630495ecace0b9f737ea361e",
+        "size": 12998728,
+        "retrieved_utc": "2026-09-13T02:26:46Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ghc-base-devel-4.20.2.0-155.fc44.x86_64.rpm"
+      },
+      {
+        "name": "mingw64-crt",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/m/mingw64-crt-13.0.0-3.fc44.noarch.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/m/mingw64-crt-13.0.0-3.fc44.noarch.rpm",
+        "sha256": "1e5bd24eccf601d9e3933b2c9f8aae4d336cdea20d11186edcf769e4794b00b1",
+        "size": 5344079,
+        "retrieved_utc": "2026-09-13T02:26:48Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "mingw64-crt-13.0.0-3.fc44.noarch.rpm"
+      },
+      {
+        "name": "mingw64-winpthreads-static",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/m/mingw64-winpthreads-static-13.0.0-3.fc44.noarch.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/m/mingw64-winpthreads-static-13.0.0-3.fc44.noarch.rpm",
+        "sha256": "9ab03461714854f78c46062face1b9ba2f17b6d5f34f61a2052ddf182a845774",
+        "size": 110528,
+        "retrieved_utc": "2026-09-13T02:26:48Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "mingw64-winpthreads-static-13.0.0-3.fc44.noarch.rpm"
+      },
+      {
+        "name": "libgfortran-static",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/l/libgfortran-static-16.0.1-0.10.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/l/libgfortran-static-16.0.1-0.10.fc44.x86_64.rpm",
+        "sha256": "fa08d3f4e76b1f2b83dbfecbca2d1a5edad513e69e88ac6c084d47fa77e40b86",
+        "size": 1014279,
+        "retrieved_utc": "2026-09-13T02:26:48Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "libgfortran-static-16.0.1-0.10.fc44.x86_64.rpm"
+      },
+      {
+        "name": "glib2-static",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/glib2-static-2.88.0-1.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/glib2-static-2.88.0-1.fc44.x86_64.rpm",
+        "sha256": "81bc4c8bb6b4c7bd28ebd0b7017fd7d92fedf4452d9671f4c1ef108d4cc24acf",
+        "size": 8213596,
+        "retrieved_utc": "2026-09-13T02:26:51Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "glib2-static-2.88.0-1.fc44.x86_64.rpm"
+      },
+      {
+        "name": "qt6-qtbase-static",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/q/qt6-qtbase-static-6.10.2-2.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/q/qt6-qtbase-static-6.10.2-2.fc44.x86_64.rpm",
+        "sha256": "0ecc1c530212e6f7f536ba91c3344e429773677af1a32b2302b0a14fb9688660",
+        "size": 5820834,
+        "retrieved_utc": "2026-09-13T02:26:52Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "qt6-qtbase-static-6.10.2-2.fc44.x86_64.rpm"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "glibc-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "libstdc---static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "zlib-ng-compat-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "ghc-base-devel",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "mingw64-crt",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "mingw64-winpthreads-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "libgfortran-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "glib2-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "params": {
+          "input": "qt6-qtbase-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "glibc-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "libstdc---static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "zlib-ng-compat-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "ghc-base-devel",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "mingw64-crt",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "mingw64-winpthreads-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "libgfortran-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "glib2-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      },
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "qt6-qtbase-static",
+          "format": "rpm",
+          "dest": "",
+          "include": [
+            "**/*.a"
+          ],
+          "prune_empty_dirs": true
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "505c056a1c5e2fd421ed6a36c2baab4e2524f79e6b8190f4224427ee2f47a884",
+    "logical_tree_sha256": "2d7de33fb0bdcad27ea5cecc89b654763f40b3470e1e8911d7a13ac461dbf8c4",
+    "content_tree_sha256": "ed8cd89b6c651041955c75fb9645e5223d09aebd40ed06894387d7937f996627",
+    "extended_tree_sha256": "a39f6c94adf6c3e97125b15cef6ccd0e3f2430d0225d311a5328e259b84d5d33",
+    "bytes": 462017058,
+    "bytes_all_paths": 464520740,
+    "allocated_bytes": 463847424,
+    "counts": {
+      "objects": 971,
+      "files": 952,
+      "unique_file_inodes": 950,
+      "dirs": 18,
+      "symlinks": 0,
+      "hardlink_groups": 2,
+      "hardlink_extra_paths": 2,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 7,
+      "max_name_length_bytes": 36,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 123,
+        "mean": 53.756,
+        "p50": 54,
+        "p95": 60
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

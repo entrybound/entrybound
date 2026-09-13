@@ -1,0 +1,2801 @@
+{
+  "schema": "ebrc-sources-v1",
+  "notes": {
+    "group": "g4-binary",
+    "families": [
+      "F09",
+      "F10",
+      "F11",
+      "F14",
+      "F16"
+    ],
+    "authored": "2026-09-12 with research/corpus/generators/g4-binary/author_sources.py (resolutions of package indexes on that date); this JSON is authoritative",
+    "split_plan": "(no upstream repository/URL/docker repo crosses splits, and held-out groups are\nnever used in tuning/validation by this group; see notes in the JSON):\n  tuning:     Ubuntu 24.04, Alpine 3.24, Silesia corpus (public benchmark), linux-firmware, fd-find (Rust),\n              PyPI binary wheels, Apache Maven, Jenkins, generated (py) nested archives / redundant blobs\n  validation: Fedora 44, Debian 13 (edk2 firmware, nocloud image), CPython Windows embeddable, Git for Windows,\n              Maven Central JVM jars, Apache Spark (pyspark sdist), generated office documents, generated FAT image\n  heldout:    AlmaLinux 10, PowerShell, uutils coreutils (macOS), OpenWrt, QuickJS, Arch Linux packages,\n              X.org release tarballs, F-Droid APKs, Firefox, FreeBSD 15.1, generated (cli) nested archives,\n              generated GPT disk"
+  },
+  "items": [
+    {
+      "item_id": "f09-ubuntu-noble-usr-binaries",
+      "family": "F09",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "docker-export",
+      "real_or_generated": "real",
+      "recipe": {
+        "docker": {
+          "image": "ubuntu:24.04@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254",
+          "platform": "linux/amd64"
+        },
+        "steps": [
+          {
+            "op": "extract",
+            "input": "docker-rootfs",
+            "format": "tar"
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/prune_tree.py",
+            "params": {
+              "keep": [
+                "bin",
+                "sbin",
+                "lib",
+                "lib64",
+                "usr/bin",
+                "usr/sbin",
+                "usr/lib",
+                "usr/lib64",
+                "usr/libexec"
+              ],
+              "require": [
+                "usr/bin",
+                "usr/lib"
+              ]
+            }
+          }
+        ],
+        "output_pin": "TOFU",
+        "notes": "Official Docker Hub ubuntu:24.04 index digest resolved 2026-09-12; exported rootfs pruned to executable/library directories (usrmerge symlinks bin/sbin/lib/lib64 kept)."
+      },
+      "license": {
+        "spdx_or_name": "Ubuntu archive packages (GPL-2.0/GPL-3.0/LGPL-2.1/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "Canonical Ltd. and the respective upstream authors",
+        "notes": "Per-package copyright files live in /usr/share/doc of the image (pruned here); corresponding source is available from the Ubuntu archive."
+      },
+      "independence_group": "ubuntu-noble",
+      "description": "ELF executables and shared libraries (/usr/bin, /usr/sbin, /usr/lib, /usr/libexec) of the official Ubuntu 24.04 container image (glibc, amd64).",
+      "tags": [
+        "elf",
+        "glibc",
+        "container-rootfs"
+      ]
+    },
+    {
+      "item_id": "f09-alpine-324-rootfs-binaries",
+      "family": "F09",
+      "split": "tuning",
+      "scale": "small",
+      "kind": "docker-export",
+      "real_or_generated": "real",
+      "recipe": {
+        "docker": {
+          "image": "alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b",
+          "platform": "linux/amd64"
+        },
+        "steps": [
+          {
+            "op": "extract",
+            "input": "docker-rootfs",
+            "format": "tar"
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/prune_tree.py",
+            "params": {
+              "keep": [
+                "bin",
+                "sbin",
+                "lib",
+                "usr/bin",
+                "usr/sbin",
+                "usr/lib",
+                "usr/libexec"
+              ],
+              "require": [
+                "usr/lib"
+              ]
+            }
+          }
+        ],
+        "output_pin": "TOFU",
+        "notes": "Official Docker Hub alpine:3.24 index digest resolved 2026-09-12 (busybox + musl, many symlinks)."
+      },
+      "license": {
+        "spdx_or_name": "Alpine packages (GPL-2.0-only busybox, MIT musl, OpenSSL Apache-2.0, others)",
+        "redistributable": true,
+        "attribution": "Alpine Linux developers and upstream authors",
+        "notes": "Source available from Alpine aports."
+      },
+      "independence_group": "alpine-linux",
+      "description": "musl/busybox ELF binaries and libraries (/bin, /sbin, /lib, /usr/bin, /usr/lib) of the official Alpine 3.24 container image.",
+      "tags": [
+        "elf",
+        "musl",
+        "symlink-heavy"
+      ]
+    },
+    {
+      "item_id": "f09-silesia-mozilla-ooffice",
+      "family": "F09",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "mozilla-bz2",
+            "url": "https://sun.aei.polsl.pl/~sdeor/corpus/mozilla.bz2",
+            "sha256": "TOFU",
+            "size": 17914392
+          },
+          {
+            "name": "ooffice-bz2",
+            "url": "https://sun.aei.polsl.pl/~sdeor/corpus/ooffice.bz2",
+            "sha256": "TOFU",
+            "size": 2862526
+          }
+        ],
+        "steps": [
+          {
+            "op": "decompress",
+            "input": "mozilla-bz2",
+            "dest": "mozilla",
+            "format": "bz2"
+          },
+          {
+            "op": "decompress",
+            "input": "ooffice-bz2",
+            "dest": "ooffice",
+            "format": "bz2"
+          }
+        ],
+        "notes": "Individual Silesia files from the corpus home page (not silesia.zip). samba (source code tar) was deliberately not used: it is text, not a binary object (belongs to F01)."
+      },
+      "license": {
+        "spdx_or_name": "Silesia corpus (mozilla: Mozilla 1.0 binaries MPL-1.1/NPL-1.1; ooffice: OpenOffice.org 1.01 DLL LGPL-2.1/SISSL-1.1)",
+        "redistributable": true,
+        "attribution": "Sebastian Deorowicz, Silesian University of Technology (corpus); Mozilla; Sun Microsystems",
+        "notes": "Freely distributed research corpus; upstream licenses permit redistribution."
+      },
+      "independence_group": "silesia-corpus",
+      "description": "Silesia corpus 'mozilla' (tarred executables of Mozilla 1.0, Tru64 UNIX edition) and 'ooffice' (a DLL from OpenOffice.org 1.01), bzip2-decompressed as published.",
+      "tags": [
+        "public-benchmark",
+        "elf",
+        "pe",
+        "silesia"
+      ]
+    },
+    {
+      "item_id": "f09-cpython-3147-embed-win-amd64",
+      "family": "F09",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "python-embed",
+            "url": "https://www.python.org/ftp/python/3.14.7/python-3.14.7-embed-amd64.zip",
+            "sha256": "TOFU",
+            "size": 12673227,
+            "notes": "python.org publishes Sigstore bundles, not SHA-256 lists"
+          }
+        ],
+        "steps": [
+          {
+            "op": "extract",
+            "input": "python-embed",
+            "format": "zip"
+          },
+          {
+            "op": "remove",
+            "paths": [
+              "python314.zip"
+            ]
+          }
+        ],
+        "notes": "python314.zip (compressed stdlib bytecode) removed so the item is PE binaries only."
+      },
+      "license": {
+        "spdx_or_name": "PSF-2.0 (bundled: OpenSSL Apache-2.0, libffi MIT, SQLite blessing, Tcl/Tk-style, zlib)",
+        "redistributable": true,
+        "attribution": "Python Software Foundation",
+        "notes": "LICENSE.txt is kept in the item."
+      },
+      "independence_group": "cpython",
+      "description": "Windows x64 PE binaries (python.exe, python314.dll, *.pyd, vcruntime) from the official CPython 3.14.7 embeddable package.",
+      "tags": [
+        "pe",
+        "windows"
+      ]
+    },
+    {
+      "item_id": "f09-fedora-44-usr-binaries",
+      "family": "F09",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "docker-export",
+      "real_or_generated": "real",
+      "recipe": {
+        "docker": {
+          "image": "fedora:44@sha256:43b29f65a41eb9c35e1cd5323e3bdf3b655c2357a9f4f1ff2f9c2798e5045d80",
+          "platform": "linux/amd64"
+        },
+        "steps": [
+          {
+            "op": "extract",
+            "input": "docker-rootfs",
+            "format": "tar"
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/prune_tree.py",
+            "params": {
+              "keep": [
+                "bin",
+                "sbin",
+                "lib",
+                "lib64",
+                "usr/bin",
+                "usr/sbin",
+                "usr/lib",
+                "usr/lib64",
+                "usr/libexec"
+              ],
+              "require": [
+                "usr/bin",
+                "usr/lib64"
+              ]
+            }
+          }
+        ],
+        "output_pin": "TOFU",
+        "notes": "Official Docker Hub fedora:44 index digest resolved 2026-09-12."
+      },
+      "license": {
+        "spdx_or_name": "Fedora packages (GPL/LGPL/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "Fedora Project contributors",
+        "notes": "Corresponding source available from Fedora (SRPMs)."
+      },
+      "independence_group": "fedora",
+      "description": "ELF executables and shared libraries of the official Fedora 44 container image (glibc, lib64 layout).",
+      "tags": [
+        "elf",
+        "glibc",
+        "container-rootfs"
+      ]
+    },
+    {
+      "item_id": "f09-git-for-windows-portable-2550",
+      "family": "F09",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "portablegit-2-55-0-5-64-bit-7z-exe",
+            "url": "https://github.com/git-for-windows/git/releases/download/v2.55.0.windows.5/PortableGit-2.55.0.5-64-bit.7z.exe",
+            "sha256": "5aa8a20f6e9abb2c755f0e73c91c687701a46b309ad84a0ca6509380fa4ae290",
+            "size": 58960208,
+            "notes": "GitHub release git-for-windows/git@v2.55.0.windows.5 (SHA-256 from GitHub asset digest)"
+          }
+        ],
+        "steps": [
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "portablegit-2-55-0-5-64-bit-7z-exe",
+              "format": "7z",
+              "dest": "",
+              "include": [
+                "mingw64/bin/**",
+                "mingw64/libexec/**",
+                "usr/bin/**",
+                "usr/lib/**"
+              ],
+              "normalize_modes": true
+            }
+          }
+        ],
+        "notes": "7-Zip self-extracting archive unpacked with p7zip; pruned to binary directories. Git's libexec/git-core holds many byte-identical copies of git.exe (hardlinks on Windows)."
+      },
+      "license": {
+        "spdx_or_name": "GPL-2.0-only (Git) plus MSYS2/MinGW-w64 components (GPL, LGPL, BSD, MIT, Perl Artistic)",
+        "redistributable": true,
+        "attribution": "Git for Windows project, MSYS2, MinGW-w64",
+        "notes": "Sources published by the Git for Windows project."
+      },
+      "independence_group": "git-for-windows",
+      "description": "Windows x64 PE executables and DLLs (MSYS2 runtime, MinGW-w64 Git, Perl DLLs) from the official PortableGit 2.55.0.5 release.",
+      "tags": [
+        "pe",
+        "windows",
+        "duplicate-executables"
+      ]
+    },
+    {
+      "item_id": "f09-heldout-almalinux-10-usr-binaries",
+      "family": "F09",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "docker-export",
+      "real_or_generated": "real",
+      "recipe": {
+        "docker": {
+          "image": "almalinux:10@sha256:957738702313e6ee452cdb17bc1431542c467be9a4e2f4da3b8e551b0ebb9677",
+          "platform": "linux/amd64"
+        },
+        "steps": [
+          {
+            "op": "extract",
+            "input": "docker-rootfs",
+            "format": "tar"
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/prune_tree.py",
+            "params": {
+              "keep": [
+                "bin",
+                "sbin",
+                "lib",
+                "lib64",
+                "usr/bin",
+                "usr/sbin",
+                "usr/lib",
+                "usr/lib64",
+                "usr/libexec"
+              ],
+              "require": [
+                "usr/bin"
+              ]
+            }
+          }
+        ],
+        "output_pin": "TOFU",
+        "notes": "Official Docker Hub almalinux:10 index digest resolved 2026-09-12."
+      },
+      "license": {
+        "spdx_or_name": "AlmaLinux packages (GPL/LGPL/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "AlmaLinux OS Foundation and upstream authors",
+        "notes": "Corresponding source available from AlmaLinux vault."
+      },
+      "independence_group": "almalinux",
+      "description": "Held-out: executable/library directories exported from the official AlmaLinux 10 container image (pinned digest).",
+      "tags": [
+        "elf"
+      ]
+    },
+    {
+      "item_id": "f09-heldout-powershell-766-win-x64",
+      "family": "F09",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "powershell-7-6-6-win-x64-zip",
+            "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.6.6/PowerShell-7.6.6-win-x64.zip",
+            "sha256": "02fe458be20493fbdf43f61ea20610b811ee6c738ab1676c61b9cfcd1a33c860",
+            "size": 106328873,
+            "notes": "GitHub release PowerShell/PowerShell@v7.6.6 (SHA-256 from GitHub asset digest)"
+          }
+        ],
+        "steps": [
+          {
+            "op": "extract",
+            "input": "powershell-7-6-6-win-x64-zip",
+            "format": "zip"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "MIT (PowerShell, .NET runtime) with third-party notices",
+        "redistributable": true,
+        "attribution": "Microsoft Corporation",
+        "notes": "ThirdPartyNotices.txt included in the release."
+      },
+      "independence_group": "powershell",
+      "description": "Held-out: official PowerShell 7.6.6 win-x64 release zip, extracted (GitHub release asset).",
+      "tags": [
+        "pe",
+        "windows"
+      ]
+    },
+    {
+      "item_id": "f09-heldout-uutils-coreutils-0110-macos",
+      "family": "F09",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "coreutils-0-11-0-x86_64-apple-darwin-tar-gz",
+            "url": "https://github.com/uutils/coreutils/releases/download/0.11.0/coreutils-0.11.0-x86_64-apple-darwin.tar.gz",
+            "sha256": "75e3f1fe855beae6c4bd6f2f8c6306bc0fec5102d6aedb2d539fd9a025c889a8",
+            "size": 5901007,
+            "notes": "GitHub release uutils/coreutils@0.11.0 (SHA-256 from GitHub asset digest)"
+          },
+          {
+            "name": "coreutils-0-11-0-aarch64-apple-darwin-tar-gz",
+            "url": "https://github.com/uutils/coreutils/releases/download/0.11.0/coreutils-0.11.0-aarch64-apple-darwin.tar.gz",
+            "sha256": "9001127a01891f6e32547a72c0e27156d686310b0b42fdf23da567288666abb5",
+            "size": 4878124,
+            "notes": "GitHub release uutils/coreutils@0.11.0 (SHA-256 from GitHub asset digest)"
+          }
+        ],
+        "steps": [
+          {
+            "op": "extract",
+            "input": "coreutils-0-11-0-x86_64-apple-darwin-tar-gz",
+            "dest": "x86_64-apple-darwin"
+          },
+          {
+            "op": "extract",
+            "input": "coreutils-0-11-0-aarch64-apple-darwin-tar-gz",
+            "dest": "aarch64-apple-darwin"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "MIT",
+        "redistributable": true,
+        "attribution": "uutils developers",
+        "notes": ""
+      },
+      "independence_group": "uutils-coreutils",
+      "description": "Held-out: official uutils coreutils 0.11.0 macOS release archives (x86_64 and aarch64), extracted (GitHub release assets).",
+      "tags": [
+        "macho"
+      ]
+    },
+    {
+      "item_id": "f09-heldout-ninja-1132-multiplatform",
+      "family": "F09",
+      "split": "heldout",
+      "scale": "small",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "ninja-linux-zip",
+            "url": "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-linux.zip",
+            "sha256": "5749cbc4e668273514150a80e387a957f933c6ed3f5f11e03fb30955e2bbead6",
+            "size": 134040,
+            "notes": "GitHub release ninja-build/ninja@v1.13.2 (SHA-256 from GitHub asset digest)"
+          },
+          {
+            "name": "ninja-linux-aarch64-zip",
+            "url": "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-linux-aarch64.zip",
+            "sha256": "fd2cacc8050a7f12a16a2e48f9e06fca5c14fc4c2bee2babb67b58be17a607fc",
+            "size": 126256,
+            "notes": "GitHub release ninja-build/ninja@v1.13.2 (SHA-256 from GitHub asset digest)"
+          },
+          {
+            "name": "ninja-mac-zip",
+            "url": "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-mac.zip",
+            "sha256": "c99048673aa765960a99cf10c6ddb9f1fad506099ff0a0e137ad8960a88f321b",
+            "size": 314051,
+            "notes": "GitHub release ninja-build/ninja@v1.13.2 (SHA-256 from GitHub asset digest)"
+          },
+          {
+            "name": "ninja-win-zip",
+            "url": "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip",
+            "sha256": "07fc8261b42b20e71d1720b39068c2e14ffcee6396b76fb7a795fb460b78dc65",
+            "size": 291570,
+            "notes": "GitHub release ninja-build/ninja@v1.13.2 (SHA-256 from GitHub asset digest)"
+          },
+          {
+            "name": "ninja-winarm64-zip",
+            "url": "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-winarm64.zip",
+            "sha256": "e52f0bdef9dfb1003229dbd6508a508c4073fd017247002adc66e5e806cb0391",
+            "size": 270354,
+            "notes": "GitHub release ninja-build/ninja@v1.13.2 (SHA-256 from GitHub asset digest)"
+          }
+        ],
+        "steps": [
+          {
+            "op": "extract",
+            "input": "ninja-linux-zip",
+            "format": "zip",
+            "dest": "ninja-linux"
+          },
+          {
+            "op": "extract",
+            "input": "ninja-linux-aarch64-zip",
+            "format": "zip",
+            "dest": "ninja-linux-aarch64"
+          },
+          {
+            "op": "extract",
+            "input": "ninja-mac-zip",
+            "format": "zip",
+            "dest": "ninja-mac"
+          },
+          {
+            "op": "extract",
+            "input": "ninja-win-zip",
+            "format": "zip",
+            "dest": "ninja-win"
+          },
+          {
+            "op": "extract",
+            "input": "ninja-winarm64-zip",
+            "format": "zip",
+            "dest": "ninja-winarm64"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Apache-2.0",
+        "redistributable": true,
+        "attribution": "Ninja authors",
+        "notes": ""
+      },
+      "independence_group": "ninja-build",
+      "description": "Held-out: official Ninja 1.13.2 release binaries for Linux x86_64/aarch64, macOS and Windows x64/arm64 (GitHub release assets), extracted.",
+      "tags": [
+        "elf",
+        "macho",
+        "pe"
+      ]
+    },
+    {
+      "item_id": "f10-rust-fd-find-1050-multiprofile",
+      "family": "F10",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "crate",
+            "url": "https://static.crates.io/crates/fd-find/fd-find-10.5.0.crate",
+            "sha256": "f35becce49c551724fd26d9824ec01d6578868cecbcc4e3d060658f9f8ad1e4d",
+            "size": 137149,
+            "notes": "SHA-256 from the crates.io API (fd-find 10.5.0)"
+          }
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/build_rust_multiprofile.sh",
+          "interpreter": "bash",
+          "seed": 0,
+          "params": {
+            "bin": "fd",
+            "toolchain": "stable",
+            "profiles": [
+              "dev",
+              "dev-debug1-opt1",
+              "release-debuginfo",
+              "release-nostrip"
+            ],
+            "keep_rlibs_profile": "dev"
+          }
+        },
+        "output_pin": "TOFU",
+        "notes": "Dependencies fetched from crates.io with `cargo fetch --locked` (checksums verified by the published Cargo.lock). Paths remapped so the output is location independent."
+      },
+      "license": {
+        "spdx_or_name": "MIT OR Apache-2.0 (fd) plus dependency licenses (MIT/Apache-2.0/Unicode-3.0; jemalloc BSD-2-Clause)",
+        "redistributable": true,
+        "attribution": "fd authors (David Peter et al.) and crate authors",
+        "notes": ""
+      },
+      "independence_group": "rust-fd-find",
+      "description": "The same Rust program (fd-find 10.5.0) built with four profiles (debug, debug1+opt1, release+debuginfo, release unstripped) plus the debug-profile .rlib static libraries: DWARF-heavy, mutually near-duplicate binaries.",
+      "tags": [
+        "elf",
+        "debuginfo",
+        "static-library",
+        "multi-build"
+      ]
+    },
+    {
+      "item_id": "f10-linux-firmware-20260910-subset",
+      "family": "F10",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "firmware",
+            "url": "https://cdn.kernel.org/pub/linux/kernel/firmware/linux-firmware-20260910.tar.xz",
+            "sha256": "f3937ca282ba256242e2b6dbe523df8a80007d29ffd61f56d270190865492ea8",
+            "size": 656677324,
+            "notes": "SHA-256 from kernel.org sha256sums.asc"
+          }
+        ],
+        "steps": [
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "firmware",
+              "format": "tar",
+              "dest": "",
+              "strip_components": 1,
+              "members": [
+                "linux-firmware-20260910/WHENCE",
+                "linux-firmware-20260910/amdgpu/*",
+                "linux-firmware-20260910/i915/*",
+                "linux-firmware-20260910/xe/*",
+                "linux-firmware-20260910/intel/iwlwifi/*",
+                "linux-firmware-20260910/rtw89/*",
+                "linux-firmware-20260910/radeon/*"
+              ]
+            }
+          }
+        ],
+        "notes": "Subset chosen for families of near-duplicate blobs (successive firmware API versions, per-SKU variants) and sized to the medium tier from the tarball index (~473 MiB). The first attempt used a top-level iwlwifi-* pattern, which no longer exists (moved to intel/iwlwifi/)."
+      },
+      "license": {
+        "spdx_or_name": "linux-firmware (per-file licenses listed in WHENCE; redistribution permitted, modification often not)",
+        "redistributable": true,
+        "attribution": "Firmware vendors (AMD, Intel, Realtek, MediaTek, Qualcomm, NVIDIA) via linux-firmware",
+        "notes": "WHENCE is kept in the item; only unmodified redistribution is permitted for most blobs."
+      },
+      "independence_group": "linux-firmware",
+      "description": "Subset of linux-firmware 20260910 (amdgpu, i915, xe, intel/iwlwifi, rtw89, radeon plus WHENCE): families of versioned and per-SKU near-duplicate firmware images.",
+      "tags": [
+        "firmware",
+        "near-duplicate"
+      ]
+    },
+    {
+      "item_id": "f10-gen-redundant-binary-blobs",
+      "family": "F10",
+      "split": "tuning",
+      "scale": "small",
+      "kind": "generate",
+      "real_or_generated": "generated",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/gen_redundant_blobs.py",
+          "seed": 1009,
+          "params": {
+            "profile": "mixed-v1"
+          }
+        }
+      },
+      "license": {
+        "spdx_or_name": "CC0-1.0",
+        "redistributable": true,
+        "attribution": "Entrybound research (generated data)",
+        "notes": "Generated by a script in research/corpus/generators/g4-binary; no third-party content."
+      },
+      "independence_group": "gen-g4-redundant-blobs",
+      "description": "Generated: zero-filled and 0xFF-padded flash-like images, fixed-size record streams, periodic patterns, shifted repeats and near-duplicate variants (synthetic worst/best cases for dedup).",
+      "tags": [
+        "generated",
+        "zeros",
+        "padding",
+        "records"
+      ]
+    },
+    {
+      "item_id": "f10-debian-13-edk2-firmware-images",
+      "family": "F10",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "ovmf",
+            "url": "https://deb.debian.org/debian/pool/main/e/edk2/ovmf_2025.02-8+deb13u1_all.deb",
+            "sha256": "78e0d54df11fc77406cb7a0bc9a39e5bca6d1cbe06556b91d9a73491c52decdf",
+            "size": 5779964,
+            "notes": "ovmf 2025.02-8+deb13u1 (SHA-256 from https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz)"
+          },
+          {
+            "name": "qemu-efi-aarch64",
+            "url": "https://deb.debian.org/debian/pool/main/e/edk2/qemu-efi-aarch64_2025.02-8+deb13u1_all.deb",
+            "sha256": "a00b2411a79c8aeafd95a7c868ac3cd1aab592f1af9fff965f02d81a625276ed",
+            "size": 5122856,
+            "notes": "qemu-efi-aarch64 2025.02-8+deb13u1 (SHA-256 from https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz)"
+          }
+        ],
+        "steps": [
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "ovmf",
+              "format": "deb",
+              "dest": "ovmf"
+            }
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "qemu-efi-aarch64",
+              "format": "deb",
+              "dest": "qemu-efi-aarch64"
+            }
+          }
+        ],
+        "notes": "Debian package contents unpacked with dpkg-deb -x; AAVMF/QEMU_EFI flash images are padded to fixed flash sizes."
+      },
+      "license": {
+        "spdx_or_name": "BSD-2-Clause-Patent (edk2) with bundled OpenSSL (Apache-2.0) and others",
+        "redistributable": true,
+        "attribution": "TianoCore edk2 contributors; Debian packagers",
+        "notes": "usr/share/doc/*/copyright kept in the item."
+      },
+      "independence_group": "debian-trixie",
+      "description": "UEFI firmware volumes from Debian 13 ovmf and qemu-efi-aarch64 packages (OVMF/AAVMF code and vars images in several flash sizes and secure-boot variants).",
+      "tags": [
+        "firmware",
+        "padding",
+        "near-duplicate"
+      ]
+    },
+    {
+      "item_id": "f10-fedora-44-static-libraries",
+      "family": "F10",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "glibc-static",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/glibc-static-2.43-2.fc44.x86_64.rpm",
+            "sha256": "7f8a798a536492e8f9e118af17ef83b5e96dbf8310439dfda56d363fd7d2142a",
+            "size": 7079385,
+            "notes": "glibc-static 0:2.43-2.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "libstdc---static",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/l/libstdc++-static-16.0.1-0.10.fc44.x86_64.rpm",
+            "sha256": "badf30e193205555ef04f49324a3c049eac91fb5b00dd06f0d7d0ea7725d9324",
+            "size": 8361981,
+            "notes": "libstdc++-static 0:16.0.1-0.10.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "zlib-ng-compat-static",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/z/zlib-ng-compat-static-2.3.3-3.fc44.x86_64.rpm",
+            "sha256": "779f4602639dd1cb19bca1da897f4ec6fc7d6b6fd7df2a4590b9ce2816e17d1a",
+            "size": 494874,
+            "notes": "zlib-ng-compat-static 0:2.3.3-3.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "ghc-base-devel",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/ghc-base-devel-4.20.2.0-155.fc44.x86_64.rpm",
+            "sha256": "ab5629a652465981a899dfb5cec8cbc887c2559a630495ecace0b9f737ea361e",
+            "size": 12998728,
+            "notes": "ghc-base-devel 0:4.20.2.0-155.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "mingw64-crt",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/m/mingw64-crt-13.0.0-3.fc44.noarch.rpm",
+            "sha256": "1e5bd24eccf601d9e3933b2c9f8aae4d336cdea20d11186edcf769e4794b00b1",
+            "size": 5344079,
+            "notes": "mingw64-crt 0:13.0.0-3.fc44.noarch (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "mingw64-winpthreads-static",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/m/mingw64-winpthreads-static-13.0.0-3.fc44.noarch.rpm",
+            "sha256": "9ab03461714854f78c46062face1b9ba2f17b6d5f34f61a2052ddf182a845774",
+            "size": 110528,
+            "notes": "mingw64-winpthreads-static 0:13.0.0-3.fc44.noarch (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "libgfortran-static",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/l/libgfortran-static-16.0.1-0.10.fc44.x86_64.rpm",
+            "sha256": "fa08d3f4e76b1f2b83dbfecbca2d1a5edad513e69e88ac6c084d47fa77e40b86",
+            "size": 1014279,
+            "notes": "libgfortran-static 0:16.0.1-0.10.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "glib2-static",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/glib2-static-2.88.0-1.fc44.x86_64.rpm",
+            "sha256": "81bc4c8bb6b4c7bd28ebd0b7017fd7d92fedf4452d9671f4c1ef108d4cc24acf",
+            "size": 8213596,
+            "notes": "glib2-static 0:2.88.0-1.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "qt6-qtbase-static",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/q/qt6-qtbase-static-6.10.2-2.fc44.x86_64.rpm",
+            "sha256": "0ecc1c530212e6f7f536ba91c3344e429773677af1a32b2302b0a14fb9688660",
+            "size": 5820834,
+            "notes": "qt6-qtbase-static 0:6.10.2-2.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          }
+        ],
+        "steps": [
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "glibc-static",
+              "format": "rpm",
+              "dest": "",
+              "include": [
+                "**/*.a"
+              ],
+              "prune_empty_dirs": true
+            }
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "libstdc---static",
+              "format": "rpm",
+              "dest": "",
+              "include": [
+                "**/*.a"
+              ],
+              "prune_empty_dirs": true
+            }
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "zlib-ng-compat-static",
+              "format": "rpm",
+              "dest": "",
+              "include": [
+                "**/*.a"
+              ],
+              "prune_empty_dirs": true
+            }
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "ghc-base-devel",
+              "format": "rpm",
+              "dest": "",
+              "include": [
+                "**/*.a"
+              ],
+              "prune_empty_dirs": true
+            }
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "mingw64-crt",
+              "format": "rpm",
+              "dest": "",
+              "include": [
+                "**/*.a"
+              ],
+              "prune_empty_dirs": true
+            }
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "mingw64-winpthreads-static",
+              "format": "rpm",
+              "dest": "",
+              "include": [
+                "**/*.a"
+              ],
+              "prune_empty_dirs": true
+            }
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "libgfortran-static",
+              "format": "rpm",
+              "dest": "",
+              "include": [
+                "**/*.a"
+              ],
+              "prune_empty_dirs": true
+            }
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "glib2-static",
+              "format": "rpm",
+              "dest": "",
+              "include": [
+                "**/*.a"
+              ],
+              "prune_empty_dirs": true
+            }
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "params": {
+              "input": "qt6-qtbase-static",
+              "format": "rpm",
+              "dest": "",
+              "include": [
+                "**/*.a"
+              ],
+              "prune_empty_dirs": true
+            }
+          }
+        ],
+        "notes": "Static archives (.a) extracted from Fedora 44 release RPMs with bsdtar."
+      },
+      "license": {
+        "spdx_or_name": "Mixed: LGPL-2.1-or-later (glibc), GPL-3.0-with-GCC-exception (libstdc++), Apache-2.0 WITH LLVM-exception, Zlib, BSD-3-Clause (GHC base)",
+        "redistributable": true,
+        "attribution": "Upstream projects; Fedora packagers",
+        "notes": ""
+      },
+      "independence_group": "fedora",
+      "description": "Static libraries (.a archives of ELF objects with symbol tables) from Fedora 44 glibc-static, libstdc++-static, llvm-static, zlib-ng-compat-static and ghc-base-devel.",
+      "tags": [
+        "static-library",
+        "elf"
+      ]
+    },
+    {
+      "item_id": "f10-heldout-openwrt-25125-ath79-images",
+      "family": "F10",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "tl-wdr3500-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr3500-v1-squashfs-sysupgrade.bin",
+            "sha256": "ffbae28de05990be53102c7a2af23aa1a2bd9abaff0d65057fe3ac974f0c40fd",
+            "size": 7012646,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wdr3600-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr3600-v1-squashfs-sysupgrade.bin",
+            "sha256": "9ec5042b5a24433ef5687e9e21e5375f98c177bacc0141d303147dcf1afe8e5b",
+            "size": 7012646,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wdr4300-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr4300-v1-squashfs-sysupgrade.bin",
+            "sha256": "426deefaf6c9880cba3cbdb863c1033a001289e1f198cf1062977d2e7208fbe6",
+            "size": 7012646,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wdr4300-v1-il-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr4300-v1-il-squashfs-sysupgrade.bin",
+            "sha256": "0b6ef907f19150c219899bb3dbc7087a4ee6352b0b6399968d1e47f7eb9dc48a",
+            "size": 7012652,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wdr4310-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wdr4310-v1-squashfs-sysupgrade.bin",
+            "sha256": "7e249f460191f44f3666ccc1469d527699cdb0024a534ee558f8bf7d0af58649",
+            "size": 7012646,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wr1043nd-v2-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v2-squashfs-sysupgrade.bin",
+            "sha256": "bcaae23712aa0f6282e8f38c9211c0e382e49e0ae45c8e09536de04a343be4fe",
+            "size": 7012652,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wr1043nd-v3-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v3-squashfs-sysupgrade.bin",
+            "sha256": "a15c7eac1e901e4073e19ed414c06cee7fb7b142b6eea35501e0cf3c3fab5a1f",
+            "size": 7012652,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wr1043nd-v4-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043nd-v4-squashfs-sysupgrade.bin",
+            "sha256": "a847c7c4bdfe849da7a20148d577f22d3740f85242b2095936f7a0a12fd44c41",
+            "size": 7012652,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wr1043n-v5-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1043n-v5-squashfs-sysupgrade.bin",
+            "sha256": "934de3915b2e5f71fef3b54d459ca16501318e6818adcb21180098b1c075089e",
+            "size": 6947113,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wr1045nd-v2-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr1045nd-v2-squashfs-sysupgrade.bin",
+            "sha256": "03edd4b33095022dc369ce85ecf433f7bf14f5470b1ce3b9e7b3ff2dc5ac05c0",
+            "size": 7012635,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wr2543-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr2543-v1-squashfs-sysupgrade.bin",
+            "sha256": "0850d44e84eacaa60802852efec4ea827b34d189858200d98a138c43396156c5",
+            "size": 7078180,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wr842n-v3-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr842n-v3-squashfs-sysupgrade.bin",
+            "sha256": "e92dc849eb6a27e26f0d16eeaa6404300b9306245016fa0b91a29944b15d36f8",
+            "size": 7012646,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "tl-wr810n-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_tl-wr810n-v1-squashfs-sysupgrade.bin",
+            "sha256": "5be7bb0d5dd35bf7fccaf045885fbf330001304e7b645b3bf169c8e0466aba7b",
+            "size": 7012643,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe210-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v1-squashfs-sysupgrade.bin",
+            "sha256": "16f8f101e90de2eae621184264d51bdc87bdd39218af4f9c32f023cd615cea81",
+            "size": 7803398,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe210-v2-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v2-squashfs-sysupgrade.bin",
+            "sha256": "77fac6757cafafc18c962be3a4399ca606750e583598f000fbdf899f2fa48715",
+            "size": 7803557,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe210-v3-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v3-squashfs-sysupgrade.bin",
+            "sha256": "dacc21f0b2bbd8376b08e76552fd9c188a4efdfc9952e18633a796da91a3bce6",
+            "size": 7803609,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe220-v2-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v2-squashfs-sysupgrade.bin",
+            "sha256": "41b4b4f29c070781843baa7119d5cab7d1dfb1754e090c458e806dbd229fc251",
+            "size": 7803545,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe220-v3-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v3-squashfs-sysupgrade.bin",
+            "sha256": "d1cfe5d450584010f5f22b78d7844da93db96fc85678d25476d0b690fab26027",
+            "size": 7803545,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe510-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v1-squashfs-sysupgrade.bin",
+            "sha256": "70925946eefe560e006481bd6fbd4fc656f9414831639d5fddc8d15424baf7d5",
+            "size": 7803460,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe510-v2-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v2-squashfs-sysupgrade.bin",
+            "sha256": "abca6cf45c3c2785e8480012c40400f8b39d5a1fadb18423e631ef0a24836d11",
+            "size": 7803637,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe510-v3-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v3-squashfs-sysupgrade.bin",
+            "sha256": "e10b5ccb1236152864ed9af2c8befea5aae42d668f4fa1853fcc81e1a19ffd15",
+            "size": 7803748,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe605-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe605-v1-squashfs-sysupgrade.bin",
+            "sha256": "001f0964bfc094c1b44c3659607ed14d839fb665e3949bbca23ce033506beb32",
+            "size": 7803292,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe610-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe610-v1-squashfs-sysupgrade.bin",
+            "sha256": "f857b47b02bf1ef2b416c9e9ab574836819d881d5a60a9afe04181e590b717e7",
+            "size": 7803545,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe610-v2-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe610-v2-squashfs-sysupgrade.bin",
+            "sha256": "34bf5a915f7cbcb0208d9ace2d62bcd81bd4a2d1c2482260e72aeb29c2941721",
+            "size": 7803545,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "wbs210-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs210-v1-squashfs-sysupgrade.bin",
+            "sha256": "d888fc26ed796444b1aa05eb83fd3a417c8f746bcd687aca1f001c2a0e052cd8",
+            "size": 7803277,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "wbs210-v2-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs210-v2-squashfs-sysupgrade.bin",
+            "sha256": "22004cc8341136161cb0c6700323973af253b639d39875844852020536bd2ed6",
+            "size": 7803292,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "wbs510-v1-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs510-v1-squashfs-sysupgrade.bin",
+            "sha256": "a2f3e4ef59cb5f74bbb9271da5f7ecc982a2988f47665ead0a0c9e4ec2a0eca2",
+            "size": 7803309,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "wbs510-v2-sysupgrade-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_wbs510-v2-squashfs-sysupgrade.bin",
+            "sha256": "ae432770a3d08d011c038c9bfa4b346e223ec9220b53fd56aae9b499eddf0cbc",
+            "size": 7803332,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe210-v1-factory-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v1-squashfs-factory.bin",
+            "sha256": "035ecaeca1ca92a5489b01acfb358b1c269aa6fccab7d74f6c6b0dd6528f82aa",
+            "size": 6956974,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe210-v2-factory-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v2-squashfs-factory.bin",
+            "sha256": "bef215be0d5c661c55e661f6afebe71fcc6c32468eb5cbdd22ab6ee4f58dd45f",
+            "size": 6945098,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe210-v3-factory-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe210-v3-squashfs-factory.bin",
+            "sha256": "c4db8e8651095b47a9204b86f950a37129b273bcf61bf1f75402931bd99d923a",
+            "size": 6945150,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe220-v2-factory-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v2-squashfs-factory.bin",
+            "sha256": "3d9afb0b5c9e0384feb1dce16d2f617118bc20fb054b67d34dba026e738c7ac7",
+            "size": 6957132,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe220-v3-factory-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe220-v3-squashfs-factory.bin",
+            "sha256": "8a2b3b43a07986aa6807bd05128a40df9b46f7d0c821a34ed8bd0b677d9af1e2",
+            "size": 6945113,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          },
+          {
+            "name": "cpe510-v1-factory-bin",
+            "url": "https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/openwrt-25.12.5-ath79-generic-tplink_cpe510-v1-squashfs-factory.bin",
+            "sha256": "6fb7b9f7a3aa05775eeda7e3345600bdbf9a49994030bd123e1b0df2e84e46be",
+            "size": 6957036,
+            "notes": "SHA-256 from https://downloads.openwrt.org/releases/25.12.5/targets/ath79/generic/sha256sums"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "GPL-2.0-only (OpenWrt firmware: Linux, busybox, others)",
+        "redistributable": true,
+        "attribution": "OpenWrt project",
+        "notes": "Source available from the OpenWrt project."
+      },
+      "independence_group": "openwrt",
+      "description": "Held-out: official OpenWrt 25.12.5 ath79/generic firmware images for TP-Link devices (sysupgrade and factory), SHA-256 pinned from the release sha256sums.",
+      "tags": [
+        "firmware"
+      ]
+    },
+    {
+      "item_id": "f10-heldout-quickjs-20260604-multibuild",
+      "family": "F10",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "quickjs",
+            "url": "https://bellard.org/quickjs/quickjs-2026-06-04.tar.xz",
+            "sha256": "TOFU",
+            "size": 621500
+          }
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/build_c_multibuild.sh",
+          "interpreter": "bash",
+          "seed": 0,
+          "params": {
+            "variants": {
+              "O0-g3": "-O0 -g3",
+              "O2-g": "-O2 -g",
+              "Os-g": "-Os -g",
+              "O2-nodebug": "-O2"
+            },
+            "targets": [
+              "qjs",
+              "libquickjs.a"
+            ]
+          }
+        },
+        "output_pin": "TOFU"
+      },
+      "license": {
+        "spdx_or_name": "MIT",
+        "redistributable": true,
+        "attribution": "Fabrice Bellard and Charlie Gordon",
+        "notes": ""
+      },
+      "independence_group": "quickjs",
+      "description": "Held-out: QuickJS 2026-06-04 built from the release tarball with four C compiler flag sets.",
+      "tags": [
+        "elf",
+        "multi-build"
+      ]
+    },
+    {
+      "item_id": "f10-heldout-raspberrypi-firmware-pi4-variants",
+      "family": "F10",
+      "split": "heldout",
+      "scale": "small",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "start4-elf",
+            "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4.elf",
+            "sha256": "TOFU",
+            "size": 2298560,
+            "notes": "raspberrypi/firmware tag 1.20260907; GitHub raw file at the tagged commit (TOFU)"
+          },
+          {
+            "name": "start4x-elf",
+            "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4x.elf",
+            "sha256": "TOFU",
+            "size": 3045800,
+            "notes": "raspberrypi/firmware tag 1.20260907; GitHub raw file at the tagged commit (TOFU)"
+          },
+          {
+            "name": "start4cd-elf",
+            "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4cd.elf",
+            "sha256": "TOFU",
+            "size": 844156,
+            "notes": "raspberrypi/firmware tag 1.20260907; GitHub raw file at the tagged commit (TOFU)"
+          },
+          {
+            "name": "start4db-elf",
+            "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/start4db.elf",
+            "sha256": "TOFU",
+            "size": 3796520,
+            "notes": "raspberrypi/firmware tag 1.20260907; GitHub raw file at the tagged commit (TOFU)"
+          },
+          {
+            "name": "fixup4-dat",
+            "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4.dat",
+            "sha256": "TOFU",
+            "size": 5512,
+            "notes": "raspberrypi/firmware tag 1.20260907; GitHub raw file at the tagged commit (TOFU)"
+          },
+          {
+            "name": "fixup4x-dat",
+            "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4x.dat",
+            "sha256": "TOFU",
+            "size": 8501,
+            "notes": "raspberrypi/firmware tag 1.20260907; GitHub raw file at the tagged commit (TOFU)"
+          },
+          {
+            "name": "fixup4cd-dat",
+            "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4cd.dat",
+            "sha256": "TOFU",
+            "size": 3282,
+            "notes": "raspberrypi/firmware tag 1.20260907; GitHub raw file at the tagged commit (TOFU)"
+          },
+          {
+            "name": "fixup4db-dat",
+            "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/fixup4db.dat",
+            "sha256": "TOFU",
+            "size": 8501,
+            "notes": "raspberrypi/firmware tag 1.20260907; GitHub raw file at the tagged commit (TOFU)"
+          },
+          {
+            "name": "licence-broadcom",
+            "url": "https://raw.githubusercontent.com/raspberrypi/firmware/b76effded7afe5ed92070ff169e0109a8487fb82/boot/LICENCE.broadcom",
+            "sha256": "TOFU",
+            "size": 1594,
+            "notes": "raspberrypi/firmware tag 1.20260907; GitHub raw file at the tagged commit (TOFU)"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Broadcom binary firmware licence (boot/LICENCE.broadcom: redistribution in binary form without modification permitted)",
+        "redistributable": true,
+        "attribution": "Broadcom Corporation / Raspberry Pi Ltd",
+        "notes": "LICENCE.broadcom is included in the item."
+      },
+      "independence_group": "raspberrypi-firmware",
+      "description": "Held-out: Raspberry Pi 4 GPU firmware variants (start4/start4x/start4cd/start4db.elf with fixup files) from the raspberrypi/firmware repository at tag 1.20260907.",
+      "tags": [
+        "firmware",
+        "near-duplicate"
+      ]
+    },
+    {
+      "item_id": "f11-ubuntu-noble-debs",
+      "family": "F11",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "openjdk-21-jre-headless",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openjdk-21/openjdk-21-jre-headless_21.0.3+9-1ubuntu1_amd64.deb",
+            "sha256": "4bfdfffb320d3f31a3a90634e17f1f6562ce463989cef111be3402f7b766676d",
+            "size": 46602504,
+            "notes": "openjdk-21-jre-headless 21.0.3+9-1ubuntu1 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "libllvm18",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/llvm-toolchain-18/libllvm18_18.1.3-1_amd64.deb",
+            "sha256": "826621c8e678dd27b4f5c3a9b26d10aae50d5de2d95575695a17c91014f5eaa5",
+            "size": 27545628,
+            "notes": "libllvm18 1:18.1.3-1 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "dotnet-runtime-8-0",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/d/dotnet8/dotnet-runtime-8.0_8.0.4-0ubuntu1_amd64.deb",
+            "sha256": "9dd1dbe560aacfab90915eabcc3fae97973aba5b9e9ac7b7feeafacf67e11a3a",
+            "size": 23904102,
+            "notes": "dotnet-runtime-8.0 8.0.4-0ubuntu1 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "containerd",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/c/containerd-app/containerd_1.7.12-0ubuntu4_amd64.deb",
+            "sha256": "379c4750e429d470260b15e41bf35cbfac15eddd4e1998f3d41b5db5b584e212",
+            "size": 38580926,
+            "notes": "containerd 1.7.12-0ubuntu4 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "libreoffice-core",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/libr/libreoffice/libreoffice-core_24.2.2-0ubuntu1_amd64.deb",
+            "sha256": "5dee8f36c8048949ce6850d0078730d7b0f8f55d0442985b941ebb923c7f821b",
+            "size": 43015572,
+            "notes": "libreoffice-core 4:24.2.2-0ubuntu1 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "coreutils",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/c/coreutils/coreutils_9.4-3ubuntu6_amd64.deb",
+            "sha256": "0d19c3e94f04ff1aafde46701fe1783da0a068a4904adc3794c30140f1aaeb8f",
+            "size": 1412418,
+            "notes": "coreutils 9.4-3ubuntu6 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "bash",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/b/bash/bash_5.2.21-2ubuntu4_amd64.deb",
+            "sha256": "73de311a21e094e29ac01527d2b52226cc87fde0a5b57032902251b426d92c66",
+            "size": 794086,
+            "notes": "bash 5.2.21-2ubuntu4 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "vim-runtime",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/v/vim/vim-runtime_9.1.0016-1ubuntu7_all.deb",
+            "sha256": "562d8516367f53f2d5f9021fd232ddfba594a2dc9c014ebcc372cbbd225f97bc",
+            "size": 7279432,
+            "notes": "vim-runtime 2:9.1.0016-1ubuntu7 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "perl-modules-5-38",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/perl/perl-modules-5.38_5.38.2-3.2build2_all.deb",
+            "sha256": "540b64b1be061236e50f617badc2b96e1af92766f106302b2fc84ba790d39610",
+            "size": 3110036,
+            "notes": "perl-modules-5.38 5.38.2-3.2build2 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "libc6",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.39-0ubuntu8_amd64.deb",
+            "sha256": "af36c7ac770770fe3d3c10e85d6bc538e76e57570ba7db7d397fb9f654783ef3",
+            "size": 3264806,
+            "notes": "libc6 2.39-0ubuntu8 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "git",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/git/git_2.43.0-1ubuntu7_amd64.deb",
+            "sha256": "664e394169ca5f1643b096059cf45169e360ced9e96ed378465dd03d47309074",
+            "size": 3673594,
+            "notes": "git 1:2.43.0-1ubuntu7 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "openssh-server",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssh/openssh-server_9.6p1-3ubuntu13_amd64.deb",
+            "sha256": "6fe2467aff7aa8ed1cbe91a3521df69a41b90122143392f94037d4225a7098cb",
+            "size": 509904,
+            "notes": "openssh-server 1:9.6p1-3ubuntu13 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "systemd",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/s/systemd/systemd_255.4-1ubuntu8_amd64.deb",
+            "sha256": "2c5932214476d783f27df85cc866b8859232dfbd38a73f780fc4693ea9886e70",
+            "size": 3470734,
+            "notes": "systemd 255.4-1ubuntu8 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "locales",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/locales_2.39-0ubuntu8_all.deb",
+            "sha256": "de586cb30e40abfe653d5e5b8031deba6d88ea9caff8e2ad75f3ff3e0e416c5b",
+            "size": 4233588,
+            "notes": "locales 2.39-0ubuntu8 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "libicu74",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu74_74.2-1ubuntu3_amd64.deb",
+            "sha256": "d29c97a21a3e3254731cfac186e4d4e611e5e67d2c9a0430f6acfbd9acaefa2e",
+            "size": 10860410,
+            "notes": "libicu74 74.2-1ubuntu3 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "binutils-x86-64-linux-gnu",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/binutils-x86-64-linux-gnu_2.42-4ubuntu2_amd64.deb",
+            "sha256": "1f3770dce907c26493217393ed24ca7484443381cafd04c81d6a6bef702b7416",
+            "size": 2469014,
+            "notes": "binutils-x86-64-linux-gnu 2.42-4ubuntu2 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "fonts-dejavu-core",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/f/fonts-dejavu/fonts-dejavu-core_2.37-8_all.deb",
+            "sha256": "40049660c194f3b8a2541fc7369efebb10e9f94bdac836a2f38fafedd10fa73a",
+            "size": 835172,
+            "notes": "fonts-dejavu-core 2.37-8 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          },
+          {
+            "name": "tzdata",
+            "url": "https://archive.ubuntu.com/ubuntu/pool/main/t/tzdata/tzdata_2024a-2ubuntu1_all.deb",
+            "sha256": "f5bca0c788a4fc465c435f7e8a54b2594e9cbf1a22abb263a59e393f1cb666e1",
+            "size": 273318,
+            "notes": "tzdata 2024a-2ubuntu1 (SHA-256 from https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.gz)"
+          }
+        ],
+        "notes": "Release-pocket (noble) versions, which stay in the pool for the life of the release."
+      },
+      "license": {
+        "spdx_or_name": "Ubuntu main archive packages (DFSG-free; per-package debian/copyright)",
+        "redistributable": true,
+        "attribution": "Canonical Ltd., Debian and upstream authors",
+        "notes": ""
+      },
+      "independence_group": "ubuntu-noble",
+      "description": "Ubuntu 24.04 .deb packages as published (ar archives with zstd-compressed control/data tarballs).",
+      "tags": [
+        "deb",
+        "zstd"
+      ]
+    },
+    {
+      "item_id": "f11-pypi-binary-wheels-cp312",
+      "family": "F11",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "pyarrow",
+            "url": "https://files.pythonhosted.org/packages/60/c9/711ca85d79f1ec98f29a5eae2b051e25b4ecec5de3e3c0e2d5c5dcb15664/pyarrow-25.0.1-cp312-cp312-manylinux_2_28_x86_64.whl",
+            "sha256": "5389cdf79447ed1515c9e31620e6e1e2302249564d603f2ad727d4f6d313e4c3",
+            "size": 50102437,
+            "notes": "pyarrow 25.0.1 pyarrow-25.0.1-cp312-cp312-manylinux_2_28_x86_64.whl (SHA-256 from PyPI JSON API)"
+          },
+          {
+            "name": "opencv-python-headless",
+            "url": "https://files.pythonhosted.org/packages/9b/21/f6ef335f6e65724aa78b8d792b48d40a48c381715f1e62f5a5049e09d07e/opencv_python_headless-5.0.0.93-cp37-abi3-manylinux_2_28_x86_64.whl",
+            "sha256": "ed709fdf9aa0bd1f2ed8549e71d19449b03a675bb581eb292285f6861953be37",
+            "size": 61204038,
+            "notes": "opencv-python-headless 5.0.0.93 opencv_python_headless-5.0.0.93-cp37-abi3-manylinux_2_28_x86_64.whl (SHA-256 from PyPI JSON API)"
+          },
+          {
+            "name": "onnxruntime",
+            "url": "https://files.pythonhosted.org/packages/34/35/e7f862dbacbc99fadd9b14a614e49c99bf0f35fd9927a82f096e3de33531/onnxruntime-1.30.0-cp312-cp312-manylinux_2_28_x86_64.whl",
+            "sha256": "fa688e7891a6aa206636fe7372e27ee75fd17713289f6b4fc7b190e0a7de9328",
+            "size": 23585654,
+            "notes": "onnxruntime 1.30.0 onnxruntime-1.30.0-cp312-cp312-manylinux_2_28_x86_64.whl (SHA-256 from PyPI JSON API)"
+          },
+          {
+            "name": "duckdb",
+            "url": "https://files.pythonhosted.org/packages/4f/98/6549769f158126fa64fd6c1ac2eb59a18282146c939867a3eb31b7c1db07/duckdb-1.5.5-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl",
+            "sha256": "7a6d2d11859d82a936ebdcb30ce3d8a1cbb3e990bff05c12abb9b54c44fa7bd1",
+            "size": 21510909,
+            "notes": "duckdb 1.5.5 duckdb-1.5.5-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (SHA-256 from PyPI JSON API)"
+          },
+          {
+            "name": "llvmlite",
+            "url": "https://files.pythonhosted.org/packages/be/3c/e97f69c62a2d972066d9a2612ce1f3de313035ac897a5b9f787cad8b55f7/llvmlite-0.49.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+            "sha256": "6acba646d88abbc87d5c113a3d62c1fbf8b8fee11c6493f516803e30f21ae870",
+            "size": 59890658,
+            "notes": "llvmlite 0.49.0 llvmlite-0.49.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (SHA-256 from PyPI JSON API)"
+          },
+          {
+            "name": "grpcio",
+            "url": "https://files.pythonhosted.org/packages/bc/19/9fc702e31a631262d7a752fa699f6022821e707fefc8bff49b1550a57729/grpcio-1.83.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+            "sha256": "72578aa07a4008f17521ef52debcc3acfd1e2c5426243bc3ffb56a38bfe610b7",
+            "size": 7040936,
+            "notes": "grpcio 1.83.1 grpcio-1.83.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (SHA-256 from PyPI JSON API)"
+          },
+          {
+            "name": "lxml",
+            "url": "https://files.pythonhosted.org/packages/0a/20/e022dbc6b4753a9bc9fc5fb28a27163430c1731b9913997f6544c1b2518c/lxml-6.1.3-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl",
+            "sha256": "909f4e927bb051f7740d6367285fc60cdcfdaf0258c2dba4ff5ba7eadadc250c",
+            "size": 5244675,
+            "notes": "lxml 6.1.3 lxml-6.1.3-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (SHA-256 from PyPI JSON API)"
+          },
+          {
+            "name": "shapely",
+            "url": "https://files.pythonhosted.org/packages/b9/37/e781683abac55dde9771e086b790e554811a71ed0b2b8a1e789b7430dd44/shapely-2.1.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+            "sha256": "1e7d4d7ad262a48bb44277ca12c7c78cb1b0f56b32c10734ec9a1d30c0b0c54b",
+            "size": 3099844,
+            "notes": "shapely 2.1.2 shapely-2.1.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (SHA-256 from PyPI JSON API)"
+          },
+          {
+            "name": "h5py",
+            "url": "https://files.pythonhosted.org/packages/9e/e9/1a19e42cd43cc1365e127db6aae85e1c671da1d9a5d746f4d34a50edb577/h5py-3.16.0-cp312-cp312-manylinux_2_28_x86_64.whl",
+            "sha256": "dfc21898ff025f1e8e67e194965a95a8d4754f452f83454538f98f8a3fcb207e",
+            "size": 5405250,
+            "notes": "h5py 3.16.0 h5py-3.16.0-cp312-cp312-manylinux_2_28_x86_64.whl (SHA-256 from PyPI JSON API)"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Mixed permissive (Apache-2.0, MIT, BSD-3-Clause) per project",
+        "redistributable": true,
+        "attribution": "Respective PyPI projects",
+        "notes": "Wheels bundle third-party native libraries with their own notices."
+      },
+      "independence_group": "pypi-binary-wheels",
+      "description": "CPython 3.12 manylinux x86_64 binary wheels (deflate zip archives) of nine native-extension projects.",
+      "tags": [
+        "wheel",
+        "zip",
+        "deflate"
+      ]
+    },
+    {
+      "item_id": "f11-alpine-324-apks",
+      "family": "F11",
+      "split": "tuning",
+      "scale": "small",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "busybox",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/busybox-1.37.0-r31.apk",
+            "sha256": "TOFU",
+            "size": 504769,
+            "notes": "busybox 1.37.0-r31 license GPL-2.0-only (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "musl",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/musl-1.2.6-r2.apk",
+            "sha256": "TOFU",
+            "size": 415475,
+            "notes": "musl 1.2.6-r2 license MIT (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "libcrypto3",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcrypto3-3.5.8-r0.apk",
+            "sha256": "TOFU",
+            "size": 1978546,
+            "notes": "libcrypto3 3.5.8-r0 license Apache-2.0 (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "libssl3",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libssl3-3.5.8-r0.apk",
+            "sha256": "TOFU",
+            "size": 379265,
+            "notes": "libssl3 3.5.8-r0 license Apache-2.0 (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "zlib",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zlib-1.3.2-r0.apk",
+            "sha256": "TOFU",
+            "size": 56195,
+            "notes": "zlib 1.3.2-r0 license Zlib (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "zstd-libs",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zstd-libs-1.5.7-r2.apk",
+            "sha256": "TOFU",
+            "size": 376646,
+            "notes": "zstd-libs 1.5.7-r2 license BSD-3-Clause OR GPL-2.0-or-later (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "xz-libs",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/xz-libs-5.8.4-r0.apk",
+            "sha256": "TOFU",
+            "size": 118503,
+            "notes": "xz-libs 5.8.4-r0 license GPL-2.0-or-later AND 0BSD AND Public-Domain AND LGPL-2.1-or-later (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "libcurl",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcurl-8.22.0-r0.apk",
+            "sha256": "TOFU",
+            "size": 358307,
+            "notes": "libcurl 8.22.0-r0 license curl (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "git",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/git-2.54.0-r0.apk",
+            "sha256": "TOFU",
+            "size": 3546724,
+            "notes": "git 2.54.0-r0 license GPL-2.0-only (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "sqlite-libs",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/sqlite-libs-3.53.4-r0.apk",
+            "sha256": "TOFU",
+            "size": 877769,
+            "notes": "sqlite-libs 3.53.4-r0 license blessing (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "ncurses-terminfo-base",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/ncurses-terminfo-base-6.6_p20260516-r0.apk",
+            "sha256": "TOFU",
+            "size": 22172,
+            "notes": "ncurses-terminfo-base 6.6_p20260516-r0 license X11 (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "readline",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/readline-8.3.3-r1.apk",
+            "sha256": "TOFU",
+            "size": 127194,
+            "notes": "readline 8.3.3-r1 license GPL-3.0-or-later (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "bash",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/bash-5.3.9-r1.apk",
+            "sha256": "TOFU",
+            "size": 480961,
+            "notes": "bash 5.3.9-r1 license GPL-3.0-or-later (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "openssh-client-default",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/openssh-client-default-10.3_p1-r1.apk",
+            "sha256": "TOFU",
+            "size": 350769,
+            "notes": "openssh-client-default 10.3_p1-r1 license SSH-OpenSSH (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "pcre2",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/pcre2-10.48-r0.apk",
+            "sha256": "TOFU",
+            "size": 322467,
+            "notes": "pcre2 10.48-r0 license BSD-3-Clause (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          },
+          {
+            "name": "jq",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/jq-1.8.2-r0.apk",
+            "sha256": "TOFU",
+            "size": 155516,
+            "notes": "jq 1.8.2-r0 license MIT (APKINDEX has SHA-1 of the control segment only; TOFU)"
+          }
+        ],
+        "notes": "Alpine 3.24 main; superseded package builds are removed from the CDN, so the TOFU pin plus local cache is the durable reference."
+      },
+      "license": {
+        "spdx_or_name": "Alpine packages (GPL-2.0, MIT, Apache-2.0, BSD and others)",
+        "redistributable": true,
+        "attribution": "Alpine Linux developers",
+        "notes": ""
+      },
+      "independence_group": "alpine-linux",
+      "description": "Alpine Linux 3.24 .apk packages as published (concatenated gzip streams: signature, control, data).",
+      "tags": [
+        "apk",
+        "gzip"
+      ]
+    },
+    {
+      "item_id": "f11-fedora-44-rpms",
+      "family": "F11",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "gcc",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/gcc-16.0.1-0.10.fc44.x86_64.rpm",
+            "sha256": "5410123363bb8a6e3ac5d00448619957f8062e4769a434ba28cf61e9f2524871",
+            "size": 45161684,
+            "notes": "gcc 0:16.0.1-0.10.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "gcc-c",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/gcc-c++-16.0.1-0.10.fc44.x86_64.rpm",
+            "sha256": "1a59b2eb05e808abe6e801da4d2107aeeca8fac1d8d0e528bca7f08ecb93bb15",
+            "size": 18035753,
+            "notes": "gcc-c++ 0:16.0.1-0.10.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "kernel-core",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-core-6.19.10-300.fc44.x86_64.rpm",
+            "sha256": "a69aebcfe61ed91a593926dd008a5178e0a84dff04b3700cf25b4d92032c4b6d",
+            "size": 21394553,
+            "notes": "kernel-core 0:6.19.10-300.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "kernel-modules-core",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-modules-core-6.19.10-300.fc44.x86_64.rpm",
+            "sha256": "97c409946fa6eeaf5d026bdb214a709d40a7a9204a3efb38ff23a59f518239d3",
+            "size": 76562633,
+            "notes": "kernel-modules-core 0:6.19.10-300.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "python3-libs",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/p/python3-libs-3.14.3-2.fc44.x86_64.rpm",
+            "sha256": "130aad43ab0ccca75d52c89d9862701a0c55136cb6b8aba4e34d21d3fd8b2849",
+            "size": 10591012,
+            "notes": "python3-libs 0:3.14.3-2.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "qt6-qtbase",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/q/qt6-qtbase-6.10.2-2.fc44.x86_64.rpm",
+            "sha256": "b7542686d152d4a6546b3d06e9ec7f042735340ba2ec7a8aad1e2978ea40ccea",
+            "size": 4548649,
+            "notes": "qt6-qtbase 0:6.10.2-2.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "emacs-common",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/e/emacs-common-30.2-16.fc44.x86_64.rpm",
+            "sha256": "5be147cdd016d17f6666123beca18e71c7cc7beadaeab45f3dcc130b58eda2c7",
+            "size": 45055520,
+            "notes": "emacs-common 1:30.2-16.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "webkitgtk6-0",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/w/webkitgtk6.0-2.52.1-1.fc44.x86_64.rpm",
+            "sha256": "c2e0ca83e31b3e188b9dc3abd5bbfcebd768d171ba5f774a38fed9e195a57854",
+            "size": 29084597,
+            "notes": "webkitgtk6.0 0:2.52.1-1.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "r-core",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/r/R-core-4.5.3-1.fc44.x86_64.rpm",
+            "sha256": "786872050382a63ca1d6e54c625554393099fc6176ae5bb49bd357636f9abd97",
+            "size": 64586898,
+            "notes": "R-core 0:4.5.3-1.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "php-cli",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/p/php-cli-8.5.4-1.fc44.x86_64.rpm",
+            "sha256": "decd5f74c8695738729d9fd8cc9b60a6587f21acdb25de02b3d90b9f3fcb7d42",
+            "size": 6338608,
+            "notes": "php-cli 0:8.5.4-1.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "poppler",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/p/poppler-26.01.0-3.fc44.x86_64.rpm",
+            "sha256": "4a7de5b6cd1d6254a40922064d98f7383e8963ba94c7ae0a1f09d5af2b715278",
+            "size": 1433284,
+            "notes": "poppler 0:26.01.0-3.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "texlive-base",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/t/texlive-base-20260301-105.fc44.x86_64.rpm",
+            "sha256": "2a33f064e62bc73a1909531255b9abb2d32a06fdcde579f9b1792155ef769931",
+            "size": 3052568,
+            "notes": "texlive-base 12:20260301-105.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Fedora packages (GPL/LGPL/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "Fedora Project contributors",
+        "notes": ""
+      },
+      "independence_group": "fedora",
+      "description": "Fedora 44 release RPMs as published (RPM lead/header plus zstd-compressed cpio payload).",
+      "tags": [
+        "rpm",
+        "zstd"
+      ]
+    },
+    {
+      "item_id": "f11-maven-central-jvm-jars",
+      "family": "F11",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "kotlin-compiler-embeddable",
+            "url": "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-compiler-embeddable/2.4.20/kotlin-compiler-embeddable-2.4.20.jar",
+            "sha256": "TOFU",
+            "size": 58593245,
+            "notes": "org.jetbrains.kotlin:kotlin-compiler-embeddable:2.4.20 (Maven Central publishes SHA-1 only; TOFU)"
+          },
+          {
+            "name": "jython-standalone",
+            "url": "https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.5b1/jython-standalone-2.7.5b1.jar",
+            "sha256": "0b3af15fad90dd3a887a88ee4fb9af082cb335cff19a54f5927673e328761290",
+            "size": 53034903,
+            "notes": "org.python:jython-standalone:2.7.5b1 (SHA-256 from Maven Central .sha256)"
+          },
+          {
+            "name": "h2",
+            "url": "https://repo1.maven.org/maven2/com/h2database/h2/2.5.250/h2-2.5.250.jar",
+            "sha256": "TOFU",
+            "size": 2689845,
+            "notes": "com.h2database:h2:2.5.250 (Maven Central publishes SHA-1 only; TOFU)"
+          },
+          {
+            "name": "clojure",
+            "url": "https://repo1.maven.org/maven2/org/clojure/clojure/1.13.0-alpha6/clojure-1.13.0-alpha6.jar",
+            "sha256": "815832a9d38df21728d8dca27807269572708e73e60fa47a01a297c403df873a",
+            "size": 4289046,
+            "notes": "org.clojure:clojure:1.13.0-alpha6 (SHA-256 from Maven Central .sha256)"
+          },
+          {
+            "name": "lucene-core",
+            "url": "https://repo1.maven.org/maven2/org/apache/lucene/lucene-core/10.5.1/lucene-core-10.5.1.jar",
+            "sha256": "2b4912cc792f462e8e7b350f7c958f538ee7ec42da4cf4b65902fb9d546bba53",
+            "size": 4744152,
+            "notes": "org.apache.lucene:lucene-core:10.5.1 (SHA-256 from Maven Central .sha256)"
+          },
+          {
+            "name": "ecj",
+            "url": "https://repo1.maven.org/maven2/org/eclipse/jdt/ecj/3.46.100/ecj-3.46.100.jar",
+            "sha256": "TOFU",
+            "size": 3384534,
+            "notes": "org.eclipse.jdt:ecj:3.46.100 (Maven Central publishes SHA-1 only; TOFU)"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Mixed: Apache-2.0 (Kotlin, Lucene), PSF-2.0 (Jython), MPL-2.0/EPL-1.0 (H2), EPL-1.0 (Clojure), EPL-2.0 (ecj)",
+        "redistributable": true,
+        "attribution": "JetBrains, Jython project, H2 Group, Rich Hickey, Apache Software Foundation, Eclipse Foundation",
+        "notes": ""
+      },
+      "independence_group": "maven-central-jvm-jars",
+      "description": "JVM .jar files (deflate zip) from Maven Central: Kotlin compiler, Jython standalone, H2, Clojure, Lucene core, Eclipse JDT compiler.",
+      "tags": [
+        "jar",
+        "zip",
+        "deflate"
+      ]
+    },
+    {
+      "item_id": "f11-heldout-archlinux-pkgs",
+      "family": "F11",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "boost-libs",
+            "url": "https://archive.archlinux.org/packages/b/boost-libs/boost-libs-1.92.0-1-x86_64.pkg.tar.zst",
+            "sha256": "TOFU",
+            "size": 6460100,
+            "notes": "boost-libs 0:1.92.0-1 (extra); Arch publishes signatures only, so SHA-256 is TOFU-pinned"
+          },
+          {
+            "name": "ruby",
+            "url": "https://archive.archlinux.org/packages/r/ruby/ruby-3.4.10-1-x86_64.pkg.tar.zst",
+            "sha256": "TOFU",
+            "size": 4374231,
+            "notes": "ruby 0:3.4.10-1 (extra); Arch publishes signatures only, so SHA-256 is TOFU-pinned"
+          },
+          {
+            "name": "nodejs",
+            "url": "https://archive.archlinux.org/packages/n/nodejs/nodejs-26.8.2-1-x86_64.pkg.tar.zst",
+            "sha256": "TOFU",
+            "size": 17081101,
+            "notes": "nodejs 0:26.8.2-1 (extra); Arch publishes signatures only, so SHA-256 is TOFU-pinned"
+          },
+          {
+            "name": "gtk4",
+            "url": "https://archive.archlinux.org/packages/g/gtk4/gtk4-1%3A4.22.5-1-x86_64.pkg.tar.zst",
+            "sha256": "TOFU",
+            "size": 9743414,
+            "filename": "gtk4-1_4.22.5-1-x86_64.pkg.tar.zst",
+            "notes": "gtk4 1:4.22.5-1 (extra); Arch publishes signatures only, so SHA-256 is TOFU-pinned"
+          },
+          {
+            "name": "gimp",
+            "url": "https://archive.archlinux.org/packages/g/gimp/gimp-3.2.6-1-x86_64.pkg.tar.zst",
+            "sha256": "TOFU",
+            "size": 24907325,
+            "notes": "gimp 0:3.2.6-1 (extra); Arch publishes signatures only, so SHA-256 is TOFU-pinned"
+          },
+          {
+            "name": "inkscape",
+            "url": "https://archive.archlinux.org/packages/i/inkscape/inkscape-1.4.4-6-x86_64.pkg.tar.zst",
+            "sha256": "TOFU",
+            "size": 25783509,
+            "notes": "inkscape 0:1.4.4-6 (extra); Arch publishes signatures only, so SHA-256 is TOFU-pinned"
+          },
+          {
+            "name": "mesa",
+            "url": "https://archive.archlinux.org/packages/m/mesa/mesa-1%3A26.2.2-1-x86_64.pkg.tar.zst",
+            "sha256": "TOFU",
+            "size": 14153319,
+            "filename": "mesa-1_26.2.2-1-x86_64.pkg.tar.zst",
+            "notes": "mesa 1:26.2.2-1 (extra); Arch publishes signatures only, so SHA-256 is TOFU-pinned"
+          },
+          {
+            "name": "ghostscript",
+            "url": "https://archive.archlinux.org/packages/g/ghostscript/ghostscript-10.08.0-1-x86_64.pkg.tar.zst",
+            "sha256": "TOFU",
+            "size": 21009787,
+            "notes": "ghostscript 0:10.08.0-1 (extra); Arch publishes signatures only, so SHA-256 is TOFU-pinned"
+          },
+          {
+            "name": "erlang",
+            "url": "https://archive.archlinux.org/packages/e/erlang/erlang-29.0.6-1-x86_64.pkg.tar.zst",
+            "sha256": "TOFU",
+            "size": 3835,
+            "notes": "erlang 0:29.0.6-1 (extra); Arch publishes signatures only, so SHA-256 is TOFU-pinned"
+          },
+          {
+            "name": "kicad",
+            "url": "https://archive.archlinux.org/packages/k/kicad/kicad-10.0.6-2-x86_64.pkg.tar.zst",
+            "sha256": "TOFU",
+            "size": 49990175,
+            "notes": "kicad 0:10.0.6-2 (extra); Arch publishes signatures only, so SHA-256 is TOFU-pinned"
+          },
+          {
+            "name": "texinfo",
+            "url": "https://archive.archlinux.org/packages/t/texinfo/texinfo-7.3-1-x86_64.pkg.tar.zst",
+            "sha256": "TOFU",
+            "size": 2226205,
+            "notes": "texinfo 0:7.3-1 (core); Arch publishes signatures only, so SHA-256 is TOFU-pinned"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Arch Linux packages (GPL/LGPL/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "Arch Linux packagers and upstream authors",
+        "notes": ""
+      },
+      "independence_group": "archlinux",
+      "description": "Held-out: Arch Linux x86_64 .pkg.tar.zst packages from the Arch Linux Archive (TOFU-pinned).",
+      "tags": [
+        "zstd",
+        "tar"
+      ]
+    },
+    {
+      "item_id": "f11-heldout-xorg-release-tarballs",
+      "family": "F11",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "xorg-server-21-1-24-tar-xz",
+            "url": "https://www.x.org/releases/individual/xserver/xorg-server-21.1.24.tar.xz",
+            "sha256": "TOFU",
+            "size": 5072780,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "xorg-server-21-1-24-tar-gz",
+            "url": "https://www.x.org/releases/individual/xserver/xorg-server-21.1.24.tar.gz",
+            "sha256": "TOFU",
+            "size": 9036382,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "xorg-server-1-20-11-tar-bz2",
+            "url": "https://www.x.org/releases/individual/xserver/xorg-server-1.20.11.tar.bz2",
+            "sha256": "TOFU",
+            "size": 6476116,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "xorg-server-1-10-6-tar-gz",
+            "url": "https://www.x.org/releases/individual/xserver/xorg-server-1.10.6.tar.gz",
+            "sha256": "TOFU",
+            "size": 7316775,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "libx11-1-8-13-tar-xz",
+            "url": "https://www.x.org/releases/individual/lib/libX11-1.8.13.tar.xz",
+            "sha256": "TOFU",
+            "size": 1803464,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "libx11-1-8-13-tar-gz",
+            "url": "https://www.x.org/releases/individual/lib/libX11-1.8.13.tar.gz",
+            "sha256": "TOFU",
+            "size": 3217264,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "libx11-1-7-2-tar-bz2",
+            "url": "https://www.x.org/releases/individual/lib/libX11-1.7.2.tar.bz2",
+            "sha256": "TOFU",
+            "size": 2392982,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "libxt-1-3-1-tar-xz",
+            "url": "https://www.x.org/releases/individual/lib/libXt-1.3.1.tar.xz",
+            "sha256": "TOFU",
+            "size": 691200,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "libxaw-1-0-16-tar-xz",
+            "url": "https://www.x.org/releases/individual/lib/libXaw-1.0.16.tar.xz",
+            "sha256": "TOFU",
+            "size": 602848,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "libxcb-1-17-0-tar-xz",
+            "url": "https://www.x.org/releases/individual/lib/libxcb-1.17.0.tar.xz",
+            "sha256": "TOFU",
+            "size": 455208,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "libxfont2-2-0-9-tar-xz",
+            "url": "https://www.x.org/releases/individual/lib/libXfont2-2.0.9.tar.xz",
+            "sha256": "TOFU",
+            "size": 478844,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "twm-1-0-13-1-tar-xz",
+            "url": "https://www.x.org/releases/individual/app/twm-1.0.13.1.tar.xz",
+            "sha256": "TOFU",
+            "size": 272456,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "font-misc-misc-1-1-3-tar-xz",
+            "url": "https://www.x.org/releases/individual/font/font-misc-misc-1.1.3.tar.xz",
+            "sha256": "TOFU",
+            "size": 1563776,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "xkeyboard-config-2-48-tar-xz",
+            "url": "https://www.x.org/releases/individual/data/xkeyboard-config/xkeyboard-config-2.48.tar.xz",
+            "sha256": "TOFU",
+            "size": 953316,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          },
+          {
+            "name": "xkeyboard-config-2-34-tar-bz2",
+            "url": "https://www.x.org/releases/individual/data/xkeyboard-config/xkeyboard-config-2.34.tar.bz2",
+            "sha256": "TOFU",
+            "size": 1763558,
+            "notes": "X.org publishes checksums in release announcements only; TOFU"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "MIT/X11 and related permissive licenses",
+        "redistributable": true,
+        "attribution": "X.Org Foundation and contributors",
+        "notes": ""
+      },
+      "independence_group": "xorg",
+      "description": "Held-out: X.Org source release tarballs spanning gzip, bzip2 and xz compression.",
+      "tags": [
+        "gzip",
+        "bzip2",
+        "xz",
+        "tar"
+      ]
+    },
+    {
+      "item_id": "f11-heldout-7zip-2603-release-archives",
+      "family": "F11",
+      "split": "heldout",
+      "scale": "small",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "7z2603-src-7z",
+            "url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-src.7z",
+            "sha256": "41e2a7c0e9f838351c625e01f0f581a2188bb3dda10c8e0b4a852da26546ffe2",
+            "size": 1539219,
+            "notes": "GitHub release ip7z/7zip@26.03 (SHA-256 from GitHub asset digest)"
+          },
+          {
+            "name": "7z2603-src-tar-xz",
+            "url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-src.tar.xz",
+            "sha256": "9cbde5099c6deb73691b0579063da5827522ccbbcba3f0020fd04e8c8c16c0d4",
+            "size": 1552200,
+            "notes": "GitHub release ip7z/7zip@26.03 (SHA-256 from GitHub asset digest)"
+          },
+          {
+            "name": "lzma2603-7z",
+            "url": "https://github.com/ip7z/7zip/releases/download/26.03/lzma2603.7z",
+            "sha256": "86c213f752520ab5325c310f50bef63ec344b56dd1c80b0246d06dc6cec953b2",
+            "size": 1785639,
+            "notes": "GitHub release ip7z/7zip@26.03 (SHA-256 from GitHub asset digest)"
+          },
+          {
+            "name": "7z2603-extra-7z",
+            "url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-extra.7z",
+            "sha256": "191894e6acb3647ffb69ce630479ff318523b2e2b9890aa7f05c1127c2e59b8f",
+            "size": 1764178,
+            "notes": "GitHub release ip7z/7zip@26.03 (SHA-256 from GitHub asset digest)"
+          },
+          {
+            "name": "7z2603-linux-x64-tar-xz",
+            "url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-linux-x64.tar.xz",
+            "sha256": "dc99eff5008f1ab79bd7084c68513701547a808a89502bf4133683535ab3c695",
+            "size": 1575072,
+            "notes": "GitHub release ip7z/7zip@26.03 (SHA-256 from GitHub asset digest)"
+          },
+          {
+            "name": "7z2603-mac-tar-xz",
+            "url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-mac.tar.xz",
+            "sha256": "5ca87677072c59f5602e5c49baa27d4694bacd2259b4e507f0094249d4281480",
+            "size": 1863192,
+            "notes": "GitHub release ip7z/7zip@26.03 (SHA-256 from GitHub asset digest)"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "LGPL-2.1-or-later with BSD-3-Clause parts and unRAR restriction (7-Zip); public domain (LZMA SDK)",
+        "redistributable": true,
+        "attribution": "Igor Pavlov",
+        "notes": ""
+      },
+      "independence_group": "7-zip",
+      "description": "Held-out: official 7-Zip 26.03 release archives (.7z and .tar.xz) as published on the ip7z/7zip GitHub release.",
+      "tags": [
+        "7z",
+        "xz"
+      ]
+    },
+    {
+      "item_id": "f14-apache-maven-3916-bin-tarball",
+      "family": "F14",
+      "split": "tuning",
+      "scale": "small",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "maven",
+            "url": "https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz",
+            "sha256": "TOFU",
+            "size": 9278065,
+            "notes": "Apache publishes SHA-512 (831a8591fe20c8243b1dbe7d71e3244f31d1665b0804b2e825e38cbbe5ce0cafb8338851f90780735568773e0a6cd07bbec107cda0b896b008b861075358b6f6)"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Apache-2.0 (with bundled third-party jars under their licenses)",
+        "redistributable": true,
+        "attribution": "Apache Software Foundation",
+        "notes": ""
+      },
+      "independence_group": "apache-maven",
+      "description": "Apache Maven 3.9.16 binary distribution kept as published: tar.gz containing lib/*.jar (zip) archives.",
+      "tags": [
+        "tar.gz",
+        "jar",
+        "nesting-2"
+      ]
+    },
+    {
+      "item_id": "f14-jenkins-25683-war",
+      "family": "F14",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "jenkins-war",
+            "url": "https://get.jenkins.io/war-stable/2.568.3/jenkins.war",
+            "sha256": "ccdbfdceade83489e34285a4d57c12134ffea0a09ca20062282e580cbfa5f09e",
+            "size": 101130898,
+            "notes": "SHA-256 from jenkins.war.sha256; get.jenkins.io redirects to a mirror"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "MIT (Jenkins core) with bundled third-party libraries",
+        "redistributable": true,
+        "attribution": "Jenkins project",
+        "notes": ""
+      },
+      "independence_group": "jenkins",
+      "description": "Jenkins 2.568.3 LTS WAR: zip containing WEB-INF/lib/*.jar and detached-plugin .hpi archives that themselves contain jars (three archive levels).",
+      "tags": [
+        "war",
+        "jar",
+        "hpi",
+        "nesting-3"
+      ]
+    },
+    {
+      "item_id": "f14-gen-nested-archives-py",
+      "family": "F14",
+      "split": "tuning",
+      "scale": "small",
+      "kind": "generate",
+      "real_or_generated": "generated",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/gen_nested_archives.py",
+          "seed": 1409,
+          "params": {
+            "profile": "mixed-v1"
+          }
+        }
+      },
+      "license": {
+        "spdx_or_name": "CC0-1.0",
+        "redistributable": true,
+        "attribution": "Entrybound research (generated data)",
+        "notes": "Generated by a script in research/corpus/generators/g4-binary; no third-party content."
+      },
+      "independence_group": "gen-g4-nested-archives-py",
+      "description": "Generated: zip-of-zips (stored/deflated), tar containing tar.gz, three-level tar.xz/zip/tar.gz nesting, jar-like fat archives with stored nested jars, and archives mixed into a plain tree.",
+      "tags": [
+        "generated",
+        "zip",
+        "tar",
+        "nesting-3"
+      ]
+    },
+    {
+      "item_id": "f14-pyspark-420-sdist",
+      "family": "F14",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "pyspark",
+            "url": "https://files.pythonhosted.org/packages/c3/33/c987434f5d50aa802779a004ca0fd45ee4350caab50554ad7283d5a22b50/pyspark-4.2.0.tar.gz",
+            "sha256": "5ad689d53570ee1674193fd4f9bda065f0db3be9363a27d2a3406cc457b70b61",
+            "size": 450129423,
+            "notes": "SHA-256 from the PyPI JSON API"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Apache-2.0 (Spark) with bundled jars under their own licenses",
+        "redistributable": true,
+        "attribution": "Apache Software Foundation",
+        "notes": ""
+      },
+      "independence_group": "apache-spark",
+      "description": "PySpark 4.2.0 source distribution as published: tar.gz containing ~hundreds of dependency jars.",
+      "tags": [
+        "tar.gz",
+        "jar",
+        "nesting-2"
+      ]
+    },
+    {
+      "item_id": "f14-gen-office-documents",
+      "family": "F14",
+      "split": "validation",
+      "scale": "small",
+      "kind": "generate",
+      "real_or_generated": "generated",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/gen_office_docs.py",
+          "seed": 1419,
+          "params": {
+            "profile": "office-v1"
+          }
+        }
+      },
+      "license": {
+        "spdx_or_name": "CC0-1.0",
+        "redistributable": true,
+        "attribution": "Entrybound research (generated data)",
+        "notes": "Generated by a script in research/corpus/generators/g4-binary; no third-party content."
+      },
+      "independence_group": "gen-g4-office-docs",
+      "description": "Generated: OOXML (docx/xlsx/pptx) and ODF (odt/ods) packages written directly as zip containers, including embedded workbooks/documents inside documents and an EPUB.",
+      "tags": [
+        "generated",
+        "ooxml",
+        "odf",
+        "zip"
+      ]
+    },
+    {
+      "item_id": "f14-heldout-fdroid-apks",
+      "family": "F14",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "org-schabi-newpipe",
+            "url": "https://f-droid.org/repo/org.schabi.newpipe_1015_cb84069.apk",
+            "sha256": "18447bfb1e06d113edc88df93f471827280de06f6f3d4dc42f56f28b9c1bab79",
+            "size": 11507122,
+            "notes": "org.schabi.newpipe 0.29.1 (versionCode 1015), license GPL-3.0-or-later (SHA-256 from F-Droid index-v2)"
+          },
+          {
+            "name": "de-danoeh-antennapod",
+            "url": "https://f-droid.org/repo/de.danoeh.antennapod_3120195.apk",
+            "sha256": "11b38c20b555b445a301c12028ccb912af24dce1d8b85532658b797b85d52638",
+            "size": 17733444,
+            "notes": "de.danoeh.antennapod 3.12.1 (versionCode 3120195), license GPL-3.0-only (SHA-256 from F-Droid index-v2)"
+          },
+          {
+            "name": "org-wikipedia",
+            "url": "https://f-droid.org/repo/org.wikipedia_50605.apk",
+            "sha256": "85b7a91561fc8558331185657e55f00b99f064273410424b1bb5d4c268b7af61",
+            "size": 82518241,
+            "notes": "org.wikipedia r/50605-r-2026-09-08 (versionCode 50605), license Apache-2.0 (SHA-256 from F-Droid index-v2)"
+          },
+          {
+            "name": "org-kde-kdeconnect_tp",
+            "url": "https://f-droid.org/repo/org.kde.kdeconnect_tp_13513.apk",
+            "sha256": "87949c72a22bae97e019ce81cdb41496999254ca9a53cc6647ea802c3d5506f4",
+            "size": 6794284,
+            "notes": "org.kde.kdeconnect_tp 1.35.13 (versionCode 13513), license GPL-3.0-only (SHA-256 from F-Droid index-v2)"
+          },
+          {
+            "name": "com-nextcloud-client",
+            "url": "https://f-droid.org/repo/com.nextcloud.client_350000051.apk",
+            "sha256": "ccc70b2534201eb7d60f44dd50ea4abbc1c3721b6046d9a89842cf9505709ac9",
+            "size": 95314568,
+            "notes": "com.nextcloud.client 35.0.0 RC1 (versionCode 350000051), license GPL-2.0-only (SHA-256 from F-Droid index-v2)"
+          },
+          {
+            "name": "org-fdroid-fdroid",
+            "url": "https://f-droid.org/repo/org.fdroid.fdroid_2000041.apk",
+            "sha256": "36b343514ea2cdd353b7554c14b3da3f4309653b67be5ceb2e912b25597e3d85",
+            "size": 13257686,
+            "notes": "org.fdroid.fdroid 2.0-rc1 (versionCode 2000041), license GPL-3.0-or-later (SHA-256 from F-Droid index-v2)"
+          },
+          {
+            "name": "org-videolan-vlc",
+            "url": "https://f-droid.org/repo/org.videolan.vlc_13070108.apk",
+            "sha256": "4a9144fadfd8606cc5c0e9db892fd24846b7b2efeb1630db5377955d1612b119",
+            "size": 49444910,
+            "notes": "org.videolan.vlc 3.7.1 (versionCode 13070108), license GPL-3.0-only (SHA-256 from F-Droid index-v2)"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Mixed FOSS licenses per app (GPL-3.0, Apache-2.0, MPL-2.0, AGPL-3.0)",
+        "redistributable": true,
+        "attribution": "Respective app authors via F-Droid",
+        "notes": ""
+      },
+      "independence_group": "f-droid-apps",
+      "description": "Held-out: Android APKs from the main F-Droid repository (SHA-256 from index-v2).",
+      "tags": [
+        "apk",
+        "zip"
+      ]
+    },
+    {
+      "item_id": "f14-heldout-firefox-15501-linux-tarball",
+      "family": "F14",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "firefox",
+            "url": "https://ftp.mozilla.org/pub/firefox/releases/155.0.1/linux-x86_64/en-US/firefox-155.0.1.tar.xz",
+            "sha256": "642ab731354a5ca790b894d4556dfb5028c61d0c24eb10d10e10a111a69c89bf",
+            "size": 87372544,
+            "notes": "SHA-256 from the release SHA256SUMS"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "MPL-2.0 (Mozilla trademark policy applies to the unmodified binary)",
+        "redistributable": true,
+        "attribution": "Mozilla Foundation",
+        "notes": ""
+      },
+      "independence_group": "mozilla-firefox",
+      "description": "Held-out: official Firefox 155.0.1 Linux x86_64 release tarball as published.",
+      "tags": [
+        "tar.xz",
+        "zip"
+      ]
+    },
+    {
+      "item_id": "f14-heldout-gen-nested-archives-cli",
+      "family": "F14",
+      "split": "heldout",
+      "scale": "small",
+      "kind": "generate",
+      "real_or_generated": "generated",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/gen_nested_cli.sh",
+          "interpreter": "bash",
+          "seed": 1499,
+          "params": {
+            "profile": "cli-v1"
+          }
+        }
+      },
+      "license": {
+        "spdx_or_name": "CC0-1.0",
+        "redistributable": true,
+        "attribution": "Entrybound research (generated data)",
+        "notes": "Generated by a script in research/corpus/generators/g4-binary; no third-party content."
+      },
+      "independence_group": "gen-g4-nested-archives-cli",
+      "description": "Held-out generated (different generator from the tuning item): nested archives built with command-line tools (tar, cpio, ar, zip, 7z, squashfs with gzip/xz/zstd/lz4/bzip2).",
+      "tags": [
+        "generated"
+      ]
+    },
+    {
+      "item_id": "f16-alpine-3241-minirootfs-ext4-raw",
+      "family": "F16",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "minirootfs",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/x86_64/alpine-minirootfs-3.24.1-x86_64.tar.gz",
+            "sha256": "41f73e3cf5fa919b8aa5ca6b30dc48f0da2720776d7423e2a7748211456fe081",
+            "size": 3698422,
+            "notes": "SHA-256 from latest-releases.yaml"
+          }
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/build_ext4_image.sh",
+          "interpreter": "bash",
+          "seed": 0,
+          "params": {
+            "image": "alpine-3.24.1-x86_64-ext4.img",
+            "size_mib": 256,
+            "label": "alpine-root",
+            "uuid": "6c3b3c1e-4f0a-4b8e-9a53-2f5d0e1a4b16",
+            "block_size": 4096
+          }
+        },
+        "output_pin": "TOFU",
+        "notes": "mke2fs -d populate; E2FSPROGS_FAKE_TIME, fixed UUID/hash seed; zero blocks punched to holes."
+      },
+      "license": {
+        "spdx_or_name": "Alpine packages (GPL-2.0-only busybox, MIT musl, others)",
+        "redistributable": true,
+        "attribution": "Alpine Linux developers",
+        "notes": ""
+      },
+      "independence_group": "alpine-linux",
+      "description": "Raw sparse 256 MiB ext4 filesystem image populated with the Alpine 3.24.1 minirootfs.",
+      "tags": [
+        "raw",
+        "ext4",
+        "sparse"
+      ]
+    },
+    {
+      "item_id": "f16-alpine-3241-minirootfs-ext4-qcow2",
+      "family": "F16",
+      "split": "tuning",
+      "scale": "small",
+      "kind": "derive",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "from_items": [
+          "f16-alpine-3241-minirootfs-ext4-raw"
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/convert_image.sh",
+          "interpreter": "bash",
+          "seed": 0,
+          "params": {
+            "from_item": "f16-alpine-3241-minirootfs-ext4-raw",
+            "src": "alpine-3.24.1-x86_64-ext4.img",
+            "src_format": "raw",
+            "dst": "alpine-3.24.1-x86_64-ext4.qcow2",
+            "dst_format": "qcow2",
+            "options": "compat=1.1,cluster_size=65536,lazy_refcounts=off"
+          }
+        }
+      },
+      "license": {
+        "spdx_or_name": "Alpine packages (GPL-2.0-only busybox, MIT musl, others)",
+        "redistributable": true,
+        "attribution": "Alpine Linux developers",
+        "notes": ""
+      },
+      "independence_group": "alpine-linux",
+      "description": "The same Alpine ext4 image converted to qcow2 (uncompressed clusters) for raw-vs-qcow2 comparison.",
+      "tags": [
+        "qcow2",
+        "ext4"
+      ]
+    },
+    {
+      "item_id": "f16-ubuntu-noble-cloudimg-20260911-raw",
+      "family": "F16",
+      "split": "tuning",
+      "scale": "large",
+      "kind": "build",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "cloudimg",
+            "url": "https://cloud-images.ubuntu.com/releases/noble/release-20260911/ubuntu-24.04-server-cloudimg-amd64.img",
+            "sha256": "612b2c0cc1bc413a6cb8c38fd611794caf0f2b436c50013d8b3794db12ad7354",
+            "size": 625256960,
+            "notes": "qcow2 image; SHA-256 from the release SHA256SUMS"
+          }
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/convert_image.sh",
+          "interpreter": "bash",
+          "seed": 0,
+          "params": {
+            "input": "cloudimg",
+            "src_format": "qcow2",
+            "dst": "ubuntu-24.04-server-cloudimg-amd64.raw",
+            "dst_format": "raw"
+          }
+        },
+        "output_pin": "TOFU"
+      },
+      "license": {
+        "spdx_or_name": "Ubuntu cloud image (per-package licenses; Canonical IP rights policy permits unmodified redistribution)",
+        "redistributable": true,
+        "attribution": "Canonical Ltd.",
+        "notes": "Converted qcow2->raw without modifying guest content."
+      },
+      "independence_group": "ubuntu-noble",
+      "description": "Official Ubuntu 24.04 server cloud image (release 20260911) converted from qcow2 to a sparse raw disk (GPT, ext4 root, ESP, BIOS boot).",
+      "tags": [
+        "raw",
+        "sparse",
+        "gpt",
+        "ext4"
+      ]
+    },
+    {
+      "item_id": "f16-debian-13-nocloud-20260831-qcow2",
+      "family": "F16",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "nocloud",
+            "url": "https://cloud.debian.org/images/cloud/trixie/20260831-2587/debian-13-nocloud-amd64-20260831-2587.qcow2",
+            "sha256": "TOFU",
+            "size": 406716416,
+            "notes": "Debian publishes SHA-512 e4f716b1fb48be24085c0907bd1a0a31f03b7bf2adfbd46d9f39595a225dc38741a4b5d79910e61fa1d885ac043e5ea0663fe805f26944e1dc1211a3206022c2"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Debian image (DFSG-free packages, per-package copyright)",
+        "redistributable": true,
+        "attribution": "Debian Cloud Team",
+        "notes": ""
+      },
+      "independence_group": "debian-trixie",
+      "description": "Official Debian 13 nocloud amd64 qcow2 image (build 20260831-2587) as published.",
+      "tags": [
+        "qcow2"
+      ]
+    },
+    {
+      "item_id": "f16-gen-fat32-image",
+      "family": "F16",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "generate",
+      "real_or_generated": "generated",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/gen_fat_image.py",
+          "seed": 1609,
+          "params": {
+            "size_mib": 64,
+            "fat": 32,
+            "volume_id": "1f16c0de",
+            "label": "EBFAT32"
+          }
+        },
+        "output_pin": "TOFU"
+      },
+      "license": {
+        "spdx_or_name": "CC0-1.0",
+        "redistributable": true,
+        "attribution": "Entrybound research (generated data)",
+        "notes": "Generated by a script in research/corpus/generators/g4-binary; no third-party content."
+      },
+      "independence_group": "gen-g4-fat-image",
+      "description": "Generated: 64 MiB FAT32 filesystem image (mkfs.vfat + mtools) holding a generated EFI-like tree with long names, small text files and larger binaries.",
+      "tags": [
+        "generated",
+        "fat32",
+        "raw"
+      ]
+    },
+    {
+      "item_id": "f16-heldout-almalinux-10-genericcloud-qcow2",
+      "family": "F16",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "genericcloud",
+            "url": "https://repo.almalinux.org/almalinux/10/cloud/x86_64/images/AlmaLinux-10-GenericCloud-10.2-20260817.0.x86_64.qcow2",
+            "sha256": "bc59485c4828861a15887e30ff1bb913f0f16202fd7286208518f4814da1e10a",
+            "size": 496631808,
+            "notes": "SHA-256 from the images CHECKSUM file"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "AlmaLinux image (per-package licenses)",
+        "redistributable": true,
+        "attribution": "AlmaLinux OS Foundation",
+        "notes": ""
+      },
+      "independence_group": "almalinux",
+      "description": "Held-out: official AlmaLinux 10.2 GenericCloud x86_64 qcow2 image (20260817) as published.",
+      "tags": [
+        "qcow2"
+      ]
+    },
+    {
+      "item_id": "f16-heldout-freebsd-151-ufs-vmdk",
+      "family": "F16",
+      "split": "heldout",
+      "scale": "large",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "vmdk-xz",
+            "url": "https://download.freebsd.org/releases/VM-IMAGES/15.1-RELEASE/amd64/Latest/FreeBSD-15.1-RELEASE-amd64-ufs.vmdk.xz",
+            "sha256": "1bc19a845ddfba9f85c6a44e2c14d074ed232abb0040b2e6f51c4af1ff349565",
+            "size": 665305636,
+            "notes": "SHA-256 from CHECKSUM.SHA256"
+          }
+        ],
+        "steps": [
+          {
+            "op": "decompress",
+            "input": "vmdk-xz",
+            "dest": "FreeBSD-15.1-RELEASE-amd64-ufs.vmdk",
+            "format": "xz"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "BSD-2-Clause (FreeBSD) with third-party components",
+        "redistributable": true,
+        "attribution": "The FreeBSD Project",
+        "notes": ""
+      },
+      "independence_group": "freebsd",
+      "description": "Held-out: official FreeBSD 15.1-RELEASE amd64 UFS VM image in VMDK format (xz-decompressed as published).",
+      "tags": [
+        "vmdk",
+        "ufs"
+      ]
+    },
+    {
+      "item_id": "f16-heldout-gen-gpt-disk",
+      "family": "F16",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "generate",
+      "real_or_generated": "generated",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/gen_gpt_disk.py",
+          "seed": 1699,
+          "params": {
+            "size_mib": 192,
+            "esp_mib": 48,
+            "disk_guid": "a3c1e7d2-5b4f-4e61-8d2a-9f0b1c2d3e4f"
+          }
+        },
+        "output_pin": "TOFU"
+      },
+      "license": {
+        "spdx_or_name": "CC0-1.0",
+        "redistributable": true,
+        "attribution": "Entrybound research (generated data)",
+        "notes": "Generated by a script in research/corpus/generators/g4-binary; no third-party content."
+      },
+      "independence_group": "gen-g4-gpt-disk",
+      "description": "Held-out generated (different generator from the FAT item): GPT-partitioned raw disk with a FAT ESP and an ext4 partition holding generated content.",
+      "tags": [
+        "generated"
+      ]
+    }
+  ]
+}

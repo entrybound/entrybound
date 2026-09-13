@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f14-gen-nested-archives-py",
+  "inputs": {},
+  "output": {
+    "materialization_key": "407964cedfeed38b2ff3d2c27466cfe674d2fb93d54df883ff86f5b47cdd88ea",
+    "logical_tree_sha256": "b34f047f2a279bd2b2d8a709bd798d4e5a8cf9c5063f3f9f22cbd9011bd4c583",
+    "pinned_utc": "2026-09-13T02:25:26Z"
+  },
+  "history": []
+}

@@ -1,0 +1,146 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-tuning-bbb-video-large",
+  "family": "F13",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-blender-bbb",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "2f90f85c52588a11cff1400f1ad26dad03831c95a5d8735bbe14a4529aaf9bb2",
+  "materialization_key": "953391833330cd4f6a3fd75eecae091e7696543b0378ef0a79baf240fad9e32f",
+  "materialized_utc": "2026-09-13T02:29:54Z",
+  "materialized_relpath": "corpus/tuning/f13-tuning-bbb-video-large",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "178bd885c12f39ce81da530aa847336164942c6695d5de377f8de3551715bc54",
+    "pinned_utc": "2026-09-13T02:29:54Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 910815729,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "blender-a608e6f381fe",
+        "url": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v.zip",
+        "final_url": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v.zip",
+        "sha256": "7118242b6728d40c871479c5b3c0f0fb27d748089df15d7f1b469f297c74a2d6",
+        "size": 121284117,
+        "retrieved_utc": "2026-09-13T02:04:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "BigBuckBunny_640x360.m4v.zip"
+      },
+      {
+        "name": "blender-2bb36eb634c4",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.480p.vp9.webm",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.480p.vp9.webm",
+        "sha256": "6d6c5ab5862cadec8c61cdba8044526bff3350b715657c7c3a9e575c491769d0",
+        "size": 96645673,
+        "retrieved_utc": "2026-09-13T02:04:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Big_Buck_Bunny_4K.webm.480p.vp9.webm"
+      },
+      {
+        "name": "blender-f192355d4a4e",
+        "url": "https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_30fps_normal.mp4.zip",
+        "final_url": "https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_30fps_normal.mp4.zip",
+        "sha256": "e320fef389ec749117d0c1583945039266a40f25483881c2ff0d33207e62b362",
+        "size": 275524128,
+        "retrieved_utc": "2026-09-13T02:04:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "bbb_sunflower_1080p_30fps_normal.mp4.zip"
+      },
+      {
+        "name": "blender-3da0f59ff427",
+        "url": "https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_720p_h264.mov.zip",
+        "final_url": "https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_720p_h264.mov.zip",
+        "sha256": "b0c9ade80b086179feee41514929de583966eec87c703575d97f051f88b33b67",
+        "size": 416751396,
+        "retrieved_utc": "2026-09-13T02:04:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "big_buck_bunny_720p_h264.mov.zip"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "blender-a608e6f381fe",
+        "format": "zip"
+      },
+      {
+        "op": "copy",
+        "input": "blender-2bb36eb634c4",
+        "dest": "Big_Buck_Bunny_4K.webm.480p.vp9.webm"
+      },
+      {
+        "op": "extract",
+        "input": "blender-f192355d4a4e",
+        "format": "zip"
+      },
+      {
+        "op": "extract",
+        "input": "blender-3da0f59ff427",
+        "format": "zip"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "bsdtar": "bsdtar 3.7.2 - libarchive 3.7.2 zlib/1.3 liblzma/5.4.5 bz2lib/1.0.8 liblz4/1.9.4 libzstd/1.5.5",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "a39f3ade37945914c30c0f1769c92f9b139b634a2f728b71d5137069c414a700",
+    "logical_tree_sha256": "178bd885c12f39ce81da530aa847336164942c6695d5de377f8de3551715bc54",
+    "content_tree_sha256": "6e5e7061b389ff5a557e3f121333450160a9969b73ce24c03b293f8c3313e305",
+    "extended_tree_sha256": "40c1be236fa2f888d50e6fbcfc6deed8d4d817e168fa37a5098cbc2312ffca7b",
+    "bytes": 910815729,
+    "bytes_all_paths": 910815729,
+    "allocated_bytes": 910823424,
+    "counts": {
+      "objects": 5,
+      "files": 4,
+      "unique_file_inodes": 4,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 36,
+      "path_length_bytes": {
+        "min": 24,
+        "max": 36,
+        "mean": 31.0,
+        "p50": 36,
+        "p95": 36
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}
