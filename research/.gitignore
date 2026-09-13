@@ -1,0 +1,19 @@
+# Python tooling caches
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Research harness build output (built with CARGO_TARGET_DIR outside the repo where possible)
+/harness/target/
+/independent-reader/target/
+/fuzz/**/target/
+/fuzz/**/corpus/
+/fuzz/**/artifacts/
+
+# Local-only scratch
+*.local.json
+/scratch/
+
+# Native conformance vectors are exact .eb bytes and MUST be tracked despite the
+# repository-wide *.eb ignore rule.
+!/conformance/**/*.eb
