@@ -1,0 +1,132 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f02-heldout-postgresql-17-6-build",
+  "family": "F02",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "postgresql",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "2dac64a683088e481dbda36ab179f9d1e50f84f26f233b20cb107540a67e1b53",
+  "materialization_key": "a386b3b55b575001f2532dda4e4102205114a57768324d271dd4c52368e27d30",
+  "materialized_utc": "2026-09-13T02:10:07Z",
+  "materialized_relpath": "heldout/f02-heldout-postgresql-17-6-build",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 275452445,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "postgresql",
+        "url": "https://ftp.postgresql.org/pub/source/v17.6/postgresql-17.6.tar.bz2",
+        "final_url": "https://ftp.postgresql.org/pub/source/v17.6/postgresql-17.6.tar.bz2",
+        "sha256": "e0630a3600aea27511715563259ec2111cd5f4353a4b040e0be827f94cd7a8b0",
+        "size": 21623975,
+        "retrieved_utc": "2026-09-13T01:56:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "postgresql-17.6.tar.bz2"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "input": "postgresql",
+          "strip_components": 1
+        },
+        "env": {
+          "CC": "gcc"
+        },
+        "expect": [
+          [
+            [
+              "gcc",
+              "-dumpfullversion"
+            ],
+            "13.3.0"
+          ],
+          [
+            [
+              "make",
+              "--version"
+            ],
+            "GNU Make 4.3"
+          ]
+        ],
+        "jobs": 16,
+        "commands": [
+          {
+            "argv": [
+              "{src}/configure",
+              "--prefix=/opt/ebrc/pgsql",
+              "--enable-debug",
+              "--with-openssl",
+              "--with-icu"
+            ],
+            "cwd": "{build}"
+          },
+          {
+            "argv": [
+              "make",
+              "-j",
+              "{jobs}",
+              "world-bin"
+            ],
+            "cwd": "{build}"
+          }
+        ],
+        "capture": [
+          {
+            "from": "{build}",
+            "to": "build"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "4d8dac1fb63273c1e3c5d8545079d6207261462d32e2839884fadd097b490eb7",
+    "logical_tree_sha256": "1d3ea21f3ca87934b7cc18440f52c9c2c8215821ac553c8e892eac36833d6459",
+    "content_tree_sha256": "7cc6b63df860ddcdd9fa68af9ed945bd9c18cafb8f16d9a7aa82fc27d256a288",
+    "extended_tree_sha256": "a1380dfd8ec954def41d7ee2a47e0bf4f85685580713f79b0d9f077436e43a77",
+    "bytes": 275452445,
+    "counts": {
+      "objects": 2752,
+      "files": 1768,
+      "dirs": 621,
+      "symlinks": 362,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

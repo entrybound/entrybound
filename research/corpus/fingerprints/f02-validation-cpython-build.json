@@ -1,0 +1,138 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f02-validation-cpython-build",
+  "family": "F02",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "cpython",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "d3bb5b8845c0869e29540e080a21c6ba6cf9800f7242463312987d14755d6cb2",
+  "materialization_key": "11b0d14e77dd9d1ffe43ba3ba661f539497847152c840241280367d682ad54c6",
+  "materialized_utc": "2026-09-13T02:10:44Z",
+  "materialized_relpath": "corpus/validation/f02-validation-cpython-build",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 341779024,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "from_items": [
+      {
+        "item_id": "f01-validation-cpython-3-13-15-git",
+        "logical_tree_sha256": "8de9646f761ba371352c59a1b876edffd386ef0934f025b28d2dcfa6be150074"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "from_item": "f01-validation-cpython-3-13-15-git"
+        },
+        "env": {
+          "CC": "gcc"
+        },
+        "expect": [
+          [
+            [
+              "gcc",
+              "-dumpfullversion"
+            ],
+            "13.3.0"
+          ],
+          [
+            [
+              "make",
+              "--version"
+            ],
+            "GNU Make 4.3"
+          ]
+        ],
+        "jobs": 16,
+        "commands": [
+          {
+            "argv": [
+              "{src}/configure",
+              "--prefix=/opt/ebrc/python3.13",
+              "--with-ensurepip=no"
+            ],
+            "cwd": "{build}"
+          },
+          {
+            "argv": [
+              "make",
+              "-j",
+              "{jobs}"
+            ],
+            "cwd": "{build}"
+          }
+        ],
+        "capture": [
+          {
+            "from": "{build}",
+            "to": "build"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "5fe868ab3feed1bcd05d80846e90ef50e2a4d96427bc3a6508f042000fc92228",
+    "logical_tree_sha256": "653c792b3f3f28145cd354f00da6fd08fb1159e616ff91bb2513fa7ef1ea79da",
+    "content_tree_sha256": "cbd0ef5b07d915ce576ccb491e206409ab507a13ca3eb8f9be438388e2e4418c",
+    "extended_tree_sha256": "a5f510a6da9b08a7e5dd408b9c66a65800ff05b6c76dc358ecd606fdcc735d68",
+    "bytes": 341779024,
+    "bytes_all_paths": 341779024,
+    "allocated_bytes": 342814720,
+    "counts": {
+      "objects": 598,
+      "files": 489,
+      "unique_file_inodes": 489,
+      "dirs": 31,
+      "symlinks": 77,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 5,
+      "max_name_length_bytes": 55,
+      "path_length_bytes": {
+        "min": 5,
+        "max": 100,
+        "mean": 38.556,
+        "p50": 32,
+        "p95": 76
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

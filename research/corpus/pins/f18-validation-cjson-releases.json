@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f18-validation-cjson-releases",
+  "inputs": {},
+  "output": {
+    "materialization_key": "d5680a9ad1481e6c259d5aaba68df40ba1371c9f8ac2477f731784aa7177ffd0",
+    "logical_tree_sha256": "40ead9b540f4e1f99760c50f9412013c7c3e75330fc292cf0d8a97c7e5b8a918",
+    "pinned_utc": "2026-09-13T02:04:47Z"
+  },
+  "history": []
+}

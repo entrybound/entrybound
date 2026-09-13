@@ -1,0 +1,202 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-validation-cjson-releases",
+  "family": "F18",
+  "split": "validation",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "cjson",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "d276fe2b7458453386d7d022af026558481f64027c89e88568ad3d46a13003b5",
+  "materialization_key": "d5680a9ad1481e6c259d5aaba68df40ba1371c9f8ac2477f731784aa7177ffd0",
+  "materialized_utc": "2026-09-13T02:04:47Z",
+  "materialized_relpath": "corpus/validation/f18-validation-cjson-releases",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "40ead9b540f4e1f99760c50f9412013c7c3e75330fc292cf0d8a97c7e5b8a918",
+    "pinned_utc": "2026-09-13T02:04:47Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 10070828,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "cjson-1_7_12",
+        "url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.12",
+        "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.12",
+        "sha256": "760687665ab41a5cff9c40b1053c19572bcdaadef1194e5cba1b5e6f824686e7",
+        "size": 348294,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.7.12"
+      },
+      {
+        "name": "cjson-1_7_13",
+        "url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.13",
+        "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.13",
+        "sha256": "d4e77a38f540f2c37f55758f2666655314f1f51c716fea5f279659940efdcf04",
+        "size": 354448,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.7.13"
+      },
+      {
+        "name": "cjson-1_7_14",
+        "url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.14",
+        "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.14",
+        "sha256": "fb50a663eefdc76bafa80c82bc045af13b1363e8f45cec8b442007aef6a41343",
+        "size": 352028,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.7.14"
+      },
+      {
+        "name": "cjson-1_7_15",
+        "url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.15",
+        "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.15",
+        "sha256": "5308fd4bd90cef7aa060558514de6a1a4a0819974a26e6ed13973c5f624c24b2",
+        "size": 352278,
+        "retrieved_utc": "2026-09-13T01:56:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.7.15"
+      },
+      {
+        "name": "cjson-1_7_16",
+        "url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.16",
+        "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.16",
+        "sha256": "451131a92c55efc5457276807fc0c4c2c2707c9ee96ef90c47d68852d5384c6c",
+        "size": 353498,
+        "retrieved_utc": "2026-09-13T01:56:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.7.16"
+      },
+      {
+        "name": "cjson-1_7_17",
+        "url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.17",
+        "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.17",
+        "sha256": "c91d1eeb7175c50d49f6ba2a25e69b46bd05cffb798382c19bfb202e467ec51c",
+        "size": 353748,
+        "retrieved_utc": "2026-09-13T01:56:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.7.17"
+      },
+      {
+        "name": "cjson-1_7_18",
+        "url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.18",
+        "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.18",
+        "sha256": "3aa806844a03442c00769b83e99970be70fbef03735ff898f4811dd03b9f5ee5",
+        "size": 354726,
+        "retrieved_utc": "2026-09-13T01:56:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.7.18"
+      },
+      {
+        "name": "cjson-1_7_19",
+        "url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.19",
+        "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.19",
+        "sha256": "7fa616e3046edfa7a28a32d5f9eacfd23f92900fe1f8ccd988c1662f30454562",
+        "size": 356247,
+        "retrieved_utc": "2026-09-13T01:56:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.7.19"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "cjson-1_7_12"
+      },
+      {
+        "op": "extract",
+        "input": "cjson-1_7_13"
+      },
+      {
+        "op": "extract",
+        "input": "cjson-1_7_14"
+      },
+      {
+        "op": "extract",
+        "input": "cjson-1_7_15"
+      },
+      {
+        "op": "extract",
+        "input": "cjson-1_7_16"
+      },
+      {
+        "op": "extract",
+        "input": "cjson-1_7_17"
+      },
+      {
+        "op": "extract",
+        "input": "cjson-1_7_18"
+      },
+      {
+        "op": "extract",
+        "input": "cjson-1_7_19"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "714581db0106480c611b4d1e262c570c933e4a748dc6e585e217a58467d7b65f",
+    "logical_tree_sha256": "40ead9b540f4e1f99760c50f9412013c7c3e75330fc292cf0d8a97c7e5b8a918",
+    "content_tree_sha256": "f56ec15e2c5f1e00d463ebd87689f534aea4ba982466a41491fc91ecfac4a09f",
+    "extended_tree_sha256": "85c3bef568ba4d8a630332358a007df2d76dac7f89a0d97782d0a32236d9553d",
+    "bytes": 10070828,
+    "bytes_all_paths": 10070828,
+    "allocated_bytes": 14929920,
+    "counts": {
+      "objects": 2039,
+      "files": 1740,
+      "unique_file_inodes": 1740,
+      "dirs": 298,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 8,
+      "max_name_length_bytes": 66,
+      "path_length_bytes": {
+        "min": 12,
+        "max": 96,
+        "mean": 46.35,
+        "p50": 46,
+        "p95": 69
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

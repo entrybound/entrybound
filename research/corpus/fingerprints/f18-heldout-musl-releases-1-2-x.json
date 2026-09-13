@@ -1,0 +1,155 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-heldout-musl-releases-1-2-x",
+  "family": "F18",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "musl",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "ce01db5a4326a5254d09df05ca3539a6517308257eb1fb7fc7e2148a5b232fb9",
+  "materialization_key": "c555ec1a22313fb67a3fe316538dac6a54eb483abc63656b609cead94346fecd",
+  "materialized_utc": "2026-09-13T02:10:49Z",
+  "materialized_relpath": "heldout/f18-heldout-musl-releases-1-2-x",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "26d0f7fef6136ea49a0a85c2480fee7c623b792466ee0fdb58c65f9830e474ea",
+    "pinned_utc": "2026-09-13T02:10:49Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 20332232,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "musl-1_2_0",
+        "url": "https://musl.libc.org/releases/musl-1.2.0.tar.gz",
+        "final_url": "https://musl.libc.org/releases/musl-1.2.0.tar.gz",
+        "sha256": "c6de7b191139142d3f9a7b5b702c9cae1b5ee6e7f57e582da9328629408fd4e8",
+        "size": 1035265,
+        "retrieved_utc": "2026-09-13T01:56:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "musl-1.2.0.tar.gz"
+      },
+      {
+        "name": "musl-1_2_1",
+        "url": "https://musl.libc.org/releases/musl-1.2.1.tar.gz",
+        "final_url": "https://musl.libc.org/releases/musl-1.2.1.tar.gz",
+        "sha256": "68af6e18539f646f9c41a3a2bb25be4a5cfa5a8f65f0bb647fd2bbfdf877e84b",
+        "size": 1047481,
+        "retrieved_utc": "2026-09-13T01:56:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "musl-1.2.1.tar.gz"
+      },
+      {
+        "name": "musl-1_2_2",
+        "url": "https://musl.libc.org/releases/musl-1.2.2.tar.gz",
+        "final_url": "https://musl.libc.org/releases/musl-1.2.2.tar.gz",
+        "sha256": "9b969322012d796dc23dda27a35866034fa67d8fb67e0e2c45c913c3d43219dd",
+        "size": 1055220,
+        "retrieved_utc": "2026-09-13T01:56:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "musl-1.2.2.tar.gz"
+      },
+      {
+        "name": "musl-1_2_3",
+        "url": "https://musl.libc.org/releases/musl-1.2.3.tar.gz",
+        "final_url": "https://musl.libc.org/releases/musl-1.2.3.tar.gz",
+        "sha256": "7d5b0b6062521e4627e099e4c9dc8248d32a30285e959b7eecaa780cf8cfd4a4",
+        "size": 1058642,
+        "retrieved_utc": "2026-09-13T01:56:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "musl-1.2.3.tar.gz"
+      },
+      {
+        "name": "musl-1_2_4",
+        "url": "https://musl.libc.org/releases/musl-1.2.4.tar.gz",
+        "final_url": "https://musl.libc.org/releases/musl-1.2.4.tar.gz",
+        "sha256": "7a35eae33d5372a7c0da1188de798726f68825513b7ae3ebe97aaaa52114f039",
+        "size": 1063758,
+        "retrieved_utc": "2026-09-13T01:56:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "musl-1.2.4.tar.gz"
+      },
+      {
+        "name": "musl-1_2_5",
+        "url": "https://musl.libc.org/releases/musl-1.2.5.tar.gz",
+        "final_url": "https://musl.libc.org/releases/musl-1.2.5.tar.gz",
+        "sha256": "a9a118bbe84d8764da0ea0d28b3ab3fae8477fc7e4085d90102b8596fc7c75e4",
+        "size": 1080786,
+        "retrieved_utc": "2026-09-13T01:56:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "musl-1.2.5.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "musl-1_2_0"
+      },
+      {
+        "op": "extract",
+        "input": "musl-1_2_1"
+      },
+      {
+        "op": "extract",
+        "input": "musl-1_2_2"
+      },
+      {
+        "op": "extract",
+        "input": "musl-1_2_3"
+      },
+      {
+        "op": "extract",
+        "input": "musl-1_2_4"
+      },
+      {
+        "op": "extract",
+        "input": "musl-1_2_5"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "52869f3baae4d55452ff0a82ac6b377f288f01ebf14ca47158aa5654cee6f835",
+    "logical_tree_sha256": "26d0f7fef6136ea49a0a85c2480fee7c623b792466ee0fdb58c65f9830e474ea",
+    "content_tree_sha256": "dfd0944eeda5c06e039d700f259eae51b76f7315b47e87df753d1e05f86a319f",
+    "extended_tree_sha256": "a6cb99fd45876d0c23988551da5b9ee471966256f196eee964571abd69073cd6",
+    "bytes": 20332232,
+    "counts": {
+      "objects": 17091,
+      "files": 15761,
+      "dirs": 1329,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f18-validation-redis-7-2-point-releases",
+  "inputs": {},
+  "output": {
+    "materialization_key": "488368359bda595536550367fa1c45ab0f9f0204eb659a1d38fba3d5c2f4fe24",
+    "logical_tree_sha256": "c101f0ed5e733368ddd9e0fe58d73b547c4101d6453b137063b1cd830a2c5294",
+    "pinned_utc": "2026-09-13T02:04:57Z"
+  },
+  "history": []
+}

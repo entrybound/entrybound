@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f18-validation-cpython-3-12-point-releases",
+  "inputs": {},
+  "output": {
+    "materialization_key": "be9dc1c85c35802d7343f834d0636eeabfc2606ac49ffdb3bce62f4d9cdb39dc",
+    "logical_tree_sha256": "1a89677e7e6da3a7687fc5d05077c64f7a5867df18ca83cff57757744cfd6788",
+    "pinned_utc": "2026-09-13T02:05:06Z"
+  },
+  "history": []
+}

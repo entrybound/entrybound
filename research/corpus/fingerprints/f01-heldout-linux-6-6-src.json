@@ -1,0 +1,81 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f01-heldout-linux-6-6-src",
+  "family": "F01",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "linux-kernel",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "285ce16323ec14214315e79004ab193e175a17b65e95676161eb8f9c681acea0",
+  "materialization_key": "87bb57fd42ef21227d17a08e9e7124752fdd073e9712672288b66ca55b01b203",
+  "materialized_utc": "2026-09-13T02:08:02Z",
+  "materialized_relpath": "heldout/f01-heldout-linux-6-6-src",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "1c56c8e16ed9634d845735739ceb3e0313117e74ce1aa9b17c44981a9aa4c552",
+    "pinned_utc": "2026-09-13T02:08:02Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 1353526029,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "linux",
+        "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.tar.xz",
+        "final_url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.tar.xz",
+        "sha256": "d926a06c63dd8ac7df3f86ee1ffc2ce2a3b81a2d168484e76b5b389aba8e56d0",
+        "size": 140064536,
+        "retrieved_utc": "2026-09-13T01:56:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "linux-6.6.tar.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "linux",
+        "strip_components": 1
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "d454c9c7e0450b3a351269c65acd0f4166db997f59151d2b4268443a4cdf7848",
+    "logical_tree_sha256": "1c56c8e16ed9634d845735739ceb3e0313117e74ce1aa9b17c44981a9aa4c552",
+    "content_tree_sha256": "59d7b0b497894d3367779ec0467b7b22909bb2e46daa92cc9c86d895a0a8ff48",
+    "extended_tree_sha256": "bc151f0417f8ca4b7e53d8eecc48c7661a1cfc7f4ccfc0245a1827723cf43fb1",
+    "bytes": 1353526029,
+    "counts": {
+      "objects": 87083,
+      "files": 81703,
+      "dirs": 5316,
+      "symlinks": 63,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

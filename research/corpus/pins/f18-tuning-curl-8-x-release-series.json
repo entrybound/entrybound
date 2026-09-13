@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f18-tuning-curl-8-x-release-series",
+  "inputs": {},
+  "output": {
+    "materialization_key": "121b5a3c9143727a4f8e9a6680ef926bf54c0681b70d8a6ae4bc934b0e7b7f60",
+    "logical_tree_sha256": "6a666fa161b59bb31f426d00699a98330eadc8450ca42a5737a09b702ed74519",
+    "pinned_utc": "2026-09-13T02:22:29Z"
+  },
+  "history": []
+}

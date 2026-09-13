@@ -1,0 +1,354 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-tuning-ripgrep-commit-snapshots",
+  "family": "F18",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "ripgrep",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "1ff717893c6e8697802651edde3e27bc54069cec22fbc0cb6ae49f168d4ed517",
+  "materialization_key": "726050b7defe0ce183c16cac8eaf934d141048b6248ce62371b4d34333186e72",
+  "materialized_utc": "2026-09-13T02:23:22Z",
+  "materialized_relpath": "corpus/tuning/f18-tuning-ripgrep-commit-snapshots",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "ab27bf8de2a61e264f412e0b7969512ae2a561140f7a8d7efe493b89c687e427",
+    "pinned_utc": "2026-09-13T02:04:42Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 48494301,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "c01",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/2057023dc5eb2b2ab28d03d2b902f3b57ce93165",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/2057023dc5eb2b2ab28d03d2b902f3b57ce93165",
+        "sha256": "6b1fcc94d1d1449f9c6c99c401889685bd8d876d69a1b613d92bee07b0a2b756",
+        "size": 584794,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2057023dc5eb2b2ab28d03d2b902f3b57ce93165"
+      },
+      {
+        "name": "c02",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/8e8fc9c5039663bf0145d7ae292c4214da957d4f",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/8e8fc9c5039663bf0145d7ae292c4214da957d4f",
+        "sha256": "e07dcf9219557a3d8bebc2884d566b7601524c31fe332ca59f5e328048a7047c",
+        "size": 584784,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "8e8fc9c5039663bf0145d7ae292c4214da957d4f"
+      },
+      {
+        "name": "c03",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/6c2a550e1ed190351707dbcb28d5085a89ac0710",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/6c2a550e1ed190351707dbcb28d5085a89ac0710",
+        "sha256": "c356ed544f2d43834450807d20e3a831e557a8f61a83e64afd6989dd952ca670",
+        "size": 584838,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "6c2a550e1ed190351707dbcb28d5085a89ac0710"
+      },
+      {
+        "name": "c04",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/827082a33ae7d86846a103ef14fb9ff297587049",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/827082a33ae7d86846a103ef14fb9ff297587049",
+        "sha256": "d6fc9a035e68ee581922c81984e07abb16c64cc00a3635bf75a01209e240bf7f",
+        "size": 585279,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "827082a33ae7d86846a103ef14fb9ff297587049"
+      },
+      {
+        "name": "c05",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/5dec4b8e3755bcc0be27fb43bd20880d6da1c42b",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/5dec4b8e3755bcc0be27fb43bd20880d6da1c42b",
+        "sha256": "4b0ee849b3993211fbf86c6d0ffd070573742ca6b4e9b4f8c6ab00f6431c71a8",
+        "size": 584116,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "5dec4b8e3755bcc0be27fb43bd20880d6da1c42b"
+      },
+      {
+        "name": "c06",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/23af5fb043f8e625294e210446090f17dbd7e3bf",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/23af5fb043f8e625294e210446090f17dbd7e3bf",
+        "sha256": "213f8f14c7973d5ee8cf998af73d11d8513af728ac135128c6d7d4b915892826",
+        "size": 584125,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "23af5fb043f8e625294e210446090f17dbd7e3bf"
+      },
+      {
+        "name": "c07",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/e0a85678e112759f56f9e07d04a29f2eed6eb348",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/e0a85678e112759f56f9e07d04a29f2eed6eb348",
+        "sha256": "e9bbdca11ed13b61627c83da10a73ded548a6013b58092c65f520f6d4e7940d3",
+        "size": 584729,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "e0a85678e112759f56f9e07d04a29f2eed6eb348"
+      },
+      {
+        "name": "c08",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/67dd809a8097923a721305ce0632a9fb9f19cb57",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/67dd809a8097923a721305ce0632a9fb9f19cb57",
+        "sha256": "78dc3699f0e76cac10475980d8e32f92bd6ba4588bc56102bdacec34275964ef",
+        "size": 584731,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "67dd809a8097923a721305ce0632a9fb9f19cb57"
+      },
+      {
+        "name": "c09",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/b9c774937fc285e6668be9823c4bf231a61fc4a8",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/b9c774937fc285e6668be9823c4bf231a61fc4a8",
+        "sha256": "6eb6664b630f878493bf08ff05189b1b1c0b0ac8b8570d46a5f81d1118646a31",
+        "size": 584857,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "b9c774937fc285e6668be9823c4bf231a61fc4a8"
+      },
+      {
+        "name": "c10",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/f02a50a69da131269fe0d8460e08b1fceea04ca9",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/f02a50a69da131269fe0d8460e08b1fceea04ca9",
+        "sha256": "9f0c1f841ec691f44b7067a4ec19e106ada0ca35179e286827ec58c724822fa2",
+        "size": 584804,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "f02a50a69da131269fe0d8460e08b1fceea04ca9"
+      },
+      {
+        "name": "c11",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/c8e4a84519ede79b330f9a9e2b072110d5bd0c8c",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/c8e4a84519ede79b330f9a9e2b072110d5bd0c8c",
+        "sha256": "8d5c9c3f1dd60c705403a2994248cd37d1a3725d0fe51612a27c61f3887ede6b",
+        "size": 584894,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "c8e4a84519ede79b330f9a9e2b072110d5bd0c8c"
+      },
+      {
+        "name": "c12",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/6e9141a9ca39a7ffbb25bf0817d21895e486aacc",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/6e9141a9ca39a7ffbb25bf0817d21895e486aacc",
+        "sha256": "44e00a547994727157058c435140179e53c61a36f470f02f4c12e0bbbb6a1ea9",
+        "size": 584886,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "6e9141a9ca39a7ffbb25bf0817d21895e486aacc"
+      },
+      {
+        "name": "c13",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/2c3897585d3a6d0709954bc389bed3d957878048",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/2c3897585d3a6d0709954bc389bed3d957878048",
+        "sha256": "461f68d39aec1479e948c7e689b44f41164c64d894195400ea10e06498094d7a",
+        "size": 584901,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2c3897585d3a6d0709954bc389bed3d957878048"
+      },
+      {
+        "name": "c14",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/44aa5a417d396ec75613c876e0eb5e4ba2f03b1d",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/44aa5a417d396ec75613c876e0eb5e4ba2f03b1d",
+        "sha256": "5365fda2886503fb2e41890cd7e9e5ef411ec73ddae2a0cfc2e7d30d8af6c25b",
+        "size": 584882,
+        "retrieved_utc": "2026-09-13T01:56:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "44aa5a417d396ec75613c876e0eb5e4ba2f03b1d"
+      },
+      {
+        "name": "c15",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/1fa76d2a42f05509a01c3e50a9424d16cfa8726d",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/1fa76d2a42f05509a01c3e50a9424d16cfa8726d",
+        "sha256": "a9b0f6c3a927ca6160edd11e6f505f24ed0358067f8a2fc15adb9369bfa95d43",
+        "size": 584928,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "1fa76d2a42f05509a01c3e50a9424d16cfa8726d"
+      },
+      {
+        "name": "c16",
+        "url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/e50df40a1967708b9781486b1c017e48040bceb0",
+        "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/e50df40a1967708b9781486b1c017e48040bceb0",
+        "sha256": "099567088d923d17e324b76cd51afef5b372ba807c54f40e9179452f8eb4e376",
+        "size": 584956,
+        "retrieved_utc": "2026-09-13T01:56:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "e50df40a1967708b9781486b1c017e48040bceb0"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "c01",
+        "dest": "01-2057023dc5eb",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c02",
+        "dest": "02-8e8fc9c50396",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c03",
+        "dest": "03-6c2a550e1ed1",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c04",
+        "dest": "04-827082a33ae7",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c05",
+        "dest": "05-5dec4b8e3755",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c06",
+        "dest": "06-23af5fb043f8",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c07",
+        "dest": "07-e0a85678e112",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c08",
+        "dest": "08-67dd809a8097",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c09",
+        "dest": "09-b9c774937fc2",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c10",
+        "dest": "10-f02a50a69da1",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c11",
+        "dest": "11-c8e4a84519ed",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c12",
+        "dest": "12-6e9141a9ca39",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c13",
+        "dest": "13-2c3897585d3a",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c14",
+        "dest": "14-44aa5a417d39",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c15",
+        "dest": "15-1fa76d2a42f0",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "c16",
+        "dest": "16-e50df40a1967",
+        "strip_components": 1
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "6fd333ab705dad01e18cc47960ea53b0020ce5ec9e2fbd6b397bdeefb657aa77",
+    "logical_tree_sha256": "ab27bf8de2a61e264f412e0b7969512ae2a561140f7a8d7efe493b89c687e427",
+    "content_tree_sha256": "2544f5c985a525a10184186b782cdaa47faabe296b9fe5f25ca1474d34ba9ae2",
+    "extended_tree_sha256": "90c9a5e343257b6609f16ce7d53b7b7b59b722f254ba9d577cbc065095c1d603",
+    "bytes": 48494301,
+    "bytes_all_paths": 48494301,
+    "allocated_bytes": 57446400,
+    "counts": {
+      "objects": 4387,
+      "files": 3434,
+      "unique_file_inodes": 3434,
+      "dirs": 936,
+      "symlinks": 16,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 6,
+      "max_name_length_bytes": 53,
+      "path_length_bytes": {
+        "min": 15,
+        "max": 89,
+        "mean": 43.422,
+        "p50": 41,
+        "p95": 72
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

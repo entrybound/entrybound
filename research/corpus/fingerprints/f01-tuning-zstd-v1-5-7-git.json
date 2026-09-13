@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f01-tuning-zstd-v1-5-7-git",
+  "family": "F01",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "zstd",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "b93c75af051329e24574ba483cd373bce7081100efafa32dc590f3db3b95bf00",
+  "materialization_key": "98c627b7be3f645ca14a51a6e31a2a0cd9faf44d94c575f2ead365d0c94eb01d",
+  "materialized_utc": "2026-09-13T02:23:19Z",
+  "materialized_relpath": "corpus/tuning/f01-tuning-zstd-v1-5-7-git",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "a587cd5e1471dd737139fde30aadb8839bd265fc08c7018b563fffdf1150934f",
+    "pinned_utc": "2026-09-13T02:04:37Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 8354806,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/facebook/zstd",
+      "commit": "f8745da6ff1ad1e7bab384bd1f9d742439278e99",
+      "ref": "v1.5.7",
+      "subpaths": null,
+      "archive_sha256": "0d8789de25f9740fea6f014950dab72bff7be13c1b5a182211255a69c5f799c6",
+      "archive_bytes": 8919040,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "git-archive",
+        "format": "tar"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "017752e17a9b8c6b45f7e2d2f5a48dcc36ed2ef2522adb51108681aad6d7933e",
+    "logical_tree_sha256": "a587cd5e1471dd737139fde30aadb8839bd265fc08c7018b563fffdf1150934f",
+    "content_tree_sha256": "7be7f17a462b58bbeb550993a7c7d6a6a7a662fbd81de71c0e966947adc30664",
+    "extended_tree_sha256": "9b154db9d858afe84f35ce6dbfccb29c96e5aff3110ce74b2c1383accfc0750c",
+    "bytes": 8354806,
+    "bytes_all_paths": 8354806,
+    "allocated_bytes": 10006528,
+    "counts": {
+      "objects": 743,
+      "files": 637,
+      "unique_file_inodes": 637,
+      "dirs": 103,
+      "symlinks": 2,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 6,
+      "max_name_length_bytes": 55,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 81,
+        "mean": 29.726,
+        "p50": 28,
+        "p95": 53
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

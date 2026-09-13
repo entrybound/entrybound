@@ -1,0 +1,173 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-heldout-linux-6-6-stable-subset-series",
+  "family": "F18",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "linux-kernel",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "b16f5a0c68913709097e2f64b0e1b894d5d68bd5585cd6d5a9013090ea946835",
+  "materialization_key": "97ae3856f935b39d9c2af2e607fbb8692f4218ba2fefda524a6f8c4ec2453bcc",
+  "materialized_utc": "2026-09-13T02:11:24Z",
+  "materialized_relpath": "heldout/f18-heldout-linux-6-6-stable-subset-series",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "e6d4646c123b8d12850ffc8a4e45b50fd4738324ccf80ab643540f50b222d0ae",
+    "pinned_utc": "2026-09-13T02:11:24Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 603791571,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "base",
+        "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.tar.xz",
+        "final_url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.tar.xz",
+        "sha256": "d926a06c63dd8ac7df3f86ee1ffc2ce2a3b81a2d168484e76b5b389aba8e56d0",
+        "size": 140064536,
+        "retrieved_utc": "2026-09-13T01:56:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "linux-6.6.tar.xz"
+      },
+      {
+        "name": "patch-30",
+        "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.30.xz",
+        "final_url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.30.xz",
+        "sha256": "e530daf2bc6c6db477382c9653508b5c83e81df6642ea6f0976f09ff34ff1440",
+        "size": 1872228,
+        "retrieved_utc": "2026-09-13T01:56:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "patch-6.6.30.xz"
+      },
+      {
+        "name": "patch-60",
+        "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.60.xz",
+        "final_url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.60.xz",
+        "sha256": "68a5627a4142fed06c1ba6e28b70d566727a56d6c07230229066cff09bfb9763",
+        "size": 3314136,
+        "retrieved_utc": "2026-09-13T01:56:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "patch-6.6.60.xz"
+      },
+      {
+        "name": "patch-90",
+        "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.90.xz",
+        "final_url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.90.xz",
+        "sha256": "d76132ce478187cd14974b1a6b12bf64f57ae9204ec510e2f80a567963b910a6",
+        "size": 4274884,
+        "retrieved_utc": "2026-09-13T01:56:33Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "patch-6.6.90.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g1-code/linux_stable_series.py",
+        "interpreter": "python",
+        "seed": 0,
+        "params": {
+          "base_topdir": "linux-6.6",
+          "subset": [
+            "block",
+            "crypto",
+            "fs",
+            "include",
+            "init",
+            "io_uring",
+            "ipc",
+            "kernel",
+            "lib",
+            "mm",
+            "net",
+            "security",
+            "virt"
+          ],
+          "snapshots": [
+            0,
+            30,
+            60,
+            90
+          ],
+          "name_format": "linux-6.6.{n}"
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g1-code/linux_stable_series.py",
+        "script_sha256": "10160fe80d303fe338b4c453bc2e58e7bbcd15bb2bec820e928232a699c7c9bc",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "base_topdir": "linux-6.6",
+          "subset": [
+            "block",
+            "crypto",
+            "fs",
+            "include",
+            "init",
+            "io_uring",
+            "ipc",
+            "kernel",
+            "lib",
+            "mm",
+            "net",
+            "security",
+            "virt"
+          ],
+          "snapshots": [
+            0,
+            30,
+            60,
+            90
+          ],
+          "name_format": "linux-6.6.{n}"
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "f275ac0dfe5d860687e8a09db7eb10f9e35c520c1c57cb8d7707a5f32489b6b0",
+    "logical_tree_sha256": "e6d4646c123b8d12850ffc8a4e45b50fd4738324ccf80ab643540f50b222d0ae",
+    "content_tree_sha256": "53e4e782d6f6b105f9b8756f65d75e3c79e4a750c6200c1a5332ce24389e8601",
+    "extended_tree_sha256": "ab41f88eacad60597b1aec1fda54c6dc5590554a2ecd57ae96e3b11935c2e116",
+    "bytes": 603791571,
+    "counts": {
+      "objects": 50711,
+      "files": 48348,
+      "dirs": 2350,
+      "symlinks": 12,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f01-validation-cpython-3-13-15-git",
+  "inputs": {},
+  "output": {
+    "materialization_key": "88c2bdac782f42dfdf83fda6d96b9f5cbbb8f94db9965322f54c91513a9eb7d9",
+    "logical_tree_sha256": "8de9646f761ba371352c59a1b876edffd386ef0934f025b28d2dcfa6be150074",
+    "pinned_utc": "2026-09-13T02:04:57Z"
+  },
+  "history": []
+}

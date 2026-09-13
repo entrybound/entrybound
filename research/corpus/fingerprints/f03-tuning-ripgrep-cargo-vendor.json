@@ -1,0 +1,135 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f03-tuning-ripgrep-cargo-vendor",
+  "family": "F03",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "ripgrep",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "0b6b983dff998a370b3fad4353b209e5d94660a7d07851574d6008da59749e73",
+  "materialization_key": "545c9b570e9ec157d4c620b1dc8635c1479ecf57bf9bd5e522bb4617dd6c1c1e",
+  "materialized_utc": "2026-09-13T02:23:32Z",
+  "materialized_relpath": "corpus/tuning/f03-tuning-ripgrep-cargo-vendor",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "c9b78a73b5afefc97f77f059790229a001052c60c2485def1691ec0b52ead241",
+    "pinned_utc": "2026-09-13T02:05:59Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 105438818,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "from_items": [
+      {
+        "item_id": "f01-tuning-ripgrep-14-1-1-git",
+        "logical_tree_sha256": "3d10cb8fe1533d5552d6d8ac8141aa4bcc6fcdc85e566da2061def81a65aaaae"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "from_item": "f01-tuning-ripgrep-14-1-1-git"
+        },
+        "env": {
+          "RUSTUP_TOOLCHAIN": "stable",
+          "CARGO_HOME": "{cache}/cargo-home",
+          "CARGO_TERM_COLOR": "never",
+          "CARGO_TERM_PROGRESS_WHEN": "never"
+        },
+        "expect": [
+          [
+            [
+              "rustc",
+              "--version"
+            ],
+            "rustc 1.98.1 (48a229cea 2026-09-01)"
+          ],
+          [
+            [
+              "cargo",
+              "--version"
+            ],
+            "cargo 1.98.1"
+          ]
+        ],
+        "commands": [
+          {
+            "argv": [
+              "cargo",
+              "vendor",
+              "--locked",
+              "--versioned-dirs",
+              "{build}/vendor"
+            ]
+          }
+        ],
+        "capture": [
+          {
+            "from": "{build}/vendor",
+            "to": "vendor"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "6abcdaefdcfcd7f4e58003555330541d2354ceab1a30ed946748a6370c2232c5",
+    "logical_tree_sha256": "c9b78a73b5afefc97f77f059790229a001052c60c2485def1691ec0b52ead241",
+    "content_tree_sha256": "105ae5fee2a62436c43cd08575d05e96cf82db010c1e3a4fef4dde66ad03033c",
+    "extended_tree_sha256": "475aa18ca96d58ee2ef6a75cb9786282181f912760156e845e681b77b56c15bc",
+    "bytes": 105438818,
+    "bytes_all_paths": 105438818,
+    "allocated_bytes": 111849472,
+    "counts": {
+      "objects": 3254,
+      "files": 2568,
+      "unique_file_inodes": 2568,
+      "dirs": 685,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 10,
+      "max_name_length_bytes": 73,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 121,
+        "mean": 52.405,
+        "p50": 50,
+        "p95": 84
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

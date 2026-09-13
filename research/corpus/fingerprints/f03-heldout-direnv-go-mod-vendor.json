@@ -1,0 +1,121 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f03-heldout-direnv-go-mod-vendor",
+  "family": "F03",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "direnv",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "ca0bca4a5ad6dc061ce60aee0612ffc2115649ce0bf4120aa8da0f5c1bba1d4f",
+  "materialization_key": "011bfea3bf6e74db89f6373076235c08e36d9a75ec6924f731c6711d8124cc98",
+  "materialized_utc": "2026-09-13T02:19:53Z",
+  "materialized_relpath": "heldout/f03-heldout-direnv-go-mod-vendor",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "66d866cdc486ff1ca8fc3d8cbd22cde282b879bf1894b33a83abc2c38989badd",
+    "pinned_utc": "2026-09-13T02:19:53Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 6471298,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/direnv/direnv",
+      "commit": "b2f5e9f205c43670cc948c5ee77a06077a493b2f",
+      "ref": "v2.34.0",
+      "subpaths": null,
+      "archive_sha256": "a060d3b7010ecda2c44086b1d3ca3a52937dd53c4d69b8eb2dd008081f752b9b",
+      "archive_bytes": 471040,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "git_archive": true
+        },
+        "env": {
+          "GOTOOLCHAIN": "local",
+          "GOPATH": "{cache}/gopath",
+          "GOMODCACHE": "{cache}/go-mod-cache",
+          "GOCACHE": "{cache}/go-build-cache",
+          "GOPROXY": "https://proxy.golang.org",
+          "GOSUMDB": "sum.golang.org",
+          "GONOSUMDB": "",
+          "GOPRIVATE": "",
+          "GOTELEMETRY": "off"
+        },
+        "expect": [
+          [
+            [
+              "go",
+              "version"
+            ],
+            "go version go1.22.2 linux/amd64"
+          ]
+        ],
+        "commands": [
+          {
+            "argv": [
+              "go",
+              "mod",
+              "vendor",
+              "-o",
+              "{build}/vendor"
+            ]
+          }
+        ],
+        "capture": [
+          {
+            "from": "{build}/vendor",
+            "to": "vendor"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "8f759aba40f93af72a7db9e17d890779e1e2ece0ca03e32bf5a50130b55e2c70",
+    "logical_tree_sha256": "66d866cdc486ff1ca8fc3d8cbd22cde282b879bf1894b33a83abc2c38989badd",
+    "content_tree_sha256": "47266aa5cc3766d73c245cd1dccecb7509a907dae0fe7484a0e03261a6f91b1a",
+    "extended_tree_sha256": "112fd9873000effc77ce6eef31d603a86d61a6a83e4dacf0fc7f68ff8b8deb3a",
+    "bytes": 6471298,
+    "counts": {
+      "objects": 354,
+      "files": 340,
+      "dirs": 13,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

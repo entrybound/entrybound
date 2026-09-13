@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f01-heldout-musl-1-2-5-src",
+  "inputs": {},
+  "output": {
+    "materialization_key": "5da3610e41b866656a97bc149161fce9a6134b448c6597a12ad3b2cf929f5dd9",
+    "logical_tree_sha256": "b304b49d6c1e79fa1b31911cb9e17917c50b19ac091a4a1d93f1ce8e4430c3cf",
+    "pinned_utc": "2026-09-13T02:07:02Z"
+  },
+  "history": []
+}

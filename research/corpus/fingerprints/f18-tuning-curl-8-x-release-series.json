@@ -1,0 +1,532 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-tuning-curl-8-x-release-series",
+  "family": "F18",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "curl",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "06852823ecc5adf05164756fcb8bb91268cd934ca27a0e5dace23f92d7c6b1e0",
+  "materialization_key": "121b5a3c9143727a4f8e9a6680ef926bf54c0681b70d8a6ae4bc934b0e7b7f60",
+  "materialized_utc": "2026-09-13T02:22:29Z",
+  "materialized_relpath": "corpus/tuning/f18-tuning-curl-8-x-release-series",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "6a666fa161b59bb31f426d00699a98330eadc8450ca42a5737a09b702ed74519",
+    "pinned_utc": "2026-09-13T02:22:29Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 650421441,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "curl-8_0_0",
+        "url": "https://curl.se/download/curl-8.0.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.0.0.tar.xz",
+        "sha256": "759690f9a375a720f8bcce9f953897b0d93f31eed9649b74f846d54bbf63bbcc",
+        "size": 2576600,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.0.0.tar.xz"
+      },
+      {
+        "name": "curl-8_0_1",
+        "url": "https://curl.se/download/curl-8.0.1.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.0.1.tar.xz",
+        "sha256": "0a381cd82f4d00a9a334438b8ca239afea5bfefcfa9a1025f2bf118e79e0b5f0",
+        "size": 2575544,
+        "retrieved_utc": "2026-09-13T02:21:08Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.0.1.tar.xz"
+      },
+      {
+        "name": "curl-8_1_0",
+        "url": "https://curl.se/download/curl-8.1.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.1.0.tar.xz",
+        "sha256": "6bd80ad4f07187015911216ee7185b90d285ac5162aed1bded144f9f93232a3c",
+        "size": 2612568,
+        "retrieved_utc": "2026-09-13T02:21:08Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.1.0.tar.xz"
+      },
+      {
+        "name": "curl-8_1_1",
+        "url": "https://curl.se/download/curl-8.1.1.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.1.1.tar.xz",
+        "sha256": "08a948e061929645597c1ef7194e07b308b22084ff03fa7400b465e6c05149e5",
+        "size": 2613348,
+        "retrieved_utc": "2026-09-13T02:21:08Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.1.1.tar.xz"
+      },
+      {
+        "name": "curl-8_1_2",
+        "url": "https://curl.se/download/curl-8.1.2.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.1.2.tar.xz",
+        "sha256": "31b1118eb8bfd43cd95d9a3f146f814ff874f6ed3999b29d94f4d1e7dbac5ef6",
+        "size": 2612652,
+        "retrieved_utc": "2026-09-13T02:21:08Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.1.2.tar.xz"
+      },
+      {
+        "name": "curl-8_2_0",
+        "url": "https://curl.se/download/curl-8.2.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.2.0.tar.xz",
+        "sha256": "2859ec79e2cd96e976a99493547359b8001af1d1e21f3a3a3b846544ef54500f",
+        "size": 2637208,
+        "retrieved_utc": "2026-09-13T02:21:08Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.2.0.tar.xz"
+      },
+      {
+        "name": "curl-8_2_1",
+        "url": "https://curl.se/download/curl-8.2.1.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.2.1.tar.xz",
+        "sha256": "dd322f6bd0a20e6cebdfd388f69e98c3d183bed792cf4713c8a7ef498cba4894",
+        "size": 2631932,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.2.1.tar.xz"
+      },
+      {
+        "name": "curl-8_3_0",
+        "url": "https://curl.se/download/curl-8.3.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.3.0.tar.xz",
+        "sha256": "376d627767d6c4f05105ab6d497b0d9aba7111770dd9d995225478209c37ea63",
+        "size": 2641764,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.3.0.tar.xz"
+      },
+      {
+        "name": "curl-8_4_0",
+        "url": "https://curl.se/download/curl-8.4.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.4.0.tar.xz",
+        "sha256": "16c62a9c4af0f703d28bda6d7bbf37ba47055ad3414d70dec63e2e6336f2a82d",
+        "size": 2658376,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.4.0.tar.xz"
+      },
+      {
+        "name": "curl-8_5_0",
+        "url": "https://curl.se/download/curl-8.5.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.5.0.tar.xz",
+        "sha256": "42ab8db9e20d8290a3b633e7fbb3cec15db34df65fd1015ef8ac1e4723750eeb",
+        "size": 2658520,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.5.0.tar.xz"
+      },
+      {
+        "name": "curl-8_6_0",
+        "url": "https://curl.se/download/curl-8.6.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.6.0.tar.xz",
+        "sha256": "3ccd55d91af9516539df80625f818c734dc6f2ecf9bada33c76765e99121db15",
+        "size": 2630108,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.6.0.tar.xz"
+      },
+      {
+        "name": "curl-8_7_0",
+        "url": "https://curl.se/download/curl-8.7.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.7.0.tar.xz",
+        "sha256": "0df1f686f0f55c61ec5fb5f833f326f4d63c22c3239facfe42da93489ca20fab",
+        "size": 2379056,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.7.0.tar.xz"
+      },
+      {
+        "name": "curl-8_7_1",
+        "url": "https://curl.se/download/curl-8.7.1.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.7.1.tar.xz",
+        "sha256": "6fea2aac6a4610fbd0400afb0bcddbe7258a64c63f1f68e5855ebc0c659710cd",
+        "size": 2707016,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.7.1.tar.xz"
+      },
+      {
+        "name": "curl-8_8_0",
+        "url": "https://curl.se/download/curl-8.8.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.8.0.tar.xz",
+        "sha256": "0f58bb95fc330c8a46eeb3df5701b0d90c9d9bfcc42bd1cd08791d12551d4400",
+        "size": 2748860,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.8.0.tar.xz"
+      },
+      {
+        "name": "curl-8_9_0",
+        "url": "https://curl.se/download/curl-8.9.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.9.0.tar.xz",
+        "sha256": "ff09b2791ca56d25fd5c3f3a4927dce7c8a9dc4182200c487ca889fba1fdd412",
+        "size": 2781828,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.9.0.tar.xz"
+      },
+      {
+        "name": "curl-8_9_1",
+        "url": "https://curl.se/download/curl-8.9.1.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.9.1.tar.xz",
+        "sha256": "f292f6cc051d5bbabf725ef85d432dfeacc8711dd717ea97612ae590643801e5",
+        "size": 2782364,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.9.1.tar.xz"
+      },
+      {
+        "name": "curl-8_10_0",
+        "url": "https://curl.se/download/curl-8.10.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.10.0.tar.xz",
+        "sha256": "e6b142f0e85e954759d37e26a3627e2278137595be80e3a860c4353e4335e5a0",
+        "size": 2729448,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.10.0.tar.xz"
+      },
+      {
+        "name": "curl-8_10_1",
+        "url": "https://curl.se/download/curl-8.10.1.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.10.1.tar.xz",
+        "sha256": "73a4b0e99596a09fa5924a4fb7e4b995a85fda0d18a2c02ab9cf134bebce04ee",
+        "size": 2726748,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.10.1.tar.xz"
+      },
+      {
+        "name": "curl-8_11_0",
+        "url": "https://curl.se/download/curl-8.11.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.11.0.tar.xz",
+        "sha256": "db59cf0d671ca6e7f5c2c5ec177084a33a79e04c97e71cf183a5cdea235054eb",
+        "size": 2750684,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.11.0.tar.xz"
+      },
+      {
+        "name": "curl-8_11_1",
+        "url": "https://curl.se/download/curl-8.11.1.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.11.1.tar.xz",
+        "sha256": "c7ca7db48b0909743eaef34250da02c19bc61d4f1dcedd6603f109409536ab56",
+        "size": 2751236,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.11.1.tar.xz"
+      },
+      {
+        "name": "curl-8_12_0",
+        "url": "https://curl.se/download/curl-8.12.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.12.0.tar.xz",
+        "sha256": "9a4628c764be6b1a9909567c13e8e771041609df43b2158fcac4e05ea7097e5d",
+        "size": 2777552,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.12.0.tar.xz"
+      },
+      {
+        "name": "curl-8_12_1",
+        "url": "https://curl.se/download/curl-8.12.1.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.12.1.tar.xz",
+        "sha256": "0341f1ed97a26c811abaebd37d62b833956792b7607ea3f15d001613c76de202",
+        "size": 2768160,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.12.1.tar.xz"
+      },
+      {
+        "name": "curl-8_13_0",
+        "url": "https://curl.se/download/curl-8.13.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.13.0.tar.xz",
+        "sha256": "4a093979a3c2d02de2fbc00549a32771007f2e78032c6faa5ecd2f7a9e152025",
+        "size": 2773628,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.13.0.tar.xz"
+      },
+      {
+        "name": "curl-8_14_0",
+        "url": "https://curl.se/download/curl-8.14.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.14.0.tar.xz",
+        "sha256": "b3634cfc538c72c9c6ca794ef4c73d7fdbd171e8dee2db837d83a5e45231002a",
+        "size": 2819512,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.14.0.tar.xz"
+      },
+      {
+        "name": "curl-8_14_1",
+        "url": "https://curl.se/download/curl-8.14.1.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.14.1.tar.xz",
+        "sha256": "f4619a1e2474c4bbfedc88a7c2191209c8334b48fa1f4e53fd584cc12e9120dd",
+        "size": 2817248,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.14.1.tar.xz"
+      },
+      {
+        "name": "curl-8_15_0",
+        "url": "https://curl.se/download/curl-8.15.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.15.0.tar.xz",
+        "sha256": "6cd0a8a5b126ddfda61c94dc2c3fc53481ba7a35461cf7c5ab66aa9d6775b609",
+        "size": 2773156,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.15.0.tar.xz"
+      },
+      {
+        "name": "curl-8_16_0",
+        "url": "https://curl.se/download/curl-8.16.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.16.0.tar.xz",
+        "sha256": "40c8cddbcb6cc6251c03dea423a472a6cea4037be654ba5cf5dec6eb2d22ff1d",
+        "size": 2788632,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.16.0.tar.xz"
+      },
+      {
+        "name": "curl-8_17_0",
+        "url": "https://curl.se/download/curl-8.17.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.17.0.tar.xz",
+        "sha256": "955f6e729ad6b3566260e8fef68620e76ba3c31acf0a18524416a185acf77992",
+        "size": 2797000,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.17.0.tar.xz"
+      },
+      {
+        "name": "curl-8_18_0",
+        "url": "https://curl.se/download/curl-8.18.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.18.0.tar.xz",
+        "sha256": "40df79166e74aa20149365e11ee4c798a46ad57c34e4f68fd13100e2c9a91946",
+        "size": 2801444,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.18.0.tar.xz"
+      },
+      {
+        "name": "curl-8_19_0",
+        "url": "https://curl.se/download/curl-8.19.0.tar.xz",
+        "final_url": "https://curl.se/download/curl-8.19.0.tar.xz",
+        "sha256": "4eb41489790d19e190d7ac7e18e82857cdd68af8f4e66b292ced562d333f11df",
+        "size": 2787584,
+        "retrieved_utc": "2026-09-13T02:21:09Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "curl-8.19.0.tar.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "curl-8_0_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_0_1"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_1_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_1_1"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_1_2"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_2_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_2_1"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_3_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_4_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_5_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_6_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_7_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_7_1"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_8_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_9_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_9_1"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_10_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_10_1"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_11_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_11_1"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_12_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_12_1"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_13_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_14_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_14_1"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_15_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_16_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_17_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_18_0"
+      },
+      {
+        "op": "extract",
+        "input": "curl-8_19_0"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "5e05b4f915df98bf5d5c15e25d917805dbf4a0298fd7dd30567a21c9395edccd",
+    "logical_tree_sha256": "6a666fa161b59bb31f426d00699a98330eadc8450ca42a5737a09b702ed74519",
+    "content_tree_sha256": "0e479faf3a3984bc8caddc50a868b54299eb339ce7bd58c897a6d12451a26002",
+    "extended_tree_sha256": "006fa93cd5bafc5f3c431a3640974d89ca37a9bb44ec560b347e2b206abc8ae8",
+    "bytes": 650421441,
+    "bytes_all_paths": 650421441,
+    "allocated_bytes": 947339264,
+    "counts": {
+      "objects": 116411,
+      "files": 115028,
+      "unique_file_inodes": 115028,
+      "dirs": 1382,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 6,
+      "max_name_length_bytes": 42,
+      "path_length_bytes": {
+        "min": 10,
+        "max": 69,
+        "mean": 34.387,
+        "p50": 31,
+        "p95": 54
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

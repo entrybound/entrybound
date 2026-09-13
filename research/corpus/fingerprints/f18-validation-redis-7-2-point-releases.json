@@ -1,0 +1,232 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-validation-redis-7-2-point-releases",
+  "family": "F18",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "redis",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "252301c91e3b5b04a8356d8ca23c8edc61409218250bb1cbb4efaf7f6a1e18d9",
+  "materialization_key": "488368359bda595536550367fa1c45ab0f9f0204eb659a1d38fba3d5c2f4fe24",
+  "materialized_utc": "2026-09-13T02:04:57Z",
+  "materialized_relpath": "corpus/validation/f18-validation-redis-7-2-point-releases",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "c101f0ed5e733368ddd9e0fe58d73b547c4101d6453b137063b1cd830a2c5294",
+    "pinned_utc": "2026-09-13T02:04:57Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 154647912,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "redis-7_2_0",
+        "url": "https://download.redis.io/releases/redis-7.2.0.tar.gz",
+        "final_url": "https://download.redis.io/releases/redis-7.2.0.tar.gz",
+        "sha256": "8b12e242647635b419a0e1833eda02b65bf64e39eb9e509d9db4888fb3124943",
+        "size": 3381269,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "redis-7.2.0.tar.gz"
+      },
+      {
+        "name": "redis-7_2_1",
+        "url": "https://download.redis.io/releases/redis-7.2.1.tar.gz",
+        "final_url": "https://download.redis.io/releases/redis-7.2.1.tar.gz",
+        "sha256": "5c76d990a1b1c5f949bcd1eed90d0c8a4f70369bdbdcb40288c561ddf88967a4",
+        "size": 3383319,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "redis-7.2.1.tar.gz"
+      },
+      {
+        "name": "redis-7_2_2",
+        "url": "https://download.redis.io/releases/redis-7.2.2.tar.gz",
+        "final_url": "https://download.redis.io/releases/redis-7.2.2.tar.gz",
+        "sha256": "ca999be08800edc6d265379c4c7aafad92f0ee400692e4e2d69829ab4b4c3d08",
+        "size": 3384618,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "redis-7.2.2.tar.gz"
+      },
+      {
+        "name": "redis-7_2_3",
+        "url": "https://download.redis.io/releases/redis-7.2.3.tar.gz",
+        "final_url": "https://download.redis.io/releases/redis-7.2.3.tar.gz",
+        "sha256": "3e2b196d6eb4ddb9e743088bfc2915ccbb42d40f5a8a3edd8cb69c716ec34be7",
+        "size": 3384816,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "redis-7.2.3.tar.gz"
+      },
+      {
+        "name": "redis-7_2_4",
+        "url": "https://download.redis.io/releases/redis-7.2.4.tar.gz",
+        "final_url": "https://download.redis.io/releases/redis-7.2.4.tar.gz",
+        "sha256": "8d104c26a154b29fd67d6568b4f375212212ad41e0c2caa3d66480e78dbd3b59",
+        "size": 3386861,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "redis-7.2.4.tar.gz"
+      },
+      {
+        "name": "redis-7_2_5",
+        "url": "https://download.redis.io/releases/redis-7.2.5.tar.gz",
+        "final_url": "https://download.redis.io/releases/redis-7.2.5.tar.gz",
+        "sha256": "5981179706f8391f03be91d951acafaeda91af7fac56beffb2701963103e423d",
+        "size": 3386454,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "redis-7.2.5.tar.gz"
+      },
+      {
+        "name": "redis-7_2_6",
+        "url": "https://download.redis.io/releases/redis-7.2.6.tar.gz",
+        "final_url": "https://download.redis.io/releases/redis-7.2.6.tar.gz",
+        "sha256": "fb10d67a2fe2b4556f6cb840064dd6e6e3175ce8ca035f0726990ec2da9f3d0e",
+        "size": 3391023,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "redis-7.2.6.tar.gz"
+      },
+      {
+        "name": "redis-7_2_7",
+        "url": "https://download.redis.io/releases/redis-7.2.7.tar.gz",
+        "final_url": "https://download.redis.io/releases/redis-7.2.7.tar.gz",
+        "sha256": "72c081e3b8cfae7144273d26d76736f08319000af46c01515cad5d29765cead5",
+        "size": 3394075,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "redis-7.2.7.tar.gz"
+      },
+      {
+        "name": "redis-7_2_8",
+        "url": "https://download.redis.io/releases/redis-7.2.8.tar.gz",
+        "final_url": "https://download.redis.io/releases/redis-7.2.8.tar.gz",
+        "sha256": "6be4fdfcdb2e5ac91454438246d00842d2671f792673390e742dfcaf1bf01574",
+        "size": 3394108,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "redis-7.2.8.tar.gz"
+      },
+      {
+        "name": "redis-7_2_9",
+        "url": "https://download.redis.io/releases/redis-7.2.9.tar.gz",
+        "final_url": "https://download.redis.io/releases/redis-7.2.9.tar.gz",
+        "sha256": "2343cc49db3beb9d2925a44e13032805a608821a58f25bd874c84881115a20b7",
+        "size": 3394517,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "redis-7.2.9.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "redis-7_2_0"
+      },
+      {
+        "op": "extract",
+        "input": "redis-7_2_1"
+      },
+      {
+        "op": "extract",
+        "input": "redis-7_2_2"
+      },
+      {
+        "op": "extract",
+        "input": "redis-7_2_3"
+      },
+      {
+        "op": "extract",
+        "input": "redis-7_2_4"
+      },
+      {
+        "op": "extract",
+        "input": "redis-7_2_5"
+      },
+      {
+        "op": "extract",
+        "input": "redis-7_2_6"
+      },
+      {
+        "op": "extract",
+        "input": "redis-7_2_7"
+      },
+      {
+        "op": "extract",
+        "input": "redis-7_2_8"
+      },
+      {
+        "op": "extract",
+        "input": "redis-7_2_9"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "2f4efd9d71f7a2cdc47b7590401de9b2da5b5be87ce7afb4b327c59d5cb10562",
+    "logical_tree_sha256": "c101f0ed5e733368ddd9e0fe58d73b547c4101d6453b137063b1cd830a2c5294",
+    "content_tree_sha256": "d6c885258a87fc5a64012341947e8bb87cb383cb48e330bd288302168b157f7d",
+    "extended_tree_sha256": "faa0c157f7666d9f90c6f2114e37550e1361a7bc3820b1d60d618655983c0921",
+    "bytes": 154647912,
+    "bytes_all_paths": 154647912,
+    "allocated_bytes": 193568768,
+    "counts": {
+      "objects": 16699,
+      "files": 15828,
+      "unique_file_inodes": 15828,
+      "dirs": 870,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 8,
+      "max_name_length_bytes": 39,
+      "path_length_bytes": {
+        "min": 11,
+        "max": 88,
+        "mean": 41.316,
+        "p50": 40,
+        "p95": 63
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

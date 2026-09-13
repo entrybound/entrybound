@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f03-heldout-direnv-go-mod-vendor",
+  "inputs": {},
+  "output": {
+    "materialization_key": "011bfea3bf6e74db89f6373076235c08e36d9a75ec6924f731c6711d8124cc98",
+    "logical_tree_sha256": "66d866cdc486ff1ca8fc3d8cbd22cde282b879bf1894b33a83abc2c38989badd",
+    "pinned_utc": "2026-09-13T02:19:53Z"
+  },
+  "history": []
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f01-heldout-go-1-25-0-src",
+  "inputs": {},
+  "output": {
+    "materialization_key": "2db021f65d7c1d0171f0e140b8dc467a9f272206de3305317c63b50413a5bb43",
+    "logical_tree_sha256": "64ed425955dc18e750ce7f2d07203a77a48e523c372fb260224b0ea0072eab85",
+    "pinned_utc": "2026-09-13T02:07:11Z"
+  },
+  "history": []
+}

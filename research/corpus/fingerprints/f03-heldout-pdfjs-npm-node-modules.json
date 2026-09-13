@@ -1,0 +1,147 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f03-heldout-pdfjs-npm-node-modules",
+  "family": "F03",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "mozilla-pdfjs",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "9e3139434e88959c21845d47589f7293438f21652e0af146da46df09c5bbd6d4",
+  "materialization_key": "6a9d54e9640bad8620b9faef72e2076cdb5c628a291cf89008091d36cdc66cfd",
+  "materialized_utc": "2026-09-13T02:09:22Z",
+  "materialized_relpath": "heldout/f03-heldout-pdfjs-npm-node-modules",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "8e4fb50c723d90c25a262fa048732492f22e4f29ea01baad9a6d05b2f56f8ed0",
+    "pinned_utc": "2026-09-13T02:09:22Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 229116721,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "package-json",
+        "url": "https://raw.githubusercontent.com/mozilla/pdf.js/f9bea397f817100a186d0ced2aa3d4b85813b637/package.json",
+        "final_url": "https://raw.githubusercontent.com/mozilla/pdf.js/f9bea397f817100a186d0ced2aa3d4b85813b637/package.json",
+        "sha256": "ed54f512e39c009282b0010dbec4cc5ac77f66978cb2861ece00759ba79f6c4b",
+        "size": 1995,
+        "retrieved_utc": "2026-09-13T01:56:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "package.json"
+      },
+      {
+        "name": "package-lock",
+        "url": "https://raw.githubusercontent.com/mozilla/pdf.js/f9bea397f817100a186d0ced2aa3d4b85813b637/package-lock.json",
+        "final_url": "https://raw.githubusercontent.com/mozilla/pdf.js/f9bea397f817100a186d0ced2aa3d4b85813b637/package-lock.json",
+        "sha256": "0f751bd7ead2e8bce251c6bcace778f411ed40d9d0fd5dcbcf1aaeb81ee6dde1",
+        "size": 509657,
+        "retrieved_utc": "2026-09-13T01:56:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "package-lock.json"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "files": [
+            {
+              "input": "package-json",
+              "dest": "package.json"
+            },
+            {
+              "input": "package-lock",
+              "dest": "package-lock.json"
+            }
+          ]
+        },
+        "env": {
+          "npm_config_cache": "{cache}/npm-cache",
+          "npm_config_update_notifier": "false",
+          "npm_config_fund": "false",
+          "npm_config_audit": "false",
+          "npm_config_progress": "false"
+        },
+        "expect": [
+          [
+            [
+              "node",
+              "--version"
+            ],
+            "v22.23.2"
+          ],
+          [
+            [
+              "npm",
+              "--version"
+            ],
+            "10.9.8"
+          ]
+        ],
+        "commands": [
+          {
+            "argv": [
+              "npm",
+              "ci",
+              "--ignore-scripts",
+              "--no-audit",
+              "--no-fund",
+              "--loglevel=warn"
+            ]
+          }
+        ],
+        "capture": [
+          {
+            "from": "{src}/node_modules",
+            "to": "node_modules"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "763bd3bf103d20272668e5c5180ae38bf49fd0acdf5e7eddba9559b07173bb6c",
+    "logical_tree_sha256": "8e4fb50c723d90c25a262fa048732492f22e4f29ea01baad9a6d05b2f56f8ed0",
+    "content_tree_sha256": "9a2d7c6b06e0db226accd35e51a796e0ee25a29f8979f7b0697dea90568130c6",
+    "extended_tree_sha256": "7560946179b3ab01a928ead623e4922f566c7b73cd6abbd6c71006c9f3dab326",
+    "bytes": 229116721,
+    "counts": {
+      "objects": 34904,
+      "files": 31250,
+      "dirs": 3579,
+      "symlinks": 74,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f01-validation-cpython-3-13-15-git",
+  "family": "F01",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "cpython",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "d32c7fa0fe1f4f59e1e798f629b6267d2f3473f0e3abd655e10d1e8aad7d4d3c",
+  "materialization_key": "88c2bdac782f42dfdf83fda6d96b9f5cbbb8f94db9965322f54c91513a9eb7d9",
+  "materialized_utc": "2026-09-13T02:04:57Z",
+  "materialized_relpath": "corpus/validation/f01-validation-cpython-3-13-15-git",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "8de9646f761ba371352c59a1b876edffd386ef0934f025b28d2dcfa6be150074",
+    "pinned_utc": "2026-09-13T02:04:57Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 110992477,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/python/cpython",
+      "commit": "4061bc4c35f7c26f25264666d4ba083b93d2f6f9",
+      "ref": "v3.13.15",
+      "subpaths": null,
+      "archive_sha256": "cb7b1901d93a1da3268ca7dcbbc18f3fdec9c00d60245f3f850bfd5bb55e06bf",
+      "archive_bytes": 115138560,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "git-archive",
+        "format": "tar"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "9a121a1de9f19661bb1ee2ebe8f8ec716e3454925ffd440d0fcefa1976d4fab0",
+    "logical_tree_sha256": "8de9646f761ba371352c59a1b876edffd386ef0934f025b28d2dcfa6be150074",
+    "content_tree_sha256": "7ca418715790126db8017585fe76518fb02eba1c52b021f746da35d46aa6dca7",
+    "extended_tree_sha256": "292d8b7aa1ec8b39d70a3147d6d77b4c87c122f1bb5311caa6fbfda46e102dc1",
+    "bytes": 110992477,
+    "bytes_all_paths": 110992477,
+    "allocated_bytes": 123269120,
+    "counts": {
+      "objects": 5471,
+      "files": 5041,
+      "unique_file_inodes": 5041,
+      "dirs": 426,
+      "symlinks": 3,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 10,
+      "max_name_length_bytes": 57,
+      "path_length_bytes": {
+        "min": 2,
+        "max": 99,
+        "mean": 30.283,
+        "p50": 28,
+        "p95": 54
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

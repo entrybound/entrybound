@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f01-validation-redis-7-2-16-git",
+  "family": "F01",
+  "split": "validation",
+  "scale": "small",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "redis",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "8da7969747a64ae89a6c24d3caf8a0b9d0731bca03544317248bc40310ea81ab",
+  "materialization_key": "b6f5fe8e721dc67dd87789804fd505f0f3d2907ea76ae853926c20d99f2f612f",
+  "materialized_utc": "2026-09-13T02:04:48Z",
+  "materialized_relpath": "corpus/validation/f01-validation-redis-7-2-16-git",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "62b48c6c43a30ec32c08fbba0fd7fff05634cbca88dcde18a72fd2277fd211fa",
+    "pinned_utc": "2026-09-13T02:04:48Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 15564620,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/redis/redis",
+      "commit": "335554f18caf7bbf6b0ac2b3548133d750f00a1b",
+      "ref": "7.2.16",
+      "subpaths": null,
+      "archive_sha256": "359f0cde1bc1c7171a547cde38e90365161be0fcd06750a09dbab4238289d360",
+      "archive_bytes": 16855040,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "git-archive",
+        "format": "tar"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "a8f0175ba41998c9d6ea0c6f7c9684fe75b7216f54c68a25da06cf27596984a5",
+    "logical_tree_sha256": "62b48c6c43a30ec32c08fbba0fd7fff05634cbca88dcde18a72fd2277fd211fa",
+    "content_tree_sha256": "cee6e4245d19788696007efe762810a7b9ab40ead641d7f7343a16df00903726",
+    "extended_tree_sha256": "9a4d56aa7c526670d99bbf65acd186c5158c220a25559956e52c63bffc89ddf9",
+    "bytes": 15564620,
+    "bytes_all_paths": 15564620,
+    "allocated_bytes": 19447808,
+    "counts": {
+      "objects": 1671,
+      "files": 1584,
+      "unique_file_inodes": 1584,
+      "dirs": 86,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 7,
+      "max_name_length_bytes": 39,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 76,
+        "mean": 29.34,
+        "p50": 28,
+        "p95": 51
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,292 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-tuning-sqlite-amalgamation-series",
+  "family": "F18",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "sqlite",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "46885008a5756b0405a796e2563359fb1230edea1a9b6075ec4a3731586c05bc",
+  "materialization_key": "a7d802ed9f5a6fdebed4d913ae198b25bccf0f368470c10c4b985e0bdda5f910",
+  "materialized_utc": "2026-09-13T02:04:43Z",
+  "materialized_relpath": "corpus/tuning/f18-tuning-sqlite-amalgamation-series",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "b5b858153e41929078b87fbe3765afce407e9d01cef0382d1ce3816410fdcd21",
+    "pinned_utc": "2026-09-13T02:04:43Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 151655598,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "sqlite-3450000",
+        "url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450000.zip",
+        "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450000.zip",
+        "sha256": "bde30d13ebdf84926ddd5e8b6df145be03a577a48fd075a087a5dd815bcdf740",
+        "size": 2729858,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3450000.zip"
+      },
+      {
+        "name": "sqlite-3450100",
+        "url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip",
+        "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip",
+        "sha256": "5592243caf28b2cdef41e6ab58d25d653dfc53deded8450eb66072c929f030c4",
+        "size": 2730697,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3450100.zip"
+      },
+      {
+        "name": "sqlite-3450200",
+        "url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450200.zip",
+        "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450200.zip",
+        "sha256": "65230414820d43a6d1445d1d98cfe57e8eb9f7ac0d6a96ad6932e0647cce51db",
+        "size": 2732008,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3450200.zip"
+      },
+      {
+        "name": "sqlite-3450300",
+        "url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450300.zip",
+        "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450300.zip",
+        "sha256": "ea170e73e447703e8359308ca2e4366a3ae0c4304a8665896f068c736781c651",
+        "size": 2733959,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3450300.zip"
+      },
+      {
+        "name": "sqlite-3460000",
+        "url": "https://www.sqlite.org/2024/sqlite-amalgamation-3460000.zip",
+        "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3460000.zip",
+        "sha256": "712a7d09d2a22652fb06a49af516e051979a3984adb067da86760e60ed51a7f5",
+        "size": 2763740,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3460000.zip"
+      },
+      {
+        "name": "sqlite-3460100",
+        "url": "https://www.sqlite.org/2024/sqlite-amalgamation-3460100.zip",
+        "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3460100.zip",
+        "sha256": "77823cb110929c2bcb0f5d48e4833b5c59a8a6e40cdea3936b99e199dbbe5784",
+        "size": 2764032,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3460100.zip"
+      },
+      {
+        "name": "sqlite-3470000",
+        "url": "https://www.sqlite.org/2024/sqlite-amalgamation-3470000.zip",
+        "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3470000.zip",
+        "sha256": "2842fddbb1cc33f66c7da998a57535f14a6bfee159676a07bb4bf3e59375d93e",
+        "size": 2810589,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3470000.zip"
+      },
+      {
+        "name": "sqlite-3470100",
+        "url": "https://www.sqlite.org/2024/sqlite-amalgamation-3470100.zip",
+        "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3470100.zip",
+        "sha256": "9da21e6b14ef6a943cdc30f973df259fb390bb4483f77e7f171b9b6e977e5458",
+        "size": 2811435,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3470100.zip"
+      },
+      {
+        "name": "sqlite-3470200",
+        "url": "https://www.sqlite.org/2024/sqlite-amalgamation-3470200.zip",
+        "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3470200.zip",
+        "sha256": "aa73d8748095808471deaa8e6f34aa700e37f2f787f4425744f53fdd15a89c40",
+        "size": 2811504,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3470200.zip"
+      },
+      {
+        "name": "sqlite-3480000",
+        "url": "https://www.sqlite.org/2025/sqlite-amalgamation-3480000.zip",
+        "final_url": "https://www.sqlite.org/2025/sqlite-amalgamation-3480000.zip",
+        "sha256": "d9a15a42db7c78f88fe3d3c5945acce2f4bfe9e4da9f685cd19f6ea1d40aa884",
+        "size": 2820489,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3480000.zip"
+      },
+      {
+        "name": "sqlite-3490000",
+        "url": "https://www.sqlite.org/2025/sqlite-amalgamation-3490000.zip",
+        "final_url": "https://www.sqlite.org/2025/sqlite-amalgamation-3490000.zip",
+        "sha256": "cb6851ebad74913672014c20f642bbd7883552c4747780583a54ee1cd493f13b",
+        "size": 2826299,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3490000.zip"
+      },
+      {
+        "name": "sqlite-3490100",
+        "url": "https://www.sqlite.org/2025/sqlite-amalgamation-3490100.zip",
+        "final_url": "https://www.sqlite.org/2025/sqlite-amalgamation-3490100.zip",
+        "sha256": "6cebd1d8403fc58c30e93939b246f3e6e58d0765a5cd50546f16c00fd805d2c3",
+        "size": 2826319,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3490100.zip"
+      },
+      {
+        "name": "sqlite-3490200",
+        "url": "https://www.sqlite.org/2025/sqlite-amalgamation-3490200.zip",
+        "final_url": "https://www.sqlite.org/2025/sqlite-amalgamation-3490200.zip",
+        "sha256": "921fc725517a694df7df38a2a3dfede6684024b5788d9de464187c612afb5918",
+        "size": 2826584,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3490200.zip"
+      },
+      {
+        "name": "sqlite-3500000",
+        "url": "https://www.sqlite.org/2025/sqlite-amalgamation-3500000.zip",
+        "final_url": "https://www.sqlite.org/2025/sqlite-amalgamation-3500000.zip",
+        "sha256": "f196539ae448ecb304f05598d8614b125ace159a63a980dca691e066250d7fa2",
+        "size": 2844474,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sqlite-amalgamation-3500000.zip"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "sqlite-3450000"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3450100"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3450200"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3450300"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3460000"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3460100"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3470000"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3470100"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3470200"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3480000"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3490000"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3490100"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3490200"
+      },
+      {
+        "op": "extract",
+        "input": "sqlite-3500000"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "bsdtar": "bsdtar 3.7.2 - libarchive 3.7.2 zlib/1.3 liblzma/5.4.5 bz2lib/1.0.8 liblz4/1.9.4 libzstd/1.5.5",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "e7dba93fe6cd05e972394f6687b719cd4ca45c9d684cd93e0a91f8d18896c395",
+    "logical_tree_sha256": "b5b858153e41929078b87fbe3765afce407e9d01cef0382d1ce3816410fdcd21",
+    "content_tree_sha256": "e8f008f2a338d707d493b70a4c1d79ef14ba2728636ad49d86a3d0c53b294a74",
+    "extended_tree_sha256": "3956f6db5b9203e9e6c2918942f92647b4cc5f64ee4d1c5140bc1eeaf5916bf0",
+    "bytes": 151655598,
+    "bytes_all_paths": 151655598,
+    "allocated_bytes": 151764992,
+    "counts": {
+      "objects": 71,
+      "files": 56,
+      "unique_file_inodes": 56,
+      "dirs": 14,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 27,
+      "path_length_bytes": {
+        "min": 27,
+        "max": 40,
+        "mean": 35.2,
+        "p50": 37,
+        "p95": 40
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

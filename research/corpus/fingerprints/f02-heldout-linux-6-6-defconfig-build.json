@@ -1,0 +1,135 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f02-heldout-linux-6-6-defconfig-build",
+  "family": "F02",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "linux-kernel",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "2ef0b68a7372fb356d8f13cd323cd20bb748eecca7c9927b375a265fca6ec1b3",
+  "materialization_key": "49c89c7c7fa394cb9fd2669b5129cc290d12c550c345ba06a8a179bb0ca87b7f",
+  "materialized_utc": "2026-09-13T02:11:39Z",
+  "materialized_relpath": "heldout/f02-heldout-linux-6-6-defconfig-build",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 837787138,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "linux",
+        "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.tar.xz",
+        "final_url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.tar.xz",
+        "sha256": "d926a06c63dd8ac7df3f86ee1ffc2ce2a3b81a2d168484e76b5b389aba8e56d0",
+        "size": 140064536,
+        "retrieved_utc": "2026-09-13T01:56:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "linux-6.6.tar.xz"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "input": "linux",
+          "strip_components": 1
+        },
+        "env": {
+          "KBUILD_BUILD_TIMESTAMP": "Thu Jan  1 00:00:00 UTC 2026",
+          "KBUILD_BUILD_USER": "ebrc",
+          "KBUILD_BUILD_HOST": "ebrc"
+        },
+        "expect": [
+          [
+            [
+              "gcc",
+              "-dumpfullversion"
+            ],
+            "13.3.0"
+          ],
+          [
+            [
+              "make",
+              "--version"
+            ],
+            "GNU Make 4.3"
+          ]
+        ],
+        "jobs": 16,
+        "commands": [
+          {
+            "argv": [
+              "make",
+              "-C",
+              "{src}",
+              "O={build}",
+              "x86_64_defconfig"
+            ]
+          },
+          {
+            "argv": [
+              "make",
+              "-C",
+              "{src}",
+              "O={build}",
+              "-j",
+              "{jobs}",
+              "all"
+            ]
+          }
+        ],
+        "capture": [
+          {
+            "from": "{build}",
+            "to": "build"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "650f6caf437b9f3b0617fc1f43f4ae281540269c970c363b2137d77c729f0fa5",
+    "logical_tree_sha256": "17db42518b1b725e421e8cf99fb78215a8544581d694bb4de79d1f383f50e6b7",
+    "content_tree_sha256": "556d30526d5c07d80214d65607529bfc7b937b8c33bee0c7df343347bd15d6a6",
+    "extended_tree_sha256": "99e89c8f681e75c7ec2dbe4b464cc5e82445cc33a77686bc9569bad574f72ef8",
+    "bytes": 837787138,
+    "counts": {
+      "objects": 11196,
+      "files": 10462,
+      "dirs": 731,
+      "symlinks": 2,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

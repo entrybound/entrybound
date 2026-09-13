@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f03-heldout-alacritty-cargo-vendor",
+  "inputs": {},
+  "output": {
+    "materialization_key": "6b03c8863ea6dff7bc87679718df2c7d4c2a3a914c95a739858880f68cf453bd",
+    "logical_tree_sha256": "2f2f74e940979faa9f9560c9c58f83e1a5785895c2bcf86a42c7c387eadda4ca",
+    "pinned_utc": "2026-09-13T02:08:26Z"
+  },
+  "history": []
+}

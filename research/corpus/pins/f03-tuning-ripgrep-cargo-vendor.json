@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f03-tuning-ripgrep-cargo-vendor",
+  "inputs": {},
+  "output": {
+    "materialization_key": "545c9b570e9ec157d4c620b1dc8635c1479ecf57bf9bd5e522bb4617dd6c1c1e",
+    "logical_tree_sha256": "c9b78a73b5afefc97f77f059790229a001052c60c2485def1691ec0b52ead241",
+    "pinned_utc": "2026-09-13T02:05:59Z"
+  },
+  "history": []
+}

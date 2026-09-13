@@ -1,0 +1,128 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f02-heldout-musl-1-2-5-build",
+  "family": "F02",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "musl",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "c7ea5ddec9dca896cb9a42c3e5a5203ddcdea2396416087b998f46e83e055944",
+  "materialization_key": "b782270f6d4e3ee3545b0e95d18aa529f41400455577734e5e25e9d6e15504d8",
+  "materialized_utc": "2026-09-13T02:07:17Z",
+  "materialized_relpath": "heldout/f02-heldout-musl-1-2-5-build",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 6199883,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "musl",
+        "url": "https://musl.libc.org/releases/musl-1.2.5.tar.gz",
+        "final_url": "https://musl.libc.org/releases/musl-1.2.5.tar.gz",
+        "sha256": "a9a118bbe84d8764da0ea0d28b3ab3fae8477fc7e4085d90102b8596fc7c75e4",
+        "size": 1080786,
+        "retrieved_utc": "2026-09-13T01:56:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "musl-1.2.5.tar.gz"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "input": "musl",
+          "strip_components": 1
+        },
+        "env": {
+          "CC": "gcc"
+        },
+        "expect": [
+          [
+            [
+              "gcc",
+              "-dumpfullversion"
+            ],
+            "13.3.0"
+          ],
+          [
+            [
+              "make",
+              "--version"
+            ],
+            "GNU Make 4.3"
+          ]
+        ],
+        "jobs": 16,
+        "commands": [
+          {
+            "argv": [
+              "{src}/configure",
+              "--prefix=/opt/ebrc/musl"
+            ],
+            "cwd": "{build}"
+          },
+          {
+            "argv": [
+              "make",
+              "-j",
+              "{jobs}"
+            ],
+            "cwd": "{build}"
+          }
+        ],
+        "capture": [
+          {
+            "from": "{build}",
+            "to": "build"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "0d3b2042d05a06f2b55c363710312a3fe4b6ba19d86e1e6ad9a9a83c1831ba3d",
+    "logical_tree_sha256": "689d518562cf9cc9cc82a94d915c63eee69b5b4cb806452509240dc7e34b1c71",
+    "content_tree_sha256": "0192a34f88627fbdb62c972c79fa0c9353815fe7fa0aa687d23560d86594d041",
+    "extended_tree_sha256": "50cb8b2bd9f00f4462869e7b750eb05f9b1d0b8db9f3cb889b879ac33cebe1ff",
+    "bytes": 6199883,
+    "counts": {
+      "objects": 1435,
+      "files": 1373,
+      "dirs": 60,
+      "symlinks": 1,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f18-heldout-linux-6-6-stable-subset-series",
+  "inputs": {},
+  "output": {
+    "materialization_key": "97ae3856f935b39d9c2af2e607fbb8692f4218ba2fefda524a6f8c4ec2453bcc",
+    "logical_tree_sha256": "e6d4646c123b8d12850ffc8a4e45b50fd4738324ccf80ab643540f50b222d0ae",
+    "pinned_utc": "2026-09-13T02:11:24Z"
+  },
+  "history": []
+}

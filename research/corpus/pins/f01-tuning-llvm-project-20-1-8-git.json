@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f01-tuning-llvm-project-20-1-8-git",
+  "inputs": {},
+  "output": {
+    "materialization_key": "dd079def2b1c10b159d2955eb8ed1822161b73212bd559265084bde28f6967de",
+    "logical_tree_sha256": "bfa9c810be654f9a03fda9f92c4fcba997c3d1ad811f6f8a7de05a9692f214c5",
+    "pinned_utc": "2026-09-13T02:08:13Z"
+  },
+  "history": []
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f18-tuning-lz4-releases-1-9-to-1-10",
+  "inputs": {},
+  "output": {
+    "materialization_key": "bb7791612de975d3ba22b815fd9d34a72f8d492f488d40e865bceba529333cd6",
+    "logical_tree_sha256": "e2badb01e3286b174d42759de91922c1edb7c973a40d3ed8249476452d3e8ac2",
+    "pinned_utc": "2026-09-13T02:04:38Z"
+  },
+  "history": []
+}

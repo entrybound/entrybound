@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f01-tuning-llvm-project-20-1-8-git",
+  "family": "F01",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "llvm-project",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "94e10f57b849a50be8befe360e1504a4d6013dc69ae8020d959f7ed0b9bbea34",
+  "materialization_key": "dd079def2b1c10b159d2955eb8ed1822161b73212bd559265084bde28f6967de",
+  "materialized_utc": "2026-09-13T02:08:13Z",
+  "materialized_relpath": "corpus/tuning/f01-tuning-llvm-project-20-1-8-git",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "bfa9c810be654f9a03fda9f92c4fcba997c3d1ad811f6f8a7de05a9692f214c5",
+    "pinned_utc": "2026-09-13T02:08:13Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 1749036966,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/llvm/llvm-project",
+      "commit": "87f0227cb60147a26a1eeb4fb06e3b505e9c7261",
+      "ref": "llvmorg-20.1.8",
+      "subpaths": null,
+      "archive_sha256": "6f8ce3dc870a1631649254cc31a09aea09edbe03532f116e07cc6dbb2fb29506",
+      "archive_bytes": 1875097600,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "git-archive",
+        "format": "tar"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "00dd00997bf047455f708dd61c01fbe65192abfc4b583cff379c592ad7264c40",
+    "logical_tree_sha256": "bfa9c810be654f9a03fda9f92c4fcba997c3d1ad811f6f8a7de05a9692f214c5",
+    "content_tree_sha256": "400bab3108fe03925395a8ecc86864252b578279c0709fcf53d533edad73a888",
+    "extended_tree_sha256": "831012d2bb5ec24577bee9d8e5c4ed149ac7c10b874fd233240ead7216c85392",
+    "bytes": 1749036966,
+    "bytes_all_paths": 1749036966,
+    "allocated_bytes": 2139860992,
+    "counts": {
+      "objects": 168692,
+      "files": 154022,
+      "unique_file_inodes": 154022,
+      "dirs": 14650,
+      "symlinks": 19,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 16,
+      "max_name_length_bytes": 97,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 165,
+        "mean": 50.775,
+        "p50": 47,
+        "p95": 87
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

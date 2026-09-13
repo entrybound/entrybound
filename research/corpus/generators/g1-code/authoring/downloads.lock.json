@@ -1,0 +1,994 @@
+{
+  "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.tar.xz": {
+    "sha256": "d926a06c63dd8ac7df3f86ee1ffc2ce2a3b81a2d168484e76b5b389aba8e56d0",
+    "size": 140064536,
+    "final_url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.tar.xz",
+    "retrieved_utc": "2026-09-13T01:56:35Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://cdn.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc"
+  },
+  "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.30.xz": {
+    "sha256": "e530daf2bc6c6db477382c9653508b5c83e81df6642ea6f0976f09ff34ff1440",
+    "size": 1872228,
+    "final_url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.30.xz",
+    "retrieved_utc": "2026-09-13T01:56:34Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://cdn.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc"
+  },
+  "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.60.xz": {
+    "sha256": "68a5627a4142fed06c1ba6e28b70d566727a56d6c07230229066cff09bfb9763",
+    "size": 3314136,
+    "final_url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.60.xz",
+    "retrieved_utc": "2026-09-13T01:56:33Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://cdn.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc"
+  },
+  "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.90.xz": {
+    "sha256": "d76132ce478187cd14974b1a6b12bf64f57ae9204ec510e2f80a567963b910a6",
+    "size": 4274884,
+    "final_url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/patch-6.6.90.xz",
+    "retrieved_utc": "2026-09-13T01:56:33Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://cdn.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/1fa76d2a42f05509a01c3e50a9424d16cfa8726d": {
+    "sha256": "a9b0f6c3a927ca6160edd11e6f505f24ed0358067f8a2fc15adb9369bfa95d43",
+    "size": 584928,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/1fa76d2a42f05509a01c3e50a9424d16cfa8726d",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/2057023dc5eb2b2ab28d03d2b902f3b57ce93165": {
+    "sha256": "6b1fcc94d1d1449f9c6c99c401889685bd8d876d69a1b613d92bee07b0a2b756",
+    "size": 584794,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/2057023dc5eb2b2ab28d03d2b902f3b57ce93165",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/23af5fb043f8e625294e210446090f17dbd7e3bf": {
+    "sha256": "213f8f14c7973d5ee8cf998af73d11d8513af728ac135128c6d7d4b915892826",
+    "size": 584125,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/23af5fb043f8e625294e210446090f17dbd7e3bf",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/2c3897585d3a6d0709954bc389bed3d957878048": {
+    "sha256": "461f68d39aec1479e948c7e689b44f41164c64d894195400ea10e06498094d7a",
+    "size": 584901,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/2c3897585d3a6d0709954bc389bed3d957878048",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/44aa5a417d396ec75613c876e0eb5e4ba2f03b1d": {
+    "sha256": "5365fda2886503fb2e41890cd7e9e5ef411ec73ddae2a0cfc2e7d30d8af6c25b",
+    "size": 584882,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/44aa5a417d396ec75613c876e0eb5e4ba2f03b1d",
+    "retrieved_utc": "2026-09-13T01:56:31Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/5dec4b8e3755bcc0be27fb43bd20880d6da1c42b": {
+    "sha256": "4b0ee849b3993211fbf86c6d0ffd070573742ca6b4e9b4f8c6ab00f6431c71a8",
+    "size": 584116,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/5dec4b8e3755bcc0be27fb43bd20880d6da1c42b",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/67dd809a8097923a721305ce0632a9fb9f19cb57": {
+    "sha256": "78dc3699f0e76cac10475980d8e32f92bd6ba4588bc56102bdacec34275964ef",
+    "size": 584731,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/67dd809a8097923a721305ce0632a9fb9f19cb57",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/6c2a550e1ed190351707dbcb28d5085a89ac0710": {
+    "sha256": "c356ed544f2d43834450807d20e3a831e557a8f61a83e64afd6989dd952ca670",
+    "size": 584838,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/6c2a550e1ed190351707dbcb28d5085a89ac0710",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/6e9141a9ca39a7ffbb25bf0817d21895e486aacc": {
+    "sha256": "44e00a547994727157058c435140179e53c61a36f470f02f4c12e0bbbb6a1ea9",
+    "size": 584886,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/6e9141a9ca39a7ffbb25bf0817d21895e486aacc",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/827082a33ae7d86846a103ef14fb9ff297587049": {
+    "sha256": "d6fc9a035e68ee581922c81984e07abb16c64cc00a3635bf75a01209e240bf7f",
+    "size": 585279,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/827082a33ae7d86846a103ef14fb9ff297587049",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/8e8fc9c5039663bf0145d7ae292c4214da957d4f": {
+    "sha256": "e07dcf9219557a3d8bebc2884d566b7601524c31fe332ca59f5e328048a7047c",
+    "size": 584784,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/8e8fc9c5039663bf0145d7ae292c4214da957d4f",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/b9c774937fc285e6668be9823c4bf231a61fc4a8": {
+    "sha256": "6eb6664b630f878493bf08ff05189b1b1c0b0ac8b8570d46a5f81d1118646a31",
+    "size": 584857,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/b9c774937fc285e6668be9823c4bf231a61fc4a8",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/c8e4a84519ede79b330f9a9e2b072110d5bd0c8c": {
+    "sha256": "8d5c9c3f1dd60c705403a2994248cd37d1a3725d0fe51612a27c61f3887ede6b",
+    "size": 584894,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/c8e4a84519ede79b330f9a9e2b072110d5bd0c8c",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/e0a85678e112759f56f9e07d04a29f2eed6eb348": {
+    "sha256": "e9bbdca11ed13b61627c83da10a73ded548a6013b58092c65f520f6d4e7940d3",
+    "size": 584729,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/e0a85678e112759f56f9e07d04a29f2eed6eb348",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/e50df40a1967708b9781486b1c017e48040bceb0": {
+    "sha256": "099567088d923d17e324b76cd51afef5b372ba807c54f40e9179452f8eb4e376",
+    "size": 584956,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/e50df40a1967708b9781486b1c017e48040bceb0",
+    "retrieved_utc": "2026-09-13T01:56:31Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/f02a50a69da131269fe0d8460e08b1fceea04ca9": {
+    "sha256": "9f0c1f841ec691f44b7067a4ec19e106ada0ca35179e286827ec58c724822fa2",
+    "size": 584804,
+    "final_url": "https://codeload.github.com/BurntSushi/ripgrep/tar.gz/f02a50a69da131269fe0d8460e08b1fceea04ca9",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.12": {
+    "sha256": "760687665ab41a5cff9c40b1053c19572bcdaadef1194e5cba1b5e6f824686e7",
+    "size": 348294,
+    "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.12",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.13": {
+    "sha256": "d4e77a38f540f2c37f55758f2666655314f1f51c716fea5f279659940efdcf04",
+    "size": 354448,
+    "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.13",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.14": {
+    "sha256": "fb50a663eefdc76bafa80c82bc045af13b1363e8f45cec8b442007aef6a41343",
+    "size": 352028,
+    "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.14",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.15": {
+    "sha256": "5308fd4bd90cef7aa060558514de6a1a4a0819974a26e6ed13973c5f624c24b2",
+    "size": 352278,
+    "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.15",
+    "retrieved_utc": "2026-09-13T01:56:33Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.16": {
+    "sha256": "451131a92c55efc5457276807fc0c4c2c2707c9ee96ef90c47d68852d5384c6c",
+    "size": 353498,
+    "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.16",
+    "retrieved_utc": "2026-09-13T01:56:33Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.17": {
+    "sha256": "c91d1eeb7175c50d49f6ba2a25e69b46bd05cffb798382c19bfb202e467ec51c",
+    "size": 353748,
+    "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.17",
+    "retrieved_utc": "2026-09-13T01:56:33Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.18": {
+    "sha256": "3aa806844a03442c00769b83e99970be70fbef03735ff898f4811dd03b9f5ee5",
+    "size": 354726,
+    "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.18",
+    "retrieved_utc": "2026-09-13T01:56:33Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.19": {
+    "sha256": "7fa616e3046edfa7a28a32d5f9eacfd23f92900fe1f8ccd988c1662f30454562",
+    "size": 356247,
+    "final_url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/refs/tags/v1.7.19",
+    "retrieved_utc": "2026-09-13T01:56:33Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.10.0": {
+    "sha256": "537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b",
+    "size": 387114,
+    "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.10.0",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.0": {
+    "sha256": "f8b6d5662fa534bd61227d313535721ae41a68c9d84058b7b7d86e143572dcfb",
+    "size": 281743,
+    "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.0",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.1": {
+    "sha256": "f8377c89dad5c9f266edc0be9b73595296ecafd5bfa1000de148096c50052dc4",
+    "size": 285336,
+    "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.1",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.2": {
+    "sha256": "658ba6191fa44c92280d4aa2c271b0f4fbc0e34d249578dd05e50e76d0e5efcc",
+    "size": 305796,
+    "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.2",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.3": {
+    "sha256": "030644df4611007ff7dc962d981f390361e6c97a34e5cbc393ddfbe019ffe2c1",
+    "size": 320958,
+    "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.3",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.4": {
+    "sha256": "0b0e3aa07c8c063ddf40b082bdf7e37a1562bda40a0ff5272957f3e987e0e54b",
+    "size": 354063,
+    "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.4",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.0.0.tar.xz": {
+    "sha256": "759690f9a375a720f8bcce9f953897b0d93f31eed9649b74f846d54bbf63bbcc",
+    "size": 2576600,
+    "final_url": "https://curl.se/download/curl-8.0.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.0.1.tar.xz": {
+    "sha256": "0a381cd82f4d00a9a334438b8ca239afea5bfefcfa9a1025f2bf118e79e0b5f0",
+    "size": 2575544,
+    "final_url": "https://curl.se/download/curl-8.0.1.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:08Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.1.0.tar.xz": {
+    "sha256": "6bd80ad4f07187015911216ee7185b90d285ac5162aed1bded144f9f93232a3c",
+    "size": 2612568,
+    "final_url": "https://curl.se/download/curl-8.1.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:08Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.1.1.tar.xz": {
+    "sha256": "08a948e061929645597c1ef7194e07b308b22084ff03fa7400b465e6c05149e5",
+    "size": 2613348,
+    "final_url": "https://curl.se/download/curl-8.1.1.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:08Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.1.2.tar.xz": {
+    "sha256": "31b1118eb8bfd43cd95d9a3f146f814ff874f6ed3999b29d94f4d1e7dbac5ef6",
+    "size": 2612652,
+    "final_url": "https://curl.se/download/curl-8.1.2.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:08Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.10.0.tar.xz": {
+    "sha256": "e6b142f0e85e954759d37e26a3627e2278137595be80e3a860c4353e4335e5a0",
+    "size": 2729448,
+    "final_url": "https://curl.se/download/curl-8.10.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.10.1.tar.xz": {
+    "sha256": "73a4b0e99596a09fa5924a4fb7e4b995a85fda0d18a2c02ab9cf134bebce04ee",
+    "size": 2726748,
+    "final_url": "https://curl.se/download/curl-8.10.1.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.11.0.tar.xz": {
+    "sha256": "db59cf0d671ca6e7f5c2c5ec177084a33a79e04c97e71cf183a5cdea235054eb",
+    "size": 2750684,
+    "final_url": "https://curl.se/download/curl-8.11.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.11.1.tar.xz": {
+    "sha256": "c7ca7db48b0909743eaef34250da02c19bc61d4f1dcedd6603f109409536ab56",
+    "size": 2751236,
+    "final_url": "https://curl.se/download/curl-8.11.1.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.12.0.tar.xz": {
+    "sha256": "9a4628c764be6b1a9909567c13e8e771041609df43b2158fcac4e05ea7097e5d",
+    "size": 2777552,
+    "final_url": "https://curl.se/download/curl-8.12.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.12.1.tar.xz": {
+    "sha256": "0341f1ed97a26c811abaebd37d62b833956792b7607ea3f15d001613c76de202",
+    "size": 2768160,
+    "final_url": "https://curl.se/download/curl-8.12.1.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.13.0.tar.xz": {
+    "sha256": "4a093979a3c2d02de2fbc00549a32771007f2e78032c6faa5ecd2f7a9e152025",
+    "size": 2773628,
+    "final_url": "https://curl.se/download/curl-8.13.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.14.0.tar.xz": {
+    "sha256": "b3634cfc538c72c9c6ca794ef4c73d7fdbd171e8dee2db837d83a5e45231002a",
+    "size": 2819512,
+    "final_url": "https://curl.se/download/curl-8.14.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.14.1.tar.xz": {
+    "sha256": "f4619a1e2474c4bbfedc88a7c2191209c8334b48fa1f4e53fd584cc12e9120dd",
+    "size": 2817248,
+    "final_url": "https://curl.se/download/curl-8.14.1.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.15.0.tar.xz": {
+    "sha256": "6cd0a8a5b126ddfda61c94dc2c3fc53481ba7a35461cf7c5ab66aa9d6775b609",
+    "size": 2773156,
+    "final_url": "https://curl.se/download/curl-8.15.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.16.0.tar.xz": {
+    "sha256": "40c8cddbcb6cc6251c03dea423a472a6cea4037be654ba5cf5dec6eb2d22ff1d",
+    "size": 2788632,
+    "final_url": "https://curl.se/download/curl-8.16.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.17.0.tar.xz": {
+    "sha256": "955f6e729ad6b3566260e8fef68620e76ba3c31acf0a18524416a185acf77992",
+    "size": 2797000,
+    "final_url": "https://curl.se/download/curl-8.17.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.18.0.tar.xz": {
+    "sha256": "40df79166e74aa20149365e11ee4c798a46ad57c34e4f68fd13100e2c9a91946",
+    "size": 2801444,
+    "final_url": "https://curl.se/download/curl-8.18.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.19.0.tar.xz": {
+    "sha256": "4eb41489790d19e190d7ac7e18e82857cdd68af8f4e66b292ced562d333f11df",
+    "size": 2787584,
+    "final_url": "https://curl.se/download/curl-8.19.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.2.0.tar.xz": {
+    "sha256": "2859ec79e2cd96e976a99493547359b8001af1d1e21f3a3a3b846544ef54500f",
+    "size": 2637208,
+    "final_url": "https://curl.se/download/curl-8.2.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:08Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.2.1.tar.xz": {
+    "sha256": "dd322f6bd0a20e6cebdfd388f69e98c3d183bed792cf4713c8a7ef498cba4894",
+    "size": 2631932,
+    "final_url": "https://curl.se/download/curl-8.2.1.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.3.0.tar.xz": {
+    "sha256": "376d627767d6c4f05105ab6d497b0d9aba7111770dd9d995225478209c37ea63",
+    "size": 2641764,
+    "final_url": "https://curl.se/download/curl-8.3.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.4.0.tar.xz": {
+    "sha256": "16c62a9c4af0f703d28bda6d7bbf37ba47055ad3414d70dec63e2e6336f2a82d",
+    "size": 2658376,
+    "final_url": "https://curl.se/download/curl-8.4.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.5.0.tar.xz": {
+    "sha256": "42ab8db9e20d8290a3b633e7fbb3cec15db34df65fd1015ef8ac1e4723750eeb",
+    "size": 2658520,
+    "final_url": "https://curl.se/download/curl-8.5.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.6.0.tar.xz": {
+    "sha256": "3ccd55d91af9516539df80625f818c734dc6f2ecf9bada33c76765e99121db15",
+    "size": 2630108,
+    "final_url": "https://curl.se/download/curl-8.6.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.7.0.tar.xz": {
+    "sha256": "0df1f686f0f55c61ec5fb5f833f326f4d63c22c3239facfe42da93489ca20fab",
+    "size": 2379056,
+    "final_url": "https://curl.se/download/curl-8.7.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.7.1.tar.xz": {
+    "sha256": "6fea2aac6a4610fbd0400afb0bcddbe7258a64c63f1f68e5855ebc0c659710cd",
+    "size": 2707016,
+    "final_url": "https://curl.se/download/curl-8.7.1.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.8.0.tar.xz": {
+    "sha256": "0f58bb95fc330c8a46eeb3df5701b0d90c9d9bfcc42bd1cd08791d12551d4400",
+    "size": 2748860,
+    "final_url": "https://curl.se/download/curl-8.8.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.9.0.tar.xz": {
+    "sha256": "ff09b2791ca56d25fd5c3f3a4927dce7c8a9dc4182200c487ca889fba1fdd412",
+    "size": 2781828,
+    "final_url": "https://curl.se/download/curl-8.9.0.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://curl.se/download/curl-8.9.1.tar.xz": {
+    "sha256": "f292f6cc051d5bbabf725ef85d432dfeacc8711dd717ea97612ae590643801e5",
+    "size": 2782364,
+    "final_url": "https://curl.se/download/curl-8.9.1.tar.xz",
+    "retrieved_utc": "2026-09-13T02:21:09Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://download.redis.io/releases/redis-7.2.0.tar.gz": {
+    "sha256": "8b12e242647635b419a0e1833eda02b65bf64e39eb9e509d9db4888fb3124943",
+    "size": 3381269,
+    "final_url": "https://download.redis.io/releases/redis-7.2.0.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://raw.githubusercontent.com/redis/redis-hashes/master/README"
+  },
+  "https://download.redis.io/releases/redis-7.2.1.tar.gz": {
+    "sha256": "5c76d990a1b1c5f949bcd1eed90d0c8a4f70369bdbdcb40288c561ddf88967a4",
+    "size": 3383319,
+    "final_url": "https://download.redis.io/releases/redis-7.2.1.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://raw.githubusercontent.com/redis/redis-hashes/master/README"
+  },
+  "https://download.redis.io/releases/redis-7.2.2.tar.gz": {
+    "sha256": "ca999be08800edc6d265379c4c7aafad92f0ee400692e4e2d69829ab4b4c3d08",
+    "size": 3384618,
+    "final_url": "https://download.redis.io/releases/redis-7.2.2.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://raw.githubusercontent.com/redis/redis-hashes/master/README"
+  },
+  "https://download.redis.io/releases/redis-7.2.3.tar.gz": {
+    "sha256": "3e2b196d6eb4ddb9e743088bfc2915ccbb42d40f5a8a3edd8cb69c716ec34be7",
+    "size": 3384816,
+    "final_url": "https://download.redis.io/releases/redis-7.2.3.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://raw.githubusercontent.com/redis/redis-hashes/master/README"
+  },
+  "https://download.redis.io/releases/redis-7.2.4.tar.gz": {
+    "sha256": "8d104c26a154b29fd67d6568b4f375212212ad41e0c2caa3d66480e78dbd3b59",
+    "size": 3386861,
+    "final_url": "https://download.redis.io/releases/redis-7.2.4.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://raw.githubusercontent.com/redis/redis-hashes/master/README"
+  },
+  "https://download.redis.io/releases/redis-7.2.5.tar.gz": {
+    "sha256": "5981179706f8391f03be91d951acafaeda91af7fac56beffb2701963103e423d",
+    "size": 3386454,
+    "final_url": "https://download.redis.io/releases/redis-7.2.5.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://raw.githubusercontent.com/redis/redis-hashes/master/README"
+  },
+  "https://download.redis.io/releases/redis-7.2.6.tar.gz": {
+    "sha256": "fb10d67a2fe2b4556f6cb840064dd6e6e3175ce8ca035f0726990ec2da9f3d0e",
+    "size": 3391023,
+    "final_url": "https://download.redis.io/releases/redis-7.2.6.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://raw.githubusercontent.com/redis/redis-hashes/master/README"
+  },
+  "https://download.redis.io/releases/redis-7.2.7.tar.gz": {
+    "sha256": "72c081e3b8cfae7144273d26d76736f08319000af46c01515cad5d29765cead5",
+    "size": 3394075,
+    "final_url": "https://download.redis.io/releases/redis-7.2.7.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://raw.githubusercontent.com/redis/redis-hashes/master/README"
+  },
+  "https://download.redis.io/releases/redis-7.2.8.tar.gz": {
+    "sha256": "6be4fdfcdb2e5ac91454438246d00842d2671f792673390e742dfcaf1bf01574",
+    "size": 3394108,
+    "final_url": "https://download.redis.io/releases/redis-7.2.8.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://raw.githubusercontent.com/redis/redis-hashes/master/README"
+  },
+  "https://download.redis.io/releases/redis-7.2.9.tar.gz": {
+    "sha256": "2343cc49db3beb9d2925a44e13032805a608821a58f25bd874c84881115a20b7",
+    "size": 3394517,
+    "final_url": "https://download.redis.io/releases/redis-7.2.9.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://raw.githubusercontent.com/redis/redis-hashes/master/README"
+  },
+  "https://ftp.postgresql.org/pub/source/v17.6/postgresql-17.6.tar.bz2": {
+    "sha256": "e0630a3600aea27511715563259ec2111cd5f4353a4b040e0be827f94cd7a8b0",
+    "size": 21623975,
+    "final_url": "https://ftp.postgresql.org/pub/source/v17.6/postgresql-17.6.tar.bz2",
+    "retrieved_utc": "2026-09-13T01:56:36Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://ftp.postgresql.org/pub/source/v17.6/postgresql-17.6.tar.bz2.sha256"
+  },
+  "https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz": {
+    "sha256": "5194fbfa781fcf45b98c5e849651aa7b3b0a008c6b72d4a0db760f3002291e94",
+    "size": 1851389,
+    "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/7385d700-b4ba-11eb-87f8-62322d21266f",
+    "retrieved_utc": "2026-09-13T01:56:28Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz.sha256"
+  },
+  "https://github.com/facebook/zstd/releases/download/v1.5.1/zstd-1.5.1.tar.gz": {
+    "sha256": "e28b2f2ed5710ea0d3a1ecac3f6a947a016b972b9dd30242369010e5f53d7002",
+    "size": 1934669,
+    "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/e94bd703-904d-4c78-9c60-d3fe0364faf4",
+    "retrieved_utc": "2026-09-13T01:56:28Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://github.com/facebook/zstd/releases/download/v1.5.1/zstd-1.5.1.tar.gz.sha256"
+  },
+  "https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.tar.gz": {
+    "sha256": "7c42d56fac126929a6a85dbc73ff1db2411d04f104fae9bdea51305663a83fd0",
+    "size": 1936664,
+    "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/83dbeeaa-8f94-4b5e-9cb2-140542eff5d9",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.tar.gz.sha256"
+  },
+  "https://github.com/facebook/zstd/releases/download/v1.5.4/zstd-1.5.4.tar.gz": {
+    "sha256": "0f470992aedad543126d06efab344dc5f3e171893810455787d38347343a4424",
+    "size": 2161536,
+    "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/b9615440-5e25-4d0d-aa9d-323580aae8ea",
+    "retrieved_utc": "2026-09-13T01:56:28Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://github.com/facebook/zstd/releases/download/v1.5.4/zstd-1.5.4.tar.gz.sha256"
+  },
+  "https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz": {
+    "sha256": "9c4396cc829cfae319a6e2615202e82aad41372073482fce286fac78646d3ee4",
+    "size": 2368543,
+    "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/c042a5d4-24be-4250-916b-747c2be5d37e",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz.sha256"
+  },
+  "https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz": {
+    "sha256": "8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1",
+    "size": 2406875,
+    "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/5a6a726c-abce-4c08-8237-428805ddec52",
+    "retrieved_utc": "2026-09-13T01:56:28Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz.sha256"
+  },
+  "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz": {
+    "sha256": "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3",
+    "size": 2434947,
+    "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/99c899ba-527a-4d01-94e1-4b246cc9b551",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz.sha256"
+  },
+  "https://go.dev/dl/go1.25.0.src.tar.gz": {
+    "sha256": "4bd01e91297207bfa450ea40d4d5a93b1b531a5e438473b2a06e18e077227225",
+    "size": 31974753,
+    "final_url": "https://dl.google.com/go/go1.25.0.src.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:34Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: declared by https://go.dev/dl/?mode=json&include=all"
+  },
+  "https://musl.libc.org/releases/musl-1.2.0.tar.gz": {
+    "sha256": "c6de7b191139142d3f9a7b5b702c9cae1b5ee6e7f57e582da9328629408fd4e8",
+    "size": 1035265,
+    "final_url": "https://musl.libc.org/releases/musl-1.2.0.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:33Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://musl.libc.org/releases/musl-1.2.1.tar.gz": {
+    "sha256": "68af6e18539f646f9c41a3a2bb25be4a5cfa5a8f65f0bb647fd2bbfdf877e84b",
+    "size": 1047481,
+    "final_url": "https://musl.libc.org/releases/musl-1.2.1.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:34Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://musl.libc.org/releases/musl-1.2.2.tar.gz": {
+    "sha256": "9b969322012d796dc23dda27a35866034fa67d8fb67e0e2c45c913c3d43219dd",
+    "size": 1055220,
+    "final_url": "https://musl.libc.org/releases/musl-1.2.2.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:34Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://musl.libc.org/releases/musl-1.2.3.tar.gz": {
+    "sha256": "7d5b0b6062521e4627e099e4c9dc8248d32a30285e959b7eecaa780cf8cfd4a4",
+    "size": 1058642,
+    "final_url": "https://musl.libc.org/releases/musl-1.2.3.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:34Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://musl.libc.org/releases/musl-1.2.4.tar.gz": {
+    "sha256": "7a35eae33d5372a7c0da1188de798726f68825513b7ae3ebe97aaaa52114f039",
+    "size": 1063758,
+    "final_url": "https://musl.libc.org/releases/musl-1.2.4.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:34Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://musl.libc.org/releases/musl-1.2.5.tar.gz": {
+    "sha256": "a9a118bbe84d8764da0ea0d28b3ab3fae8477fc7e4085d90102b8596fc7c75e4",
+    "size": 1080786,
+    "final_url": "https://musl.libc.org/releases/musl-1.2.5.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:34Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://raw.githubusercontent.com/microsoft/TypeScript/c63de15a992d37f0d6cec03ac7631872838602cb/package-lock.json": {
+    "sha256": "472c30604eef217bec1b807a81590f07cd5cad765e57757948606c6b727a3642",
+    "size": 366720,
+    "final_url": "https://raw.githubusercontent.com/microsoft/TypeScript/c63de15a992d37f0d6cec03ac7631872838602cb/package-lock.json",
+    "retrieved_utc": "2026-09-13T01:56:31Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://raw.githubusercontent.com/microsoft/TypeScript/c63de15a992d37f0d6cec03ac7631872838602cb/package.json": {
+    "sha256": "4532f4524fee211a60447f20f049bb5e4a8078d939edd4e194a3c4de006b1f07",
+    "size": 3561,
+    "final_url": "https://raw.githubusercontent.com/microsoft/TypeScript/c63de15a992d37f0d6cec03ac7631872838602cb/package.json",
+    "retrieved_utc": "2026-09-13T01:56:31Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://raw.githubusercontent.com/mozilla/pdf.js/f9bea397f817100a186d0ced2aa3d4b85813b637/package-lock.json": {
+    "sha256": "0f751bd7ead2e8bce251c6bcace778f411ed40d9d0fd5dcbcf1aaeb81ee6dde1",
+    "size": 509657,
+    "final_url": "https://raw.githubusercontent.com/mozilla/pdf.js/f9bea397f817100a186d0ced2aa3d4b85813b637/package-lock.json",
+    "retrieved_utc": "2026-09-13T01:56:36Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://raw.githubusercontent.com/mozilla/pdf.js/f9bea397f817100a186d0ced2aa3d4b85813b637/package.json": {
+    "sha256": "ed54f512e39c009282b0010dbec4cc5ac77f66978cb2861ece00759ba79f6c4b",
+    "size": 1995,
+    "final_url": "https://raw.githubusercontent.com/mozilla/pdf.js/f9bea397f817100a186d0ced2aa3d4b85813b637/package.json",
+    "retrieved_utc": "2026-09-13T01:56:36Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://raw.githubusercontent.com/twbs/bootstrap/25aa8cc0b32f0d1a54be575347e6d84b70b1acd7/package-lock.json": {
+    "sha256": "cfc62dfb0bc981c3aae8538121e888a93536613e576882da3dcc8534c1949b2c",
+    "size": 707514,
+    "final_url": "https://raw.githubusercontent.com/twbs/bootstrap/25aa8cc0b32f0d1a54be575347e6d84b70b1acd7/package-lock.json",
+    "retrieved_utc": "2026-09-13T01:56:33Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://raw.githubusercontent.com/twbs/bootstrap/25aa8cc0b32f0d1a54be575347e6d84b70b1acd7/package.json": {
+    "sha256": "49eadf815d086016c72c42dc46bffb2c9afc0021e97edbef750ef1f21fd62d8d",
+    "size": 10476,
+    "final_url": "https://raw.githubusercontent.com/twbs/bootstrap/25aa8cc0b32f0d1a54be575347e6d84b70b1acd7/package.json",
+    "retrieved_utc": "2026-09-13T01:56:33Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.lua.org/ftp/lua-5.4.0.tar.gz": {
+    "sha256": "eac0836eb7219e421a96b7ee3692b93f0629e4cdb0c788432e3d10ce9ed47e28",
+    "size": 349308,
+    "final_url": "https://www.lua.org/ftp/lua-5.4.0.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:35Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://www.lua.org/ftp/"
+  },
+  "https://www.lua.org/ftp/lua-5.4.1.tar.gz": {
+    "sha256": "4ba786c3705eb9db6567af29c91a01b81f1c0ac3124fdbf6cd94bdd9e53cca7d",
+    "size": 353965,
+    "final_url": "https://www.lua.org/ftp/lua-5.4.1.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:35Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://www.lua.org/ftp/"
+  },
+  "https://www.lua.org/ftp/lua-5.4.2.tar.gz": {
+    "sha256": "11570d97e9d7303c0a59567ed1ac7c648340cd0db10d5fd594c09223ef2f524f",
+    "size": 353472,
+    "final_url": "https://www.lua.org/ftp/lua-5.4.2.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:35Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://www.lua.org/ftp/"
+  },
+  "https://www.lua.org/ftp/lua-5.4.3.tar.gz": {
+    "sha256": "f8612276169e3bfcbcfb8f226195bfc6e466fe13042f1076cbde92b7ec96bbfb",
+    "size": 358216,
+    "final_url": "https://www.lua.org/ftp/lua-5.4.3.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:35Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://www.lua.org/ftp/"
+  },
+  "https://www.lua.org/ftp/lua-5.4.4.tar.gz": {
+    "sha256": "164c7849653b80ae67bec4b7473b884bf5cc8d2dca05653475ec2ed27b9ebf61",
+    "size": 360876,
+    "final_url": "https://www.lua.org/ftp/lua-5.4.4.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:36Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://www.lua.org/ftp/"
+  },
+  "https://www.lua.org/ftp/lua-5.4.5.tar.gz": {
+    "sha256": "59df426a3d50ea535a460a452315c4c0d4e1121ba72ff0bdde58c2ef31d6f444",
+    "size": 363316,
+    "final_url": "https://www.lua.org/ftp/lua-5.4.5.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:36Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://www.lua.org/ftp/"
+  },
+  "https://www.lua.org/ftp/lua-5.4.6.tar.gz": {
+    "sha256": "7d5ea1b9cb6aa0b59ca3dde1c6adcb57ef83a1ba8e5432c0ecd06bf439b3ad88",
+    "size": 363329,
+    "final_url": "https://www.lua.org/ftp/lua-5.4.6.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:36Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://www.lua.org/ftp/"
+  },
+  "https://www.lua.org/ftp/lua-5.4.7.tar.gz": {
+    "sha256": "9fbf5e28ef86c69858f6d3d34eccc32e911c1a28b4120ff3e84aaa70cfbf1e30",
+    "size": 374097,
+    "final_url": "https://www.lua.org/ftp/lua-5.4.7.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:36Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://www.lua.org/ftp/"
+  },
+  "https://www.lua.org/ftp/lua-5.4.8.tar.gz": {
+    "sha256": "4f18ddae154e793e46eeab727c59ef1c0c0c2b744e7b94219710d76f530629ae",
+    "size": 374332,
+    "final_url": "https://www.lua.org/ftp/lua-5.4.8.tar.gz",
+    "retrieved_utc": "2026-09-13T01:56:36Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match: https://www.lua.org/ftp/"
+  },
+  "https://www.python.org/ftp/python/3.12.0/Python-3.12.0.tar.xz": {
+    "sha256": "795c34f44df45a0e9b9710c8c71c15c671871524cd412ca14def212e8ccb155d",
+    "size": 20575020,
+    "final_url": "https://www.python.org/ftp/python/3.12.0/Python-3.12.0.tar.xz",
+    "retrieved_utc": "2026-09-13T01:56:31Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match (md5 only; python.org API publishes no sha256): https://www.python.org/api/v2/downloads/"
+  },
+  "https://www.python.org/ftp/python/3.12.1/Python-3.12.1.tar.xz": {
+    "sha256": "8dfb8f426fcd226657f9e2bd5f1e96e53264965176fa17d32658e873591aeb21",
+    "size": 20583448,
+    "final_url": "https://www.python.org/ftp/python/3.12.1/Python-3.12.1.tar.xz",
+    "retrieved_utc": "2026-09-13T01:56:31Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match (md5 only; python.org API publishes no sha256): https://www.python.org/api/v2/downloads/"
+  },
+  "https://www.python.org/ftp/python/3.12.2/Python-3.12.2.tar.xz": {
+    "sha256": "be28112dac813d2053545c14bf13a16401a21877f1a69eb6ea5d84c4a0f3d870",
+    "size": 20591308,
+    "final_url": "https://www.python.org/ftp/python/3.12.2/Python-3.12.2.tar.xz",
+    "retrieved_utc": "2026-09-13T01:56:31Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match (md5 only; python.org API publishes no sha256): https://www.python.org/api/v2/downloads/"
+  },
+  "https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz": {
+    "sha256": "56bfef1fdfc1221ce6720e43a661e3eb41785dd914ce99698d8c7896af4bdaa1",
+    "size": 20625068,
+    "final_url": "https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz",
+    "retrieved_utc": "2026-09-13T01:56:31Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match (md5 only; python.org API publishes no sha256): https://www.python.org/api/v2/downloads/"
+  },
+  "https://www.python.org/ftp/python/3.12.4/Python-3.12.4.tar.xz": {
+    "sha256": "f6d419a6d8743ab26700801b4908d26d97e8b986e14f95de31b32de2b0e79554",
+    "size": 20659356,
+    "final_url": "https://www.python.org/ftp/python/3.12.4/Python-3.12.4.tar.xz",
+    "retrieved_utc": "2026-09-13T01:56:35Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match (md5 only; python.org API publishes no sha256): https://www.python.org/api/v2/downloads/"
+  },
+  "https://www.python.org/ftp/python/3.12.5/Python-3.12.5.tar.xz": {
+    "sha256": "fa8a2e12c5e620b09f53e65bcd87550d2e5a1e2e04bf8ba991dcc55113876397",
+    "size": 20422396,
+    "final_url": "https://www.python.org/ftp/python/3.12.5/Python-3.12.5.tar.xz",
+    "retrieved_utc": "2026-09-13T01:56:32Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "match (md5 only; python.org API publishes no sha256): https://www.python.org/api/v2/downloads/"
+  },
+  "https://www.sqlite.org/2024/sqlite-amalgamation-3450000.zip": {
+    "sha256": "bde30d13ebdf84926ddd5e8b6df145be03a577a48fd075a087a5dd815bcdf740",
+    "size": 2729858,
+    "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450000.zip",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip": {
+    "sha256": "5592243caf28b2cdef41e6ab58d25d653dfc53deded8450eb66072c929f030c4",
+    "size": 2730697,
+    "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2024/sqlite-amalgamation-3450200.zip": {
+    "sha256": "65230414820d43a6d1445d1d98cfe57e8eb9f7ac0d6a96ad6932e0647cce51db",
+    "size": 2732008,
+    "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450200.zip",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2024/sqlite-amalgamation-3450300.zip": {
+    "sha256": "ea170e73e447703e8359308ca2e4366a3ae0c4304a8665896f068c736781c651",
+    "size": 2733959,
+    "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3450300.zip",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2024/sqlite-amalgamation-3460000.zip": {
+    "sha256": "712a7d09d2a22652fb06a49af516e051979a3984adb067da86760e60ed51a7f5",
+    "size": 2763740,
+    "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3460000.zip",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2024/sqlite-amalgamation-3460100.zip": {
+    "sha256": "77823cb110929c2bcb0f5d48e4833b5c59a8a6e40cdea3936b99e199dbbe5784",
+    "size": 2764032,
+    "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3460100.zip",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2024/sqlite-amalgamation-3470000.zip": {
+    "sha256": "2842fddbb1cc33f66c7da998a57535f14a6bfee159676a07bb4bf3e59375d93e",
+    "size": 2810589,
+    "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3470000.zip",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2024/sqlite-amalgamation-3470100.zip": {
+    "sha256": "9da21e6b14ef6a943cdc30f973df259fb390bb4483f77e7f171b9b6e977e5458",
+    "size": 2811435,
+    "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3470100.zip",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2024/sqlite-amalgamation-3470200.zip": {
+    "sha256": "aa73d8748095808471deaa8e6f34aa700e37f2f787f4425744f53fdd15a89c40",
+    "size": 2811504,
+    "final_url": "https://www.sqlite.org/2024/sqlite-amalgamation-3470200.zip",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2025/sqlite-amalgamation-3480000.zip": {
+    "sha256": "d9a15a42db7c78f88fe3d3c5945acce2f4bfe9e4da9f685cd19f6ea1d40aa884",
+    "size": 2820489,
+    "final_url": "https://www.sqlite.org/2025/sqlite-amalgamation-3480000.zip",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2025/sqlite-amalgamation-3490000.zip": {
+    "sha256": "cb6851ebad74913672014c20f642bbd7883552c4747780583a54ee1cd493f13b",
+    "size": 2826299,
+    "final_url": "https://www.sqlite.org/2025/sqlite-amalgamation-3490000.zip",
+    "retrieved_utc": "2026-09-13T01:56:29Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2025/sqlite-amalgamation-3490100.zip": {
+    "sha256": "6cebd1d8403fc58c30e93939b246f3e6e58d0765a5cd50546f16c00fd805d2c3",
+    "size": 2826319,
+    "final_url": "https://www.sqlite.org/2025/sqlite-amalgamation-3490100.zip",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2025/sqlite-amalgamation-3490200.zip": {
+    "sha256": "921fc725517a694df7df38a2a3dfede6684024b5788d9de464187c612afb5918",
+    "size": 2826584,
+    "final_url": "https://www.sqlite.org/2025/sqlite-amalgamation-3490200.zip",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  },
+  "https://www.sqlite.org/2025/sqlite-amalgamation-3500000.zip": {
+    "sha256": "f196539ae448ecb304f05598d8614b125ace159a63a980dca691e066250d7fa2",
+    "size": 2844474,
+    "final_url": "https://www.sqlite.org/2025/sqlite-amalgamation-3500000.zip",
+    "retrieved_utc": "2026-09-13T01:56:30Z",
+    "retrieval_date": "2026-09-12",
+    "published_check": "none-published"
+  }
+}

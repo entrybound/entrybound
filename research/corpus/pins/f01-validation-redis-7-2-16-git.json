@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f01-validation-redis-7-2-16-git",
+  "inputs": {},
+  "output": {
+    "materialization_key": "b6f5fe8e721dc67dd87789804fd505f0f3d2907ea76ae853926c20d99f2f612f",
+    "logical_tree_sha256": "62b48c6c43a30ec32c08fbba0fd7fff05634cbca88dcde18a72fd2277fd211fa",
+    "pinned_utc": "2026-09-13T02:04:48Z"
+  },
+  "history": []
+}

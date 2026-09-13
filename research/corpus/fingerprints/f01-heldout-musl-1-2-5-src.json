@@ -1,0 +1,81 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f01-heldout-musl-1-2-5-src",
+  "family": "F01",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "musl",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "52797feeef310585368cfb61dc07fa8527c54d54831d909e9457c74cefe07e85",
+  "materialization_key": "5da3610e41b866656a97bc149161fce9a6134b448c6597a12ad3b2cf929f5dd9",
+  "materialized_utc": "2026-09-13T02:07:02Z",
+  "materialized_relpath": "heldout/f01-heldout-musl-1-2-5-src",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "b304b49d6c1e79fa1b31911cb9e17917c50b19ac091a4a1d93f1ce8e4430c3cf",
+    "pinned_utc": "2026-09-13T02:07:02Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 3481629,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "musl",
+        "url": "https://musl.libc.org/releases/musl-1.2.5.tar.gz",
+        "final_url": "https://musl.libc.org/releases/musl-1.2.5.tar.gz",
+        "sha256": "a9a118bbe84d8764da0ea0d28b3ab3fae8477fc7e4085d90102b8596fc7c75e4",
+        "size": 1080786,
+        "retrieved_utc": "2026-09-13T01:56:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "musl-1.2.5.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "musl",
+        "strip_components": 1
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "7a0e52db37d852ff0068d371aee06a88ce8ff34dd5cc80da42c8f0527000e93e",
+    "logical_tree_sha256": "b304b49d6c1e79fa1b31911cb9e17917c50b19ac091a4a1d93f1ce8e4430c3cf",
+    "content_tree_sha256": "47308d2b073986e077864399dee5a3f074219cab7307110917b0586fe4ac24ad",
+    "extended_tree_sha256": "88c26a96f0ed0be6212f93821f590cb5eff902538106ebda1dec012c9abf73f1",
+    "bytes": 3481629,
+    "counts": {
+      "objects": 2933,
+      "files": 2697,
+      "dirs": 235,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

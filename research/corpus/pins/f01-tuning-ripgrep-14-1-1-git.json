@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f01-tuning-ripgrep-14-1-1-git",
+  "inputs": {},
+  "output": {
+    "materialization_key": "4898d78d984d06050677130220fb0eb56f9d7368dc00975ed1525dd610f3e4b9",
+    "logical_tree_sha256": "3d10cb8fe1533d5552d6d8ac8141aa4bcc6fcdc85e566da2061def81a65aaaae",
+    "pinned_utc": "2026-09-13T02:04:36Z"
+  },
+  "history": []
+}

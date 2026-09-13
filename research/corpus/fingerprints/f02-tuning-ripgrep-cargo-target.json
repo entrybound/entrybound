@@ -1,0 +1,162 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f02-tuning-ripgrep-cargo-target",
+  "family": "F02",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "ripgrep",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "f908aa89ebd25920852df0681fbc7cd7f1841b12fa8a1a2e41d3a044093a5413",
+  "materialization_key": "2f88ada40a6a6bdb98634059657148b3237e34191ce8e9d8645a48f70d1d2d8f",
+  "materialized_utc": "2026-09-13T02:09:46Z",
+  "materialized_relpath": "corpus/tuning/f02-tuning-ripgrep-cargo-target",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 686740446,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "from_items": [
+      {
+        "item_id": "f01-tuning-ripgrep-14-1-1-git",
+        "logical_tree_sha256": "3d10cb8fe1533d5552d6d8ac8141aa4bcc6fcdc85e566da2061def81a65aaaae"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "from_item": "f01-tuning-ripgrep-14-1-1-git"
+        },
+        "env": {
+          "RUSTUP_TOOLCHAIN": "stable",
+          "CARGO_HOME": "{cache}/cargo-home",
+          "CARGO_TERM_COLOR": "never",
+          "CARGO_TERM_PROGRESS_WHEN": "never",
+          "CARGO_TARGET_DIR": "{build}/target"
+        },
+        "expect": [
+          [
+            [
+              "rustc",
+              "--version"
+            ],
+            "rustc 1.98.1 (48a229cea 2026-09-01)"
+          ],
+          [
+            [
+              "cargo",
+              "--version"
+            ],
+            "cargo 1.98.1"
+          ]
+        ],
+        "jobs": 16,
+        "commands": [
+          {
+            "argv": [
+              "cargo",
+              "fetch",
+              "--locked"
+            ]
+          },
+          {
+            "argv": [
+              "cargo",
+              "build",
+              "--locked",
+              "-j",
+              "{jobs}"
+            ]
+          },
+          {
+            "argv": [
+              "cargo",
+              "test",
+              "--locked",
+              "--no-run",
+              "-j",
+              "{jobs}"
+            ]
+          },
+          {
+            "argv": [
+              "cargo",
+              "build",
+              "--locked",
+              "--release",
+              "-j",
+              "{jobs}"
+            ]
+          }
+        ],
+        "capture": [
+          {
+            "from": "{build}/target",
+            "to": "target"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "2445f2952e67f14730a4b1f9d0a386d49dbe6edddfcff7d96411a516b7091226",
+    "logical_tree_sha256": "21b5767261cf8321f285ffed0725cf731abb9bd33f59c8ae954aa5dac3eeb64d",
+    "content_tree_sha256": "1a043f45b2202fda5c92b787af9984bb90a135dc9564ea275195411b1fe84fd2",
+    "extended_tree_sha256": "23277440f26ec1098cf937e7a2fc562bbeff64f52134ecfee28576bd97535345",
+    "bytes": 686740446,
+    "bytes_all_paths": 831061841,
+    "allocated_bytes": 691400704,
+    "counts": {
+      "objects": 2185,
+      "files": 2008,
+      "unique_file_inodes": 1985,
+      "dirs": 176,
+      "symlinks": 0,
+      "hardlink_groups": 23,
+      "hardlink_extra_paths": 23,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 6,
+      "max_name_length_bytes": 46,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 132,
+        "mean": 96.829,
+        "p50": 116,
+        "p95": 126
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f18-heldout-musl-releases-1-2-x",
+  "inputs": {},
+  "output": {
+    "materialization_key": "c555ec1a22313fb67a3fe316538dac6a54eb483abc63656b609cead94346fecd",
+    "logical_tree_sha256": "26d0f7fef6136ea49a0a85c2480fee7c623b792466ee0fdb58c65f9830e474ea",
+    "pinned_utc": "2026-09-13T02:10:49Z"
+  },
+  "history": []
+}

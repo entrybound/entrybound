@@ -110,3 +110,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-13T02:28Z — Corpus g3-data committed: 54 items F05-F08 (tuning/validation/held-out); gaps: no large validation items, F08 validation lacks real-content DBs, F07/F08 held-out have 2 real + 1 generated groups; several upstreams are unstable (pinned bytes cached).
 - 2026-09-13T02:30Z — Phase A: code-cli extraction final (36/36 slices); integrity cluster merged.
 - 2026-09-13T02:32Z — Phase A: model cluster merged.
+- 2026-09-13T02:32Z — Corpus g1-code committed: 40 items F01/F02/F03/F18. Carry-forward: tree_sha256 includes ext4 st_blocks and is unstable under delayed allocation (use logical_tree_sha256); build trees are not all bit-reproducible; vendor trees share common packages across splits; held-out large tier is all linux-kernel group.

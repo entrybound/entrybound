@@ -1,0 +1,164 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f03-tuning-typescript-npm-node-modules",
+  "family": "F03",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "microsoft-typescript",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "1c18917cef7408afbc514203ceadc2433d36839f086adb2e96b62f6d3b522ebc",
+  "materialization_key": "43c62ce752487d521936221971590a7a1852412d7e7ae42580707ffcf42ebce1",
+  "materialized_utc": "2026-09-13T02:23:30Z",
+  "materialized_relpath": "corpus/tuning/f03-tuning-typescript-npm-node-modules",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "3a3f315c0c9c8217926223682762591a620f79f62a69c169c2544cf1f3d5a035",
+    "pinned_utc": "2026-09-13T02:05:28Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 155225814,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "package-json",
+        "url": "https://raw.githubusercontent.com/microsoft/TypeScript/c63de15a992d37f0d6cec03ac7631872838602cb/package.json",
+        "final_url": "https://raw.githubusercontent.com/microsoft/TypeScript/c63de15a992d37f0d6cec03ac7631872838602cb/package.json",
+        "sha256": "4532f4524fee211a60447f20f049bb5e4a8078d939edd4e194a3c4de006b1f07",
+        "size": 3561,
+        "retrieved_utc": "2026-09-13T01:56:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "package.json"
+      },
+      {
+        "name": "package-lock",
+        "url": "https://raw.githubusercontent.com/microsoft/TypeScript/c63de15a992d37f0d6cec03ac7631872838602cb/package-lock.json",
+        "final_url": "https://raw.githubusercontent.com/microsoft/TypeScript/c63de15a992d37f0d6cec03ac7631872838602cb/package-lock.json",
+        "sha256": "472c30604eef217bec1b807a81590f07cd5cad765e57757948606c6b727a3642",
+        "size": 366720,
+        "retrieved_utc": "2026-09-13T01:56:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "package-lock.json"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "files": [
+            {
+              "input": "package-json",
+              "dest": "package.json"
+            },
+            {
+              "input": "package-lock",
+              "dest": "package-lock.json"
+            }
+          ]
+        },
+        "env": {
+          "npm_config_cache": "{cache}/npm-cache",
+          "npm_config_update_notifier": "false",
+          "npm_config_fund": "false",
+          "npm_config_audit": "false",
+          "npm_config_progress": "false"
+        },
+        "expect": [
+          [
+            [
+              "node",
+              "--version"
+            ],
+            "v22.23.2"
+          ],
+          [
+            [
+              "npm",
+              "--version"
+            ],
+            "10.9.8"
+          ]
+        ],
+        "commands": [
+          {
+            "argv": [
+              "npm",
+              "ci",
+              "--ignore-scripts",
+              "--no-audit",
+              "--no-fund",
+              "--loglevel=warn"
+            ]
+          }
+        ],
+        "capture": [
+          {
+            "from": "{src}/node_modules",
+            "to": "node_modules"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "3dfaf731a2e256a548f1210c8ac2f50caf6c8ba42109d1c6b2303dc84d2d92c4",
+    "logical_tree_sha256": "3a3f315c0c9c8217926223682762591a620f79f62a69c169c2544cf1f3d5a035",
+    "content_tree_sha256": "1358e7749145cc4c5d6584430edc0787cfff362a994285c644c6f1a0da02ae6e",
+    "extended_tree_sha256": "11fe82ece1215edb989969bbb2f0dd0a792296b3aa57b1be8be2d86ea6c3ec45",
+    "bytes": 155225814,
+    "bytes_all_paths": 155225814,
+    "allocated_bytes": 180285440,
+    "counts": {
+      "objects": 10062,
+      "files": 8822,
+      "unique_file_inodes": 8822,
+      "dirs": 1214,
+      "symlinks": 25,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 10,
+      "max_name_length_bytes": 51,
+      "path_length_bytes": {
+        "min": 12,
+        "max": 118,
+        "mean": 52.053,
+        "p50": 49,
+        "p95": 84
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

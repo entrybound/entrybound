@@ -1,0 +1,172 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-tuning-lz4-releases-1-9-to-1-10",
+  "family": "F18",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "lz4",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "bd773a556d004445479861d59488b7a575159cf60727e35943316503e0c6b847",
+  "materialization_key": "bb7791612de975d3ba22b815fd9d34a72f8d492f488d40e865bceba529333cd6",
+  "materialized_utc": "2026-09-13T02:23:20Z",
+  "materialized_relpath": "corpus/tuning/f18-tuning-lz4-releases-1-9-to-1-10",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "e2badb01e3286b174d42759de91922c1edb7c973a40d3ed8249476452d3e8ac2",
+    "pinned_utc": "2026-09-13T02:04:38Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 8893080,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "lz4-1_9_0",
+        "url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.0",
+        "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.0",
+        "sha256": "f8b6d5662fa534bd61227d313535721ae41a68c9d84058b7b7d86e143572dcfb",
+        "size": 281743,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.9.0"
+      },
+      {
+        "name": "lz4-1_9_1",
+        "url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.1",
+        "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.1",
+        "sha256": "f8377c89dad5c9f266edc0be9b73595296ecafd5bfa1000de148096c50052dc4",
+        "size": 285336,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.9.1"
+      },
+      {
+        "name": "lz4-1_9_2",
+        "url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.2",
+        "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.2",
+        "sha256": "658ba6191fa44c92280d4aa2c271b0f4fbc0e34d249578dd05e50e76d0e5efcc",
+        "size": 305796,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.9.2"
+      },
+      {
+        "name": "lz4-1_9_3",
+        "url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.3",
+        "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.3",
+        "sha256": "030644df4611007ff7dc962d981f390361e6c97a34e5cbc393ddfbe019ffe2c1",
+        "size": 320958,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.9.3"
+      },
+      {
+        "name": "lz4-1_9_4",
+        "url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.4",
+        "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.9.4",
+        "sha256": "0b0e3aa07c8c063ddf40b082bdf7e37a1562bda40a0ff5272957f3e987e0e54b",
+        "size": 354063,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.9.4"
+      },
+      {
+        "name": "lz4-1_10_0",
+        "url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.10.0",
+        "final_url": "https://codeload.github.com/lz4/lz4/tar.gz/refs/tags/v1.10.0",
+        "sha256": "537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b",
+        "size": 387114,
+        "retrieved_utc": "2026-09-13T01:56:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "v1.10.0"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "lz4-1_9_0"
+      },
+      {
+        "op": "extract",
+        "input": "lz4-1_9_1"
+      },
+      {
+        "op": "extract",
+        "input": "lz4-1_9_2"
+      },
+      {
+        "op": "extract",
+        "input": "lz4-1_9_3"
+      },
+      {
+        "op": "extract",
+        "input": "lz4-1_9_4"
+      },
+      {
+        "op": "extract",
+        "input": "lz4-1_10_0"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "2c87f38b316159aa6d51ee92eda0c0fdacd0f51ebf287c466afa3487d40efe30",
+    "logical_tree_sha256": "e2badb01e3286b174d42759de91922c1edb7c973a40d3ed8249476452d3e8ac2",
+    "content_tree_sha256": "b314a1a235feec50f5d07062ec597ee747033c15d9e9a68b3df320ea2fa1c148",
+    "extended_tree_sha256": "7a9347614de47119de17f2c787de5b8977e61a221cc7750b30028242f3711be3",
+    "bytes": 8893080,
+    "bytes_all_paths": 8893080,
+    "allocated_bytes": 11366400,
+    "counts": {
+      "objects": 1256,
+      "files": 985,
+      "unique_file_inodes": 985,
+      "dirs": 270,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 7,
+      "max_name_length_bytes": 38,
+      "path_length_bytes": {
+        "min": 9,
+        "max": 60,
+        "mean": 32.602,
+        "p50": 31,
+        "p95": 50
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

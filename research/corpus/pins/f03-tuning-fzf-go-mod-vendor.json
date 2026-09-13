@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f03-tuning-fzf-go-mod-vendor",
+  "inputs": {},
+  "output": {
+    "materialization_key": "8a2ae899082bb67b1556592189352ad882bc24b99438c524302f8e07c9e93357",
+    "logical_tree_sha256": "d9f47f1deb8f6d81caa5f46d77ff439da69210defb5c59b4c996932e5e23973d",
+    "pinned_utc": "2026-09-13T02:19:54Z"
+  },
+  "history": []
+}

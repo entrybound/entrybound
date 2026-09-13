@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f18-tuning-sqlite-amalgamation-series",
+  "inputs": {},
+  "output": {
+    "materialization_key": "a7d802ed9f5a6fdebed4d913ae198b25bccf0f368470c10c4b985e0bdda5f910",
+    "logical_tree_sha256": "b5b858153e41929078b87fbe3765afce407e9d01cef0382d1ce3816410fdcd21",
+    "pinned_utc": "2026-09-13T02:04:43Z"
+  },
+  "history": []
+}

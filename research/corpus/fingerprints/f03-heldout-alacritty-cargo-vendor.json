@@ -1,0 +1,123 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f03-heldout-alacritty-cargo-vendor",
+  "family": "F03",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "alacritty",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "a995b61eef9b51a3b7c97edf7ce7fdc0c4f830d7c145d3d374e7016898d3638f",
+  "materialization_key": "6b03c8863ea6dff7bc87679718df2c7d4c2a3a914c95a739858880f68cf453bd",
+  "materialized_utc": "2026-09-13T02:08:26Z",
+  "materialized_relpath": "heldout/f03-heldout-alacritty-cargo-vendor",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "2f2f74e940979faa9f9560c9c58f83e1a5785895c2bcf86a42c7c387eadda4ca",
+    "pinned_utc": "2026-09-13T02:08:26Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 483314993,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/alacritty/alacritty",
+      "commit": "0c405d53e74ace2980fc5e6c6d5b710c144bc075",
+      "ref": "v0.15.1",
+      "subpaths": null,
+      "archive_sha256": "861e36a5c75a4e9b41361e8b783bdb27661263f81cf049a23ab6da875f6589f0",
+      "archive_bytes": 49838080,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "git_archive": true
+        },
+        "env": {
+          "RUSTUP_TOOLCHAIN": "stable",
+          "CARGO_HOME": "{cache}/cargo-home",
+          "CARGO_TERM_COLOR": "never",
+          "CARGO_TERM_PROGRESS_WHEN": "never"
+        },
+        "expect": [
+          [
+            [
+              "rustc",
+              "--version"
+            ],
+            "rustc 1.98.1 (48a229cea 2026-09-01)"
+          ],
+          [
+            [
+              "cargo",
+              "--version"
+            ],
+            "cargo 1.98.1"
+          ]
+        ],
+        "commands": [
+          {
+            "argv": [
+              "cargo",
+              "vendor",
+              "--locked",
+              "--versioned-dirs",
+              "{build}/vendor"
+            ]
+          }
+        ],
+        "capture": [
+          {
+            "from": "{build}/vendor",
+            "to": "vendor"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "574870070cb819a6d83b685505f3fc9f393a7e231c15a4735c72d6d6913ab43f",
+    "logical_tree_sha256": "2f2f74e940979faa9f9560c9c58f83e1a5785895c2bcf86a42c7c387eadda4ca",
+    "content_tree_sha256": "ab0e388b177f0a42e5fb377aae98b7cd1fb247c8862b24dc781a6b2aec74ce62",
+    "extended_tree_sha256": "8f1156e0556efcfb7ad79fbc801a1bc309db6fe8810730467c59cb083dd10c14",
+    "bytes": 483314993,
+    "counts": {
+      "objects": 18939,
+      "files": 16103,
+      "dirs": 2835,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

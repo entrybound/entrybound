@@ -1,0 +1,81 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f01-heldout-go-1-25-0-src",
+  "family": "F01",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "golang-go",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "da44e67192fc41d48d8498ba57463f22c9d5f869cf1e75ec58a1f41047066a6c",
+  "materialization_key": "2db021f65d7c1d0171f0e140b8dc467a9f272206de3305317c63b50413a5bb43",
+  "materialized_utc": "2026-09-13T02:07:11Z",
+  "materialized_relpath": "heldout/f01-heldout-go-1-25-0-src",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "64ed425955dc18e750ce7f2d07203a77a48e523c372fb260224b0ea0072eab85",
+    "pinned_utc": "2026-09-13T02:07:11Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 133758376,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "go-src",
+        "url": "https://go.dev/dl/go1.25.0.src.tar.gz",
+        "final_url": "https://dl.google.com/go/go1.25.0.src.tar.gz",
+        "sha256": "4bd01e91297207bfa450ea40d4d5a93b1b531a5e438473b2a06e18e077227225",
+        "size": 31974753,
+        "retrieved_utc": "2026-09-13T01:56:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "go1.25.0.src.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "go-src",
+        "strip_components": 1
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "efa5bb3e91518a0db4e41fbedb30c739107e3cfac115b20760d76a73f52fe354",
+    "logical_tree_sha256": "64ed425955dc18e750ce7f2d07203a77a48e523c372fb260224b0ea0072eab85",
+    "content_tree_sha256": "748a752dd63e42ffd469a63aec14f17cd2917a0117f6941357e4cf477ad535a0",
+    "extended_tree_sha256": "0940a3887b3e8cc7d31937dbb3e3b85d69416b32ddd3be386f250f121e5dd926",
+    "bytes": 133758376,
+    "counts": {
+      "objects": 16063,
+      "files": 14476,
+      "dirs": 1586,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

@@ -1,0 +1,138 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f03-validation-yq-go-mod-vendor",
+  "family": "F03",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "mikefarah-yq",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "b68098e192425808307796b010b9fb8580d06e2fdb8795f385e7a9b39fb64791",
+  "materialization_key": "ace9b43e38ea7d2fe69cf1fb5d78d312576a4aac23e44edf8f40389176df23af",
+  "materialized_utc": "2026-09-13T02:20:16Z",
+  "materialized_relpath": "corpus/validation/f03-validation-yq-go-mod-vendor",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "e6e075ee93b3f3d70a94f4dec7f8fdc42de2dcfc0eb2ac633db46ea992d19f7c",
+    "pinned_utc": "2026-09-13T02:20:16Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 17653806,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/mikefarah/yq",
+      "commit": "dd648994340a5d03225d97abf19c9bf1086c3f07",
+      "ref": "v4.40.5",
+      "subpaths": null,
+      "archive_sha256": "90c0470223ffbd5affc21b1db4fed3a022db025e6d42d797a8e9a35d0b07f82b",
+      "archive_bytes": 1730560,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "git_archive": true
+        },
+        "env": {
+          "GOTOOLCHAIN": "local",
+          "GOPATH": "{cache}/gopath",
+          "GOMODCACHE": "{cache}/go-mod-cache",
+          "GOCACHE": "{cache}/go-build-cache",
+          "GOPROXY": "https://proxy.golang.org",
+          "GOSUMDB": "sum.golang.org",
+          "GONOSUMDB": "",
+          "GOPRIVATE": "",
+          "GOTELEMETRY": "off"
+        },
+        "expect": [
+          [
+            [
+              "go",
+              "version"
+            ],
+            "go version go1.22.2 linux/amd64"
+          ]
+        ],
+        "commands": [
+          {
+            "argv": [
+              "go",
+              "mod",
+              "vendor",
+              "-o",
+              "{build}/vendor"
+            ]
+          }
+        ],
+        "capture": [
+          {
+            "from": "{build}/vendor",
+            "to": "vendor"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "7cd25ef95de0b7dc77452f27618cbd9c2af3dbd45051e65ec8d8abde0c19b2f4",
+    "logical_tree_sha256": "e6e075ee93b3f3d70a94f4dec7f8fdc42de2dcfc0eb2ac633db46ea992d19f7c",
+    "content_tree_sha256": "762953570213e3abcb3897b9050e4eb26a1bbb238ee963a03e245ce6be8c5424",
+    "extended_tree_sha256": "1e0c9747acf5fcd7dbb9af114902df0a5defcc826f639c5144293421c6501082",
+    "bytes": 17653806,
+    "bytes_all_paths": 17653806,
+    "allocated_bytes": 19570688,
+    "counts": {
+      "objects": 870,
+      "files": 766,
+      "unique_file_inodes": 766,
+      "dirs": 103,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 8,
+      "max_name_length_bytes": 27,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 76,
+        "mean": 46.605,
+        "p50": 48,
+        "p95": 59
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,187 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-tuning-zstd-releases-1-5-x",
+  "family": "F18",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "zstd",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "188c6cb0220af574515c4361fc95534b4248e39a05e649ad437410e1972be1e6",
+  "materialization_key": "5a9b0a3a4cea982b109c26b57e48e654628a416c6b50d8aa01eda8b755aba1e2",
+  "materialized_utc": "2026-09-13T02:04:44Z",
+  "materialized_relpath": "corpus/tuning/f18-tuning-zstd-releases-1-5-x",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "48e1a8931db0d477dfa60f22f057fb95c6f6f70b035d463b489963db53a14145",
+    "pinned_utc": "2026-09-13T02:04:44Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 53090116,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "v1_5_0",
+        "url": "https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/7385d700-b4ba-11eb-87f8-62322d21266f",
+        "sha256": "5194fbfa781fcf45b98c5e849651aa7b3b0a008c6b72d4a0db760f3002291e94",
+        "size": 1851389,
+        "retrieved_utc": "2026-09-13T01:56:28Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "zstd-1.5.0.tar.gz"
+      },
+      {
+        "name": "v1_5_1",
+        "url": "https://github.com/facebook/zstd/releases/download/v1.5.1/zstd-1.5.1.tar.gz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/e94bd703-904d-4c78-9c60-d3fe0364faf4",
+        "sha256": "e28b2f2ed5710ea0d3a1ecac3f6a947a016b972b9dd30242369010e5f53d7002",
+        "size": 1934669,
+        "retrieved_utc": "2026-09-13T01:56:28Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "zstd-1.5.1.tar.gz"
+      },
+      {
+        "name": "v1_5_2",
+        "url": "https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.tar.gz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/83dbeeaa-8f94-4b5e-9cb2-140542eff5d9",
+        "sha256": "7c42d56fac126929a6a85dbc73ff1db2411d04f104fae9bdea51305663a83fd0",
+        "size": 1936664,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "zstd-1.5.2.tar.gz"
+      },
+      {
+        "name": "v1_5_4",
+        "url": "https://github.com/facebook/zstd/releases/download/v1.5.4/zstd-1.5.4.tar.gz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/b9615440-5e25-4d0d-aa9d-323580aae8ea",
+        "sha256": "0f470992aedad543126d06efab344dc5f3e171893810455787d38347343a4424",
+        "size": 2161536,
+        "retrieved_utc": "2026-09-13T01:56:28Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "zstd-1.5.4.tar.gz"
+      },
+      {
+        "name": "v1_5_5",
+        "url": "https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/c042a5d4-24be-4250-916b-747c2be5d37e",
+        "sha256": "9c4396cc829cfae319a6e2615202e82aad41372073482fce286fac78646d3ee4",
+        "size": 2368543,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "zstd-1.5.5.tar.gz"
+      },
+      {
+        "name": "v1_5_6",
+        "url": "https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/5a6a726c-abce-4c08-8237-428805ddec52",
+        "sha256": "8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1",
+        "size": 2406875,
+        "retrieved_utc": "2026-09-13T01:56:28Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "zstd-1.5.6.tar.gz"
+      },
+      {
+        "name": "v1_5_7",
+        "url": "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/29759715/99c899ba-527a-4d01-94e1-4b246cc9b551",
+        "sha256": "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3",
+        "size": 2434947,
+        "retrieved_utc": "2026-09-13T01:56:29Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "zstd-1.5.7.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "v1_5_0"
+      },
+      {
+        "op": "extract",
+        "input": "v1_5_1"
+      },
+      {
+        "op": "extract",
+        "input": "v1_5_2"
+      },
+      {
+        "op": "extract",
+        "input": "v1_5_4"
+      },
+      {
+        "op": "extract",
+        "input": "v1_5_5"
+      },
+      {
+        "op": "extract",
+        "input": "v1_5_6"
+      },
+      {
+        "op": "extract",
+        "input": "v1_5_7"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "21e3bf0edc59522001385c6c61ced40442f1dc5e705d9fada5b601733da70301",
+    "logical_tree_sha256": "48e1a8931db0d477dfa60f22f057fb95c6f6f70b035d463b489963db53a14145",
+    "content_tree_sha256": "5cdcbf2943e5dade2778c86de6780d957859dbf41f86fb54fecc4e323dfaabb7",
+    "extended_tree_sha256": "a73f36fcc3e3af2d5b3d2517e78209d2453923ea932cc63cda0a511036b72ed6",
+    "bytes": 53090116,
+    "bytes_all_paths": 53090116,
+    "allocated_bytes": 62930944,
+    "counts": {
+      "objects": 4658,
+      "files": 3946,
+      "unique_file_inodes": 3946,
+      "dirs": 703,
+      "symlinks": 8,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 7,
+      "max_name_length_bytes": 55,
+      "path_length_bytes": {
+        "min": 10,
+        "max": 92,
+        "mean": 39.408,
+        "p50": 38,
+        "p95": 61
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

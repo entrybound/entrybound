@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f03-validation-yq-go-mod-vendor",
+  "inputs": {},
+  "output": {
+    "materialization_key": "ace9b43e38ea7d2fe69cf1fb5d78d312576a4aac23e44edf8f40389176df23af",
+    "logical_tree_sha256": "e6e075ee93b3f3d70a94f4dec7f8fdc42de2dcfc0eb2ac633db46ea992d19f7c",
+    "pinned_utc": "2026-09-13T02:20:16Z"
+  },
+  "history": []
+}

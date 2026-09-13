@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f03-heldout-pdfjs-npm-node-modules",
+  "inputs": {},
+  "output": {
+    "materialization_key": "6a9d54e9640bad8620b9faef72e2076cdb5c628a291cf89008091d36cdc66cfd",
+    "logical_tree_sha256": "8e4fb50c723d90c25a262fa048732492f22e4f29ea01baad9a6d05b2f56f8ed0",
+    "pinned_utc": "2026-09-13T02:09:22Z"
+  },
+  "history": []
+}

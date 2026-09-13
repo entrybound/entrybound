@@ -1,0 +1,200 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-heldout-lua-5-4-releases",
+  "family": "F18",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "lua",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "215e51f7420c3ba88fd2e27c9553efb92a4785e8a74b5bbd36ae0ee4cbcb9fbf",
+  "materialization_key": "403de9a376585b07ef1aea41e63a0d7d16c611627681f7d07bde88b9a5937556",
+  "materialized_utc": "2026-09-13T02:10:30Z",
+  "materialized_relpath": "heldout/f18-heldout-lua-5-4-releases",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "1b425eab468eddab11e1ae22db8fad201b5e4d26ff3305a6a3657ce310d9f94f",
+    "pinned_utc": "2026-09-13T02:10:30Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 11657285,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "lua-5_4_0",
+        "url": "https://www.lua.org/ftp/lua-5.4.0.tar.gz",
+        "final_url": "https://www.lua.org/ftp/lua-5.4.0.tar.gz",
+        "sha256": "eac0836eb7219e421a96b7ee3692b93f0629e4cdb0c788432e3d10ce9ed47e28",
+        "size": 349308,
+        "retrieved_utc": "2026-09-13T01:56:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lua-5.4.0.tar.gz"
+      },
+      {
+        "name": "lua-5_4_1",
+        "url": "https://www.lua.org/ftp/lua-5.4.1.tar.gz",
+        "final_url": "https://www.lua.org/ftp/lua-5.4.1.tar.gz",
+        "sha256": "4ba786c3705eb9db6567af29c91a01b81f1c0ac3124fdbf6cd94bdd9e53cca7d",
+        "size": 353965,
+        "retrieved_utc": "2026-09-13T01:56:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lua-5.4.1.tar.gz"
+      },
+      {
+        "name": "lua-5_4_2",
+        "url": "https://www.lua.org/ftp/lua-5.4.2.tar.gz",
+        "final_url": "https://www.lua.org/ftp/lua-5.4.2.tar.gz",
+        "sha256": "11570d97e9d7303c0a59567ed1ac7c648340cd0db10d5fd594c09223ef2f524f",
+        "size": 353472,
+        "retrieved_utc": "2026-09-13T01:56:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lua-5.4.2.tar.gz"
+      },
+      {
+        "name": "lua-5_4_3",
+        "url": "https://www.lua.org/ftp/lua-5.4.3.tar.gz",
+        "final_url": "https://www.lua.org/ftp/lua-5.4.3.tar.gz",
+        "sha256": "f8612276169e3bfcbcfb8f226195bfc6e466fe13042f1076cbde92b7ec96bbfb",
+        "size": 358216,
+        "retrieved_utc": "2026-09-13T01:56:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lua-5.4.3.tar.gz"
+      },
+      {
+        "name": "lua-5_4_4",
+        "url": "https://www.lua.org/ftp/lua-5.4.4.tar.gz",
+        "final_url": "https://www.lua.org/ftp/lua-5.4.4.tar.gz",
+        "sha256": "164c7849653b80ae67bec4b7473b884bf5cc8d2dca05653475ec2ed27b9ebf61",
+        "size": 360876,
+        "retrieved_utc": "2026-09-13T01:56:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lua-5.4.4.tar.gz"
+      },
+      {
+        "name": "lua-5_4_5",
+        "url": "https://www.lua.org/ftp/lua-5.4.5.tar.gz",
+        "final_url": "https://www.lua.org/ftp/lua-5.4.5.tar.gz",
+        "sha256": "59df426a3d50ea535a460a452315c4c0d4e1121ba72ff0bdde58c2ef31d6f444",
+        "size": 363316,
+        "retrieved_utc": "2026-09-13T01:56:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lua-5.4.5.tar.gz"
+      },
+      {
+        "name": "lua-5_4_6",
+        "url": "https://www.lua.org/ftp/lua-5.4.6.tar.gz",
+        "final_url": "https://www.lua.org/ftp/lua-5.4.6.tar.gz",
+        "sha256": "7d5ea1b9cb6aa0b59ca3dde1c6adcb57ef83a1ba8e5432c0ecd06bf439b3ad88",
+        "size": 363329,
+        "retrieved_utc": "2026-09-13T01:56:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lua-5.4.6.tar.gz"
+      },
+      {
+        "name": "lua-5_4_7",
+        "url": "https://www.lua.org/ftp/lua-5.4.7.tar.gz",
+        "final_url": "https://www.lua.org/ftp/lua-5.4.7.tar.gz",
+        "sha256": "9fbf5e28ef86c69858f6d3d34eccc32e911c1a28b4120ff3e84aaa70cfbf1e30",
+        "size": 374097,
+        "retrieved_utc": "2026-09-13T01:56:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lua-5.4.7.tar.gz"
+      },
+      {
+        "name": "lua-5_4_8",
+        "url": "https://www.lua.org/ftp/lua-5.4.8.tar.gz",
+        "final_url": "https://www.lua.org/ftp/lua-5.4.8.tar.gz",
+        "sha256": "4f18ddae154e793e46eeab727c59ef1c0c0c2b744e7b94219710d76f530629ae",
+        "size": 374332,
+        "retrieved_utc": "2026-09-13T01:56:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lua-5.4.8.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "lua-5_4_0"
+      },
+      {
+        "op": "extract",
+        "input": "lua-5_4_1"
+      },
+      {
+        "op": "extract",
+        "input": "lua-5_4_2"
+      },
+      {
+        "op": "extract",
+        "input": "lua-5_4_3"
+      },
+      {
+        "op": "extract",
+        "input": "lua-5_4_4"
+      },
+      {
+        "op": "extract",
+        "input": "lua-5_4_5"
+      },
+      {
+        "op": "extract",
+        "input": "lua-5_4_6"
+      },
+      {
+        "op": "extract",
+        "input": "lua-5_4_7"
+      },
+      {
+        "op": "extract",
+        "input": "lua-5_4_8"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "106e178ecf42caeccef9789350d79c06e70f68a519e1cf62f3bfe8d764b8d2b6",
+    "logical_tree_sha256": "1b425eab468eddab11e1ae22db8fad201b5e4d26ff3305a6a3657ce310d9f94f",
+    "content_tree_sha256": "a3e837246d7eb32628448cf1ccaad3f7ed4b44f3e0c5fb2bda64a5f23a82fe4e",
+    "extended_tree_sha256": "69d6673e11fbfec84d5ae80a86d292fe9234ca79324fb2b729e7698a49bafd86",
+    "bytes": 11657285,
+    "counts": {
+      "objects": 703,
+      "files": 675,
+      "dirs": 27,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

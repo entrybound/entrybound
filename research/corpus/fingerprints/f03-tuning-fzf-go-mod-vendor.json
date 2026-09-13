@@ -1,0 +1,138 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f03-tuning-fzf-go-mod-vendor",
+  "family": "F03",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "junegunn-fzf",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "4adc880c66ee6a9fed371a5056be20848f26a59e10a345c16e5d8889c6a31d92",
+  "materialization_key": "8a2ae899082bb67b1556592189352ad882bc24b99438c524302f8e07c9e93357",
+  "materialized_utc": "2026-09-13T02:23:19Z",
+  "materialized_relpath": "corpus/tuning/f03-tuning-fzf-go-mod-vendor",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "d9f47f1deb8f6d81caa5f46d77ff439da69210defb5c59b4c996932e5e23973d",
+    "pinned_utc": "2026-09-13T02:19:54Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 15280218,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/junegunn/fzf",
+      "commit": "3c0a6304756e890e0a605b742943a9bb8e1d2247",
+      "ref": "0.46.1",
+      "subpaths": null,
+      "archive_sha256": "e921c8a8c4e44213fb6e38bcf9f3c4f80e59c97e1ec80d5faa439817d54ce24f",
+      "archive_bytes": 1054720,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "git_archive": true
+        },
+        "env": {
+          "GOTOOLCHAIN": "local",
+          "GOPATH": "{cache}/gopath",
+          "GOMODCACHE": "{cache}/go-mod-cache",
+          "GOCACHE": "{cache}/go-build-cache",
+          "GOPROXY": "https://proxy.golang.org",
+          "GOSUMDB": "sum.golang.org",
+          "GONOSUMDB": "",
+          "GOPRIVATE": "",
+          "GOTELEMETRY": "off"
+        },
+        "expect": [
+          [
+            [
+              "go",
+              "version"
+            ],
+            "go version go1.22.2 linux/amd64"
+          ]
+        ],
+        "commands": [
+          {
+            "argv": [
+              "go",
+              "mod",
+              "vendor",
+              "-o",
+              "{build}/vendor"
+            ]
+          }
+        ],
+        "capture": [
+          {
+            "from": "{build}/vendor",
+            "to": "vendor"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "81c0a4b5254ce20d75ee700303ad2c740e7d5a0f429d8988ecf443550e4f167b",
+    "logical_tree_sha256": "d9f47f1deb8f6d81caa5f46d77ff439da69210defb5c59b4c996932e5e23973d",
+    "content_tree_sha256": "842bd329d27ec2311fae4407d3c249440b36380db45d98586acce6379c8107af",
+    "extended_tree_sha256": "50963cd74230d14cf4c52a62ffc63359a71f303675d5a7ccee4b7af996686ac2",
+    "bytes": 15280218,
+    "bytes_all_paths": 15280218,
+    "allocated_bytes": 16732160,
+    "counts": {
+      "objects": 662,
+      "files": 570,
+      "unique_file_inodes": 570,
+      "dirs": 91,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 9,
+      "max_name_length_bytes": 27,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 67,
+        "mean": 48.109,
+        "p50": 50,
+        "p95": 59
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,156 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f02-tuning-zstd-cmake-build",
+  "family": "F02",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "zstd",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "cff0df84089afbc763e05a67cd4cbb5a4015c3a24e12542b4a947038f2cdf9cd",
+  "materialization_key": "e944c3af3aa08a239be48fabc6a076e0268994c088e375cca5c0237ff70eb493",
+  "materialized_utc": "2026-09-13T02:06:12Z",
+  "materialized_relpath": "corpus/tuning/f02-tuning-zstd-cmake-build",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 101454992,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "from_items": [
+      {
+        "item_id": "f01-tuning-zstd-v1-5-7-git",
+        "logical_tree_sha256": "a587cd5e1471dd737139fde30aadb8839bd265fc08c7018b563fffdf1150934f"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g1-code/build_tree.py",
+      "script_sha256": "2c559f3b36e4b1aa6759b7a6e1484fa2a4749f8d3781aa2e698ea53d5c7e09df",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "source": {
+          "from_item": "f01-tuning-zstd-v1-5-7-git"
+        },
+        "env": {
+          "CC": "gcc",
+          "CXX": "g++"
+        },
+        "expect": [
+          [
+            [
+              "gcc",
+              "-dumpfullversion"
+            ],
+            "13.3.0"
+          ],
+          [
+            [
+              "make",
+              "--version"
+            ],
+            "GNU Make 4.3"
+          ],
+          [
+            [
+              "cmake",
+              "--version"
+            ],
+            "cmake version 3.28.3"
+          ]
+        ],
+        "jobs": 16,
+        "commands": [
+          {
+            "argv": [
+              "cmake",
+              "-S",
+              "{src}/build/cmake",
+              "-B",
+              "{build}",
+              "-G",
+              "Unix Makefiles",
+              "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
+              "-DZSTD_BUILD_TESTS=ON",
+              "-DZSTD_BUILD_CONTRIB=ON",
+              "-DZSTD_BUILD_STATIC=ON",
+              "-DZSTD_BUILD_SHARED=ON",
+              "-DZSTD_MULTITHREAD_SUPPORT=ON"
+            ]
+          },
+          {
+            "argv": [
+              "cmake",
+              "--build",
+              "{build}",
+              "-j",
+              "{jobs}"
+            ]
+          }
+        ],
+        "capture": [
+          {
+            "from": "{build}",
+            "to": "build"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "a558badae4133d2971858078650c8466bb7fcf59555b2df9f4b0fadaf3448564",
+    "logical_tree_sha256": "24a30e45f9b38d7debd3ec1db59988e10dcce68c96214fb212ca42554197758d",
+    "content_tree_sha256": "151eec6a42947a3f6adba4d161e27792097b3c557179c39a418a276914839fe2",
+    "extended_tree_sha256": "8e81c4f88a05f8dff527a5419897d4863cd56437dc6f04e5f7859f8edbe4469a",
+    "bytes": 101454992,
+    "bytes_all_paths": 101454992,
+    "allocated_bytes": 102731776,
+    "counts": {
+      "objects": 641,
+      "files": 492,
+      "unique_file_inodes": 492,
+      "dirs": 141,
+      "symlinks": 7,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 14,
+      "max_name_length_bytes": 33,
+      "path_length_bytes": {
+        "min": 5,
+        "max": 146,
+        "mean": 83.147,
+        "p50": 65,
+        "p95": 136
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f01-tuning-curl-8-19-0-git",
+  "inputs": {},
+  "output": {
+    "materialization_key": "3d4219188ebde7565f32d5c2347cfe1f95b82e4a6d82e4608a19dccb1559daac",
+    "logical_tree_sha256": "02618987e7e518109ceb5a971eb5881e95b657518500af2173b3efa408ea6925",
+    "pinned_utc": "2026-09-13T02:04:41Z"
+  },
+  "history": []
+}

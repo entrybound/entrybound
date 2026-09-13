@@ -1,0 +1,172 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-validation-cpython-3-12-point-releases",
+  "family": "F18",
+  "split": "validation",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "cpython",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "15644a7f259210d521991b533315e9e789c6a6576801c2e077f2d80d9c4f8015",
+  "materialization_key": "be9dc1c85c35802d7343f834d0636eeabfc2606ac49ffdb3bce62f4d9cdb39dc",
+  "materialized_utc": "2026-09-13T02:05:06Z",
+  "materialized_relpath": "corpus/validation/f18-validation-cpython-3-12-point-releases",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "1a89677e7e6da3a7687fc5d05077c64f7a5867df18ca83cff57757744cfd6788",
+    "pinned_utc": "2026-09-13T02:05:06Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 603385837,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "python-3_12_0",
+        "url": "https://www.python.org/ftp/python/3.12.0/Python-3.12.0.tar.xz",
+        "final_url": "https://www.python.org/ftp/python/3.12.0/Python-3.12.0.tar.xz",
+        "sha256": "795c34f44df45a0e9b9710c8c71c15c671871524cd412ca14def212e8ccb155d",
+        "size": 20575020,
+        "retrieved_utc": "2026-09-13T01:56:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Python-3.12.0.tar.xz"
+      },
+      {
+        "name": "python-3_12_1",
+        "url": "https://www.python.org/ftp/python/3.12.1/Python-3.12.1.tar.xz",
+        "final_url": "https://www.python.org/ftp/python/3.12.1/Python-3.12.1.tar.xz",
+        "sha256": "8dfb8f426fcd226657f9e2bd5f1e96e53264965176fa17d32658e873591aeb21",
+        "size": 20583448,
+        "retrieved_utc": "2026-09-13T01:56:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Python-3.12.1.tar.xz"
+      },
+      {
+        "name": "python-3_12_2",
+        "url": "https://www.python.org/ftp/python/3.12.2/Python-3.12.2.tar.xz",
+        "final_url": "https://www.python.org/ftp/python/3.12.2/Python-3.12.2.tar.xz",
+        "sha256": "be28112dac813d2053545c14bf13a16401a21877f1a69eb6ea5d84c4a0f3d870",
+        "size": 20591308,
+        "retrieved_utc": "2026-09-13T01:56:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Python-3.12.2.tar.xz"
+      },
+      {
+        "name": "python-3_12_3",
+        "url": "https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz",
+        "final_url": "https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz",
+        "sha256": "56bfef1fdfc1221ce6720e43a661e3eb41785dd914ce99698d8c7896af4bdaa1",
+        "size": 20625068,
+        "retrieved_utc": "2026-09-13T01:56:31Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Python-3.12.3.tar.xz"
+      },
+      {
+        "name": "python-3_12_4",
+        "url": "https://www.python.org/ftp/python/3.12.4/Python-3.12.4.tar.xz",
+        "final_url": "https://www.python.org/ftp/python/3.12.4/Python-3.12.4.tar.xz",
+        "sha256": "f6d419a6d8743ab26700801b4908d26d97e8b986e14f95de31b32de2b0e79554",
+        "size": 20659356,
+        "retrieved_utc": "2026-09-13T01:56:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Python-3.12.4.tar.xz"
+      },
+      {
+        "name": "python-3_12_5",
+        "url": "https://www.python.org/ftp/python/3.12.5/Python-3.12.5.tar.xz",
+        "final_url": "https://www.python.org/ftp/python/3.12.5/Python-3.12.5.tar.xz",
+        "sha256": "fa8a2e12c5e620b09f53e65bcd87550d2e5a1e2e04bf8ba991dcc55113876397",
+        "size": 20422396,
+        "retrieved_utc": "2026-09-13T01:56:32Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Python-3.12.5.tar.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "python-3_12_0"
+      },
+      {
+        "op": "extract",
+        "input": "python-3_12_1"
+      },
+      {
+        "op": "extract",
+        "input": "python-3_12_2"
+      },
+      {
+        "op": "extract",
+        "input": "python-3_12_3"
+      },
+      {
+        "op": "extract",
+        "input": "python-3_12_4"
+      },
+      {
+        "op": "extract",
+        "input": "python-3_12_5"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "eb6947306a8aa5279fec59539a93473b9e07c8f472a33f773046d5220e2e76a2",
+    "logical_tree_sha256": "1a89677e7e6da3a7687fc5d05077c64f7a5867df18ca83cff57757744cfd6788",
+    "content_tree_sha256": "61de268757275d496ae278dbbbdaf3aa829f4414a0617cbbef8669bf1ee75ad9",
+    "extended_tree_sha256": "dc800f0dec21c88235636f892dbc4fde541f41217b03c0f8432cea5259aa909e",
+    "bytes": 603385837,
+    "bytes_all_paths": 603385837,
+    "allocated_bytes": 668368896,
+    "counts": {
+      "objects": 28950,
+      "files": 26898,
+      "unique_file_inodes": 26898,
+      "dirs": 2051,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 9,
+      "max_name_length_bytes": 57,
+      "path_length_bytes": {
+        "min": 13,
+        "max": 108,
+        "mean": 43.459,
+        "p50": 41,
+        "p95": 66
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

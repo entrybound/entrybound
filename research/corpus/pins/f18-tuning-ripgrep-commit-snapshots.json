@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f18-tuning-ripgrep-commit-snapshots",
+  "inputs": {},
+  "output": {
+    "materialization_key": "726050b7defe0ce183c16cac8eaf934d141048b6248ce62371b4d34333186e72",
+    "logical_tree_sha256": "ab27bf8de2a61e264f412e0b7969512ae2a561140f7a8d7efe493b89c687e427",
+    "pinned_utc": "2026-09-13T02:04:42Z"
+  },
+  "history": []
+}
