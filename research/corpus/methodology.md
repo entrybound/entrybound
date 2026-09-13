@@ -1,0 +1,479 @@
+# Entrybound research corpus methodology (draft)
+
+Corpus version: `ebrc-2026.09-v1`. Status: **draft**. The framework and tools exist; family items are
+still being defined. This document is normative for the tools in `research/corpus/tools/`. If this
+document and the code disagree, `provision.py --check` is the authority for definitions and
+`fingerprint.py` is the authority for hashes. Fix whichever one is wrong.
+
+## 1. Purpose and scope
+
+The corpus is the input set for Entrybound archive-format research: chunking, compression and
+codec choice, the planner, metadata fidelity, and random access. It has to be:
+
+- **Reproducible.** Every item is materialized from a declarative definition. Items are then
+  identified by a canonical tree fingerprint and pinned by hash.
+- **Stratified.** Items are spread across 20 content families, three splits and three scale tiers.
+- **Leakage-controlled.** The held-out split stays unseen by tuning code until a recorded design
+  freeze.
+- **Honest about provenance and licensing.** Each item says whether it is real or generated, where
+  it came from, and whether it can be redistributed.
+
+Large data lives outside git under `/root/eb-research` (WSL ext4). Git holds only the definitions,
+pins, fingerprints, per-item statistics, the manifest and this document.
+
+## 2. Families
+
+Family IDs are fixed. An item belongs to exactly one family: the one whose behaviour it mainly
+exercises.
+
+| ID | Family | Intent (examples) |
+|---|---|---|
+| F01 | source-code repositories | git-archive of real projects; text-heavy, many small files, shared licence headers |
+| F02 | build trees | object files, intermediate artefacts, `target/`, `build/` outputs |
+| F03 | dependency/vendor trees | `node_modules`, vendored crates, site-packages; deep paths, duplication across packages |
+| F04 | many-small-file trees | 10^4-10^6 tiny files; per-entry overhead dominates |
+| F05 | logs/text | server and application logs, plain-text corpora |
+| F06 | JSON/XML/CSV/structured text | exports, datasets, config dumps |
+| F07 | scientific/numeric arrays | float/int arrays, HDF5/NetCDF/NPY-like data |
+| F08 | databases | SQLite and other page-structured files |
+| F09 | executable/binary objects | ELF/PE binaries, shared libraries, container root filesystems |
+| F10 | highly redundant binaries | zero-filled or patterned blobs, repeated records |
+| F11 | already-compressed files | .gz/.xz/.zst/.zip payloads, compressed packages |
+| F12 | JPEG/images | JPEG (targets JPEG reconstruction), PNG, other images |
+| F13 | other media | audio and video containers |
+| F14 | archive-inside-archive | tar/zip/7z nested inside trees, including recursive nesting |
+| F15 | sparse files | files with holes; apparent size far above allocation |
+| F16 | VM/disk-like images | raw, qcow2 and vmdk-like images, filesystem images |
+| F17 | duplicate trees | exact duplicate subtrees and files |
+| F18 | near-duplicate/versioned trees | successive releases, small edits, rename-heavy histories |
+| F19 | metadata-heavy filesystem trees | hardlinks, symlinks, xattrs, ACLs, odd modes/owners/timestamps/names |
+| F20 | adversarial/high-entropy inputs | random data, crafted worst cases, pathological names and structures |
+
+## 3. Splits and split discipline
+
+| Split | Use | Who may read content |
+|---|---|---|
+| `tuning` | parameter search, threshold selection, iterative development | all research code |
+| `validation` | checking decisions made on tuning, noise estimation, regression checks | all research code, but decisions must not be *searched* on it |
+| `heldout` | final unbiased evaluation after the design freeze | nobody, until unlocked (section 9) |
+
+Rules. The validator enforces them and fails on violation.
+
+1. **Independence groups.** Items that share upstream origin share an `independence_group`. That
+   covers the same project or repository at different versions, the same dataset, the same image
+   repository, and trees derived from one another. Within a family, a group may appear in **one
+   split only**.
+2. **Across families**, a group shared between split `heldout` and any other split is an error. A
+   group shared between tuning and validation across families is a warning, recorded in the
+   manifest's `split_audit`.
+3. **Upstream identity.** An input URL, pinned SHA-256, git repository (normalized, any commit) or
+   docker repository (any tag or digest) used by items in different splits is an error, even when
+   the groups differ. This catches mislabelled groups.
+4. **Derivation stays in its split.** A `derive` item must be in the same split as every
+   `from_items` source. A group that differs from its source's group is a warning.
+5. **Generated items.** Items from the same generator script with different seeds are *not*
+   automatically independent in distribution. Held-out generated items should use different
+   parameters and, where feasible, a different generator. See threats in section 11.
+
+Suggested allocation per family is at least one item in each split, with tuning getting the
+majority. Held-out should cover every family at the scale tiers used for the final decisions. The
+coverage table (`coverage.md`, `manifest.json#coverage`) makes gaps visible.
+
+## 4. Scale tiers
+
+| Tier | Max apparent bytes (sum of unique-inode regular file sizes) |
+|---|---|
+| `small` | 16 MiB (16,777,216) |
+| `medium` | 512 MiB (536,870,912) |
+| `large` | 8 GiB (8,589,934,592) |
+
+- Exceeding the declared tier fails materialization.
+- An item that would fit a smaller tier produces a warning and `scale_check.fits_smaller_tier = true`.
+- The tier uses apparent size, so sparse files count at their full length.
+
+## 5. Source definitions (`research/corpus/sources/*.json`)
+
+Each file is:
+
+```json
+{ "schema": "ebrc-sources-v1", "notes": "optional free text", "items": [ ITEM, ... ] }
+```
+
+### 5.1 ITEM
+
+| Key | Type | Rule |
+|---|---|---|
+| `item_id` | string | kebab-case `^[a-z0-9]+(-[a-z0-9]+)*$`, at most 80 chars, globally unique across all source files |
+| `family` | string | `F01`..`F20` |
+| `split` | string | `tuning` \| `validation` \| `heldout` |
+| `scale` | string | `small` \| `medium` \| `large` |
+| `kind` | string | `download` \| `generate` \| `derive` \| `docker-export` \| `git-archive` \| `build` |
+| `real_or_generated` | string | `real` \| `generated` \| `derived-from-real` |
+| `recipe` | object | see 5.2 |
+| `license` | object | `{ "spdx_or_name": non-empty string, "redistributable": bool, "attribution": string, "notes": string }` (all four keys required) |
+| `independence_group` | string | kebab-case |
+| `description` | string | non-empty. For held-out items, describe provenance, not content statistics |
+| `notes`, `tags` | any | optional |
+
+Unknown keys are errors.
+
+### 5.2 recipe
+
+| Key | Type | Meaning |
+|---|---|---|
+| `inputs` | list | downloads: `{ "name": "^[a-z0-9][a-z0-9_-]{0,63}$", "url": "https://...", "sha256": "<64 lowercase hex>" \| "TOFU", "size": int (optional), "filename": safe basename (optional), "notes": optional }`. The names `git-archive` and `docker-rootfs` are reserved. |
+| `git` | object | `{ "repo": "https://...", "commit": "<40 hex>", "ref": optional branch/tag used if fetch-by-SHA fails, "subpaths": [optional relative paths] }` |
+| `docker` | object | `{ "image": "name[:tag]@sha256:<64 hex>", "platform": "linux/amd64" (default) \| "linux/arm64" \| "linux/arm/v7" \| "linux/386" }`. Non-x86 platforms are recorded as `emulated: true`. |
+| `from_items` | list | item ids this item derives from (same split; no cycles) |
+| `generator` | object | `{ "script": "research/...", "interpreter": "python" \| "bash" \| "sh" (default python), "seed": int (required), "params": object (optional) }` |
+| `steps` | list | ordered post-acquisition operations (5.3) |
+| `output_pin` | null \| `"TOFU"` \| 64 hex | pin on the materialized `logical_tree_sha256`. Defaults: `TOFU` for download/generate/derive/git-archive; `null` (record only) for build/docker-export |
+| `notes` | any | optional; excluded from the materialization key |
+
+Kind requirements:
+
+| kind | requires | forbids / constraints |
+|---|---|---|
+| `download` | `inputs` | `git`, `docker` |
+| `generate` | `generator` | `inputs`, `git`, `docker`, `from_items`; `real_or_generated` must be `generated` |
+| `derive` | `from_items` and (`generator` or `steps`) | `real_or_generated` must not be `real` |
+| `docker-export` | `docker` | |
+| `git-archive` | `git` | |
+| `build` | `generator` (the build script) | `inputs`, `git`, `from_items` optional |
+
+Default steps when `steps` is absent:
+
+- `download` copies each input to the item root under its filename.
+- `git-archive` and `docker-export` extract the acquired tar into the item root.
+
+### 5.3 steps
+
+| op | fields | behaviour |
+|---|---|---|
+| `extract` | `input`, `dest` (rel, default root), `format` `auto`\|`tar`\|`zip`\|`7z`, `strip_components` | tar family: GNU tar `-x --numeric-owner --same-owner --same-permissions --xattrs --xattrs-include=* --acls`, compression auto-detected. zip/7z: `bsdtar -x -p --numeric-owner` |
+| `decompress` | `input`, `dest` (required), `format` `auto`\|`gz`\|`xz`\|`zst`\|`bz2`\|`lz`\|`lz4`\|`br` | single-stream decompress to a file (mode 0644) |
+| `copy` | `input`, `dest` (default: input filename), `mode` (octal string, default `"0644"`) | copy a downloaded blob |
+| `copy-item` | `from_item` (must be in `from_items`), `src` (rel, default root), `dest` | `cp -a --reflink=never`; preserves hardlinks, xattrs, ACLs and holes |
+| `remove` | `paths` (non-empty list of rel paths) | delete; a missing path is an error (detects upstream drift) |
+| `run` | same fields as `generator` (`seed` optional) | run a script against the staging tree |
+
+The generator, if present, runs after all steps.
+
+### 5.4 Script contract (generator, build, run)
+
+```
+<interpreter> <repo>/<script> --out <staging dir> --seed <int> --params <canonical JSON>
+```
+
+- `cwd` is a scratch directory. The environment is sanitized:
+  - `PATH` holds only the venv, `~/.cargo/bin` and system dirs, never Windows paths.
+  - `HOME` is inside scratch.
+  - `LC_ALL=C.UTF-8`, `TZ=UTC`, `SOURCE_DATE_EPOCH=1767225600`, `PYTHONHASHSEED=0`, umask 022.
+- The script also receives these variables: `EB_OUT`, `EB_SEED`, `EB_PARAMS_JSON`, `EB_ITEM_ID`,
+  `EB_FAMILY`, `EB_SPLIT`, `EB_SCALE`, `EB_SCRATCH`, `EB_REPO`, `EB_DATA_ROOT`, `EB_CACHE`,
+  `EB_INPUTS_JSON` (name to path), `EB_FROM_JSON` (item id to path), `EB_INPUT_<NAME>` and
+  `EB_FROM_<ITEM_ID>` (upper case, `-` becomes `_`).
+- Output must be a pure function of script bytes, seed, params and inputs. Set explicit modes,
+  owners and mtimes when they matter.
+- Example: `research/corpus/generators/selftest_tree.py`.
+
+### 5.5 Example
+
+```json
+{
+  "schema": "ebrc-sources-v1",
+  "items": [
+    {
+      "item_id": "f05-example-logs-small",
+      "family": "F05", "split": "tuning", "scale": "small",
+      "kind": "download", "real_or_generated": "real",
+      "recipe": {
+        "inputs": [{"name": "logs", "url": "https://example.org/logs.tar.xz", "sha256": "TOFU"}],
+        "steps": [{"op": "extract", "input": "logs", "strip_components": 1}]
+      },
+      "license": {"spdx_or_name": "CC-BY-4.0", "redistributable": true,
+                  "attribution": "Example Org", "notes": ""},
+      "independence_group": "example-org-logs",
+      "description": "Example web server logs, first release"
+    }
+  ]
+}
+```
+
+Validate with `run.sh provision --check`.
+
+## 6. Materialization and pinning
+
+Run all tools inside WSL:
+
+```
+wsl.exe -d Ubuntu -- bash /mnt/d/Projects/entrybound/entrybound/research/corpus/tools/run.sh <tool> [args]
+```
+
+Materialization steps:
+
+1. **Acquire.**
+   - Downloads go to the content-addressed cache `/root/eb-research/cache/sha256/<hex>`, plus a
+     `by-url` index. The URL must be https.
+   - A declared SHA-256 must match.
+   - `TOFU`: the first retrieval's SHA-256, size, UTC time and local date are written to
+     `research/corpus/pins/<item_id>.json`. After that the pin is enforced. A later mismatch fails
+     with `HASH MISMATCH` and exit status 1.
+   - Git: shallow fetch of the exact commit into a bare cache repository, then
+     `git -c tar.umask=0022 archive`.
+   - Docker: `docker pull`, `create`, `export` of the digest-pinned image. The container is always
+     removed afterwards.
+2. **Build** in `/root/eb-research/staging/<id>.<token>`: run the steps, then the generator, then
+   chmod the root to 0755.
+3. **Fingerprint** the staging tree (section 7). Enforce the scale tier. Enforce `output_pin`:
+   - a declared hex must match;
+   - `TOFU` matches the pin recorded for the same materialization key, or creates it;
+   - a stale pin (the recipe changed) is moved to `history`.
+4. **Swap** the tree into `/root/eb-research/corpus/<split>/<id>` or
+   `/root/eb-research/heldout/<id>`, which has mode 0700. Write
+   `research/corpus/fingerprints/<id>.json`, and the canonical lines (gzip) to
+   `/root/eb-research/fingerprints/<split>/<id>.lines.gz` (held-out files have mode 0600).
+5. On a hash mismatch the staging tree is moved to `/root/eb-research/quarantine/` for inspection.
+
+**Materialization key** = SHA-256 of the canonical JSON of: kind, recipe (without `notes` and
+`output_pin`), SHA-256 of every referenced script, and the `logical_tree_sha256` of every
+`from_items` dependency. If it changes, provision rebuilds the item. If only descriptive fields
+change, the record metadata is refreshed without a rebuild.
+
+**Idempotence.** An item whose key is unchanged is verified, not rebuilt:
+
+- `--verify full` re-fingerprints the tree.
+- `--verify quick` compares an lstat digest recorded in `/root/eb-research/state/`.
+- `auto`, the default, uses full up to 512 MiB and quick above.
+
+A tree that no longer matches its record fails loudly; `--rebuild` is the explicit recovery.
+Filters: `--family`, `--group`, `--item`, `--split`. Dependencies are added automatically.
+Concurrency: `--jobs` (items) and `--hash-jobs` (threads per item), with per-item and per-download
+file locks.
+
+Tool versions (tar, bsdtar, git, docker, python, kernel) and tool script hashes are recorded in each
+fingerprint record.
+
+## 7. Fingerprint algorithm (`ebrc-fp-v1`)
+
+The walk starts at the item root and **never follows symlinks**. It refuses to cross filesystems.
+Each object (root included, with path `""`) produces one line of tab-separated `key=value` fields:
+
+| key | value |
+|---|---|
+| `p` | relative path, raw bytes, lowercase hex |
+| `t` | `file` \| `dir` \| `symlink` \| `fifo` \| `other-socket` \| `other-chardev` \| `other-blockdev` \| `other-unknown` |
+| `s` | files: `st_size`; symlinks: target length; otherwise `-` |
+| `c` | files: SHA-256 of content; otherwise `-` |
+| `m` | permission bits including setuid/setgid/sticky, 4-digit octal |
+| `o` | `uid:gid` |
+| `l` | symlink target raw bytes hex, else `-` |
+| `g` | hardlink group `h<N>` if two or more paths *inside the item* share an inode, else `-` |
+| `x` | xattrs sorted by name bytes: `<name hex>:<SHA-256 of value>` joined by `,`, else `-`. POSIX ACLs appear as `system.posix_acl_access` / `system.posix_acl_default` |
+| `r` | char/block devices: `major:minor`, else `-` |
+| `d` | files: data-extent map from `SEEK_DATA`/`SEEK_HOLE`: `none` (empty), `full`, `hole`, `e:<a>-<b>;...` (at most 4 extents) or `h:<SHA-256 of that list>` |
+| `b` | files: `st_blocks` (512-byte units), else `-` |
+| `mt` | `mtime_ns` (`-` for the root) |
+
+Each hardlink group also adds one line:
+`g=h<N>  t=hardlink-group  n=<paths in item>  p=<first path hex>`. Group ids are numbered in
+bytewise order of each group's first path.
+
+Digests. Each is the SHA-256 over the concatenation of `line + "\n"`, with lines sorted bytewise:
+
+| digest | fields | use |
+|---|---|---|
+| `content_tree_sha256` | p t s c l g (+ group lines) | portable across metadata-lossy copies |
+| `logical_tree_sha256` | p t s c m o l g x r d | **identity used for pins, idempotence, the held-out lock** |
+| `tree_sha256` | logical + b | exact materialization including `st_blocks` allocation (filesystem-bound) |
+| `extended_tree_sha256` | tree + mt | informational |
+
+Why `st_blocks` is not the primary identity: raw allocation depends on the filesystem, on extent
+index blocks for large or fragmented files, and on external xattr blocks. It can therefore differ
+across re-materializations of identical content. Sparseness is captured portably by the extent map
+`d`; `tree_sha256` still records the raw allocation. Directory sizes are omitted because they
+depend on the filesystem.
+
+Summary fields:
+
+- `bytes` (unique inodes), `bytes_all_paths`, `allocated_bytes`
+- counts: objects, files, unique file inodes, dirs (excluding root), symlinks, hardlink groups,
+  extra hardlink paths, fifos, other
+- `structure`: max depth, max name length, path-length min/max/mean/p50/p95
+
+Held-out records keep only the hashes, `bytes`, and the counts objects/files/dirs/symlinks/hardlink
+groups.
+
+The self-test confirms:
+
+- a `cp -a` copy keeps `logical_tree_sha256` unchanged;
+- changing mtime changes only the extended digest;
+- mode and xattr changes alter the logical digest;
+- regrouping hardlinks alters the content digest;
+- filling a hole alters only the logical digest (the extent map).
+
+## 8. Statistics (`stats.py`, format `ebrc-stats-v1`)
+
+`stats.py` covers tuning and validation only. It reads each tree once, recomputes the fingerprint
+and requires it to match the record. It emits:
+
+- **Content types.** libmagic via `file --mime-type -b -N` (file 5.45; the magic.mgc SHA-256 is
+  recorded), counted and byte-weighted over unique inodes.
+- **Extensions.** Lowercased final suffix of the basename (`(none)`, `(long)`, `(non-utf8)`).
+- **Exact duplicates.** By SHA-256 over non-empty unique inodes: duplicate file ratio and duplicate
+  byte ratio.
+- **4 KiB fixed-block duplicates.** Per-file blocks from offset 0, with tail blocks keyed together
+  with their length (BLAKE2b-128). Reports duplicate block and byte ratios and the zero-block ratio.
+- **Entropy.** Order-0 Shannon entropy of the whole stream, mean over full 4 KiB blocks, and the
+  byte-weighted mean per-file entropy. Histograms: per file (1-bit bins) and per block (0.5-bit
+  bins).
+- **Compressibility.** Single-shot `zstd -3 -T1` and `xz -6 -T1` over the concatenated unique file
+  contents in path order. Streams above `--compress-max-bytes` (default 1 GiB) are sampled with
+  evenly spaced 1 MiB windows (`sampled: true`). These ratios are **indicators only, never
+  benchmark results**.
+- **Metadata.**
+  - symlinks: absolute, escaping the root, dangling, non-UTF-8 targets
+  - hardlinks: groups, extra paths, max group size, links outside the item
+  - xattrs by namespace, and ACL access/default counts
+  - sparse files: apparent vs allocated vs data-extent bytes
+  - mode variety, setuid/setgid/sticky, world-writable
+  - uid/gid variety
+  - names: non-UTF-8, control characters, Windows-hostile, case-insensitive collisions
+  - mtime range, sub-second and out-of-range timestamps
+  - directory fan-out
+
+Outputs contain no timestamps and repeated runs are byte-identical, which the self-test checks. **No
+timing data is collected in this phase.** Timing belongs to the runner's quiet-window `--timing`
+guard.
+
+## 9. Held-out access control
+
+Layers:
+
+1. **Physical separation.** Items live in `/root/eb-research/heldout/` (0700). Canonical line
+   listings, which contain paths, live in `/root/eb-research/fingerprints/heldout/` (0600). All
+   agents run as root, so permissions are a tripwire, not a barrier. The remaining layers are
+   procedural and tool-enforced.
+2. **Fingerprint-only records.** `research/corpus/fingerprints/<heldout-id>.json`, `manifest.json`,
+   `statistics.json#heldout` and `heldout-lock.json` expose hashes, bytes and counts only.
+   `fingerprint.py` automatically switches to the held-out-safe view for paths under the held-out
+   root.
+3. **Tool refusal.** `stats.py` refuses held-out items and paths (exit 3) without a two-key unlock:
+   `--unlock-heldout <commit>`, *and* a committed `research/corpus/heldout-unlock.json` with
+   `{"design_freeze_commit": "<commit>", ...}`. The commit must be an ancestor of HEAD, and
+   `heldout-lock.json` must be `frozen`.
+4. **Library guard.** `corpuslib.Layout.item_path()` raises `HeldoutAccessError` for held-out items
+   unless the caller passes `allow_heldout=True`. Only `provision.py` and
+   `assemble.py --verify-heldout` do so; audit with `grep -rn allow_heldout research/`. Experiment
+   runners must call `corpuslib.assert_not_heldout(path)` before reading any corpus path.
+5. **Frozen set.** `assemble.py --freeze` records the held-out ids and `logical_tree_sha256` values,
+   plus `heldout_set_sha256` over the lines `<item_id>\t<logical_tree_sha256>\n`, with the freeze
+   time and git HEAD. Any later change fails assembly unless `--relock --reason ...` is given, and
+   that relock is appended to `history`. `assemble.py --verify-heldout` re-fingerprints against the
+   lock (hashes only).
+6. **Derivation cannot cross splits** (section 3). Provision may read held-out items only to derive
+   other held-out items.
+
+Unlock procedure, after the design freeze:
+
+1. Commit the design-freeze decision record (commit X).
+2. Commit `heldout-unlock.json` naming X, with who approved it and why.
+3. Run `stats.py --item <id> --unlock-heldout X`.
+
+Every held-out result produced afterwards must cite X.
+
+## 10. Assembly outputs
+
+`assemble.py` writes:
+
+- **`manifest.json`**
+  - `corpus_version`, the families, splits and tiers, and tool hashes
+  - one entry per item: definition fields, licence, provenance summary (URLs + SHA-256, commit,
+    image digest, script SHA-256 + seed + params), fingerprint record reference and SHA-256 of its
+    canonical JSON, materialization key, output pin, the three identity digests, bytes, file count,
+    and `status` (`ok` | `stale` | `stale-metadata` | `not-materialized`)
+  - the family x split x scale coverage table, with empty family/split cells listed
+  - `split_audit`
+  - `manifest_sha256` = SHA-256 of the canonical JSON (sorted keys, `,`/`:` separators, UTF-8)
+    of the manifest without that key
+- **`statistics.json`**: tuning and validation stats per item (only when the stats' logical hash
+  matches the record), family x split byte-weighted aggregates, and a fingerprint-only held-out
+  section with a note.
+- **`coverage.md`**: the coverage table rendered in Markdown.
+- **`heldout-lock.json`**: see 9.5.
+
+`--require-all` and `--require-stats` turn gaps into failures. Assembly output is deterministic for
+an unchanged corpus.
+
+## 11. Threats to validity
+
+- **Benchmark contamination of upstream codecs.** zstd, xz, brotli, JPEG recompressors and
+  similar tools were tuned on popular sets (Silesia, Canterbury/Calgary, enwik8/9, the Kodak
+  images, common source trees). Items drawn from those sets, or from near relatives, will flatter
+  existing codecs and understate headroom.
+  - Prefer less-publicized real data.
+  - Tag such items (`tags: ["public-benchmark"]`).
+  - Keep the held-out split free of them, or report results with and without them.
+- **Generator bias.** Generated data reflects the generator author's model. Seeds of one
+  generator are not independent samples of reality. Mitigations: mix real and generated items per
+  family, and give held-out generated items different params or generators.
+- **Selection bias and garden of forking paths.** Family agents choose items after seeing
+  tooling. Mitigations:
+  - Commit source definitions before computing statistics.
+  - Do not replace items because they "look bad" without a decision record.
+  - The held-out set is frozen by hash.
+- **Leakage through metadata.** Descriptions, filenames in provenance, and fingerprint listings
+  can reveal held-out content. Keep held-out descriptions provenance-only, and never read
+  `/root/eb-research/fingerprints/heldout/`.
+- **Leakage through shared origin.** Enforced by groups, upstream-key checks and same-split
+  derivation. Undetectable cases (for example, the same data under different URLs) rely on correct
+  `independence_group` labelling.
+- **Upstream drift.** URLs die or change. TOFU pins detect changed content. The cache preserves
+  bytes, but redistribution depends on `license.redistributable`. Reproduction elsewhere may need
+  mirrors.
+- **Materialization fidelity.**
+  - `docker export` drops image xattrs (for example file capabilities) and adds container
+    artefacts (`/.dockerenv`, `/etc/hostname` and similar).
+  - `git archive` drops history and applies `export-ignore` and `tar.umask=0022`.
+  - tar/zip extraction normalizes owners to numeric ids.
+  - WSL ext4 has no SELinux/`security.*` labels.
+  - `st_blocks` and extent granularity are ext4-specific.
+  - Record-level identity uses `logical_tree_sha256` for this reason.
+- **Scale representativeness.** Tiers cap the size at 8 GiB, so multi-terabyte behaviour
+  (index size, memory) must be extrapolated or tested separately.
+- **Indicator statistics.**
+  - Single-shot and sampled compression ratios ignore archive framing and long-range matching
+    beyond the samples.
+  - libmagic results depend on its version.
+  - Entropy is order-0 only.
+  - None of these is a performance claim.
+- **Measurement environment.** The machine is shared by concurrent agents. No timing is collected
+  in this phase. ARM64 runs are QEMU-emulated and labelled as such.
+- **Small cells.** Some family x split x scale cells will hold few items. Report uncertainty per
+  cell and avoid pooling that hides family effects.
+
+## 12. Files
+
+```
+research/corpus/
+  methodology.md           this document
+  sources/*.json           declarative item definitions (family agents)
+  pins/<id>.json           TOFU pins (inputs, output) with history
+  fingerprints/<id>.json   fingerprint records (held-out: fingerprint-only)
+  stats/<id>.json          per-item statistics (tuning/validation)
+  manifest.json            assembled manifest + coverage + manifest_sha256
+  statistics.json          assembled statistics
+  coverage.md              coverage table
+  heldout-lock.json        held-out set (draft|frozen)
+  heldout-unlock.json      (only after design freeze) two-key unlock record
+  generators/              generator/build scripts (selftest_tree.py is the reference example)
+  tools/
+    run.sh                 WSL entry point (provision|stats|assemble|fingerprint|selftest)
+    corpuslib.py           constants, validation, layout, held-out guard
+    fingerprint.py         canonical tree fingerprint
+    provision.py           materialization
+    stats.py               statistics
+    assemble.py            manifest/statistics/coverage/lock
+    selftest.sh            sandboxed end-to-end test
+/root/eb-research/         corpus/<split>/<id>, heldout/<id>, cache/, fingerprints/, state/, logs/, quarantine/
+```
