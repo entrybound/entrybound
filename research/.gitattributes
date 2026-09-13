@@ -1,0 +1,17 @@
+# Research tooling runs under both Windows and WSL; keep text files LF in every
+# working copy so shell scripts and byte-exact fixtures are not rewritten by
+# core.autocrlf.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gz binary
+*.zst binary
+*.xz binary
+*.zip binary
+*.tar binary
+*.7z binary
+*.eb binary
+*.ebsig binary
+*.bin binary
