@@ -90,6 +90,8 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - The `ebr` corpus module and `research/corpus/tools/corpuslib.py` both implement held-out guards. Consolidate them so `ebr` calls `corpuslib.assert_not_heldout()` and reads `research/corpus/manifest.json` (Phase B2 task).
 - An extra directory, `/root/eb-research/generated`, was created by a framework agent and may overlap the corpus framework; reconcile it during corpus assembly.
 - `fingerprint.py`/`stats.py` memory grows roughly 0.5–1 KB per filesystem object; generated items are hashed in memory. Streaming generators are needed for multi-GB synthetic items.
+- Corpus fingerprint `tree_sha256` includes `st_blocks`, which is unstable on ext4 under delayed allocation: 14 of 40 g1-code items re-verified with an allocation-only difference. Corpus identity and held-out locking must use `logical_tree_sha256`; fix `fingerprint.py`/`assemble.py` if assembly has not already done so.
+- Some corpus build trees are not bit-reproducible (e.g. cJSON's CMake build), and the Docker database data directories use `output_pin: null`. Experiments must reference the committed fingerprint of the materialized bytes, not assume a rebuild reproduces them.
 - `tools/zip-compat/observed-outcomes-v1.json` (tracked production tooling) was transiently modified by an agent during extraction and was verified byte-identical to `HEAD` afterwards. Agents must not run regeneration tools against tracked files.
 
 ## How to resume
