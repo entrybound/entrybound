@@ -108,3 +108,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-13T02:04Z — Added research/orchestration/checkpoint.py (serialized commit+log+push) and watch_journals.py (per-agent completion events). All later workflows commit stage outputs through checkpoint.py.
 - 2026-09-13T02:08Z — Launched Phase B2 (wf_5a19305a-ed0); script at research/orchestration/workflows/phase-b2-harness.js. Journal watcher now covers A, B1, B2.
 - 2026-09-13T02:28Z — Corpus g3-data committed: 54 items F05-F08 (tuning/validation/held-out); gaps: no large validation items, F08 validation lacks real-content DBs, F07/F08 held-out have 2 real + 1 generated groups; several upstreams are unstable (pinned bytes cached).
+- 2026-09-13T02:30Z — Phase A: code-cli extraction final (36/36 slices); integrity cluster merged.
