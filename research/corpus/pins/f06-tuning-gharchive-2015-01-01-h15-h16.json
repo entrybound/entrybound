@@ -1,0 +1,35 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f06-tuning-gharchive-2015-01-01-h15-h16",
+  "inputs": {
+    "h15": {
+      "url": "https://data.gharchive.org/2015-01-01-15.json.gz",
+      "sha256": "dc50a9e7cf6fd56cfbb7fa11381a6bcf3657a1e279131b66888ebbfb58652e76",
+      "size": 3844072,
+      "retrieved_utc": "2026-09-13T02:16:27Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "h16": {
+      "url": "https://data.gharchive.org/2015-01-01-16.json.gz",
+      "sha256": "1dd342a77a340b837c5e3cb74fa824a62000f43115a5ed4c1182432315b3570f",
+      "size": 3928231,
+      "retrieved_utc": "2026-09-13T02:16:27Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "4d2c0c4e0c1173cbcaf4bc3500a437d3df8a5b906600f089dffc165972707004",
+    "logical_tree_sha256": "aafe652be9f127dbcdb9b9eaea90b3de65ff095cfc20c7f9168c76a4e145a606",
+    "pinned_utc": "2026-09-13T02:25:03Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:03Z",
+      "output": {
+        "materialization_key": "6e6f97fe77b01096c7d095150b34e7757c37b572cbf4a10aed1f3508ebd0f643",
+        "logical_tree_sha256": "aafe652be9f127dbcdb9b9eaea90b3de65ff095cfc20c7f9168c76a4e145a606",
+        "pinned_utc": "2026-09-13T02:16:27Z"
+      }
+    }
+  ]
+}

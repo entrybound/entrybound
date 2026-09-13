@@ -1,0 +1,103 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-heldout-gen-numeric-c",
+  "family": "F07",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "generate",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-gen-numeric-c",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "d97d6b289810c4664c810c3ca6a2513f94fd19066ea2ab7d2b9502bc5503757c",
+  "materialization_key": "803f238fc25d14d2972fe66e616ee11b83b1e6772bd63677ac5e5bbca374d5f5",
+  "materialized_utc": "2026-09-13T02:17:49Z",
+  "materialized_relpath": "heldout/f07-heldout-gen-numeric-c",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "0713d619bc14d97dfb2f29e95bcbdefc60df103bea120a62f84d2f4abb27520a",
+    "pinned_utc": "2026-09-13T02:17:49Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 489921815,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g3-data/gen_numeric_c.py",
+      "script_sha256": "d83a0dbc480fa4da898cfcf6dd9fada7dce48a4582f08890c07cc057c2ae61ee",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 7301,
+      "params": {
+        "runs": [
+          {
+            "name": "reaction-diffusion",
+            "model": "gray-scott",
+            "n": 512,
+            "steps": 6000,
+            "every": 150,
+            "F": 0.037,
+            "k": 0.06
+          },
+          {
+            "name": "tracer",
+            "model": "advection",
+            "n": 512,
+            "steps": 3000,
+            "every": 100
+          },
+          {
+            "name": "lorenz96-ensemble",
+            "model": "lorenz96",
+            "k": 40,
+            "members": 64,
+            "steps": 40000,
+            "every": 4
+          },
+          {
+            "name": "hydrophone",
+            "model": "ar-audio",
+            "channels": 4,
+            "seconds": 240,
+            "rate": 48000
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "cddf289abded1117cc9e24336b7ab8958249a9203d78c95a711ea5018e083363",
+    "logical_tree_sha256": "0713d619bc14d97dfb2f29e95bcbdefc60df103bea120a62f84d2f4abb27520a",
+    "content_tree_sha256": "640561294b10fa6bc4821635fa711d64e67f34c1d655bcfa78ad8f7308d859ef",
+    "extended_tree_sha256": "8cca597b759f8f63036f3d3c88194c48ef3978fa27783fda1178fbd9bea83985",
+    "bytes": 489921815,
+    "counts": {
+      "objects": 12,
+      "files": 7,
+      "dirs": 4,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

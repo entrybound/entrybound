@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f08-heldout-lahman-baseball-sqlite-2022",
+  "inputs": {
+    "lahman": {
+      "url": "https://github.com/jknecht/baseball-archive-sqlite/releases/download/2022/lahman_1871-2022.sqlite",
+      "sha256": "d688f51113bfce19d7314f9824ea0d080c074b5d106493bfea2ac8d3bfb8d3e2",
+      "size": 69300224,
+      "retrieved_utc": "2026-09-13T02:16:49Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "1253dd22806c602cf1f0b4ea7ca42e45f732b8740101353bac1526fefad4dab7",
+    "logical_tree_sha256": "257c66d371e661d0481e3f2fee56769a6f4ef6ab1730f5c70c61b28c5a2b98e4",
+    "pinned_utc": "2026-09-13T02:25:22Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:22Z",
+      "output": {
+        "materialization_key": "4984392bd9919d95c865af2c94a17950d24fe9f8d3b0a6b64c12d99430ef2dce",
+        "logical_tree_sha256": "257c66d371e661d0481e3f2fee56769a6f4ef6ab1730f5c70c61b28c5a2b98e4",
+        "pinned_utc": "2026-09-13T02:16:49Z"
+      }
+    }
+  ]
+}

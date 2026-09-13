@@ -1,0 +1,97 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-validation-sdrbench-exafel",
+  "family": "F07",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "sdrbench-exafel",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "6efd2d779af2163e4c4dd8dec2c7cbc8f946f83f18934230a136465d553f2c00",
+  "materialization_key": "a7352dbe0b48f2c18bb1c42e7c25b7f84d209d3ccc763d46c9715e9d7e2c0e66",
+  "materialized_utc": "2026-09-13T02:25:23Z",
+  "materialized_relpath": "corpus/validation/f07-validation-sdrbench-exafel",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "038e7c1e1d0f91f936643141514129f60748352e49c320fe6129df8fdf950a86",
+    "pinned_utc": "2026-09-13T02:25:23Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 137817600,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "exafel",
+        "url": "https://g-d0cd3f.fd635.8443.data.globus.org/raw-data/EXAFEL/SDRBENCH-EXAFEL-10x32x185x388.tar.gz",
+        "final_url": "https://g-d0cd3f.fd635.8443.data.globus.org/raw-data/EXAFEL/SDRBENCH-EXAFEL-10x32x185x388.tar.gz",
+        "sha256": "b6a2a65b5134313ebacb53ea6effc6c8b049ad2f2d60027340b8d213805a7164",
+        "size": 82977072,
+        "retrieved_utc": "2026-09-13T02:16:48Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "SDRBENCH-EXAFEL-10x32x185x388.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "exafel"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "5496c09cd308853449179c5c5c8558c19d9bd331654045aea3af3fe174e67996",
+    "logical_tree_sha256": "038e7c1e1d0f91f936643141514129f60748352e49c320fe6129df8fdf950a86",
+    "content_tree_sha256": "a444eb50dd3ac2d88de052e301cca142d755790d39362469d802788da9be5d75",
+    "extended_tree_sha256": "ff963ce0f4c0dcacb3a21e0df0d55558af4e2c2f26663730f6332f33d536ca69",
+    "bytes": 137817600,
+    "bytes_all_paths": 137817600,
+    "allocated_bytes": 137822208,
+    "counts": {
+      "objects": 5,
+      "files": 3,
+      "unique_file_inodes": 3,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 31,
+      "path_length_bytes": {
+        "min": 29,
+        "max": 61,
+        "mean": 50.25,
+        "p50": 56,
+        "p95": 61
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

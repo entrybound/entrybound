@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-tuning-gen-logs-a-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "2d27cb85671d82b138c991858c440a0e30628222309a4ab20ddbf2931c2c88b2",
+    "logical_tree_sha256": "0adaf812516e5f00c8051e58883f785f250015e679dff144825222a5d426ef17",
+    "pinned_utc": "2026-09-13T02:14:37Z"
+  },
+  "history": []
+}

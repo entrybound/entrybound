@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f08-validation-northwind-sqlite",
+  "inputs": {
+    "northwind": {
+      "url": "https://raw.githubusercontent.com/jpwhite3/northwind-SQLite3/4f56e7f5906dfd23b25244c5bfe8fb5da6402efd/dist/northwind.db",
+      "sha256": "2f4f5c68dfcd33ba27373eae48c7a4869800c68095ee0f9f0da494f83382a877",
+      "size": 24702976,
+      "retrieved_utc": "2026-09-13T02:16:50Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "2bd7c3a9cfea21b451d8969ebfd228e5b0aaa57b94663c19dfdcc1abeb1b2617",
+    "logical_tree_sha256": "2a3c73bfccdd1b8180b0a7a7ee5a8c7720086af4419acd8625fde4e2a7bbe148",
+    "pinned_utc": "2026-09-13T02:25:27Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:27Z",
+      "output": {
+        "materialization_key": "f90846e52fc870abe866eb3e76de7b5746fcf03c388379e71d23a40fa2c0a5a3",
+        "logical_tree_sha256": "2a3c73bfccdd1b8180b0a7a7ee5a8c7720086af4419acd8625fde4e2a7bbe148",
+        "pinned_utc": "2026-09-13T02:16:51Z"
+      }
+    }
+  ]
+}

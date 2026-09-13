@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-tuning-enwik8",
+  "inputs": {
+    "enwik8": {
+      "url": "https://mattmahoney.net/dc/enwik8.zip",
+      "sha256": "547994d9980ebed1288380d652999f38a14fe291a6247c157c3d33d4932534bc",
+      "size": 36445475,
+      "retrieved_utc": "2026-09-13T02:16:10Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "ded100e24641e0bc0e4ef19f58d02e09d72d886e7cbc6ea08db4123452be3b94",
+    "logical_tree_sha256": "0b7854e845f3d5df948d19817f53f8a9a2a07dd45feb6fef30b6054b34048e0c",
+    "pinned_utc": "2026-09-13T02:24:58Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:24:58Z",
+      "output": {
+        "materialization_key": "849bf35a3ac56013b5f7eff52424f73766c237db11f4340e222271765070f58a",
+        "logical_tree_sha256": "0b7854e845f3d5df948d19817f53f8a9a2a07dd45feb6fef30b6054b34048e0c",
+        "pinned_utc": "2026-09-13T02:16:11Z"
+      }
+    }
+  ]
+}

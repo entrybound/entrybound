@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f08-tuning-chinook-sqlite",
+  "inputs": {
+    "chinook": {
+      "url": "https://github.com/lerocha/chinook-database/releases/download/v1.4.5/Chinook_Sqlite.sqlite",
+      "sha256": "bdf635be69850bd3be09c9a2dbeef7ddfb80036bd3ef3381383cd03b61e4a61a",
+      "size": 1067008,
+      "retrieved_utc": "2026-09-13T02:14:47Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "951276efdab01914658cd7fd1e4ee659725370387bcb98d2f3015ccd5902e865",
+    "logical_tree_sha256": "ed6ba20aea92737f780c70842c5445c1a4700b87cabbd5939689162414a6dbc4",
+    "pinned_utc": "2026-09-13T02:25:23Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:23Z",
+      "output": {
+        "materialization_key": "4fa872910d373b9b1d71feec31d817dfef688274b0ca85dacb978bee46b7f98f",
+        "logical_tree_sha256": "ed6ba20aea92737f780c70842c5445c1a4700b87cabbd5939689162414a6dbc4",
+        "pinned_utc": "2026-09-13T02:14:47Z"
+      }
+    }
+  ]
+}

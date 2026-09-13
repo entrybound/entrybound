@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-tuning-gen-numeric-a-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "0612543dae6221d28972c126d51d324f6a0bfccd66dab155a911e767d6f23820",
+    "logical_tree_sha256": "f91745e39381dfc3a54071c58d63c17e2eefc2b76392d7af07f6dd359cd66008",
+    "pinned_utc": "2026-09-13T02:16:45Z"
+  },
+  "history": []
+}

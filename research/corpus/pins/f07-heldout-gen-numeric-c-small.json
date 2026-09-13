@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-heldout-gen-numeric-c-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "699187e80644a2393a7e5c22aea2362d03be287bfc0c9592480b5c2c9990daa2",
+    "logical_tree_sha256": "c006181c1545b466a68f754a9874af524deb271038ece79fa7cedadc08e73f3e",
+    "pinned_utc": "2026-09-13T02:22:01Z"
+  },
+  "history": []
+}

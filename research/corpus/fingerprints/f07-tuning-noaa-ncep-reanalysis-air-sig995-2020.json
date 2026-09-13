@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-tuning-noaa-ncep-reanalysis-air-sig995-2020",
+  "family": "F07",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "noaa-psl-ncep-reanalysis",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "38f74f9f44789189119837f79e877a0cc4c273cc2c0607ac95f5eb92dc8ccd07",
+  "materialization_key": "9ab770f5165ba52d04d95df0a51f06d1b3316cc7c4abd0072286070626362008",
+  "materialized_utc": "2026-09-13T02:25:18Z",
+  "materialized_relpath": "corpus/tuning/f07-tuning-noaa-ncep-reanalysis-air-sig995-2020",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "3d9f8fd303acf220c651f0f1c64937fd9597d9db21f7b6a2cb885c0d587357e6",
+    "pinned_utc": "2026-09-13T02:25:18Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 22123352,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "air",
+        "url": "https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/surface/air.sig995.2020.nc",
+        "final_url": "https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/surface/air.sig995.2020.nc",
+        "sha256": "64bb7a3efc872cd942eb573801ae8742beaab5f4b42ea701e31ec433775d3c41",
+        "size": 22123352,
+        "retrieved_utc": "2026-09-13T02:16:41Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "air.sig995.2020.nc"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "air"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "4d9ae0901d46db518d7c41ec85e8d3cdb0b4ab826c531f11663c7129679adaae",
+    "logical_tree_sha256": "3d9f8fd303acf220c651f0f1c64937fd9597d9db21f7b6a2cb885c0d587357e6",
+    "content_tree_sha256": "3004d7da11db60adf30d71e17cbcf17720124afc520e0e9b52b691f97bac5893",
+    "extended_tree_sha256": "d684e84497c79776dc727546850cf18c4fb1b20abf08ccba483dc300cc6716ad",
+    "bytes": 22123352,
+    "bytes_all_paths": 22123352,
+    "allocated_bytes": 22126592,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 18,
+      "path_length_bytes": {
+        "min": 18,
+        "max": 18,
+        "mean": 18.0,
+        "p50": 18,
+        "p95": 18
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

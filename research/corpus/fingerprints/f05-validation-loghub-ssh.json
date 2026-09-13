@@ -1,0 +1,97 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-validation-loghub-ssh",
+  "family": "F05",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "loghub-openssh",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "662aaa795a6d40358ac51d659418607509e3032a758e84095bd4786c00557196",
+  "materialization_key": "6fb3f4f482809be57f3fb648b8b9d2aef05e64a4f2bde597fdd1c891ee5f2717",
+  "materialized_utc": "2026-09-13T02:24:59Z",
+  "materialized_relpath": "corpus/validation/f05-validation-loghub-ssh",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "a88147b8e93b0033f64d4ae99a4de5ebfa01b789be343b84c1019d8dc2f04f37",
+    "pinned_utc": "2026-09-13T02:24:59Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 73417506,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ssh",
+        "url": "https://zenodo.org/records/8196385/files/SSH.tar.gz",
+        "final_url": "https://zenodo.org/records/8196385/files/SSH.tar.gz",
+        "sha256": "296610a35773f58b7c295e5407fc5ccdf48beb3c544fc14a6309addf904a2712",
+        "size": 4596666,
+        "retrieved_utc": "2026-09-13T02:16:23Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "SSH.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "ssh"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "d997699574d54ca6d0d19b9504e7feb26ef03c3daaa562aefb9b1b28c81ba22a",
+    "logical_tree_sha256": "a88147b8e93b0033f64d4ae99a4de5ebfa01b789be343b84c1019d8dc2f04f37",
+    "content_tree_sha256": "11da7d8e1fdcfda77051e2e430d1e515323435a0034e656cba7460bd804b08e4",
+    "extended_tree_sha256": "d35cbbc8e74db975bef8fd0a2d3cc7f9662948a69acbc991d666e79b9f9a45f4",
+    "bytes": 73417506,
+    "bytes_all_paths": 73417506,
+    "allocated_bytes": 73420800,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 7,
+      "path_length_bytes": {
+        "min": 7,
+        "max": 7,
+        "mean": 7.0,
+        "p50": 7,
+        "p95": 7
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f08-tuning-silesia-osdb",
+  "inputs": {
+    "osdb": {
+      "url": "https://sun.aei.polsl.pl/~sdeor/corpus/osdb.bz2",
+      "sha256": "1adaad6b614f0739f0a8401eaee34923af1284df70c1fe842dd3cab4cf334612",
+      "size": 2802792,
+      "retrieved_utc": "2026-09-13T02:14:49Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "111290043d9ca48a37c1eace728d9702388d2fdedac7b2794493780bfa104b22",
+    "logical_tree_sha256": "02359541c9dd6c23d6bf82c29643bc04ba5e7ded87a7a6fa3285aa57f24bae21",
+    "pinned_utc": "2026-09-13T02:25:26Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:26Z",
+      "output": {
+        "materialization_key": "0e5d99e470f9d7c3239cefb0055994024fafb691d07e412f84b37bfb8fc42e65",
+        "logical_tree_sha256": "02359541c9dd6c23d6bf82c29643bc04ba5e7ded87a7a6fa3285aa57f24bae21",
+        "pinned_utc": "2026-09-13T02:14:49Z"
+      }
+    }
+  ]
+}

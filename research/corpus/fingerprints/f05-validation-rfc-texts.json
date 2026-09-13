@@ -1,0 +1,381 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-validation-rfc-texts",
+  "family": "F05",
+  "split": "validation",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "ietf-rfc-texts",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "314ca0c326f662f57920c1699e3ad125a0cdba8004f47636e6025d8c92b67f21",
+  "materialization_key": "cb8c74cd21617b15f3212a71ac2d78005aea727e5bbc187d874c71094a96fb36",
+  "materialized_utc": "2026-09-13T02:26:13Z",
+  "materialized_relpath": "corpus/validation/f05-validation-rfc-texts",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "e2c5d5aef020f520bc5d7ba861f5cc2b1c6ecfffbee1004826eb238fe9744008",
+    "pinned_utc": "2026-09-13T02:24:59Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 3830137,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "rfc791",
+        "url": "https://www.rfc-editor.org/rfc/rfc791.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc791.txt",
+        "sha256": "6cfb387fcecfc1b72f2f69343c5b6951b5d263d708162e2b5c66ab8f394f6265",
+        "size": 94892,
+        "retrieved_utc": "2026-09-13T02:14:38Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc791.txt"
+      },
+      {
+        "name": "rfc793",
+        "url": "https://www.rfc-editor.org/rfc/rfc793.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc793.txt",
+        "sha256": "e55b1faa35edbeecceb2400233a16ae81897bdf9c31d5b3031e91139e5ea8142",
+        "size": 172710,
+        "retrieved_utc": "2026-09-13T02:14:38Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc793.txt"
+      },
+      {
+        "name": "rfc2616",
+        "url": "https://www.rfc-editor.org/rfc/rfc2616.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc2616.txt",
+        "sha256": "10211d2885196b97b1c78e1672f3f68ae97c294596ef2b7fd890cbd30a3427bf",
+        "size": 422279,
+        "retrieved_utc": "2026-09-13T02:14:38Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc2616.txt"
+      },
+      {
+        "name": "rfc3986",
+        "url": "https://www.rfc-editor.org/rfc/rfc3986.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc3986.txt",
+        "sha256": "3102dae4b68cebe40337730312fcb612297b8928547267e8b3d1ee6002b2d683",
+        "size": 141811,
+        "retrieved_utc": "2026-09-13T02:14:38Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc3986.txt"
+      },
+      {
+        "name": "rfc4180",
+        "url": "https://www.rfc-editor.org/rfc/rfc4180.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc4180.txt",
+        "sha256": "5d9ec035aa40c0108362cb767c9e2d08c30f7225cb2a4715f484cb13c29b5f21",
+        "size": 12931,
+        "retrieved_utc": "2026-09-13T02:14:38Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc4180.txt"
+      },
+      {
+        "name": "rfc5321",
+        "url": "https://www.rfc-editor.org/rfc/rfc5321.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc5321.txt",
+        "sha256": "7d560eddff1b213c17d4e1e5f95005728b2f05bc2b3947f0fcc91717c6707634",
+        "size": 225929,
+        "retrieved_utc": "2026-09-13T02:14:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc5321.txt"
+      },
+      {
+        "name": "rfc5322",
+        "url": "https://www.rfc-editor.org/rfc/rfc5322.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc5322.txt",
+        "sha256": "cb459acca15a2aa895863eaeff6f1d5b9c4ca15578ae3e3706f757787a385969",
+        "size": 122322,
+        "retrieved_utc": "2026-09-13T02:14:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc5322.txt"
+      },
+      {
+        "name": "rfc6749",
+        "url": "https://www.rfc-editor.org/rfc/rfc6749.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc6749.txt",
+        "sha256": "f204fc8661d6c92d2ec6e0b54808f961a9ad26e792f57f312d9528335519bd71",
+        "size": 163498,
+        "retrieved_utc": "2026-09-13T02:14:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc6749.txt"
+      },
+      {
+        "name": "rfc7231",
+        "url": "https://www.rfc-editor.org/rfc/rfc7231.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc7231.txt",
+        "sha256": "a83d026937f6f7929a0e53f8a9bfec4104285f0f89d6dbabd3927c4208a715b2",
+        "size": 235053,
+        "retrieved_utc": "2026-09-13T02:14:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc7231.txt"
+      },
+      {
+        "name": "rfc7540",
+        "url": "https://www.rfc-editor.org/rfc/rfc7540.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc7540.txt",
+        "sha256": "6a67e8d7fdfa7b5272fc55f8fba62b266f932031c7f39e29c52f83e129bc2967",
+        "size": 209580,
+        "retrieved_utc": "2026-09-13T02:14:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc7540.txt"
+      },
+      {
+        "name": "rfc8259",
+        "url": "https://www.rfc-editor.org/rfc/rfc8259.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc8259.txt",
+        "sha256": "61a5378f4255c720beb2a4b4a63b29540147c140f36988bf086291989b4cd2d7",
+        "size": 28360,
+        "retrieved_utc": "2026-09-13T02:14:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc8259.txt"
+      },
+      {
+        "name": "rfc8446",
+        "url": "https://www.rfc-editor.org/rfc/rfc8446.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc8446.txt",
+        "sha256": "47871bc8820a2c3b6ea89f061055577058862cf543686b82d10131239702b3bd",
+        "size": 337736,
+        "retrieved_utc": "2026-09-13T02:14:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc8446.txt"
+      },
+      {
+        "name": "rfc9000",
+        "url": "https://www.rfc-editor.org/rfc/rfc9000.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9000.txt",
+        "sha256": "f88aae47f8b18e102024916e975e919201d8dde689cba79b01079eaedd402e22",
+        "size": 403442,
+        "retrieved_utc": "2026-09-13T02:14:39Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc9000.txt"
+      },
+      {
+        "name": "rfc9001",
+        "url": "https://www.rfc-editor.org/rfc/rfc9001.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9001.txt",
+        "sha256": "3bbaecdf5afd278052a2c48348ce118c4ff8d0cf6b9915549858171b3f98a591",
+        "size": 126175,
+        "retrieved_utc": "2026-09-13T02:14:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc9001.txt"
+      },
+      {
+        "name": "rfc9002",
+        "url": "https://www.rfc-editor.org/rfc/rfc9002.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9002.txt",
+        "sha256": "3a8a54eea1ad5d1c134a548bf15edfa0e21bfb4106dbd7db3c09cace842099af",
+        "size": 89071,
+        "retrieved_utc": "2026-09-13T02:14:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc9002.txt"
+      },
+      {
+        "name": "rfc9110",
+        "url": "https://www.rfc-editor.org/rfc/rfc9110.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9110.txt",
+        "sha256": "21c1cdce6ab0e5509b04d84a28000836c7a087cf786efe6f04877ebfff47232a",
+        "size": 502941,
+        "retrieved_utc": "2026-09-13T02:14:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc9110.txt"
+      },
+      {
+        "name": "rfc9111",
+        "url": "https://www.rfc-editor.org/rfc/rfc9111.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9111.txt",
+        "sha256": "aeb52adb3279d5f23dae34f68af11bd5cef0a0aff7ffcd014c9ca93c5302cf3e",
+        "size": 84477,
+        "retrieved_utc": "2026-09-13T02:14:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc9111.txt"
+      },
+      {
+        "name": "rfc9112",
+        "url": "https://www.rfc-editor.org/rfc/rfc9112.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9112.txt",
+        "sha256": "e4f426bac6206b67fdf9e0da826154f70588db2133a0a86b15cde4ff725d8937",
+        "size": 109913,
+        "retrieved_utc": "2026-09-13T02:14:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc9112.txt"
+      },
+      {
+        "name": "rfc9113",
+        "url": "https://www.rfc-editor.org/rfc/rfc9113.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9113.txt",
+        "sha256": "a00ef91b64e111a282e77ec66980f5242e77c0bb5e33e0927e3b6757080506de",
+        "size": 191811,
+        "retrieved_utc": "2026-09-13T02:14:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc9113.txt"
+      },
+      {
+        "name": "rfc9114",
+        "url": "https://www.rfc-editor.org/rfc/rfc9114.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9114.txt",
+        "sha256": "6b84555c88eeebcf5d2b2e1d9d7b58630abc97ab877b2cf62dee4cd635db34e4",
+        "size": 155206,
+        "retrieved_utc": "2026-09-13T02:14:40Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "rfc9114.txt"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "rfc791"
+      },
+      {
+        "op": "copy",
+        "input": "rfc793"
+      },
+      {
+        "op": "copy",
+        "input": "rfc2616"
+      },
+      {
+        "op": "copy",
+        "input": "rfc3986"
+      },
+      {
+        "op": "copy",
+        "input": "rfc4180"
+      },
+      {
+        "op": "copy",
+        "input": "rfc5321"
+      },
+      {
+        "op": "copy",
+        "input": "rfc5322"
+      },
+      {
+        "op": "copy",
+        "input": "rfc6749"
+      },
+      {
+        "op": "copy",
+        "input": "rfc7231"
+      },
+      {
+        "op": "copy",
+        "input": "rfc7540"
+      },
+      {
+        "op": "copy",
+        "input": "rfc8259"
+      },
+      {
+        "op": "copy",
+        "input": "rfc8446"
+      },
+      {
+        "op": "copy",
+        "input": "rfc9000"
+      },
+      {
+        "op": "copy",
+        "input": "rfc9001"
+      },
+      {
+        "op": "copy",
+        "input": "rfc9002"
+      },
+      {
+        "op": "copy",
+        "input": "rfc9110"
+      },
+      {
+        "op": "copy",
+        "input": "rfc9111"
+      },
+      {
+        "op": "copy",
+        "input": "rfc9112"
+      },
+      {
+        "op": "copy",
+        "input": "rfc9113"
+      },
+      {
+        "op": "copy",
+        "input": "rfc9114"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "8f6d2d06d8c9874c926ca3d900cdb209e32ab35e0b486d5206a23a303ba8a51b",
+    "logical_tree_sha256": "e2c5d5aef020f520bc5d7ba861f5cc2b1c6ecfffbee1004826eb238fe9744008",
+    "content_tree_sha256": "6c00f0c36378028f60391c74d44eb02699c445ed0f15c1f972db333595cfbf39",
+    "extended_tree_sha256": "6584ef7ebf543a1d8b29c69c8f0e7fcde99db310df27dcd1288fce402ddf2fc7",
+    "bytes": 3830137,
+    "bytes_all_paths": 3830137,
+    "allocated_bytes": 3866624,
+    "counts": {
+      "objects": 21,
+      "files": 20,
+      "unique_file_inodes": 20,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 11,
+      "path_length_bytes": {
+        "min": 10,
+        "max": 11,
+        "mean": 10.9,
+        "p50": 11,
+        "p95": 11
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

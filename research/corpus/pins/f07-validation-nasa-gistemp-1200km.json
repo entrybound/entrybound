@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-validation-nasa-gistemp-1200km",
+  "inputs": {
+    "gistemp": {
+      "url": "https://data.giss.nasa.gov/pub/gistemp/gistemp1200_GHCNv4_ERSSTv5.nc.gz",
+      "sha256": "6a597332bcefbe0fbe5a6ce7677a9012fa766cc43cea291d6207c12db2fe0cc6",
+      "size": 25853076,
+      "retrieved_utc": "2026-09-13T02:16:46Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "53b89377957bfc13ff0fea4f49f8984a35502a40dd78cf1996f0f49c0f3b7715",
+    "logical_tree_sha256": "0b9648517749df657a43aa92d6beff842e5c76995be0c2e95296e6cff4017869",
+    "pinned_utc": "2026-09-13T02:25:21Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:21Z",
+      "output": {
+        "materialization_key": "c21a14219b908f7339c1c9907b36b77fbbe402df99539f760bfd50343c95667e",
+        "logical_tree_sha256": "0b9648517749df657a43aa92d6beff842e5c76995be0c2e95296e6cff4017869",
+        "pinned_utc": "2026-09-13T02:16:47Z"
+      }
+    }
+  ]
+}

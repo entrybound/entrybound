@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f06-validation-osm-andorra-20250101-xml",
+  "inputs": {
+    "pbf": {
+      "url": "https://download.geofabrik.de/europe/andorra-250101.osm.pbf",
+      "sha256": "8a2c4deafa9eb4d03da075437dc15d1511cb2e2779ca74cf78a94679703cc945",
+      "size": 3113044,
+      "retrieved_utc": "2026-09-13T02:16:36Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "c7acc2bc6f1c1f7f378a1bc55f340bf145c74f3592746d8e29df26a0f65118fb",
+    "logical_tree_sha256": "0d52ecee8df9d4156ef739956211e7dc424095a6c7e94f2d464e677a18487afa",
+    "pinned_utc": "2026-09-13T02:25:14Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:14Z",
+      "output": {
+        "materialization_key": "98e3b26c95a0b0252aa03de310b465d4d0ebf57a793f26eba25826c4bf19930b",
+        "logical_tree_sha256": "0d52ecee8df9d4156ef739956211e7dc424095a6c7e94f2d464e677a18487afa",
+        "pinned_utc": "2026-09-13T02:21:56Z"
+      }
+    }
+  ]
+}

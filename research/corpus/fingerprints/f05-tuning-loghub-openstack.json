@@ -1,0 +1,97 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-tuning-loghub-openstack",
+  "family": "F05",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "loghub-openstack",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "830221f1a9fdced1ee670237d8f58b7c4da662c3f36b34b7b5f1eff446a631e1",
+  "materialization_key": "076b466bee22178b79c77a81cf70cb56ea46fb6ff16e9603da602571017a1366",
+  "materialized_utc": "2026-09-13T02:24:59Z",
+  "materialized_relpath": "corpus/tuning/f05-tuning-loghub-openstack",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "4fb953b58ec4635f396245e2baa77193affcc21efdc8b7ea764b0206f7b95643",
+    "pinned_utc": "2026-09-13T02:24:59Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 61442325,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "openstack",
+        "url": "https://zenodo.org/records/8196385/files/OpenStack.tar.gz",
+        "final_url": "https://zenodo.org/records/8196385/files/OpenStack.tar.gz",
+        "sha256": "87c98c5ed03262e05cdb7a6f3717033df76d88fda0f7d2db23bd9fa4200f1879",
+        "size": 5394691,
+        "retrieved_utc": "2026-09-13T02:16:20Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "OpenStack.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "openstack"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "8932fb72f838350c154e69b41b513090e633a6880f4afc13847946b03dac30d4",
+    "logical_tree_sha256": "4fb953b58ec4635f396245e2baa77193affcc21efdc8b7ea764b0206f7b95643",
+    "content_tree_sha256": "7ada8efae2fd78189d6d623ba67a2356c51e99faea95061a7c4232c1ae456d7b",
+    "extended_tree_sha256": "6242fe3b668bf8e403bf297c1fab75336db3dab5db4ed8f55d457d9074f71e1d",
+    "bytes": 61442325,
+    "bytes_all_paths": 61442325,
+    "allocated_bytes": 61456384,
+    "counts": {
+      "objects": 5,
+      "files": 4,
+      "unique_file_inodes": 4,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 22,
+      "path_length_bytes": {
+        "min": 18,
+        "max": 22,
+        "mean": 20.5,
+        "p50": 21,
+        "p95": 22
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

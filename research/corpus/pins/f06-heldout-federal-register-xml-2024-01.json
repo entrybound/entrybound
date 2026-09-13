@@ -1,0 +1,91 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f06-heldout-federal-register-xml-2024-01",
+  "inputs": {
+    "fr02": {
+      "url": "https://www.govinfo.gov/bulkdata/FR/2024/01/FR-2024-01-02.xml",
+      "sha256": "57abe43a1988ac14194809a43425e692991568a3ad081bdd37bb450404d9f7f0",
+      "size": 1897193,
+      "retrieved_utc": "2026-09-13T02:16:24Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "fr03": {
+      "url": "https://www.govinfo.gov/bulkdata/FR/2024/01/FR-2024-01-03.xml",
+      "sha256": "57481146f86fa6f25db318591603632a5aa251fb93d2fe16021552f1550a576b",
+      "size": 2067055,
+      "retrieved_utc": "2026-09-13T02:16:24Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "fr04": {
+      "url": "https://www.govinfo.gov/bulkdata/FR/2024/01/FR-2024-01-04.xml",
+      "sha256": "55a335a13d44fca899f5f3f9f631df01e9da73c3db375e8fe3b9d6532296222e",
+      "size": 2674544,
+      "retrieved_utc": "2026-09-13T02:16:25Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "fr05": {
+      "url": "https://www.govinfo.gov/bulkdata/FR/2024/01/FR-2024-01-05.xml",
+      "sha256": "228c5c2e4d7216cdb57b35834a2c3f02b6220dc9cc3a46ba663dd1f875fcd610",
+      "size": 1578177,
+      "retrieved_utc": "2026-09-13T02:16:25Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "fr08": {
+      "url": "https://www.govinfo.gov/bulkdata/FR/2024/01/FR-2024-01-08.xml",
+      "sha256": "e17c8be1522243f33065032414f5252c7ed080f05ef98a76fd58184c97f413d7",
+      "size": 1597659,
+      "retrieved_utc": "2026-09-13T02:16:25Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "fr09": {
+      "url": "https://www.govinfo.gov/bulkdata/FR/2024/01/FR-2024-01-09.xml",
+      "sha256": "0087e24ee0bb0089138c34d86babe076b224277d4f17e22955fcb6d2dc638aad",
+      "size": 3975963,
+      "retrieved_utc": "2026-09-13T02:16:26Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "fr10": {
+      "url": "https://www.govinfo.gov/bulkdata/FR/2024/01/FR-2024-01-10.xml",
+      "sha256": "883aa68b1a19d63f721353b624d750fcd61abe814d91670bf74f348637d0ce00",
+      "size": 3463322,
+      "retrieved_utc": "2026-09-13T02:16:26Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "fr11": {
+      "url": "https://www.govinfo.gov/bulkdata/FR/2024/01/FR-2024-01-11.xml",
+      "sha256": "61d64793705c740b4e6db440cacb72861331656c03139c4239ae6877a4dc8938",
+      "size": 3177305,
+      "retrieved_utc": "2026-09-13T02:16:26Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "fr12": {
+      "url": "https://www.govinfo.gov/bulkdata/FR/2024/01/FR-2024-01-12.xml",
+      "sha256": "78f27a8d370c8eca8921b64530e5c0cf562df53da2ab958ebd82af3d7fb89c05",
+      "size": 3336779,
+      "retrieved_utc": "2026-09-13T02:16:27Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "fr16": {
+      "url": "https://www.govinfo.gov/bulkdata/FR/2024/01/FR-2024-01-16.xml",
+      "sha256": "8aec004716b3b6b23e1116694c620c9e09257f0eef0ab5c647de03f12eea21aa",
+      "size": 3792540,
+      "retrieved_utc": "2026-09-13T02:16:27Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "f134174aded094724cc21d5278ec8f1a88945361fce70dab87240b3ea3e85985",
+    "logical_tree_sha256": "3ff7fe80fb3effb7a57742bed324eee5a8ec49be11c4b7b8d92a5ad21c9541e8",
+    "pinned_utc": "2026-09-13T02:25:00Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:00Z",
+      "output": {
+        "materialization_key": "1302c86049a2a87c5ef80bf1dd20bd31c893ef2a1cf74be1e4ac8e2865f3bf7a",
+        "logical_tree_sha256": "3ff7fe80fb3effb7a57742bed324eee5a8ec49be11c4b7b8d92a5ad21c9541e8",
+        "pinned_utc": "2026-09-13T02:16:27Z"
+      }
+    }
+  ]
+}

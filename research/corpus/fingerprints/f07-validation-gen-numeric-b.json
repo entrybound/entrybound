@@ -1,0 +1,146 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-validation-gen-numeric-b",
+  "family": "F07",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "generate",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-gen-numeric-b",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "d9d2759ca155085948e7504d7e70fc37e42f50c664aaad52d16f066da6cb8d6f",
+  "materialization_key": "80f763b2c1b73c43e18334352076e684d41887e6945b0d48d7124287bfcba60f",
+  "materialized_utc": "2026-09-13T02:16:45Z",
+  "materialized_relpath": "corpus/validation/f07-validation-gen-numeric-b",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "f2f6cfda3713acdd5901b49098bd59618f0469ae1fd57a8810ef0df4e984d747",
+    "pinned_utc": "2026-09-13T02:16:45Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 171498196,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g3-data/gen_numeric_ab.py",
+      "script_sha256": "08ae20c6fd70860cfd25db86ef9ff5f3dd6bafcb7e33fcd3d18a06fd7f0d0df5",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 7201,
+      "params": {
+        "arrays": [
+          {
+            "path": "cube/vorticity_128x256x256.f32",
+            "kind": "grf",
+            "shape": [
+              128,
+              256,
+              256
+            ],
+            "dtype": "float32",
+            "beta": 2.0
+          },
+          {
+            "path": "grid/geopotential_2048x2048.f64",
+            "kind": "grf",
+            "shape": [
+              2048,
+              2048
+            ],
+            "dtype": "float64",
+            "beta": 4.0,
+            "scale": 150.0,
+            "offset": 5500.0
+          },
+          {
+            "path": "grid/counts_2048x2048_uint16.npy",
+            "kind": "grf",
+            "shape": [
+              2048,
+              2048
+            ],
+            "dtype": "uint16",
+            "beta": 1.5,
+            "scale": 5000.0,
+            "offset": 30000.0,
+            "container": "npy"
+          },
+          {
+            "path": "daq/channels_4x5M.i32",
+            "kind": "timeseries",
+            "shape": [
+              4,
+              5000000
+            ],
+            "dtype": "int32",
+            "scale": 200000.0,
+            "noise": 0.3
+          },
+          {
+            "path": "daq/timestamps_2M_int64.npy",
+            "kind": "timestamps",
+            "shape": [
+              2000000
+            ],
+            "dtype": "int64",
+            "step": 0.00025,
+            "container": "npy"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "ccbf037963646194b8c3a00c84e071a45ba439674b35459edc2377b2cd11357a",
+    "logical_tree_sha256": "f2f6cfda3713acdd5901b49098bd59618f0469ae1fd57a8810ef0df4e984d747",
+    "content_tree_sha256": "f50f571203cb18c90351db2569f55d579f5973a46ec55a4273b6e3af87dacef6",
+    "extended_tree_sha256": "44a36e53ea03a5e53ab0fbd0fbb9d90c254ad6d007a43a5de5503de3540731da",
+    "bytes": 171498196,
+    "bytes_all_paths": 171498196,
+    "allocated_bytes": 171520000,
+    "counts": {
+      "objects": 12,
+      "files": 8,
+      "unique_file_inodes": 8,
+      "dirs": 3,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 31,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 36,
+        "mean": 22.636,
+        "p50": 27,
+        "p95": 36
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

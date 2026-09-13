@@ -1,0 +1,109 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-tuning-gen-logs-a-small",
+  "family": "F05",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "generate",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-gen-logs-a",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "9b34deee8c448ed5abdc92acdff33711e5df67767aedf0a8fc730d504106e041",
+  "materialization_key": "2d27cb85671d82b138c991858c440a0e30628222309a4ab20ddbf2931c2c88b2",
+  "materialized_utc": "2026-09-13T02:26:15Z",
+  "materialized_relpath": "corpus/tuning/f05-tuning-gen-logs-a-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "0adaf812516e5f00c8051e58883f785f250015e679dff144825222a5d426ef17",
+    "pinned_utc": "2026-09-13T02:14:37Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 12000078,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g3-data/gen_logs_ab.py",
+      "script_sha256": "c3f07e054b693955e59dd7346af8004370659267eeceb7df09eea1e583d3c9c2",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 5101,
+      "params": {
+        "hosts": 12,
+        "start_epoch": 1767225600,
+        "files": [
+          {
+            "path": "var/log/syslog",
+            "profile": "syslog",
+            "bytes": 4000000,
+            "rate": 3.0
+          },
+          {
+            "path": "var/log/syslog.1",
+            "profile": "syslog",
+            "bytes": 3000000,
+            "rate": 3.0
+          },
+          {
+            "path": "srv/checkout/app.jsonl",
+            "profile": "jsonl",
+            "bytes": 5000000,
+            "rate": 8.0
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "fbdba312bc85c3a9bbf5d50eb8afbf0d5adf55615f15414d834decf06e481438",
+    "logical_tree_sha256": "0adaf812516e5f00c8051e58883f785f250015e679dff144825222a5d426ef17",
+    "content_tree_sha256": "a2e4cf259db2602265a3c114c64379dc424dae52d7a7b8382ca8d2bd341a2249",
+    "extended_tree_sha256": "d12bc22a65b74cfdfdac84e249b12185cd0c331b59a5944fb8caf51412eeaeb7",
+    "bytes": 12000078,
+    "bytes_all_paths": 12000078,
+    "allocated_bytes": 12005376,
+    "counts": {
+      "objects": 8,
+      "files": 3,
+      "unique_file_inodes": 3,
+      "dirs": 4,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 3,
+      "max_name_length_bytes": 9,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 22,
+        "mean": 11.0,
+        "p50": 12,
+        "p95": 22
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

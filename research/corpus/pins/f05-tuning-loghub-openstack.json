@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-tuning-loghub-openstack",
+  "inputs": {
+    "openstack": {
+      "url": "https://zenodo.org/records/8196385/files/OpenStack.tar.gz",
+      "sha256": "87c98c5ed03262e05cdb7a6f3717033df76d88fda0f7d2db23bd9fa4200f1879",
+      "size": 5394691,
+      "retrieved_utc": "2026-09-13T02:16:20Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "076b466bee22178b79c77a81cf70cb56ea46fb6ff16e9603da602571017a1366",
+    "logical_tree_sha256": "4fb953b58ec4635f396245e2baa77193affcc21efdc8b7ea764b0206f7b95643",
+    "pinned_utc": "2026-09-13T02:24:59Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:24:59Z",
+      "output": {
+        "materialization_key": "fde6fddf41bb1c24461604ff1ee78c91e8e277fdae5d2f0c0086e0b0f2b448eb",
+        "logical_tree_sha256": "4fb953b58ec4635f396245e2baa77193affcc21efdc8b7ea764b0206f7b95643",
+        "pinned_utc": "2026-09-13T02:16:20Z"
+      }
+    }
+  ]
+}

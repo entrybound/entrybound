@@ -1,0 +1,235 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-heldout-maccdc2012-zeek-logs",
+  "family": "F05",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "maccdc2012-zeek-logs",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "26a6089d3d3c33d885c496e6e2a7b77e24dddcf8005396acf0bb8aa4ac27d52a",
+  "materialization_key": "5de9574dd379416a728efdef0973b851710b3c6f52e5a7207cfa8aa07303d49d",
+  "materialized_utc": "2026-09-13T02:24:57Z",
+  "materialized_relpath": "heldout/f05-heldout-maccdc2012-zeek-logs",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "f5b7fd0e93f22c6d76f250b409642f3c1acf0146229e77fa1e7cf8c6befc7196",
+    "pinned_utc": "2026-09-13T02:24:57Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 92735808,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "dns",
+        "url": "https://www.secrepo.com/maccdc2012/dns.log.gz",
+        "final_url": "https://www.secrepo.com/maccdc2012/dns.log.gz",
+        "sha256": "845719a1d67741c1caf115ae667a50095962164b45425544df89c5fcd3cd59c9",
+        "size": 6606969,
+        "retrieved_utc": "2026-09-13T02:16:10Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "dns.log.gz"
+      },
+      {
+        "name": "ssl",
+        "url": "https://www.secrepo.com/maccdc2012/ssl.log.gz",
+        "final_url": "https://www.secrepo.com/maccdc2012/ssl.log.gz",
+        "sha256": "9a6cf61bdc3cac41194c5e7cdee2e30ec97dc41b6b51c892c47dd9d8066ee5f7",
+        "size": 1311076,
+        "retrieved_utc": "2026-09-13T02:16:10Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ssl.log.gz"
+      },
+      {
+        "name": "weird",
+        "url": "https://www.secrepo.com/maccdc2012/weird.log.gz",
+        "final_url": "https://www.secrepo.com/maccdc2012/weird.log.gz",
+        "sha256": "e3a8fcd0a51d3d996569c3008ca1a3b73ad752f61bc93923384a9e99bf0efcb6",
+        "size": 1252444,
+        "retrieved_utc": "2026-09-13T02:16:10Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "weird.log.gz"
+      },
+      {
+        "name": "ssh",
+        "url": "https://www.secrepo.com/maccdc2012/ssh.log.gz",
+        "final_url": "https://www.secrepo.com/maccdc2012/ssh.log.gz",
+        "sha256": "a51d95750c3670facf0871e3604cc748f6850ce99bcef2406b1058edba8ea9e6",
+        "size": 182159,
+        "retrieved_utc": "2026-09-13T02:16:10Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ssh.log.gz"
+      },
+      {
+        "name": "ftp",
+        "url": "https://www.secrepo.com/maccdc2012/ftp.log.gz",
+        "final_url": "https://www.secrepo.com/maccdc2012/ftp.log.gz",
+        "sha256": "fccd860e8b5b0517b4e23581d72f7dddf2b2d0ec43d67fb11b495f29b080188a",
+        "size": 127353,
+        "retrieved_utc": "2026-09-13T02:16:11Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ftp.log.gz"
+      },
+      {
+        "name": "dhcp",
+        "url": "https://www.secrepo.com/maccdc2012/dhcp.log.gz",
+        "final_url": "https://www.secrepo.com/maccdc2012/dhcp.log.gz",
+        "sha256": "f0d1ae0f6733817aed3fde6e8fbf81264296addec1e70e9b6a49b02f6dddaa43",
+        "size": 44571,
+        "retrieved_utc": "2026-09-13T02:16:11Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "dhcp.log.gz"
+      },
+      {
+        "name": "notice",
+        "url": "https://www.secrepo.com/maccdc2012/notice.log.gz",
+        "final_url": "https://www.secrepo.com/maccdc2012/notice.log.gz",
+        "sha256": "8e0f370416d5e5fab220ed3ca64179035c3eea9600c29316421be476d4c669c6",
+        "size": 20391,
+        "retrieved_utc": "2026-09-13T02:16:12Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "notice.log.gz"
+      },
+      {
+        "name": "smtp",
+        "url": "https://www.secrepo.com/maccdc2012/smtp.log.gz",
+        "final_url": "https://www.secrepo.com/maccdc2012/smtp.log.gz",
+        "sha256": "0163632cf89856e458ea4a8ca32f0b1a1385a892d82b7728b5eb7962bc0b6a98",
+        "size": 6551,
+        "retrieved_utc": "2026-09-13T02:16:12Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "smtp.log.gz"
+      },
+      {
+        "name": "tunnel",
+        "url": "https://www.secrepo.com/maccdc2012/tunnel.log.gz",
+        "final_url": "https://www.secrepo.com/maccdc2012/tunnel.log.gz",
+        "sha256": "ef8652803a05fb2ac6d50fa4dc3ec29a6eb359039d2b4fa8b7b49e0af42517d5",
+        "size": 4877,
+        "retrieved_utc": "2026-09-13T02:16:12Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "tunnel.log.gz"
+      },
+      {
+        "name": "signatures",
+        "url": "https://www.secrepo.com/maccdc2012/signatures.log.gz",
+        "final_url": "https://www.secrepo.com/maccdc2012/signatures.log.gz",
+        "sha256": "863ec320f84a435700c75922934a39f64a01db0fb5d89aed86446c8b8f6479b6",
+        "size": 265,
+        "retrieved_utc": "2026-09-13T02:16:13Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "signatures.log.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "dns",
+        "dest": "dns.log",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "ssl",
+        "dest": "ssl.log",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "weird",
+        "dest": "weird.log",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "ssh",
+        "dest": "ssh.log",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "ftp",
+        "dest": "ftp.log",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "dhcp",
+        "dest": "dhcp.log",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "notice",
+        "dest": "notice.log",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "smtp",
+        "dest": "smtp.log",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "tunnel",
+        "dest": "tunnel.log",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "signatures",
+        "dest": "signatures.log",
+        "format": "gz"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "gzip": "gzip 1.12",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "119ca1231e6bae546a70c5dd84cd06678e846623a93ca077f6f2af05cc45c591",
+    "logical_tree_sha256": "f5b7fd0e93f22c6d76f250b409642f3c1acf0146229e77fa1e7cf8c6befc7196",
+    "content_tree_sha256": "40f282c7fe35bdc4db5273aaca0db42a12b1add0dea3134ce12a616d92b821ea",
+    "extended_tree_sha256": "8f9e8c1265bd40fb45e432b560a242ea2a10d0bd7205774b4a07f824f79100f5",
+    "bytes": 92735808,
+    "counts": {
+      "objects": 11,
+      "files": 10,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

@@ -1,0 +1,89 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f08-tuning-postgres17-pgbench-s40",
+  "family": "F08",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "build",
+  "real_or_generated": "generated",
+  "independence_group": "postgres-pgbench",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "a53c948a0d9d5c879d9023c08d2ce1e7c034681c29d3b0a7bf09bf347404b7d7",
+  "materialization_key": "9c1feeb58a025b38d829c1fe2b49e4abc5af798689ba6a634a08cd6c1d7fbded",
+  "materialized_utc": "2026-09-13T02:20:33Z",
+  "materialized_relpath": "corpus/tuning/f08-tuning-postgres17-pgbench-s40",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 1187734017,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g3-data/build_postgres_pgbench.sh",
+      "script_sha256": "64761511dc02c24f8373254164725e8ae53ebbc1dd6836c30a00f22620f568a8",
+      "interpreter": "bash",
+      "interpreter_path": "/bin/bash",
+      "seed": 0,
+      "params": {
+        "image": "docker.io/library/postgres:17.6@sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929",
+        "platform": "linux/amd64",
+        "scale": 40,
+        "initdb_args": "--locale=C --encoding=UTF8"
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "09b0f978bbeb7aa9143c924e72f4c07f1d3b7f3171deb66bb306d0ccfbfa4aae",
+    "logical_tree_sha256": "7c3c9a4e7423bc641ac5a159d501ea429a988b68a20757b1c709292c00784fba",
+    "content_tree_sha256": "97b05dbf5776abed1c6fdc900b9f5f36bc3ba865f98abdb291898f1fb11d3810",
+    "extended_tree_sha256": "d53d7069accf5438f1420a00aaab49e001f4a7ba06d4173fedb4b93e99e8b134",
+    "bytes": 1187734017,
+    "bytes_all_paths": 1187734017,
+    "allocated_bytes": 1187852288,
+    "counts": {
+      "objects": 1045,
+      "files": 1016,
+      "unique_file_inodes": 1016,
+      "dirs": 28,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 4,
+      "max_name_length_bytes": 24,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 39,
+        "mean": 19.62,
+        "p50": 18,
+        "p95": 23
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

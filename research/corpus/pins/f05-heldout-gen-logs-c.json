@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-heldout-gen-logs-c",
+  "inputs": {},
+  "output": {
+    "materialization_key": "aa640cd7d5eb9e303ae77a57e0e18ddee3fe1ce0713b12d5897ea5e3fb49eb8c",
+    "logical_tree_sha256": "e67f798a643431cbd54782b33d1def485679fd2039a104417be2d4cdd5bba1c2",
+    "pinned_utc": "2026-09-13T02:16:15Z"
+  },
+  "history": []
+}

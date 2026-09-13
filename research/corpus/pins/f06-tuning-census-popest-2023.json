@@ -1,0 +1,35 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f06-tuning-census-popest-2023",
+  "inputs": {
+    "county": {
+      "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2023/counties/totals/co-est2023-alldata.csv",
+      "sha256": "38dd59c70ef8067a3d476b6f5039e60f288e2d492015525ba9711faffd12c418",
+      "size": 1396427,
+      "retrieved_utc": "2026-09-13T02:14:38Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "state": {
+      "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2023/state/totals/NST-EST2023-ALLDATA.csv",
+      "sha256": "8f0733f32bb01e8c60c22e1eb88ed300e54dcd85306debb13521a81e0c53332a",
+      "size": 32466,
+      "retrieved_utc": "2026-09-13T02:14:38Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "9e95bb91fdefbd0a57ea9cf184d78aebb1679775170c63071c3e4a7404508662",
+    "logical_tree_sha256": "1d694494df8f55ef242e451cfd0a3829eee569a289b9aed4239d248c34bbe86a",
+    "pinned_utc": "2026-09-13T02:25:02Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:02Z",
+      "output": {
+        "materialization_key": "767526f68eea72cd9ec97a6289efb2c609622a0f07f598f11793b048661ae76e",
+        "logical_tree_sha256": "1d694494df8f55ef242e451cfd0a3829eee569a289b9aed4239d248c34bbe86a",
+        "pinned_utc": "2026-09-13T02:14:38Z"
+      }
+    }
+  ]
+}

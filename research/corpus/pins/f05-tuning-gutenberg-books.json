@@ -1,0 +1,56 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-tuning-gutenberg-books",
+  "inputs": {
+    "pg145": {
+      "url": "https://gutenberg.pglaf.org/cache/epub/145/pg145.txt",
+      "sha256": "dc2e0107e6ae07e8e33da934b2ec4e8e600826a2e0cd48df265119cd02e5fb50",
+      "size": 1865684,
+      "retrieved_utc": "2026-09-13T02:14:37Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "pg2701": {
+      "url": "https://gutenberg.pglaf.org/cache/epub/2701/pg2701.txt",
+      "sha256": "907420db6c4b68c70e2988cd2ad9c8cf79138667a01b63376d18dd17fef1a18b",
+      "size": 1276267,
+      "retrieved_utc": "2026-09-13T02:14:38Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "pg17489": {
+      "url": "https://gutenberg.pglaf.org/cache/epub/17489/pg17489.txt",
+      "sha256": "a5de514ba7b9f2e1790e7e259c4e8b7a35ae1d29e4bf9a5f8767039c58b80503",
+      "size": 710496,
+      "retrieved_utc": "2026-09-13T02:14:39Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "pg2229": {
+      "url": "https://gutenberg.pglaf.org/cache/epub/2229/pg2229.txt",
+      "sha256": "fed2a58edd6910ee96d27ada614d34bcc41f03750d86541c41246bb74c564ff7",
+      "size": 218440,
+      "retrieved_utc": "2026-09-13T02:14:40Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "pg23962": {
+      "url": "https://gutenberg.pglaf.org/cache/epub/23962/pg23962.txt",
+      "sha256": "af3c9e408c0c58595b666ed9981b6fa1e9343f4bbc78309b1cb0818c32fc1f58",
+      "size": 2264069,
+      "retrieved_utc": "2026-09-13T02:14:42Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "e0a366cfa98ada598b05090b5d01b2007dbc5aa102cdf35b889091b6b86c8493",
+    "logical_tree_sha256": "b5bb4de8a6458857451be5d65e180222d4bd0f0917acdd2a50208629e2d45244",
+    "pinned_utc": "2026-09-13T02:24:58Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:24:58Z",
+      "output": {
+        "materialization_key": "14fbcb1dea2795b2f338e26d939965cd6d8cd8e6630e4cd8baf40a942b74fd95",
+        "logical_tree_sha256": "b5bb4de8a6458857451be5d65e180222d4bd0f0917acdd2a50208629e2d45244",
+        "pinned_utc": "2026-09-13T02:14:45Z"
+      }
+    }
+  ]
+}

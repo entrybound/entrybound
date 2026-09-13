@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f06-tuning-gen-structured-a-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "6794148918bf9ec72aba1df89c9c72fbc3bac0c6d2f741e5fc3318d37e9f0a3b",
+    "logical_tree_sha256": "889c0be11eb6f517aea973ee91a651daed455c81ea9c9adcd76856e0d102feaa",
+    "pinned_utc": "2026-09-13T02:16:39Z"
+  },
+  "history": []
+}

@@ -1,0 +1,99 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f08-validation-mariadb11-test-db-employees",
+  "family": "F08",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "generated",
+  "independence_group": "mysql-test-db-employees",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "c9480207186933a1e949fc061c676fc6e74fe017b7fddd286562eb6928d76c94",
+  "materialization_key": "11fe4c27ea4cbc57b57df58fe89ee138c7064a181f1f6b6a9dbac67bb5a6e4e3",
+  "materialized_utc": "2026-09-13T02:21:32Z",
+  "materialized_relpath": "corpus/validation/f08-validation-mariadb11-test-db-employees",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 342809801,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/datacharmer/test_db",
+      "commit": "e324b56193ca506ab7cc1ab143a9153d8c4535d7",
+      "ref": "master",
+      "subpaths": null,
+      "archive_sha256": "924cffba7f8517c45e850664a884bb949134930869ce6b45ee2739ebabe74e37",
+      "archive_bytes": 175933440,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g3-data/build_mariadb_test_db.sh",
+      "script_sha256": "5fc4fa0a19cb41518595694ec0d2d303f38b776131dffb4706129efb1e671c29",
+      "interpreter": "bash",
+      "interpreter_path": "/bin/bash",
+      "seed": 0,
+      "params": {
+        "image": "docker.io/library/mariadb:11.4.8@sha256:bc474f00629f0123c10f9e1bca193a45d18af15a274cf0656acda64f1086c3b6",
+        "platform": "linux/amd64",
+        "sql": "employees.sql"
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "3424244f41c222f0e72382f0b9915660b2cffc29d4d35674e1b5cc09eb7ec9a3",
+    "logical_tree_sha256": "072d83c1deeec41a7392b288020fef567d261d430fb2ef8f36feb68f81ba5cc4",
+    "content_tree_sha256": "e449b21629fd0f3421c6f9896ea19be904cd20272eea69939ce12c4a41dc447c",
+    "extended_tree_sha256": "4ba90b39fce696076081c3205a79360f929402008e85124a51016f7239edc4ec",
+    "bytes": 342809801,
+    "bytes_all_paths": 342809801,
+    "allocated_bytes": 343146496,
+    "counts": {
+      "objects": 227,
+      "files": 221,
+      "unique_file_inodes": 221,
+      "dirs": 5,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 3,
+      "max_name_length_bytes": 53,
+      "path_length_bytes": {
+        "min": 5,
+        "max": 63,
+        "mean": 33.336,
+        "p50": 31,
+        "p95": 52
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

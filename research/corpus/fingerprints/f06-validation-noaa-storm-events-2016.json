@@ -1,0 +1,133 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-validation-noaa-storm-events-2016",
+  "family": "F06",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "noaa-storm-events",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "e34506bb8c9937b73e0979b4a9c92d010f6d565dab65afd8b897b61be12d9ca4",
+  "materialization_key": "62830f76e698d4abd2063706d64aac648f6a96659fba6d73a64a2a18663f990b",
+  "materialized_utc": "2026-09-13T02:25:14Z",
+  "materialized_relpath": "corpus/validation/f06-validation-noaa-storm-events-2016",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "fa687b1d51a1814eafd122a62ffc9b063ebf3b8a98f060caff5b9e12101c8bce",
+    "pinned_utc": "2026-09-13T02:25:14Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 55578483,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "details",
+        "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2016_c20260323.csv.gz",
+        "final_url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_details-ftp_v1.0_d2016_c20260323.csv.gz",
+        "sha256": "d8e1389897df3557e74ba36820357f6962a7c0ca922595400fe74d883f7a5036",
+        "size": 9065715,
+        "retrieved_utc": "2026-09-13T02:16:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "StormEvents_details-ftp_v1.0_d2016_c20260323.csv.gz"
+      },
+      {
+        "name": "fatalities",
+        "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_fatalities-ftp_v1.0_d2016_c20260323.csv.gz",
+        "final_url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_fatalities-ftp_v1.0_d2016_c20260323.csv.gz",
+        "sha256": "0b6257248317f2bb3fcc80c5aefa76a803ad7f48d583eaa2637ad77c3ffa5621",
+        "size": 8818,
+        "retrieved_utc": "2026-09-13T02:16:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "StormEvents_fatalities-ftp_v1.0_d2016_c20260323.csv.gz"
+      },
+      {
+        "name": "locations",
+        "url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_locations-ftp_v1.0_d2016_c20260707.csv.gz",
+        "final_url": "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/StormEvents_locations-ftp_v1.0_d2016_c20260707.csv.gz",
+        "sha256": "140003376bd534273c1bd623b98456f0fcb6e54a26e0c4bb8776dcf6e1f0d954",
+        "size": 1387086,
+        "retrieved_utc": "2026-09-13T02:16:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "StormEvents_locations-ftp_v1.0_d2016_c20260707.csv.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "details",
+        "dest": "StormEvents_details-ftp_v1.0_d2016_c20260323.csv",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "fatalities",
+        "dest": "StormEvents_fatalities-ftp_v1.0_d2016_c20260323.csv",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "locations",
+        "dest": "StormEvents_locations-ftp_v1.0_d2016_c20260707.csv",
+        "format": "gz"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "gzip": "gzip 1.12",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "e6ba014a9a871197bc4e2bb258588410f4dae0a999a35a1f4be581a8e26f7f10",
+    "logical_tree_sha256": "fa687b1d51a1814eafd122a62ffc9b063ebf3b8a98f060caff5b9e12101c8bce",
+    "content_tree_sha256": "8995712928a679904ad7b0c1936ac606b9edcacee0319c1b23edd3da6521ee7e",
+    "extended_tree_sha256": "35a9f9886c82b9fbd04a94762de66f8d007507c3f4061af8bce00ecea00eae3b",
+    "bytes": 55578483,
+    "bytes_all_paths": 55578483,
+    "allocated_bytes": 55586816,
+    "counts": {
+      "objects": 4,
+      "files": 3,
+      "unique_file_inodes": 3,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 51,
+      "path_length_bytes": {
+        "min": 48,
+        "max": 51,
+        "mean": 49.667,
+        "p50": 50,
+        "p95": 51
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

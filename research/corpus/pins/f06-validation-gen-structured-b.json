@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f06-validation-gen-structured-b",
+  "inputs": {},
+  "output": {
+    "materialization_key": "e4dc460921b8a67d6a223ff8b8a24acf312839c151010a2db0206099537664e8",
+    "logical_tree_sha256": "4dd9c8f007274c91bc6a272fac205530ec235fb1847a67931e7c8d93704a6dc8",
+    "pinned_utc": "2026-09-13T02:16:34Z"
+  },
+  "history": []
+}

@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-heldout-noaa-etopo2022-60s-surface",
+  "family": "F07",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "noaa-ncei-etopo2022",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "e573f3ddf5d3800112342dbfa044e30bcb2a89cbf9feb405bb616b7c3bb6aaee",
+  "materialization_key": "26d4c4ef5be34d6fe47f372a7cb3a2cc1f9bd631811c1b804d534dafd1c485d4",
+  "materialized_utc": "2026-09-13T02:25:17Z",
+  "materialized_relpath": "heldout/f07-heldout-noaa-etopo2022-60s-surface",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "0cd65cd9ee3304d15a5177711d4782d3d208e9d160e9da2fdf7f42acbfff8a3e",
+    "pinned_utc": "2026-09-13T02:25:17Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 478290125,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "etopo",
+        "url": "https://www.ngdc.noaa.gov/thredds/fileServer/global/ETOPO2022/60s/60s_surface_elev_netcdf/ETOPO_2022_v1_60s_N90W180_surface.nc",
+        "final_url": "https://www.ngdc.noaa.gov/thredds/fileServer/global/ETOPO2022/60s/60s_surface_elev_netcdf/ETOPO_2022_v1_60s_N90W180_surface.nc",
+        "sha256": "74bbc5c23e85188d93f0beba8116babf69e1a8f160e8dc9f053bf8df01b197b6",
+        "size": 478290125,
+        "retrieved_utc": "2026-09-13T02:24:07Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ETOPO_2022_v1_60s_N90W180_surface.nc"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "etopo"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "7aed120e8a059ae67579114e420d719603ea183fac95a6b4e50651ef66719243",
+    "logical_tree_sha256": "0cd65cd9ee3304d15a5177711d4782d3d208e9d160e9da2fdf7f42acbfff8a3e",
+    "content_tree_sha256": "b4a75b19d79858d984321665b09fdfd70e2bb93c0e881c2a952f6739ac72cad6",
+    "extended_tree_sha256": "1ec5c301887a5e0da041ed7f45a77d39e0e71e3a666fd9faa15fc855076d4909",
+    "bytes": 478290125,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

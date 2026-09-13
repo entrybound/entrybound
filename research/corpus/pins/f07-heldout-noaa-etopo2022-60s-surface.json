@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-heldout-noaa-etopo2022-60s-surface",
+  "inputs": {
+    "etopo": {
+      "url": "https://www.ngdc.noaa.gov/thredds/fileServer/global/ETOPO2022/60s/60s_surface_elev_netcdf/ETOPO_2022_v1_60s_N90W180_surface.nc",
+      "sha256": "74bbc5c23e85188d93f0beba8116babf69e1a8f160e8dc9f053bf8df01b197b6",
+      "size": 478290125,
+      "retrieved_utc": "2026-09-13T02:24:07Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "26d4c4ef5be34d6fe47f372a7cb3a2cc1f9bd631811c1b804d534dafd1c485d4",
+    "logical_tree_sha256": "0cd65cd9ee3304d15a5177711d4782d3d208e9d160e9da2fdf7f42acbfff8a3e",
+    "pinned_utc": "2026-09-13T02:25:17Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:17Z",
+      "output": {
+        "materialization_key": "04ba68316170bef9b840217fd524627448fe554933b569635bd054a32644811d",
+        "logical_tree_sha256": "0cd65cd9ee3304d15a5177711d4782d3d208e9d160e9da2fdf7f42acbfff8a3e",
+        "pinned_utc": "2026-09-13T02:24:08Z"
+      }
+    }
+  ]
+}

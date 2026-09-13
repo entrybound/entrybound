@@ -1,0 +1,114 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-validation-osm-monaco-20250101-xml",
+  "family": "F06",
+  "split": "validation",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "openstreetmap-planet",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "3232b7ad1ab4f3d908547cc87217a8cd12a1449f19274ff11fbbc3e4d0dc2e54",
+  "materialization_key": "f8474e4dc65bf35467f55f2c96864824d339148cb9716cab5ad2c00bf8fdda01",
+  "materialized_utc": "2026-09-13T02:26:14Z",
+  "materialized_relpath": "corpus/validation/f06-validation-osm-monaco-20250101-xml",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "886b916e110f51e3cf6bc347733ffb7475d6c9553c703d8b7db354da8c50af8c",
+    "pinned_utc": "2026-09-13T02:25:15Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 9284903,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "pbf",
+        "url": "https://download.geofabrik.de/europe/monaco-250101.osm.pbf",
+        "final_url": "https://download.geofabrik.de/europe/monaco-250101.osm.pbf",
+        "sha256": "27ef6e03d3792f43beb319a5bca7b4ac494e8a62c2ace4bf89c68e5a52b00bd9",
+        "size": 626624,
+        "retrieved_utc": "2026-09-13T02:21:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "monaco-250101.osm.pbf"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g3-data/osm_pbf_to_xml.sh",
+        "interpreter": "bash",
+        "params": {
+          "input": "pbf",
+          "output": "monaco-250101.osm"
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g3-data/osm_pbf_to_xml.sh",
+        "script_sha256": "28d26eeeb126f67b831148b36911a69cbe14fb87ed105ef680159ee553821b3b",
+        "interpreter": "bash",
+        "interpreter_path": "/bin/bash",
+        "seed": 0,
+        "params": {
+          "input": "pbf",
+          "output": "monaco-250101.osm"
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "fe1c96d4e36fea2ab560846ac6d89fc29dfca2d82c137c4e7e8b7c543bfca47f",
+    "logical_tree_sha256": "886b916e110f51e3cf6bc347733ffb7475d6c9553c703d8b7db354da8c50af8c",
+    "content_tree_sha256": "a1ba03cbdc7f5a952e248e54d747c23b2d1bb1bd7ba3a8ac9f4e8b412dcbaf77",
+    "extended_tree_sha256": "a515c27946257670a518029fc1b30cbfb3fc2c5c028271b6cb709043967edc62",
+    "bytes": 9284903,
+    "bytes_all_paths": 9284903,
+    "allocated_bytes": 9285632,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 17,
+      "path_length_bytes": {
+        "min": 17,
+        "max": 17,
+        "mean": 17.0,
+        "p50": 17,
+        "p95": 17
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

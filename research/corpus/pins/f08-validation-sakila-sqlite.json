@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f08-validation-sakila-sqlite",
+  "inputs": {
+    "sakila": {
+      "url": "https://raw.githubusercontent.com/bradleygrant/sakila-sqlite3/9394b42d13888c3d3d3d56cd7e9c84fadafb71c7/sakila_master.db",
+      "sha256": "88c91a4a1a6b61f9d3f35904c0a173c887b25e73f20c3c2fdb073818c06f4268",
+      "size": 5791744,
+      "retrieved_utc": "2026-09-13T02:14:49Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "bb415cae35511e7b6f1144c9e1a4f7bb1eb42700c29284f1089553d731aa99c6",
+    "logical_tree_sha256": "5812ed2b28c1f11fcafef0810617cec9dfd1ea64155d4b8dac2850ced882dba2",
+    "pinned_utc": "2026-09-13T02:25:27Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:27Z",
+      "output": {
+        "materialization_key": "283cf2016b485d8f2d27672d9dacc32fa9830fc94586ea9302e7d131b3beee00",
+        "logical_tree_sha256": "5812ed2b28c1f11fcafef0810617cec9dfd1ea64155d4b8dac2850ced882dba2",
+        "pinned_utc": "2026-09-13T02:14:49Z"
+      }
+    }
+  ]
+}

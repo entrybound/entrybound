@@ -1,0 +1,97 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-tuning-sdrbench-hurricane-isabel",
+  "family": "F07",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "sdrbench-hurricane-isabel",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "87c7daac216c5d515e4b6005621055307ab49deec4fc0ab7bb6570044bff6b36",
+  "materialization_key": "185a6a0c53ca61f509bfbc81f9e7cfd95374d48a5fc03d693ed04d9e519ddb7f",
+  "materialized_utc": "2026-09-13T02:25:42Z",
+  "materialized_relpath": "corpus/tuning/f07-tuning-sdrbench-hurricane-isabel",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "36a3705eaa9d3ea1998cf5a05cb562658f8e78eb652f49fa7cb63c4b168bf1fa",
+    "pinned_utc": "2026-09-13T02:25:42Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 2000000000,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "isabel",
+        "url": "https://g-d0cd3f.fd635.8443.data.globus.org/raw-data/Hurricane-ISABEL/SDRBENCH-Hurricane-ISABEL-100x500x500.tar.gz",
+        "final_url": "https://g-d0cd3f.fd635.8443.data.globus.org/raw-data/Hurricane-ISABEL/SDRBENCH-Hurricane-ISABEL-100x500x500.tar.gz",
+        "sha256": "ca5f8003ab4a650ea2d546eeb7ad6efd55b6e14281b361b365add41d0e7fa5ac",
+        "size": 1253837293,
+        "retrieved_utc": "2026-09-13T02:20:23Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "SDRBENCH-Hurricane-ISABEL-100x500x500.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "isabel"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "d7960fce0f802750eb4b878690e62ae8074f9d8a0bc1a8a262c94ab9b7dfa635",
+    "logical_tree_sha256": "36a3705eaa9d3ea1998cf5a05cb562658f8e78eb652f49fa7cb63c4b168bf1fa",
+    "content_tree_sha256": "932b03a51d11ea8dc558a60ca393134c9f1fece93c8b647a4d82538a4a8991b3",
+    "extended_tree_sha256": "d831b18312e8c4d9a7ce5d7e09b5a8fb08548d7fc9775f6d1157c77b4efa9641",
+    "bytes": 2000000000,
+    "bytes_all_paths": 2000000000,
+    "allocated_bytes": 2000076800,
+    "counts": {
+      "objects": 22,
+      "files": 20,
+      "unique_file_inodes": 20,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 23,
+      "path_length_bytes": {
+        "min": 11,
+        "max": 35,
+        "mean": 28.524,
+        "p50": 29,
+        "p95": 35
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,137 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-tuning-gen-numeric-a-small",
+  "family": "F07",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "generate",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-gen-numeric-a",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "3950b33052a7184f6b9cc3cfe4ead888a107c2623b260d5da88c427d1cede905",
+  "materialization_key": "d7b26dd04a6ad41b8f63a8492a47b92f4dcef548dff8d76884ea406820222aab",
+  "materialized_utc": "2026-09-13T02:26:19Z",
+  "materialized_relpath": "corpus/tuning/f07-tuning-gen-numeric-a-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "f6c9ec276f907d44509b947f416ef958b47528aeb6c8a3476d5bd77b0693d858",
+    "pinned_utc": "2026-09-13T02:14:46Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 12292022,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g3-data/gen_numeric_ab.py",
+      "script_sha256": "08ae20c6fd70860cfd25db86ef9ff5f3dd6bafcb7e33fcd3d18a06fd7f0d0df5",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 7100,
+      "params": {
+        "arrays": [
+          {
+            "path": "fields/temperature_1024x1024.f32",
+            "kind": "grf",
+            "shape": [
+              1024,
+              1024
+            ],
+            "dtype": "float32",
+            "beta": 3.0,
+            "scale": 4.0,
+            "offset": 288.0
+          },
+          {
+            "path": "fields/elevation_1024x1024_int16.npy",
+            "kind": "grf",
+            "shape": [
+              1024,
+              1024
+            ],
+            "dtype": "int16",
+            "beta": 3.5,
+            "scale": 900.0,
+            "offset": 600.0,
+            "fill_fraction": 0.25,
+            "fill_value": -32768,
+            "container": "npy"
+          },
+          {
+            "path": "series/adc_8ch_250k.i16",
+            "kind": "timeseries",
+            "shape": [
+              8,
+              250000
+            ],
+            "dtype": "int16",
+            "scale": 2500.0,
+            "noise": 0.05
+          },
+          {
+            "path": "series/time_250k.npy",
+            "kind": "timestamps",
+            "shape": [
+              250000
+            ],
+            "dtype": "float64",
+            "step": 0.0005,
+            "container": "npy"
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "0775c984cc8df931f27e2f769250f5d6aaf59ebb16e24241a932938947079d27",
+    "logical_tree_sha256": "f6c9ec276f907d44509b947f416ef958b47528aeb6c8a3476d5bd77b0693d858",
+    "content_tree_sha256": "44ba7a0bdf10d0b44b0691829c590dbdfe3a0c796a01b9f0e0ec3657fc82a834",
+    "extended_tree_sha256": "8fdc2c75835a6216fa5d8280f97524b086b84fce0eae2285270b5e0978e58966",
+    "bytes": 12292022,
+    "bytes_all_paths": 12292022,
+    "allocated_bytes": 12308480,
+    "counts": {
+      "objects": 9,
+      "files": 6,
+      "unique_file_inodes": 6,
+      "dirs": 2,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 30,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 37,
+        "mean": 23.5,
+        "p50": 28,
+        "p95": 37
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

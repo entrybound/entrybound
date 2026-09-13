@@ -1,0 +1,98 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-tuning-loghub-hdfs-v1",
+  "family": "F05",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "loghub-hdfs-v1",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "7a81eb6346cb94a6c499debb6c7c0536378d5e611af31f4cbec5bf38d02038b3",
+  "materialization_key": "85d707cff652934ad1a3e817ff66e2c7ecd8c5dc7335456f0ac28f12993ea49d",
+  "materialized_utc": "2026-09-13T02:25:10Z",
+  "materialized_relpath": "corpus/tuning/f05-tuning-loghub-hdfs-v1",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "d69a6227af324165481810752376aeb475d1cbc681211bf325b8db6737e58aa4",
+    "pinned_utc": "2026-09-13T02:25:10Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 1828043147,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "hdfs-v1",
+        "url": "https://zenodo.org/records/8196385/files/HDFS_v1.zip",
+        "final_url": "https://zenodo.org/records/8196385/files/HDFS_v1.zip",
+        "sha256": "04f919f2185821f23f045dca611a7586429bdabc601bd7b43f30005f8e289b01",
+        "size": 186645559,
+        "retrieved_utc": "2026-09-13T02:23:18Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "HDFS_v1.zip"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "hdfs-v1",
+        "format": "zip"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "bsdtar": "bsdtar 3.7.2 - libarchive 3.7.2 zlib/1.3 liblzma/5.4.5 bz2lib/1.0.8 liblz4/1.9.4 libzstd/1.5.5",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "a15fac894f7b1ba6b79e527223ac7a415a7bb3c6687a48b40eb203b6aed9c1b5",
+    "logical_tree_sha256": "d69a6227af324165481810752376aeb475d1cbc681211bf325b8db6737e58aa4",
+    "content_tree_sha256": "4e4fce3c719a3d0753e9d7911af9d40b0bb7862b99f4cac208ae6d6a1d6a9ab4",
+    "extended_tree_sha256": "518ab79d62b3ef534c0851f9b46cc6cf7401bedd3272e9d31d16b56f2aaeec8b",
+    "bytes": 1828043147,
+    "bytes_all_paths": 1828043147,
+    "allocated_bytes": 1828061184,
+    "counts": {
+      "objects": 9,
+      "files": 7,
+      "unique_file_inodes": 7,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 27,
+      "path_length_bytes": {
+        "min": 8,
+        "max": 40,
+        "mean": 23.0,
+        "p50": 29,
+        "p95": 40
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

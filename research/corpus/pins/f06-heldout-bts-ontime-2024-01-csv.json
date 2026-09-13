@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f06-heldout-bts-ontime-2024-01-csv",
+  "inputs": {
+    "ontime": {
+      "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_1.zip",
+      "sha256": "fe089b45523f9d4ac0ccd0e176a543d274e914ee5ae5bd384dbaafc7dc06ebfd",
+      "size": 27573265,
+      "retrieved_utc": "2026-09-13T02:16:36Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "67d2c9b868b140ae1e8d03dc2be232fc43e454eb7c7eb7c3138816c5c9396c2c",
+    "logical_tree_sha256": "73a5bb12446366a55013e610425a1610251e53bb58d962807e28284e58e57607",
+    "pinned_utc": "2026-09-13T02:25:01Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:01Z",
+      "output": {
+        "materialization_key": "57bafb8899a031bdc0e8fa54eb3fefa7bfe057a2c7aedf26f305d7740eb59b2a",
+        "logical_tree_sha256": "73a5bb12446366a55013e610425a1610251e53bb58d962807e28284e58e57607",
+        "pinned_utc": "2026-09-13T02:16:37Z"
+      }
+    }
+  ]
+}

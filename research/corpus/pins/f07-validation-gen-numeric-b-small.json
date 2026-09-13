@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-validation-gen-numeric-b-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "44df373366e34d6dbeb1c38aab70e186094fbfc0e792eee7f2ef07b6a2d950b1",
+    "logical_tree_sha256": "b89b9b6ffa17d86a5e919879d7fac5adea53f3159b9aaa5646dc8e09a2fd8a4d",
+    "pinned_utc": "2026-09-13T02:21:58Z"
+  },
+  "history": []
+}

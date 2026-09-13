@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f08-validation-northwind-sqlite",
+  "family": "F08",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "northwind-sample-db",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "8654ae969ba87578d73f37ac3f5a2ffbd822f922f933568de770658eea6ef15b",
+  "materialization_key": "2bd7c3a9cfea21b451d8969ebfd228e5b0aaa57b94663c19dfdcc1abeb1b2617",
+  "materialized_utc": "2026-09-13T02:25:27Z",
+  "materialized_relpath": "corpus/validation/f08-validation-northwind-sqlite",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "2a3c73bfccdd1b8180b0a7a7ee5a8c7720086af4419acd8625fde4e2a7bbe148",
+    "pinned_utc": "2026-09-13T02:25:27Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 24702976,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "northwind",
+        "url": "https://raw.githubusercontent.com/jpwhite3/northwind-SQLite3/4f56e7f5906dfd23b25244c5bfe8fb5da6402efd/dist/northwind.db",
+        "final_url": "https://raw.githubusercontent.com/jpwhite3/northwind-SQLite3/4f56e7f5906dfd23b25244c5bfe8fb5da6402efd/dist/northwind.db",
+        "sha256": "2f4f5c68dfcd33ba27373eae48c7a4869800c68095ee0f9f0da494f83382a877",
+        "size": 24702976,
+        "retrieved_utc": "2026-09-13T02:16:50Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "northwind.db"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "northwind"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "48a381c453fa87168cb4c40eac03646cfd9d1d7664427b8ad968f90c2190499d",
+    "logical_tree_sha256": "2a3c73bfccdd1b8180b0a7a7ee5a8c7720086af4419acd8625fde4e2a7bbe148",
+    "content_tree_sha256": "e28705d85b2ac4810016c6f7bc2d1e0238422e4e39eb83bf8b893b9fd7789b82",
+    "extended_tree_sha256": "8ab74b9c1e99674206cb47c23b60017b070a05281ad342648cd3226af22c7c81",
+    "bytes": 24702976,
+    "bytes_all_paths": 24702976,
+    "allocated_bytes": 24702976,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 12,
+      "path_length_bytes": {
+        "min": 12,
+        "max": 12,
+        "mean": 12.0,
+        "p50": 12,
+        "p95": 12
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

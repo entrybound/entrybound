@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-tuning-gen-numeric-a-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "d7b26dd04a6ad41b8f63a8492a47b92f4dcef548dff8d76884ea406820222aab",
+    "logical_tree_sha256": "f6c9ec276f907d44509b947f416ef958b47528aeb6c8a3476d5bd77b0693d858",
+    "pinned_utc": "2026-09-13T02:14:46Z"
+  },
+  "history": []
+}

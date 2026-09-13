@@ -1,0 +1,81 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-heldout-bts-ontime-2024-01-csv",
+  "family": "F06",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "bts-ontime-performance",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "e42ecd938de20ccde4bcd402d045ee3f06fcaa79d18906990e03c566c8c50826",
+  "materialization_key": "67d2c9b868b140ae1e8d03dc2be232fc43e454eb7c7eb7c3138816c5c9396c2c",
+  "materialized_utc": "2026-09-13T02:25:01Z",
+  "materialized_relpath": "heldout/f06-heldout-bts-ontime-2024-01-csv",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "73a5bb12446366a55013e610425a1610251e53bb58d962807e28284e58e57607",
+    "pinned_utc": "2026-09-13T02:25:01Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 246842640,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ontime",
+        "url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_1.zip",
+        "final_url": "https://transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_1.zip",
+        "sha256": "fe089b45523f9d4ac0ccd0e176a543d274e914ee5ae5bd384dbaafc7dc06ebfd",
+        "size": 27573265,
+        "retrieved_utc": "2026-09-13T02:16:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2024_1.zip"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "ontime",
+        "format": "zip"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "bsdtar": "bsdtar 3.7.2 - libarchive 3.7.2 zlib/1.3 liblzma/5.4.5 bz2lib/1.0.8 liblz4/1.9.4 libzstd/1.5.5",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "cea9090d29013bd0a6d957c85beed2176b0364e89b3bb9adac38ff07f936fd01",
+    "logical_tree_sha256": "73a5bb12446366a55013e610425a1610251e53bb58d962807e28284e58e57607",
+    "content_tree_sha256": "d3b136ac9b1c2e188081a3dc0fa0a3658ab0a7e645eec1f1c15c9f7fa63bb858",
+    "extended_tree_sha256": "d72858e2ceeddceef33d4c529b141d3b9b805dc465a4064f21f4ba801a1ee833",
+    "bytes": 246842640,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

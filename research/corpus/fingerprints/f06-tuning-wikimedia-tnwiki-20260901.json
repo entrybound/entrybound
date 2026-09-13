@@ -1,0 +1,98 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-tuning-wikimedia-tnwiki-20260901",
+  "family": "F06",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "wikimedia-tnwiki",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "9b413d4781a88b5a633be2d2e29a9be0a68b012d1ac5b43ac2beccf5bed1b3d4",
+  "materialization_key": "b304fd0be8a858f1c05a78b175d59f93870c9e243204df58bd514d81ddc54efa",
+  "materialized_utc": "2026-09-13T02:25:13Z",
+  "materialized_relpath": "corpus/tuning/f06-tuning-wikimedia-tnwiki-20260901",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "bc886452dd69e805af612c4f7db9651e28849b2af88bff6acbd246b9d84e0f44",
+    "pinned_utc": "2026-09-13T02:25:13Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 60753099,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "dump",
+        "url": "https://dumps.wikimedia.org/tnwiki/20260901/tnwiki-20260901-pages-meta-current.xml.bz2",
+        "final_url": "https://dumps.wikimedia.org/tnwiki/20260901/tnwiki-20260901-pages-meta-current.xml.bz2",
+        "sha256": "fbe2d3f31cde72ca796fef8b02986c790215ef0441ace136a35876b7e5145db6",
+        "size": 12928422,
+        "retrieved_utc": "2026-09-13T02:16:30Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "tnwiki-20260901-pages-meta-current.xml.bz2"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "dump",
+        "dest": "tnwiki-20260901-pages-meta-current.xml",
+        "format": "bz2"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "9f696f48801a4e528176a8c51db36dd41cc078c91be0fda94a46f769b41be70e",
+    "logical_tree_sha256": "bc886452dd69e805af612c4f7db9651e28849b2af88bff6acbd246b9d84e0f44",
+    "content_tree_sha256": "87bdeba1f73ae4ccef08c1057abc8ddfa8c8db7b152c790aad5d9b17abeee75d",
+    "extended_tree_sha256": "b867bc7d3c41d8d06c531e53d2fa257b2ad132c769f2692190fd1e52260ca241",
+    "bytes": 60753099,
+    "bytes_all_paths": 60753099,
+    "allocated_bytes": 60755968,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 38,
+      "path_length_bytes": {
+        "min": 38,
+        "max": 38,
+        "mean": 38.0,
+        "p50": 38,
+        "p95": 38
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

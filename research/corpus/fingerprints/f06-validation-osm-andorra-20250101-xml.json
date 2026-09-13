@@ -1,0 +1,114 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-validation-osm-andorra-20250101-xml",
+  "family": "F06",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "openstreetmap-planet",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "d38e3242c67cee89a133704b3aa22b34afb808dfd5499eea7454035f6fbc57f2",
+  "materialization_key": "c7acc2bc6f1c1f7f378a1bc55f340bf145c74f3592746d8e29df26a0f65118fb",
+  "materialized_utc": "2026-09-13T02:25:14Z",
+  "materialized_relpath": "corpus/validation/f06-validation-osm-andorra-20250101-xml",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "0d52ecee8df9d4156ef739956211e7dc424095a6c7e94f2d464e677a18487afa",
+    "pinned_utc": "2026-09-13T02:25:14Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 70248558,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "pbf",
+        "url": "https://download.geofabrik.de/europe/andorra-250101.osm.pbf",
+        "final_url": "https://download.geofabrik.de/europe/andorra-250101.osm.pbf",
+        "sha256": "8a2c4deafa9eb4d03da075437dc15d1511cb2e2779ca74cf78a94679703cc945",
+        "size": 3113044,
+        "retrieved_utc": "2026-09-13T02:16:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "andorra-250101.osm.pbf"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g3-data/osm_pbf_to_xml.sh",
+        "interpreter": "bash",
+        "params": {
+          "input": "pbf",
+          "output": "andorra-250101.osm"
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g3-data/osm_pbf_to_xml.sh",
+        "script_sha256": "28d26eeeb126f67b831148b36911a69cbe14fb87ed105ef680159ee553821b3b",
+        "interpreter": "bash",
+        "interpreter_path": "/bin/bash",
+        "seed": 0,
+        "params": {
+          "input": "pbf",
+          "output": "andorra-250101.osm"
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "7b314b92bf47f57e6fb4b25ffeb2037230cbb3bc4da532c1c29c6aea23193b8f",
+    "logical_tree_sha256": "0d52ecee8df9d4156ef739956211e7dc424095a6c7e94f2d464e677a18487afa",
+    "content_tree_sha256": "3653e52273c4e4a56518dfc21db5662bdb1ee66add52906a5acc914b8c8c3b11",
+    "extended_tree_sha256": "e9d916869ee97c42c09aa8768e0369bba64d0a866dd3a6b3ac70ff996633ea51",
+    "bytes": 70248558,
+    "bytes_all_paths": 70248558,
+    "allocated_bytes": 70250496,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 18,
+      "path_length_bytes": {
+        "min": 18,
+        "max": 18,
+        "mean": 18.0,
+        "p50": 18,
+        "p95": 18
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

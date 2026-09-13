@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f08-heldout-natural-earth-vector-gpkg",
+  "inputs": {
+    "ne": {
+      "url": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
+      "sha256": "b9e2e7b3d5c2c59593f6eafc19be2ba87fb04788a90c57ccd6cf32a587b6ecc3",
+      "size": 446353155,
+      "retrieved_utc": "2026-09-13T02:20:00Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "e603520338038e3ba79c2af091b870f5772f7fc471f2c1e5995d79d456566f02",
+    "logical_tree_sha256": "be4f9c87def24bc6d3b0e12b82c441c50345c5b138cae137eb3288b350da0bc9",
+    "pinned_utc": "2026-09-13T02:25:29Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:29Z",
+      "output": {
+        "materialization_key": "a2a5894e06139119b7852d338fae1185c09f82dd2c4a118e0e0ebc325b048aef",
+        "logical_tree_sha256": "be4f9c87def24bc6d3b0e12b82c441c50345c5b138cae137eb3288b350da0bc9",
+        "pinned_utc": "2026-09-13T02:20:04Z"
+      }
+    }
+  ]
+}

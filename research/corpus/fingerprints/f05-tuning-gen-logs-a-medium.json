@@ -1,0 +1,121 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-tuning-gen-logs-a-medium",
+  "family": "F05",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "generate",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-gen-logs-a",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "dc6bbf98f95a4c1639668ae1cd65f41fc95b5ac11bd472525362d3ed786ce166",
+  "materialization_key": "24c7241140a7dc6ea25d7a7fc158965cb65f4afb46b6dc0896e3fce2a31d4cf5",
+  "materialized_utc": "2026-09-13T02:16:25Z",
+  "materialized_relpath": "corpus/tuning/f05-tuning-gen-logs-a-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "278ef49ba067281a3a80bbf9d96144c49d34fff5e98fc02fc99330a4906b6d72",
+    "pinned_utc": "2026-09-13T02:16:25Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 230000737,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g3-data/gen_logs_ab.py",
+      "script_sha256": "c3f07e054b693955e59dd7346af8004370659267eeceb7df09eea1e583d3c9c2",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 5102,
+      "params": {
+        "hosts": 40,
+        "start_epoch": 1767312000,
+        "files": [
+          {
+            "path": "var/log/syslog",
+            "profile": "syslog",
+            "bytes": 40000000,
+            "rate": 20.0
+          },
+          {
+            "path": "var/log/syslog.1",
+            "profile": "syslog",
+            "bytes": 30000000,
+            "rate": 20.0
+          },
+          {
+            "path": "srv/gateway/app.jsonl",
+            "profile": "jsonl",
+            "bytes": 70000000,
+            "rate": 60.0
+          },
+          {
+            "path": "srv/payments/app.jsonl",
+            "profile": "jsonl",
+            "bytes": 40000000,
+            "rate": 25.0
+          },
+          {
+            "path": "srv/orders/application.log",
+            "profile": "java",
+            "bytes": 50000000,
+            "rate": 30.0
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "9160e7e81e26e8a132eb68a608d5c6f06647f2c5c17017e1755814f6348d53c4",
+    "logical_tree_sha256": "278ef49ba067281a3a80bbf9d96144c49d34fff5e98fc02fc99330a4906b6d72",
+    "content_tree_sha256": "6d0a727214a043801c29d6b2bfd1900daa4499df96838cf4c2fc8fe34da33439",
+    "extended_tree_sha256": "a076e33e88371373f615a76f039a73e771a657433d17269022fd585522e34249",
+    "bytes": 230000737,
+    "bytes_all_paths": 230000737,
+    "allocated_bytes": 230010880,
+    "counts": {
+      "objects": 12,
+      "files": 5,
+      "unique_file_inodes": 5,
+      "dirs": 6,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 3,
+      "max_name_length_bytes": 15,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 26,
+        "mean": 13.182,
+        "p50": 12,
+        "p95": 26
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

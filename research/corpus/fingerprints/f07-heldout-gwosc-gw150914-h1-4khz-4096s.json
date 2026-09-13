@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-heldout-gwosc-gw150914-h1-4khz-4096s",
+  "family": "F07",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "gwosc-strain-data",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "aefa8c85d14745abe211d2533b0036642136f108ba502d230d407f9deeb58689",
+  "materialization_key": "0c2998969090cb11adf5b6d163dd7638cad00db931340adf279c2dbeaf8b14ad",
+  "materialized_utc": "2026-09-13T02:25:16Z",
+  "materialized_relpath": "heldout/f07-heldout-gwosc-gw150914-h1-4khz-4096s",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "43d31c36211be1a89e9ddd0569a21be57cfb2b70f6ea14a11d9c9f1627111a11",
+    "pinned_utc": "2026-09-13T02:25:16Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 130158262,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "strain",
+        "url": "https://gwosc.org/eventapi/json/GWTC-1-confident/GW150914/v3/H-H1_GWOSC_4KHZ_R1-1126257415-4096.hdf5",
+        "final_url": "https://gwosc.org/eventapi/json/GWTC-1-confident/GW150914/v3/H-H1_GWOSC_4KHZ_R1-1126257415-4096.hdf5",
+        "sha256": "8ef8b762cff53b422429c474b1e35a6d9bfa86f3ed0c0d3e855f599781390a27",
+        "size": 130158262,
+        "retrieved_utc": "2026-09-13T02:16:47Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "H-H1_GWOSC_4KHZ_R1-1126257415-4096.hdf5"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "strain"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "caed21a0f3b8e0d96805d655c140e2fd5a1f6ce5a56f730eaf94a65a563ae401",
+    "logical_tree_sha256": "43d31c36211be1a89e9ddd0569a21be57cfb2b70f6ea14a11d9c9f1627111a11",
+    "content_tree_sha256": "2ff1672ee72ea682e6cf748f05782548041ee3ab7d19cf067f7afd80ff3abacf",
+    "extended_tree_sha256": "911be3f6e2d5f0822e50afa00606b3847f7f1f4f02a5d02de00eafd27d0d8277",
+    "bytes": 130158262,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

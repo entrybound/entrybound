@@ -1,0 +1,104 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-tuning-gen-structured-a-small",
+  "family": "F06",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "generate",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-gen-structured-a",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "b0200417da30480d783b3e9dec2dcee1645b3e7e18ae5c9d4748d412dd34df80",
+  "materialization_key": "4dab2d7cd1397dbe576d20ce404b2e88b23f11032cde2ce027a190b029d1780c",
+  "materialized_utc": "2026-09-13T02:26:17Z",
+  "materialized_relpath": "corpus/tuning/f06-tuning-gen-structured-a-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "94132171fca5665d08b64dd27f7dddabc22e67716e8e1dd4f0291cf9ba03e588",
+    "pinned_utc": "2026-09-13T02:14:45Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 14211346,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g3-data/gen_structured_ab.py",
+      "script_sha256": "b58bf57497f244c8a88360b9c7421af98159e1563b048c757c445e7f0691b954",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 6100,
+      "params": {
+        "outputs": [
+          {
+            "path": "orders/orders.ndjson",
+            "kind": "ndjson-orders",
+            "bytes": 6000000
+          },
+          {
+            "path": "catalog/products.json",
+            "kind": "json-array",
+            "bytes": 3000000
+          },
+          {
+            "path": "telemetry/sensors.csv",
+            "kind": "csv-sensors",
+            "bytes": 5000000
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "d62962e4a2327f9b9a7ad5c2b5b766dba9345580781a37fe47e4a3f8c0b9a2e0",
+    "logical_tree_sha256": "94132171fca5665d08b64dd27f7dddabc22e67716e8e1dd4f0291cf9ba03e588",
+    "content_tree_sha256": "0e64b151f7bcb2706459754ee39f80ba2f48b5b2cc9cbef671cd8b5312be0327",
+    "extended_tree_sha256": "424fcdb0117ac65a8df0652421192d5febb80a103a6018c28730adc45b728025",
+    "bytes": 14211346,
+    "bytes_all_paths": 14211346,
+    "allocated_bytes": 14217216,
+    "counts": {
+      "objects": 7,
+      "files": 3,
+      "unique_file_inodes": 3,
+      "dirs": 3,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 13,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 21,
+        "mean": 14.0,
+        "p50": 9,
+        "p95": 21
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

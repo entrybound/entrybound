@@ -1,0 +1,114 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-tuning-gen-structured-a-medium",
+  "family": "F06",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "generate",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-gen-structured-a",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "7ee3aea9cfac18c4dd5a0ccb9b4384458740d28f9ca05f19f922de368a7dea0f",
+  "materialization_key": "6794148918bf9ec72aba1df89c9c72fbc3bac0c6d2f741e5fc3318d37e9f0a3b",
+  "materialized_utc": "2026-09-13T02:16:39Z",
+  "materialized_relpath": "corpus/tuning/f06-tuning-gen-structured-a-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "889c0be11eb6f517aea973ee91a651daed455c81ea9c9adcd76856e0d102feaa",
+    "pinned_utc": "2026-09-13T02:16:39Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 135432596,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g3-data/gen_structured_ab.py",
+      "script_sha256": "b58bf57497f244c8a88360b9c7421af98159e1563b048c757c445e7f0691b954",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 6101,
+      "params": {
+        "outputs": [
+          {
+            "path": "orders/2026-01.ndjson",
+            "kind": "ndjson-orders",
+            "bytes": 30000000
+          },
+          {
+            "path": "orders/2026-02.ndjson",
+            "kind": "ndjson-orders",
+            "bytes": 30000000
+          },
+          {
+            "path": "catalog/products.json",
+            "kind": "json-array",
+            "bytes": 25000000
+          },
+          {
+            "path": "telemetry/sensors-a.csv",
+            "kind": "csv-sensors",
+            "bytes": 30000000
+          },
+          {
+            "path": "telemetry/sensors-b.csv",
+            "kind": "csv-sensors",
+            "bytes": 20000000
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "4143aa7b85be47e0b0a54bc44b82bfc221371d12c7bb81f58c7108428f5de053",
+    "logical_tree_sha256": "889c0be11eb6f517aea973ee91a651daed455c81ea9c9adcd76856e0d102feaa",
+    "content_tree_sha256": "dd17160fa82eca63c30c36d21ab26625a30df07b5144b834f8136926f8bec373",
+    "extended_tree_sha256": "5a0a06aa0f81d41176774b41ad6fd585fc97ff2f4b279cf42ceb5de9663e1358",
+    "bytes": 135432596,
+    "bytes_all_paths": 135432596,
+    "allocated_bytes": 135442432,
+    "counts": {
+      "objects": 9,
+      "files": 5,
+      "unique_file_inodes": 5,
+      "dirs": 3,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 14,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 23,
+        "mean": 16.375,
+        "p50": 21,
+        "p95": 23
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

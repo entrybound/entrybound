@@ -1,0 +1,28 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-tuning-silesia-xray",
+  "inputs": {
+    "xray": {
+      "url": "https://sun.aei.polsl.pl/~sdeor/corpus/x-ray.bz2",
+      "sha256": "1233211ff0d01c923f1b2d0b86d883a35b7326f58982a34d399621d85921deb2",
+      "size": 4051112,
+      "retrieved_utc": "2026-09-13T02:14:48Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "152ff3a9dbf26ebb64f362b7beaf98e35cdd7a4bf8ff3825648315b0aea5d889",
+    "logical_tree_sha256": "68436205e475008f4295be8a4c3cf8c9095cd5932131889e2480719b71848405",
+    "pinned_utc": "2026-09-13T02:25:20Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:25:20Z",
+      "output": {
+        "materialization_key": "605b9ac78fcf83601a4ea81fd1accfcbd495219c5f7399e73af8f6cae6ea5dd0",
+        "logical_tree_sha256": "68436205e475008f4295be8a4c3cf8c9095cd5932131889e2480719b71848405",
+        "pinned_utc": "2026-09-13T02:14:48Z"
+      }
+    }
+  ]
+}

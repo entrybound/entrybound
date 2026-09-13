@@ -1,0 +1,244 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-heldout-unicode-ucd-16-0-0-text",
+  "family": "F06",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "unicode-ucd",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "c88ae32b42123b58a26d6223f68625da9b074d876a0b4da8fc9d125838a278ba",
+  "materialization_key": "f624e377b33dc0ab1b16a3ec81b7ad59c0d5f0f9f5d0ff54e3810e2650e2303f",
+  "materialized_utc": "2026-09-13T02:25:02Z",
+  "materialized_relpath": "heldout/f06-heldout-unicode-ucd-16-0-0-text",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "be0b82cd3e49a1c3bc54232cf697593b6fe3624141088776f8df8ae5b7475937",
+    "pinned_utc": "2026-09-13T02:25:02Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 5543279,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "unicodedata",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/UnicodeData.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/UnicodeData.txt",
+        "sha256": "ff58e5823bd095166564a006e47d111130813dcf8bf234ef79fa51a870edb48f",
+        "size": 2175362,
+        "retrieved_utc": "2026-09-13T02:21:56Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "UnicodeData.txt"
+      },
+      {
+        "name": "nameslist",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/NamesList.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/NamesList.txt",
+        "sha256": "6a299e9259d07c2a941fdc967e2117e1246d56aa4e133caff86dfc0845715679",
+        "size": 2030616,
+        "retrieved_utc": "2026-09-13T02:21:56Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "NamesList.txt"
+      },
+      {
+        "name": "scripts",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/Scripts.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/Scripts.txt",
+        "sha256": "9e88f0a677df47311106340be8ede2ecdacd9c1c931831218d2be6d5508e0039",
+        "size": 189588,
+        "retrieved_utc": "2026-09-13T02:21:56Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Scripts.txt"
+      },
+      {
+        "name": "scriptextensions",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/ScriptExtensions.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/ScriptExtensions.txt",
+        "sha256": "049117ce26b9769fe2749b06eef51a50a89faef4a97764dd2d81daa715980700",
+        "size": 20576,
+        "retrieved_utc": "2026-09-13T02:21:56Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ScriptExtensions.txt"
+      },
+      {
+        "name": "linebreak",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/LineBreak.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/LineBreak.txt",
+        "sha256": "e97e4259d0d20fab150b9c7b4b28abfae5cd78ca97e7f4ac6ed20d685d5f4a7c",
+        "size": 260441,
+        "retrieved_utc": "2026-09-13T02:21:56Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "LineBreak.txt"
+      },
+      {
+        "name": "eastasianwidth",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/EastAsianWidth.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/EastAsianWidth.txt",
+        "sha256": "43adc76c0686a42cb370764eb8cfe2b2a45b10b855e5572a2db4a0eecce15d5b",
+        "size": 199042,
+        "retrieved_utc": "2026-09-13T02:21:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "EastAsianWidth.txt"
+      },
+      {
+        "name": "derivedage",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/DerivedAge.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/DerivedAge.txt",
+        "sha256": "60caa81b99a4dfb0bc5d38440d323073e3f356f46f9ca7869da848cd0715408b",
+        "size": 134680,
+        "retrieved_utc": "2026-09-13T02:21:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "DerivedAge.txt"
+      },
+      {
+        "name": "proplist",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/PropList.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/PropList.txt",
+        "sha256": "53d614508e2a0b2305a8aa21cd60d993de9326cdf65993660dfcce4503548583",
+        "size": 144253,
+        "retrieved_utc": "2026-09-13T02:21:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "PropList.txt"
+      },
+      {
+        "name": "blocks",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/Blocks.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/Blocks.txt",
+        "sha256": "f3907b395d410f1b97342292ca6bc83dd12eb4b205f2a0c48efdef99e517d7b0",
+        "size": 11397,
+        "retrieved_utc": "2026-09-13T02:21:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Blocks.txt"
+      },
+      {
+        "name": "casefolding",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/CaseFolding.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/CaseFolding.txt",
+        "sha256": "6f1f9c588eb4a5c718d9e8f93b782685e5c7fec872cf05e8e6878053599e09bb",
+        "size": 86092,
+        "retrieved_utc": "2026-09-13T02:21:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "CaseFolding.txt"
+      },
+      {
+        "name": "specialcasing",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/SpecialCasing.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/SpecialCasing.txt",
+        "sha256": "8d5de354eef79f2395a54c9c7dcebbaf3d30fc962d0f85611ea97aa973a0c451",
+        "size": 16809,
+        "retrieved_utc": "2026-09-13T02:21:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "SpecialCasing.txt"
+      },
+      {
+        "name": "derivedgeneralcategory",
+        "url": "https://www.unicode.org/Public/16.0.0/ucd/extracted/DerivedGeneralCategory.txt",
+        "final_url": "https://www.unicode.org/Public/16.0.0/ucd/extracted/DerivedGeneralCategory.txt",
+        "sha256": "7676ab755a41ef82108460238569e60ad65c191ddafe61b36c6765ec1353f293",
+        "size": 274423,
+        "retrieved_utc": "2026-09-13T02:21:57Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "DerivedGeneralCategory.txt"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "unicodedata"
+      },
+      {
+        "op": "copy",
+        "input": "nameslist"
+      },
+      {
+        "op": "copy",
+        "input": "scripts"
+      },
+      {
+        "op": "copy",
+        "input": "scriptextensions"
+      },
+      {
+        "op": "copy",
+        "input": "linebreak"
+      },
+      {
+        "op": "copy",
+        "input": "eastasianwidth"
+      },
+      {
+        "op": "copy",
+        "input": "derivedage"
+      },
+      {
+        "op": "copy",
+        "input": "proplist"
+      },
+      {
+        "op": "copy",
+        "input": "blocks"
+      },
+      {
+        "op": "copy",
+        "input": "casefolding"
+      },
+      {
+        "op": "copy",
+        "input": "specialcasing"
+      },
+      {
+        "op": "copy",
+        "input": "derivedgeneralcategory"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c36af2281792e1eae57e0961c80a22cceecee5bdb83d169c748d2f51fbfb016d",
+    "logical_tree_sha256": "be0b82cd3e49a1c3bc54232cf697593b6fe3624141088776f8df8ae5b7475937",
+    "content_tree_sha256": "21d73af0ac89c110780689823a7a194605042733e97078871ca164af9320c9ba",
+    "extended_tree_sha256": "0a9b058934d99f4dbd51beff9636741db0e0d3ee719ee70c9d9ffd0ce1242593",
+    "bytes": 5543279,
+    "counts": {
+      "objects": 13,
+      "files": 12,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

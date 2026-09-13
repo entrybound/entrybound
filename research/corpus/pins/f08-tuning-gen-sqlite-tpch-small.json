@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f08-tuning-gen-sqlite-tpch-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "35db51c5a07ae55601908767a297a6f3bcd1f24c2bd476bafc7b895654eba05a",
+    "logical_tree_sha256": "7027fe891ae55e8d6490fe6cd03ae2d8133c34c351e1125aa1d4703dc1c37615",
+    "pinned_utc": "2026-09-13T02:14:49Z"
+  },
+  "history": []
+}

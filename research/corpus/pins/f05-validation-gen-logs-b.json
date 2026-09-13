@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-validation-gen-logs-b",
+  "inputs": {},
+  "output": {
+    "materialization_key": "6360ef3d6bbb842b96fda1f4d0cba1090482dfffcd908a84faf34fd8228ad97d",
+    "logical_tree_sha256": "c1145a5787e36cde20139485e3103606222fa441c0553ece5adad4f53f585412",
+    "pinned_utc": "2026-09-13T02:16:26Z"
+  },
+  "history": []
+}

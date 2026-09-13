@@ -1,0 +1,91 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-heldout-maccdc2012-zeek-logs",
+  "inputs": {
+    "dns": {
+      "url": "https://www.secrepo.com/maccdc2012/dns.log.gz",
+      "sha256": "845719a1d67741c1caf115ae667a50095962164b45425544df89c5fcd3cd59c9",
+      "size": 6606969,
+      "retrieved_utc": "2026-09-13T02:16:10Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "ssl": {
+      "url": "https://www.secrepo.com/maccdc2012/ssl.log.gz",
+      "sha256": "9a6cf61bdc3cac41194c5e7cdee2e30ec97dc41b6b51c892c47dd9d8066ee5f7",
+      "size": 1311076,
+      "retrieved_utc": "2026-09-13T02:16:10Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "weird": {
+      "url": "https://www.secrepo.com/maccdc2012/weird.log.gz",
+      "sha256": "e3a8fcd0a51d3d996569c3008ca1a3b73ad752f61bc93923384a9e99bf0efcb6",
+      "size": 1252444,
+      "retrieved_utc": "2026-09-13T02:16:10Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "ssh": {
+      "url": "https://www.secrepo.com/maccdc2012/ssh.log.gz",
+      "sha256": "a51d95750c3670facf0871e3604cc748f6850ce99bcef2406b1058edba8ea9e6",
+      "size": 182159,
+      "retrieved_utc": "2026-09-13T02:16:10Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "ftp": {
+      "url": "https://www.secrepo.com/maccdc2012/ftp.log.gz",
+      "sha256": "fccd860e8b5b0517b4e23581d72f7dddf2b2d0ec43d67fb11b495f29b080188a",
+      "size": 127353,
+      "retrieved_utc": "2026-09-13T02:16:11Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "dhcp": {
+      "url": "https://www.secrepo.com/maccdc2012/dhcp.log.gz",
+      "sha256": "f0d1ae0f6733817aed3fde6e8fbf81264296addec1e70e9b6a49b02f6dddaa43",
+      "size": 44571,
+      "retrieved_utc": "2026-09-13T02:16:11Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "notice": {
+      "url": "https://www.secrepo.com/maccdc2012/notice.log.gz",
+      "sha256": "8e0f370416d5e5fab220ed3ca64179035c3eea9600c29316421be476d4c669c6",
+      "size": 20391,
+      "retrieved_utc": "2026-09-13T02:16:12Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "smtp": {
+      "url": "https://www.secrepo.com/maccdc2012/smtp.log.gz",
+      "sha256": "0163632cf89856e458ea4a8ca32f0b1a1385a892d82b7728b5eb7962bc0b6a98",
+      "size": 6551,
+      "retrieved_utc": "2026-09-13T02:16:12Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "tunnel": {
+      "url": "https://www.secrepo.com/maccdc2012/tunnel.log.gz",
+      "sha256": "ef8652803a05fb2ac6d50fa4dc3ec29a6eb359039d2b4fa8b7b49e0af42517d5",
+      "size": 4877,
+      "retrieved_utc": "2026-09-13T02:16:12Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "signatures": {
+      "url": "https://www.secrepo.com/maccdc2012/signatures.log.gz",
+      "sha256": "863ec320f84a435700c75922934a39f64a01db0fb5d89aed86446c8b8f6479b6",
+      "size": 265,
+      "retrieved_utc": "2026-09-13T02:16:13Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "5de9574dd379416a728efdef0973b851710b3c6f52e5a7207cfa8aa07303d49d",
+    "logical_tree_sha256": "f5b7fd0e93f22c6d76f250b409642f3c1acf0146229e77fa1e7cf8c6befc7196",
+    "pinned_utc": "2026-09-13T02:24:57Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:24:57Z",
+      "output": {
+        "materialization_key": "f88f99a7095e7dd0b45cbeba606c077f81eccad71a51f70ad74462e1385dc4f7",
+        "logical_tree_sha256": "f5b7fd0e93f22c6d76f250b409642f3c1acf0146229e77fa1e7cf8c6befc7196",
+        "pinned_utc": "2026-09-13T02:16:13Z"
+      }
+    }
+  ]
+}

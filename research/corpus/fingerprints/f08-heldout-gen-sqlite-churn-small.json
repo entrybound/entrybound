@@ -1,0 +1,91 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f08-heldout-gen-sqlite-churn-small",
+  "family": "F08",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "generate",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-gen-sqlite-churn",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "e81d53938d94686a036b5010107c2f762468fef34c66052db3e8a1b42a32f960",
+  "materialization_key": "86bf06718af9cd27566674d40e476473485cb7bf000af0571bd9aff1f996c5c5",
+  "materialized_utc": "2026-09-13T02:26:22Z",
+  "materialized_relpath": "heldout/f08-heldout-gen-sqlite-churn-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "matched-tofu",
+    "logical_tree_sha256": "354937e9456d965a8bf2671f459a2b876bb3ad477398a2775112227d02070883",
+    "pinned_utc": "2026-09-13T02:21:59Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 3112960,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g3-data/gen_sqlite_churn.py",
+      "script_sha256": "4b30eb5e49b15bdc3859b6b518be98de7d7738d0b8ad44610e5a6e26f47893ff",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 8300,
+      "params": {
+        "databases": [
+          {
+            "file": "chat/messages.sqlite",
+            "profile": "messaging",
+            "ops": 30000,
+            "page_size": 4096,
+            "journal_mode": "delete",
+            "auto_vacuum": "full",
+            "fts": false,
+            "blob_max": 20000
+          },
+          {
+            "file": "cache/kv.sqlite",
+            "profile": "kvstore",
+            "ops": 12000,
+            "page_size": 16384,
+            "journal_mode": "wal",
+            "auto_vacuum": "none",
+            "blob_max": 4000
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "3fc351a3b969ea14aa7f63c090c2bc576ce54c28656390b0665962ec84572456",
+    "logical_tree_sha256": "354937e9456d965a8bf2671f459a2b876bb3ad477398a2775112227d02070883",
+    "content_tree_sha256": "80528fb75a03eaeba01fdffead857fb669d4a7f6737fdf8e531664bc87e4ebdf",
+    "extended_tree_sha256": "33e9d09e48d27b7a8c47f665d2b428e2b34c5e5391319575d623e5b59af28ad2",
+    "bytes": 3112960,
+    "counts": {
+      "objects": 5,
+      "files": 2,
+      "dirs": 2,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

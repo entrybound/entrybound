@@ -1,0 +1,49 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-heldout-congressional-record-2024-01",
+  "inputs": {
+    "crec10": {
+      "url": "https://www.govinfo.gov/content/pkg/CREC-2024-01-10/zip/CREC-2024-01-10.zip",
+      "sha256": "feccba8a9cf57a764d2093cf83d5b204c4ed09e160aaeaf2a96e7fd0d450ebf6",
+      "size": 43544322,
+      "retrieved_utc": "2026-09-13T02:14:51Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "crec11": {
+      "url": "https://www.govinfo.gov/content/pkg/CREC-2024-01-11/zip/CREC-2024-01-11.zip",
+      "sha256": "e8bec4b5b90fa4a6c741060cb8fa8d9445ccd08bd85a03f340a05dcc1295bf72",
+      "size": 49336044,
+      "retrieved_utc": "2026-09-13T02:15:06Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "crec16": {
+      "url": "https://www.govinfo.gov/content/pkg/CREC-2024-01-16/zip/CREC-2024-01-16.zip",
+      "sha256": "c0597a7694835e973eb0004e82a6b2bde95bdb48205648842b9f28ff8a1fc80c",
+      "size": 25791683,
+      "retrieved_utc": "2026-09-13T02:15:14Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "crec17": {
+      "url": "https://www.govinfo.gov/content/pkg/CREC-2024-01-17/zip/CREC-2024-01-17.zip",
+      "sha256": "bb506f93653c7019231c7315b7ebdb9ef56345277d74d74606da8a6d9c955760",
+      "size": 41113041,
+      "retrieved_utc": "2026-09-13T02:15:34Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "72f50331eb24b72149df7f105f04555fba238b90f249d1f573353caee1fb4c44",
+    "logical_tree_sha256": "ed179289b58f343425d9aff4d7e6313b16bce6a82fbf4144492feb31f033cac5",
+    "pinned_utc": "2026-09-13T02:24:58Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:24:58Z",
+      "output": {
+        "materialization_key": "53db936d27e5ada87169f1875c2a973d9bebc1a2fef8e49882d0354478779f0e",
+        "logical_tree_sha256": "ed179289b58f343425d9aff4d7e6313b16bce6a82fbf4144492feb31f033cac5",
+        "pinned_utc": "2026-09-13T02:15:35Z"
+      }
+    }
+  ]
+}

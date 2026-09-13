@@ -1,0 +1,238 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-heldout-secrepo-self-weblogs-2017-01",
+  "inputs": {
+    "d01": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-01.gz",
+      "sha256": "0f2d74c670eccda1d9bfef908df59796d4164171412044082819f953c716c58e",
+      "size": 17272,
+      "retrieved_utc": "2026-09-13T02:14:35Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d02": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-02.gz",
+      "sha256": "16ece210d083294fc62986baeaeb10c7cf079227e5009b49261fd8a13e1a76ee",
+      "size": 26423,
+      "retrieved_utc": "2026-09-13T02:14:35Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d03": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-03.gz",
+      "sha256": "f4278643edcb62965751e684a46248ac1cf03a9c33026e13a12bb17042b75001",
+      "size": 40758,
+      "retrieved_utc": "2026-09-13T02:14:35Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d04": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-04.gz",
+      "sha256": "91cf9b381d03d4ffa16093e3734d2fbfce144270725c6865b92d9ccccf0d4d02",
+      "size": 33458,
+      "retrieved_utc": "2026-09-13T02:14:35Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d05": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-05.gz",
+      "sha256": "877e39bdb8c2c326b9c25f581f65b7bcc11dd819b7ad066156ba26000ff90549",
+      "size": 42304,
+      "retrieved_utc": "2026-09-13T02:14:35Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d06": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-06.gz",
+      "sha256": "e3286e07e7bc453bdd099447ae7012ff96f06e16b75633ddea0b17f374301128",
+      "size": 20217,
+      "retrieved_utc": "2026-09-13T02:14:35Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d07": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-07.gz",
+      "sha256": "1ec5fd5b08ac5b42018efbb308a752bee26e73ca84d3908dadb495f244bee161",
+      "size": 16913,
+      "retrieved_utc": "2026-09-13T02:14:35Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d08": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-08.gz",
+      "sha256": "10cea6d9750fc7426a9790ccd103da855b26af7171aba1430c4cf516ff9efdc7",
+      "size": 14541,
+      "retrieved_utc": "2026-09-13T02:14:35Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d09": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-09.gz",
+      "sha256": "3bbedefec29df820c4d83511c58c58e4d2063c0cf1d7e26ce576128a7c4c0ab0",
+      "size": 24557,
+      "retrieved_utc": "2026-09-13T02:14:35Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d10": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-10.gz",
+      "sha256": "0228d4e7547f34adac1a312586a9a7e5b029bd1b4be580968dbce4e3a03e2f39",
+      "size": 95819,
+      "retrieved_utc": "2026-09-13T02:14:36Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d11": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-11.gz",
+      "sha256": "25a97de1ea510c5177d1326f5daea776707cefef4165c7082ae0af7d5b781d1b",
+      "size": 92649,
+      "retrieved_utc": "2026-09-13T02:14:36Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d12": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-12.gz",
+      "sha256": "1baafe68b2a9662ddd291f68b80a02718a423412c6714c400cd4373a262b6b1e",
+      "size": 86167,
+      "retrieved_utc": "2026-09-13T02:14:36Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d13": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-13.gz",
+      "sha256": "7e80fa83b661b8c845f4e652b0cb747fddbce086621ccbd885c5f790d933d973",
+      "size": 16298,
+      "retrieved_utc": "2026-09-13T02:14:36Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d14": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-14.gz",
+      "sha256": "5ddcf92fea2fc701bc1dd8e3716da6c289e04cc1827f3f720a45813c1609aa75",
+      "size": 10451,
+      "retrieved_utc": "2026-09-13T02:14:36Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d15": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-15.gz",
+      "sha256": "cffb7056abb2e9b6538b0ec418a92b33d43d28ef8956c4ffbd43dca0c12a7bca",
+      "size": 13340,
+      "retrieved_utc": "2026-09-13T02:14:36Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d16": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-16.gz",
+      "sha256": "cf83f52cbcc52561d842cdd639923e36d63999104aca0a6735bcae05b93821b1",
+      "size": 42679,
+      "retrieved_utc": "2026-09-13T02:14:36Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d17": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-17.gz",
+      "sha256": "ea31f6a7fb1623c21f7c8b1f33338dec9e3d522e603853c3c0ddd1e6b5e04fa3",
+      "size": 18087,
+      "retrieved_utc": "2026-09-13T02:14:36Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d18": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-18.gz",
+      "sha256": "288d32ed99b78ae5ef3278de801d217dca85a937fd16a0207131032e886a6f03",
+      "size": 14962,
+      "retrieved_utc": "2026-09-13T02:14:36Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d19": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-19.gz",
+      "sha256": "1461318ba53cb122a89c9f6d071a8d98ccacee6f2c274f3de2b78e24c91c580b",
+      "size": 17980,
+      "retrieved_utc": "2026-09-13T02:14:37Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d20": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-20.gz",
+      "sha256": "31b16d3ab9c399f072443033faa0844191e6f4543ddf5d0ca0bf957643795f8a",
+      "size": 12608,
+      "retrieved_utc": "2026-09-13T02:14:37Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d21": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-21.gz",
+      "sha256": "2b651714d44d999965a359655d2bb9a05e555c0ba9f4fe682bfb73521ecb7c10",
+      "size": 19238,
+      "retrieved_utc": "2026-09-13T02:14:37Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d22": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-22.gz",
+      "sha256": "c0822740626f4b6b9ce78f71734f8b2e9b33fd40d4ae864b5fc43d8430b55f93",
+      "size": 12059,
+      "retrieved_utc": "2026-09-13T02:14:37Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d23": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-23.gz",
+      "sha256": "8b6f129d1c147521b11f704882d5094866da124da38a1564db9fe7ccddcda5e6",
+      "size": 45294,
+      "retrieved_utc": "2026-09-13T02:14:37Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d24": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-24.gz",
+      "sha256": "327b906b68e6b30d1bfc1ad34467150055895c1d643263d51c36c3c4af1acd65",
+      "size": 16707,
+      "retrieved_utc": "2026-09-13T02:14:37Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d25": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-25.gz",
+      "sha256": "d693a9444888938e6d13c29011dcb907676283f7b26bf9d3b056dfc0b034f406",
+      "size": 18773,
+      "retrieved_utc": "2026-09-13T02:14:37Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d26": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-26.gz",
+      "sha256": "8d3073a24d331af57cfe13e90fcd866b3c72f88f7ff49e639f1197aab7978d29",
+      "size": 23667,
+      "retrieved_utc": "2026-09-13T02:14:37Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d27": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-27.gz",
+      "sha256": "fb7084f24d4f161e39ea37c76cd88846c0a888df451f313172e5b022981ce55b",
+      "size": 17887,
+      "retrieved_utc": "2026-09-13T02:14:37Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d28": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-28.gz",
+      "sha256": "01e5d29ff56c408a124dda30e5b76efdde9b2931ec1c799c6d3c55299a4ab10f",
+      "size": 17183,
+      "retrieved_utc": "2026-09-13T02:14:37Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d29": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-29.gz",
+      "sha256": "e8aae9d952ae5d5fd5cdb4b7ee46a9ac2e9e00d70db9c3e49baa5b437cc116ed",
+      "size": 31002,
+      "retrieved_utc": "2026-09-13T02:14:38Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d30": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-30.gz",
+      "sha256": "a5228501610e5ef9c7dba359b7c7d17dcf9a8aa8acc6bc984af4eb63d8ad5aaf",
+      "size": 29378,
+      "retrieved_utc": "2026-09-13T02:14:38Z",
+      "retrieval_date": "2026-09-12"
+    },
+    "d31": {
+      "url": "https://www.secrepo.com/self.logs/access.log.2017-01-31.gz",
+      "sha256": "4149811f144985a8f3733e4bab8722552ff5e1ad51cbb868ccc6c243eaf81970",
+      "size": 19492,
+      "retrieved_utc": "2026-09-13T02:14:38Z",
+      "retrieval_date": "2026-09-12"
+    }
+  },
+  "output": {
+    "materialization_key": "ba00c4d5a5fbc02171f6e386dfb5e39bf0ca7dacfe10c2617268ab5f8129e429",
+    "logical_tree_sha256": "437e8e9052c6411e0646f0a397986f72cd77e586e6917f4f43d2292e6789cc88",
+    "pinned_utc": "2026-09-13T02:24:56Z"
+  },
+  "history": [
+    {
+      "replaced_utc": "2026-09-13T02:24:56Z",
+      "output": {
+        "materialization_key": "63a0645aeadc8ef162446c7a0c9627b884bbadea63781ef215fca61e6efa412d",
+        "logical_tree_sha256": "437e8e9052c6411e0646f0a397986f72cd77e586e6917f4f43d2292e6789cc88",
+        "pinned_utc": "2026-09-13T02:16:09Z"
+      }
+    }
+  ]
+}

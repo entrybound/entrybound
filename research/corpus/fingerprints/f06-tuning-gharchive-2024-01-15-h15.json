@@ -1,0 +1,99 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-tuning-gharchive-2024-01-15-h15",
+  "family": "F06",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "gharchive-github-events",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "ae7bfd5d4f0516cb67c454b94fd140482bfb7659303859c6a9f3e7fc19dac7b2",
+  "materialization_key": "5eb183e344afbdc3928e5f1918913e38d17573dd9529c50f6af14da0a3a1ccd4",
+  "materialized_utc": "2026-09-13T02:25:18Z",
+  "materialized_relpath": "corpus/tuning/f06-tuning-gharchive-2024-01-15-h15",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "4007dabf0cffd06f881433e895d96d7a6a2680b6ff266d79b9d410459073abc9",
+    "pinned_utc": "2026-09-13T02:25:18Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 1004701772,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "h15",
+        "url": "https://data.gharchive.org/2024-01-15-15.json.gz",
+        "final_url": "https://data.gharchive.org/2024-01-15-15.json.gz",
+        "sha256": "5fb7b0cacd66b97749e3bb7231130a15d4da5c8ade9c7d08aaf6316772e18049",
+        "size": 135661600,
+        "retrieved_utc": "2026-09-13T02:19:42Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "2024-01-15-15.json.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "h15",
+        "dest": "2024-01-15-15.json",
+        "format": "gz"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "gzip": "gzip 1.12",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "49db9fbc5f737841be6fcffe6e39acbe63fe528fb3dd394425e0596f10f35a8d",
+    "logical_tree_sha256": "4007dabf0cffd06f881433e895d96d7a6a2680b6ff266d79b9d410459073abc9",
+    "content_tree_sha256": "da5a314a1236011c2779335ccd70937b62eb46fe4478987497102c68ed6f895b",
+    "extended_tree_sha256": "a1c3fd45fbd34eb2d1ff373f612f7b510309c86052623a6b3a786a29b9707f0d",
+    "bytes": 1004701772,
+    "bytes_all_paths": 1004701772,
+    "allocated_bytes": 1004703744,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 18,
+      "path_length_bytes": {
+        "min": 18,
+        "max": 18,
+        "mean": 18.0,
+        "p50": 18,
+        "p95": 18
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f08-heldout-gen-sqlite-churn-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "86bf06718af9cd27566674d40e476473485cb7bf000af0571bd9aff1f996c5c5",
+    "logical_tree_sha256": "354937e9456d965a8bf2671f459a2b876bb3ad477398a2775112227d02070883",
+    "pinned_utc": "2026-09-13T02:21:59Z"
+  },
+  "history": []
+}

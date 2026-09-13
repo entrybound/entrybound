@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f08-heldout-lahman-baseball-sqlite-2022",
+  "family": "F08",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "lahman-baseball-db",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "1cda5098b92e77c6bfde8b5d2724cd367803fa76ab83a9ca65563b2da4ccd192",
+  "materialization_key": "1253dd22806c602cf1f0b4ea7ca42e45f732b8740101353bac1526fefad4dab7",
+  "materialized_utc": "2026-09-13T02:25:22Z",
+  "materialized_relpath": "heldout/f08-heldout-lahman-baseball-sqlite-2022",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "257c66d371e661d0481e3f2fee56769a6f4ef6ab1730f5c70c61b28c5a2b98e4",
+    "pinned_utc": "2026-09-13T02:25:22Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 69300224,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "lahman",
+        "url": "https://github.com/jknecht/baseball-archive-sqlite/releases/download/2022/lahman_1871-2022.sqlite",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/3404194/348b3e53-263b-48e6-b2f2-560306b7ca86?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-13T03%3A12%3A32Z&rscd=attachment%3B+filename%3Dlahman_1871-2022.sqlite&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-13T02%3A11%3A57Z&ske=2026-09-13T03%3A12%3A32Z&sks=b&skv=2018-11-09&sig=aDxjo21%2BHId1Cc6dqeulLQdcvqNOgBQiE2%2FpTFt7r9k%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTI2NzYxMCwibmJmIjoxNzg5MjY1ODEwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.vz2gG2jsKnrKxTua8vUy73GJ5z1bF3_Zo6WBVGyV23s&response-content-disposition=attachment%3B%20filename%3Dlahman_1871-2022.sqlite&response-content-type=application%2Foctet-stream",
+        "sha256": "d688f51113bfce19d7314f9824ea0d080c074b5d106493bfea2ac8d3bfb8d3e2",
+        "size": 69300224,
+        "retrieved_utc": "2026-09-13T02:16:49Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "lahman_1871-2022.sqlite"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "lahman"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c343f7583b47536297ecce7bc96eb370bb1966ce9e93cfa7956c25631ab21cef",
+    "logical_tree_sha256": "257c66d371e661d0481e3f2fee56769a6f4ef6ab1730f5c70c61b28c5a2b98e4",
+    "content_tree_sha256": "f4b19bac9a7a803c6bedd62e8a370093f2521c356b8c0ef7a26495c154676b4d",
+    "extended_tree_sha256": "c8c41a9c08ab2e9b19e0f1fefadeaf7a465304a8494a93a458df5fcbda2fef10",
+    "bytes": 69300224,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

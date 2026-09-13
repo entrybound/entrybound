@@ -1,0 +1,98 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-tuning-silesia-xray",
+  "family": "F07",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "silesia-corpus",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "e23204547cfc8af0de3bef8c2c6b7c06cc70200914701adc3cfa1bf430d90b7e",
+  "materialization_key": "152ff3a9dbf26ebb64f362b7beaf98e35cdd7a4bf8ff3825648315b0aea5d889",
+  "materialized_utc": "2026-09-13T02:25:20Z",
+  "materialized_relpath": "corpus/tuning/f07-tuning-silesia-xray",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "68436205e475008f4295be8a4c3cf8c9095cd5932131889e2480719b71848405",
+    "pinned_utc": "2026-09-13T02:25:20Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 8474240,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "xray",
+        "url": "https://sun.aei.polsl.pl/~sdeor/corpus/x-ray.bz2",
+        "final_url": "https://sun.aei.polsl.pl/~sdeor/corpus/x-ray.bz2",
+        "sha256": "1233211ff0d01c923f1b2d0b86d883a35b7326f58982a34d399621d85921deb2",
+        "size": 4051112,
+        "retrieved_utc": "2026-09-13T02:14:48Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "x-ray.bz2"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "xray",
+        "dest": "x-ray",
+        "format": "bz2"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c1bef524bdad16e4b9e51468ae95dc3beb2b26104ed5156f3c839f3156c899c8",
+    "logical_tree_sha256": "68436205e475008f4295be8a4c3cf8c9095cd5932131889e2480719b71848405",
+    "content_tree_sha256": "b515f05da7694c336faa04e1755b25ddde5bafe1e54ec9b53579922f2933563d",
+    "extended_tree_sha256": "ebe4ae4564431382898aadc4f87a42a8380d6b33617e95712d5db746df34dd48",
+    "bytes": 8474240,
+    "bytes_all_paths": 8474240,
+    "allocated_bytes": 8474624,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 5,
+      "path_length_bytes": {
+        "min": 5,
+        "max": 5,
+        "mean": 5.0,
+        "p50": 5,
+        "p95": 5
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,99 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-validation-nasa-gistemp-1200km",
+  "family": "F07",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "nasa-giss-gistemp",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "4eed4bdca1a074a56592e436f5ddf17cb69fbdee4009c8c46fd119ce9ea98247",
+  "materialization_key": "53b89377957bfc13ff0fea4f49f8984a35502a40dd78cf1996f0f49c0f3b7715",
+  "materialized_utc": "2026-09-13T02:25:21Z",
+  "materialized_relpath": "corpus/validation/f07-validation-nasa-gistemp-1200km",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "0b9648517749df657a43aa92d6beff842e5c76995be0c2e95296e6cff4017869",
+    "pinned_utc": "2026-09-13T02:25:21Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 57047300,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "gistemp",
+        "url": "https://data.giss.nasa.gov/pub/gistemp/gistemp1200_GHCNv4_ERSSTv5.nc.gz",
+        "final_url": "https://data.giss.nasa.gov/pub/gistemp/gistemp1200_GHCNv4_ERSSTv5.nc.gz",
+        "sha256": "6a597332bcefbe0fbe5a6ce7677a9012fa766cc43cea291d6207c12db2fe0cc6",
+        "size": 25853076,
+        "retrieved_utc": "2026-09-13T02:16:46Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "gistemp1200_GHCNv4_ERSSTv5.nc.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "gistemp",
+        "dest": "gistemp1200_GHCNv4_ERSSTv5.nc",
+        "format": "gz"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "gzip": "gzip 1.12",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "5f0579cf1014cfb0597992668078e3180f60da1676f78180e1b71d651fef6faa",
+    "logical_tree_sha256": "0b9648517749df657a43aa92d6beff842e5c76995be0c2e95296e6cff4017869",
+    "content_tree_sha256": "8ab4f0925a48c53c4a8dec62351109615a2bc6f374f519a2994a19cf80f2e180",
+    "extended_tree_sha256": "132f3d457acc145d1da00e53b983372c2115d972fcf760e8e538c67fa718df06",
+    "bytes": 57047300,
+    "bytes_all_paths": 57047300,
+    "allocated_bytes": 57049088,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 29,
+      "path_length_bytes": {
+        "min": 29,
+        "max": 29,
+        "mean": 29.0,
+        "p50": 29,
+        "p95": 29
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

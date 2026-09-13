@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f08-tuning-chinook-sqlite",
+  "family": "F08",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "chinook-sample-db",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "ad1ad834c456791b4eff0605f4e353559db1eabe985f1c6ec6fad8bd76b27b35",
+  "materialization_key": "951276efdab01914658cd7fd1e4ee659725370387bcb98d2f3015ccd5902e865",
+  "materialized_utc": "2026-09-13T02:25:23Z",
+  "materialized_relpath": "corpus/tuning/f08-tuning-chinook-sqlite",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "ed6ba20aea92737f780c70842c5445c1a4700b87cabbd5939689162414a6dbc4",
+    "pinned_utc": "2026-09-13T02:25:23Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 1067008,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "chinook",
+        "url": "https://github.com/lerocha/chinook-database/releases/download/v1.4.5/Chinook_Sqlite.sqlite",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/26098045/f874d47d-29a1-4df5-9784-b25c33a86bc8?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-13T03%3A12%3A08Z&rscd=attachment%3B+filename%3DChinook_Sqlite.sqlite&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-13T02%3A11%3A52Z&ske=2026-09-13T03%3A12%3A08Z&sks=b&skv=2018-11-09&sig=eKoN3t1dEFHtCxr7R%2BImpYTqP%2F9Bx3IrZvOi64I5UD8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTI2NTk4NywibmJmIjoxNzg5MjY1Njg3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Jp7U30URrV6HD7jEo1FBJ7T3uvqzgBJYCteCOcLqj6w&response-content-disposition=attachment%3B%20filename%3DChinook_Sqlite.sqlite&response-content-type=application%2Foctet-stream",
+        "sha256": "bdf635be69850bd3be09c9a2dbeef7ddfb80036bd3ef3381383cd03b61e4a61a",
+        "size": 1067008,
+        "retrieved_utc": "2026-09-13T02:14:47Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "Chinook_Sqlite.sqlite"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "chinook"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "0baae1b96773a2ea7101cf6f41e444c452ea9092d49a3b5c13ce456f513c8152",
+    "logical_tree_sha256": "ed6ba20aea92737f780c70842c5445c1a4700b87cabbd5939689162414a6dbc4",
+    "content_tree_sha256": "7a2735bc576e0dff0b5006cd74c3e8d9ad7e822636c2d9578468dc402f9acf58",
+    "extended_tree_sha256": "7955df8a36727c700688db5d2d512c9d57bd10fff345861054dcdff9c5df1396",
+    "bytes": 1067008,
+    "bytes_all_paths": 1067008,
+    "allocated_bytes": 1069056,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 21,
+      "path_length_bytes": {
+        "min": 21,
+        "max": 21,
+        "mean": 21.0,
+        "p50": 21,
+        "p95": 21
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

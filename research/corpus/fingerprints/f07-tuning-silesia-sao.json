@@ -1,0 +1,98 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-tuning-silesia-sao",
+  "family": "F07",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "silesia-corpus",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "1498a68c106ec2cc557a859724fa729b4522025f9e942239afbf3b77aa899790",
+  "materialization_key": "afd35430a0209bfd41a0cd112ca4c6ffdad64e5a5062fb4963212450c79caa7d",
+  "materialized_utc": "2026-09-13T02:25:19Z",
+  "materialized_relpath": "corpus/tuning/f07-tuning-silesia-sao",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "21b4bc47637afbbea5b06e3e7209f2c8ec2050b3756fc0911159834d26b992a4",
+    "pinned_utc": "2026-09-13T02:25:19Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 7251944,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "sao",
+        "url": "https://sun.aei.polsl.pl/~sdeor/corpus/sao.bz2",
+        "final_url": "https://sun.aei.polsl.pl/~sdeor/corpus/sao.bz2",
+        "sha256": "99eb682a310de9a0f1426e988bcc16b3ed024fa732100e3b6c727d45f6949075",
+        "size": 4940524,
+        "retrieved_utc": "2026-09-13T02:14:47Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "sao.bz2"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "sao",
+        "dest": "sao",
+        "format": "bz2"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "9c93523fa1e7154c83fb3b1bd298f2eb799fc6c0f37f19bc2fddcedc91343e6d",
+    "logical_tree_sha256": "21b4bc47637afbbea5b06e3e7209f2c8ec2050b3756fc0911159834d26b992a4",
+    "content_tree_sha256": "2de173b91bcc7974e5b4dc0dbb873556c0fce6188c3e86cd1bc62f5aaea19deb",
+    "extended_tree_sha256": "70d24662297ca4bf09ffebe34d17a381184debe4ba7235142bbcb9b12f8be2c7",
+    "bytes": 7251944,
+    "bytes_all_paths": 7251944,
+    "allocated_bytes": 7254016,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 3,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 3,
+        "mean": 3.0,
+        "p50": 3,
+        "p95": 3
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

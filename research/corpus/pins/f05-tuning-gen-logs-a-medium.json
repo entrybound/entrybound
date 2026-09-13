@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-tuning-gen-logs-a-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "24c7241140a7dc6ea25d7a7fc158965cb65f4afb46b6dc0896e3fce2a31d4cf5",
+    "logical_tree_sha256": "278ef49ba067281a3a80bbf9d96144c49d34fff5e98fc02fc99330a4906b6d72",
+    "pinned_utc": "2026-09-13T02:16:25Z"
+  },
+  "history": []
+}

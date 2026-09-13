@@ -1,0 +1,111 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-tuning-census-popest-2023",
+  "family": "F06",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "census-popest-v2023",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "cb41a3fcf0bc785a8a49883f59ca0c83ae1048878124eb94f09f4d53a4cf7cd5",
+  "materialization_key": "9e95bb91fdefbd0a57ea9cf184d78aebb1679775170c63071c3e4a7404508662",
+  "materialized_utc": "2026-09-13T02:25:02Z",
+  "materialized_relpath": "corpus/tuning/f06-tuning-census-popest-2023",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "1d694494df8f55ef242e451cfd0a3829eee569a289b9aed4239d248c34bbe86a",
+    "pinned_utc": "2026-09-13T02:25:02Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 1428893,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "county",
+        "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2023/counties/totals/co-est2023-alldata.csv",
+        "final_url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2023/counties/totals/co-est2023-alldata.csv",
+        "sha256": "38dd59c70ef8067a3d476b6f5039e60f288e2d492015525ba9711faffd12c418",
+        "size": 1396427,
+        "retrieved_utc": "2026-09-13T02:14:38Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "co-est2023-alldata.csv"
+      },
+      {
+        "name": "state",
+        "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2023/state/totals/NST-EST2023-ALLDATA.csv",
+        "final_url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2023/state/totals/NST-EST2023-ALLDATA.csv",
+        "sha256": "8f0733f32bb01e8c60c22e1eb88ed300e54dcd85306debb13521a81e0c53332a",
+        "size": 32466,
+        "retrieved_utc": "2026-09-13T02:14:38Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "NST-EST2023-ALLDATA.csv"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "county"
+      },
+      {
+        "op": "copy",
+        "input": "state"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "0b47058c36802cdb8f3aa65597fa582024694eed7d8e4929389efadca0c8a713",
+    "logical_tree_sha256": "1d694494df8f55ef242e451cfd0a3829eee569a289b9aed4239d248c34bbe86a",
+    "content_tree_sha256": "f93d91d234124af087879c2ddd8f4b0fd3337e23073cc1e48de72f37b44ae71d",
+    "extended_tree_sha256": "412b48f1b9b4b846c77e421b3f6520e975bfdf1fca557276c691aee8fc5b6208",
+    "bytes": 1428893,
+    "bytes_all_paths": 1428893,
+    "allocated_bytes": 1429504,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "unique_file_inodes": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 23,
+      "path_length_bytes": {
+        "min": 22,
+        "max": 23,
+        "mean": 22.5,
+        "p50": 22,
+        "p95": 23
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}
