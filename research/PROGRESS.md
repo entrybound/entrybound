@@ -46,7 +46,13 @@ hashes and extracts the two tarballs to a stable directory.
 ## Execution environment
 
 - **Windows host:** Windows 11 Pro 10.0.26200, Intel i9-14900HX (8 P-cores + 16 E-cores, 32 logical), 64 GB RAM, NTFS, non-admin session, balanced power scheme. Tools: Rust 1.97.1 at `%USERPROFILE%\.cargo\bin` (not on the default PATH), Python 3.13.5 at `C:\Python313\python.exe`, Java 21, PowerShell 7, bsdtar 3.8.8, Docker Desktop 29.7.2.
-- **WSL2 Ubuntu 24.04 (root):** ext4 with about 769 GB free, 31 GB RAM visible. Rust stable 1.98.1 plus nightly-2026-08-01 and cargo-fuzz 0.13.2. Installed via apt: GNU tar 1.35, bsdtar 3.7.2, 7-Zip 23.01 (`7zz`), p7zip 16.02, zstd 1.5.5, xz 5.4.5, gzip 1.12, pigz, lz4, lzip, brotli, pixz, par2, hyperfine, cpio, squashfs-tools, xfsprogs, btrfs-progs, attr, acl, sqlite3, jq.
+- **WSL2 Ubuntu 24.04 (root):** ext4 with about 769 GB free, 31 GB RAM visible, 8 GiB swap. Rust stable 1.98.1 plus nightly-2026-08-01 and cargo-fuzz 0.13.2. Installed via apt: GNU tar 1.35, bsdtar 3.7.2, 7-Zip 23.01 (`7z`/`7za`/`7zr` from Ubuntu package `7zip` 23.01+dfsg-11; `p7zip-full` is only a transitional package, so there is no p7zip 16.02 binary and no `7zz` on PATH), zstd 1.5.5, xz 5.4.5, gzip 1.12, pigz, lz4, lzip, brotli, pixz, par2, hyperfine, cpio, squashfs-tools, xfsprogs, btrfs-progs, attr, acl, sqlite3, jq.
+- **Pinned research Rust toolchain: `1.98.1` on both Windows and WSL** (installed explicitly on 2026-09-13). Floating `stable` differs between the hosts (Windows 1.97.1/LLVM 22.1.6, WSL 1.98.1/LLVM 22.1.8). A WSL `bash script.sh` does not source `~/.cargo/env`, so plain `rustc` resolves to Ubuntu's `/usr/bin/rustc` 1.75.0. Research scripts must invoke `/root/.cargo/bin/cargo +1.98.1` (WSL) or `%USERPROFILE%\.cargo\bin\cargo.exe +1.98.1` (Windows) explicitly.
+- **Timing and fidelity caveats:**
+  - Microsoft Defender real-time protection is on, and Hyper-V/VBS runs the Windows host under the hypervisor; both affect Windows-side I/O timing.
+  - `/mnt/d` in WSL is mounted without `metadata`, so metadata-fidelity experiments must run on ext4 under `/root/eb-research`.
+  - Inside WSL the quiet-machine guard sees only VM CPU accounting (host load appears as steal time), and `taskset` cannot target host P- or E-cores.
+  - Temperatures and throttling cannot be read without admin.
 - **Docker:** Linux containers run on the same WSL2 kernel. `sch_netem` is absent in both WSL2 and Docker, so network emulation must be application-level (documented threat to validity). QEMU binfmt ARM64 emulation works.
 - **Fingerprints:** machine-readable fingerprints are in `research/environment/` (`index.json`); usernames and hostnames are redacted.
 - **Data root outside git (WSL):** `/root/eb-research/{corpus,heldout,cache,venv,src,target}`.
@@ -58,7 +64,7 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 | Phase | Scope (program sections) | Status | Artifacts / notes |
 |---|---|---|---|
 | A. Source-of-truth audit | §2, §3 | RUNNING — workflow `wf_da687d30-ac3`, script `research/orchestration/workflows/phase-a-audit.js` | Stage 1 extraction: 36 source slices → `research/audit/extract/*.jsonl` (8,429 records validated, 0 malformed lines, as of 2026-09-13T01:59Z; `code-cli` still finalizing). Then per-cluster merge → `research/audit/merged/`, ledger assembly (`research/tools/ledger/assemble.py`, stable IDs in `research/audit/id-map.json`), completeness critics looping until a round finds nothing new, then `archetypal-objective.md` + `decision-method.md` with adversarial review. |
-| B1. Infrastructure & corpus | §4, §5, §6, §7 | RUNNING — workflow `wf_cf480e56-fb5`, script `research/orchestration/workflows/phase-b1-infra-corpus.js` | DONE: environment capture (`research/tools/env`, `research/environment`), `ebr` runner/stats package with tests and end-to-end smoke `EXP-SMOKE-000`, corpus framework (`research/corpus/tools`). RUNNING: 5 corpus family groups (g1-code, g2-generated, g3-data, g4-binary, g5-media), then corpus assembly/critic and baseline tooling + capability matrix + size/determinism pass `EXP-BASE-SIZE`. |
+| B1. Infrastructure & corpus | §4, §5, §6, §7 | RUNNING — workflow `wf_cf480e56-fb5`, script `research/orchestration/workflows/phase-b1-infra-corpus.js` | DONE and committed: environment capture (`research/tools/env`, `research/environment`; commit `10cee5a`), the `ebr` runner/stats package with tests and the end-to-end smoke `EXP-SMOKE-000` (`5eabf03`), and the corpus framework (`research/corpus/tools`, `1320b64`). RUNNING: 5 corpus family groups (g1-code, g2-generated, g3-data, g4-binary, g5-media), followed by corpus assembly/critic, baseline tooling, the capability matrix, and the size/determinism pass `EXP-BASE-SIZE`. |
 | Gate: method pre-registration | §3.3, §37 | NEXT | Commit `decision-method.md` and `archetypal-objective.md` **before** any decision-relevant result is observed. |
 | B2. Research harness | §4, §7, §9 | PLANNED | Separate cargo workspace `research/harness` (path dependency on `crates/entrybound`); planner candidate trace via default-off research feature, verified byte-identical; WSL clone build; application-level network emulation proxy. |
 | C-design | §8–§33 | PLANNED | Pre-registered experiment specs per domain, committed before execution. |
@@ -77,6 +83,15 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - Human usability participants are unavailable; §33 will use independently simulated first-use evaluations, labeled as such.
 - Independent external cryptographic review cannot be performed internally; crypto final selections remain `EXTERNAL_REVIEW_REQUIRED` with a dossier.
 
+## Open integration items (carry forward)
+
+- `research/methods/thresholds.json` is a null template; fill it from the pre-registered `decision-method.md` (Phase A output) before any timing run. The runner refuses timing runs while quiet-machine limits are unset.
+- `research/decisions/design-freeze.json` must use one of the key names `design_freeze_sha`, `commit_sha`, or `sha`; the `ebr` held-out unlock reads those.
+- The `ebr` corpus module and `research/corpus/tools/corpuslib.py` both implement held-out guards. Consolidate them so `ebr` calls `corpuslib.assert_not_heldout()` and reads `research/corpus/manifest.json` (Phase B2 task).
+- An extra directory, `/root/eb-research/generated`, was created by a framework agent and may overlap the corpus framework; reconcile it during corpus assembly.
+- `fingerprint.py`/`stats.py` memory grows roughly 0.5–1 KB per filesystem object; generated items are hashed in memory. Streaming generators are needed for multi-GB synthetic items.
+- `tools/zip-compat/observed-outcomes-v1.json` (tracked production tooling) was transiently modified by an agent during extraction and was verified byte-identical to `HEAD` afterwards. Agents must not run regeneration tools against tracked files.
+
 ## How to resume
 
 1. `git -C D:\Projects\entrybound\entrybound log --oneline -20` and read this file's phase table; the latest commit message names the last completed step.
@@ -88,4 +103,5 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 ## Change log
 
 - 2026-09-12 — Program started; repository discipline verified (baseline SHA above). WSL toolchain and archivers installed; Docker verified; netem absence and ARM64 emulation confirmed.
-- 2026-09-13T01:59Z — Checkpoint 1: progress log, research `.gitignore`, external-source extraction script, orchestration scripts, Phase A extraction records (35 of 36 slices final), Phase B1 environment fingerprints, `ebr` runner/stats framework with smoke experiment, corpus framework tools.
+- 2026-09-13T01:59Z — Checkpoint 1 (commits `a966630`..`1320b64`): progress log, research `.gitignore`/`.gitattributes` (LF), external-source extraction script, orchestration scripts, Phase A extraction records (35 of 36 slices final; `code-cli` pending), Phase B1 environment fingerprints, `ebr` runner/stats framework with smoke experiment, corpus framework tools.
+- 2026-09-13 — Decision: pin research Rust builds to toolchain 1.98.1 on both hosts, invoked by explicit path. Recorded environment corrections (WSL 7-Zip is 23.01, not p7zip; Defender/VBS timing caveats; `/mnt/d` lacks metadata).
