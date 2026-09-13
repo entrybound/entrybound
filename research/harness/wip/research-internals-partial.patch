@@ -1,0 +1,2436 @@
+diff --git a/crates/entrybound/Cargo.toml b/crates/entrybound/Cargo.toml
+index 64e883b..4709971 100644
+--- a/crates/entrybound/Cargo.toml
++++ b/crates/entrybound/Cargo.toml
+@@ -9,6 +9,12 @@ repository.workspace = true
+ [lints]
+ workspace = true
+ 
++[features]
++# Research-only, default-off, read-only access to internal planner, codec,
++# transform, and reconstruction entry points. Enabling it must never change
++# archive bytes; see research/harness/research-internals.md.
++research-internals = []
++
+ [dependencies]
+ aes = "=0.9.3"
+ aes-gcm-siv = "=0.12.1"
+diff --git a/crates/entrybound/src/codec.rs b/crates/entrybound/src/codec.rs
+index d8de2c5..16b39ae 100644
+--- a/crates/entrybound/src/codec.rs
++++ b/crates/entrybound/src/codec.rs
+@@ -1224,6 +1224,219 @@ fn decompression(detail: impl Into<String>) -> Diagnostic {
+     )
+ }
+ 
++/// Read-only research access to the operational codec registry.
++///
++/// Every function forwards to the private production function of the same name
++/// without altering arguments or results.
++#[cfg(feature = "research-internals")]
++pub mod research {
++    use std::collections::BTreeMap;
++
++    use crate::diagnostics::Result;
++    use crate::eam::{
++        ChunkGroup, DecodeRequirements, Dictionary, Digest, ReconstructionData, TransformPlan,
++        TransformStep,
++    };
++
++    pub const ZSTD_CODEC_IDENTIFIER: &str = super::ZSTD_CODEC_IDENTIFIER;
++    pub const LZ4_CODEC_IDENTIFIER: &str = super::LZ4_CODEC_IDENTIFIER;
++    pub const LZMA2_CODEC_IDENTIFIER: &str = super::LZMA2_CODEC_IDENTIFIER;
++    pub const ZSTD_WINDOW_LOG: u8 = super::ZSTD_WINDOW_LOG;
++    pub const ZSTD_WINDOW_BYTES: u64 = super::ZSTD_WINDOW_BYTES;
++    pub const ZSTD_WORKING_SET_BYTES: u64 = super::ZSTD_WORKING_SET_BYTES;
++    pub const SUPPORTED_LEVELS: [i32; 7] = super::SUPPORTED_LEVELS;
++    pub const SUPPORTED_LOOKBACKS: [u32; 4] = super::SUPPORTED_LOOKBACKS;
++    pub const SUPPORTED_LZMA2_CONFIGURATIONS: [(u8, u32); 3] =
++        super::SUPPORTED_LZMA2_CONFIGURATIONS;
++    pub const ZSTD_DICTIONARY_FORMAT: &str = super::ZSTD_DICTIONARY_FORMAT;
++    pub const ZSTD_DICTIONARY_CONSTRUCTION_PREFIX: &str =
++        super::ZSTD_DICTIONARY_CONSTRUCTION_PREFIX;
++    pub const SUPPORTED_DICTIONARY_CONSTRUCTIONS: [&str; 9] =
++        super::SUPPORTED_DICTIONARY_CONSTRUCTIONS;
++
++    /// Public mirror of the private codec dependency mode.
++    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
++    pub enum PlanMode {
++        Independent,
++        Dictionary(Digest),
++        Prefix { lookback: u32 },
++    }
++
++    impl From<super::PlanMode> for PlanMode {
++        fn from(value: super::PlanMode) -> Self {
++            match value {
++                super::PlanMode::Independent => Self::Independent,
++                super::PlanMode::Dictionary(dictionary_id) => Self::Dictionary(dictionary_id),
++                super::PlanMode::Prefix { lookback } => Self::Prefix { lookback },
++            }
++        }
++    }
++
++    #[must_use]
++    pub fn store_plan() -> TransformPlan {
++        super::store_plan()
++    }
++
++    pub fn zstd_plan(level: i32) -> Result<TransformPlan> {
++        super::zstd_plan(level)
++    }
++
++    pub fn zstd_dictionary_plan(level: i32, dictionary_id: Digest) -> Result<TransformPlan> {
++        super::zstd_dictionary_plan(level, dictionary_id)
++    }
++
++    pub fn zstd_prefix_plan(level: i32, lookback: u32) -> Result<TransformPlan> {
++        super::zstd_prefix_plan(level, lookback)
++    }
++
++    pub fn zstd_transformed_plan(
++        level: i32,
++        transforms: Box<[TransformStep]>,
++    ) -> Result<TransformPlan> {
++        super::zstd_transformed_plan(level, transforms)
++    }
++
++    pub fn lz4_plan(transforms: Box<[TransformStep]>) -> Result<TransformPlan> {
++        super::lz4_plan(transforms)
++    }
++
++    pub fn lzma2_plan(
++        preset: u8,
++        dictionary_bytes: u32,
++        transforms: Box<[TransformStep]>,
++    ) -> Result<TransformPlan> {
++        super::lzma2_plan(preset, dictionary_bytes, transforms)
++    }
++
++    pub fn with_pipeline(
++        base: TransformPlan,
++        transforms: Box<[TransformStep]>,
++    ) -> Result<TransformPlan> {
++        super::with_pipeline(base, transforms)
++    }
++
++    pub fn without_transforms(plan: &TransformPlan) -> Result<TransformPlan> {
++        super::without_transforms(plan)
++    }
++
++    pub fn validate_plans(plans: &[TransformPlan]) -> Result<()> {
++        super::validate_plans(plans)
++    }
++
++    pub fn validate_plan(plan: &TransformPlan) -> Result<()> {
++        super::validate_plan(plan)
++    }
++
++    pub fn required_features(plan: &TransformPlan) -> Result<u64> {
++        super::required_features(plan)
++    }
++
++    pub fn plan_mode(plan: &TransformPlan) -> Result<PlanMode> {
++        super::plan_mode(plan).map(PlanMode::from)
++    }
++
++    #[must_use]
++    pub fn aggregate_decode_requirements(plans: &[TransformPlan]) -> DecodeRequirements {
++        super::aggregate_decode_requirements(plans)
++    }
++
++    pub fn aggregate_archive_decode_requirements(
++        plans: &[TransformPlan],
++        dictionaries: &BTreeMap<Digest, Dictionary>,
++        groups: &BTreeMap<Digest, ChunkGroup>,
++    ) -> Result<DecodeRequirements> {
++        super::aggregate_archive_decode_requirements(plans, dictionaries, groups)
++    }
++
++    #[must_use]
++    pub const fn zstd_decode_requirements() -> DecodeRequirements {
++        super::zstd_decode_requirements()
++    }
++
++    pub fn encode_payload(plan: &TransformPlan, plaintext: &[u8]) -> Result<Vec<u8>> {
++        super::encode_payload(plan, plaintext)
++    }
++
++    pub fn encode_transformed_payload(plan: &TransformPlan, transformed: &[u8]) -> Result<Vec<u8>> {
++        super::encode_transformed_payload(plan, transformed)
++    }
++
++    pub fn encode_payload_with_dictionary(
++        plan: &TransformPlan,
++        plaintext: &[u8],
++        dictionary: &Dictionary,
++    ) -> Result<Vec<u8>> {
++        super::encode_payload_with_dictionary(plan, plaintext, dictionary)
++    }
++
++    pub fn encode_payload_with_prefix(
++        plan: &TransformPlan,
++        plaintext: &[u8],
++        prefix: &[u8],
++    ) -> Result<Vec<u8>> {
++        super::encode_payload_with_prefix(plan, plaintext, prefix)
++    }
++
++    pub fn encode_payload_with_reconstruction(
++        plan: &TransformPlan,
++        plaintext: &[u8],
++        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
++    ) -> Result<Vec<u8>> {
++        super::encode_payload_with_reconstruction(plan, plaintext, reconstruction_data)
++    }
++
++    pub fn decode_payload(
++        plan: &TransformPlan,
++        stored: &[u8],
++        logical_len: u64,
++    ) -> Result<Vec<u8>> {
++        super::decode_payload(plan, stored, logical_len)
++    }
++
++    pub fn decode_transformed_payload(
++        plan: &TransformPlan,
++        stored: &[u8],
++        transformed_len: u64,
++    ) -> Result<Vec<u8>> {
++        super::decode_transformed_payload(plan, stored, transformed_len)
++    }
++
++    pub fn decode_payload_with_dictionary(
++        plan: &TransformPlan,
++        stored: &[u8],
++        logical_len: u64,
++        dictionary: &Dictionary,
++    ) -> Result<Vec<u8>> {
++        super::decode_payload_with_dictionary(plan, stored, logical_len, dictionary)
++    }
++
++    pub fn decode_payload_with_prefix(
++        plan: &TransformPlan,
++        stored: &[u8],
++        logical_len: u64,
++        prefix: &[u8],
++    ) -> Result<Vec<u8>> {
++        super::decode_payload_with_prefix(plan, stored, logical_len, prefix)
++    }
++
++    pub fn decode_payload_with_reconstruction(
++        plan: &TransformPlan,
++        stored: &[u8],
++        logical_len: u64,
++        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
++    ) -> Result<Vec<u8>> {
++        super::decode_payload_with_reconstruction(plan, stored, logical_len, reconstruction_data)
++    }
++
++    pub fn validate_dictionary(dictionary: &Dictionary) -> Result<()> {
++        super::validate_dictionary(dictionary)
++    }
++
++    pub fn train_dictionary(samples: &[&[u8]], maximum_size: usize) -> Result<Vec<u8>> {
++        super::train_dictionary(samples, maximum_size)
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+diff --git a/crates/entrybound/src/ecf.rs b/crates/entrybound/src/ecf.rs
+index a15cb27..f2aadda 100644
+--- a/crates/entrybound/src/ecf.rs
++++ b/crates/entrybound/src/ecf.rs
+@@ -261,6 +261,125 @@ impl Default for BootstrapCapabilities {
+     }
+ }
+ 
++/// Read-only research access to the exact record-length helpers used by the
++/// planner cost model, lookback prefix construction, and Chunk frame parsing.
++///
++/// Every function forwards to the private production function of the same name.
++#[cfg(feature = "research-internals")]
++pub mod research {
++    use std::collections::BTreeMap;
++
++    use crate::diagnostics::Result;
++    use crate::eam::{
++        ChunkGroup, ConversionProvenance, Dictionary, Digest, LegacyPreservation,
++        ReconstructionData, ReconstructionRegion, TransformPlan,
++    };
++
++    pub fn encoded_transform_plan_len(plan: &TransformPlan) -> Result<u64> {
++        super::encoded_transform_plan_len(plan)
++    }
++
++    pub fn encoded_transform_plan_v2_len(plan: &TransformPlan) -> Result<u64> {
++        super::encoded_transform_plan_v2_len(plan)
++    }
++
++    pub fn encoded_transform_plan_v3_len(plan: &TransformPlan) -> Result<u64> {
++        super::encoded_transform_plan_v3_len(plan)
++    }
++
++    pub fn encoded_reconstruction_region_len(region: &ReconstructionRegion) -> Result<u64> {
++        super::encoded_reconstruction_region_len(region)
++    }
++
++    pub fn encoded_reconstruction_data_len(value: &ReconstructionData) -> Result<u64> {
++        super::encoded_reconstruction_data_len(value)
++    }
++
++    pub fn encoded_dictionary_len(dictionary: &Dictionary) -> Result<u64> {
++        super::encoded_dictionary_len(dictionary)
++    }
++
++    pub fn encoded_chunk_group_len(group: &ChunkGroup) -> Result<u64> {
++        super::encoded_chunk_group_len(group)
++    }
++
++    pub fn encoded_legacy_evidence_len(
++        conversion: &ConversionProvenance,
++        preservation: Option<&LegacyPreservation>,
++    ) -> Result<u64> {
++        super::encoded_legacy_evidence_len(conversion, preservation)
++    }
++
++    /// Bounded-lookback prefix built from already decoded preceding group members.
++    pub fn physical_prefix_from_slices(history: &[&[u8]], lookback: u32) -> Result<Vec<u8>> {
++        super::container::physical_prefix_from_slices(history, lookback)
++    }
++
++    /// Chunk frame header width: 96 bytes when the cross-file feature is set, else 64.
++    #[must_use]
++    pub const fn chunk_frame_header_len(extended: bool) -> u64 {
++        super::container::chunk_frame_header_len(extended)
++    }
++
++    /// Public mirror of the authoritative fields one Chunk frame header declares.
++    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
++    pub struct ChunkFrameHeader {
++        pub stored_len: u64,
++        pub chunk_id: Digest,
++        pub logical_len: u64,
++        pub plan_ref: u64,
++        pub group_ref: Option<Digest>,
++        pub region_owned: bool,
++    }
++
++    /// Parses one Chunk frame header. Unlike the internal parser, which relies on
++    /// callers to pass a complete header, this refuses a short slice.
++    pub fn parse_chunk_frame_header(
++        header: &[u8],
++        extended: bool,
++        whole_object: bool,
++    ) -> Result<ChunkFrameHeader> {
++        let required = usize::try_from(chunk_frame_header_len(extended)).unwrap_or(usize::MAX);
++        if header.len() < required {
++            return Err(super::container::structure(
++                "Chunk frame header is truncated",
++            ));
++        }
++        let parsed = super::container::parse_chunk_frame_header(
++            &header[..required],
++            extended,
++            whole_object,
++        )?;
++        Ok(ChunkFrameHeader {
++            stored_len: parsed.stored_len,
++            chunk_id: parsed.chunk_id,
++            logical_len: parsed.logical_len,
++            plan_ref: parsed.plan_ref,
++            group_ref: parsed.group_ref,
++            region_owned: parsed.region_owned,
++        })
++    }
++
++    /// The single frame-payload decode authority shared by both layouts.
++    pub fn decode_frame_payload(
++        plan: &TransformPlan,
++        stored: &[u8],
++        logical_len: u64,
++        dictionaries: &BTreeMap<Digest, Dictionary>,
++        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
++        prefix: Option<&[u8]>,
++    ) -> Result<Vec<u8>> {
++        super::container::decode_frame_payload(
++            plan,
++            stored,
++            logical_len,
++            dictionaries,
++            reconstruction_data,
++            prefix,
++        )
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::{
+diff --git a/crates/entrybound/src/jpeg_reconstruction.rs b/crates/entrybound/src/jpeg_reconstruction.rs
+index 98a95a4..223cd1d 100644
+--- a/crates/entrybound/src/jpeg_reconstruction.rs
++++ b/crates/entrybound/src/jpeg_reconstruction.rs
+@@ -240,6 +240,78 @@ fn resource(detail: impl Into<String>) -> Diagnostic {
+     )
+ }
+ 
++/// Read-only research access to bounded JPEG/JPEG XL whole-object reconstruction.
++///
++/// Every function forwards to the private production function of the same name.
++#[cfg(feature = "research-internals")]
++pub mod research {
++    use crate::diagnostics::Result;
++    use crate::eam::{Digest, ReconstructionRegion};
++
++    pub const JPEG_RECONSTRUCT_ID: &str = super::JPEG_RECONSTRUCT_ID;
++    pub const JPEG_RECONSTRUCT_PARAMETERS: &[u8] = super::JPEG_RECONSTRUCT_PARAMETERS;
++    pub const MAX_JPEG_BYTES: usize = super::MAX_JPEG_BYTES;
++    pub const MAX_JXL_BYTES: usize = super::MAX_JXL_BYTES;
++    pub const MAX_JPEG_PIXELS: u64 = super::MAX_JPEG_PIXELS;
++    pub const JPEG_WORKING_SET_BYTES: u64 = super::JPEG_WORKING_SET_BYTES;
++    pub const MAX_REGION_CHUNKS: u64 = super::MAX_REGION_CHUNKS;
++    pub const MAX_REGION_EXPANSION_RATIO: u64 = super::MAX_REGION_EXPANSION_RATIO;
++    pub const REGION_MEMBER_PLAN_REF: u64 = super::REGION_MEMBER_PLAN_REF;
++
++    /// Public mirror of the private verified JPEG XL representation.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub struct VerifiedJpegRepresentation {
++        pub bytes: Vec<u8>,
++        pub width: u32,
++        pub height: u32,
++    }
++
++    /// Public mirror of the private JPEG attempt failure classes.
++    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
++    pub enum JpegAttemptFailure {
++        NotRecognized,
++        Unsupported,
++        VerificationFailed,
++        ResourceExcluded,
++    }
++
++    impl From<super::JpegAttemptFailure> for JpegAttemptFailure {
++        fn from(value: super::JpegAttemptFailure) -> Self {
++            match value {
++                super::JpegAttemptFailure::NotRecognized => Self::NotRecognized,
++                super::JpegAttemptFailure::Unsupported => Self::Unsupported,
++                super::JpegAttemptFailure::VerificationFailed => Self::VerificationFailed,
++                super::JpegAttemptFailure::ResourceExcluded => Self::ResourceExcluded,
++            }
++        }
++    }
++
++    pub fn verified_forward(
++        original: &[u8],
++    ) -> std::result::Result<VerifiedJpegRepresentation, JpegAttemptFailure> {
++        super::verified_forward(original)
++            .map(|verified| VerifiedJpegRepresentation {
++                bytes: verified.bytes,
++                width: verified.width,
++                height: verified.height,
++            })
++            .map_err(JpegAttemptFailure::from)
++    }
++
++    pub fn inverse(representation: &[u8]) -> Result<Vec<u8>> {
++        super::inverse(representation)
++    }
++
++    pub fn validate_parameters(parameters: &[u8]) -> Result<()> {
++        super::validate_parameters(parameters)
++    }
++
++    #[must_use]
++    pub fn region_identity(region: &ReconstructionRegion) -> Digest {
++        super::region_identity(region)
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+diff --git a/crates/entrybound/src/lib.rs b/crates/entrybound/src/lib.rs
+index 029450a..ac86893 100644
+--- a/crates/entrybound/src/lib.rs
++++ b/crates/entrybound/src/lib.rs
+@@ -20,3 +20,21 @@ pub mod random_access;
+ mod reconstruction;
+ pub mod similarity;
+ mod transform;
++
++/// Default-off, read-only research access to crate internals.
++///
++/// Compiled only with the `research-internals` cargo feature. Every item is a
++/// thin wrapper over, or an enumeration built from, the exact private functions
++/// production uses; nothing here alters production behavior or archive bytes.
++/// These APIs are not stable: promoting any of them to a production API requires
++/// an accepted Decision Ledger entry.
++#[cfg(feature = "research-internals")]
++pub mod research {
++    pub use crate::codec::research as codec;
++    pub use crate::ecf::research as ecf;
++    pub use crate::jpeg_reconstruction::research as jpeg_reconstruction;
++    pub use crate::planner::research as planner;
++    pub use crate::reconstruction::research as reconstruction;
++    pub use crate::similarity::research as similarity;
++    pub use crate::transform::research as transform;
++}
+diff --git a/crates/entrybound/src/planner.rs b/crates/entrybound/src/planner.rs
+index 0588803..d581800 100644
+--- a/crates/entrybound/src/planner.rs
++++ b/crates/entrybound/src/planner.rs
+@@ -1827,6 +1827,1735 @@ fn resource(detail: impl Into<String>) -> Diagnostic {
+     )
+ }
+ 
++/// Read-only research access to planner internals.
++///
++/// Two layers are provided:
++///
++/// * thin wrappers that forward to the private production functions the
++///   planners call (candidate lists, cost functions, qualification rules,
++///   cohort selection, dictionary training, lookback prefix sizing, JPEG
++///   region candidates), and
++/// * a candidate enumeration ([`trace_chunk`], [`trace_cohort`],
++///   [`trace_jpeg_object`], [`trace_archive`]) that re-runs each production
++///   selection loop outside the production function bodies, calling the same
++///   private functions, and records every candidate with its cost components,
++///   qualification result, exclusion reason, and the production selection.
++///
++/// No production function body is modified or hooked. Research harnesses must
++/// check that [`PlannedAssignment::differences`] is empty against an Archive
++/// planned by the real planner before trusting any enumeration.
++#[cfg(feature = "research-internals")]
++pub mod research {
++    use std::collections::{BTreeMap, BTreeSet};
++
++    use super::{CompressionProfile, ContentAnalysis, PlanningReport};
++    use crate::codec::{
++        encode_payload, encode_payload_with_dictionary, encode_payload_with_prefix,
++        encode_payload_with_reconstruction, encode_transformed_payload, store_plan,
++        zstd_dictionary_plan, zstd_plan, zstd_prefix_plan,
++    };
++    use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
++    use crate::eam::{
++        Archive, ChunkGroup, ContentObject, Dictionary, Digest, ReconstructionAuditReason,
++        ReconstructionAuditTarget, ReconstructionData, ReconstructionFallbackReason,
++        ReconstructionRegion, RegionAccessCost, TransformPlan,
++    };
++    use crate::ecf::{
++        SECTION_HEADER_LEN, encoded_reconstruction_data_len, encoded_reconstruction_region_len,
++        encoded_transform_plan_v2_len, encoded_transform_plan_v3_len,
++    };
++    use crate::identity::sha256_exact;
++    use crate::similarity::{SimilarityCohort, cluster};
++
++    pub const MINIMUM_ZSTD_INPUT_BYTES: usize = super::MINIMUM_ZSTD_INPUT_BYTES;
++    pub const PROBE_BYTES: usize = super::PROBE_BYTES;
++    pub const MINIMUM_COHORT_GAIN_BYTES: u64 = super::MINIMUM_COHORT_GAIN_BYTES;
++    pub const DICTIONARY_SECTION_OVERHEAD_BYTES: u64 = super::DICTIONARY_SECTION_OVERHEAD_BYTES;
++    pub const CHUNK_GROUP_SECTION_OVERHEAD_BYTES: u64 = super::CHUNK_GROUP_SECTION_OVERHEAD_BYTES;
++    pub const RECONSTRUCTION_SECTION_OVERHEAD_BYTES: u64 =
++        super::RECONSTRUCTION_SECTION_OVERHEAD_BYTES;
++    pub const MINIMUM_RECONSTRUCTION_GAIN_BYTES: u64 = super::MINIMUM_RECONSTRUCTION_GAIN_BYTES;
++    pub const MINIMUM_RECONSTRUCTION_GAIN_BASIS_POINTS: u64 =
++        super::MINIMUM_RECONSTRUCTION_GAIN_BASIS_POINTS;
++
++    // ---------------------------------------------------------------------
++    // Thin wrappers over private production functions.
++    // ---------------------------------------------------------------------
++
++    /// v1–v3 Zstandard levels scanned for a Chunk with this probe result.
++    #[must_use]
++    pub fn levels(profile: CompressionProfile, analysis: ContentAnalysis) -> &'static [i32] {
++        profile.levels(analysis)
++    }
++
++    #[must_use]
++    pub const fn dictionary_levels(profile: CompressionProfile) -> &'static [i32] {
++        profile.dictionary_levels()
++    }
++
++    #[must_use]
++    pub const fn lookback_levels(profile: CompressionProfile) -> &'static [i32] {
++        profile.lookback_levels()
++    }
++
++    /// Ordinary and structural-transform candidate lists, in evaluation order.
++    pub fn v4_candidates(
++        profile: CompressionProfile,
++        plaintext: &[u8],
++    ) -> Result<(Vec<TransformPlan>, Vec<TransformPlan>)> {
++        super::v4_candidates(profile, plaintext)
++    }
++
++    pub fn select_v4_plan(profile: CompressionProfile, plaintext: &[u8]) -> Result<TransformPlan> {
++        super::select_v4_plan(profile, plaintext)
++    }
++
++    pub fn complete_candidate_cost(plan: &TransformPlan, plaintext: &[u8]) -> Result<u64> {
++        super::complete_candidate_cost(plan, plaintext)
++    }
++
++    pub fn qualifies_v4(candidate: u64, baseline: u64) -> Result<bool> {
++        super::qualifies_v4(candidate, baseline)
++    }
++
++    #[must_use]
++    pub fn reconstruction_max_chain(profile: CompressionProfile) -> u32 {
++        super::reconstruction_max_chain(profile)
++    }
++
++    pub fn reconstruction_candidates(
++        profile: CompressionProfile,
++        data: &ReconstructionData,
++    ) -> Result<Vec<TransformPlan>> {
++        super::reconstruction_candidates(profile, data)
++    }
++
++    pub fn v5_independent_cost(
++        plan: &TransformPlan,
++        plaintext: &[u8],
++        reconstruction: Option<(&ReconstructionData, &BTreeMap<Digest, ReconstructionData>)>,
++    ) -> Result<u64> {
++        super::v5_independent_cost(plan, plaintext, reconstruction)
++    }
++
++    pub fn qualifies_reconstruction(candidate: u64, baseline: u64) -> Result<bool> {
++        super::qualifies_reconstruction(candidate, baseline)
++    }
++
++    /// Public mirror of the private cohort selection.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub enum CohortSelection {
++        Independent,
++        Dictionary {
++            dictionary: Dictionary,
++            plan: TransformPlan,
++        },
++        Lookback {
++            group: ChunkGroup,
++            plan: TransformPlan,
++        },
++    }
++
++    impl From<super::CohortSelection> for CohortSelection {
++        fn from(value: super::CohortSelection) -> Self {
++            match value {
++                super::CohortSelection::Independent => Self::Independent,
++                super::CohortSelection::Dictionary { dictionary, plan } => {
++                    Self::Dictionary { dictionary, plan }
++                }
++                super::CohortSelection::Lookback { group, plan } => Self::Lookback { group, plan },
++            }
++        }
++    }
++
++    pub fn select_cohort_plan(
++        archive: &Archive,
++        cohort: &SimilarityCohort,
++        profile: CompressionProfile,
++        planner_id: &str,
++        plans: &BTreeMap<u64, TransformPlan>,
++    ) -> Result<CohortSelection> {
++        super::select_cohort_plan(archive, cohort, profile, planner_id, plans)
++            .map(CohortSelection::from)
++    }
++
++    pub fn train_cohort_dictionary(
++        archive: &Archive,
++        cohort: &SimilarityCohort,
++        profile: CompressionProfile,
++        planner_id: &str,
++    ) -> Result<Option<Dictionary>> {
++        super::train_cohort_dictionary(archive, cohort, profile, planner_id)
++    }
++
++    pub fn cohort_prefix(
++        archive: &Archive,
++        chunks: &[Digest],
++        position: usize,
++        lookback: u32,
++    ) -> Result<Vec<u8>> {
++        super::cohort_prefix(archive, chunks, position, lookback)
++    }
++
++    pub fn maximum_preceding_bytes(
++        archive: &Archive,
++        chunks: &[Digest],
++        lookback: u32,
++    ) -> Result<u64> {
++        super::maximum_preceding_bytes(archive, chunks, lookback)
++    }
++
++    pub fn qualifies_against_independent(candidate: u64, independent: u64) -> Result<bool> {
++        super::qualifies_against_independent(candidate, independent)
++    }
++
++    pub fn jpeg_region_candidates(profile: CompressionProfile) -> Result<Vec<TransformPlan>> {
++        super::jpeg_region_candidates(profile)
++    }
++
++    pub fn v6_ordinary_payload_cost(
++        archive: &Archive,
++        object: &ContentObject,
++        plans: &BTreeMap<u64, TransformPlan>,
++    ) -> Result<u64> {
++        super::v6_ordinary_payload_cost(archive, object, plans)
++    }
++
++    #[must_use]
++    pub fn chunk_group_id(cohort_id: Digest, level: i32, lookback: u32) -> Digest {
++        super::chunk_group_id(cohort_id, level, lookback)
++    }
++
++    pub fn independent_encoded_len(
++        profile: CompressionProfile,
++        planner_id: &str,
++        plaintext: &[u8],
++    ) -> Result<usize> {
++        super::independent_encoded_len(profile, planner_id, plaintext)
++    }
++
++    #[must_use]
++    pub fn chunk_object_owners(archive: &Archive) -> BTreeMap<Digest, BTreeSet<Digest>> {
++        super::chunk_object_owners(archive)
++    }
++
++    // ---------------------------------------------------------------------
++    // Candidate enumeration.
++    // ---------------------------------------------------------------------
++
++    /// Frozen planner generations the enumeration reproduces.
++    #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
++    pub enum PlannerVersion {
++        V1,
++        V2,
++        V3,
++        V4,
++        V5,
++        V6,
++    }
++
++    impl PlannerVersion {
++        pub const ALL: [Self; 6] = [Self::V1, Self::V2, Self::V3, Self::V4, Self::V5, Self::V6];
++
++        /// Planner ID the production planner records for this generation.
++        #[must_use]
++        pub const fn planner_id(self, profile: CompressionProfile) -> &'static str {
++            match self {
++                Self::V1 => profile.planner_v1_id(),
++                Self::V2 => profile.planner_v2_id(),
++                Self::V3 => profile.planner_v3_id(),
++                Self::V4 => profile.planner_v4_id(),
++                Self::V5 => profile.planner_v5_id(),
++                Self::V6 => profile.planner_id(),
++            }
++        }
++
++        /// Planner ID the Chunk and cohort stages receive. v6 runs the frozen v5 stages.
++        #[must_use]
++        pub const fn stage_planner_id(self, profile: CompressionProfile) -> &'static str {
++            match self {
++                Self::V6 => profile.planner_v5_id(),
++                _ => self.planner_id(profile),
++            }
++        }
++
++        /// Runs the real production planner of this generation.
++        pub fn plan(
++            self,
++            archive: &mut Archive,
++            profile: CompressionProfile,
++        ) -> Result<PlanningReport> {
++            match self {
++                Self::V1 => super::plan_archive(archive, profile),
++                Self::V2 => super::plan_archive_v2(archive, profile),
++                Self::V3 => super::plan_archive_v3(archive, profile),
++                Self::V4 => super::plan_archive_v4(archive, profile),
++                Self::V5 => super::plan_archive_v5(archive, profile),
++                Self::V6 => super::plan_archive_v6(archive, profile),
++            }
++        }
++
++        const fn has_cohort_stage(self) -> bool {
++            !matches!(self, Self::V1 | Self::V2)
++        }
++
++        const fn has_reconstruction_stage(self) -> bool {
++            matches!(self, Self::V5 | Self::V6)
++        }
++    }
++
++    /// Production rule that evaluated a per-Chunk candidate.
++    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
++    pub enum CandidateStage {
++        /// v1–v3 Zstandard level scan, qualified by `zstandard_wins` against the logical length.
++        IndependentZstandard,
++        /// v1–v3 STORE fallback, used when no Zstandard level qualifies.
++        IndependentStore,
++        /// v4 ordinary candidates. The first (STORE) is the qualification baseline.
++        V4Ordinary,
++        /// v4 structural-transform candidates, qualified against the best ordinary cost.
++        V4Transformed,
++        /// v5 baseline: the v4 winner recosted with a TransformPlan v2 record.
++        V5Baseline,
++        /// v5 DEFLATE-reconstructive candidates, qualified against the v5 baseline.
++        V5Reconstruction,
++    }
++
++    /// Why a traced candidate is not the production selection.
++    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
++    pub enum ExclusionReason {
++        /// Failed the stage's minimum-gain qualification rule.
++        InsufficientGain,
++        /// Qualified, but did not strictly beat the incumbent evaluated before it.
++        /// Earlier candidates win exact ties.
++        NotCheaperThanIncumbent,
++        /// Was the baseline, fallback, or incumbent, but a later candidate won.
++        Superseded,
++        /// Won its stage and became the next stage's baseline (v4 winner -> v5 baseline).
++        CarriedToNextStage,
++    }
++
++    /// One per-Chunk candidate with the cost components the production rule used.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub struct CandidateCost {
++        pub stage: CandidateStage,
++        pub plan: TransformPlan,
++        /// Operational codec output length.
++        pub payload_bytes: u64,
++        /// Encoded TransformPlan record bytes the stage charges (zero for v1–v3,
++        /// the v1 record for v4 stages, the v2 record for v5 stages).
++        pub plan_record_bytes: u64,
++        /// ReconstructionData record plus section overhead (v5 reconstructive candidates).
++        pub side_data_bytes: u64,
++        /// The value the production rule compares: the payload for v1–v3, otherwise
++        /// `payload_bytes + plan_record_bytes + side_data_bytes`.
++        pub complete_cost: u64,
++        /// Value the qualification rule compared against (the logical length for
++        /// v1–v3); `None` for a stage baseline or fallback.
++        pub qualification_baseline: Option<u64>,
++        pub qualified: bool,
++        /// True only for the Chunk-stage plan production assigns.
++        pub selected: bool,
++        pub exclusion: Option<ExclusionReason>,
++    }
++
++    /// Outcome of the v5 DEFLATE reconstruction attempt for one Chunk.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub struct ReconstructionAttempt {
++        pub max_chain: u32,
++        /// Verified side data when `try_forward` produced a candidate.
++        pub data: Option<ReconstructionData>,
++        /// `encoded_reconstruction_data_len` plus the reconstruction section overhead.
++        pub side_data_bytes: Option<u64>,
++        /// Fallback reason the independent stage records. The cohort stage may later
++        /// add `CompleteCostDidNotWin` or remove it; see [`PlannedAssignment`].
++        pub fallback: Option<ReconstructionFallbackReason>,
++    }
++
++    /// Every candidate one production Chunk stage evaluates for one plaintext.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub struct ChunkTrace {
++        pub chunk_id: Digest,
++        pub logical_len: u64,
++        pub profile: CompressionProfile,
++        pub version: PlannerVersion,
++        pub analysis: ContentAnalysis,
++        /// Candidates in production evaluation order.
++        pub candidates: Vec<CandidateCost>,
++        pub reconstruction: Option<ReconstructionAttempt>,
++        /// Index in `candidates` of the plan the production Chunk stage assigns.
++        pub selected: usize,
++    }
++
++    impl ChunkTrace {
++        #[must_use]
++        pub fn selected_plan(&self) -> &TransformPlan {
++            &self.candidates[self.selected].plan
++        }
++    }
++
++    /// Strategy of one cross-file cohort candidate.
++    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
++    pub enum CohortStrategy {
++        Dictionary { level: i32 },
++        Lookback { level: i32, lookback: u32 },
++    }
++
++    /// One cohort candidate with the cost components `select_cohort_plan` used.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub struct CohortCandidate {
++        pub strategy: CohortStrategy,
++        pub plan: TransformPlan,
++        /// Declared ChunkGroup of a lookback candidate.
++        pub group: Option<ChunkGroup>,
++        /// Sum of member payloads under this strategy.
++        pub payload_bytes: u64,
++        /// `encoded_transform_plan_len` of the shared plan.
++        pub plan_record_bytes: u64,
++        /// Dictionary record plus section overhead, or ChunkGroup record plus section overhead.
++        pub side_data_bytes: u64,
++        pub complete_cost: u64,
++        /// `qualifies_against_independent(complete_cost, independent)`.
++        pub qualified: bool,
++        pub selected: bool,
++        pub exclusion: Option<ExclusionReason>,
++    }
++
++    /// Independent (Chunk-stage) cost of a cohort as `select_cohort_plan` computes it.
++    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
++    pub struct IndependentCohortCost {
++        pub payload_bytes: u64,
++        /// Distinct TransformPlan records (zero for v3, v1 records for v4, v2 records for v5).
++        pub plan_record_bytes: u64,
++        /// Distinct ReconstructionData records plus section overhead (v5 only).
++        pub side_data_bytes: u64,
++        pub complete_cost: u64,
++    }
++
++    /// Every candidate `select_cohort_plan` evaluates for one cohort.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub struct CohortTrace {
++        pub cohort: SimilarityCohort,
++        pub planner_id: String,
++        pub independent: IndependentCohortCost,
++        /// Dictionary produced by `train_cohort_dictionary`, if training ran and succeeded.
++        pub dictionary: Option<Dictionary>,
++        /// Dictionary candidates first, then lookback candidates, in evaluation order.
++        pub candidates: Vec<CohortCandidate>,
++        /// Index in `candidates`, or `None` when the independent assignment is kept.
++        pub selected: Option<usize>,
++    }
++
++    impl CohortTrace {
++        /// The selection the traced rule reproduces.
++        #[must_use]
++        pub fn selection(&self) -> CohortSelection {
++            let Some(candidate) = self.selected.map(|index| &self.candidates[index]) else {
++                return CohortSelection::Independent;
++            };
++            match (&candidate.strategy, &self.dictionary, &candidate.group) {
++                (CohortStrategy::Dictionary { .. }, Some(dictionary), _) => {
++                    CohortSelection::Dictionary {
++                        dictionary: dictionary.clone(),
++                        plan: candidate.plan.clone(),
++                    }
++                }
++                (CohortStrategy::Lookback { .. }, _, Some(group)) => CohortSelection::Lookback {
++                    group: group.clone(),
++                    plan: candidate.plan.clone(),
++                },
++                _ => CohortSelection::Independent,
++            }
++        }
++    }
++
++    /// One v6 JPEG region candidate with the cost components production used.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub struct RegionCandidate {
++        pub plan: TransformPlan,
++        /// Codec output over the verified JPEG XL representation.
++        pub representation_bytes: u64,
++        /// `encoded_transform_plan_v3_len`, or zero when the plan is already recorded.
++        pub plan_record_bytes: u64,
++        /// ReconstructionRegion record bytes excluding the representation.
++        pub region_record_bytes: u64,
++        /// Section header charged only while no region section has been emitted.
++        pub section_header_bytes: u64,
++        pub complete_cost: u64,
++        /// `qualifies_reconstruction(complete_cost, ordinary_cost)`. Production applies
++        /// the rule only to the cheapest candidate; for others this is informational.
++        pub qualified: bool,
++        pub selected: bool,
++        pub exclusion: Option<ExclusionReason>,
++    }
++
++    /// The v6 whole-object attempt for one ContentObject.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub struct ObjectTrace {
++        pub content_object: Digest,
++        pub chunk_count: u64,
++        /// Summed logical bytes, once the eligibility checks reach that step.
++        pub logical_bytes: Option<u64>,
++        /// JPEG XL representation length after `verified_forward` succeeded.
++        pub transformed_bytes: Option<u64>,
++        /// `v6_ordinary_payload_cost` of the v5 assignment, once costed.
++        pub ordinary_cost: Option<u64>,
++        pub candidates: Vec<RegionCandidate>,
++        pub selected: Option<usize>,
++        /// Region production records when a candidate is selected.
++        pub region: Option<ReconstructionRegion>,
++        /// Audit reason production records when no region is selected.
++        pub audit: Option<ReconstructionAuditReason>,
++    }
++
++    /// Final per-Chunk physical assignment.
++    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
++    pub struct ChunkAssignment {
++        pub plan_ref: u64,
++        pub group_ref: Option<Digest>,
++    }
++
++    /// The physical planning state the traced rules reproduce for a whole Archive.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub struct PlannedAssignment {
++        pub planner_id: String,
++        pub chunks: BTreeMap<Digest, ChunkAssignment>,
++        pub transform_plans: BTreeMap<u64, TransformPlan>,
++        pub dictionaries: BTreeMap<Digest, Dictionary>,
++        pub chunk_groups: BTreeMap<Digest, ChunkGroup>,
++        pub reconstruction_data: BTreeMap<Digest, ReconstructionData>,
++        pub reconstruction_fallbacks: BTreeMap<Digest, ReconstructionFallbackReason>,
++        pub reconstruction_regions: BTreeMap<Digest, ReconstructionRegion>,
++        pub reconstruction_audits: BTreeMap<ReconstructionAuditTarget, ReconstructionAuditReason>,
++        pub physical_order: Box<[Digest]>,
++    }
++
++    impl PlannedAssignment {
++        /// Differences from an Archive planned by the real planner of the same
++        /// profile and generation. An empty result means the enumeration reproduced
++        /// every production choice exactly.
++        #[must_use]
++        pub fn differences(&self, archive: &Archive) -> Vec<String> {
++            let mut differences = Vec::new();
++            if archive.descriptor.planner_id != self.planner_id {
++                differences.push(format!(
++                    "planner_id: planner {}, trace {}",
++                    archive.descriptor.planner_id, self.planner_id
++                ));
++            }
++            if archive.content_store.chunks.len() != self.chunks.len() {
++                differences.push(format!(
++                    "chunk count: planner {}, trace {}",
++                    archive.content_store.chunks.len(),
++                    self.chunks.len()
++                ));
++            }
++            for (chunk_id, chunk) in &archive.content_store.chunks {
++                let planned = ChunkAssignment {
++                    plan_ref: chunk.plan_ref,
++                    group_ref: chunk.group_ref,
++                };
++                if self.chunks.get(chunk_id) != Some(&planned) {
++                    differences.push(format!(
++                        "chunk {chunk_id}: planner {planned:?}, trace {:?}",
++                        self.chunks.get(chunk_id)
++                    ));
++                }
++            }
++            let plans = archive
++                .transform_plans
++                .iter()
++                .map(|plan| (plan.plan_id, plan.clone()))
++                .collect::<BTreeMap<_, _>>();
++            if plans.len() != archive.transform_plans.len() || plans != self.transform_plans {
++                differences.push(format!(
++                    "transform plans: planner {:?}, trace {:?}",
++                    plans.keys().collect::<Vec<_>>(),
++                    self.transform_plans.keys().collect::<Vec<_>>()
++                ));
++            }
++            if archive.content_store.dictionaries != self.dictionaries {
++                differences.push(format!(
++                    "dictionaries: planner {:?}, trace {:?}",
++                    archive
++                        .content_store
++                        .dictionaries
++                        .keys()
++                        .collect::<Vec<_>>(),
++                    self.dictionaries.keys().collect::<Vec<_>>()
++                ));
++            }
++            if archive.content_store.chunk_groups != self.chunk_groups {
++                differences.push(format!(
++                    "chunk groups: planner {:?}, trace {:?}",
++                    archive.content_store.chunk_groups, self.chunk_groups
++                ));
++            }
++            if archive.content_store.reconstruction_data != self.reconstruction_data {
++                differences.push(format!(
++                    "reconstruction data: planner {:?}, trace {:?}",
++                    archive
++                        .content_store
++                        .reconstruction_data
++                        .keys()
++                        .collect::<Vec<_>>(),
++                    self.reconstruction_data.keys().collect::<Vec<_>>()
++                ));
++            }
++            if archive.content_store.reconstruction_fallbacks != self.reconstruction_fallbacks {
++                differences.push(format!(
++                    "reconstruction fallbacks: planner {:?}, trace {:?}",
++                    archive.content_store.reconstruction_fallbacks, self.reconstruction_fallbacks
++                ));
++            }
++            if archive.content_store.reconstruction_regions != self.reconstruction_regions {
++                differences.push(format!(
++                    "reconstruction regions: planner {:?}, trace {:?}",
++                    archive
++                        .content_store
++                        .reconstruction_regions
++                        .keys()
++                        .collect::<Vec<_>>(),
++                    self.reconstruction_regions.keys().collect::<Vec<_>>()
++                ));
++            }
++            let audits = archive
++                .content_store
++                .reconstruction_audits
++                .iter()
++                .map(|(target, audit)| (*target, audit.reason))
++                .collect::<BTreeMap<_, _>>();
++            if audits != self.reconstruction_audits
++                || archive
++                    .content_store
++                    .reconstruction_audits
++                    .iter()
++                    .any(|(target, audit)| {
++                        audit.target != *target
++                            || audit.transform_id != crate::jpeg_reconstruction::JPEG_RECONSTRUCT_ID
++                    })
++            {
++                differences.push(format!(
++                    "reconstruction audits: planner {:?}, trace {:?}",
++                    archive.content_store.reconstruction_audits, self.reconstruction_audits
++                ));
++            }
++            if archive.content_store.physical_order != self.physical_order {
++                differences.push("physical order differs".to_owned());
++            }
++            differences
++        }
++    }
++
++    /// Complete enumeration of one production planning run over an Archive.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub struct ArchiveTrace {
++        pub profile: CompressionProfile,
++        pub version: PlannerVersion,
++        /// Chunk-stage traces in Chunk digest order.
++        pub chunks: Vec<ChunkTrace>,
++        /// Cohort traces in cohort ID order (v3 and later).
++        pub cohorts: Vec<CohortTrace>,
++        /// Whole-object traces in logical digest order (v6, non-Fast).
++        pub objects: Vec<ObjectTrace>,
++        pub assignment: PlannedAssignment,
++    }
++
++    impl ArchiveTrace {
++        #[must_use]
++        pub fn chunk(&self, chunk_id: &Digest) -> Option<&ChunkTrace> {
++            self.chunks
++                .binary_search_by(|trace| trace.chunk_id.cmp(chunk_id))
++                .ok()
++                .map(|index| &self.chunks[index])
++        }
++    }
++
++    trait Ranked {
++        fn is_qualified(&self) -> bool;
++        fn exclude(&mut self, reason: ExclusionReason);
++    }
++
++    impl Ranked for CandidateCost {
++        fn is_qualified(&self) -> bool {
++            self.qualified
++        }
++
++        fn exclude(&mut self, reason: ExclusionReason) {
++            self.exclusion = Some(reason);
++        }
++    }
++
++    impl Ranked for CohortCandidate {
++        fn is_qualified(&self) -> bool {
++            self.qualified
++        }
++
++        fn exclude(&mut self, reason: ExclusionReason) {
++            self.exclusion = Some(reason);
++        }
++    }
++
++    /// Records one candidate under the production incumbent rule: it replaces the
++    /// incumbent only when `wins` is true.
++    fn push_ranked<T: Ranked>(
++        candidates: &mut Vec<T>,
++        incumbent: &mut Option<usize>,
++        mut candidate: T,
++        wins: bool,
++    ) {
++        let index = candidates.len();
++        if wins {
++            if let Some(previous) = incumbent.replace(index) {
++                candidates[previous].exclude(ExclusionReason::Superseded);
++            }
++        } else if candidate.is_qualified() {
++            candidate.exclude(ExclusionReason::NotCheaperThanIncumbent);
++        } else {
++            candidate.exclude(ExclusionReason::InsufficientGain);
++        }
++        candidates.push(candidate);
++    }
++
++    fn u64_len(bytes: &[u8], detail: &'static str) -> Result<u64> {
++        u64::try_from(bytes.len()).map_err(|_| super::resource(detail))
++    }
++
++    fn checked_sum(values: &[u64], detail: &'static str) -> Result<u64> {
++        values.iter().try_fold(0_u64, |total, value| {
++            total
++                .checked_add(*value)
++                .ok_or_else(|| super::resource(detail))
++        })
++    }
++
++    fn unknown_plan(plan_ref: u64) -> Diagnostic {
++        Diagnostic::new(
++            OutcomeClass::Unsupported,
++            ReasonCode::UnknownTransformPlan,
++            plan_ref.to_string(),
++        )
++    }
++
++    fn is_reconstructive_plan(plan: &TransformPlan) -> bool {
++        plan.transforms
++            .iter()
++            .any(|step| step.reconstruction_ref.is_some())
++    }
++
++    /// Enumerates every candidate the production Chunk stage of `version` evaluates
++    /// for `plaintext`: the v1–v3 Zstandard scan, the v4 measured
++    /// codec/transform competition, or the v4 competition followed by the v5
++    /// DEFLATE reconstruction competition (v5 and v6).
++    pub fn trace_chunk(
++        profile: CompressionProfile,
++        version: PlannerVersion,
++        plaintext: &[u8],
++    ) -> Result<ChunkTrace> {
++        trace_chunk_with_id(profile, version, sha256_exact(plaintext), plaintext)
++    }
++
++    fn trace_chunk_with_id(
++        profile: CompressionProfile,
++        version: PlannerVersion,
++        chunk_id: Digest,
++        plaintext: &[u8],
++    ) -> Result<ChunkTrace> {
++        let logical_len = u64_len(plaintext, "plaintext length exceeds u64")?;
++        let analysis = super::analyze(plaintext);
++        let mut candidates = Vec::new();
++        let mut reconstruction = None;
++        let selected = match version {
++            PlannerVersion::V1 | PlannerVersion::V2 | PlannerVersion::V3 => {
++                trace_zstandard_scan(profile, plaintext, logical_len, analysis, &mut candidates)?
++            }
++            PlannerVersion::V4 => trace_v4(profile, plaintext, &mut candidates)?,
++            PlannerVersion::V5 | PlannerVersion::V6 => {
++                let ordinary = trace_v4(profile, plaintext, &mut candidates)?;
++                if profile == CompressionProfile::Fast {
++                    ordinary
++                } else {
++                    let (selected, attempt) =
++                        trace_v5_reconstruction(profile, plaintext, ordinary, &mut candidates)?;
++                    reconstruction = Some(attempt);
++                    selected
++                }
++            }
++        };
++        candidates[selected].selected = true;
++        Ok(ChunkTrace {
++            chunk_id,
++            logical_len,
++            profile,
++            version,
++            analysis,
++            candidates,
++            reconstruction,
++            selected,
++        })
++    }
++
++    /// Mirrors the per-Chunk loop of `plan_archive_with_id` (v1–v3).
++    fn trace_zstandard_scan(
++        profile: CompressionProfile,
++        plaintext: &[u8],
++        logical_len: u64,
++        analysis: ContentAnalysis,
++        candidates: &mut Vec<CandidateCost>,
++    ) -> Result<usize> {
++        let mut incumbent = None;
++        let mut incumbent_len = None::<usize>;
++        if plaintext.len() >= super::MINIMUM_ZSTD_INPUT_BYTES {
++            for level in profile.levels(analysis) {
++                let plan = zstd_plan(*level)?;
++                let encoded = encode_payload(&plan, plaintext)?;
++                let qualified = super::zstandard_wins(logical_len, encoded.len())?;
++                let wins =
++                    qualified && incumbent_len.is_none_or(|previous| encoded.len() < previous);
++                if wins {
++                    incumbent_len = Some(encoded.len());
++                }
++                let payload_bytes = u64_len(&encoded, "encoded candidate length exceeds u64")?;
++                push_ranked(
++                    candidates,
++                    &mut incumbent,
++                    CandidateCost {
++                        stage: CandidateStage::IndependentZstandard,
++                        plan,
++                        payload_bytes,
++                        plan_record_bytes: 0,
++                        side_data_bytes: 0,
++                        complete_cost: payload_bytes,
++                        qualification_baseline: Some(logical_len),
++                        qualified,
++                        selected: false,
++                        exclusion: None,
++                    },
++                    wins,
++                );
++            }
++        }
++        let store_index = candidates.len();
++        candidates.push(CandidateCost {
++            stage: CandidateStage::IndependentStore,
++            plan: store_plan(),
++            payload_bytes: logical_len,
++            plan_record_bytes: 0,
++            side_data_bytes: 0,
++            complete_cost: logical_len,
++            qualification_baseline: None,
++            qualified: true,
++            selected: false,
++            exclusion: incumbent.map(|_| ExclusionReason::Superseded),
++        });
++        Ok(incumbent.unwrap_or(store_index))
++    }
++
++    fn measure_v4(
++        stage: CandidateStage,
++        plan: &TransformPlan,
++        plaintext: &[u8],
++    ) -> Result<CandidateCost> {
++        let payload_bytes = u64_len(
++            &encode_payload(plan, plaintext)?,
++            "v4 candidate payload length exceeds u64",
++        )?;
++        let plan_record_bytes = super::encoded_plan_cost(plan)?;
++        Ok(CandidateCost {
++            stage,
++            plan: plan.clone(),
++            payload_bytes,
++            plan_record_bytes,
++            side_data_bytes: 0,
++            complete_cost: checked_sum(
++                &[payload_bytes, plan_record_bytes],
++                "v4 complete candidate cost exceeds u64",
++            )?,
++            qualification_baseline: None,
++            qualified: false,
++            selected: false,
++            exclusion: None,
++        })
++    }
++
++    /// Mirrors `select_v4_plan`. Returns the index of the v4 winner.
++    fn trace_v4(
++        profile: CompressionProfile,
++        plaintext: &[u8],
++        candidates: &mut Vec<CandidateCost>,
++    ) -> Result<usize> {
++        let (ordinary, transformed) = super::v4_candidates(profile, plaintext)?;
++        let mut store = measure_v4(CandidateStage::V4Ordinary, &ordinary[0], plaintext)?;
++        store.qualified = true;
++        let store_cost = store.complete_cost;
++        let store_index = candidates.len();
++        let mut incumbent = None;
++        push_ranked(candidates, &mut incumbent, store, true);
++        let mut selected_cost = store_cost;
++        for plan in ordinary.iter().skip(1) {
++            let mut candidate = measure_v4(CandidateStage::V4Ordinary, plan, plaintext)?;
++            candidate.qualification_baseline = Some(store_cost);
++            candidate.qualified = super::qualifies_v4(candidate.complete_cost, store_cost)?;
++            let wins = candidate.qualified && candidate.complete_cost < selected_cost;
++            if wins {
++                selected_cost = candidate.complete_cost;
++            }
++            push_ranked(candidates, &mut incumbent, candidate, wins);
++        }
++        let best_ordinary = selected_cost;
++        for plan in &transformed {
++            let mut candidate = measure_v4(CandidateStage::V4Transformed, plan, plaintext)?;
++            candidate.qualification_baseline = Some(best_ordinary);
++            candidate.qualified = super::qualifies_v4(candidate.complete_cost, best_ordinary)?;
++            let wins = candidate.qualified && candidate.complete_cost < selected_cost;
++            if wins {
++                selected_cost = candidate.complete_cost;
++            }
++            push_ranked(candidates, &mut incumbent, candidate, wins);
++        }
++        Ok(incumbent.unwrap_or(store_index))
++    }
++
++    fn reconstruction_side_data_cost(data: &ReconstructionData) -> Result<u64> {
++        checked_sum(
++            &[
++                encoded_reconstruction_data_len(data)?,
++                super::RECONSTRUCTION_SECTION_OVERHEAD_BYTES,
++            ],
++            "v5 ReconstructionData cost overflow",
++        )
++    }
++
++    fn measure_v5(
++        stage: CandidateStage,
++        plan: &TransformPlan,
++        plaintext: &[u8],
++        reconstruction: Option<(&ReconstructionData, &BTreeMap<Digest, ReconstructionData>)>,
++    ) -> Result<CandidateCost> {
++        let payload = match reconstruction {
++            Some((_, values)) => encode_payload_with_reconstruction(plan, plaintext, values)?,
++            None => encode_payload(plan, plaintext)?,
++        };
++        let payload_bytes = u64_len(&payload, "v5 candidate payload exceeds u64")?;
++        let plan_record_bytes = encoded_transform_plan_v2_len(plan)?;
++        let side_data_bytes = match reconstruction {
++            Some((data, _)) => reconstruction_side_data_cost(data)?,
++            None => 0,
++        };
++        Ok(CandidateCost {
++            stage,
++            plan: plan.clone(),
++            payload_bytes,
++            plan_record_bytes,
++            side_data_bytes,
++            complete_cost: checked_sum(
++                &[payload_bytes, plan_record_bytes, side_data_bytes],
++                "v5 candidate cost overflow",
++            )?,
++            qualification_baseline: None,
++            qualified: false,
++            selected: false,
++            exclusion: None,
++        })
++    }
++
++    /// Mirrors the reconstruction branch of `plan_archive_v5_independent`.
++    fn trace_v5_reconstruction(
++        profile: CompressionProfile,
++        plaintext: &[u8],
++        ordinary_index: usize,
++        candidates: &mut Vec<CandidateCost>,
++    ) -> Result<(usize, ReconstructionAttempt)> {
++        let max_chain = super::reconstruction_max_chain(profile);
++        let Some(forward) = crate::reconstruction::try_forward(plaintext, max_chain)? else {
++            return Ok((
++                ordinary_index,
++                ReconstructionAttempt {
++                    max_chain,
++                    data: None,
++                    side_data_bytes: None,
++                    fallback: Some(ReconstructionFallbackReason::UnrecognizedOrVerificationFailed),
++                },
++            ));
++        };
++        let ordinary = candidates[ordinary_index].plan.clone();
++        candidates[ordinary_index].exclusion = Some(ExclusionReason::CarriedToNextStage);
++        let mut baseline = measure_v5(CandidateStage::V5Baseline, &ordinary, plaintext, None)?;
++        baseline.qualified = true;
++        let baseline_cost = baseline.complete_cost;
++        let baseline_index = candidates.len();
++        let mut incumbent = None;
++        push_ranked(candidates, &mut incumbent, baseline, true);
++
++        let data_map = BTreeMap::from([(forward.data.reconstruction_id, forward.data.clone())]);
++        let mut best_cost = baseline_cost;
++        let mut reconstructive_won = false;
++        for plan in super::reconstruction_candidates(profile, &forward.data)? {
++            let mut candidate = measure_v5(
++                CandidateStage::V5Reconstruction,
++                &plan,
++                plaintext,
++                Some((&forward.data, &data_map)),
++            )?;
++            candidate.qualification_baseline = Some(baseline_cost);
++            candidate.qualified =
++                super::qualifies_reconstruction(candidate.complete_cost, baseline_cost)?;
++            let wins = candidate.qualified && candidate.complete_cost < best_cost;
++            if wins {
++                best_cost = candidate.complete_cost;
++                reconstructive_won = true;
++            }
++            push_ranked(candidates, &mut incumbent, candidate, wins);
++        }
++        let side_data_bytes = reconstruction_side_data_cost(&forward.data)?;
++        Ok((
++            incumbent.unwrap_or(baseline_index),
++            ReconstructionAttempt {
++                max_chain,
++                data: Some(forward.data),
++                side_data_bytes: Some(side_data_bytes),
++                fallback: (!reconstructive_won)
++                    .then_some(ReconstructionFallbackReason::CompleteCostDidNotWin),
++            },
++        ))
++    }
++
++    /// Mirrors the independent-cost prelude of `select_cohort_plan`.
++    fn independent_cohort_cost(
++        archive: &Archive,
++        cohort: &SimilarityCohort,
++        planner_id: &str,
++        plans: &BTreeMap<u64, TransformPlan>,
++    ) -> Result<IndependentCohortCost> {
++        let payload_bytes = cohort.chunks.iter().try_fold(0_u64, |total, chunk_id| {
++            let chunk = &archive.content_store.chunks[chunk_id];
++            let plan = plans
++                .get(&chunk.plan_ref)
++                .ok_or_else(|| unknown_plan(chunk.plan_ref))?;
++            let encoded = if is_reconstructive_plan(plan) {
++                encode_payload_with_reconstruction(
++                    plan,
++                    &chunk.plaintext,
++                    &archive.content_store.reconstruction_data,
++                )?
++            } else {
++                encode_payload(plan, &chunk.plaintext)?
++            };
++            total
++                .checked_add(u64_len(
++                    &encoded,
++                    "independent cohort payload length exceeds u64",
++                )?)
++                .ok_or_else(|| super::resource("independent cohort cost exceeds u64"))
++        })?;
++        let mut plan_record_bytes = 0_u64;
++        let mut side_data_bytes = 0_u64;
++        let v5 = planner_id.ends_with("-v5");
++        if planner_id.ends_with("-v4") || v5 {
++            let plan_ids = cohort
++                .chunks
++                .iter()
++                .map(|chunk_id| archive.content_store.chunks[chunk_id].plan_ref)
++                .collect::<BTreeSet<_>>();
++            for plan_id in plan_ids {
++                let plan = plans.get(&plan_id).ok_or_else(|| unknown_plan(plan_id))?;
++                let record = if v5 {
++                    encoded_transform_plan_v2_len(plan)?
++                } else {
++                    super::encoded_plan_cost(plan)?
++                };
++                plan_record_bytes = checked_sum(
++                    &[plan_record_bytes, record],
++                    "v4 independent cohort complete cost exceeds u64",
++                )?;
++            }
++            if v5 {
++                let references = cohort
++                    .chunks
++                    .iter()
++                    .filter_map(|chunk_id| {
++                        let plan = plans.get(&archive.content_store.chunks[chunk_id].plan_ref)?;
++                        plan.transforms
++                            .iter()
++                            .find_map(|step| step.reconstruction_ref)
++                    })
++                    .collect::<BTreeSet<_>>();
++                for reference in references {
++                    let data = archive
++                        .content_store
++                        .reconstruction_data
++                        .get(&reference)
++                        .ok_or_else(|| {
++                            Diagnostic::new(
++                                OutcomeClass::Nonconforming,
++                                ReasonCode::UnknownReconstructionData,
++                                reference.to_string(),
++                            )
++                        })?;
++                    side_data_bytes = checked_sum(
++                        &[side_data_bytes, reconstruction_side_data_cost(data)?],
++                        "v5 independent reconstruction cost exceeds u64",
++                    )?;
++                }
++            }
++        }
++        Ok(IndependentCohortCost {
++            payload_bytes,
++            plan_record_bytes,
++            side_data_bytes,
++            complete_cost: checked_sum(
++                &[payload_bytes, plan_record_bytes, side_data_bytes],
++                "independent cohort complete cost exceeds u64",
++            )?,
++        })
++    }
++
++    /// Enumerates every candidate `select_cohort_plan` evaluates for one cohort,
++    /// given the Archive state and plan table that exist when production reaches it.
++    pub fn trace_cohort(
++        archive: &Archive,
++        cohort: &SimilarityCohort,
++        profile: CompressionProfile,
++        planner_id: &str,
++        plans: &BTreeMap<u64, TransformPlan>,
++    ) -> Result<CohortTrace> {
++        let independent = independent_cohort_cost(archive, cohort, planner_id, plans)?;
++        let independent_cost = independent.complete_cost;
++        let mut best_cost = independent_cost;
++        let mut candidates = Vec::new();
++        let mut incumbent = None;
++
++        let dictionary = super::train_cohort_dictionary(archive, cohort, profile, planner_id)?;
++        if let Some(dictionary) = &dictionary {
++            let dictionary_cost = checked_sum(
++                &[
++                    super::encoded_dictionary_cost(dictionary)?,
++                    super::DICTIONARY_SECTION_OVERHEAD_BYTES,
++                ],
++                "Dictionary section cost exceeds u64",
++            )?;
++            for level in profile.dictionary_levels() {
++                let plan = zstd_dictionary_plan(*level, dictionary.dictionary_id)?;
++                let payload_bytes = cohort.chunks.iter().try_fold(0_u64, |total, chunk_id| {
++                    let chunk = &archive.content_store.chunks[chunk_id];
++                    let encoded =
++                        encode_payload_with_dictionary(&plan, &chunk.plaintext, dictionary)?;
++                    total
++                        .checked_add(u64_len(
++                            &encoded,
++                            "dictionary cohort payload length exceeds u64",
++                        )?)
++                        .ok_or_else(|| {
++                            super::resource("dictionary cohort payload cost exceeds u64")
++                        })
++                })?;
++                let plan_record_bytes = super::encoded_plan_cost(&plan)?;
++                let complete_cost = checked_sum(
++                    &[payload_bytes, dictionary_cost, plan_record_bytes],
++                    "dictionary cohort complete cost exceeds u64",
++                )?;
++                let qualified =
++                    super::qualifies_against_independent(complete_cost, independent_cost)?;
++                let wins = qualified && complete_cost < best_cost;
++                if wins {
++                    best_cost = complete_cost;
++                }
++                push_ranked(
++                    &mut candidates,
++                    &mut incumbent,
++                    CohortCandidate {
++                        strategy: CohortStrategy::Dictionary { level: *level },
++                        plan,
++                        group: None,
++                        payload_bytes,
++                        plan_record_bytes,
++                        side_data_bytes: dictionary_cost,
++                        complete_cost,
++                        qualified,
++                        selected: false,
++                        exclusion: None,
++                    },
++                    wins,
++                );
++            }
++        }
++
++        for lookback in profile.lookback_candidates() {
++            for level in profile.lookback_levels() {
++                let plan = zstd_prefix_plan(*level, *lookback)?;
++                let mut payload_bytes = 0_u64;
++                for (position, chunk_id) in cohort.chunks.iter().enumerate() {
++                    let prefix =
++                        super::cohort_prefix(archive, &cohort.chunks, position, *lookback)?;
++                    let encoded = encode_payload_with_prefix(
++                        &plan,
++                        &archive.content_store.chunks[chunk_id].plaintext,
++                        &prefix,
++                    )?;
++                    payload_bytes = checked_sum(
++                        &[
++                            payload_bytes,
++                            u64_len(&encoded, "lookback cohort payload length exceeds u64")?,
++                        ],
++                        "lookback cohort payload cost exceeds u64",
++                    )?;
++                }
++                let group = ChunkGroup {
++                    group_id: super::chunk_group_id(cohort.cohort_id, *level, *lookback),
++                    max_lookback: *lookback,
++                    max_preceding_bytes: super::maximum_preceding_bytes(
++                        archive,
++                        &cohort.chunks,
++                        *lookback,
++                    )?,
++                };
++                let plan_record_bytes = super::encoded_plan_cost(&plan)?;
++                let side_data_bytes = checked_sum(
++                    &[
++                        super::encoded_group_cost(&group)?,
++                        super::CHUNK_GROUP_SECTION_OVERHEAD_BYTES,
++                    ],
++                    "lookback cohort complete cost exceeds u64",
++                )?;
++                let complete_cost = checked_sum(
++                    &[payload_bytes, plan_record_bytes, side_data_bytes],
++                    "lookback cohort complete cost exceeds u64",
++                )?;
++                let qualified =
++                    super::qualifies_against_independent(complete_cost, independent_cost)?;
++                let wins = qualified && complete_cost < best_cost;
++                if wins {
++                    best_cost = complete_cost;
++                }
++                push_ranked(
++                    &mut candidates,
++                    &mut incumbent,
++                    CohortCandidate {
++                        strategy: CohortStrategy::Lookback {
++                            level: *level,
++                            lookback: *lookback,
++                        },
++                        plan,
++                        group: Some(group),
++                        payload_bytes,
++                        plan_record_bytes,
++                        side_data_bytes,
++                        complete_cost,
++                        qualified,
++                        selected: false,
++                        exclusion: None,
++                    },
++                    wins,
++                );
++            }
++        }
++        if let Some(index) = incumbent {
++            candidates[index].selected = true;
++        }
++        Ok(CohortTrace {
++            cohort: cohort.clone(),
++            planner_id: planner_id.to_owned(),
++            independent,
++            dictionary,
++            candidates,
++            selected: incumbent,
++        })
++    }
++
++    /// Enumerates the v6 whole-object attempt for one ContentObject, given the
++    /// post-v5 Archive state, the current plan table, and whether a region section
++    /// has already been emitted by an earlier (lower-digest) object. For the Fast
++    /// profile production makes no attempt, so the trace carries no audit.
++    pub fn trace_jpeg_object(
++        archive: &Archive,
++        object: &ContentObject,
++        profile: CompressionProfile,
++        plans: &BTreeMap<u64, TransformPlan>,
++        emitted_region_section: bool,
++    ) -> Result<ObjectTrace> {
++        let owners = super::chunk_object_owners(archive);
++        trace_object_with_owners(
++            archive,
++            object,
++            profile,
++            plans,
++            emitted_region_section,
++            &owners,
++        )
++    }
++
++    /// Mirrors one iteration of the object loop in `plan_archive_v6`.
++    fn trace_object_with_owners(
++        archive: &Archive,
++        object: &ContentObject,
++        profile: CompressionProfile,
++        plans: &BTreeMap<u64, TransformPlan>,
++        emitted_region_section: bool,
++        owners: &BTreeMap<Digest, BTreeSet<Digest>>,
++    ) -> Result<ObjectTrace> {
++        let chunk_count = u64::try_from(object.chunks.len())
++            .map_err(|_| super::resource("JPEG region Chunk count exceeds u64"))?;
++        let mut trace = ObjectTrace {
++            content_object: object.logical_digest,
++            chunk_count,
++            logical_bytes: None,
++            transformed_bytes: None,
++            ordinary_cost: None,
++            candidates: Vec::new(),
++            selected: None,
++            region: None,
++            audit: None,
++        };
++        if profile == CompressionProfile::Fast {
++            return Ok(trace);
++        }
++        if object.chunks.is_empty() {
++            trace.audit = Some(ReconstructionAuditReason::NotRecognized);
++            return Ok(trace);
++        }
++        if (profile == CompressionProfile::Balanced && object.chunks.len() != 1)
++            || chunk_count > crate::jpeg_reconstruction::MAX_REGION_CHUNKS
++        {
++            trace.audit = Some(ReconstructionAuditReason::ResourcePolicyExcluded);
++            return Ok(trace);
++        }
++        if object.chunks.iter().any(|chunk_ref| {
++            owners
++                .get(&chunk_ref.chunk_id)
++                .is_some_and(|objects| objects.len() != 1)
++        }) || object.chunks.iter().any(|chunk_ref| {
++            let chunk = &archive.content_store.chunks[&chunk_ref.chunk_id];
++            chunk.group_ref.is_some()
++                || plans
++                    .get(&chunk.plan_ref)
++                    .is_none_or(|plan| plan.dictionary.is_some())
++        }) {
++            trace.audit = Some(ReconstructionAuditReason::RegionDedupConflict);
++            return Ok(trace);
++        }
++
++        let logical_bytes = object.chunks.iter().try_fold(0_u64, |total, chunk_ref| {
++            total
++                .checked_add(archive.content_store.chunks[&chunk_ref.chunk_id].logical_len)
++                .ok_or_else(|| super::resource("JPEG ContentObject length overflows"))
++        })?;
++        trace.logical_bytes = Some(logical_bytes);
++        if logical_bytes
++            > u64::try_from(crate::jpeg_reconstruction::MAX_JPEG_BYTES).unwrap_or(u64::MAX)
++        {
++            trace.audit = Some(ReconstructionAuditReason::ResourcePolicyExcluded);
++            return Ok(trace);
++        }
++        let mut original = Vec::with_capacity(
++            usize::try_from(logical_bytes)
++                .map_err(|_| super::resource("JPEG ContentObject length exceeds usize"))?,
++        );
++        for chunk_ref in &object.chunks {
++            original
++                .extend_from_slice(&archive.content_store.chunks[&chunk_ref.chunk_id].plaintext);
++        }
++        let verified = match crate::jpeg_reconstruction::verified_forward(&original) {
++            Ok(value) => value,
++            Err(failure) => {
++                trace.audit = Some(match failure {
++                    crate::jpeg_reconstruction::JpegAttemptFailure::NotRecognized => {
++                        ReconstructionAuditReason::NotRecognized
++                    }
++                    crate::jpeg_reconstruction::JpegAttemptFailure::Unsupported => {
++                        ReconstructionAuditReason::Unsupported
++                    }
++                    crate::jpeg_reconstruction::JpegAttemptFailure::VerificationFailed => {
++                        ReconstructionAuditReason::ExactVerificationFailed
++                    }
++                    crate::jpeg_reconstruction::JpegAttemptFailure::ResourceExcluded => {
++                        ReconstructionAuditReason::ResourcePolicyExcluded
++                    }
++                });
++                return Ok(trace);
++            }
++        };
++        let transformed_bytes = u64_len(&verified.bytes, "JPEG XL representation exceeds u64")?;
++        trace.transformed_bytes = Some(transformed_bytes);
++        let ordinary_cost = super::v6_ordinary_payload_cost(archive, object, plans)?;
++        trace.ordinary_cost = Some(ordinary_cost);
++
++        let mut best: Option<(usize, u64, Vec<u8>)> = None;
++        for plan in super::jpeg_region_candidates(profile)? {
++            let representation = encode_transformed_payload(&plan, &verified.bytes)?;
++            let plan_record_bytes = if plans.contains_key(&plan.plan_id) {
++                0
++            } else {
++                encoded_transform_plan_v3_len(&plan)?
++            };
++            let provisional = ReconstructionRegion {
++                region_id: Digest::ZERO,
++                content_object: object.logical_digest,
++                start_chunk_index: 0,
++                chunk_count,
++                plan_ref: plan.plan_id,
++                logical_bytes,
++                transformed_bytes,
++                ordinary_physical_bytes: ordinary_cost,
++                region_overhead_bytes: 0,
++                access: RegionAccessCost {
++                    logical_bytes,
++                    logical_chunks: chunk_count,
++                    worst_reconstructed_bytes: logical_bytes,
++                },
++                representation: representation.clone().into_boxed_slice(),
++            };
++            let representation_bytes =
++                u64_len(&representation, "JPEG region representation exceeds u64")?;
++            let region_record_bytes = encoded_reconstruction_region_len(&provisional)?
++                .checked_sub(representation_bytes)
++                .ok_or_else(|| super::resource("JPEG region record cost underflows"))?;
++            let section_header_bytes = if emitted_region_section {
++                0
++            } else {
++                SECTION_HEADER_LEN
++            };
++            let complete_cost = checked_sum(
++                &[
++                    representation_bytes,
++                    plan_record_bytes,
++                    region_record_bytes,
++                    section_header_bytes,
++                ],
++                "JPEG region cost overflows",
++            )?;
++            let index = trace.candidates.len();
++            let wins = best
++                .as_ref()
++                .is_none_or(|(_, previous, _)| complete_cost < *previous);
++            let exclusion = if wins {
++                if let Some((previous, _, _)) = &best {
++                    trace.candidates[*previous].exclusion = Some(ExclusionReason::Superseded);
++                }
++                None
++            } else {
++                Some(ExclusionReason::NotCheaperThanIncumbent)
++            };
++            trace.candidates.push(RegionCandidate {
++                plan,
++                representation_bytes,
++                plan_record_bytes,
++                region_record_bytes,
++                section_header_bytes,
++                complete_cost,
++                qualified: super::qualifies_reconstruction(complete_cost, ordinary_cost)
++                    .unwrap_or(false),
++                selected: false,
++                exclusion,
++            });
++            if wins {
++                best = Some((index, complete_cost, representation));
++            }
++        }
++        let Some((index, complete_cost, representation)) = best else {
++            trace.audit = Some(ReconstructionAuditReason::Unsupported);
++            return Ok(trace);
++        };
++        if !super::qualifies_reconstruction(complete_cost, ordinary_cost)? {
++            trace.candidates[index].exclusion = Some(ExclusionReason::InsufficientGain);
++            trace.audit = Some(ReconstructionAuditReason::CompleteCostDidNotWin);
++            return Ok(trace);
++        }
++        let representation_bytes =
++            u64_len(&representation, "JPEG region representation exceeds u64")?;
++        let mut region = ReconstructionRegion {
++            region_id: Digest::ZERO,
++            content_object: object.logical_digest,
++            start_chunk_index: 0,
++            chunk_count,
++            plan_ref: trace.candidates[index].plan.plan_id,
++            logical_bytes,
++            transformed_bytes,
++            ordinary_physical_bytes: ordinary_cost,
++            region_overhead_bytes: complete_cost
++                .checked_sub(representation_bytes)
++                .ok_or_else(|| super::resource("JPEG region cost underflows"))?,
++            access: RegionAccessCost {
++                logical_bytes,
++                logical_chunks: chunk_count,
++                worst_reconstructed_bytes: logical_bytes,
++            },
++            representation: representation.into_boxed_slice(),
++        };
++        region.region_id = crate::jpeg_reconstruction::region_identity(&region);
++        trace.candidates[index].selected = true;
++        trace.selected = Some(index);
++        trace.region = Some(region);
++        Ok(trace)
++    }
++
++    fn chunk_digest_mismatch(chunk_id: Digest) -> Diagnostic {
++        Diagnostic::new(
++            OutcomeClass::Corrupt,
++            ReasonCode::ChunkDigestMismatch,
++            chunk_id.to_string(),
++        )
++    }
++
++    fn unknown_chunk(chunk_id: Digest) -> Diagnostic {
++        Diagnostic::new(
++            OutcomeClass::Nonconforming,
++            ReasonCode::UnknownChunk,
++            chunk_id.to_string(),
++        )
++    }
++
++    /// Reproduces a complete production planning run of `version` over `archive`
++    /// without mutating it: the Chunk stage, the cohort stage (v3+), the v5
++    /// fallback/retention finish, and the v6 whole-object stage. Every stage
++    /// decision is taken from the enumerations above, and the resulting
++    /// [`PlannedAssignment`] can be compared with a real planner run.
++    pub fn trace_archive(
++        archive: &Archive,
++        profile: CompressionProfile,
++        version: PlannerVersion,
++    ) -> Result<ArchiveTrace> {
++        let stage_planner_id = version.stage_planner_id(profile);
++        let mut working = archive.clone();
++        working.content_store.reconstruction_data.clear();
++        working.content_store.reconstruction_fallbacks.clear();
++        working.content_store.reconstruction_regions.clear();
++        working.content_store.reconstruction_audits.clear();
++
++        let mut plans = BTreeMap::new();
++        let store = store_plan();
++        plans.insert(store.plan_id, store);
++        let mut chunk_traces = Vec::with_capacity(archive.content_store.chunks.len());
++        for chunk in archive.content_store.chunks.values() {
++            let length_matches =
++                chunk.logical_len == u64::try_from(chunk.plaintext.len()).unwrap_or(u64::MAX);
++            if (!version.has_reconstruction_stage() && !length_matches)
++                || sha256_exact(&chunk.plaintext) != chunk.chunk_id
++            {
++                return Err(chunk_digest_mismatch(chunk.chunk_id));
++            }
++            let trace = trace_chunk_with_id(profile, version, chunk.chunk_id, &chunk.plaintext)?;
++            let selected = trace.selected_plan().clone();
++            working
++                .content_store
++                .chunks
++                .get_mut(&chunk.chunk_id)
++                .ok_or_else(|| unknown_chunk(chunk.chunk_id))?
++                .plan_ref = selected.plan_id;
++            if version.has_reconstruction_stage() || version == PlannerVersion::V4 {
++                super::insert_plan(&mut plans, selected)?;
++            } else {
++                plans.entry(selected.plan_id).or_insert(selected);
++            }
++            if let Some(attempt) = &trace.reconstruction {
++                match (attempt.fallback, &attempt.data) {
++                    (Some(reason), _) => {
++                        working
++                            .content_store
++                            .reconstruction_fallbacks
++                            .insert(chunk.chunk_id, reason);
++                    }
++                    (None, Some(data)) => {
++                        working
++                            .content_store
++                            .reconstruction_data
++                            .entry(data.reconstruction_id)
++                            .or_insert_with(|| data.clone());
++                    }
++                    (None, None) => {}
++                }
++            }
++            chunk_traces.push(trace);
++        }
++
++        let mut cohort_traces = Vec::new();
++        if version.has_cohort_stage() {
++            working.content_store.dictionaries.clear();
++            working.content_store.chunk_groups.clear();
++            for chunk in working.content_store.chunks.values_mut() {
++                chunk.group_ref = None;
++            }
++            let mut cohorts = cluster(&working.content_store.chunks, profile.similarity_policy());
++            cohorts.sort_by_key(|cohort| cohort.cohort_id);
++            let mut physically_ordered = BTreeSet::new();
++            let mut physical_order = Vec::with_capacity(working.content_store.chunks.len());
++            for cohort in &cohorts {
++                let trace = trace_cohort(&working, cohort, profile, stage_planner_id, &plans)?;
++                match trace.selection() {
++                    CohortSelection::Independent => {}
++                    CohortSelection::Dictionary { dictionary, plan } => {
++                        super::insert_dictionary(
++                            &mut working.content_store.dictionaries,
++                            dictionary,
++                        )?;
++                        super::insert_plan(&mut plans, plan.clone())?;
++                        for chunk_id in &cohort.chunks {
++                            working
++                                .content_store
++                                .chunks
++                                .get_mut(chunk_id)
++                                .ok_or_else(|| unknown_chunk(*chunk_id))?
++                                .plan_ref = plan.plan_id;
++                        }
++                    }
++                    CohortSelection::Lookback { group, plan } => {
++                        super::insert_plan(&mut plans, plan.clone())?;
++                        for chunk_id in &cohort.chunks {
++                            let chunk = working
++                                .content_store
++                                .chunks
++                                .get_mut(chunk_id)
++                                .ok_or_else(|| unknown_chunk(*chunk_id))?;
++                            chunk.plan_ref = plan.plan_id;
++                            chunk.group_ref = Some(group.group_id);
++                        }
++                        working
++                            .content_store
++                            .chunk_groups
++                            .insert(group.group_id, group);
++                    }
++                }
++                for chunk_id in &cohort.chunks {
++                    if physically_ordered.insert(*chunk_id) {
++                        physical_order.push(*chunk_id);
++                    }
++                }
++                cohort_traces.push(trace);
++            }
++            for chunk_id in working.content_store.chunks.keys() {
++                if physically_ordered.insert(*chunk_id) {
++                    physical_order.push(*chunk_id);
++                }
++            }
++            working.content_store.physical_order = physical_order.into_boxed_slice();
++
++            if stage_planner_id.ends_with("-v5") {
++                for chunk in working.content_store.chunks.values() {
++                    let plan = plans
++                        .get(&chunk.plan_ref)
++                        .ok_or_else(|| unknown_plan(chunk.plan_ref))?;
++                    if is_reconstructive_plan(plan) {
++                        working
++                            .content_store
++                            .reconstruction_fallbacks
++                            .remove(&chunk.chunk_id);
++                    } else if profile != CompressionProfile::Fast {
++                        working
++                            .content_store
++                            .reconstruction_fallbacks
++                            .entry(chunk.chunk_id)
++                            .or_insert(ReconstructionFallbackReason::CompleteCostDidNotWin);
++                    }
++                }
++                let used_plans = working
++                    .content_store
++                    .chunks
++                    .values()
++                    .map(|chunk| chunk.plan_ref)
++                    .collect::<BTreeSet<_>>();
++                plans.retain(|plan_id, plan| {
++                    used_plans.contains(plan_id) || !is_reconstructive_plan(plan)
++                });
++                let used_reconstruction = plans
++                    .values()
++                    .flat_map(|plan| plan.transforms.iter())
++                    .filter_map(|step| step.reconstruction_ref)
++                    .collect::<BTreeSet<_>>();
++                working
++                    .content_store
++                    .reconstruction_data
++                    .retain(|identity, _| used_reconstruction.contains(identity));
++            }
++        }
++
++        let mut object_traces = Vec::new();
++        let mut regions = BTreeMap::new();
++        let mut audits = BTreeMap::new();
++        if version == PlannerVersion::V6 && profile != CompressionProfile::Fast {
++            let owners = super::chunk_object_owners(&working);
++            let objects = working
++                .content_store
++                .objects
++                .values()
++                .cloned()
++                .collect::<Vec<_>>();
++            let mut emitted_region_section = false;
++            for object in &objects {
++                let trace = trace_object_with_owners(
++                    &working,
++                    object,
++                    profile,
++                    &plans,
++                    emitted_region_section,
++                    &owners,
++                )?;
++                match (&trace.region, trace.selected, trace.audit) {
++                    (Some(region), Some(index), _) => {
++                        let plan = trace.candidates[index].plan.clone();
++                        plans.entry(plan.plan_id).or_insert(plan);
++                        for chunk_ref in &object.chunks {
++                            let chunk = working
++                                .content_store
++                                .chunks
++                                .get_mut(&chunk_ref.chunk_id)
++                                .ok_or_else(|| unknown_chunk(chunk_ref.chunk_id))?;
++                            chunk.plan_ref = crate::jpeg_reconstruction::REGION_MEMBER_PLAN_REF;
++                            chunk.group_ref = None;
++                            working
++                                .content_store
++                                .reconstruction_fallbacks
++                                .remove(&chunk_ref.chunk_id);
++                        }
++                        regions.insert(region.region_id, region.clone());
++                        emitted_region_section = true;
++                    }
++                    (_, _, Some(reason)) => {
++                        audits.insert(
++                            ReconstructionAuditTarget::ContentObject(object.logical_digest),
++                            reason,
++                        );
++                    }
++                    _ => {}
++                }
++                object_traces.push(trace);
++            }
++        }
++
++        let assignment = PlannedAssignment {
++            planner_id: version.planner_id(profile).to_owned(),
++            chunks: working
++                .content_store
++                .chunks
++                .iter()
++                .map(|(chunk_id, chunk)| {
++                    (
++                        *chunk_id,
++                        ChunkAssignment {
++                            plan_ref: chunk.plan_ref,
++                            group_ref: chunk.group_ref,
++                        },
++                    )
++                })
++                .collect(),
++            transform_plans: plans,
++            dictionaries: working.content_store.dictionaries,
++            chunk_groups: working.content_store.chunk_groups,
++            reconstruction_data: working.content_store.reconstruction_data,
++            reconstruction_fallbacks: working.content_store.reconstruction_fallbacks,
++            reconstruction_regions: regions,
++            reconstruction_audits: audits,
++            physical_order: working.content_store.physical_order,
++        };
++        Ok(ArchiveTrace {
++            profile,
++            version,
++            chunks: chunk_traces,
++            cohorts: cohort_traces,
++            objects: object_traces,
++            assignment,
++        })
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use std::io::Write as _;
+diff --git a/crates/entrybound/src/reconstruction.rs b/crates/entrybound/src/reconstruction.rs
+index eb35b39..559fb6b 100644
+--- a/crates/entrybound/src/reconstruction.rs
++++ b/crates/entrybound/src/reconstruction.rs
+@@ -437,6 +437,66 @@ fn failed(detail: impl Into<String>) -> Diagnostic {
+     )
+ }
+ 
++/// Read-only research access to bounded DEFLATE reconstruction.
++///
++/// Every function forwards to the private production function of the same name.
++#[cfg(feature = "research-internals")]
++pub mod research {
++    use crate::diagnostics::Result;
++    use crate::eam::ReconstructionData;
++
++    pub const DEFLATE_RECONSTRUCT_ID: &str = super::DEFLATE_RECONSTRUCT_ID;
++    pub const DEFLATE_RECONSTRUCTION_FORMAT: &str = super::DEFLATE_RECONSTRUCTION_FORMAT;
++    pub const MAX_RECONSTRUCTION_INPUT_BYTES: usize = super::MAX_RECONSTRUCTION_INPUT_BYTES;
++    pub const MAX_RECONSTRUCTION_DATA_BYTES: usize = super::MAX_RECONSTRUCTION_DATA_BYTES;
++    pub const MAX_INTERMEDIATE_BYTES: usize = super::MAX_INTERMEDIATE_BYTES;
++    pub const RECONSTRUCTION_WORKING_SET_BYTES: u64 = super::RECONSTRUCTION_WORKING_SET_BYTES;
++    pub const MAX_EXPANSION_RATIO: usize = super::MAX_EXPANSION_RATIO;
++
++    /// Public mirror of the private verified forward result.
++    #[derive(Clone, Debug, Eq, PartialEq)]
++    pub struct ReconstructCandidate {
++        /// Format-neutral intermediate (inflated) bytes.
++        pub intermediate: Vec<u8>,
++        /// Verified side data that recreates the original representation.
++        pub data: ReconstructionData,
++    }
++
++    #[must_use]
++    pub fn parameters(max_chain_length: u32) -> Box<[u8]> {
++        super::parameters(max_chain_length)
++    }
++
++    pub fn validate_parameters(value: &[u8]) -> Result<u32> {
++        super::validate_parameters(value)
++    }
++
++    pub fn try_forward(original: &[u8], max_chain: u32) -> Result<Option<ReconstructCandidate>> {
++        super::try_forward(original, max_chain).map(|candidate| {
++            candidate.map(|candidate| ReconstructCandidate {
++                intermediate: candidate.intermediate,
++                data: candidate.data,
++            })
++        })
++    }
++
++    pub fn verified_forward(
++        original: &[u8],
++        max_chain: u32,
++        expected: &ReconstructionData,
++    ) -> Result<Vec<u8>> {
++        super::verified_forward(original, max_chain, expected)
++    }
++
++    pub fn inverse(intermediate: &[u8], data: &ReconstructionData) -> Result<Vec<u8>> {
++        super::inverse(intermediate, data)
++    }
++
++    pub fn validate_data(data: &ReconstructionData) -> Result<()> {
++        super::validate_data(data)
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use flate2::Compression;
+diff --git a/crates/entrybound/src/similarity.rs b/crates/entrybound/src/similarity.rs
+index a2a8aec..cfdd5f1 100644
+--- a/crates/entrybound/src/similarity.rs
++++ b/crates/entrybound/src/similarity.rs
+@@ -249,6 +249,42 @@ fn cohort_id(leader: Digest, policy: SimilarityPolicy) -> Digest {
+     sha256_exact(&input)
+ }
+ 
++/// Read-only research access to the similarity sketch internals.
++///
++/// Every function forwards to the private production function of the same name.
++#[cfg(feature = "research-internals")]
++pub mod research {
++    use crate::eam::Digest;
++
++    use super::SimilarityPolicy;
++
++    pub const SHINGLE_BYTES: usize = super::SHINGLE_BYTES;
++    pub const SHINGLE_STRIDE: usize = super::SHINGLE_STRIDE;
++    pub const MAX_SCANNED_SHINGLES: usize = super::MAX_SCANNED_SHINGLES;
++
++    /// Bottom-k sketch items (ascending FNV-1a shingle hashes) for `bytes`.
++    #[must_use]
++    pub fn fingerprint(bytes: &[u8], sketch_items: usize) -> Box<[u64]> {
++        super::fingerprint(bytes, sketch_items).items
++    }
++
++    /// Shared items between two ascending sketches.
++    #[must_use]
++    pub fn intersection_count(left: &[u64], right: &[u64]) -> usize {
++        super::intersection_count(left, right)
++    }
++
++    #[must_use]
++    pub fn fnv1a(bytes: &[u8]) -> u64 {
++        super::fnv1a(bytes)
++    }
++
++    #[must_use]
++    pub fn cohort_id(leader: Digest, policy: SimilarityPolicy) -> Digest {
++        super::cohort_id(leader, policy)
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+diff --git a/crates/entrybound/src/transform.rs b/crates/entrybound/src/transform.rs
+index 38e8709..ec5967e 100644
+--- a/crates/entrybound/src/transform.rs
++++ b/crates/entrybound/src/transform.rs
+@@ -446,6 +446,93 @@ fn length_mismatch(identifier: &str) -> Diagnostic {
+     )
+ }
+ 
++/// Read-only research access to the transform registry and pipelines.
++///
++/// Every function forwards to the private production function of the same name.
++#[cfg(feature = "research-internals")]
++pub mod research {
++    use std::collections::BTreeMap;
++
++    use crate::diagnostics::Result;
++    use crate::eam::{Digest, ReconstructionData, TransformStep};
++
++    pub const DELTA8_ID: &str = super::DELTA8_ID;
++    pub const BYTE_SHUFFLE_ID: &str = super::BYTE_SHUFFLE_ID;
++
++    #[must_use]
++    pub fn delta8_step() -> TransformStep {
++        super::delta8_step()
++    }
++
++    pub fn byte_shuffle_step(width: u8) -> Result<TransformStep> {
++        super::byte_shuffle_step(width)
++    }
++
++    pub fn deflate_reconstruct_step(
++        max_chain_length: u32,
++        reconstruction_ref: Digest,
++    ) -> Result<TransformStep> {
++        super::deflate_reconstruct_step(max_chain_length, reconstruction_ref)
++    }
++
++    pub fn jpeg_reconstruct_step() -> Result<TransformStep> {
++        super::jpeg_reconstruct_step()
++    }
++
++    pub fn validate_pipeline(steps: &[TransformStep]) -> Result<()> {
++        super::validate_pipeline(steps)
++    }
++
++    pub fn required_features(steps: &[TransformStep]) -> Result<u64> {
++        super::required_features(steps)
++    }
++
++    pub fn forward_pipeline(steps: &[TransformStep], plaintext: &[u8]) -> Result<Vec<u8>> {
++        super::forward_pipeline(steps, plaintext)
++    }
++
++    pub fn forward_pipeline_with_reconstruction(
++        steps: &[TransformStep],
++        plaintext: &[u8],
++        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
++    ) -> Result<Vec<u8>> {
++        super::forward_pipeline_with_reconstruction(steps, plaintext, reconstruction_data)
++    }
++
++    pub fn inverse_pipeline(steps: &[TransformStep], encoded: &[u8]) -> Result<Vec<u8>> {
++        super::inverse_pipeline(steps, encoded)
++    }
++
++    pub fn inverse_pipeline_with_reconstruction(
++        steps: &[TransformStep],
++        encoded: &[u8],
++        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
++    ) -> Result<Vec<u8>> {
++        super::inverse_pipeline_with_reconstruction(steps, encoded, reconstruction_data)
++    }
++
++    pub fn intermediate_len(
++        steps: &[TransformStep],
++        logical_len: u64,
++        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
++    ) -> Result<u64> {
++        super::intermediate_len(steps, logical_len, reconstruction_data)
++    }
++
++    #[must_use]
++    pub fn display_step(step: &TransformStep) -> String {
++        super::display_step(step)
++    }
++
++    pub fn is_reconstructive(step: &TransformStep) -> Result<bool> {
++        super::is_reconstructive(step)
++    }
++
++    pub fn is_whole_object_reconstructive(step: &TransformStep) -> Result<bool> {
++        super::is_whole_object_reconstructive(step)
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;

@@ -114,3 +114,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-13T02:32Z — Phase A: model cluster merged.
 - 2026-09-13T02:32Z — Corpus g1-code committed: 40 items F01/F02/F03/F18. Carry-forward: tree_sha256 includes ext4 st_blocks and is unstable under delayed allocation (use logical_tree_sha256); build trees are not all bit-reproducible; vendor trees share common packages across splits; held-out large tier is all linux-kernel group.
 - 2026-09-13T02:34Z — Phase A: access cluster merged.
+- 2026-09-13T05:43Z — INTERRUPTION (usage limit, 2026-09-13 ~00:0x local): all three workflows stopped. Production crates restored to HEAD; partial research-internals edits saved as research/harness/wip/research-internals-partial.patch (git apply --check OK).
