@@ -116,3 +116,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-13T02:34Z — Phase A: access cluster merged.
 - 2026-09-13T05:43Z — INTERRUPTION (usage limit, 2026-09-13 ~00:0x local): all three workflows stopped. Production crates restored to HEAD; partial research-internals edits saved as research/harness/wip/research-internals-partial.patch (git apply --check OK).
 - 2026-09-13T05:43Z — Corpus WIP checkpoint: g4-binary 42 items and g5-media 26 items fingerprinted (group verification pending); g2-generated generators only.
+- 2026-09-13T05:44Z — Resume prep: research/tools/ledger/split_by_cluster.py (crypto 985/543, legacy 850/499 shards); external inputs extracted to D:/eb-research/sources (hash-verified).

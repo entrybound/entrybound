@@ -10,6 +10,9 @@ __pycache__/
 /fuzz/**/corpus/
 /fuzz/**/artifacts/
 
+# Derived, regenerable merge inputs (research/tools/ledger/split_by_cluster.py)
+/audit/by-cluster/
+
 # Local-only scratch
 *.local.json
 /scratch/
