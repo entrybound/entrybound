@@ -1,0 +1,5 @@
+# Scripts executed by bash inside WSL/containers must keep LF even on a Windows
+# checkout with core.autocrlf=true (CRLF breaks bash and changes recipe hashes).
+*.sh text eol=lf
+*.py text eol=lf
+*.Dockerfile text eol=lf

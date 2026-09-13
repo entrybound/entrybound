@@ -1,0 +1,830 @@
+{
+  "schema": "entrybound.research.env-fingerprint/1",
+  "env_id": "71b86070b993f2b8ae64122b925cde16849945af3c78e19502e7243f5ad6158d",
+  "env_id_without_repo": "98d06015c789f61e262eaf9942f142e82e2230ec9158c5aa290349b559b854db",
+  "platform_id": "0ec6f785147bfd00962477231c967ab5f91f3cbcd116b88e3acc84769cde2083",
+  "id_algorithm": "env_id = sha256(canonical_json(stable)); env_id_without_repo = sha256(canonical_json(stable minus 'repo')); platform_id = sha256(canonical_json(stable.platform)); canonical_json = json.dumps(sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode('utf-8')",
+  "stable": {
+    "docker": {
+      "cli_found": true,
+      "client": {
+        "ApiVersion": "1.55",
+        "Arch": "amd64",
+        "Context": "desktop-linux",
+        "GitCommit": "a7dcaa6",
+        "GoVersion": "go1.26.5",
+        "Os": "windows",
+        "Version": "29.7.2"
+      },
+      "engine": {
+        "Architecture": "x86_64",
+        "CgroupDriver": "cgroupfs",
+        "CgroupVersion": "1",
+        "ContainerdCommit": "aad11006b869517fcd3009450b6f82da282e1a9b",
+        "DefaultRuntime": "runc",
+        "DockerRootDir": "/var/lib/docker",
+        "Driver": "overlayfs",
+        "DriverStatus": [
+          [
+            "driver-type",
+            "io.containerd.snapshotter.v1"
+          ]
+        ],
+        "ExperimentalBuild": false,
+        "IndexServerAddress": "https://index.docker.io/v1/",
+        "InitBinary": "docker-init",
+        "InitCommit": "de40ad0",
+        "Isolation": "",
+        "KernelVersion": "5.15.167.4-microsoft-standard-WSL2",
+        "Labels": [
+          "com.docker.desktop.address=npipe://\\\\.\\pipe\\docker_cli"
+        ],
+        "LiveRestoreEnabled": false,
+        "MemTotal": 33499709440,
+        "NCPU": 32,
+        "OSType": "linux",
+        "OSVersion": "",
+        "OperatingSystem": "Docker Desktop",
+        "RuncCommit": "v1.4.3-0-gbb14dabe",
+        "Runtimes": [
+          "io.containerd.runc.v2",
+          "nvidia",
+          "runc"
+        ],
+        "SecurityOptions": [
+          "name=seccomp,profile=builtin"
+        ],
+        "ServerVersion": "29.7.2",
+        "cli_plugins": [
+          {
+            "name": "agent",
+            "version": "v1.128.0"
+          },
+          {
+            "name": "ai",
+            "version": "v1.30.0"
+          },
+          {
+            "name": "buildx",
+            "version": "v0.36.1-desktop.1"
+          },
+          {
+            "name": "compose",
+            "version": "v5.5.1"
+          },
+          {
+            "name": "debug",
+            "version": "0.0.47"
+          },
+          {
+            "name": "desktop",
+            "version": "v0.4.3"
+          },
+          {
+            "name": "dhi",
+            "version": "v0.0.7"
+          },
+          {
+            "name": "extension",
+            "version": "v0.2.31"
+          },
+          {
+            "name": "init",
+            "version": "v1.4.0"
+          },
+          {
+            "name": "mcp",
+            "version": "v0.43.3"
+          },
+          {
+            "name": "model",
+            "version": "v1.2.6"
+          },
+          {
+            "name": "offload",
+            "version": "v0.6.15"
+          },
+          {
+            "name": "pass",
+            "version": "v0.2.2"
+          },
+          {
+            "name": "sandbox",
+            "version": "v0.13.0"
+          },
+          {
+            "name": "scout",
+            "version": "v1.24.0"
+          }
+        ]
+      },
+      "server": {
+        "ApiVersion": "1.55",
+        "Arch": "amd64",
+        "GitCommit": "6a43e3d",
+        "KernelVersion": "5.15.167.4-microsoft-standard-WSL2",
+        "MinAPIVersion": "1.40",
+        "Os": "linux",
+        "Version": "29.7.2",
+        "components": [
+          {
+            "name": "Engine",
+            "version": "29.7.2"
+          },
+          {
+            "name": "containerd",
+            "version": "v2.3.3"
+          },
+          {
+            "name": "docker-init",
+            "version": "0.19.0"
+          },
+          {
+            "name": "runc",
+            "version": "1.4.3"
+          }
+        ],
+        "platform_name": "Docker Desktop 4.90.0 (238679)"
+      },
+      "server_available": true
+    },
+    "filesystems": [
+      {
+        "drive_type": "fixed",
+        "flags": [
+          "CASE_SENSITIVE_SEARCH",
+          "CASE_PRESERVED_NAMES",
+          "UNICODE_ON_DISK",
+          "PERSISTENT_ACLS",
+          "FILE_COMPRESSION",
+          "SPARSE_FILES",
+          "REPARSE_POINTS",
+          "OBJECT_IDS",
+          "ENCRYPTION",
+          "NAMED_STREAMS",
+          "HARD_LINKS",
+          "EXTENDED_ATTRIBUTES",
+          "USN_JOURNAL"
+        ],
+        "fstype": "NTFS",
+        "max_component_length": 255,
+        "path": "D:\\Projects\\entrybound\\entrybound",
+        "volume_root": "D:\\"
+      }
+    ],
+    "kind": "windows-host",
+    "platform": {
+      "cpu": {
+        "cim_win32_processor": {
+          "L2CacheSize": 32768,
+          "L3CacheSize": 36864,
+          "Manufacturer": "GenuineIntel",
+          "MaxClockSpeed": 2200,
+          "Name": "Intel(R) Core(TM) i9-14900HX",
+          "NumberOfCores": 24,
+          "NumberOfEnabledCore": 24,
+          "NumberOfLogicalProcessors": 32,
+          "ThreadCount": 32,
+          "VirtualizationFirmwareEnabled": false
+        },
+        "e_cores": 16,
+        "identifier": "Intel64 Family 6 Model 183 Stepping 1",
+        "logical_cpus": 32,
+        "microcode_revision_registry": "0x123",
+        "model_name": "Intel(R) Core(TM) i9-14900HX",
+        "p_cores": 8,
+        "physical_cores": 24,
+        "topology": {
+          "caches": [
+            {
+              "associativity": 8,
+              "instances": 16,
+              "level": 1,
+              "line_size": 64,
+              "logical_processors_per_instance": 1,
+              "size_bytes": 32768,
+              "type": "Data"
+            },
+            {
+              "associativity": 12,
+              "instances": 8,
+              "level": 1,
+              "line_size": 64,
+              "logical_processors_per_instance": 2,
+              "size_bytes": 49152,
+              "type": "Data"
+            },
+            {
+              "associativity": 8,
+              "instances": 8,
+              "level": 1,
+              "line_size": 64,
+              "logical_processors_per_instance": 2,
+              "size_bytes": 32768,
+              "type": "Instruction"
+            },
+            {
+              "associativity": 8,
+              "instances": 16,
+              "level": 1,
+              "line_size": 64,
+              "logical_processors_per_instance": 1,
+              "size_bytes": 65536,
+              "type": "Instruction"
+            },
+            {
+              "associativity": 16,
+              "instances": 8,
+              "level": 2,
+              "line_size": 64,
+              "logical_processors_per_instance": 2,
+              "size_bytes": 2097152,
+              "type": "Unified"
+            },
+            {
+              "associativity": 16,
+              "instances": 4,
+              "level": 2,
+              "line_size": 64,
+              "logical_processors_per_instance": 4,
+              "size_bytes": 4194304,
+              "type": "Unified"
+            },
+            {
+              "associativity": 12,
+              "instances": 1,
+              "level": 3,
+              "line_size": 64,
+              "logical_processors_per_instance": 32,
+              "size_bytes": 37748736,
+              "type": "Unified"
+            }
+          ],
+          "efficiency_classes": [
+            {
+              "cores": 8,
+              "efficiency_class": 1,
+              "l2_cache_sizes_bytes": [
+                2097152
+              ],
+              "label": "P-core",
+              "logical_processor_ids": "0-15",
+              "logical_processors": 16,
+              "smt_cores": 8
+            },
+            {
+              "cores": 16,
+              "efficiency_class": 0,
+              "l2_cache_sizes_bytes": [
+                4194304
+              ],
+              "label": "E-core",
+              "logical_processor_ids": "16-31",
+              "logical_processors": 16,
+              "smt_cores": 0
+            }
+          ],
+          "hybrid": true,
+          "logical_processors": 32,
+          "numa_nodes": 1,
+          "packages": 1,
+          "physical_cores": 24,
+          "processor_groups": [
+            {
+              "active_processors": 32,
+              "group": 0,
+              "maximum_processors": 32
+            }
+          ],
+          "source": "GetLogicalProcessorInformationEx(RelationAll)"
+        },
+        "vendor_id": "GenuineIntel"
+      },
+      "hardware": {
+        "battery_count": 1,
+        "bios": {
+          "Manufacturer": "INSYDE Corp.",
+          "ReleaseDate": "2024-07-11",
+          "SMBIOSBIOSVersion": "1.07.01aNS1"
+        },
+        "manufacturer": "Notebook",
+        "model": "X370SNx1",
+        "pc_system_type": 2,
+        "pc_system_type_label": "Mobile"
+      },
+      "kernel": {
+        "nt_version": "10.0.26200.9445",
+        "platform_version": "10.0.26200"
+      },
+      "memory": {
+        "installed_physical_bytes": 68719476736,
+        "modules": [
+          {
+            "Capacity": "34359738368",
+            "ConfiguredClockSpeed": 5600,
+            "FormFactor": 12,
+            "SMBIOSMemoryType": 34,
+            "Speed": 5600
+          },
+          {
+            "Capacity": "34359738368",
+            "ConfiguredClockSpeed": 5600,
+            "FormFactor": 12,
+            "SMBIOSMemoryType": 34,
+            "Speed": 5600
+          }
+        ],
+        "total_physical_bytes": 68408958976
+      },
+      "os": {
+        "architecture": "AMD64",
+        "build": 26200,
+        "display_version": "25H2",
+        "edition_id": "Professional",
+        "family": "windows",
+        "installation_type": "Client",
+        "marketing_name": "Windows 11",
+        "product_name_registry": "Windows 10 Pro",
+        "ubr": 9445,
+        "version": "10.0.26200.9445"
+      },
+      "power": {
+        "active_scheme": {
+          "guid": "381b4222-f694-41f0-9685-ff5bb260df2e",
+          "name": "Balanced"
+        },
+        "power_mode_overlay": {
+          "ac": {
+            "guid": "00000000-0000-0000-0000-000000000000",
+            "label": "Balanced (no overlay)"
+          },
+          "dc": {
+            "guid": "961cc777-2547-4f9d-8174-7d86181b8a7a",
+            "label": "Best power efficiency"
+          }
+        },
+        "powercfg_getactivescheme": {
+          "guid": "381b4222-f694-41f0-9685-ff5bb260df2e",
+          "name": "Balanced"
+        },
+        "processor_settings": {
+          "CPMAXCORES": {
+            "ac": 100,
+            "dc": 100,
+            "guid": "ea062031-0e34-4ff1-9b6d-eb1059334028",
+            "name": "Processor performance core parking max cores"
+          },
+          "CPMINCORES": {
+            "ac": 4,
+            "dc": 4,
+            "guid": "0cc5b647-c1df-4637-891a-dec35c318583",
+            "name": "Processor performance core parking min cores"
+          },
+          "HETEROPOLICY": {
+            "ac": 0,
+            "dc": 0,
+            "guid": "7f2f5cfa-f10c-4823-b5e1-e93ae85f46b5",
+            "name": "Heterogeneous policy in effect"
+          },
+          "PERFBOOSTMODE": {
+            "ac": 2,
+            "dc": 2,
+            "guid": "be337238-0d82-4146-a960-4f3749d470c7",
+            "name": "Processor performance boost mode"
+          },
+          "PERFBOOSTPOL": {
+            "ac": 60,
+            "dc": 40,
+            "guid": "45bcc044-d885-43e2-8605-ee0ec6e96b59",
+            "name": "Processor performance boost policy"
+          },
+          "PERFEPP": {
+            "ac": 45,
+            "dc": 50,
+            "guid": "36687f9e-e3a5-4dbf-b1dc-15eb381c6863",
+            "name": "Processor energy performance preference policy"
+          },
+          "PERFEPP1": {
+            "ac": 45,
+            "dc": 50,
+            "guid": "36687f9e-e3a5-4dbf-b1dc-15eb381c6864",
+            "name": "Processor energy performance preference policy for Processor Power Efficiency Class 1"
+          },
+          "PROCTHROTTLEMAX": {
+            "ac": 100,
+            "dc": 100,
+            "guid": "bc5038f7-23e0-4960-96da-33abaf5935ec",
+            "name": "Maximum processor state"
+          },
+          "PROCTHROTTLEMAX1": {
+            "ac": 100,
+            "dc": 100,
+            "guid": "bc5038f7-23e0-4960-96da-33abaf5935ed",
+            "name": "Maximum processor state for Processor Power Efficiency Class 1"
+          },
+          "PROCTHROTTLEMIN": {
+            "ac": 5,
+            "dc": 5,
+            "guid": "893dee8e-2bef-41e0-89c6-b55d0929964c",
+            "name": "Minimum processor state"
+          },
+          "PROCTHROTTLEMIN1": {
+            "ac": 5,
+            "dc": 5,
+            "guid": "893dee8e-2bef-41e0-89c6-b55d0929964d",
+            "name": "Minimum processor state for Processor Power Efficiency Class 1"
+          },
+          "SCHEDPOLICY": {
+            "ac": 5,
+            "dc": 5,
+            "guid": "93b8b6dc-0698-4d1c-9ee4-0644e900c85d",
+            "name": "Heterogeneous thread scheduling policy"
+          },
+          "SYSCOOLPOL": {
+            "ac": 1,
+            "dc": 0,
+            "guid": "94d3a615-a899-4ac5-ae2b-e4d8f634367f",
+            "name": "System cooling policy"
+          }
+        }
+      },
+      "security": {
+        "defender": {
+          "AMRunningMode": "Normal",
+          "AntivirusEnabled": true,
+          "IsTamperProtected": true,
+          "RealTimeProtectionEnabled": true
+        }
+      },
+      "virtualization": {
+        "hypervisor_present": true,
+        "security_services_configured": [
+          0
+        ],
+        "security_services_running": [
+          0
+        ],
+        "vbs_status": 2,
+        "vbs_status_label": "running",
+        "virtualization_firmware_enabled": false,
+        "wsl": {
+          "DXCore version": "10.0.26100.1-240331-1435.ge-release",
+          "Direct3D version": "1.611.1-81528511",
+          "Kernel version": "5.15.167.4-1",
+          "MSRDC version": "1.2.5620",
+          "WSL version": "2.3.26.0",
+          "WSLg version": "1.0.65",
+          "Windows version": "10.0.26200.9445"
+        }
+      }
+    },
+    "process": {
+      "cargo_profile_env": [],
+      "encoding": {
+        "filesystem": "utf-8",
+        "preferred": "cp1252",
+        "stdout": "utf-8"
+      },
+      "python": {
+        "bits": 64,
+        "build": [
+          "tags/v3.13.5:6cb20a2",
+          "Jun 11 2025 16:15:46"
+        ],
+        "compiler": "MSC v.1943 64 bit (AMD64)",
+        "executable": "C:\\Python313\\python.exe",
+        "executable_sha256": "5341746f92483a93e44c313de830f2fba2956f0759094404a16b2fed06c9a2ed",
+        "implementation": "CPython",
+        "version": "3.13.5"
+      },
+      "tool_env": {}
+    },
+    "repo": {
+      "cargo_lock": {
+        "bytes": 70779,
+        "contains_crlf": false,
+        "present": true,
+        "sha256": "764e02d5254596194edaa2611eb2c65947a2fd873be5b969bccf08bcc53505da",
+        "sha256_lf_normalized": "764e02d5254596194edaa2611eb2c65947a2fd873be5b969bccf08bcc53505da"
+      },
+      "exists": true,
+      "git": {
+        "head_ref": "refs/heads/dev",
+        "head_sha": "9e44608e5a3ed44fb8f2c4cc5423a6f69b0d0155"
+      },
+      "path": "D:\\Projects\\entrybound\\entrybound",
+      "rust_toolchain_toml": {
+        "bytes": 86,
+        "contains_crlf": false,
+        "present": true,
+        "sha256": "0c9b811689c2817b6404b2858b3e8f7aebf513af379da94774521025b7008863",
+        "sha256_lf_normalized": "0c9b811689c2817b6404b2858b3e8f7aebf513af379da94774521025b7008863"
+      }
+    },
+    "rust": {
+      "active_toolchain_in_repo": "stable-x86_64-pc-windows-msvc (overridden by 'D:\\Projects\\entrybound\\entrybound\\rust-toolchain.toml')",
+      "cargo_home_bin": "C:\\Users\\<user>\\.cargo\\bin",
+      "cargo_home_bin_on_path": false,
+      "installed_toolchains": [
+        "stable-x86_64-pc-windows-msvc (active, default)",
+        "1.70.0-x86_64-pc-windows-msvc",
+        "1.75.0-x86_64-pc-windows-msvc",
+        "1.85.1-x86_64-pc-windows-msvc",
+        "1.97.1-x86_64-pc-windows-msvc"
+      ],
+      "path_rustc": null,
+      "repo_proxy": {
+        "cargo": {
+          "version_line": "cargo 1.97.1 (c980f4866 2026-06-30)"
+        },
+        "rustc": {
+          "LLVM_version": "22.1.6",
+          "binary": "rustc",
+          "commit_date": "2026-07-14",
+          "commit_hash": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+          "host": "x86_64-pc-windows-msvc",
+          "release": "1.97.1",
+          "version_line": "rustc 1.97.1 (8bab26f4f 2026-07-14)"
+        }
+      },
+      "rustup": {
+        "found_on_path": false,
+        "path": "C:\\Users\\<user>\\.cargo\\bin\\rustup.exe",
+        "version_line": "rustup 1.29.0 (28d1352db 2026-03-05)"
+      },
+      "toolchains": {
+        "1.70.0-x86_64-pc-windows-msvc": {
+          "cargo": {
+            "version_line": "cargo 1.70.0 (ec8a8a0ca 2023-04-25)"
+          },
+          "rustc": {
+            "LLVM_version": "16.0.2",
+            "binary": "rustc",
+            "commit_date": "2023-05-31",
+            "commit_hash": "90c541806f23a127002de5b4038be731ba1458ca",
+            "host": "x86_64-pc-windows-msvc",
+            "release": "1.70.0",
+            "version_line": "rustc 1.70.0 (90c541806 2023-05-31)"
+          }
+        },
+        "1.75.0-x86_64-pc-windows-msvc": {
+          "cargo": {
+            "version_line": "cargo 1.75.0 (1d8b05cdd 2023-11-20)"
+          },
+          "rustc": {
+            "LLVM_version": "17.0.6",
+            "binary": "rustc",
+            "commit_date": "2023-12-21",
+            "commit_hash": "82e1608dfa6e0b5569232559e3d385fea5a93112",
+            "host": "x86_64-pc-windows-msvc",
+            "release": "1.75.0",
+            "version_line": "rustc 1.75.0 (82e1608df 2023-12-21)"
+          }
+        },
+        "1.85.1-x86_64-pc-windows-msvc": {
+          "cargo": {
+            "version_line": "cargo 1.85.1 (d73d2caf9 2024-12-31)"
+          },
+          "rustc": {
+            "LLVM_version": "19.1.7",
+            "binary": "rustc",
+            "commit_date": "2025-03-15",
+            "commit_hash": "4eb161250e340c8f48f66e2b929ef4a5bed7c181",
+            "host": "x86_64-pc-windows-msvc",
+            "release": "1.85.1",
+            "version_line": "rustc 1.85.1 (4eb161250 2025-03-15)"
+          }
+        },
+        "1.97.1-x86_64-pc-windows-msvc": {
+          "cargo": {
+            "version_line": "cargo 1.97.1 (c980f4866 2026-06-30)"
+          },
+          "rustc": {
+            "LLVM_version": "22.1.6",
+            "binary": "rustc",
+            "commit_date": "2026-07-14",
+            "commit_hash": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+            "host": "x86_64-pc-windows-msvc",
+            "release": "1.97.1",
+            "version_line": "rustc 1.97.1 (8bab26f4f 2026-07-14)"
+          }
+        },
+        "stable-x86_64-pc-windows-msvc": {
+          "cargo": {
+            "version_line": "cargo 1.97.1 (c980f4866 2026-06-30)"
+          },
+          "rustc": {
+            "LLVM_version": "22.1.6",
+            "binary": "rustc",
+            "commit_date": "2026-07-14",
+            "commit_hash": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+            "host": "x86_64-pc-windows-msvc",
+            "release": "1.97.1",
+            "version_line": "rustc 1.97.1 (8bab26f4f 2026-07-14)"
+          }
+        }
+      }
+    },
+    "schema": "entrybound.research.env-fingerprint/1",
+    "tools": {
+      "7z": {
+        "found": false
+      },
+      "7za": {
+        "found": false
+      },
+      "7zr": {
+        "found": false
+      },
+      "7zz": {
+        "found": false
+      },
+      "brotli": {
+        "exit_code": 0,
+        "found": true,
+        "path": "C:\\Program Files\\Git\\mingw64\\bin\\brotli.EXE",
+        "sha256": "c0cf2ecb82be720b1b742dc240b70e5b990c7e26034532cca38e35a56b492ded",
+        "size_bytes": 67391,
+        "version": "1.1.0",
+        "version_line": "brotli 1.1.0"
+      },
+      "bsdtar": {
+        "found": false
+      },
+      "bzip2": {
+        "exit_code": 0,
+        "found": true,
+        "path": "C:\\Program Files\\Git\\mingw64\\bin\\bzip2.EXE",
+        "sha256": "4dd06837ccca65bb3be00d9f10bf4350143551d22a068e29345acff290a4a6b6",
+        "size_bytes": 70978,
+        "version": "1.0.8",
+        "version_line": "bzip2, a block-sorting file compressor.  Version 1.0.8, 13-Jul-2019."
+      },
+      "cargo": {
+        "found": false
+      },
+      "cpio": {
+        "found": false
+      },
+      "docker": {
+        "exit_code": 0,
+        "found": true,
+        "path": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.EXE",
+        "sha256": "9693eb5d2e1adf26a830d62e1428c244125ca518db7322779932b702e21b3227",
+        "size_bytes": 43247024,
+        "version": "29.7.2",
+        "version_line": "Docker version 29.7.2, build a7dcaa6"
+      },
+      "git": {
+        "exit_code": 0,
+        "found": true,
+        "path": "C:\\Program Files\\Git\\cmd\\git.EXE",
+        "sha256": "332883ea074abeabaa6b2ff4d744371da0fa00d259f7e49d3ab5c8fdfbe80920",
+        "size_bytes": 46952,
+        "version": "2.47.1.windows.2",
+        "version_line": "git version 2.47.1.windows.2"
+      },
+      "gzip": {
+        "found": false
+      },
+      "hyperfine": {
+        "found": false
+      },
+      "java": {
+        "exit_code": 0,
+        "found": true,
+        "path": "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.12.101-hotspot\\bin\\java.EXE",
+        "sha256": "82051fdab26319d77d20cc0065045d05ec00b3e3d05f44935d7c06b96b621d55",
+        "size_bytes": 50304,
+        "version": "21.0.12.1",
+        "version_line": "openjdk version \"21.0.12.1\" 2026-08-18 LTS"
+      },
+      "jq": {
+        "found": false
+      },
+      "lz4": {
+        "found": false
+      },
+      "lzip": {
+        "found": false
+      },
+      "mksquashfs": {
+        "found": false
+      },
+      "par2": {
+        "found": false
+      },
+      "pigz": {
+        "found": false
+      },
+      "pixz": {
+        "found": false
+      },
+      "python": {
+        "exit_code": 0,
+        "found": true,
+        "path": "C:\\Python313\\python.EXE",
+        "sha256": "5341746f92483a93e44c313de830f2fba2956f0759094404a16b2fed06c9a2ed",
+        "size_bytes": 105816,
+        "version": "3.13.5",
+        "version_line": "Python 3.13.5"
+      },
+      "python3": {
+        "app_execution_alias": true,
+        "executed": false,
+        "found": true,
+        "path": "C:\\Users\\<user>\\AppData\\Local\\Microsoft\\WindowsApps\\python3.EXE"
+      },
+      "rustc": {
+        "found": false
+      },
+      "rustup": {
+        "found": false
+      },
+      "sqlite3": {
+        "found": false
+      },
+      "tar": {
+        "exit_code": 0,
+        "found": true,
+        "path": "C:\\Windows\\system32\\tar.EXE",
+        "sha256": "4e598a8cec84af779e3377442fce2b94b976f614ed4c6e5a665e19308fd1e379",
+        "size_bytes": 92280,
+        "version": "3.8.8",
+        "version_line": "bsdtar 3.8.8 - libarchive 3.8.8 zlib/1.2.13.1-motley liblzma/5.8.1 bz2lib/1.0.8 libzstd/1.5.7 cng/2.0 libb2/bundled"
+      },
+      "unzip": {
+        "found": false
+      },
+      "xz": {
+        "exit_code": 0,
+        "found": true,
+        "path": "C:\\Program Files\\Git\\mingw64\\bin\\xz.EXE",
+        "sha256": "dcedad889ecc83643528030097d8e24b4014d478fd617d7d2f11e31f0cdee030",
+        "size_bytes": 94417,
+        "version": "5.6.3",
+        "version_line": "xz (XZ Utils) 5.6.3"
+      },
+      "zip": {
+        "found": false
+      },
+      "zstd": {
+        "found": false
+      }
+    }
+  },
+  "capture": {
+    "capture_tool": {
+      "file": "research/tools/env/capture_env.py",
+      "sha256": "107cd5ec5d7a4ea36cbf19fc3f530983dc8a6a7e06499f46dad7071c7018646b"
+    },
+    "captured_at_utc": "2026-09-13T01:36:48Z",
+    "docker_runtime_cached_info": {
+      "Containers": 0,
+      "ContainersRunning": 0,
+      "Images": 5
+    },
+    "docker_warnings": [
+      "WARNING: No blkio throttle.read_bps_device support",
+      "WARNING: No blkio throttle.write_bps_device support",
+      "WARNING: No blkio throttle.read_iops_device support",
+      "WARNING: No blkio throttle.write_iops_device support",
+      "WARNING: Support for cgroup v1 is deprecated and planned to be removed by no later than May 2029 (https://github.com/moby/moby/issues/51111)"
+    ],
+    "filesystems": [
+      {
+        "exists": true,
+        "free_bytes": 931902472192,
+        "path": "D:\\Projects\\entrybound\\entrybound",
+        "resolved_via": null,
+        "total_bytes": 1000200990720
+      }
+    ],
+    "name": "windows-host",
+    "observations": [
+      "E-core (EfficiencyClass 0): 16 cores, 16 logical processors, ids 16-31",
+      "Hyper-V hypervisor is present (VBS/WSL2): the Windows host itself runs as the root partition",
+      "Microsoft Defender real-time protection is on; Windows-side file I/O timings include AV scanning",
+      "P-core (EfficiencyClass 1): 8 cores, 16 logical processors, ids 0-15",
+      "Windows power scheme at capture: 'Balanced'; AC overlay Balanced (no overlay)",
+      "baseline tools not found on PATH: bsdtar, 7z, 7zz, zstd, gzip, pigz, lz4, lzip, pixz, par2, zip, unzip",
+      "rustc is not on PATH; repo toolchain 1.97.1 is reachable only via C:\\Users\\<user>\\.cargo\\bin"
+    ],
+    "platform": {
+      "commit_limit_bytes": 72703926272,
+      "cpu_registry_mhz": 2419,
+      "memory_available_bytes": 37715374080,
+      "memory_load_percent": 44,
+      "power_status": {
+        "ac_line_status": "online",
+        "battery_percent": 80,
+        "battery_saver_on": false
+      },
+      "uptime_seconds": 14970
+    },
+    "repo_worktree": {
+      "git_rev_parse_head": "9e44608e5a3ed44fb8f2c4cc5423a6f69b0d0155",
+      "tracked_paths_modified": 0
+    }
+  }
+}

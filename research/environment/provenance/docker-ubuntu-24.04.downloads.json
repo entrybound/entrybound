@@ -1,0 +1,155 @@
+{
+  "schema": "entrybound.research.download-provenance/1",
+  "environment_name": "docker-ubuntu-24.04",
+  "retrieval_date": "2026-09-12",
+  "retrieved_by": "research/tools/env/capture_docker.py",
+  "downloads": [
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/e/expat/libexpat1_2.6.1-2ubuntu0.4_amd64.deb",
+      "filename": "libexpat1_2.6.1-2ubuntu0.4_amd64.deb",
+      "size_bytes": 88214,
+      "sha256": "126a5612e652bdc2edee19ae8fe4308db72b5b3b0a5581bf885b44a093baf3e5",
+      "apt_index_hash": "MD5Sum:48a8ddebb324e97991853af2840198a2"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/m/media-types/media-types_10.1.0_all.deb",
+      "filename": "media-types_10.1.0_all.deb",
+      "size_bytes": 27474,
+      "sha256": "31bfb7eec55ab6d34a50ba995150e1498d4cb897714085d8025e330d3b529747",
+      "apt_index_hash": "MD5Sum:9c1660917781c5458a14b10d64aa8622"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/n/netbase/netbase_6.4_all.deb",
+      "filename": "netbase_6.4_all.deb",
+      "size_bytes": 13112,
+      "sha256": "8cdbc9c3dca01e660759bf9d840f72e45ac72faf5d19ca1faecacaf6a60c1a87",
+      "apt_index_hash": "MD5Sum:b64460c90b84077666aa559965b7bb25"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/p/python3-defaults/libpython3-stdlib_3.12.3-0ubuntu2.1_amd64.deb",
+      "filename": "libpython3-stdlib_3.12.3-0ubuntu2.1_amd64.deb",
+      "size_bytes": 10080,
+      "sha256": "57ebb378c59d2f9ef479bee0abc933c560878cc10e2c3af8e05d6fdb2ed63da4",
+      "apt_index_hash": "MD5Sum:fbbb48b6f6ac5abc1f9b351a72f471cc"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/p/python3-defaults/python3-minimal_3.12.3-0ubuntu2.1_amd64.deb",
+      "filename": "python3-minimal_3.12.3-0ubuntu2.1_amd64.deb",
+      "size_bytes": 27442,
+      "sha256": "9ba5dd55cdcf6121c147dc5cb87403169b5933e3a56da0de57774f2ce819cf06",
+      "apt_index_hash": "MD5Sum:f59e3e012c9e66fdd136c8c3814ec33c"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/p/python3-defaults/python3_3.12.3-0ubuntu2.1_amd64.deb",
+      "filename": "python3_3.12.3-0ubuntu2.1_amd64.deb",
+      "size_bytes": 23004,
+      "sha256": "e691b9cc40841c41bbdc50bd794c876cb1b1801306ea27b06e9a1458180df1e9",
+      "apt_index_hash": "MD5Sum:77077b2adf93a4d095ef29932192a9e2"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/p/python3.12/libpython3.12-minimal_3.12.3-1ubuntu0.17_amd64.deb",
+      "filename": "libpython3.12-minimal_3.12.3-1ubuntu0.17_amd64.deb",
+      "size_bytes": 838536,
+      "sha256": "d646ad7112b5adec21ba0e1af015f04ae8ca7f5efdc619622547dd6673c4c14b",
+      "apt_index_hash": "MD5Sum:3c10fde9438466b6aa7d660e6a179cc7"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/p/python3.12/libpython3.12-stdlib_3.12.3-1ubuntu0.17_amd64.deb",
+      "filename": "libpython3.12-stdlib_3.12.3-1ubuntu0.17_amd64.deb",
+      "size_bytes": 2070530,
+      "sha256": "45d3f530ba1f9d6e879ad46b92046fabab13fe50a82450e4f65557a3bbad1489",
+      "apt_index_hash": "MD5Sum:ade20e0372324a602862f36c9f4a4218"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/p/python3.12/python3.12-minimal_3.12.3-1ubuntu0.17_amd64.deb",
+      "filename": "python3.12-minimal_3.12.3-1ubuntu0.17_amd64.deb",
+      "size_bytes": 2334634,
+      "sha256": "d452689b9660845345a4c3e05e4ad82c082d5474e04031b7aa47f1a6d5610a6e",
+      "apt_index_hash": "MD5Sum:2ac3784fb339d0b374952f17a4b5000f"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/p/python3.12/python3.12_3.12.3-1ubuntu0.17_amd64.deb",
+      "filename": "python3.12_3.12.3-1ubuntu0.17_amd64.deb",
+      "size_bytes": 650732,
+      "sha256": "6745c9463432e619d7402b117ad4ac86c31dcd3999ba20daa9e395f6f9909d86",
+      "apt_index_hash": "MD5Sum:3f381bf436bdf7bb2cb9e75273ab3371"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/r/readline/libreadline8t64_8.2-4build1_amd64.deb",
+      "filename": "libreadline8t64_8.2-4build1_amd64.deb",
+      "size_bytes": 152856,
+      "sha256": "563977a16df03b611f5239cc1e9a0426e86479fcc616b5c9e200ea32063119e5",
+      "apt_index_hash": "MD5Sum:96b4fadc70a47a119e7fd218b06986f6"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/r/readline/readline-common_8.2-4build1_all.deb",
+      "filename": "readline-common_8.2-4build1_all.deb",
+      "size_bytes": 56484,
+      "sha256": "879bfd7f8a9bc4c0f7cdc777cdd8bc6de5f8c4a2ac80c060322a1b22f13504bb",
+      "apt_index_hash": "MD5Sum:483698fd12b83d6d9aacfb4de697e5e0"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/s/sqlite3/libsqlite3-0_3.45.1-1ubuntu2.7_amd64.deb",
+      "filename": "libsqlite3-0_3.45.1-1ubuntu2.7_amd64.deb",
+      "size_bytes": 701442,
+      "sha256": "488511119cad001a00f7e00e597112cf743ccfbd3f7a03c82d66237e1bfd82c8",
+      "apt_index_hash": "MD5Sum:32a50828359e0411c6da90c53f6bd7a4"
+    },
+    {
+      "kind": "deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20260912T000000Z/pool/main/t/tzdata/tzdata_2026c-0ubuntu0.24.04.1_all.deb",
+      "filename": "tzdata_2026c-0ubuntu0.24.04.1_all.deb",
+      "size_bytes": 279816,
+      "sha256": "ef12c9ef81905b5ac558504b2f8c20da9be5f28861020b3fb5e8b15fb3fae2f6",
+      "apt_index_hash": "MD5Sum:06f39309602a44cad964df4aa94665b7"
+    },
+    {
+      "kind": "oci-image-config",
+      "url": "https://registry-1.docker.io/v2/library/ubuntu/blobs/sha256:b2b7ea366714195a1e1c5b2b578ece85c0b3920381a8654d038d9684f009613c",
+      "media_type": "application/vnd.oci.image.config.v1+json",
+      "size_bytes": 2052,
+      "sha256": "b2b7ea366714195a1e1c5b2b578ece85c0b3920381a8654d038d9684f009613c"
+    },
+    {
+      "kind": "oci-image-index",
+      "url": "https://registry-1.docker.io/v2/library/ubuntu/manifests/sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254",
+      "reference": "docker.io/library/ubuntu:24.04@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254",
+      "media_type": "application/vnd.oci.image.index.v1+json",
+      "size_bytes": 6688,
+      "sha256": "224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254"
+    },
+    {
+      "kind": "oci-image-layer",
+      "url": "https://registry-1.docker.io/v2/library/ubuntu/blobs/sha256:e51aee9c82ec5dd5ba2add49c45c6d85d460512757e2615b69bcdf9469c7cb58",
+      "media_type": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "size_bytes": 29763253,
+      "sha256": "e51aee9c82ec5dd5ba2add49c45c6d85d460512757e2615b69bcdf9469c7cb58"
+    },
+    {
+      "kind": "oci-image-manifest",
+      "platform": "linux/amd64",
+      "url": "https://registry-1.docker.io/v2/library/ubuntu/manifests/sha256:a61567bd31828687156d735ea8eb01ba4e37636e225dd6a48ba94136a70d9d61",
+      "media_type": "application/vnd.oci.image.manifest.v1+json",
+      "size_bytes": 424,
+      "sha256": "a61567bd31828687156d735ea8eb01ba4e37636e225dd6a48ba94136a70d9d61"
+    }
+  ],
+  "transport_ca_bundle": {
+    "source": "WSL Ubuntu /etc/ssl/certs/ca-certificates.crt (build-time bind mount only)",
+    "sha256": "ecd9dc38bc3efb7dbd6431f57e29d2f8d6a0f0d211e1464b3fef2cbfe266fcd2",
+    "note": "TLS transport only; .deb integrity is enforced by apt InRelease signatures (ubuntu-archive-keyring from the pinned base image) and the SHA-256 values above."
+  }
+}

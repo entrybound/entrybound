@@ -1,0 +1,456 @@
+{
+  "schema": "entrybound.research.env-fingerprint/1",
+  "env_id": "e4774cb5fe0c7cb1ef595484e673a47d8b08de08a299f19fbdf6c605e3e04fa5",
+  "env_id_without_repo": "81d62b53d0a7ea30db5aa7c0f588861c76938e0b5ec9dd5a3c8f397decb8b705",
+  "platform_id": "53cb43274671747dcc21a5808c6d284aea31e562226e9b86cb41f9447153dd9d",
+  "id_algorithm": "env_id = sha256(canonical_json(stable)); env_id_without_repo = sha256(canonical_json(stable minus 'repo')); platform_id = sha256(canonical_json(stable.platform)); canonical_json = json.dumps(sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode('utf-8')",
+  "stable": {
+    "container": {
+      "apt_snapshot": "20260912T000000Z",
+      "base_image": "docker.io/library/ubuntu:24.04@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254",
+      "packages": "python3",
+      "platform_manifest": "sha256:a61567bd31828687156d735ea8eb01ba4e37636e225dd6a48ba94136a70d9d61",
+      "recipe_sha256": "7e0230137bedbbb31e620b4ddd93da5e3cd30179b5f13177429a5b8b71744e2b",
+      "run_flags": "rm;network=none;platform=linux/amd64;bind=repo:/repo:ro"
+    },
+    "docker": {
+      "cli_found": false
+    },
+    "filesystems": [
+      {
+        "block_size": 4096,
+        "fstype": "9p",
+        "mount_options": "ro,noatime",
+        "mount_point": "/repo",
+        "name_max": 255,
+        "path": "/repo",
+        "super_options": "rw,dirsync,aname=drvfs;path=D:\\;uid=0;gid=0;metadata;symlinkroot=/mnt/host/,mmap,access=client,msize=65536,trans=fd"
+      },
+      {
+        "block_size": 4096,
+        "fstype": "overlay",
+        "mount_options": "rw,relatime",
+        "mount_point": "/",
+        "name_max": 255,
+        "path": "/tmp",
+        "super_options": "rw"
+      }
+    ],
+    "kind": "container",
+    "platform": {
+      "cpu": {
+        "caches_cpu0": [
+          {
+            "level": "1",
+            "shared_cpu_list": "0-1",
+            "size": "48K",
+            "type": "Data"
+          },
+          {
+            "level": "1",
+            "shared_cpu_list": "0-1",
+            "size": "32K",
+            "type": "Instruction"
+          },
+          {
+            "level": "2",
+            "shared_cpu_list": "0-1",
+            "size": "2048K",
+            "type": "Unified"
+          },
+          {
+            "level": "3",
+            "shared_cpu_list": "0-31",
+            "size": "36864K",
+            "type": "Unified"
+          }
+        ],
+        "cpufreq_available": false,
+        "family": "6",
+        "flags_count": 101,
+        "flags_sha256": "b037daef0bcda9108c5415d0d23fef7386da9e3090a910f150161ccbcf890d03",
+        "hybrid_core_labels_available": false,
+        "hybrid_pmu_cpus": null,
+        "logical_cpus": 32,
+        "microcode": [
+          "0xffffffff"
+        ],
+        "model": "183",
+        "model_name": [
+          "Intel(R) Core(TM) i9-14900HX"
+        ],
+        "online": "0-31",
+        "sched_affinity_count": 32,
+        "selected_flags": {
+          "aes": true,
+          "avx": true,
+          "avx2": true,
+          "avx512f": false,
+          "avx_vnni": true,
+          "bmi1": true,
+          "bmi2": true,
+          "constant_tsc": true,
+          "erms": true,
+          "fsrm": true,
+          "gfni": true,
+          "ht": true,
+          "hybrid_cpu": false,
+          "hypervisor": true,
+          "nonstop_tsc": true,
+          "pclmulqdq": true,
+          "popcnt": true,
+          "sha_ni": true,
+          "sse4_2": true,
+          "tsc_reliable": true,
+          "vaes": true,
+          "vpclmulqdq": true
+        },
+        "stepping": "1",
+        "topology_as_presented": {
+          "cores": 16,
+          "packages": 1,
+          "threads_per_core_histogram": {
+            "2": 16
+          }
+        },
+        "vendor_id": "GenuineIntel",
+        "vulnerabilities": {
+          "gather_data_sampling": "Not affected",
+          "itlb_multihit": "Not affected",
+          "l1tf": "Not affected",
+          "mds": "Not affected",
+          "meltdown": "Not affected",
+          "mmio_stale_data": "Not affected",
+          "reg_file_data_sampling": "Mitigation: Clear Register File",
+          "retbleed": "Mitigation: Enhanced IBRS",
+          "spec_rstack_overflow": "Not affected",
+          "spec_store_bypass": "Mitigation: Speculative Store Bypass disabled via prctl and seccomp",
+          "spectre_v1": "Mitigation: usercopy/swapgs barriers and __user pointer sanitization",
+          "spectre_v2": "Mitigation: Enhanced / Automatic IBRS; IBPB: conditional; RSB filling; PBRSB-eIBRS: SW sequence; BHI: BHI_DIS_S",
+          "srbds": "Not affected",
+          "tsx_async_abort": "Not affected"
+        }
+      },
+      "kernel": {
+        "clocksource": "tsc",
+        "machine": "x86_64",
+        "proc_version": "Linux version 5.15.167.4-microsoft-standard-WSL2 (root@f9c826d3017f) (gcc (GCC) 11.2.0, GNU ld (GNU Binutils) 2.37) #1 SMP Tue Nov 5 00:21:55 UTC 2024",
+        "release": "5.15.167.4-microsoft-standard-WSL2",
+        "transparent_hugepage": "[always] madvise never",
+        "version": "#1 SMP Tue Nov 5 00:21:55 UTC 2024"
+      },
+      "memory": {
+        "cgroup": {
+          "version": 1
+        },
+        "hugepagesize_bytes": 2097152,
+        "mem_total_bytes": 33499709440,
+        "swap_total_bytes": 8589934592
+      },
+      "os": {
+        "dpkg_installed": {
+          "count": 106,
+          "sha256": "04e035fd9dd38e904eb4360c8662adb15985f47b19332a4367988262f5f1fe76"
+        },
+        "family": "linux",
+        "id": "ubuntu",
+        "libc": "glibc-2.39",
+        "pretty_name": "Ubuntu 24.04.4 LTS",
+        "version_codename": "noble",
+        "version_id": "24.04"
+      },
+      "parent": {
+        "platform_id": "0ec6f785147bfd00962477231c967ab5f91f3cbcd116b88e3acc84769cde2083",
+        "relation": "hosted-by"
+      },
+      "virtualization": {
+        "container": {
+          "cgroup_namespace_root": false,
+          "containerenv": false,
+          "dockerenv": true
+        },
+        "cpu_hypervisor_flag": true,
+        "dmi_product_name": null,
+        "dmi_sys_vendor": null,
+        "kernel_is_microsoft_wsl2": true,
+        "systemd_detect_virt": null,
+        "wsl": {
+          "distro_name": null,
+          "interop_enabled": false,
+          "wslg_present": false
+        }
+      }
+    },
+    "process": {
+      "cargo_profile_env": [],
+      "encoding": {
+        "filesystem": "utf-8",
+        "preferred": "utf-8",
+        "stdout": "utf-8"
+      },
+      "euid": 0,
+      "python": {
+        "bits": 64,
+        "build": [
+          "main",
+          "Aug 31 2026 10:18:26"
+        ],
+        "compiler": "GCC 13.3.0",
+        "executable": "/usr/bin/python3",
+        "executable_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+        "implementation": "CPython",
+        "version": "3.12.3"
+      },
+      "rlimits": {
+        "RLIMIT_AS": [
+          "unlimited",
+          "unlimited"
+        ],
+        "RLIMIT_FSIZE": [
+          "unlimited",
+          "unlimited"
+        ],
+        "RLIMIT_MEMLOCK": [
+          "unlimited",
+          "unlimited"
+        ],
+        "RLIMIT_NOFILE": [
+          1048576,
+          1048576
+        ],
+        "RLIMIT_NPROC": [
+          "unlimited",
+          "unlimited"
+        ],
+        "RLIMIT_STACK": [
+          8388608,
+          "unlimited"
+        ]
+      },
+      "tool_env": {
+        "LC_CTYPE": "C.UTF-8"
+      },
+      "umask": "0022"
+    },
+    "repo": {
+      "cargo_lock": {
+        "bytes": 70779,
+        "contains_crlf": false,
+        "present": true,
+        "sha256": "764e02d5254596194edaa2611eb2c65947a2fd873be5b969bccf08bcc53505da",
+        "sha256_lf_normalized": "764e02d5254596194edaa2611eb2c65947a2fd873be5b969bccf08bcc53505da"
+      },
+      "exists": true,
+      "git": {
+        "head_ref": "refs/heads/dev",
+        "head_sha": "9e44608e5a3ed44fb8f2c4cc5423a6f69b0d0155"
+      },
+      "path": "/repo",
+      "rust_toolchain_toml": {
+        "bytes": 86,
+        "contains_crlf": false,
+        "present": true,
+        "sha256": "0c9b811689c2817b6404b2858b3e8f7aebf513af379da94774521025b7008863",
+        "sha256_lf_normalized": "0c9b811689c2817b6404b2858b3e8f7aebf513af379da94774521025b7008863"
+      }
+    },
+    "rust": {
+      "cargo_home_bin": "/root/.cargo/bin",
+      "cargo_home_bin_on_path": false,
+      "path_rustc": null,
+      "rustup": null
+    },
+    "schema": "entrybound.research.env-fingerprint/1",
+    "tools": {
+      "7z": {
+        "found": false
+      },
+      "7za": {
+        "found": false
+      },
+      "7zr": {
+        "found": false
+      },
+      "7zz": {
+        "found": false
+      },
+      "brotli": {
+        "found": false
+      },
+      "bsdtar": {
+        "found": false
+      },
+      "bzip2": {
+        "found": false
+      },
+      "cargo": {
+        "found": false
+      },
+      "cpio": {
+        "found": false
+      },
+      "docker": {
+        "found": false
+      },
+      "git": {
+        "found": false
+      },
+      "gzip": {
+        "exit_code": 0,
+        "found": true,
+        "package": {
+          "architecture": "amd64",
+          "name": "gzip",
+          "version": "1.12-1ubuntu3.2"
+        },
+        "path": "/usr/bin/gzip",
+        "sha256": "afea077ce127d4fa9ad410d3066ba2b54dea19c0b44f04adf56c72d5f7b7a9bb",
+        "size_bytes": 93424,
+        "version": "1.12",
+        "version_line": "gzip 1.12"
+      },
+      "hyperfine": {
+        "found": false
+      },
+      "java": {
+        "found": false
+      },
+      "jq": {
+        "found": false
+      },
+      "lz4": {
+        "found": false
+      },
+      "lzip": {
+        "found": false
+      },
+      "mksquashfs": {
+        "found": false
+      },
+      "par2": {
+        "found": false
+      },
+      "pigz": {
+        "found": false
+      },
+      "pixz": {
+        "found": false
+      },
+      "python": {
+        "found": false
+      },
+      "python3": {
+        "exit_code": 0,
+        "found": true,
+        "package": {
+          "architecture": "amd64",
+          "name": "python3.12-minimal",
+          "version": "3.12.3-1ubuntu0.17"
+        },
+        "path": "/usr/bin/python3",
+        "resolved_path": "/usr/bin/python3.12",
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+        "size_bytes": 8020928,
+        "version": "3.12.3",
+        "version_line": "Python 3.12.3"
+      },
+      "rustc": {
+        "found": false
+      },
+      "rustup": {
+        "found": false
+      },
+      "sqlite3": {
+        "found": false
+      },
+      "tar": {
+        "exit_code": 0,
+        "found": true,
+        "package": {
+          "architecture": "amd64",
+          "name": "tar",
+          "version": "1.35+dfsg-3ubuntu0.4"
+        },
+        "path": "/usr/bin/tar",
+        "sha256": "3ee2c3c0b4dd9aacebfd2f0fbae44bad36348203acff78a44888dd58c05f811c",
+        "size_bytes": 440264,
+        "version": "1.35",
+        "version_line": "tar (GNU tar) 1.35"
+      },
+      "unzip": {
+        "found": false
+      },
+      "xz": {
+        "found": false
+      },
+      "zip": {
+        "found": false
+      },
+      "zstd": {
+        "found": false
+      }
+    }
+  },
+  "capture": {
+    "capture_tool": {
+      "file": "research/tools/env/capture_env.py",
+      "sha256": "83ac241bd9cd5bb1438798dee4a021015970fddaa6ff773d31adb73fa44cc4c0"
+    },
+    "captured_at_utc": "2026-09-13T01:38:44Z",
+    "filesystems": [
+      {
+        "exists": true,
+        "free_bytes": 931902484480,
+        "mount_source": "D:\\",
+        "path": "/repo",
+        "resolved_via": null,
+        "total_bytes": 1000200990720
+      },
+      {
+        "exists": true,
+        "free_bytes": 1006416936960,
+        "mount_source": "overlay",
+        "path": "/tmp",
+        "resolved_via": null,
+        "total_bytes": 1081101176832
+      }
+    ],
+    "name": "docker-ubuntu-24.04",
+    "observations": [
+      "baseline tools not found on PATH: bsdtar, 7z, 7zz, zstd, xz, pigz, lz4, lzip, brotli, pixz, par2, zip, unzip, java, docker",
+      "guest presents 32 logical CPUs as 16 cores (threads/core histogram {'2': 16}) with no P/E-core labels (/sys/devices/cpu_core and cpu_atom absent); this topology is synthetic under Hyper-V"
+    ],
+    "platform": {
+      "cgroup_path": "/docker/7cfb00b35c5271c555a8ebfc1cc246f582ac3dcd798e61af5fde2699e83c978b",
+      "load_average": [
+        2.23779296875,
+        1.505859375,
+        5.51123046875
+      ],
+      "memory_available_bytes": 30981242880,
+      "pid1_comm": "python3",
+      "uptime_seconds": 12989
+    },
+    "repo_worktree": {
+      "git_cli": "not found; HEAD read directly from .git"
+    },
+    "docker_driver": {
+      "clock_probe_roundtrip_seconds": 0.6,
+      "container_clock_minus_wsl_seconds": 0.1,
+      "derived_image_id": "sha256:1ab0835717a12cbf90a1a8534d5f413bff7f558b8e88d72711a1a3fb72b33c9e",
+      "derived_image_tag": "entrybound-research/env-ubuntu-24.04:snapshot-20260912",
+      "docker_run_args": "run --rm --network none --platform linux/amd64 --mount type=bind,source=D:\\Projects\\entrybound\\entrybound,target=/repo,readonly entrybound-research/env-ubuntu-24.04:snapshot-20260912",
+      "driver": "research/tools/env/capture_docker.py",
+      "python3_package": "python3=3.12.3-0ubuntu2.1",
+      "recipe": {
+        "apt_snapshot": "20260912T000000Z",
+        "base_image": "docker.io/library/ubuntu:24.04@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254",
+        "dockerfile_sha256_lf": "7e74b5e2bb9d487bb816e55673ea80ee9f8b3f65093e31978eebf15f65467625",
+        "packages": [
+          "python3"
+        ],
+        "platform": "linux/amd64"
+      }
+    }
+  }
+}
