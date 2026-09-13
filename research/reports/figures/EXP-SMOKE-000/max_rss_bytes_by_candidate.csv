@@ -1,0 +1,16 @@
+# generated-by: python -m ebr report --spec research/experiments/EXP-SMOKE-000/spec.yaml
+# tool: ebr 0.1.0 (research/tools/ebr)
+# tool-git-sha: 9e44608e5a3ed44fb8f2c4cc5423a6f69b0d0155
+# experiment: EXP-SMOKE-000
+# input: research/normalized/EXP-SMOKE-000/samples.csv sha256=08e4f10c9d41cb0253ed3dcd9d14e1e7ae2896024f850dd0c683dff85997aeb6
+# do-not-edit: regenerate with the generated-by command; no number here is hand-entered
+env_id,metric,candidate,item_key,repetition,value,candidate_median
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,max_rss_bytes,gzip-1,generated/text-1mib-s0,0,3452928,3452928
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,max_rss_bytes,gzip-1,generated/text-1mib-s0,1,3395584,3452928
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,max_rss_bytes,gzip-1,generated/text-1mib-s0,2,3575808,3452928
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,max_rss_bytes,gzip-6,generated/text-1mib-s0,0,3473408,3538944
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,max_rss_bytes,gzip-6,generated/text-1mib-s0,1,3538944,3538944
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,max_rss_bytes,gzip-6,generated/text-1mib-s0,2,3575808,3538944
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,max_rss_bytes,gzip-9,generated/text-1mib-s0,0,3547136,3547136
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,max_rss_bytes,gzip-9,generated/text-1mib-s0,1,3571712,3547136
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,max_rss_bytes,gzip-9,generated/text-1mib-s0,2,3461120,3547136

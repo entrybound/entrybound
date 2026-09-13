@@ -1,0 +1,391 @@
+{
+  "argv": [
+    "python",
+    "-m",
+    "ebr",
+    "run",
+    "--spec",
+    "research/experiments/EXP-SMOKE-000/spec.yaml"
+  ],
+  "cpu_affinity": null,
+  "decision_ids": [],
+  "ebr_version": "0.1.0",
+  "env": {
+    "env_id_without_repo": "14acbf0387996f7597c33df84c62ad8d0a7b72f16e924893d915dd4e234d9395",
+    "env_name": "wsl-ubuntu",
+    "fingerprint_repo_sha": "9e44608e5a3ed44fb8f2c4cc5423a6f69b0d0155",
+    "platform_id": "0232788ff3a67f4d75ebad85f4d87318bb3d73e9fedee229580080e8534e70ab",
+    "probe": {
+      "cpu_model": "Intel(R) Core(TM) i9-14900HX",
+      "kernel": "5.15.167.4-microsoft-standard-WSL2",
+      "kind": "wsl",
+      "logical_cpus": 32,
+      "machine": "x86_64",
+      "mem_total_bytes": 33499709440,
+      "python": "3.12.3",
+      "system": "linux"
+    },
+    "probe_fingerprint": "ddfcf02741d4244c225d3b3f1e9efe9207927e64104037c857721dbb1f03d734",
+    "registered": true,
+    "source": "research/environment/index.json (kind match)",
+    "warnings": []
+  },
+  "env_id": "8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e",
+  "executed_samples": 12,
+  "experiment_id": "EXP-SMOKE-000",
+  "failed_samples": 0,
+  "finished_utc": "2026-09-13T01:46:19.071637+00:00",
+  "git_dirty": true,
+  "git_sha": "9e44608e5a3ed44fb8f2c4cc5423a6f69b0d0155",
+  "heldout": {
+    "selected": false,
+    "unlock_sha": null,
+    "unlocked": false
+  },
+  "invalid_samples": 0,
+  "items": [
+    {
+      "family": "synthetic-text",
+      "fingerprint": {
+        "bytes": 1048576,
+        "files": 1,
+        "sha256": "007dc5aa7af2aba9ed0b571263101a6008fcb13a3a128633f9c2b123f8731048",
+        "type": "file",
+        "version": "tree-sha256-v1"
+      },
+      "generated": true,
+      "item_id": "text-1mib-s0",
+      "item_key": "generated/text-1mib-s0",
+      "path": "/root/eb-research/generated/EXP-SMOKE-000/text-1mib-s0",
+      "split": "generated"
+    }
+  ],
+  "order": "randomized_blocks",
+  "plan": [
+    {
+      "candidate": "gzip-9",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 0,
+      "phase": "warmup",
+      "repetition": 0,
+      "round": 0,
+      "seq": 0
+    },
+    {
+      "candidate": "gzip-6",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 1,
+      "phase": "warmup",
+      "repetition": 0,
+      "round": 0,
+      "seq": 1
+    },
+    {
+      "candidate": "gzip-1",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 2,
+      "phase": "warmup",
+      "repetition": 0,
+      "round": 0,
+      "seq": 2
+    },
+    {
+      "candidate": "gzip-6",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 3,
+      "phase": "measure",
+      "repetition": 0,
+      "round": 1,
+      "seq": 3
+    },
+    {
+      "candidate": "gzip-9",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 4,
+      "phase": "measure",
+      "repetition": 0,
+      "round": 1,
+      "seq": 4
+    },
+    {
+      "candidate": "gzip-1",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 5,
+      "phase": "measure",
+      "repetition": 0,
+      "round": 1,
+      "seq": 5
+    },
+    {
+      "candidate": "gzip-9",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 6,
+      "phase": "measure",
+      "repetition": 1,
+      "round": 2,
+      "seq": 6
+    },
+    {
+      "candidate": "gzip-6",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 7,
+      "phase": "measure",
+      "repetition": 1,
+      "round": 2,
+      "seq": 7
+    },
+    {
+      "candidate": "gzip-1",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 8,
+      "phase": "measure",
+      "repetition": 1,
+      "round": 2,
+      "seq": 8
+    },
+    {
+      "candidate": "gzip-6",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 9,
+      "phase": "measure",
+      "repetition": 2,
+      "round": 3,
+      "seq": 9
+    },
+    {
+      "candidate": "gzip-9",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 10,
+      "phase": "measure",
+      "repetition": 2,
+      "round": 3,
+      "seq": 10
+    },
+    {
+      "candidate": "gzip-1",
+      "item_key": "generated/text-1mib-s0",
+      "order_index": 11,
+      "phase": "measure",
+      "repetition": 2,
+      "round": 3,
+      "seq": 11
+    }
+  ],
+  "planned_samples": 12,
+  "platform": {
+    "arch": "x86_64",
+    "emulated": false,
+    "os": "linux"
+  },
+  "python": "3.12.3",
+  "raw_bytes": 55585,
+  "raw_compression": "none",
+  "raw_file": "20260913T014617Z-6a6931.jsonl",
+  "raw_sha256": "83030d6b94196f6540b3c200d7d589230971dad7fa23366382d2a2a3dfc89bab",
+  "recorded_samples": 12,
+  "run_id": "20260913T014617Z-6a6931",
+  "schema": "ebr.run-meta.v1",
+  "seeds": {
+    "bootstrap": 20260912,
+    "command": 20260912,
+    "order": 20260912
+  },
+  "spec": {
+    "analysis": {
+      "baseline": "gzip-6",
+      "pairing": "item_repetition",
+      "pareto_objectives": [
+        "output_bytes",
+        "cpu_s"
+      ],
+      "report_metrics": [
+        "cpu_s",
+        "max_rss_bytes",
+        "scratch_peak_bytes",
+        "output_bytes",
+        "ratio"
+      ],
+      "sensitivity": {
+        "dirichlet_samples": 1000,
+        "weights": {
+          "cpu_s": 0.5,
+          "output_bytes": 0.5
+        }
+      }
+    },
+    "candidates": [
+      {
+        "name": "gzip-1",
+        "params": {
+          "level": 1
+        }
+      },
+      {
+        "name": "gzip-6",
+        "params": {
+          "level": 6
+        }
+      },
+      {
+        "name": "gzip-9",
+        "params": {
+          "level": 9
+        }
+      }
+    ],
+    "command": "gzip -{level} -c -n {item_path} > {scratch}/out.gz",
+    "corpus": {
+      "generated": [
+        {
+          "bytes": 1048576,
+          "family": "synthetic-text",
+          "generator": "text-v1",
+          "item_id": "text-1mib-s0",
+          "seed": 0,
+          "sha256": "007dc5aa7af2aba9ed0b571263101a6008fcb13a3a128633f9c2b123f8731048"
+        }
+      ]
+    },
+    "decision_ids": [],
+    "experiment_id": "EXP-SMOKE-000",
+    "hypothesis": "All samples exit 0, round-trip checks pass, gzip output is byte-identical across repetitions (gzip -n), and normalize/report regenerate byte-identical outputs.\n",
+    "metrics": [
+      {
+        "direction": "minimize",
+        "family": "time_wall",
+        "name": "wall_s",
+        "source": "resource",
+        "unit": "s"
+      },
+      {
+        "direction": "minimize",
+        "family": "time_cpu",
+        "name": "cpu_s",
+        "source": "resource",
+        "unit": "s"
+      },
+      {
+        "direction": "minimize",
+        "family": "memory_peak",
+        "name": "max_rss_bytes",
+        "source": "resource",
+        "unit": "B"
+      },
+      {
+        "direction": "minimize",
+        "family": "io",
+        "name": "fs_outputs",
+        "source": "resource",
+        "unit": "blocks"
+      },
+      {
+        "direction": "minimize",
+        "family": "scratch_peak",
+        "name": "scratch_peak_bytes",
+        "source": "scratch",
+        "unit": "B"
+      },
+      {
+        "direction": "minimize",
+        "family": "size",
+        "name": "output_bytes",
+        "path": "{scratch}/out.gz",
+        "source": "path_size",
+        "unit": "B"
+      },
+      {
+        "direction": "none",
+        "family": "size",
+        "name": "input_bytes",
+        "source": "input",
+        "unit": "B"
+      },
+      {
+        "args": [
+          "output_bytes",
+          "input_bytes"
+        ],
+        "direction": "minimize",
+        "family": "size",
+        "name": "ratio",
+        "op": "ratio",
+        "source": "derived"
+      },
+      {
+        "family": "correctness",
+        "name": "output_sha256",
+        "path": "{scratch}/out.gz",
+        "source": "path_sha256"
+      },
+      {
+        "command": "gzip -dc {scratch}/out.gz | cmp -s - {item_path}",
+        "direction": "maximize",
+        "family": "correctness",
+        "name": "roundtrip_ok",
+        "source": "check"
+      }
+    ],
+    "order": "randomized_blocks",
+    "platform": {
+      "arch": [
+        "x86_64"
+      ],
+      "emulated": false,
+      "os": [
+        "linux"
+      ],
+      "requires": [
+        "gzip",
+        "cmp"
+      ],
+      "timeout_s": 120
+    },
+    "question": "Does the ebr pipeline (run -> verify-raw -> normalize -> report) work end to end on a generated 1 MiB file compressed with gzip inside WSL?\n",
+    "raw_compression": "none",
+    "repetitions": 3,
+    "schema": "ebr.spec.v1",
+    "seeds": {
+      "bootstrap": 20260912,
+      "order": 20260912
+    },
+    "shell": "bash",
+    "status": "smoke",
+    "thresholds_override": {
+      "bootstrap": {
+        "confidence": 0.95
+      },
+      "families": {
+        "size": {
+          "practical_significance_band": {
+            "kind": "ratio",
+            "lower": 0.999,
+            "upper": 1.001
+          }
+        }
+      }
+    },
+    "timing": false,
+    "warmups": 1
+  },
+  "spec_path": "research/experiments/EXP-SMOKE-000/spec.yaml",
+  "spec_sha256": "2ea1c4ce9ce3c04e1a1ffd9ed2bf7bffa363f36206f73344ef50eb9836a2e96d",
+  "started_utc": "2026-09-13T01:46:17.978436+00:00",
+  "status": "complete",
+  "thresholds_source": "thresholds.json+spec-override (non-decision)",
+  "timing": {
+    "cli": false,
+    "effective": false,
+    "guard": {
+      "max_loadavg_1m": null,
+      "max_other_cpu_percent": null,
+      "sample_interval_s": 1.0,
+      "scope": "wsl2-vm",
+      "sources": {
+        "max_loadavg_1m": "unset",
+        "max_other_cpu_percent": "unset"
+      }
+    },
+    "guard_initial": null,
+    "spec": false
+  }
+}

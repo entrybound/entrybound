@@ -1,0 +1,146 @@
+{
+  "schema": "ebr.thresholds.v1",
+  "status": "template",
+  "authority": "research/decision-method.md is authoritative. Every non-null value here must be transcribed from it and cite the section in decision_method_section. null = unset; ebr refuses verdicts that need an unset value and never substitutes a default.",
+  "semantics": {
+    "practical_significance_band": "kind 'ratio': candidate/baseline paired median ratios inside [lower, upper] are practically equivalent; kind 'absolute': differences (candidate - baseline, metric units) inside [lower, upper]. A difference is distinguishable only if the whole bootstrap CI lies outside the band.",
+    "pareto_epsilon": "kind 'relative': fractional tolerance (a is not worse than b if a <= b*(1+value) for minimised metrics, compared in log space); kind 'absolute': metric units."
+  },
+  "families": {
+    "time_wall": {
+      "description": "Wall-clock elapsed time of a sample",
+      "practical_significance_band": {
+        "kind": null,
+        "lower": null,
+        "upper": null
+      },
+      "pareto_epsilon": {
+        "kind": null,
+        "value": null
+      },
+      "decision_method_section": null
+    },
+    "time_cpu": {
+      "description": "User+system CPU time of a sample (process tree)",
+      "practical_significance_band": {
+        "kind": null,
+        "lower": null,
+        "upper": null
+      },
+      "pareto_epsilon": {
+        "kind": null,
+        "value": null
+      },
+      "decision_method_section": null
+    },
+    "memory_peak": {
+      "description": "Peak resident set size (Linux) / peak working set (Windows)",
+      "practical_significance_band": {
+        "kind": null,
+        "lower": null,
+        "upper": null
+      },
+      "pareto_epsilon": {
+        "kind": null,
+        "value": null
+      },
+      "decision_method_section": null
+    },
+    "scratch_peak": {
+      "description": "Peak bytes occupied in the per-sample scratch directory",
+      "practical_significance_band": {
+        "kind": null,
+        "lower": null,
+        "upper": null
+      },
+      "pareto_epsilon": {
+        "kind": null,
+        "value": null
+      },
+      "decision_method_section": null
+    },
+    "size": {
+      "description": "Output size in bytes and size ratios",
+      "practical_significance_band": {
+        "kind": null,
+        "lower": null,
+        "upper": null
+      },
+      "pareto_epsilon": {
+        "kind": null,
+        "value": null
+      },
+      "decision_method_section": null
+    },
+    "throughput": {
+      "description": "Derived rates such as input bytes per second",
+      "practical_significance_band": {
+        "kind": null,
+        "lower": null,
+        "upper": null
+      },
+      "pareto_epsilon": {
+        "kind": null,
+        "value": null
+      },
+      "decision_method_section": null
+    },
+    "io": {
+      "description": "Filesystem block input/output counts",
+      "practical_significance_band": {
+        "kind": null,
+        "lower": null,
+        "upper": null
+      },
+      "pareto_epsilon": {
+        "kind": null,
+        "value": null
+      },
+      "decision_method_section": null
+    },
+    "correctness": {
+      "description": "Pass/fail checks such as round-trip equality",
+      "practical_significance_band": {
+        "kind": null,
+        "lower": null,
+        "upper": null
+      },
+      "pareto_epsilon": {
+        "kind": null,
+        "value": null
+      },
+      "decision_method_section": null
+    },
+    "other": {
+      "description": "Custom metrics not covered by another family",
+      "practical_significance_band": {
+        "kind": null,
+        "lower": null,
+        "upper": null
+      },
+      "pareto_epsilon": {
+        "kind": null,
+        "value": null
+      },
+      "decision_method_section": null
+    }
+  },
+  "bootstrap": {
+    "confidence": null,
+    "resamples": null,
+    "decision_method_section": null,
+    "note": "ebr enforces resamples >= 10000 regardless of this value."
+  },
+  "quiet_machine_guard": {
+    "max_loadavg_1m": null,
+    "max_other_cpu_percent": null,
+    "decision_method_section": null,
+    "note": "Required before any timing=true run; ebr refuses timing runs while unset."
+  },
+  "sensitivity": {
+    "min_fraction_preserving_winner": null,
+    "dirichlet_samples": null,
+    "dirichlet_concentration": null,
+    "decision_method_section": null
+  }
+}

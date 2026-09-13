@@ -1,0 +1,79 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SMOKE-000
+status: smoke
+question: >
+  Does the ebr pipeline (run -> verify-raw -> normalize -> report) work end to end
+  on a generated 1 MiB file compressed with gzip inside WSL?
+hypothesis: >
+  All samples exit 0, round-trip checks pass, gzip output is byte-identical across
+  repetitions (gzip -n), and normalize/report regenerate byte-identical outputs.
+# Pipeline smoke only: attached to no decision.
+decision_ids: []
+
+candidates:
+  - name: gzip-1
+    params: {level: 1}
+  - name: gzip-6
+    params: {level: 6}
+  - name: gzip-9
+    params: {level: 9}
+command: "gzip -{level} -c -n {item_path} > {scratch}/out.gz"
+shell: bash
+
+corpus:
+  generated:
+    - item_id: text-1mib-s0
+      family: synthetic-text
+      generator: text-v1
+      bytes: 1048576
+      seed: 0
+      sha256: 007dc5aa7af2aba9ed0b571263101a6008fcb13a3a128633f9c2b123f8731048
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: fs_outputs, source: resource, family: io, direction: minimize, unit: blocks}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+  - {name: output_bytes, source: path_size, path: "{scratch}/out.gz", family: size, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: ratio, source: derived, op: ratio, args: [output_bytes, input_bytes], family: size, direction: minimize}
+  - {name: output_sha256, source: path_sha256, path: "{scratch}/out.gz", family: correctness}
+  - name: roundtrip_ok
+    source: check
+    command: "gzip -dc {scratch}/out.gz | cmp -s - {item_path}"
+    family: correctness
+    direction: maximize
+
+repetitions: 3
+warmups: 1
+seeds: {order: 20260912, bootstrap: 20260912}
+timing: false
+order: randomized_blocks
+raw_compression: none
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [gzip, cmp]
+  timeout_s: 120
+
+analysis:
+  baseline: gzip-6
+  pairing: item_repetition
+  pareto_objectives: [output_bytes, cpu_s]
+  report_metrics: [cpu_s, max_rss_bytes, scratch_peak_bytes, output_bytes, ratio]
+  sensitivity:
+    weights: {output_bytes: 0.5, cpu_s: 0.5}
+    dirichlet_samples: 1000
+
+# SMOKE-ONLY values that exercise the CI / noise-rule code paths. They are NOT
+# derived from research/decision-method.md, carry no meaning, and must never be
+# copied into research/methods/thresholds.json or a decision experiment (ebr
+# rejects thresholds_override whenever decision_ids is non-empty).
+thresholds_override:
+  bootstrap: {confidence: 0.95}
+  families:
+    size:
+      practical_significance_band: {kind: ratio, lower: 0.999, upper: 1.001}

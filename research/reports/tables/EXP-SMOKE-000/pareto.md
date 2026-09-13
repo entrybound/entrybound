@@ -1,0 +1,15 @@
+<!--
+generated-by: python -m ebr report --spec research/experiments/EXP-SMOKE-000/spec.yaml
+tool: ebr 0.1.0 (research/tools/ebr)
+tool-git-sha: 9e44608e5a3ed44fb8f2c4cc5423a6f69b0d0155
+experiment: EXP-SMOKE-000
+input: research/normalized/EXP-SMOKE-000/pareto.csv sha256=6f6ae15ca0cf6b82639ce49db31c7c5e2cabeed9e6d4fec368ed0f726fa04e4a
+do-not-edit: regenerate with the generated-by command; no number here is hand-entered
+-->
+# EXP-SMOKE-000: Pareto frontier
+
+| env_id | candidate | output_bytes | cpu_s | on_frontier | dominated_by | decision_grade | status | epsilon |
+|---|---|---|---|---|---|---|---|---|
+| 8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e | gzip-1 | 332210 | 0.01068 | yes |  | no | ok | output_bytes=unset (strict Pareto, epsilon=0);cpu_s=unset (strict Pareto, epsilon=0) |
+| 8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e | gzip-6 | 268376 | 0.0782 | yes |  | no | ok | output_bytes=unset (strict Pareto, epsilon=0);cpu_s=unset (strict Pareto, epsilon=0) |
+| 8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e | gzip-9 | 267014 | 0.1011 | yes |  | no | ok | output_bytes=unset (strict Pareto, epsilon=0);cpu_s=unset (strict Pareto, epsilon=0) |

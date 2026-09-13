@@ -1,0 +1,9 @@
+# generated-by: python -m ebr report --spec research/experiments/EXP-SMOKE-000/spec.yaml
+# tool: ebr 0.1.0 (research/tools/ebr)
+# tool-git-sha: 9e44608e5a3ed44fb8f2c4cc5423a6f69b0d0155
+# experiment: EXP-SMOKE-000
+# input: research/normalized/EXP-SMOKE-000/paired_ratios.csv sha256=d04f8aa71af2b8461fde2ce590fd81fde1bd7c1264d07db9671cec42fd9b1bd2
+# do-not-edit: regenerate with the generated-by command; no number here is hand-entered
+env_id,metric,candidate,baseline,n_pairs,median_ratio,ci_lower,ci_upper,band_lower,band_upper,verdict
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,scratch_peak_bytes,gzip-1,gzip-6,3,1.237852863,1.237852863,1.237852863,,,threshold_unset:families.scratch_peak.practical_significance_band
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,scratch_peak_bytes,gzip-9,gzip-6,3,0.9949250306,0.9949250306,0.9949250306,,,threshold_unset:families.scratch_peak.practical_significance_band

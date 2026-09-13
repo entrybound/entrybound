@@ -1,0 +1,25 @@
+{
+  "schema": "ebr.downloads.v1",
+  "purpose": "Windows-host test venv for the ebr Windows measurement path (job object + psutil); see run_tests_windows.ps1",
+  "retrieved": "2026-09-12",
+  "index": "https://pypi.org/simple",
+  "environment": {
+    "implementation_name": "cpython",
+    "python_full_version": "3.13.5",
+    "platform_machine": "AMD64",
+    "sys_platform": "win32"
+  },
+  "note": "PyYAML and pytest come from the host interpreter's site-packages (venv created with --system-site-packages).",
+  "files": [
+    {
+      "name": "psutil",
+      "version": "7.2.2",
+      "top_level": true,
+      "filename": "psutil-7.2.2-cp37-abi3-win_amd64.whl",
+      "url": "https://files.pythonhosted.org/packages/b4/90/e2159492b5426be0c1fef7acba807a03511f97c5f86b3caeda6ad92351a7/psutil-7.2.2-cp37-abi3-win_amd64.whl",
+      "size_bytes": 137737,
+      "sha256": "eb7e81434c8d223ec4a219b5fc1c47d0417b12be7ea866e24fb5ad6e84b3d988",
+      "retrieved": "2026-09-12"
+    }
+  ]
+}
