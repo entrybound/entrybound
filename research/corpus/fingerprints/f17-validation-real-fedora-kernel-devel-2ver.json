@@ -1,0 +1,120 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+  "family": "F17",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "fedora-kernel-devel",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "e3085ab2dc6438664dff038134148a6b4c03a17eb4035da7183e682692ff5db3",
+  "materialization_key": "328aee0ead6c0755d006303fa04366f657fc1e335ecfb45c5a7b82b24f852bee",
+  "materialized_utc": "2026-09-16T23:06:24Z",
+  "materialized_relpath": "corpus/validation/f17-validation-real-fedora-kernel-devel-2ver",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "84f2e174eda7c18af80f1bffec89f7e9a2629b11169a7d03b29bbed320e5eef1",
+    "pinned_utc": "2026-09-16T23:06:24Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 341469142,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "a",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-devel-6.19.10-300.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-devel-6.19.10-300.fc44.x86_64.rpm",
+        "sha256": "dfcc13793b3c0d1e12b28e89cddd6fd517adba8496be5768b21fa9952b677196",
+        "size": 25313941,
+        "retrieved_utc": "2026-09-16T23:05:19Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "kernel-devel-6.19.10-300.fc44.x86_64.rpm"
+      },
+      {
+        "name": "b",
+        "url": "https://dl.fedoraproject.org/pub/fedora/linux/updates/44/Everything/x86_64/Packages/k/kernel-devel-7.2.5-200.fc44.x86_64.rpm",
+        "final_url": "https://dl.fedoraproject.org/pub/fedora/linux/updates/44/Everything/x86_64/Packages/k/kernel-devel-7.2.5-200.fc44.x86_64.rpm",
+        "sha256": "ae1e721889284c078c5cf7c4a51524bbb4d665f69fe0c34ef39b20385e3af2fe",
+        "size": 59320849,
+        "retrieved_utc": "2026-09-16T23:05:26Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "kernel-devel-7.2.5-200.fc44.x86_64.rpm"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g2-generated/real_kernel_headers.py",
+      "script_sha256": "e782eb2ac895cdd3b16eec1d2c1e43b4abeb1f42140912ff543dde999b380a8a",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 61007,
+      "params": {
+        "distro": "rpm",
+        "label_a": "6.19.10-300.fc44",
+        "label_b": "7.2.5-200.fc44",
+        "inputs_a": [
+          "a"
+        ],
+        "inputs_b": [
+          "b"
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "4f00929ef4f6bb41191c65a22d069d06de635923b58034e610c5ecefafbd92d2",
+    "logical_tree_sha256": "84f2e174eda7c18af80f1bffec89f7e9a2629b11169a7d03b29bbed320e5eef1",
+    "content_tree_sha256": "b16b2dac42cd0a76fb3200dca78607c3096a35e926c6dd5cd38171be1aed3412",
+    "extended_tree_sha256": "186a05bc520e3ebe5c08ce2b7bd286bd7ae35b4814054bc2a14a40cd3e0f9a6c",
+    "bytes": 341469142,
+    "bytes_all_paths": 343034618,
+    "allocated_bytes": 414703616,
+    "counts": {
+      "objects": 50133,
+      "files": 42626,
+      "unique_file_inodes": 26209,
+      "dirs": 7466,
+      "symlinks": 40,
+      "hardlink_groups": 178,
+      "hardlink_extra_paths": 16417,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 14,
+      "max_name_length_bytes": 50,
+      "path_length_bytes": {
+        "min": 14,
+        "max": 128,
+        "mean": 84.273,
+        "p50": 83,
+        "p95": 100
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

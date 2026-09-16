@@ -1,0 +1,144 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+  "family": "F17",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "ubuntu-noble-kernel-headers",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "f2325467638e2ba5d48773232dbd49ad6100352a1b748743a7813773c89a1b7b",
+  "materialization_key": "9f1afe3d81b8dc3416f5d0ad18bc2cca21c3bda7dd3a0a34f87d00f117bccb0c",
+  "materialized_utc": "2026-09-16T23:06:24Z",
+  "materialized_relpath": "corpus/tuning/f17-tuning-real-ubuntu-kernel-headers-2ver",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "84d8d14eb51eb46a41186b6d078b29422c3639cc2749a553150f881a3829fd34",
+    "pinned_utc": "2026-09-16T23:06:24Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 201940089,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "common-a",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-6.8.0-31_6.8.0-31.31_all.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-6.8.0-31_6.8.0-31.31_all.deb",
+        "sha256": "b332a7edf4ea4b5124c52496b5a18d0c1858dd85b1d91fd4dba6f1e2978b3548",
+        "size": 13608008,
+        "retrieved_utc": "2026-09-16T23:05:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "linux-headers-6.8.0-31_6.8.0-31.31_all.deb"
+      },
+      {
+        "name": "generic-a",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-6.8.0-31-generic_6.8.0-31.31_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-6.8.0-31-generic_6.8.0-31.31_amd64.deb",
+        "sha256": "dae8b1c95ad3a07d6a280c505cde6fa214bbc08db9e8ff75f58bbfab7ac991ae",
+        "size": 3865730,
+        "retrieved_utc": "2026-09-16T23:05:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "linux-headers-6.8.0-31-generic_6.8.0-31.31_amd64.deb"
+      },
+      {
+        "name": "common-b",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-6.8.0-139_6.8.0-139.139_all.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-6.8.0-139_6.8.0-139.139_all.deb",
+        "sha256": "e01bc067f30ea622bdf87bf5ea60142070d805c1f449fc193332efada595da05",
+        "size": 13604570,
+        "retrieved_utc": "2026-09-16T23:05:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "linux-headers-6.8.0-139_6.8.0-139.139_all.deb"
+      },
+      {
+        "name": "generic-b",
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-6.8.0-139-generic_6.8.0-139.139_amd64.deb",
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-6.8.0-139-generic_6.8.0-139.139_amd64.deb",
+        "sha256": "15bacf92d51a0ea971d9c1369c6385e8867cd4973eede8f8931fbaf99f3dd173",
+        "size": 3755766,
+        "retrieved_utc": "2026-09-16T23:05:16Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "linux-headers-6.8.0-139-generic_6.8.0-139.139_amd64.deb"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g2-generated/real_kernel_headers.py",
+      "script_sha256": "e782eb2ac895cdd3b16eec1d2c1e43b4abeb1f42140912ff543dde999b380a8a",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 61006,
+      "params": {
+        "distro": "ubuntu-deb",
+        "label_a": "6.8.0-31-generic",
+        "label_b": "6.8.0-139-generic",
+        "inputs_a": [
+          "common-a",
+          "generic-a"
+        ],
+        "inputs_b": [
+          "common-b",
+          "generic-b"
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "8b58ea563f2ac0f4fb96c3a29547afd179e6410c6b9c2febba3becc344355434",
+    "logical_tree_sha256": "84d8d14eb51eb46a41186b6d078b29422c3639cc2749a553150f881a3829fd34",
+    "content_tree_sha256": "61c4faf35e08857cf22de087f85486b39573d09b4be0e39ca772e2d13de0e569",
+    "extended_tree_sha256": "59b9e5e2b43459973fd36e0c8f5688609e6031d21bfdf9c536d551cb092ab16c",
+    "bytes": 201940089,
+    "bytes_all_paths": 201940089,
+    "allocated_bytes": 293306368,
+    "counts": {
+      "objects": 60547,
+      "files": 52133,
+      "unique_file_inodes": 52133,
+      "dirs": 7562,
+      "symlinks": 851,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 13,
+      "max_name_length_bytes": 49,
+      "path_length_bytes": {
+        "min": 16,
+        "max": 127,
+        "mean": 81.749,
+        "p50": 82,
+        "p95": 97
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

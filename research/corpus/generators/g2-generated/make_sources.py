@@ -241,6 +241,96 @@ ITEMS += [
          tags=["generated"]),
 ]
 
+# Corpus round-1 critic gap (F17 real duplicate trees, MINOR): tuning and held-out were 100% generated,
+# and the only real duplicate tree (f17-validation-real-yq-vendor-8x) was 61% tuning bytes. Kernel
+# header/devel packages for two ABI versions of the same distribution, unpacked side by side, are a
+# real (not generated) near-duplicate tree: most files (Kconfig, most headers, Makefiles) are
+# byte-identical between the two versions, a minority (version.h, autoconf.h, a few point-release
+# headers) differ -- unpacked with real_kernel_headers.py (dpkg-deb -x / rpm2cpio|cpio, payload only,
+# no scripts run). One independence group per distribution/split, none shared with any other F17 item.
+ITEMS += [
+    item("f17-tuning-real-ubuntu-kernel-headers-2ver", "F17", "tuning", "medium", "build", "derived-from-real",
+         {"inputs": [
+             {"name": "common-a", "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/"
+              "linux-headers-6.8.0-31_6.8.0-31.31_all.deb",
+              "sha256": "b332a7edf4ea4b5124c52496b5a18d0c1858dd85b1d91fd4dba6f1e2978b3548", "size": 13608008,
+              "notes": "SHA-256 from `apt-cache show`/Packages index, noble/main"},
+             {"name": "generic-a", "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/"
+              "linux-headers-6.8.0-31-generic_6.8.0-31.31_amd64.deb",
+              "sha256": "dae8b1c95ad3a07d6a280c505cde6fa214bbc08db9e8ff75f58bbfab7ac991ae", "size": 3865730,
+              "notes": "SHA-256 from `apt-cache show`/Packages index, noble/main"},
+             {"name": "common-b", "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/"
+              "linux-headers-6.8.0-139_6.8.0-139.139_all.deb",
+              "sha256": "e01bc067f30ea622bdf87bf5ea60142070d805c1f449fc193332efada595da05", "size": 13604570,
+              "notes": "SHA-256 from `apt-cache show`/Packages index, noble-updates/main"},
+             {"name": "generic-b", "url": "https://archive.ubuntu.com/ubuntu/pool/main/l/linux/"
+              "linux-headers-6.8.0-139-generic_6.8.0-139.139_amd64.deb",
+              "sha256": "15bacf92d51a0ea971d9c1369c6385e8867cd4973eede8f8931fbaf99f3dd173", "size": 3755766,
+              "notes": "SHA-256 from `apt-cache show`/Packages index, noble-updates/main"},
+         ],
+          "generator": gen("real_kernel_headers.py", 61006,
+                           {"distro": "ubuntu-deb", "label_a": "6.8.0-31-generic", "label_b": "6.8.0-139-generic",
+                            "inputs_a": ["common-a", "generic-a"], "inputs_b": ["common-b", "generic-b"]}),
+          "output_pin": "TOFU"},
+         lic("GPL-2.0-only WITH Linux-syscall-note", True, "Canonical Ltd. / Linux kernel contributors",
+             "Ubuntu linux-headers-* packages; per-file SPDX identifiers as in the upstream kernel tree."),
+         "ubuntu-noble-kernel-headers",
+         "Real duplicate tree: Ubuntu noble linux-headers-6.8.0-31(-generic) and linux-headers-6.8.0-139(-generic) "
+         "(base release vs. current noble-updates point release of the same 6.8 ABI) unpacked side by side into "
+         "6.8.0-31-generic/ and 6.8.0-139-generic/ -- a real near-duplicate pair differing only in the point-release "
+         "files (version.h, compile.h, a handful of patched headers).",
+         tags=["real", "duplicate-tree", "kernel-headers"]),
+    item("f17-validation-real-fedora-kernel-devel-2ver", "F17", "validation", "medium", "build", "derived-from-real",
+         {"inputs": [
+             {"name": "a", "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/"
+              "Packages/k/kernel-devel-6.19.10-300.fc44.x86_64.rpm",
+              "sha256": "dfcc13793b3c0d1e12b28e89cddd6fd517adba8496be5768b21fa9952b677196", "size": 25313941,
+              "notes": "Fedora 44 GA release tree, kernel-devel-6.19.10-300.fc44"},
+             {"name": "b", "url": "https://dl.fedoraproject.org/pub/fedora/linux/updates/44/Everything/x86_64/"
+              "Packages/k/kernel-devel-7.2.5-200.fc44.x86_64.rpm",
+              "sha256": "ae1e721889284c078c5cf7c4a51524bbb4d665f69fe0c34ef39b20385e3af2fe", "size": 59320849,
+              "notes": "Fedora 44 updates tree, kernel-devel-7.2.5-200.fc44"},
+         ],
+          "generator": gen("real_kernel_headers.py", 61007,
+                           {"distro": "rpm", "label_a": "6.19.10-300.fc44", "label_b": "7.2.5-200.fc44",
+                            "inputs_a": ["a"], "inputs_b": ["b"]}),
+          "output_pin": "TOFU"},
+         lic("GPL-2.0-only WITH Linux-syscall-note", True, "Fedora Project / Linux kernel contributors",
+             "Fedora kernel-devel package; per-file SPDX identifiers as in the upstream kernel tree."),
+         "fedora-kernel-devel",
+         "Real duplicate tree: Fedora 44 kernel-devel-6.19.10-300.fc44 (GA release) and kernel-devel-7.2.5-200.fc44 "
+         "(updates, a later kernel major/minor within the same Fedora release) unpacked side by side -- most build "
+         "infrastructure files (Kconfig fragments, Makefiles, most headers) are identical or near-identical across "
+         "the two kernel trees; the actual kernel version differs more than the Ubuntu tuning pair, giving a "
+         "distinct duplicate/near-duplicate mix at validation.",
+         tags=["real", "duplicate-tree", "kernel-headers"]),
+    item("f17-heldout-real-almalinux-kernel-devel-2ver", "F17", "heldout", "medium", "build", "derived-from-real",
+         {"inputs": [
+             {"name": "a", "url": "https://vault.almalinux.org/10.0/AppStream/x86_64/os/Packages/"
+              "kernel-devel-6.12.0-55.43.1.el10_0.x86_64.rpm",
+              "sha256": "0950d88d1962ac4afb113176307856ac6f14b56a40dbc24edabe5a3e1fc7afb0", "size": 18509789,
+              "notes": "AlmaLinux 10.0 (vault, minor release archive), kernel-devel-6.12.0-55.43.1.el10_0"},
+             {"name": "b", "url": "https://repo.almalinux.org/almalinux/10/AppStream/x86_64/os/Packages/"
+              "kernel-devel-6.12.0-211.53.1.el10_2.x86_64.rpm",
+              "sha256": "541baa62df6d0fe8813ce0d6dba23e294b3dbfbcfa3e6846d491ca18a1a724b0", "size": 24289173,
+              "notes": "AlmaLinux 10.2 (current repo), kernel-devel-6.12.0-211.53.1.el10_2"},
+         ],
+          "generator": gen("real_kernel_headers.py", 61008,
+                           {"distro": "rpm", "label_a": "6.12.0-55.43.1.el10_0", "label_b": "6.12.0-211.53.1.el10_2",
+                            "inputs_a": ["a"], "inputs_b": ["b"]}),
+          "output_pin": "TOFU"},
+         lic("GPL-2.0-only WITH Linux-syscall-note", True, "AlmaLinux OS Foundation / Linux kernel contributors",
+             "AlmaLinux kernel-devel package; per-file SPDX identifiers as in the upstream kernel tree."),
+         "almalinux-kernel-devel",
+         "Held-out: real duplicate tree, AlmaLinux 10.0 and 10.2 kernel-devel-6.12.0-* (two EL10 minor releases of "
+         "the same 6.12 kernel line) unpacked side by side. Distinct distribution/independence group from every "
+         "tuning/validation F17 item (Ubuntu, Fedora); same construction (real_kernel_headers.py) but the version "
+         "delta is minor-release erratum-sized rather than a cross-major kernel bump, giving a tighter/more-similar "
+         "near-duplicate pair than the Fedora validation item.",
+         notes="Held-out: distinct independence group from every tuning/validation F17 item.",
+         tags=["real", "duplicate-tree", "kernel-headers"]),
+]
+
 # =======================================================================================
 # F19 metadata-heavy filesystem trees
 # =======================================================================================
@@ -329,7 +419,7 @@ ITEMS += [
          "plaintext versions under fresh IVs (no shared ciphertext) and under a reused IV (nonce-reuse misuse: "
          "ciphertext bytes shared wherever plaintext matches), pure keystream, and generic encrypted containers.",
          tags=["generated"]),
-    item("f20-validation-bombs-compressed", "F20", "validation", "large", "generate", "generated",
+    item("f20-validation-bombs-compressed", "F20", "validation", "small", "generate", "generated",
          {"generator": gen("compressible_bombs.py", 81005,
                            {"mode": "compressed", "gz_gib": 1, "xz_gib": 1, "bz2_gib": 1, "zst_gib": 2,
                             "nested_gib": 1, "zip_entries": 8, "zip_entry_mib": 64, "tar_members": 4})},
@@ -337,10 +427,18 @@ ITEMS += [
          "Generated small compressed containers with huge expansion ratios: gzip/xz/bzip2/zstd of all-zero streams, "
          "triple-nested gzip, a flat zip of zero entries, a nested zip-of-zips, a tar.zst of zero members, and a "
          "POSIX tar with a 1 TiB sparse member (GNU tar --sparse).",
-         notes="Materialized bytes are tiny (containers only) even though expanded/apparent content reaches "
-               "multiple GiB and one 1 TiB sparse tar member; scale label reflects the adversarial expansion ratio, "
-               "not on-disk cost.",
-         tags=["generated"]),
+         notes="Corpus round-1 critic gap (F20 scale label, MINOR): this item was previously declared scale=large, "
+               "which made coverage.md report a validation:large cell for F20 with no large *materialized* workload "
+               "behind it (fits_smaller_tier: actual on-disk bytes are ~2 MiB, containers only). Relabeled to "
+               "scale=small, matching materialized bytes. The adversarial expansion is real but notional: gzip/xz/"
+               "bzip2/zstd of all-zero streams reach 1-2 GiB apparent per codec, the nested zip-of-zips and the "
+               "tar.zst reach roughly similar apparent sizes, and the POSIX tar's one GNU --sparse member claims "
+               "1 TiB apparent length while writing next to no real bytes. These expansion figures are recorded here "
+               "(not in the scale field) so analyses that key off `scale` are not misled into expecting a large "
+               "on-disk workload; f15-heldout-hugehole documents the same materialized-vs-apparent distinction for "
+               "sparse files.",
+         tags=["generated", "expansion:gz=1GiB", "expansion:xz=1GiB", "expansion:bz2=1GiB", "expansion:zst=2GiB",
+               "expansion:nested-gz=1GiB", "expansion:tar-sparse-member=1TiB", "fits_smaller_tier"]),
     item("f20-validation-sparsedup", "F20", "validation", "medium", "generate", "generated",
          {"generator": gen("entropy_sparse_dup.py", 81006,
                            {"files": 16, "file_mib": 8, "blobs": 10, "blob_kib": [64, 256, 1024, 4096], "max_copies": 6})},

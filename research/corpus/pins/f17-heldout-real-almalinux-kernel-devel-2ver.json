@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f17-heldout-real-almalinux-kernel-devel-2ver",
+  "inputs": {},
+  "output": {
+    "materialization_key": "508e8510f05cd85e8a614fef0ff615cae286f41c305227393c1d9dafcea0a366",
+    "logical_tree_sha256": "51c60818ff55e76fb8bcda1635845d703e6e068a177f45aaaa1b9eeb814c55f2",
+    "pinned_utc": "2026-09-16T23:05:42Z"
+  },
+  "history": []
+}

@@ -1,0 +1,103 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f17-heldout-real-almalinux-kernel-devel-2ver",
+  "family": "F17",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "almalinux-kernel-devel",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "e8efe22177b4c7136d414846c3cad9b6b68533bcd409159401a6b6636186bdc9",
+  "materialization_key": "508e8510f05cd85e8a614fef0ff615cae286f41c305227393c1d9dafcea0a366",
+  "materialized_utc": "2026-09-16T23:05:42Z",
+  "materialized_relpath": "heldout/f17-heldout-real-almalinux-kernel-devel-2ver",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "51c60818ff55e76fb8bcda1635845d703e6e068a177f45aaaa1b9eeb814c55f2",
+    "pinned_utc": "2026-09-16T23:05:42Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 156746293,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "a",
+        "url": "https://vault.almalinux.org/10.0/AppStream/x86_64/os/Packages/kernel-devel-6.12.0-55.43.1.el10_0.x86_64.rpm",
+        "final_url": "https://vault.almalinux.org/10.0/AppStream/x86_64/os/Packages/kernel-devel-6.12.0-55.43.1.el10_0.x86_64.rpm",
+        "sha256": "0950d88d1962ac4afb113176307856ac6f14b56a40dbc24edabe5a3e1fc7afb0",
+        "size": 18509789,
+        "retrieved_utc": "2026-09-16T23:05:12Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "kernel-devel-6.12.0-55.43.1.el10_0.x86_64.rpm"
+      },
+      {
+        "name": "b",
+        "url": "https://repo.almalinux.org/almalinux/10/AppStream/x86_64/os/Packages/kernel-devel-6.12.0-211.53.1.el10_2.x86_64.rpm",
+        "final_url": "https://repo.almalinux.org/almalinux/10/AppStream/x86_64/os/Packages/kernel-devel-6.12.0-211.53.1.el10_2.x86_64.rpm",
+        "sha256": "541baa62df6d0fe8813ce0d6dba23e294b3dbfbcfa3e6846d491ca18a1a724b0",
+        "size": 24289173,
+        "retrieved_utc": "2026-09-16T23:05:12Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "kernel-devel-6.12.0-211.53.1.el10_2.x86_64.rpm"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g2-generated/real_kernel_headers.py",
+      "script_sha256": "e782eb2ac895cdd3b16eec1d2c1e43b4abeb1f42140912ff543dde999b380a8a",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 61008,
+      "params": {
+        "distro": "rpm",
+        "label_a": "6.12.0-55.43.1.el10_0",
+        "label_b": "6.12.0-211.53.1.el10_2",
+        "inputs_a": [
+          "a"
+        ],
+        "inputs_b": [
+          "b"
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "6d6fd862af415139c115a51dd13b74ba83672332bffb3240c1d0d39b447ae8c7",
+    "logical_tree_sha256": "51c60818ff55e76fb8bcda1635845d703e6e068a177f45aaaa1b9eeb814c55f2",
+    "content_tree_sha256": "3612f3cc2c5fec144d3e5786ec668b7f12a778d4c1f4cdb3262b6f7ff5aa19fa",
+    "extended_tree_sha256": "6ff7d266092f32c9f97df1b96630b796864328de62e18e27a2ef88129a090f1d",
+    "bytes": 156746293,
+    "counts": {
+      "objects": 42380,
+      "files": 35223,
+      "dirs": 7119,
+      "symlinks": 37,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}
