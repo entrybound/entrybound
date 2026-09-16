@@ -8,7 +8,14 @@
 # E2FSPROGS_FAKE_TIME=SOURCE_DATE_EPOCH, atimes normalized before population, every inode's
 # ctime/atime/crtime then set to SOURCE_DATE_EPOCH with debugfs (mtimes from the tarball are kept),
 # e2fsck -fn verification, and zero blocks punched to holes (fallocate --dig-holes) so the sparse layout
-# is a function of content.
+# is a function of content. A trailing `sync` flushes that hole-punch to storage, but on this ext4/WSL2
+# host it is NOT sufficient by itself: fingerprint.py's logical_tree_sha256 includes a SEEK_DATA/SEEK_HOLE
+# extent map, and for this image that map has been observed to still change some tens of seconds after
+# materialization (same bytes, same content_tree_sha256, different extent boundaries) even with this
+# `sync` in place -- an ext4 extent-status-cache settling effect one field deeper than the documented
+# tree_sha256/st_blocks allocation-timing defect. provision.py fingerprints immediately after this script
+# returns, so a fresh TOFU pin from this script can still need a later re-check once the tree has settled
+# (see research/corpus/fingerprints/f16-alpine-3241-minirootfs-ext4-raw.json history and PROGRESS.md).
 set -euo pipefail
 OUT= PARAMS='{}'
 while [[ $# -gt 0 ]]; do
@@ -60,6 +67,7 @@ E2FSPROGS_FAKE_TIME=$EPOCH debugfs -w -f "$CMDS" "$IMG" >/dev/null 2>"$EB_SCRATC
 if grep -v '^debugfs ' "$EB_SCRATCH/debugfs.err" | grep -q .; then cat "$EB_SCRATCH/debugfs.err" >&2; exit 1; fi
 E2FSPROGS_FAKE_TIME=$EPOCH e2fsck -fn "$IMG" >/dev/null
 fallocate --dig-holes "$IMG"
+sync "$IMG"
 chmod 0644 "$IMG"
 {
   echo "source_sha256 $(sha256sum "$SRC" | cut -d' ' -f1)"

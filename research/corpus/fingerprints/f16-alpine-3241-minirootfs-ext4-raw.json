@@ -10,14 +10,14 @@
   "independence_group": "alpine-linux",
   "source_file": "research/corpus/sources/g4-binary.json",
   "item_def_sha256": "cde1f6b8b2afbdab2b263c7e61c55992f6089539f38840825c9e8b5d61fe90d6",
-  "materialization_key": "3eb7e80f492ec3c20f73b1d2d43e75d33be81d2f36a790470a3f7a3af312ae03",
-  "materialized_utc": "2026-09-13T02:32:29Z",
+  "materialization_key": "9858f5d81346ad43a896afc1a7bc934c22538a8e25a7c70890f997c8934f4be2",
+  "materialized_utc": "2026-09-16T21:27:59Z",
   "materialized_relpath": "corpus/tuning/f16-alpine-3241-minirootfs-ext4-raw",
   "output_pin": {
     "policy": "TOFU",
     "status": "matched-tofu",
-    "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
-    "pinned_utc": "2026-09-13T02:25:29Z"
+    "logical_tree_sha256": "65bcc17d5553bd76e93d6b71755c1acecc24a97bb9c321d5a005cf95eca87d94",
+    "pinned_utc": "2026-09-16T21:27:59Z"
   },
   "scale_check": {
     "tier": "medium",
@@ -43,7 +43,7 @@
     "steps": [],
     "generator": {
       "script": "research/corpus/generators/g4-binary/build_ext4_image.sh",
-      "script_sha256": "cb8181df3c42be5fb8eb7aee3452f46cc50783910ede7821455d6ee0a2b27aaa",
+      "script_sha256": "0efd94b9f30b4ea5d110db0714e20f4bd86289b73644825fddf313322797fc02",
       "interpreter": "bash",
       "interpreter_path": "/bin/bash",
       "seed": 0,
@@ -71,10 +71,10 @@
   "fingerprint": {
     "format": "ebrc-fp-v1",
     "root_type": "dir",
-    "tree_sha256": "ffb741dbe0b40a718e90050360fe3f1d1264d2c781c3acab304026948f019c95",
-    "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
+    "tree_sha256": "6d24f63138a3dd733cc6dfabbf1512f2e9d98fdf3614e82efc1ae8278acc6a84",
+    "logical_tree_sha256": "65bcc17d5553bd76e93d6b71755c1acecc24a97bb9c321d5a005cf95eca87d94",
     "content_tree_sha256": "ee4ba3e20205a3d4e8e43cb50b1c2373ae672c904132dd8ead5ca0475a39a1aa",
-    "extended_tree_sha256": "1d10aaa95e6e4496a1a66dab9f1076197022fa910f219fff8689a3378311a216",
+    "extended_tree_sha256": "4e0d367c9c2260e3e7c2d508b57f5ca3633cfd0530d85695ea9fa9e8bb39c595",
     "bytes": 268435687,
     "bytes_all_paths": 268435687,
     "allocated_bytes": 42360832,

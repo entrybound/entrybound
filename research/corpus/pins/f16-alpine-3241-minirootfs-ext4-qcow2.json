@@ -3,9 +3,50 @@
   "item_id": "f16-alpine-3241-minirootfs-ext4-qcow2",
   "inputs": {},
   "output": {
-    "materialization_key": "1fa779333a5dc6143fd2941d73c916b194bb94a14fb749583a447a7900eb4ce1",
-    "logical_tree_sha256": "2676c66f3a3d30efb766cf6e1b33e3969fe000779ccf98d3a6ff38957b1a248a",
-    "pinned_utc": "2026-09-13T02:25:32Z"
+    "materialization_key": "c82edb1c79a5bd86076bffa2011b4a2319fbf3e4e929cdd48bba06bdb7f5a327",
+    "logical_tree_sha256": "1c03be14ed07658c346cb9e8f1f883ce91bbe030d492df9c659844ffd8c11ead",
+    "pinned_utc": "2026-09-16T21:28:07Z"
   },
-  "history": []
+  "history": [
+    {
+      "replaced_utc": "2026-09-16T21:11:55Z",
+      "output": {
+        "materialization_key": "1fa779333a5dc6143fd2941d73c916b194bb94a14fb749583a447a7900eb4ce1",
+        "logical_tree_sha256": "2676c66f3a3d30efb766cf6e1b33e3969fe000779ccf98d3a6ff38957b1a248a",
+        "pinned_utc": "2026-09-13T02:25:32Z"
+      }
+    },
+    {
+      "replaced_utc": "2026-09-16T21:17:45Z",
+      "output": {
+        "materialization_key": "a431786b0332aee269f2fa7be79d9167dfd323111f591922a6ec016a771de9c5",
+        "logical_tree_sha256": "1c03be14ed07658c346cb9e8f1f883ce91bbe030d492df9c659844ffd8c11ead",
+        "pinned_utc": "2026-09-16T21:11:55Z"
+      }
+    },
+    {
+      "replaced_utc": "2026-09-16T21:21:24Z",
+      "output": {
+        "materialization_key": "980694ad22634589c5bae5846409de46b4a3c26a5651b4c13004de7f344ae24d",
+        "logical_tree_sha256": "1c03be14ed07658c346cb9e8f1f883ce91bbe030d492df9c659844ffd8c11ead",
+        "pinned_utc": "2026-09-16T21:17:45Z"
+      }
+    },
+    {
+      "replaced_utc": "2026-09-16T21:26:40Z",
+      "output": {
+        "materialization_key": "c82edb1c79a5bd86076bffa2011b4a2319fbf3e4e929cdd48bba06bdb7f5a327",
+        "logical_tree_sha256": "1c03be14ed07658c346cb9e8f1f883ce91bbe030d492df9c659844ffd8c11ead",
+        "pinned_utc": "2026-09-16T21:21:24Z"
+      }
+    },
+    {
+      "replaced_utc": "2026-09-16T21:28:07Z",
+      "output": {
+        "materialization_key": "980694ad22634589c5bae5846409de46b4a3c26a5651b4c13004de7f344ae24d",
+        "logical_tree_sha256": "1c03be14ed07658c346cb9e8f1f883ce91bbe030d492df9c659844ffd8c11ead",
+        "pinned_utc": "2026-09-16T21:26:40Z"
+      }
+    }
+  ]
 }

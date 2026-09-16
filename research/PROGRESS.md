@@ -127,3 +127,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T21:23Z — legacy-zip merged: 82 requirements, 30 decisions, 422/422 keys
 - 2026-09-16T21:24Z — ecosystem-conformance-deps merged: 75 requirements, 24 decisions, 475/475 keys
 - 2026-09-16T21:27Z — platform-metadata merge: 71 requirements, 41 decisions, 351/351 keys covered
+- 2026-09-16T21:30Z — Corpus g4-binary (42 items, F09/F10/F11/F14/F16) verified and closed out: found and fixed a logical_tree_sha256 extent-map settling defect (SEEK_DATA/SEEK_HOLE, ext4/WSL2) affecting sparse VM-image outputs, one field deeper than the documented tree_sha256/st_blocks issue; repinned 3 F16 items to their settled, content-identical state; idempotence confirmed (2x full verify, 42/42 ok); coverage meets requirements; ~11.93 GiB total (budget ~12 GiB, thin margin).

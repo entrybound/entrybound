@@ -10,14 +10,14 @@
   "independence_group": "alpine-linux",
   "source_file": "research/corpus/sources/g4-binary.json",
   "item_def_sha256": "c7157049e8af40dfc27939ea962bf3ecee541cadae21eab22757bb1844a99c61",
-  "materialization_key": "1fa779333a5dc6143fd2941d73c916b194bb94a14fb749583a447a7900eb4ce1",
-  "materialized_utc": "2026-09-13T02:25:32Z",
+  "materialization_key": "c82edb1c79a5bd86076bffa2011b4a2319fbf3e4e929cdd48bba06bdb7f5a327",
+  "materialized_utc": "2026-09-16T21:28:07Z",
   "materialized_relpath": "corpus/tuning/f16-alpine-3241-minirootfs-ext4-qcow2",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
-    "logical_tree_sha256": "2676c66f3a3d30efb766cf6e1b33e3969fe000779ccf98d3a6ff38957b1a248a",
-    "pinned_utc": "2026-09-13T02:25:32Z"
+    "logical_tree_sha256": "1c03be14ed07658c346cb9e8f1f883ce91bbe030d492df9c659844ffd8c11ead",
+    "pinned_utc": "2026-09-16T21:28:07Z"
   },
   "scale_check": {
     "tier": "small",
@@ -30,13 +30,13 @@
     "from_items": [
       {
         "item_id": "f16-alpine-3241-minirootfs-ext4-raw",
-        "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337"
+        "logical_tree_sha256": "65bcc17d5553bd76e93d6b71755c1acecc24a97bb9c321d5a005cf95eca87d94"
       }
     ],
     "steps": [],
     "generator": {
       "script": "research/corpus/generators/g4-binary/convert_image.sh",
-      "script_sha256": "22b8eae713ea8bfb30a6a99ac33d97f65313c1f6aa7a832e58585a219b3b3775",
+      "script_sha256": "f055bbc0b98d7e90a8574a0cee26027083016831f62eca0900c58c317b57c782",
       "interpreter": "bash",
       "interpreter_path": "/bin/bash",
       "seed": 0,
@@ -65,13 +65,13 @@
   "fingerprint": {
     "format": "ebrc-fp-v1",
     "root_type": "dir",
-    "tree_sha256": "8b807e464dd08ca93d602e952942b8bf2d9d3566c62d6195e5b5b150ee5d256a",
-    "logical_tree_sha256": "2676c66f3a3d30efb766cf6e1b33e3969fe000779ccf98d3a6ff38957b1a248a",
+    "tree_sha256": "dcc0cf1886f968e84e2afbb024efc6466ed9559fac7f66e396df0e5709adcf4a",
+    "logical_tree_sha256": "1c03be14ed07658c346cb9e8f1f883ce91bbe030d492df9c659844ffd8c11ead",
     "content_tree_sha256": "72b5cb0cd990973b4c0e5ffaa34989818852b64d1b4b5a4a2b823971c7b2183c",
-    "extended_tree_sha256": "9a9830bb4aa3ec4e7065db4049671dcbec0f76b013d55b5f0897d47f54cfe6fb",
+    "extended_tree_sha256": "5e3d5a0cfd2d8056182545ed4b9a044d9ff885c58b146f3741287abe02c30093",
     "bytes": 9896220,
     "bytes_all_paths": 9896220,
-    "allocated_bytes": 9842688,
+    "allocated_bytes": 9601024,
     "counts": {
       "objects": 3,
       "files": 2,

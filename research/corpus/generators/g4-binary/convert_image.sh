@@ -8,8 +8,14 @@
 #         src_format (raw|qcow2|vmdk|...), dst (output file name), dst_format (raw|qcow2|vmdk),
 #         options (qemu-img -o string, optional)
 # Output: <out>/<dst>.  qemu-img convert runs single-coroutine (-m 1) without out-of-order writes;
-# raw output is sparse and additionally normalized with fallocate --dig-holes; the result is checked
-# with qemu-img compare against the source.
+# the output (any dst_format) is additionally normalized with fallocate --dig-holes so its
+# data-extent map (SEEK_DATA/SEEK_HOLE) is a deterministic function of content rather than of
+# ext4 delayed-allocation timing -- fingerprint.py's logical_tree_sha256 includes that extent map,
+# and an un-normalized qcow2/vmdk output was observed to report a different extent layout (same
+# content, same content_tree_sha256) across repeated fingerprint runs, i.e. the same allocation-state
+# instability documented for tree_sha256's st_blocks field, one level deeper. Hole-punching only
+# clears runs of on-disk zero bytes; it never changes readable content, and qemu-img compare
+# (semantic, format-aware) runs afterward as a corruption check.
 set -euo pipefail
 OUT= PARAMS='{}'
 while [[ $# -gt 0 ]]; do
@@ -36,7 +42,8 @@ args=(convert -p -m 1 -f "$SF" -O "$DF")
 [[ -n $OPTS ]] && args+=(-o "$OPTS")
 [[ $DF == raw ]] && args+=(-S 4k)
 qemu-img "${args[@]}" "$SRC" "$DST" </dev/null | tr '\r' '\n' | tail -1
-[[ $DF == raw ]] && fallocate --dig-holes "$DST"
+fallocate --dig-holes "$DST"
+sync "$DST"
 qemu-img compare -f "$SF" -F "$DF" "$SRC" "$DST"
 chmod 0644 "$DST"
 {

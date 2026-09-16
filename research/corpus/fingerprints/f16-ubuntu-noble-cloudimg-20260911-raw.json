@@ -10,14 +10,14 @@
   "independence_group": "ubuntu-noble",
   "source_file": "research/corpus/sources/g4-binary.json",
   "item_def_sha256": "86287351ffe1758ad6ee96ea1213ab7a5f7b094da5053f62b66423b913fa2ba1",
-  "materialization_key": "784000ce9eb5899af850caa9ded9105c85062ecb8556cf1999cff5f843ae914c",
-  "materialized_utc": "2026-09-13T02:33:01Z",
+  "materialization_key": "8fbe6e201256cea91e16b412fbd467490d76488d3000b7d6b1589465205ff3ac",
+  "materialized_utc": "2026-09-16T21:22:37Z",
   "materialized_relpath": "corpus/tuning/f16-ubuntu-noble-cloudimg-20260911-raw",
   "output_pin": {
     "policy": "TOFU",
-    "status": "matched-tofu",
+    "status": "tofu-first-pin",
     "logical_tree_sha256": "2af6901b7701c599a7d1410ba242185f5816e83a4f7935768ebfdc47fba2d7a5",
-    "pinned_utc": "2026-09-13T02:31:00Z"
+    "pinned_utc": "2026-09-16T21:22:37Z"
   },
   "scale_check": {
     "tier": "large",
@@ -43,7 +43,7 @@
     "steps": [],
     "generator": {
       "script": "research/corpus/generators/g4-binary/convert_image.sh",
-      "script_sha256": "22b8eae713ea8bfb30a6a99ac33d97f65313c1f6aa7a832e58585a219b3b3775",
+      "script_sha256": "f055bbc0b98d7e90a8574a0cee26027083016831f62eca0900c58c317b57c782",
       "interpreter": "bash",
       "interpreter_path": "/bin/bash",
       "seed": 0,
@@ -70,13 +70,13 @@
   "fingerprint": {
     "format": "ebrc-fp-v1",
     "root_type": "dir",
-    "tree_sha256": "4452d3c31fe41908d45bcf381d7586056e8bdb10134417f9ae5ec5df0e1c2502",
+    "tree_sha256": "b1586c1f66c54f08663b28f92ff80665d6a4eb785a08f798f20e2cc380fec5a3",
     "logical_tree_sha256": "2af6901b7701c599a7d1410ba242185f5816e83a4f7935768ebfdc47fba2d7a5",
     "content_tree_sha256": "66893a16e943b487272d02828eb5574b9dfb09bb84a8b0ed15e695a364ae4e1d",
-    "extended_tree_sha256": "4e227dfa43cec5364947ac71a8c8eb27492f9dee3089f2147cb155f1f7e1b3ab",
+    "extended_tree_sha256": "661182ceac77b6b3eb36d55fab1270381a69496d58d6308041fae925367c01d7",
     "bytes": 3758096669,
     "bytes_all_paths": 3758096669,
-    "allocated_bytes": 1876447232,
+    "allocated_bytes": 1876434944,
     "counts": {
       "objects": 3,
       "files": 2,

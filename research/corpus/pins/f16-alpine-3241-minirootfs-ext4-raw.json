@@ -3,9 +3,42 @@
   "item_id": "f16-alpine-3241-minirootfs-ext4-raw",
   "inputs": {},
   "output": {
-    "materialization_key": "3eb7e80f492ec3c20f73b1d2d43e75d33be81d2f36a790470a3f7a3af312ae03",
-    "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
-    "pinned_utc": "2026-09-13T02:25:29Z"
+    "materialization_key": "9858f5d81346ad43a896afc1a7bc934c22538a8e25a7c70890f997c8934f4be2",
+    "logical_tree_sha256": "65bcc17d5553bd76e93d6b71755c1acecc24a97bb9c321d5a005cf95eca87d94",
+    "pinned_utc": "2026-09-16T21:27:59Z"
   },
-  "history": []
+  "history": [
+    {
+      "replaced_utc": "2026-09-16T21:17:44Z",
+      "output": {
+        "materialization_key": "3eb7e80f492ec3c20f73b1d2d43e75d33be81d2f36a790470a3f7a3af312ae03",
+        "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
+        "pinned_utc": "2026-09-13T02:25:29Z"
+      }
+    },
+    {
+      "replaced_utc": "2026-09-16T21:21:19Z",
+      "output": {
+        "materialization_key": "553a75be38994b57d6d6f2af5966aee10d30564547cf999df153f057b3ddd2b8",
+        "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
+        "pinned_utc": "2026-09-16T21:17:44Z"
+      }
+    },
+    {
+      "replaced_utc": "2026-09-16T21:26:40Z",
+      "output": {
+        "materialization_key": "553a75be38994b57d6d6f2af5966aee10d30564547cf999df153f057b3ddd2b8",
+        "logical_tree_sha256": "65bcc17d5553bd76e93d6b71755c1acecc24a97bb9c321d5a005cf95eca87d94",
+        "pinned_utc": "2026-09-16T21:21:19Z"
+      }
+    },
+    {
+      "replaced_utc": "2026-09-16T21:27:59Z",
+      "output": {
+        "materialization_key": "9858f5d81346ad43a896afc1a7bc934c22538a8e25a7c70890f997c8934f4be2",
+        "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
+        "pinned_utc": "2026-09-16T21:26:40Z"
+      }
+    }
+  ]
 }
