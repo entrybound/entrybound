@@ -1,0 +1,82 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f15-heldout-real-almalinux-genericcloud-raw",
+  "family": "F15",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "derive",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "almalinux",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "42c3ea78148e5f635248ab9580abf42d49845640d2c4cb3b145e45259b97f427",
+  "materialization_key": "80eedcc73d498953f707f526ab43b4e5dc8ac0709287d6f4bc93a386d19d71df",
+  "materialized_utc": "2026-09-16T23:22:28Z",
+  "materialized_relpath": "heldout/f15-heldout-real-almalinux-genericcloud-raw",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "806aa7df749203d27d0b536ccf981064238ed5720c68813ac1e5d92d377e291f",
+    "pinned_utc": "2026-09-16T23:22:28Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 1073742438,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "from_items": [
+      {
+        "item_id": "f16-heldout-almalinux-10-genericcloud-qcow2",
+        "logical_tree_sha256": "5f0ec0f24bef8e8089e762e8a982ffc1fa8fe1c4b2f0920c2dfe76e2fb30bd8d"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g2-generated/shrink_real_disk_image.py",
+      "script_sha256": "9aaa4b9e516f1ed5442e57e10a253a10fb17dd34ec58421bb4ededd5d062b94e",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 51009,
+      "params": {
+        "mode": "gpt-partition",
+        "from_item": "f16-heldout-almalinux-10-genericcloud-qcow2",
+        "src_relpath": "AlmaLinux-10-GenericCloud-10.2-20260817.0.x86_64.qcow2",
+        "src_format": "qcow2",
+        "partition_label": "boot",
+        "dst": "almalinux-10-genericcloud-10.2-boot.raw"
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "880e59570a8cff5d21d2ade0842b7dd384dad10f649e681074d4e4bbb6388dd4",
+    "logical_tree_sha256": "806aa7df749203d27d0b536ccf981064238ed5720c68813ac1e5d92d377e291f",
+    "content_tree_sha256": "d6ad136f40db1f12a6b45ef336a4f3490c4a20905672d6a53f1d16874ff1e2a2",
+    "extended_tree_sha256": "76b3c85863a0ffa7fec274c286a8da4fa8430b3ad71cb56d275c4123dccd523d",
+    "bytes": 1073742438,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

@@ -151,3 +151,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T23:07Z — g2-generated F17: added 3 real kernel-headers duplicate-tree items (tuning/validation/heldout), closing the F17 real-duplicate-tree gap; F20 scale label fixed (bombs-compressed -> small).
 - 2026-09-16T23:10Z — g4-binary F11 gap-closing: 3 items added (cosign signing assets, cpython release set, firefox signing metadata), F09 Silesia licence fixed; group now 45 items / ~11.994 GiB. F09 arch-skew, F14, F16, F10 large-tier, and remaining F11 sub-items deferred (budget).
 - 2026-09-16T23:13Z — Phase A method: decision-method.md pre-registration draft (round 0) committed; review and revision pending
+- 2026-09-16T23:22Z — g2-generated F15: added 3 real sparse VM-disk/partition items (tuning/validation/heldout) via qemu-img convert + fallocate --dig-holes, closing the F15 real-layout gap; validation now has a large-tier item.

@@ -183,6 +183,78 @@ ITEMS += [
          tags=["generated"]),
 ]
 
+# Corpus round-1 critic gap (F15 real layouts, MAJOR): all 6 F15 items were generated and validation
+# had no large item. Real VM/cloud disk images are converted to sparse raw with qemu-img convert and
+# hole-punched (fallocate --dig-holes) so the on-disk extent map is a deterministic function of guest
+# content (research/corpus/generators/g4-binary/convert_image.sh's own documented rationale);
+# fingerprint.py records every regular file's SEEK_DATA/SEEK_HOLE extent map as part of the item's
+# logical_tree_sha256, so the sparse layout is verified (and pinned) automatically, and qemu-img
+# compare runs as a semantic corruption check at conversion time.
+ITEMS += [
+    item("f15-tuning-real-ubuntu-noble-ova-raw", "F15", "tuning", "large", "build", "derived-from-real",
+         {"inputs": [
+             {"name": "ova", "url": "https://cloud-images.ubuntu.com/releases/noble/release-20260911/"
+              "ubuntu-24.04-server-cloudimg-amd64.ova",
+              "sha256": "ff79f630b7c845c0bb0f157db735837a9be4714be9e44ed54f11af156e4cc33a", "size": 594145280,
+              "notes": "SHA-256 from the release SHA256SUMS; a plain tar of .ovf + .mf + a streamOptimized .vmdk"}],
+          "generator": gen("shrink_real_disk_image.py", 51007,
+                           {"mode": "ova-vmdk", "ova_input": "ova", "vmdk_member": "ubuntu-noble-24.04-cloudimg.vmdk",
+                            "src_format": "vmdk", "dst": "ubuntu-noble-24.04-cloudimg.raw", "allow_shrink": True}),
+          "output_pin": "TOFU"},
+         lic("Ubuntu cloud image (per-package licenses; Canonical IP rights policy permits unmodified "
+             "redistribution)", True, "Canonical Ltd.",
+             "Converted vmdk->raw (qemu-img) without modifying guest content."),
+         "ubuntu-noble",
+         "Real sparse VM disk image: the official Ubuntu 24.04 server cloud image published as an OVA (release "
+         "20260911); its streamOptimized VMDK is converted with qemu-img to a sparse raw disk and hole-punched. The "
+         "OVA's VMDK declares a 10 GiB nominal disk but its GPT was built for a ~3.5 GiB disk (fdisk reports a "
+         "PMBR size mismatch); shrink_real_disk_image.py proves everything beyond the PMBR-declared size is "
+         "unwritten (SEEK_DATA) and truncates to it, so the item's logical size matches its real content "
+         "(GPT + BIOS-boot/ESP/ext4-root partitions) rather than template padding.",
+         notes="Same real-world source family as f16-ubuntu-noble-cloudimg-20260911-raw (independence_group "
+               "ubuntu-noble) but a distinct published artifact (OVA/VMDK rather than the cloud qcow2) and a "
+               "distinct purpose (F15 sparse-layout study rather than F16 disk-image-format study).",
+         tags=["real", "sparse", "raw", "gpt", "ext4"]),
+    item("f15-validation-real-debian-nocloud-raw", "F15", "validation", "large", "derive", "derived-from-real",
+         {"from_items": ["f16-debian-13-nocloud-20260831-qcow2"],
+          "generator": {"script": "research/corpus/generators/g4-binary/convert_image.sh", "interpreter": "bash",
+                        "seed": 51008,
+                        "params": {"from_item": "f16-debian-13-nocloud-20260831-qcow2",
+                                   "src": "debian-13-nocloud-amd64-20260831-2587.qcow2", "src_format": "qcow2",
+                                   "dst_format": "raw", "dst": "debian-13-nocloud-amd64-20260831-2587.raw"}}},
+         lic("Debian image (DFSG-free packages, per-package copyright)", True, "Debian Cloud Team",
+             "Converted qcow2->raw without modifying guest content; reused from the already-provisioned F16 item."),
+         "debian-trixie",
+         "Real sparse VM disk image (large tier): the already-provisioned F16 Debian 13 nocloud qcow2 image "
+         "converted to sparse raw with qemu-img and hole-punched. Fills F15's missing validation large-tier item.",
+         notes="Derives from f16-debian-13-nocloud-20260831-qcow2 (already downloaded/pinned); no new third-party "
+               "bytes fetched. Distinct independence group (debian-trixie) from every other F15 item.",
+         tags=["real", "sparse", "raw"]),
+    item("f15-heldout-real-almalinux-genericcloud-raw", "F15", "heldout", "large", "derive", "derived-from-real",
+         {"from_items": ["f16-heldout-almalinux-10-genericcloud-qcow2"],
+          "generator": gen("shrink_real_disk_image.py", 51009,
+                           {"mode": "gpt-partition", "from_item": "f16-heldout-almalinux-10-genericcloud-qcow2",
+                            "src_relpath": "AlmaLinux-10-GenericCloud-10.2-20260817.0.x86_64.qcow2",
+                            "src_format": "qcow2", "partition_label": "boot",
+                            "dst": "almalinux-10-genericcloud-10.2-boot.raw"})},
+         lic("AlmaLinux image (per-package licenses)", True, "AlmaLinux OS Foundation",
+             "Converted qcow2->raw without modifying guest content; reused from the already-provisioned F16 "
+             "heldout item."),
+         "almalinux",
+         "Held-out: real sparse filesystem image, the xfs `boot` partition of the already-provisioned F16 "
+         "AlmaLinux 10 GenericCloud disk, extracted (kernel loop partition scan) and converted to sparse raw with "
+         "qemu-img. Unlike the Ubuntu OVA tuning item, this disk's GPT genuinely fills its nominal 10 GiB (its xfs "
+         "root filesystem's own superblock block count equals the partition size, confirmed with xfs_info: no PMBR "
+         "size mismatch, so no lossless whole-disk shrink exists); one real partition is used instead so the item "
+         "fits the scale tiers while still being the unmodified bytes of a real filesystem.",
+         notes="Held-out: distinct independence group (almalinux) from every tuning/validation F15 item; derives "
+               "from a heldout-split source (f16-heldout-almalinux-10-genericcloud-qcow2), so no tuning/validation "
+               "split is exposed. Partition size is 1 GiB (still the large tier, just far below the 8.8 GiB the "
+               "root partition alone would need, let alone the 10 GiB whole disk); see CONVERTINFO.txt in the item "
+               "for the exact PMBR/xfs_info reasoning.",
+         tags=["real", "sparse", "raw", "xfs"]),
+]
+
 # =======================================================================================
 # F17 duplicate trees
 # =======================================================================================

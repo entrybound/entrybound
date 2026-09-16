@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f01-validation-bootstrap-5-3-8-git",
+  "inputs": {},
+  "output": {
+    "materialization_key": "9ae5a4913f4f157e2a271ecf7d25c5331525bc2ba9e6da459f65f8220e212297",
+    "logical_tree_sha256": "3152c7a2f068463e0472753ff5ae65a358b88ee6fe73fcb5cd1b6179482bb71d",
+    "pinned_utc": "2026-09-16T23:14:34Z"
+  },
+  "history": []
+}

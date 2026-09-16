@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f01-tuning-typescript-5-9-3-git",
+  "inputs": {},
+  "output": {
+    "materialization_key": "2ad454b5974765a4c96240e33a69e595e131e82160c6ef5bfce6a0776de0c7c5",
+    "logical_tree_sha256": "463f65885b6e73baada27e53452dbe4e1f69f1cc07ac0c62b8861d04d9f2111c",
+    "pinned_utc": "2026-09-16T23:16:09Z"
+  },
+  "history": []
+}

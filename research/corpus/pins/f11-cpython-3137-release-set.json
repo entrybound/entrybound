@@ -1,0 +1,152 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f11-cpython-3137-release-set",
+  "inputs": {
+    "python-3-13-7-tar-xz": {
+      "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz",
+      "sha256": "5462f9099dfd30e238def83c71d91897d8caa5ff6ebc7a50f14d4802cdaaa79a",
+      "size": 22769492,
+      "retrieved_utc": "2026-09-16T23:08:39Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "python-3-13-7-tar-xz-asc": {
+      "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz.asc",
+      "sha256": "5e8fd918d50d4d403f9908ac86933f0c6e2a8f4070586f94bfa7baabee431e7d",
+      "size": 963,
+      "retrieved_utc": "2026-09-16T23:08:40Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "python-3-13-7-tar-xz-sigstore": {
+      "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz.sigstore",
+      "sha256": "4c1c96187221ef2445f3e8a5dd0e06772e65a094719323564c36a158ab4fadb4",
+      "size": 4951,
+      "retrieved_utc": "2026-09-16T23:08:40Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "python-3-13-7-tgz-spdx-json": {
+      "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tgz.spdx.json",
+      "sha256": "b237d7783381c41b526a8df9b33a33160d0544e1f2d5183950a0533a3ab08a57",
+      "size": 2935829,
+      "retrieved_utc": "2026-09-16T23:08:40Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-appendpath-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/appendpath.msi",
+      "sha256": "2918f4e6045573dca51f41a6fd2200991595cdf0282b1ee5ea0c8a236e5f97c9",
+      "size": 53248,
+      "retrieved_utc": "2026-09-16T23:08:40Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-core-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/core.msi",
+      "sha256": "9d09bf2a213f56d40aa02680c968d0b6afe04696f3ce5ee3b03535bf0c7de3c1",
+      "size": 2084864,
+      "retrieved_utc": "2026-09-16T23:08:40Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-core_pdb-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/core_pdb.msi",
+      "sha256": "4d84413e6cb29a642c3f849ccba91076e39a2fc47e1c00e13794ed071f66b993",
+      "size": 4489216,
+      "retrieved_utc": "2026-09-16T23:08:40Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-dev-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/dev.msi",
+      "sha256": "c7c505d0601ac5237eb6117258b2e0415295ddcd800b7f28ca5a8526a3e0eded",
+      "size": 491520,
+      "retrieved_utc": "2026-09-16T23:08:40Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-doc-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/doc.msi",
+      "sha256": "b8ed32df10bcc790bdce3936df4308916eaa39d5d221c17ecb520941dfa90f0e",
+      "size": 7839744,
+      "retrieved_utc": "2026-09-16T23:08:40Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-exe-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/exe.msi",
+      "sha256": "ae879ba0f8fe74807ad12ea61c27ec7dd24798da1cd2ea8c8f4b2c4bd384847e",
+      "size": 815104,
+      "retrieved_utc": "2026-09-16T23:08:40Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-exe_pdb-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/exe_pdb.msi",
+      "sha256": "91669a2fcb2563198e8361d4942c88283830445a422f75168a648c5942adfc86",
+      "size": 139264,
+      "retrieved_utc": "2026-09-16T23:08:40Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-lib-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/lib.msi",
+      "sha256": "88ecf985d0374f6e73a96f611c5f5d96f7198478fcb67aaaf91aa2130d40e1e0",
+      "size": 7213056,
+      "retrieved_utc": "2026-09-16T23:08:41Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-lib_pdb-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/lib_pdb.msi",
+      "sha256": "6d36d7b4e3f6b3bd769a509496100deed16160570b7525544ed9f35b529447ca",
+      "size": 8814592,
+      "retrieved_utc": "2026-09-16T23:08:41Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-path-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/path.msi",
+      "sha256": "6d97f86c02bb772daaad697f091d26678a460c0e8f6955eb98a4be7f81ae3251",
+      "size": 53248,
+      "retrieved_utc": "2026-09-16T23:08:41Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-pip-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/pip.msi",
+      "sha256": "8eaac7642cce999137c1fe14c9ef64a64344751776cfc75da0bc4c7d583e694c",
+      "size": 294912,
+      "retrieved_utc": "2026-09-16T23:08:41Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-tcltk-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/tcltk.msi",
+      "sha256": "86f7c339a885a19306877281c058c8d49df713624b7ed686f66993e0d16ce5b1",
+      "size": 3276800,
+      "retrieved_utc": "2026-09-16T23:08:41Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-tcltk_pdb-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/tcltk_pdb.msi",
+      "sha256": "9ae6d855fda17c24f3150b4372cdffa0bc0d92d3cead9b6bfbf1e41379e10884",
+      "size": 192512,
+      "retrieved_utc": "2026-09-16T23:08:41Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-test-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/test.msi",
+      "sha256": "41e65a6c8b8dfb031010e012f0f75f37b59589a319b88cd13eda02cd42c47de3",
+      "size": 5980160,
+      "retrieved_utc": "2026-09-16T23:08:41Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-test_pdb-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/test_pdb.msi",
+      "sha256": "27020e55fe7519b9f0fce9a7cc84e6b32b087ce36eefc0ccfbb94bd7765478e5",
+      "size": 888832,
+      "retrieved_utc": "2026-09-16T23:08:41Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "amd64-ucrt-msi": {
+      "url": "https://www.python.org/ftp/python/3.13.7/amd64/ucrt.msi",
+      "sha256": "d7a400cf4418e6f78acaa5133b153047d5d024bcbc0ad58f54854631099f02a4",
+      "size": 552960,
+      "retrieved_utc": "2026-09-16T23:08:41Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "5d8429f2a18fb61529d11b36d7fc83b9178b848a7cd85d54a6bbf71c3127ad46",
+    "logical_tree_sha256": "1b31a8f1952b6b5873bd42cc6492b5f5960a3e74f2adad9eceea19c43c5b8706",
+    "pinned_utc": "2026-09-16T23:08:42Z"
+  },
+  "history": []
+}

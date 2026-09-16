@@ -1,0 +1,600 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f11-cosign-v250-signing-assets",
+  "inputs": {
+    "cosign-2-5-0-1-aarch64-rpm-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.aarch64.rpm-keyless.pem",
+      "sha256": "f357b7f551ff19fe6f6825231cf323728612e86226b7e834d34fa99a64f23f2c",
+      "size": 1424,
+      "retrieved_utc": "2026-09-16T23:08:07Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-2-5-0-1-aarch64-rpm-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.aarch64.rpm-keyless.sig",
+      "sha256": "c0eaacbe00f2a66ae7a09962ca36ab194dba2973fd9cbc7550ee87faf5c80bc9",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:08Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-2-5-0-1-armv7hl-rpm-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.armv7hl.rpm-keyless.pem",
+      "sha256": "0952ba1ec0036abb556fa335268bd8197c9dc0431b3ebd894ca87f274336c8c3",
+      "size": 1424,
+      "retrieved_utc": "2026-09-16T23:08:08Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-2-5-0-1-armv7hl-rpm-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.armv7hl.rpm-keyless.sig",
+      "sha256": "d26c8565f3d408f69760249bd757df293824ccf2eb014247c00aff189467a6e9",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:08Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-2-5-0-1-ppc64le-rpm-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.ppc64le.rpm-keyless.pem",
+      "sha256": "418ebcc1c9532b7dffc4e0051b4d0c74e88a468bce1608b09eee37148bef1273",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:08Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-2-5-0-1-ppc64le-rpm-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.ppc64le.rpm-keyless.sig",
+      "sha256": "8327618114998f79f7ef9ee3bb8bf2bfaacb282d974d44a9cd194866b9dd9715",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:09Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-2-5-0-1-riscv64-rpm-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.riscv64.rpm-keyless.pem",
+      "sha256": "2f97cc10a79a37dcc94b0c4f7380b24970e041c319a90f16e7b29aa969a5593f",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:09Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-2-5-0-1-riscv64-rpm-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.riscv64.rpm-keyless.sig",
+      "sha256": "489b2f3c7aa2b177e2751bb8db8173a47714801f17ec9e692655d56f4474ff98",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:09Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-2-5-0-1-s390x-rpm-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.s390x.rpm-keyless.pem",
+      "sha256": "f7d69f67e6dc4e904881ded402ff9c85d236d5f6527933c07fceee824174be64",
+      "size": 1424,
+      "retrieved_utc": "2026-09-16T23:08:09Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-2-5-0-1-s390x-rpm-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.s390x.rpm-keyless.sig",
+      "sha256": "8fa87ed02d95849c4fc823571dedf7623c6c2d75d1993f69c4711434a85c734e",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:10Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-2-5-0-1-x86_64-rpm-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.x86_64.rpm-keyless.pem",
+      "sha256": "3ad1a6295cafd3392c3886325be542f87e0089e59ec201fdbb8f1ae98242cd55",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:10Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-2-5-0-1-x86_64-rpm-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.x86_64.rpm-keyless.sig",
+      "sha256": "84674c2b811e243847dd6a3c9a0024715b93b3a9e6e09c2fdee5da19b61935dd",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:10Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-darwin-amd64-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-amd64-keyless.pem",
+      "sha256": "c307cfd37b39c6f43105f9e9893d1131ce133c63937782070a9fe160c6c4b0ae",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:10Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-darwin-amd64-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-amd64-keyless.sig",
+      "sha256": "38d4c63346970eaab4dc942ec249caced66a9aaf9dad2b601d933953b11443c6",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:11Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-darwin-amd64-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-amd64.sig",
+      "sha256": "c88e76c93136de14ff08990d7879208bba77a7e60372f2d0453e29f0449f817b",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:11Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-darwin-amd64_2-5-0_darwin_amd64-sbom-json": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-amd64_2.5.0_darwin_amd64.sbom.json",
+      "sha256": "1a35955f48a3887af561f135be72ad65b88732c8ad0175a52f12f0efa019962b",
+      "size": 417687,
+      "retrieved_utc": "2026-09-16T23:08:11Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-darwin-arm64-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-arm64-keyless.pem",
+      "sha256": "2f37343d9dc1bada256313b97da6fc8eed0efa8441a1c376999dd0bd5a7b86b8",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:12Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-darwin-arm64-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-arm64-keyless.sig",
+      "sha256": "5426fcd56d92d2b8ebf6b725b148c88909bf8a2681724d39bd57df552fa521a6",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:12Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-darwin-arm64-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-arm64.sig",
+      "sha256": "8ed387839dbdb1dacc7dd5a42a07a7ec1f3e1095f3db43e2bf785eba457af21f",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:12Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-darwin-arm64_2-5-0_darwin_arm64-sbom-json": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-arm64_2.5.0_darwin_arm64.sbom.json",
+      "sha256": "a3f347b74d2e073147b328dd7bf1b4a7f1337d76b1d08844f209f1d5d3755f3f",
+      "size": 417687,
+      "retrieved_utc": "2026-09-16T23:08:12Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-amd64-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-amd64-keyless.pem",
+      "sha256": "3ef9738123dc20796cc7e002a25b8f9054a6ebd4a1f3ae66e997b45f39e3d2bf",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:13Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-amd64-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-amd64-keyless.sig",
+      "sha256": "76e797a5fc81f5338bbd13fbc1322931d35d1ad0e2c65a076671516ce61ed669",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:13Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-amd64-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-amd64.sig",
+      "sha256": "46ae6d99440933dacbef4f24a333b6b10bd4d65468bc1cd5e53e0149b6a4c4d6",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:13Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-amd64_2-5-0_linux_amd64-sbom-json": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-amd64_2.5.0_linux_amd64.sbom.json",
+      "sha256": "27c8f8ca3c0308c40969a66d684a76f36afb54fc870c41a9f6c713d56150b23a",
+      "size": 408257,
+      "retrieved_utc": "2026-09-16T23:08:13Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-arm-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm-keyless.pem",
+      "sha256": "83034ff482a103dcd709430e73c95658bcedc816d71c61b606e3776f89608ee4",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:14Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-arm-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm-keyless.sig",
+      "sha256": "424a197a629c434ed6a7e153c63bd72b27b137ccf164581869b0136869a6406e",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:14Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-arm-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm.sig",
+      "sha256": "fbbc65614a8a3f34df78db7528b5fc1226f4dc9bd3f08bc349675d124dc2d7e9",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:14Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-arm64-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm64-keyless.pem",
+      "sha256": "fb62e9df1609256dcf76fd4fdac41a3169586722d731d6f32019791b42aad4f6",
+      "size": 1424,
+      "retrieved_utc": "2026-09-16T23:08:14Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-arm64-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm64-keyless.sig",
+      "sha256": "da7e74d8573b351b84a2013c78ecee7e37f903038afef2bd0c5ab15f71a79ff7",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:15Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-arm64-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm64.sig",
+      "sha256": "84ae68aaea61f3283cee4bf9a92f9c2a0bedab925b691e6971eb13b3e975db1d",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:15Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-arm64_2-5-0_linux_arm64-sbom-json": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm64_2.5.0_linux_arm64.sbom.json",
+      "sha256": "6896e1471a46e4250b684e391799fcf66065d42d246d03ec9825d6e06b62ebd9",
+      "size": 408257,
+      "retrieved_utc": "2026-09-16T23:08:15Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-arm_2-5-0_linux_arm-sbom-json": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm_2.5.0_linux_arm.sbom.json",
+      "sha256": "10b34ae71782467640596f935ee5f15c9ce92503faf66445b2f34c57b6696d60",
+      "size": 406761,
+      "retrieved_utc": "2026-09-16T23:08:16Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-pivkey-pkcs11key-amd64-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-amd64-keyless.pem",
+      "sha256": "8d56e40b90926f6d356bca294740d84e5c2b9cd702c14daf89b02759e30a363c",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:16Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-pivkey-pkcs11key-amd64-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-amd64-keyless.sig",
+      "sha256": "a82bfa2a2880ef345b761d5b154e9af987e775b3c0ded800c8e48b6aa6788a3c",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:16Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-pivkey-pkcs11key-amd64-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-amd64.sig",
+      "sha256": "9bc26aaf9820063ccf5af149aff6c4dfe51cc47362544bfc8cadb3adc8369924",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:17Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-pivkey-pkcs11key-amd64_2-5-0_linux_amd64-sbom-json": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-amd64_2.5.0_linux_amd64.sbom.json",
+      "sha256": "b41767c8d86596549f64d9f1b88b90dd87c60073716ba068470d2d999be94dd9",
+      "size": 431445,
+      "retrieved_utc": "2026-09-16T23:08:17Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-pivkey-pkcs11key-arm64-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-arm64-keyless.pem",
+      "sha256": "16dea34c98544ec2079b2e095e5074e98453f55f29e8dc09b088c44560da106b",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:17Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-pivkey-pkcs11key-arm64-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-arm64-keyless.sig",
+      "sha256": "e00e4cbc6261cd3d71a63a7b1109d13ce2f2c4799984d06fcc706d0d5f4eff5a",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:17Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-pivkey-pkcs11key-arm64-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-arm64.sig",
+      "sha256": "de71d89c98b6dbbba3181e26275305f7f7d1f9d40f78f5b963ec57663fa23b5c",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:18Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-pivkey-pkcs11key-arm64_2-5-0_linux_arm64-sbom-json": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-arm64_2.5.0_linux_arm64.sbom.json",
+      "sha256": "64a8823e8777e667cc1cf49b3250a830b7d746a7b0775305e06af7e348e84332",
+      "size": 431445,
+      "retrieved_utc": "2026-09-16T23:08:21Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-ppc64le-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-ppc64le-keyless.pem",
+      "sha256": "0d2a03981cff73c6777483a4d3e459c2aa4bda200b17fa2589eaea47d7e373b4",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:21Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-ppc64le-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-ppc64le-keyless.sig",
+      "sha256": "7449d3125541ed624d2bd539560f06441637f5d651b00f5ce4fd35801a4400f8",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:21Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-ppc64le-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-ppc64le.sig",
+      "sha256": "6a191e0fb0a2bc929ff94e1d4ff46726a5aa487b38bbaeb87a74a8c0d39aaa07",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:21Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-ppc64le_2-5-0_linux_ppc64le-sbom-json": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-ppc64le_2.5.0_linux_ppc64le.sbom.json",
+      "sha256": "2ee00bf999737cb2137635d61fb3194a92a4b63acaa076f8b401db6270857c82",
+      "size": 409753,
+      "retrieved_utc": "2026-09-16T23:08:22Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-riscv64-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-riscv64-keyless.pem",
+      "sha256": "0e8e60669bd95b6340198fd7aed8bdb2e69557ed1426da0f1412ae8791ac3a87",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:22Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-riscv64-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-riscv64-keyless.sig",
+      "sha256": "312fdee41e7903ef9142aab30ef2b35262fa71038b27fe042b2d55d63549093b",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:22Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-riscv64-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-riscv64.sig",
+      "sha256": "eed573a9655fade5687b5f4edd5fbf21aa5e2f5a55780dcbc16db3456954665d",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:23Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-riscv64_2-5-0_linux_riscv64-sbom-json": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-riscv64_2.5.0_linux_riscv64.sbom.json",
+      "sha256": "3c5b7dd322819a897dba848758a4d42a2be407665998ad08ec2561a09f703bce",
+      "size": 409753,
+      "retrieved_utc": "2026-09-16T23:08:23Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-s390x-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-s390x-keyless.pem",
+      "sha256": "3a43a3ae1948cf1234da6cc88832d6cec234e50607c9423bf71ed079c6a20605",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:23Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-s390x-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-s390x-keyless.sig",
+      "sha256": "65f46abe48f46b1a048ea910aad861b891e68c3b5a11c4805020e7a97ae0090a",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:24Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-s390x-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-s390x.sig",
+      "sha256": "409d1d983ede2815e2ed411b6062e6fc170383467aed23b42403cad892fd552a",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:24Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-linux-s390x_2-5-0_linux_s390x-sbom-json": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-s390x_2.5.0_linux_s390x.sbom.json",
+      "sha256": "6525e73945b365cf4e941548dc687e9f05d1215d9a3e496b1c18f2f95ed50e45",
+      "size": 408257,
+      "retrieved_utc": "2026-09-16T23:08:25Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-windows-amd64-exe-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-windows-amd64.exe-keyless.pem",
+      "sha256": "3709e33a4bf762434271e02dd511d0a0418366bdfb154d9ef67bebc05dead7a5",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:25Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-windows-amd64-exe-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-windows-amd64.exe-keyless.sig",
+      "sha256": "1a7c826f6d24f0802f7a554ace92924c47348e1c38ecab839c5b7a7a37896b60",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:25Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-windows-amd64-exe-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-windows-amd64.exe.sig",
+      "sha256": "c9bdac16a172aa972fc978e3387ed31a2793f027ea7b3982f78851322295da60",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:25Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign-windows-amd64-exe_2-5-0_windows_amd64-sbom-json": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-windows-amd64.exe_2.5.0_windows_amd64.sbom.json",
+      "sha256": "23c1021e9810bc424b3aea1bee623742f5e81a7f2747d49aac882afc5227a290",
+      "size": 426482,
+      "retrieved_utc": "2026-09-16T23:08:26Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_aarch64-apk-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_aarch64.apk-keyless.pem",
+      "sha256": "e7063581e82c045d6cf8043689cc1bcf13530dc2a7072a462b87796dd68d238b",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:26Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_aarch64-apk-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_aarch64.apk-keyless.sig",
+      "sha256": "ebeb809d2ec8afeb2bab78244ac92636e6458b1769e29a270d2cf232362a4fb8",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:26Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_amd64-deb-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_amd64.deb-keyless.pem",
+      "sha256": "429a3a8b06c149037568bd5d62690e4ee4b123a8562300aaf7cc81fe3cd1e570",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:27Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_amd64-deb-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_amd64.deb-keyless.sig",
+      "sha256": "baaad22f738ff978c659d6c3b47300f575d80a092d819a12fbc29ce14b2b7aa6",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:27Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_arm64-deb-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_arm64.deb-keyless.pem",
+      "sha256": "57732b60a69e7e9d5ae854548f5cae7660279f6d0b09cbc26f74b05162897dbe",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:27Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_arm64-deb-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_arm64.deb-keyless.sig",
+      "sha256": "cf8fa00f9bb10d23585c5ef3c325df1c60bb1f03fe4603b2ab8eca90ea3199cf",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:27Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_armhf-deb-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_armhf.deb-keyless.pem",
+      "sha256": "73b67d6700e24ce6430a347db690d1a90a846c5664592e3bd994971616c47f98",
+      "size": 1424,
+      "retrieved_utc": "2026-09-16T23:08:28Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_armhf-deb-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_armhf.deb-keyless.sig",
+      "sha256": "ba491d937ae0ea9e07b5849672f47cb5b477729b0a327a9284d2ec70a66554e7",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:28Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_armv7-apk-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_armv7.apk-keyless.pem",
+      "sha256": "6229abb0bd430f38ee9b9431d966b4a0e842a0dfed70ba5ca2e943ab84240292",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:28Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_armv7-apk-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_armv7.apk-keyless.sig",
+      "sha256": "3c0614f0d660cea8ea4cd99853501b723160b550851fd1b6a556afc5a403c948",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:28Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_ppc64el-deb-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_ppc64el.deb-keyless.pem",
+      "sha256": "a9f30169552d1911dd1a98017e41c4fc619022db9ca263d81f7c39f5c527fddc",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:29Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_ppc64el-deb-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_ppc64el.deb-keyless.sig",
+      "sha256": "e900ea0920ae40446da5525d0ab55ea59cdbfeb71a859c3a572d3d69076eb9b9",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:29Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_ppc64le-apk-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_ppc64le.apk-keyless.pem",
+      "sha256": "486cf6492ddbfa825af44145054506ab4b5cb1fc6d8c512c66e1a6e1f76013de",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:29Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_ppc64le-apk-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_ppc64le.apk-keyless.sig",
+      "sha256": "7dc720eec20452f8c50a46e80156f2eff4b47a807fe99849f8dca3e88cc3e4ee",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:29Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_riscv64-apk-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_riscv64.apk-keyless.pem",
+      "sha256": "f9fbf5b9e237688e45228fbeef95d0ecf25a20762981c09ec38ccc30aa5e34bd",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:31Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_riscv64-apk-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_riscv64.apk-keyless.sig",
+      "sha256": "6e3ae4cc6f2839d5a1b3a992685a7c5ffe69066cbee4c0c5701a240b91188d49",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:31Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_riscv64-deb-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_riscv64.deb-keyless.pem",
+      "sha256": "b2457cb0eb9f0d15863f5493ccf440436115624968d01e74027add0f66ab9a47",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:31Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_riscv64-deb-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_riscv64.deb-keyless.sig",
+      "sha256": "2ebca60fa7b43218e913654086c3be31cd07fb72d9b635a74f31583aa04e81e3",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:31Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_s390x-apk-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_s390x.apk-keyless.pem",
+      "sha256": "86e4473940dfad35b62a9b3cfbe36182a15947a1f6d9d6f43ecb1b72419fb12f",
+      "size": 1424,
+      "retrieved_utc": "2026-09-16T23:08:32Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_s390x-apk-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_s390x.apk-keyless.sig",
+      "sha256": "2a15ea3621ad1e3674f77cad0ac645eed6fc3086cc4e5716616fc6084eb753e3",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:32Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_s390x-deb-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_s390x.deb-keyless.pem",
+      "sha256": "2d7c1d29d78a76c11ff823f204343536c5868e70c69c8605c21511f1d6437f1c",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:32Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_s390x-deb-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_s390x.deb-keyless.sig",
+      "sha256": "d174618fe0c581636147b58c8020a6996a0dbba9be52ec07072dbf038f836229",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:32Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_x86_64-apk-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_x86_64.apk-keyless.pem",
+      "sha256": "3b0593b8bc2bb2dfce1eb1724cbb77536205866fdb941f1065b682ccd2b103aa",
+      "size": 1424,
+      "retrieved_utc": "2026-09-16T23:08:33Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_2-5-0_x86_64-apk-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_x86_64.apk-keyless.sig",
+      "sha256": "28b56e569b4f954a577ec07e82f378699f5b028a1fa5d89e764b847580bb9008",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:33Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_checksums-txt": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_checksums.txt",
+      "sha256": "7cb837d10e9f8fa84f40cbc0310be5d0c2f18e40ff3bfcba3c9ae447920a092e",
+      "size": 3906,
+      "retrieved_utc": "2026-09-16T23:08:33Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_checksums-txt-keyless-pem": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_checksums.txt-keyless.pem",
+      "sha256": "3a3e912d712083174cffd3e09fdbd8520366186f2bcb77aa4da6ca61d5c58c71",
+      "size": 1428,
+      "retrieved_utc": "2026-09-16T23:08:33Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "cosign_checksums-txt-keyless-sig": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_checksums.txt-keyless.sig",
+      "sha256": "d3fd76d05d757405e91b11bf53c9dc76388dfe7384f82a272c427032c52d45b7",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:08:34Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "release-cosign-pub": {
+      "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/release-cosign.pub",
+      "sha256": "f4cea466e5e887a45da5031757fa1d32655d83420639dc1758749b744179f126",
+      "size": 178,
+      "retrieved_utc": "2026-09-16T23:08:34Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "491c7a947b23f46e45d02a082cd6ae03e5b91ac102365786650ff5a2dfa0d043",
+    "logical_tree_sha256": "e8fb4c4d543a695ec48895462eed60fc69a6ffacdd9cfc2623867d9aac2004fc",
+    "pinned_utc": "2026-09-16T23:08:34Z"
+  },
+  "history": []
+}

@@ -1,0 +1,106 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f15-tuning-real-ubuntu-noble-ova-raw",
+  "family": "F15",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "ubuntu-noble",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "9fe6e10ff385200b25b1f6a33f03c9968311617dbab85ecfcd1e410139137516",
+  "materialization_key": "9d3b853edf012fae3d5ce2ac5f93f16cd2e12299963a9e3b861b7ce702fbd123",
+  "materialized_utc": "2026-09-16T23:18:49Z",
+  "materialized_relpath": "corpus/tuning/f15-tuning-real-ubuntu-noble-ova-raw",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "97c4ce53af6beb285dc76ef77e7c8019f6d630f08f725b6202991f3b33bdb837",
+    "pinned_utc": "2026-09-16T23:18:49Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 3758097030,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ova",
+        "url": "https://cloud-images.ubuntu.com/releases/noble/release-20260911/ubuntu-24.04-server-cloudimg-amd64.ova",
+        "final_url": "https://cloud-images.ubuntu.com/releases/noble/release-20260911/ubuntu-24.04-server-cloudimg-amd64.ova",
+        "sha256": "ff79f630b7c845c0bb0f157db735837a9be4714be9e44ed54f11af156e4cc33a",
+        "size": 594145280,
+        "retrieved_utc": "2026-09-16T23:12:12Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "ubuntu-24.04-server-cloudimg-amd64.ova"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g2-generated/shrink_real_disk_image.py",
+      "script_sha256": "73a36c68e34d5fdb6aeae802b191cc56b4f29dc50fa80cb4f59f71d0857e6f44",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 51007,
+      "params": {
+        "mode": "ova-vmdk",
+        "ova_input": "ova",
+        "vmdk_member": "ubuntu-noble-24.04-cloudimg.vmdk",
+        "src_format": "vmdk",
+        "dst": "ubuntu-noble-24.04-cloudimg.raw",
+        "allow_shrink": true
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "7afbbb43f44d6ae9b08ba7a02e903d3dc500860b3ac779e43098764bdde68833",
+    "logical_tree_sha256": "97c4ce53af6beb285dc76ef77e7c8019f6d630f08f725b6202991f3b33bdb837",
+    "content_tree_sha256": "dfc4275d14d4323f5854491eaf174b0a5d8a57fd157f774385a5cd75a04ea257",
+    "extended_tree_sha256": "608fda32829eb7e7a6659ef43ee40d2eb8484ab1e74d935835b5877134e6a4d3",
+    "bytes": 3758097030,
+    "bytes_all_paths": 3758097030,
+    "allocated_bytes": 1876434944,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "unique_file_inodes": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 31,
+      "path_length_bytes": {
+        "min": 15,
+        "max": 31,
+        "mean": 23.0,
+        "p50": 15,
+        "p95": 31
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

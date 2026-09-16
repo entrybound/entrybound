@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f18-heldout-firefox-155-releases",
+  "inputs": {},
+  "output": {
+    "materialization_key": "7172b89803577eaad0eba3ee5ae17beb20a222ae841d9bce9e7c07a1a71a80ee",
+    "logical_tree_sha256": "941e4bd8c44cefac1103568bc703b94444c1c27379dfd31a0f512153f6a7aa44",
+    "pinned_utc": "2026-09-16T23:14:55Z"
+  },
+  "history": []
+}
