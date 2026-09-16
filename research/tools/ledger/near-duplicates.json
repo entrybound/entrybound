@@ -1,6 +1,6 @@
 {
   "schema": "entrybound-near-duplicates/v1",
-  "description": "Adjudications for near-duplicate candidates: rows from different merge jobs of one cluster whose TF-IDF cosine (requirement_or_question or question plus key tokens) is at least review_threshold. Merges fold rows into the named survivor; distinct pairs stay separate. Every candidate at or above review_threshold in round 0 was reviewed on 2026-09-16.",
+  "description": "Adjudications for near-duplicate candidates: rows from different merge jobs of one cluster, and pairs involving a row added by addenda, whose TF-IDF cosine (requirement_or_question or question plus key tokens) is at least review_threshold. Merges fold rows into the named survivor; distinct pairs stay separate. Every candidate at or above review_threshold in round 0 was reviewed on 2026-09-16; the round 1 addenda candidates were reviewed on 2026-09-16.",
   "review_threshold": 0.3,
   "auto_merge_threshold": 0.7,
   "merges": [
@@ -1795,6 +1795,86 @@
       ],
       "cosine": 0.418,
       "reason": "Capture semantics and crate versus bound values and refusal classes."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "compression",
+      "keys": [
+        "experimental-frozen-generation-status",
+        "program-compression-capability-stable-v1-disposition"
+      ],
+      "cosine": 0.309,
+      "reason": "Reviewed round 1 (addenda-added row): Task 34 disposition inventory for all unfinished compression capabilities versus the codec-transform doc's statement of what 'experimental frozen' commits to; the inventory spans more capabilities and has a different source and kind."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "container",
+      "keys": [
+        "program-container-capability-stable-v1-disposition",
+        "program-task11-format-revision-assessment"
+      ],
+      "cosine": 0.409,
+      "reason": "Reviewed round 1 (addenda-added row): Task 34 assigns a stable-v1 disposition to every unfinished container capability; Task 11 decides from measured evidence whether a format revision is justified. Overlapping capability list, different obligation and decision."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "container",
+      "keys": [
+        "program-container-capability-stable-v1-disposition",
+        "section-type-registry-and-numbering"
+      ],
+      "cosine": 0.322,
+      "reason": "Reviewed round 1 (addenda-added row): The disposition inventory lists the section-type registry as one item; the registry row is the doc-sourced open question on renumbering and stable ids."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "frozen-crypto-cli-surface-divergence",
+        "signature-cli-surface-and-management"
+      ],
+      "cosine": 0.355,
+      "reason": "Reviewed round 1 (addenda-added row): Divergence between docs/crypto-suite-v1.md's frozen key/sign CLI and the implemented synopsis versus the SPEC's missing signature management commands; different authority and question."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "encrypted-creation-and-unlock-cli-surface",
+        "frozen-crypto-cli-surface-divergence"
+      ],
+      "cosine": 0.318,
+      "reason": "Reviewed round 1 (addenda-added row): SPEC pack --recipient/--password creation and unlock capability versus the docs-frozen key and sign synopsis divergence."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "ecosystem",
+      "keys": [
+        "program-heldout-unlock-and-design-freeze-protocol",
+        "program-incumbent-comparison-and-heldout-final-evaluation"
+      ],
+      "cosine": 0.325,
+      "reason": "Reviewed round 1 (addenda-added row): Design-freeze commit, held-out lock and post-unlock change policy versus the incumbent comparison and final evaluation itself; the protocol row governs when and how the evaluation may run."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "ecosystem",
+      "keys": [
+        "program-cli-first-use-usability-evaluation",
+        "program-usability-evaluation-without-human-participants"
+      ],
+      "cosine": 0.323,
+      "reason": "Reviewed round 1 (addenda-added row): The Task 33 obligation (what first-time users must manage) versus the substitute method and evidence ceiling when human participants are unavailable; the critic linked them rather than restating one."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "program-dual-publishing-sidecar-receipt-stable-v1",
+        "program-legacy-capability-stable-v1-disposition"
+      ],
+      "cosine": 0.311,
+      "reason": "Reviewed round 1 (addenda-added row): Dual publishing, sidecars and receipts are one item of the legacy disposition inventory; the dual-publishing row also covers composition with crypto and consumer verification."
     }
   ],
   "distinct_collisions": []

@@ -78,26 +78,38 @@ must therefore accept both CRLF and LF record separators. The tool always writes
    this run or of `id-map.json`, in which case the update is redirected to the survivor.
    `additional_sources` are unioned by `local_key`. Every other non-empty field replaces the old value,
    and lists are replaced whole. `correction_reason` is logged. `status` is accepted as a synonym of
-   `initial_status`, and `blocker_class` overrides the derived class. A row with an unknown key is a new
-   row and must carry the required fields.
-5. **Cross-cluster dedupe.** Rows in different clusters that claim the same primary `local_key` merge. The
+   `initial_status`, and `blocker_class` (or `_blocker_override`) overrides the derived class. A row with an
+   unknown key is a new row and must carry the required fields. A row with `correction_reason` is logged
+   as a correction. When a replaced list loses items (reference lists are compared after resolution,
+   candidates by `candidate_id`), the dropped items are listed under the addendum in the assembly log.
+5. **Near-duplicates involving addenda rows.** After addenda are applied, step 3 runs again over the
+   post-addenda table, restricted to pairs that include a row added by an addendum (a different job
+   from every merge job and from other addenda files). The same adjudication file and thresholds apply.
+   Adjudicated merges that name a row only an addendum adds are deferred to this pass. In round 1, the 8
+   candidates (all requirement pairs, cosine 0.309-0.409) were reviewed and kept distinct.
+6. **Cross-cluster dedupe.** Rows in different clusters that claim the same primary `local_key` merge. The
    survivor is the row in the extraction record's `primary_cluster`. Keys shared as supporting references
    are not merged and are listed in the coverage report.
-6. **Reference resolution.** `decision_keys` and `requirement_keys` may be bare keys (same cluster first,
+7. **Reference resolution.** `decision_keys` and `requirement_keys` may be bare keys (same cluster first,
    then a unique match in another cluster), `cluster/key`, or stable IDs. Aliases are followed. Links are
    symmetric: a link declared on either side appears in both `decision_ids` and `requirement_ids`.
    Unresolved or ambiguous references are validation errors.
-7. **Integrity and coverage.** Every decision must reference at least one requirement. Every requirement
+8. **Integrity and coverage.** Every decision must reference at least one requirement. Every requirement
    with `decision_needed` must reference at least one decision. Every program section in 8.1-8.8, 9-21,
    22.1-22.5 and 23-35 must appear in at least one decision. Every `additional_sources.local_key` must
    exist. Every extraction key must be referenced by a requirement row, either as its primary key or in
    `additional_sources`.
-8. **Stable IDs, outputs, schema validation.** The CSV is read back and every row is validated against
+9. **Stable IDs, outputs, schema validation.** The CSV is read back and every row is validated against
    the requirement schema. Every decision row is validated against the decision schema.
 
 **Primary key** of a requirement row: the extraction key in the last bracket of `source_location`, else
 `source_local_key`, else the `additional_sources` entry whose location equals `source_location` (the
 access and integrity merges record their primary key this way). PROGRAM rows have none.
+`source_local_key` is a merge-input field, not a ledger column. When it is the only place the key
+appears, the CSV `source_location` gets ` [<key>]` appended, and the change is logged under "Primary keys
+made visible". After the CSV is written, the assembler reads it back and fails validation if any covered
+extraction key is not visible in the CSV (a `source_location` bracket or an `additional_sources` entry).
+Round 1 made 70 integrity-cluster primary keys visible this way.
 
 **Field merge rules.**
 - Requirements:
@@ -129,6 +141,12 @@ access and integrity merges record their primary key this way). PROGRAM rows hav
 - **Round 0 fixes.** `assembler-round0.jsonl` holds two kinds of fix. It links 19 requirements to decisions
   that their `decision_needed` text named or that own their question, and it adds the decision
   `crypto/stream-layout-signing-support`.
+- **Round 1.** The critic addenda `round1-spec-research.jsonl`, `round1-appendix-docs.jsonl` and
+  `round1-program-code.jsonl` added 17 requirements and 12 decisions and corrected 46 rows. The
+  round 1 assembly found 0 uncovered extraction keys and 0 integrity errors, so it wrote neither
+  `assembler-coverage-round1.jsonl` nor `assembler-round1.jsonl`. Three new crypto rows cite
+  `docs/crypto-suite-v1.md` L721-852, which has no extraction record, so they have no primary
+  `local_key`. They are reported as warnings.
 
 ### Stable IDs (`research/audit/id-map.json`)
 
@@ -153,7 +171,9 @@ fields: experiment and result references, counterevidence, sensitivity analysis,
 - **Later-phase rows.** If any `history` entry was written by a later phase (the change text does not
   start with `created by Phase A audit` or `assembler:`), `status` and `blocker_class` are preserved.
 - **Audit-owned rows.** Otherwise the status is re-derived from the inputs. A change appends one
-  `assembler:` history entry.
+  `assembler:` history entry. The entry names its cause: the addendum that set the status or blocker
+  class, or the addenda that changed `implementation_state` on a linked requirement, or otherwise
+  "reassembled inputs".
 - **Retired IDs.** A ledger row whose ID was retired by a merge has its evidence absorbed into the
   survivor, with a history entry.
 - **Unknown IDs.** A ledger row with an unknown ID is kept unchanged and reported as an error.

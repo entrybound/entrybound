@@ -10,7 +10,7 @@ Authority rank (1 = highest): **1** repository docs, code, tests, tools and mani
 `9e44608` (they supersede the SPEC where they freeze or refine it); **2** the SPEC (supersedes Research
 I-III and the appendix); **3** Research I-III, the research appendix and the Research III instrumentation
 (evidence base). PROGRAM (the research program brief) is not a file input: it adds research obligations only
-and is cited by 75 requirement rows.
+and is cited by 89 requirement rows.
 
 *Extraction slice keys* lists the `research/audit/extract` slices whose records cite the source, with record
 counts. *Citing rows* counts requirement-ledger rows that cite the source as primary or additional source.
@@ -22,7 +22,7 @@ Files inventoried: 199.
 
 | path | SHA-256 | bytes | lines | role | authority rank | extraction slice keys | citing rows |
 |---|---|---:|---:|---|---:|---|---:|
-| `design/2026-08-29-entrybound-product-architecture.md` | `1f881c7b13f193b41353b90066d33ca6abcb7d4c3dcd4f58e22834801f0fe29c` | 252238 | 2754 | Product Architecture Specification v1.2 (SPEC; normative product architecture) | 2 | spec-01 (242), spec-02 (181), spec-03 (229), spec-04 (223), spec-05 (199), spec-06 (237), spec-07 (275), spec-08 (313) | 693 |
+| `design/2026-08-29-entrybound-product-architecture.md` | `1f881c7b13f193b41353b90066d33ca6abcb7d4c3dcd4f58e22834801f0fe29c` | 252238 | 2754 | Product Architecture Specification v1.2 (SPEC; normative product architecture) | 2 | spec-01 (242), spec-02 (181), spec-03 (229), spec-04 (223), spec-05 (199), spec-06 (237), spec-07 (275), spec-08 (313) | 695 |
 | `research/2026-08-29-archive-category-research.md` | `bc524da26e85e20bce515b81a9e84ba1a412599ca66b08bdda7ab3005c4b8cfe` | 184616 | 1147 | Research I: archive category research (evidence base) | 3 | r1-a (320), r1-b (350) | 220 |
 | `research/2026-08-29-entrybound-opportunity-validation.md` | `8c3575a463e492d99298400c2bf77f0f8b6fa260368671b23398e00c9c1bd301` | 137543 | 816 | Research II: opportunity validation (evidence base) | 3 | r2 (366) | 114 |
 | `research/2026-08-29-entrybound-research-iii-final-gate.md` | `bb209e0c74bf3aac4067efdf54aeb70efd0cee232945903e6b11d1bdfee495c3` | 124436 | 1333 | Research III: final gate (evidence base) | 3 | r3-a (208), r3-b (181) | 103 |
@@ -122,7 +122,7 @@ Files inventoried: 199.
 | `README.md` | `d08fcee15f8f5b1c0380dc6a23b46f7627f61fe74829e036853a8053974a1d1a` | 21839 | 404 | repository metadata | 1 |  | 0 |
 | `crates/entrybound-cli/Cargo.toml` | `996dc5e282f9dfc535afe2c1531a7412127ebfd81dff7b4506ee9c9605b8cee1` | 761 | 35 | Cargo manifest (entrybound-cli) | 1 | code-cli (3), code-deps-tests-tools (3) | 5 |
 | `crates/entrybound-cli/src/bin/entrybound.rs` | `a3bb513a7d479f076fde336cf9ce7b42b3b7fdae436ce7092441f0be6ba64067` | 88 | 5 | crate source (entrybound-cli) | 1 |  | 0 |
-| `crates/entrybound-cli/src/lib.rs` | `b4f687cfee47d1eec814fba263dd33c38045482c9bcf3d796d37bddb591dfc7b` | 238978 | 6179 | crate source (entrybound-cli) | 1 | code-access (5), code-cli (217), code-crypto-b (1), code-deps-tests-tools (4), code-legacy-a (2), code-legacy-b (2) | 147 |
+| `crates/entrybound-cli/src/lib.rs` | `b4f687cfee47d1eec814fba263dd33c38045482c9bcf3d796d37bddb591dfc7b` | 238978 | 6179 | crate source (entrybound-cli) | 1 | code-access (5), code-cli (217), code-crypto-b (1), code-deps-tests-tools (4), code-legacy-a (2), code-legacy-b (2) | 150 |
 | `crates/entrybound-cli/src/main.rs` | `a3bb513a7d479f076fde336cf9ce7b42b3b7fdae436ce7092441f0be6ba64067` | 88 | 5 | crate source (entrybound-cli) | 1 | code-cli (1) | 1 |
 | `crates/entrybound-cli/tests/cli_workflow.rs` | `063303cb17668b780d2055ae14480075de9a96115bd73268c7f31b624344e6a9` | 14793 | 397 | crate test (entrybound-cli) | 1 | code-cli (6), code-deps-tests-tools (7) | 10 |
 | `crates/entrybound-cli/tests/crypto_cli.rs` | `963cee4390b6217af857b5fcbdad1605d0d8a0d88ad444967abf06bbc8e8a566` | 9300 | 315 | crate test (entrybound-cli) | 1 | code-cli (2), code-crypto-b (1), code-deps-tests-tools (3) | 4 |
@@ -187,9 +187,9 @@ Files inventoried: 199.
 | `docs/compressed-stream-import-v1.md` | `1d7b57f122b30b8fc15e9643abe8c3876729209660f6cce396353938596575b1` | 3577 | 72 | repo normative design doc | 1 | docs-legacy (22) | 16 |
 | `docs/compressed-tar-export-v1.md` | `28ce7588c498fe9c24d700b78040c37308514214ced2ce685f67076a993dd260` | 2587 | 67 | repo normative design doc | 1 | docs-legacy (16) | 7 |
 | `docs/cross-file-compression-v1.md` | `ea26527c0445279e479cc795c3041d5431b9ecc10e77950ce16cfafbccd51ecd` | 5985 | 114 | repo normative design doc | 1 | docs-compress (44) | 29 |
-| `docs/crypto-implementation-v1.md` | `9c384ca5d1be4fa7e3b9945197c970ac1da2eff41b374ea1854f2432a59ef380` | 12788 | 219 | repo normative design doc | 1 | docs-crypto-c (68) | 56 |
+| `docs/crypto-implementation-v1.md` | `9c384ca5d1be4fa7e3b9945197c970ac1da2eff41b374ea1854f2432a59ef380` | 12788 | 219 | repo normative design doc | 1 | docs-crypto-c (68) | 58 |
 | `docs/crypto-review-v1.md` | `1db2c88b088588288081904bdf125f638672db7aec68c3765c85fc603a83f5f0` | 36317 | 492 | repo normative design doc | 1 | docs-crypto-c (178) | 101 |
-| `docs/crypto-suite-v1.md` | `51630cc75f80b14895499798067657980edd5c6422b379bb7c72955cb261fa58` | 38833 | 852 | repo normative design doc | 1 | docs-crypto-a (121) | 91 |
+| `docs/crypto-suite-v1.md` | `51630cc75f80b14895499798067657980edd5c6422b379bb7c72955cb261fa58` | 38833 | 852 | repo normative design doc | 1 | docs-crypto-a (121) | 94 |
 | `docs/crypto-threat-model-v1.md` | `4ca6adfe37e8ce697cb009ee38abce93ca03d4c088258dbc0ba4943226b7d784` | 12002 | 237 | repo normative design doc | 1 | docs-crypto-a (62) | 45 |
 | `docs/crypto-wire-v1-vectors.txt` | `71fec6b72d4b9c6074531c06f10b8c67f13bd67d48a7e3f02e3c8d2e94a43c24` | 11757 | 42 | repo test vectors | 1 | docs-crypto-b (6) | 3 |
 | `docs/crypto-wire-v1.md` | `18cc112dfd1c4e6c36e42ce0c442ea52bdfce80a61ccc76c35fabb143cc74923` | 46521 | 1092 | repo normative design doc | 1 | docs-crypto-b (226) | 115 |
@@ -213,7 +213,7 @@ Files inventoried: 199.
 | `docs/repack-v1.md` | `b71418eea43b5b3f1168328ec288b6852a519ec927161105560a615d2b53a6d1` | 2691 | 51 | repo normative design doc | 1 | docs-access (37) | 21 |
 | `docs/security-metadata-v1-vectors.txt` | `c5a213188db0da3895c04701b20e17d8540152c6abeddfde499c620a1c805f83` | 2168 | 9 | repo test vectors | 1 | docs-fs (5) | 2 |
 | `docs/security-metadata-v1.md` | `83964c56bf448876defd0e8acb033d5f2d885f8150c5abfacefaac2bb0301746` | 7078 | 148 | repo normative design doc | 1 | docs-fs (59) | 27 |
-| `docs/signing-key-management-v1.md` | `5a1455dd075143b26002803fe1b9d6fa89e997d8b96619364100abaa32f920c7` | 4652 | 87 | repo normative design doc | 1 | docs-crypto-c (44) | 33 |
+| `docs/signing-key-management-v1.md` | `5a1455dd075143b26002803fe1b9d6fa89e997d8b96619364100abaa32f920c7` | 4652 | 87 | repo normative design doc | 1 | docs-crypto-c (44) | 34 |
 | `docs/stream-layout-v1.md` | `3f091081919c7304c609ea1bcc32cc7f80c52835f9054a48f4f3ba825316c5da` | 19307 | 434 | repo normative design doc | 1 | docs-format (97) | 54 |
 | `docs/tar-export-v1.md` | `06690043a3d92d7725363e9fd41b8f019779c12b2ceda4b69cc67f58e7d7b420` | 2328 | 62 | repo normative design doc | 1 | docs-legacy (17) | 10 |
 | `docs/tar-import-v1.md` | `ae25974064bea9b3f37cc489d7e7c7d4b2c838b5feaab5de5ac8e29ca58be28a` | 5805 | 110 | repo normative design doc | 1 | docs-legacy (35) | 25 |

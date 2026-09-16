@@ -509,6 +509,7 @@ class Assembler:
         self.edges = set()
         self.req_ids = {}
         self.dec_ids = {}
+        self.deferred_merges = {}
 
     # ----------------------------------------------------------------- loading
     def load_extract(self):
@@ -790,8 +791,15 @@ class Assembler:
         return node
 
     # ----------------------------------------------------------------- near duplicates
-    def near_duplicates(self, record_type):
+    def near_duplicates(self, record_type, added=None):
+        """Merge near-duplicate rows of different jobs within one cluster.
+
+        First pass (added is None): all pairs of merged-job rows. Addenda pass (added is a set of nodes
+        added by addenda): only pairs involving an added row, scored over the post-addenda table.
+        """
         table = self.table(record_type)
+        suffix = "" if added is None else "_addenda"
+        stage_tag = "" if added is None else ", addenda"
         nodes = sorted(table)
         docs = []
         for node in nodes:
@@ -805,6 +813,8 @@ class Assembler:
         for cluster in sorted(by_cluster):
             for a, b in itertools.combinations(by_cluster[cluster], 2):
                 if table[a]["_job"] == table[b]["_job"]:
+                    continue
+                if added is not None and a not in added and b not in added:
                     continue
                 score = cosine(vectors[a], vectors[b])
                 if score >= self.review_threshold:
@@ -825,21 +835,29 @@ class Assembler:
                 distinct.add((entry["cluster"], min(keys), max(keys)))
         score_of = {(a, b): s for a, b, s in candidates}
         score_of.update({(b, a): s for a, b, s in candidates})
-        # Adjudicated merges.
-        for entry in sorted((e for e in self.near["merges"] if e.get("record_type") == record_type),
-                            key=lambda e: (e["cluster"], e["survivor"])):
-            survivor = (entry["cluster"], entry["survivor"])
-            if survivor not in table:
-                self.warnings.append(f"stale near-duplicate adjudication: survivor {record_type} {node_str(survivor)} not found")
+        # Adjudicated merges. Entries naming rows that only addenda add are deferred to the addenda pass.
+        if added is None:
+            work = [(entry, key) for entry in sorted((e for e in self.near["merges"] if e.get("record_type") == record_type),
+                                                     key=lambda e: (e["cluster"], e["survivor"]))
+                    for key in sorted(entry["merged"])]
+        else:
+            work = self.deferred_merges.pop(record_type, [])
+        deferred = []
+        for entry, key in work:
+            survivor = self.follow(record_type, (entry["cluster"], entry["survivor"]))
+            node = (entry["cluster"], key)
+            if survivor not in table or node not in table:
+                missing = node_str(survivor) if survivor not in table else node_str(node)
+                if added is None:
+                    deferred.append((entry, key))
+                else:
+                    self.warnings.append(f"stale near-duplicate adjudication: {record_type} {missing} not found")
                 continue
-            for key in sorted(entry["merged"]):
-                node = (entry["cluster"], key)
-                if node not in table:
-                    self.warnings.append(f"stale near-duplicate adjudication: {record_type} {node_str(node)} not found")
-                    continue
-                score = score_of.get((survivor, node))
-                self.merge(record_type, survivor, table[node], reason=entry.get("reason", "adjudicated near-duplicate"),
-                           stage="near-duplicate (adjudicated)", score=score, merged_node=node)
+            score = score_of.get((survivor, node))
+            self.merge(record_type, survivor, table[node], reason=entry.get("reason", "adjudicated near-duplicate"),
+                       stage=f"near-duplicate (adjudicated{stage_tag})", score=score, merged_node=node)
+        if added is None:
+            self.deferred_merges[record_type] = deferred
         # Unadjudicated candidates: auto-merge above the auto threshold, otherwise report.
         unadjudicated = []
         for a, b, score in sorted(candidates, key=lambda c: (-round(c[2], 12), c[0], c[1])):
@@ -853,14 +871,14 @@ class Assembler:
             if score >= self.auto_threshold and fa in table and fb in table:
                 survivor, merged = sorted([fa, fb], key=lambda n: self.survivor_rank(record_type, n))
                 self.merge(record_type, survivor, table[merged], reason=f"auto-merged near-duplicate (cosine {score:.3f})",
-                           stage="near-duplicate (auto)", score=score, merged_node=merged)
+                           stage=f"near-duplicate (auto{stage_tag})", score=score, merged_node=merged)
             else:
                 unadjudicated.append((a, b, score))
         for a, b, score in unadjudicated:
-            self.warnings.append(f"unadjudicated near-duplicate candidate ({record_type}, cosine {score:.3f}): "
+            self.warnings.append(f"unadjudicated near-duplicate candidate ({record_type}{stage_tag}, cosine {score:.3f}): "
                                  f"{node_str(a)} <> {node_str(b)}")
-        self.log[f"unadjudicated_{record_type}"] = unadjudicated
-        self.log[f"candidates_{record_type}"] = len(candidates)
+        self.log[f"unadjudicated{suffix}_{record_type}"] = unadjudicated
+        self.log[f"candidates{suffix}_{record_type}"] = len(candidates)
         return unadjudicated
 
     def survivor_rank(self, record_type, node):
@@ -917,6 +935,7 @@ class Assembler:
         self.prepare_row(update, record_type, partial=True)
         allowed = set(REQ_FIELDS if record_type == "requirement" else DEC_FIELDS) - {"record_type", "cluster", "canonical_key", "decision_key"}
         changed = []
+        dropped = {}
         for field in sorted(update):
             value = update[field]
             if field.startswith("_") and field != "_blocker_override":
@@ -932,7 +951,14 @@ class Assembler:
                 continue
             if field == "_blocker_override":
                 if nonempty(value):
-                    target["_blocker_override"] = value
+                    fixed = normalize_enum("blocker_class", value)
+                    if fixed is None:
+                        self.errors.append(f"{origin}: invalid blocker_class {value!r} (no minimal fix)")
+                        continue
+                    if fixed != value:
+                        self.log["enum_fixes"].append(f"{origin}: blocker_class {value!r} -> {fixed!r}")
+                    target["_blocker_override"] = fixed
+                    target["_status_addendum"] = f"addendum {origin}: {ws(row.get('correction_reason', ''))}".rstrip(": ")
                     changed.append("blocker_class")
                 continue
             if field not in allowed:
@@ -941,11 +967,27 @@ class Assembler:
             if nonempty(value) and target.get(field) != value:
                 if record_type == "decision" and field == "initial_status":
                     target["_status_addendum"] = f"addendum {origin}: {ws(row.get('correction_reason', ''))}".rstrip(": ")
+                if record_type == "requirement" and field == "implementation_state":
+                    target.setdefault("_impl_addenda", []).append(origin)
+                old = target.get(field)
+                if isinstance(old, list) and isinstance(value, list):
+                    def keyfn(item, field=field):
+                        if field in ("decision_keys", "requirement_keys"):
+                            ref_type = "decision" if field == "decision_keys" else "requirement"
+                            resolved, _ = self.resolve(ref_type, item, node[0])
+                            return node_str(resolved) if resolved else str(item)
+                        if isinstance(item, dict) and "candidate_id" in item:
+                            return item["candidate_id"]
+                        return item if isinstance(item, str) else json.dumps(item, sort_keys=True, ensure_ascii=False)
+                    new_keys = {keyfn(item) for item in value}
+                    lost = [keyfn(item) for item in old if keyfn(item) not in new_keys]
+                    if lost:
+                        dropped[field] = lost
                 target[field] = value
                 changed.append(field)
         target.setdefault("_addenda", []).append(origin)
         self.log["addenda_updates"].append({
-            "record_type": record_type, "node": node, "origin": origin, "fields": changed,
+            "record_type": record_type, "node": node, "origin": origin, "fields": changed, "dropped": dropped,
             "reason": ws(row.get("correction_reason", "")), "redirected": redirected})
 
     def add_row(self, record_type, node, row, origin):
@@ -1190,14 +1232,28 @@ class Assembler:
         self.id_map["retired_ids"] = dict(sorted(self.id_map["retired_ids"].items()))
 
     # ----------------------------------------------------------------- outputs
+    def visible_source_location(self, node, row):
+        """source_location with the primary local_key in brackets when the ledger would not otherwise show it."""
+        location = ws(row["source_location"])
+        key = self.primary_key(row)
+        if not key:
+            return location
+        in_brackets = any(key in LOCAL_KEY_RX.findall(inner) for inner in BRACKET_RX.findall(location))
+        in_additional = any(entry["local_key"] == key for entry in row["additional_sources"])
+        if in_brackets or in_additional:
+            return location
+        self.log["primary_key_visible"].append(f"`{node_str(node)}`: source_location {location!r} + [{key}] (from source_local_key)")
+        return f"{location} [{key}]"
+
     def requirement_rows(self):
         rows = []
-        for node, row in self.reqs.items():
+        self.log["primary_key_visible"] = []
+        for node, row in sorted(self.reqs.items()):
             decision_ids = sorted({self.dec_ids[d] for d in self.req_links.get(node, set()) if d in self.dec_ids})
             rows.append({
                 "req_id": self.req_ids[node], "cluster": node[0], "kind": row["kind"],
                 "requirement_or_question": ws(row["requirement_or_question"]), "source": row["source"],
-                "source_location": ws(row["source_location"]),
+                "source_location": self.visible_source_location(node, row),
                 "additional_sources": [{"source": e["source"], "location": ws(e["location"]), "local_key": e["local_key"]}
                                        for e in row["additional_sources"]],
                 "superseding_authority": ws(row["superseding_authority"]), "supersession_note": ws(row["supersession_note"]),
@@ -1259,6 +1315,10 @@ class Assembler:
             return "PLATFORM"
         return "EVIDENCE"
 
+    def linked_state_addenda(self, node):
+        origins = sorted({o for r in self.dec_links.get(node, ()) for o in self.reqs[r].get("_impl_addenda", [])})
+        return f"implementation_state addenda on linked requirements: {', '.join(origins)}" if origins else ""
+
     def decision_rows(self):
         existing = {}
         if DEC_JSONL.exists():
@@ -1313,7 +1373,7 @@ class Assembler:
                 if audit_owned:
                     new_blocker = self.derive_blocker(node, derived_status)
                     if prev.get("status") != derived_status or prev.get("blocker_class") != new_blocker:
-                        why = dec.get("_status_addendum") or "reassembled inputs"
+                        why = dec.get("_status_addendum") or self.linked_state_addenda(node) or "reassembled inputs"
                         row["history"].append({"date": self.date, "change":
                             f"assembler: status {prev.get('status')}/{prev.get('blocker_class')} -> {derived_status}/{new_blocker} ({why})"})
                     row["status"], row["blocker_class"] = derived_status, new_blocker
@@ -1409,7 +1469,9 @@ class Assembler:
         lines = ["# Extraction-key coverage report", "",
                  "Generated by `research/tools/ledger/assemble.py`. A key is covered when at least one requirement",
                  "row references it as its primary key (bracketed key in `source_location`, or the `additional_sources`",
-                 "entry matching `source_location`) or in `additional_sources`.", "",
+                 "entry matching `source_location`) or in `additional_sources`. The assembler checks that every covered",
+                 "key is visible in `research/requirement-ledger.csv` itself (a bracket in `source_location` or an",
+                 "`additional_sources` entry).", "",
                  f"- Extraction records: {len(self.extract)}",
                  f"- Covered: {len(self.extract) - len(self.uncovered)}",
                  f"- Uncovered: {len(self.uncovered)}",
@@ -1455,6 +1517,10 @@ class Assembler:
               f"aliases: {len(self.id_map['requirement_aliases'])} requirement, {len(self.id_map['decision_aliases'])} decision", ""]
         L += ["## Enumeration and format fixes", ""]
         L += [f"- {x}" for x in self.log["enum_fixes"]] or ["None."]
+        L += ["", "## Primary keys made visible in source_location", "",
+              "Rows whose primary extraction key was carried only in the merge-input field `source_local_key` (not a",
+              "ledger column) get it appended in brackets to `source_location`, so coverage is checkable from the CSV alone.", ""]
+        L += [f"- {x}" for x in self.log["primary_key_visible"]] or ["None."]
         L += ["", "## Key collisions within a cluster", ""]
         collision_merges = [m for m in self.log["merges"] if m["stage"] == "key-collision"]
         L += [f"- {x}" for x in self.log["collisions"]]
@@ -1466,7 +1532,8 @@ class Assembler:
             merges = [m for m in self.log["merges"] if m["record_type"] == record_type and m["stage"].startswith("near-duplicate")]
             L += ["", f"## Near-duplicate {record_type} merges across merge jobs", "",
                   f"Candidates: {self.log.get('candidates_' + record_type, 0)} pairs at TF-IDF cosine >= {self.review_threshold:.2f} "
-                  f"between rows of different merge jobs in one cluster; adjudications in "
+                  f"between rows of different merge jobs in one cluster, plus {self.log.get('candidates_addenda_' + record_type, 0)} "
+                  f"pairs involving a row added by addenda (scored after addenda are applied); adjudications in "
                   f"`research/tools/ledger/near-duplicates.json`; unadjudicated pairs at >= {self.auto_threshold:.2f} merge automatically.", ""]
             if merges:
                 ids = self.req_ids if record_type == "requirement" else self.dec_ids
@@ -1477,7 +1544,7 @@ class Assembler:
                              f"({m['merged_origin']}) | {m['stage']} | {score} | {md_cell(m['reason'])} | {md_cell(m['merged_text'])} |")
             else:
                 L.append("None.")
-            pending = self.log.get(f"unadjudicated_{record_type}", [])
+            pending = self.log.get(f"unadjudicated_{record_type}", []) + self.log.get(f"unadjudicated_addenda_{record_type}", [])
             L += ["", f"Unadjudicated {record_type} candidates kept distinct: {len(pending)}", ""]
             L += [f"- {s:.3f} `{node_str(a)}` <> `{node_str(b)}`" for a, b, s in pending]
         L += ["", "## Addenda applied", ""]
@@ -1487,8 +1554,11 @@ class Assembler:
             for item in self.log["addenda_updates"]:
                 redirect = " (redirected from alias)" if item["redirected"] else ""
                 fields = ", ".join(item["fields"]) or "no field changed"
-                L.append(f"- updated {item['record_type']} `{node_str(item['node'])}`{redirect} from {item['origin']} "
+                verb = "corrected" if item["reason"] else "updated"
+                L.append(f"- {verb} {item['record_type']} `{node_str(item['node'])}`{redirect} from {item['origin']} "
                          f"[{fields}]: {item['reason'] or '(no correction_reason)'}")
+                for field, lost in sorted(item.get("dropped", {}).items()):
+                    L.append(f"  - replaced `{field}` dropped {len(lost)} item(s): " + "; ".join(md_cell(x) for x in lost))
         else:
             L.append("None.")
         L += ["", "## Cross-cluster primary-key dedupe", ""]
@@ -1727,6 +1797,10 @@ class Assembler:
         self.near_duplicates("requirement")
         self.near_duplicates("decision")
         self.apply_addenda()
+        for record_type in ("requirement", "decision"):
+            added = {item["node"] for item in self.log["addenda_additions"]
+                     if item["record_type"] == record_type and item["node"] in self.table(record_type)}
+            self.near_duplicates(record_type, added=added)
         self.dedupe_primary_keys()
         self.build_links()
         self.check_integrity()
@@ -1740,9 +1814,17 @@ class Assembler:
         write_text(DEC_SCHEMA, json.dumps(dec_schema, indent=2, ensure_ascii=False) + "\n")
         req_rows = self.requirement_rows()
         self.write_requirement_csv(req_rows)
+        visible_keys = set()
         for row in self.read_back_csv():
             for problem in schema_validate(row, req_schema):
                 self.errors.append(f"requirement-ledger.csv {row.get('req_id')}: {problem}")
+            for inner in BRACKET_RX.findall(row["source_location"]):
+                visible_keys.update(LOCAL_KEY_RX.findall(inner))
+            if isinstance(row["additional_sources"], list):
+                visible_keys.update(e.get("local_key") for e in row["additional_sources"] if isinstance(e, dict))
+        for key in sorted(set(self.extract) - visible_keys):
+            if key in self.referenced:
+                self.errors.append(f"coverage: extraction key {key} is covered but not visible in requirement-ledger.csv")
         dec_rows = self.decision_rows()
         for row in dec_rows:
             for problem in schema_validate(row, dec_schema):
