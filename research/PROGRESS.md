@@ -130,3 +130,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T21:30Z — Corpus g4-binary (42 items, F09/F10/F11/F14/F16) verified and closed out: found and fixed a logical_tree_sha256 extent-map settling defect (SEEK_DATA/SEEK_HOLE, ext4/WSL2) affecting sparse VM-image outputs, one field deeper than the documented tree_sha256/st_blocks issue; repinned 3 F16 items to their settled, content-identical state; idempotence confirmed (2x full verify, 42/42 ok); coverage meets requirements; ~11.93 GiB total (budget ~12 GiB, thin margin).
 - 2026-09-16T21:30Z — crypto-leakage-suite merge: 99 requirements, 27 decisions, 572/572 keys mapped
 - 2026-09-16T21:30Z — Phase A: ecosystem cli-adoption shard merged (109 requirements, 53 decisions).
+- 2026-09-16T21:31Z — crypto-signatures-trust merged: 75 requirements, 51 decisions, 1 key deferred to model cluster
