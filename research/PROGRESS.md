@@ -41,6 +41,7 @@ hashes and extracts the two tarballs to a stable directory.
 | 2026-09-12 | Research checkpoints are committed to `dev` and pushed to public `origin/dev`. `main` is never modified. | Ledgers paraphrase and cite the unpublished inputs by section and hash; the documents themselves are not committed. |
 | 2026-09-12 | Downloads of public third-party corpora and tools are approved. | Large inputs live outside git under `/root/eb-research` (WSL ext4); only source definitions, manifests, and hashes are committed. |
 | 2026-09-12 | Commit and document progress at every atomically meaningful change. | This log plus per-phase commits; workflow scripts are copied into `research/orchestration/workflows/`. |
+| 2026-09-16 | Usage-budget pacing (orchestrator decision after two limit interruptions: the 5-hour limit on 2026-09-13 and the weekly limit on 2026-09-13, reset 2026-09-16). | Check plan usage (`get_usage`) between workflows and keep weekly use at or below about 14% per day. Use Sonnet for mechanical stages (provisioning, verification, harness boilerplate, experiment execution) and the session model for judgment stages (merges, method, experiment design, analysis, adversarial review). Merge agents read compact topic shards (`research/tools/ledger/make_merge_shards.py`). Workflows stay small so progress can be checkpointed and usage re-checked between them. |
 | 2026-09-12 | Production semantics are not changed by experiments. Alternate algorithms/parameters stay in research-only tooling or default-off research features until a Decision Ledger entry is accepted. | Any research feature in production crates must be default-off and proven byte-identical when disabled. |
 
 ## Execution environment
@@ -119,3 +120,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-13T05:43Z — Corpus WIP checkpoint: g4-binary 42 items and g5-media 26 items fingerprinted (group verification pending); g2-generated generators only.
 - 2026-09-13T05:44Z — Resume prep: research/tools/ledger/split_by_cluster.py (crypto 985/543, legacy 850/499 shards); external inputs extracted to D:/eb-research/sources (hash-verified).
 - 2026-09-13T05:49Z — Launched continuations wf_84e35026-465 (A2) and wf_69959eaa-27f (B1c); B2 relaunch deferred; resume procedure extended with interruption recovery steps.
+- 2026-09-16T21:02Z — RESUMED 2026-09-16 after weekly limit (A2 wf_84e35026-465 and B1c wf_69959eaa-27f failed with 0 agents done; no partial outputs). Added make_merge_shards.py (15 topic shards, 100-263 KB compact) and usage pacing policy.
