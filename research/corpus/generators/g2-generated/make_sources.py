@@ -171,7 +171,7 @@ ITEMS += [
          notes="Held-out generated item: apparent size is multi-GiB (large scale) but actual written bytes are "
                "small (sparse), so materialized cost stays modest.",
          tags=["generated"]),
-    item("f15-heldout-coredump", "F15", "heldout", "small", "generate", "generated",
+    item("f15-heldout-coredump", "F15", "heldout", "medium", "generate", "generated",
          {"generator": gen("sparse_coredump.py", 51006,
                            {"cores": 2, "heap_mib": 24, "arenas": 2, "arena_mib": 24, "threads": 3, "stack_mib": 6,
                             "wal_segments": 2, "wal_segment_mib": 32})},

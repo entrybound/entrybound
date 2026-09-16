@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f15-tuning-dbprealloc",
+  "inputs": {},
+  "output": {
+    "materialization_key": "839b95888f1126ec817c5690c2bbb612cd296ca847714a289456fa98e79fa41f",
+    "logical_tree_sha256": "9735dd9a3bbf7d3ac365e019a4788a11c43a112a866c80353b9331e4ca016643",
+    "pinned_utc": "2026-09-16T21:35:19Z"
+  },
+  "history": []
+}

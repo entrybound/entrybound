@@ -326,7 +326,7 @@
       "item_id": "f15-heldout-coredump",
       "family": "F15",
       "split": "heldout",
-      "scale": "small",
+      "scale": "medium",
       "kind": "generate",
       "real_or_generated": "generated",
       "recipe": {

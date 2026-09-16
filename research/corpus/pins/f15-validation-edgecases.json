@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f15-validation-edgecases",
+  "inputs": {},
+  "output": {
+    "materialization_key": "214262c4ad0a33722dd55c06968b09d9e7bcbc564e20ab11066000f0d85142cf",
+    "logical_tree_sha256": "11beccb19b1260a794b342618899ed0364d49802a006c6db7d315c0daf03d3bb",
+    "pinned_utc": "2026-09-16T21:35:20Z"
+  },
+  "history": []
+}

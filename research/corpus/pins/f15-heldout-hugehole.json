@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f15-heldout-hugehole",
+  "inputs": {},
+  "output": {
+    "materialization_key": "cd4838301b154ffad064c03c414592a91122fe3a635f6cbe2d321fbd3da40871",
+    "logical_tree_sha256": "c2d82214bee526596dd679d67d00bb230e4eee245e62290b3130d03746dad777",
+    "pinned_utc": "2026-09-16T21:35:17Z"
+  },
+  "history": []
+}

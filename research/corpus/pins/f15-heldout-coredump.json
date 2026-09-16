@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f15-heldout-coredump",
+  "inputs": {},
+  "output": {
+    "materialization_key": "a8aa4f34033416e09c878f667c611992424d97407ad6aec7432be5c4e1e4ff0e",
+    "logical_tree_sha256": "c32829753a90ea72f6dd48cd4cfd7b3ad923b5af87f3ce82904f49bc34876c63",
+    "pinned_utc": "2026-09-16T21:35:44Z"
+  },
+  "history": []
+}

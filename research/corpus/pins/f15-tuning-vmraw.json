@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f15-tuning-vmraw",
+  "inputs": {},
+  "output": {
+    "materialization_key": "8c811078aefe38a7b5cc87dfa0adcdbb44a492fedea8d167a15f386978e8d41e",
+    "logical_tree_sha256": "d460c45b7b46bdc43380b82bb60a3dc68f4de21e5e1f54d757f1ec72247c406f",
+    "pinned_utc": "2026-09-16T21:35:20Z"
+  },
+  "history": []
+}
