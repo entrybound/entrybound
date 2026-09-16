@@ -142,3 +142,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T22:12Z — Phase A assembly round 0: 1501 requirements, 581 decisions, 0 uncovered extraction keys, 0 validation errors (29+9 near-duplicate merges, 20 integrity addenda).
 - 2026-09-16T22:32Z — Round 1 spec/research critic addenda: 1 new decision, 2 decision and 26 requirement corrections.
 - 2026-09-16T22:33Z — Corpus assembly round 0: manifest/statistics/coverage/licenses generated for all 196 items (131 tuning+validation stats, 0 missing/stale); heldout-lock draft (65 items, not frozen); 27/196 fingerprints (13.8%) spot-verified by recomputation; added an st_blocks/logical_tree_sha256 regression test; consolidated ebr's held-out guard onto corpuslib.assert_not_heldout().
+- 2026-09-16T22:33Z — round 1 appendix/docs critic addendum: 3 requirements + 1 decision added, 9 corrections
