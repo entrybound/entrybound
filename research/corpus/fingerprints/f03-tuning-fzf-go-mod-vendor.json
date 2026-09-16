@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "junegunn-fzf",
   "source_file": "research/corpus/sources/g1-code.json",
-  "item_def_sha256": "4adc880c66ee6a9fed371a5056be20848f26a59e10a345c16e5d8889c6a31d92",
+  "item_def_sha256": "310ab19438fc79a3411c124b4daba06ffbc8db616ab836d146eafac79a0b5d74",
   "materialization_key": "8a2ae899082bb67b1556592189352ad882bc24b99438c524302f8e07c9e93357",
   "materialized_utc": "2026-09-13T02:23:19Z",
   "materialized_relpath": "corpus/tuning/f03-tuning-fzf-go-mod-vendor",

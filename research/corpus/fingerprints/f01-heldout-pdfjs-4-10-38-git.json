@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f01-heldout-pdfjs-4-10-38-git",
+  "family": "F01",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "mozilla-pdfjs",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "9fca71914d3421945c777b8341f37aebc505e101ff2b18b820923a70bd60b6af",
+  "materialization_key": "3c18e7014c8da2d392d296da65316950f7df195e7412237f809d6d5ce7fc20d2",
+  "materialized_utc": "2026-09-16T23:15:19Z",
+  "materialized_relpath": "heldout/f01-heldout-pdfjs-4-10-38-git",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "cc09aa5dd829c2d7b7eda0d9fd4d66e7b9a88f44f737e4fcee38454cf7b95251",
+    "pinned_utc": "2026-09-16T23:15:19Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 110317435,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/mozilla/pdf.js",
+      "commit": "f9bea397f817100a186d0ced2aa3d4b85813b637",
+      "ref": "v4.10.38",
+      "subpaths": null,
+      "archive_sha256": "aef50ce8183965513ad3113cccb5a3e9dbd0df5856e37079d5f61a884037d7cb",
+      "archive_bytes": 112097280,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "git-archive",
+        "format": "tar"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "4ffcc60a4d09cd77d1c2053e742e29763b2787d9c4984ab61e5884964982002e",
+    "logical_tree_sha256": "cc09aa5dd829c2d7b7eda0d9fd4d66e7b9a88f44f737e4fcee38454cf7b95251",
+    "content_tree_sha256": "87410f8ead00253276fdc9b9b606997e3d8b8722f192390fdf6b556298079910",
+    "extended_tree_sha256": "5f1ee97938eeafda13b42190f9fdfa65c22fc7094c66659c3f3c339f19bea32d",
+    "bytes": 110317435,
+    "counts": {
+      "objects": 2258,
+      "files": 2082,
+      "dirs": 175,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

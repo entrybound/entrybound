@@ -1,0 +1,99 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-heldout-firefox-155-releases",
+  "family": "F18",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "mozilla-firefox",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "88f24b390108fbe35cf402c30d434f0df6b03a61e9b2ab47cd2e5667ab2690ae",
+  "materialization_key": "7172b89803577eaad0eba3ee5ae17beb20a222ae841d9bce9e7c07a1a71a80ee",
+  "materialized_utc": "2026-09-16T23:14:55Z",
+  "materialized_relpath": "heldout/f18-heldout-firefox-155-releases",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "941e4bd8c44cefac1103568bc703b94444c1c27379dfd31a0f512153f6a7aa44",
+    "pinned_utc": "2026-09-16T23:14:55Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 660875906,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "firefox-155-0",
+        "url": "https://ftp.mozilla.org/pub/firefox/releases/155.0/linux-x86_64/en-US/firefox-155.0.tar.xz",
+        "final_url": "https://ftp.mozilla.org/pub/firefox/releases/155.0/linux-x86_64/en-US/firefox-155.0.tar.xz",
+        "sha256": "fd9ec3f5f113d0825ca0bd1ab3c0756fbc40241034eefce6743be953bcca7473",
+        "size": 86978904,
+        "retrieved_utc": "2026-09-16T23:14:36Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "firefox-155.0.tar.xz"
+      },
+      {
+        "name": "firefox-155-0-1",
+        "url": "https://ftp.mozilla.org/pub/firefox/releases/155.0.1/linux-x86_64/en-US/firefox-155.0.1.tar.xz",
+        "final_url": "https://ftp.mozilla.org/pub/firefox/releases/155.0.1/linux-x86_64/en-US/firefox-155.0.1.tar.xz",
+        "sha256": "642ab731354a5ca790b894d4556dfb5028c61d0c24eb10d10e10a111a69c89bf",
+        "size": 87372544,
+        "retrieved_utc": "2026-09-13T02:29:51Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "firefox-155.0.1.tar.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "firefox-155-0",
+        "dest": "firefox-155.0",
+        "strip_components": 1
+      },
+      {
+        "op": "extract",
+        "input": "firefox-155-0-1",
+        "dest": "firefox-155.0.1",
+        "strip_components": 1
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "97caac7abdfabf7dd3e609a7a49a9a8d0e7e0ccd520b555c0521df43227880fb",
+    "logical_tree_sha256": "941e4bd8c44cefac1103568bc703b94444c1c27379dfd31a0f512153f6a7aa44",
+    "content_tree_sha256": "b28727b2f0d8a2c6556a1ae1bd4983ac0691a3cb2cbac58880f969685b8074ef",
+    "extended_tree_sha256": "365e6c21c8074a3e78be66c7e8cff067a79fc0447688f44c08e8c2b45f15efd4",
+    "bytes": 660875906,
+    "counts": {
+      "objects": 127,
+      "files": 102,
+      "dirs": 24,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

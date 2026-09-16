@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "microsoft-typescript",
   "source_file": "research/corpus/sources/g1-code.json",
-  "item_def_sha256": "1c18917cef7408afbc514203ceadc2433d36839f086adb2e96b62f6d3b522ebc",
+  "item_def_sha256": "0eaa6a09648cb925dfd1b86627e30cb44b4dabf4c273029ef1fa41a182025dc1",
   "materialization_key": "43c62ce752487d521936221971590a7a1852412d7e7ae42580707ffcf42ebce1",
   "materialized_utc": "2026-09-13T02:23:30Z",
   "materialized_relpath": "corpus/tuning/f03-tuning-typescript-npm-node-modules",

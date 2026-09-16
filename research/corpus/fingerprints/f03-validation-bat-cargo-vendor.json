@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "sharkdp-bat",
   "source_file": "research/corpus/sources/g1-code.json",
-  "item_def_sha256": "2724f1e6c43d42ee452bd4e42e4e582332bd5a38a86da053c699281986a579b0",
+  "item_def_sha256": "efad10b36abe41f76066d9b9290f876742b72559def7fd54841132270c85e22a",
   "materialization_key": "98e19a6919ea501f458f574349ce0671095d929743c3019951c66b7a7a6ce3cc",
   "materialized_utc": "2026-09-13T02:19:59Z",
   "materialized_relpath": "corpus/validation/f03-validation-bat-cargo-vendor",

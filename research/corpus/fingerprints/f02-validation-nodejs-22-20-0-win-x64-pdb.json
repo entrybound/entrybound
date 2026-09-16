@@ -1,0 +1,98 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f02-validation-nodejs-22-20-0-win-x64-pdb",
+  "family": "F02",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "nodejs",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "2a1db871008cb1c4c59e8421973d852bd3f8a4bdb8deda82c706c9c2921c0471",
+  "materialization_key": "8f95169067b7b9d9b7487f9f2efff5d815b4f4ee83d326c573a44bb07e9a3009",
+  "materialized_utc": "2026-09-16T23:26:56Z",
+  "materialized_relpath": "corpus/validation/f02-validation-nodejs-22-20-0-win-x64-pdb",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "31e26f6ae48a677f3c77a00ddf1b171a7b19529430e3341aeea4d0b6e16f52c9",
+    "pinned_utc": "2026-09-16T23:26:56Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 361672704,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "node_pdb",
+        "url": "https://nodejs.org/dist/v22.20.0/win-x64/node_pdb.zip",
+        "final_url": "https://nodejs.org/dist/v22.20.0/win-x64/node_pdb.zip",
+        "sha256": "a7b9db641bd1c788b98219670b40e654ec9b0d8f956bb48ed6983442dd0214a8",
+        "size": 91339479,
+        "retrieved_utc": "2026-09-16T23:26:54Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "node_pdb.zip"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "node_pdb",
+        "dest": "node_pdb"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "bsdtar": "bsdtar 3.7.2 - libarchive 3.7.2 zlib/1.3 liblzma/5.4.5 bz2lib/1.0.8 liblz4/1.9.4 libzstd/1.5.5",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "7f50a40c4f1cee138ee4785b7118f765bc42b4552296d2baf31116bf4fd7584c",
+    "logical_tree_sha256": "31e26f6ae48a677f3c77a00ddf1b171a7b19529430e3341aeea4d0b6e16f52c9",
+    "content_tree_sha256": "4e7a15e9bdf6d53cf194708a40e20bbc4a16583538180b85dd84a446fe49d10c",
+    "extended_tree_sha256": "f4df865cf2c8fde2093e459653b8d20d0338b0c06b1657245f95ac936275311e",
+    "bytes": 361672704,
+    "bytes_all_paths": 361672704,
+    "allocated_bytes": 361672704,
+    "counts": {
+      "objects": 3,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 8,
+      "path_length_bytes": {
+        "min": 8,
+        "max": 17,
+        "mean": 12.5,
+        "p50": 8,
+        "p95": 17
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

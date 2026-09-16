@@ -1,0 +1,87 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f01-tuning-zstd-v1-5-7-full-clone",
+  "family": "F01",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "zstd",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "cbc3d2238b797028f9ef145bc57c2687e42b518c7980238eb3598d4ccc0e9457",
+  "materialization_key": "ac2f4086a10c5f88c8944896d7dd5743bfe346e5d8d69af0853af39de1b24aa4",
+  "materialized_utc": "2026-09-16T23:14:47Z",
+  "materialized_relpath": "corpus/tuning/f01-tuning-zstd-v1-5-7-full-clone",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 51501868,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/facebook/zstd",
+      "commit": "f8745da6ff1ad1e7bab384bd1f9d742439278e99",
+      "ref": "v1.5.7",
+      "history": "full",
+      "mirror_bundle_sha256": "b15ea9a4d24807265e5ae53d1980496515fb528a5a3532cbba88ea2dcf581e0f",
+      "mirror_bundle_bytes": 52897687,
+      "git_version": "git version 2.43.0",
+      "notes": "materialized tree is a full working clone (with .git: refs, packed objects, reflog) checked out at the pinned commit; cloned from a cached `git bundle create --all` of a full-history bare mirror of the repository, not from a shallow archive"
+    },
+    "steps": []
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "8909166b449ccda98906c4ad3cb924815080bd3702918ffda7a3b2eae9ca29e4",
+    "logical_tree_sha256": "0c6be2d26a1ac00d20ec22a60dde1df209b5b3bbc64718139f2e195b46f2cc62",
+    "content_tree_sha256": "44255b2cae9dc3b9cb4763d04c047b86460eee3ddd18cd24a13249aa46fca064",
+    "extended_tree_sha256": "2502ef4dff7130c9b7e57c712584f2fa501f4fe55dc324c5c881540a4f4ff6a0",
+    "bytes": 51501868,
+    "bytes_all_paths": 51501868,
+    "allocated_bytes": 53084160,
+    "counts": {
+      "objects": 786,
+      "files": 665,
+      "unique_file_inodes": 665,
+      "dirs": 118,
+      "symlinks": 2,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 6,
+      "max_name_length_bytes": 55,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 81,
+        "mean": 29.397,
+        "p50": 28,
+        "p95": 53
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

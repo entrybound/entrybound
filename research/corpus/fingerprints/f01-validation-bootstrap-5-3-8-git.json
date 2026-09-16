@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f01-validation-bootstrap-5-3-8-git",
+  "family": "F01",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "twbs-bootstrap",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "57a9e87c36140d3c0a107fde48098ffe0ebe3ec1e348f1a03f253042993e821d",
+  "materialization_key": "9ae5a4913f4f157e2a271ecf7d25c5331525bc2ba9e6da459f65f8220e212297",
+  "materialized_utc": "2026-09-16T23:14:34Z",
+  "materialized_relpath": "corpus/validation/f01-validation-bootstrap-5-3-8-git",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "3152c7a2f068463e0472753ff5ae65a358b88ee6fe73fcb5cd1b6179482bb71d",
+    "pinned_utc": "2026-09-16T23:14:34Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 18722223,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/twbs/bootstrap",
+      "commit": "25aa8cc0b32f0d1a54be575347e6d84b70b1acd7",
+      "ref": "v5.3.8",
+      "subpaths": null,
+      "archive_sha256": "571e71eddf7d341c6e2ee8f78ab5a113b908218dfbee3d7ed8caa8d99b7b4232",
+      "archive_bytes": 19404800,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "git-archive",
+        "format": "tar"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "893eeba19f6547738c328468db6c279213b37162d3e0a00237a9866fd1beba4c",
+    "logical_tree_sha256": "3152c7a2f068463e0472753ff5ae65a358b88ee6fe73fcb5cd1b6179482bb71d",
+    "content_tree_sha256": "74511a193e6bbb0f376be4cbdabbb502db6e92223fb4bfd0defda13a2edc2a5c",
+    "extended_tree_sha256": "64f0e75a2df8746e8b13842e0cbbe777284ef0602b8e9f7816aacd5f717f5cef",
+    "bytes": 18722223,
+    "bytes_all_paths": 18722223,
+    "allocated_bytes": 20664320,
+    "counts": {
+      "objects": 910,
+      "files": 789,
+      "unique_file_inodes": 789,
+      "dirs": 120,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 8,
+      "max_name_length_bytes": 40,
+      "path_length_bytes": {
+        "min": 2,
+        "max": 77,
+        "mean": 35.879,
+        "p50": 34,
+        "p95": 64
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

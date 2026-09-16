@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "ripgrep",
   "source_file": "research/corpus/sources/g1-code.json",
-  "item_def_sha256": "0b6b983dff998a370b3fad4353b209e5d94660a7d07851574d6008da59749e73",
+  "item_def_sha256": "56f9d056c7854d5d99403481dc7feb76629184570fbdb38eaa2346e4e9b97d44",
   "materialization_key": "545c9b570e9ec157d4c620b1dc8635c1479ecf57bf9bd5e522bb4617dd6c1c1e",
   "materialized_utc": "2026-09-13T02:23:32Z",
   "materialized_relpath": "corpus/tuning/f03-tuning-ripgrep-cargo-vendor",

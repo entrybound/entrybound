@@ -1,0 +1,7129 @@
+{
+  "item_id": "f03-validation-bootstrap-npm-node-modules",
+  "ecosystem": "npm",
+  "package_count": 1184,
+  "class_counts": {
+    "copyleft-or-other": 2,
+    "permissive": 1174,
+    "unresolved": 8
+  },
+  "non_permissive_packages": [
+    "@img/sharp-libvips-linux-x64@1.0.4",
+    "@img/sharp-libvips-linuxmusl-x64@1.0.4",
+    "@socket.io/component-emitter",
+    "baz",
+    "browser_field",
+    "buffers@0.1.1",
+    "engine.io-parser",
+    "false_main",
+    "invalid_main",
+    "zod-to-ts@1.2.0"
+  ],
+  "recommended_redistributable": false,
+  "packages": [
+    {
+      "package": "@adobe/css-tools@4.4.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/abtesting@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/autocomplete-core@1.17.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/autocomplete-plugin-algolia-insights@1.17.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/autocomplete-preset-algolia@1.17.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/autocomplete-shared@1.17.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/client-abtesting@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/client-analytics@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/client-common@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/client-insights@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/client-personalization@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/client-query-suggestions@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/client-search@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/ingestion@1.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/monitoring@1.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/recommend@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/requester-browser-xhr@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/requester-fetch@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@algolia/requester-node-http@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@ampproject/remapping@2.3.0",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@astrojs/check@0.9.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@astrojs/compiler@2.12.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@astrojs/internal-helpers@0.7.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@astrojs/language-server@2.15.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@astrojs/markdown-remark@6.3.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@astrojs/mdx@4.3.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@astrojs/prism@3.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "zod@3.25.76",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@astrojs/sitemap@3.5.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@astrojs/telemetry@3.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@astrojs/yaml2ts@0.2.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "chokidar@3.6.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "glob-parent@5.1.2",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "picomatch@2.3.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "readdirp@3.6.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/cli@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/code-frame@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/compat-data@7.28.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/core@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/generator@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-annotate-as-pure@7.27.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-compilation-targets@7.27.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-create-class-features-plugin@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-create-regexp-features-plugin@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-define-polyfill-provider@0.6.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-globals@7.28.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-member-expression-to-functions@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-module-imports@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-module-transforms@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-optimise-call-expression@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-plugin-utils@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-remap-async-to-generator@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-replace-supers@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-skip-transparent-expression-wrappers@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-string-parser@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-validator-identifier@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-validator-option@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helper-wrap-function@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/helpers@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/parser@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-bugfix-firefox-class-in-computed-class-key@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-bugfix-safari-class-field-initializer-scope@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-bugfix-v8-static-class-fields-redefine-readonly@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-proposal-private-property-in-object@7.21.0-placeholder-for-preset-env.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-syntax-import-assertions@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-syntax-import-attributes@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-syntax-unicode-sets-regex@7.18.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-arrow-functions@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-async-generator-functions@7.28.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-async-to-generator@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-block-scoped-functions@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-block-scoping@7.28.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-class-properties@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-class-static-block@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-classes@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-computed-properties@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-destructuring@7.28.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-dotall-regex@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-duplicate-keys@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-duplicate-named-capturing-groups-regex@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-dynamic-import@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-explicit-resource-management@7.28.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-exponentiation-operator@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-export-namespace-from@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-for-of@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-function-name@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-json-strings@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-literals@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-logical-assignment-operators@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-member-expression-literals@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-modules-amd@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-modules-commonjs@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-modules-systemjs@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-modules-umd@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-named-capturing-groups-regex@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-new-target@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-nullish-coalescing-operator@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-numeric-separator@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-object-rest-spread@7.28.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-object-super@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-optional-catch-binding@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-optional-chaining@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-parameters@7.27.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-private-methods@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-private-property-in-object@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-property-literals@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-regenerator@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-regexp-modifiers@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-reserved-words@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-shorthand-properties@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-spread@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-sticky-regex@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-template-literals@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-typeof-symbol@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-unicode-escapes@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-unicode-property-regex@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-unicode-regex@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/plugin-transform-unicode-sets-regex@7.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/preset-env@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/preset-modules@0.1.6-no-external-plugins",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/template@7.27.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/traverse@7.28.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@babel/types@7.28.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@capsizecss/unpack@2.4.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@colors/colors@1.5.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@csstools/css-parser-algorithms@3.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@csstools/css-tokenizer@3.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@csstools/media-query-list-parser@4.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@csstools/selector-specificity@5.0.0",
+      "license_expr": "MIT-0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@docsearch/css@3.9.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@docsearch/js@3.9.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@docsearch/react@3.9.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@dual-bundle/import-meta-resolve@4.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@emmetio/abbreviation@2.3.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@emmetio/css-abbreviation@2.1.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@emmetio/css-parser@0.4.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@emmetio/html-matcher@1.3.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@emmetio/scanner@1.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@emmetio/stream-reader@2.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@emmetio/stream-reader-utils@0.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@epic-web/invariant@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@esbuild/linux-x64@0.25.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@eslint/eslintrc@2.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@eslint/js@8.57.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@eslint-community/eslint-utils@4.7.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@eslint-community/regexpp@4.12.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@humanwhocodes/config-array@0.13.0",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@humanwhocodes/module-importer@1.0.1",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@humanwhocodes/object-schema@2.0.3",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@img/sharp-libvips-linux-x64@1.0.4",
+      "license_expr": "LGPL-3.0-or-later",
+      "source": "package.json license",
+      "class": "copyleft-or-other"
+    },
+    {
+      "package": "@img/sharp-libvips-linuxmusl-x64@1.0.4",
+      "license_expr": "LGPL-3.0-or-later",
+      "source": "package.json license",
+      "class": "copyleft-or-other"
+    },
+    {
+      "package": "@img/sharp-linux-x64@0.33.5",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@img/sharp-linuxmusl-x64@0.33.5",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ansi-regex@6.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "emoji-regex@9.2.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "string-width@5.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "strip-ansi@7.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "wrap-ansi@8.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@isaacs/cliui@8.0.2",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@istanbuljs/schema@0.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@jest/diff-sequences@30.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@jest/get-type@30.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@jest/schemas@30.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@jridgewell/gen-mapping@0.3.13",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@jridgewell/resolve-uri@3.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@jridgewell/source-map@0.3.11",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@jridgewell/sourcemap-codec@1.5.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@jridgewell/trace-mapping@0.3.30",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@keyv/serialize@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@mdx-js/mdx@3.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@nicolo-ribaudo/chokidar-2@2.1.8-no-fsevents.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@nodelib/fs.scandir@2.1.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@nodelib/fs.stat@2.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@nodelib/fs.walk@1.2.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@oslojs/encoding@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@pkgjs/parseargs@0.11.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@popperjs/core@2.11.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@rollup/plugin-babel@6.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "estree-walker@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@rollup/plugin-commonjs@28.0.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@rollup/plugin-node-resolve@16.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@rollup/plugin-replace@6.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@rollup/pluginutils@5.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@rollup/rollup-linux-x64-gnu@4.46.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@rollup/rollup-linux-x64-musl@4.46.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@rtsao/scc@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@shikijs/core@3.9.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@shikijs/engine-javascript@3.9.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@shikijs/engine-oniguruma@3.9.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@shikijs/langs@3.9.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@shikijs/themes@3.9.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@shikijs/types@3.9.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@shikijs/vscode-textmate@10.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@sinclair/typebox@0.34.40",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@sindresorhus/merge-streams@2.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@socket.io/component-emitter",
+      "license_expr": null,
+      "source": "package.json has no license field",
+      "class": "unresolved"
+    },
+    {
+      "package": "@socket.io/component-emitter@3.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@stackblitz/sdk@1.11.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@stylistic/stylelint-config@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@csstools/media-query-list-parser@3.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss-selector-parser@6.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@stylistic/stylelint-plugin@3.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@swc/helpers@0.5.17",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/cors@2.8.19",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/debug@4.1.12",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/estree@1.0.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/estree-jsx@1.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/fontkit@2.0.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/hast@3.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/js-yaml@4.0.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/json5@0.0.29",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/mdast@4.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/mdx@2.0.13",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/mime@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/ms@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/nlcst@2.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/node@18.19.123",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/normalize-package-data@2.4.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/prismjs@1.26.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/resolve@1.20.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/sax@1.2.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/unist@3.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@ungap/structured-clone@1.3.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@volar/kit@2.4.23",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@volar/language-core@2.4.23",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@volar/language-server@2.4.23",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@volar/language-service@2.4.23",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@volar/source-map@2.4.23",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@volar/typescript@2.4.23",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@vscode/emmet-helper@2.11.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@vscode/l10n@0.0.18",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "argparse@1.0.10",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "js-yaml@3.14.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@yarnpkg/parsers@3.0.3",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "accepts@1.3.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "acorn@8.15.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "acorn-jsx@5.3.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "agent-base@4.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ajv@6.12.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "algoliasearch@5.35.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "emoji-regex@8.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "string-width@4.2.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ansi-align@3.0.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ansi-regex@5.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ansi-styles@6.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "anymatch@3.1.3",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "arg@5.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "argparse@2.0.1",
+      "license_expr": "Python-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "aria-query@5.3.2",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "array-buffer-byte-length@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "array-includes@3.1.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "array-iterate@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "array-union@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "array.prototype.findlastindex@1.2.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "array.prototype.flat@1.3.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "array.prototype.flatmap@1.3.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "arraybuffer.prototype.slice@1.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "astral-regex@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "astring@1.9.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "semver@7.7.2",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "zod-to-json-schema@3.24.6",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "zod-to-ts@1.2.0",
+      "license_expr": null,
+      "source": "package.json has no license field",
+      "class": "unresolved"
+    },
+    {
+      "package": "astro@5.13.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "astro-auto-import@0.4.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "async-function@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "asynckit@0.4.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "autoprefixer@10.4.21",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "available-typed-arrays@1.0.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "axios@0.30.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "axobject-query@4.1.0",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "babel-plugin-polyfill-corejs2@0.4.14",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "babel-plugin-polyfill-corejs3@0.13.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "babel-plugin-polyfill-regenerator@0.6.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "bail@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "balanced-match@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "base-64@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "base64-js@1.5.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "base64id@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "big-integer@1.6.52",
+      "license_expr": "Unlicense",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "binary@0.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "binary-extensions@2.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "blob-to-buffer@1.2.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "bluebird@3.4.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "debug@2.6.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ms@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "body-parser@1.20.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "boxen@8.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "brace-expansion@1.1.12",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "braces@3.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "brotli@1.3.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "browserslist@4.25.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "browserstack@1.5.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "browserstacktunnel-wrapper@2.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "buffer-from@1.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "buffer-indexof-polyfill@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "buffers@0.1.1",
+      "license_expr": null,
+      "source": "package.json has no license field",
+      "class": "unresolved"
+    },
+    {
+      "package": "builtin-modules@3.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ansi-styles@4.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "chalk@4.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "commander@5.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "bundlewatch@0.4.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "bytes@3.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "keyv@5.5.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cacheable@1.10.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "call-bind@1.0.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "call-bind-apply-helpers@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "call-bound@1.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "callsites@3.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "camelcase@8.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "caniuse-lite@1.0.30001735",
+      "license_expr": "CC-BY-4.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ccount@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "chainsaw@0.1.0",
+      "license_expr": "MIT/X11",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "chalk@5.6.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "character-entities@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "character-entities-html4@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "character-entities-legacy@1.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "character-reference-invalid@1.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "chokidar@4.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ci-env@1.17.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ci-info@4.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "source-map@0.6.1",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "clean-css@5.3.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "commander@7.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "clean-css-cli@5.6.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "escape-string-regexp@1.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "clean-regexp@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cli-boxes@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "clipboard@2.0.11",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "wrap-ansi@7.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cliui@8.0.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "clone@2.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "clsx@2.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "collapse-white-space@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "color@4.2.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "color-convert@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "color-name@1.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "color-string@1.9.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "colord@2.9.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "combined-stream@1.0.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "comma-separated-tokens@2.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "commander@6.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "common-ancestor-path@1.0.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "commondir@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "concat-map@0.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "confusing-browser-globals@1.0.11",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "connect@3.7.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "content-type@1.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "convert-source-map@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cookie@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cookie-es@1.2.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "core-js-compat@3.45.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "core-util-is@1.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cors@2.8.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cosmiconfig@9.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cross-env@10.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cross-fetch@3.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cross-fetch-polyfill@0.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cross-spawn@7.0.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "crossws@0.3.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "css-functions-list@3.2.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "css-tree@3.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cssesc@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "custom-event@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "data-view-buffer@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "data-view-byte-length@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "data-view-byte-offset@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "date-format@4.0.14",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "debounce@1.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "debug@4.4.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "decode-named-character-reference@1.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "deep-is@0.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "deepmerge@4.3.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "define-data-property@1.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "define-properties@1.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "defu@6.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "delayed-stream@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "delegate@3.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "depd@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "dependency-graph@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "dequal@2.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "destr@2.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "destroy@1.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "detect-libc@2.0.4",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "deterministic-object-hash@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "devalue@5.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "devlop@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "dfa@1.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "di@0.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "diff@5.2.0",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "path-type@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "dir-glob@3.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "dlv@1.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "doctrine@3.0.0",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "dom-serialize@2.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "entities@4.5.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "dom-serializer@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "domelementtype@2.3.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "domhandler@5.0.3",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "domutils@3.2.2",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "dset@3.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "dunder-proto@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "duplexer@0.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "duplexer2@0.1.4",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eastasianwidth@0.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ee-first@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "electron-to-chromium@1.5.206",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "emmet@2.4.11",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "emoji-regex@10.4.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "encodeurl@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cookie@0.7.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "debug@4.3.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "engine.io@6.6.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "engine.io-parser",
+      "license_expr": null,
+      "source": "package.json has no license field",
+      "class": "unresolved"
+    },
+    {
+      "package": "engine.io-parser@5.2.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ent@2.2.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "entities@6.0.1",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "env-paths@2.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "error-ex@1.3.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "es-abstract@1.24.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "es-define-property@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "es-errors@1.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "es-module-lexer@1.7.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "es-object-atoms@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "es-set-tostringtag@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "es-shim-unscopables@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "es-to-primitive@1.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "es6-promise@4.2.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "es6-promisify@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "esast-util-from-estree@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "esast-util-from-js@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "esbuild@0.25.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "escalade@3.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "escape-html@1.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "escape-string-regexp@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eslint@8.57.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eslint-config-xo@0.45.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "debug@3.2.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eslint-import-resolver-node@0.3.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eslint-module-utils@2.12.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eslint-plugin-html@8.1.3",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "doctrine@2.1.0",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eslint-plugin-import@2.32.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eslint-plugin-markdown@5.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "globals@15.15.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eslint-plugin-unicorn@56.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eslint-scope@7.2.2",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eslint-visitor-keys@3.4.3",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "espree@9.6.1",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "esprima@4.0.1",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "esquery@1.6.0",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "esrecurse@4.3.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "estraverse@5.3.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "estree-util-attach-comments@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "estree-util-build-jsx@3.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "estree-util-is-identifier-name@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "estree-util-scope@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "estree-util-to-js@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "estree-util-visit@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "estree-walker@3.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "esutils@2.0.3",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eventemitter3@4.0.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "execa@5.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "extend@3.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fast-deep-equal@3.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fast-glob@3.3.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fast-json-stable-stringify@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fast-levenshtein@2.0.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fast-uri@3.0.6",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fastest-levenshtein@1.0.16",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fastq@1.19.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fdir@6.5.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "file-entry-cache@6.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fill-range@7.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "on-finished@2.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "finalhandler@1.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "commander@12.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "escape-string-regexp@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "slash@5.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "find-unused-sass-variables@6.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "find-up@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "flat-cache@3.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "flatted@3.3.3",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "flattie@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "follow-redirects@1.15.11",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fontace@0.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fontkit@2.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "for-each@0.3.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "signal-exit@4.1.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "foreground-child@3.3.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "form-data@4.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fraction.js@4.3.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fs-extra@11.3.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fs-readdir-recursive@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fs.realpath@1.0.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rimraf@2.7.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fstream@1.0.12",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "function-bind@1.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "function.prototype.name@1.1.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "functions-have-names@1.2.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "gensync@1.0.0-beta.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "get-caller-file@2.0.5",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "get-east-asian-width@1.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "get-intrinsic@1.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "get-proto@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "get-stream@6.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "get-symbol-description@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "github-slugger@2.0.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "glob@7.2.3",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "glob-parent@6.0.2",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "global-modules@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "which@1.3.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "global-prefix@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "type-fest@0.20.2",
+      "license_expr": "(MIT OR CC0-1.0)",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "globals@13.24.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "globalthis@1.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ignore@7.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "globby@14.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "globjoin@0.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "good-listener@1.2.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "gopd@1.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "graceful-fs@4.2.11",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "graphemer@1.4.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "gzip-size@6.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "h3@1.15.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hammer-simulator@0.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "has-bigints@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "has-flag@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "has-property-descriptors@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "has-proto@1.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "has-symbols@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "has-tostringtag@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hasown@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-from-html@2.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-from-parse5@8.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-heading-rank@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-is-element@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-parse-selector@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-raw@9.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-sanitize@5.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-to-estree@3.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-to-html@9.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-to-jsx-runtime@2.3.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "property-information@6.5.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-to-parse5@8.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-to-text@4.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hast-util-whitespace@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hastscript@9.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hookified@1.11.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "hosted-git-info@2.8.9",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "html-escaper@3.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "html-tags@3.3.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "html-void-elements@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "htmlparser2@10.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "http-cache-semantics@4.2.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "statuses@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "http-errors@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "http-proxy@1.18.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "https-proxy-agent@2.2.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "human-signals@2.1.0",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "iconv-lite@0.4.24",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ignore@5.3.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ignore-by-default@1.0.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "image-size@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "immutable@4.3.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "import-fresh@3.3.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "import-meta-resolve@4.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "imurmurhash@0.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "indent-string@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "inflight@1.0.6",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "inherits@2.0.4",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ini@1.3.8",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "inline-style-parser@0.2.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "internal-slot@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ip@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "iron-webcrypto@1.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-alphabetical@1.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-alphanumerical@1.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-array-buffer@3.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-arrayish@0.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-async-function@2.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-bigint@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-binary-path@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-boolean-object@1.2.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-builtin-module@3.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-callable@1.2.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-core-module@2.16.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-data-view@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-date-object@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-decimal@1.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-docker@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-extglob@2.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-finalizationregistry@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-fullwidth-code-point@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-generator-function@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-glob@4.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-hexadecimal@1.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-inside-container@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-map@2.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-module@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-negative-zero@2.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-number@7.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-number-object@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-path-inside@3.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-plain-obj@4.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-plain-object@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-reference@1.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-regex@1.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-set@2.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-shared-array-buffer@1.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-stream@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-string@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-symbol@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-typed-array@1.1.15",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-weakmap@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-weakref@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-weakset@2.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-wsl@3.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "isarray@2.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "isbinaryfile@4.0.10",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "isexe@2.0.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "istanbul-lib-coverage@3.2.2",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "istanbul-lib-instrument@6.0.3",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "make-dir@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "istanbul-lib-report@3.0.1",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "istanbul-lib-coverage@2.0.5",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "istanbul-lib-source-maps@3.0.6",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "html-escaper@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "istanbul-reports@3.2.0",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jackspeak@3.4.3",
+      "license_expr": "BlueOak-1.0.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "brace-expansion@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "glob@10.4.5",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "minimatch@9.0.5",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jasmine@5.9.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jasmine-core@5.9.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jest-diff@30.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jquery@3.7.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "js-tokens@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "js-yaml@4.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jsesc@3.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "json-buffer@3.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "json-parse-even-better-errors@2.3.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "json-schema-traverse@0.4.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "json-stable-stringify-without-jsonify@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "json5@2.2.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jsonc-parser@2.3.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jsonfile@6.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jsonpack@1.1.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "cliui@7.0.4",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mime@2.6.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yargs@16.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yargs-parser@20.2.9",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "karma@6.4.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "karma-browserstack-launcher@1.4.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "karma-chrome-launcher@3.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "karma-coverage-istanbul-reporter@3.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "karma-detect-browsers@2.3.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-docker@2.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-wsl@2.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "which@3.0.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "karma-firefox-launcher@2.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jasmine-core@4.6.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "karma-jasmine@5.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "karma-jasmine-html-reporter@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "karma-rollup-preprocessor@7.0.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "keyv@4.5.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "kind-of@6.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "kleur@4.1.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "known-css-properties@0.37.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "levn@0.4.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "lilconfig@3.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "lines-and-columns@1.2.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "listenercount@1.0.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "locate-path@6.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "lockfile-lint@4.14.1",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "lockfile-lint-api@5.9.2",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "lodash@4.17.21",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "lodash.debounce@4.0.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "lodash.merge@4.6.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "lodash.truncate@4.4.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "log4js@6.9.1",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "longest-streak@3.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "lru-cache@5.1.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "magic-string@0.30.17",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "magicast@0.3.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "semver@5.7.2",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "make-dir@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "markdown-extensions@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "markdown-table@3.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "math-intrinsics@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mathml-tag-names@2.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-definitions@6.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-find-and-replace@3.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/mdast@3.0.15",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/unist@2.0.11",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unist-util-stringify-position@2.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-from-markdown@0.8.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-from-markdown@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-to-string@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark@4.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-gfm@3.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-gfm-autolink-literal@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-gfm-footnote@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-gfm-strikethrough@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-gfm-table@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-gfm-task-list-item@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-mdx@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-mdx-expression@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "character-entities-legacy@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "character-reference-invalid@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-alphabetical@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-alphanumerical@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-decimal@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-hexadecimal@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "parse-entities@4.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-mdx-jsx@3.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-mdxjs-esm@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-phrasing@4.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-to-hast@13.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-to-markdown@2.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdast-util-to-string@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdn-data@2.12.2",
+      "license_expr": "CC0-1.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "media-typer@0.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "memorystream@0.3.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "meow@13.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "merge-stream@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "merge2@1.4.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark@2.11.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-core-commonmark@2.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-gfm@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-gfm-autolink-literal@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-gfm-footnote@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-gfm-strikethrough@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-gfm-table@2.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-gfm-tagfilter@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-gfm-task-list-item@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-mdx-expression@3.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-mdx-jsx@3.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-mdx-md@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-mdxjs@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-extension-mdxjs-esm@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-factory-destination@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-factory-label@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-factory-mdx-expression@2.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-factory-space@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-factory-title@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-factory-whitespace@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-character@2.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-chunked@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-classify-character@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-combine-extensions@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-decode-numeric-character-reference@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-decode-string@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-encode@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-events-to-acorn@2.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-html-tag-name@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-normalize-identifier@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-resolve-all@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-sanitize-uri@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-subtokenize@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-symbol@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromark-util-types@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "micromatch@4.0.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mime@4.0.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mime-db@1.52.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mime-types@2.1.35",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mimic-fn@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "min-indent@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "minimatch@3.1.2",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "minimist@1.2.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "minipass@7.1.2",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mkdirp@0.5.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mrmime@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ms@2.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "muggle-string@0.4.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "nanoid@3.3.11",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "natural-compare@1.4.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "negotiator@0.6.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "neotraverse@0.6.18",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "nlcst-to-string@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "node-fetch@2.7.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "node-fetch-native@1.6.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "node-mock-http@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "node-releases@2.0.19",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "has-flag@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "supports-color@5.5.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "nodemon@3.1.10",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "normalize-package-data@2.5.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "normalize-path@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "normalize-range@0.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "npm-normalize-package-bin@4.0.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "isexe@3.1.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "which@5.0.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "npm-run-all2@8.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "npm-run-all-test@0.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "npm-run-path@4.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "object-assign@4.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "object-hash@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "object-inspect@1.13.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "object-keys@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "object.assign@4.1.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "object.fromentries@2.0.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "object.groupby@1.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "object.values@1.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ofetch@1.4.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ohash@2.0.11",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "on-finished@2.4.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "once@1.4.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "onetime@5.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "oniguruma-parser@0.12.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "oniguruma-to-es@4.3.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "optionator@0.9.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "own-keys@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "p-limit@6.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "p-limit@3.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yocto-queue@0.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "p-locate@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "eventemitter3@5.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "p-queue@8.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "p-timeout@6.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "p-try@2.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "package-json-from-dist@1.0.1",
+      "license_expr": "BlueOak-1.0.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "package-manager-detector@1.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "pako@0.2.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "parent-module@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "character-entities@1.2.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "parse-entities@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "parse-json@5.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "parse-latin@7.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "parse5@7.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "parseurl@1.3.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "path-browserify@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "path-exists@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "path-is-absolute@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "path-key@3.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "path-parse@1.0.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "lru-cache@10.4.3",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "path-scurry@1.11.1",
+      "license_expr": "BlueOak-1.0.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "path-type@6.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "picocolors@1.1.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "picomatch@4.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "pidtree@0.6.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "pify@4.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "pluralize@8.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "possible-typed-array-names@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss@8.5.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss-cli@11.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss-load-config@5.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss-media-query-parser@0.2.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss-reporter@7.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss-resolve-nested-selector@0.1.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss-safe-parser@7.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss-scss@4.0.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss-selector-parser@7.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss-sorting@8.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "postcss-value-parser@4.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "preact-compat@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "preact-debug@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "preact-devtools@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "preact-hooks@0.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jsx-runtime@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "preact@10.27.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "test-utils@0.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "prelude-ls@1.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "prettier@3.6.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "prettier-plugin-astro@0.14.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ansi-styles@5.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "pretty-format@30.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "pretty-hrtime@1.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "prismjs@1.30.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "process-nextick-args@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "kleur@3.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "prompts@2.4.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "property-information@7.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "proxy-from-env@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "pstree.remy@1.1.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "punycode@1.4.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "q@1.5.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "qjobs@1.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "qs@6.13.0",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "queue-microtask@1.2.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "radix3@1.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "range-parser@1.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "raw-body@2.5.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "react-is@18.3.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "pify@2.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "read-cache@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "json-parse-even-better-errors@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "read-package-json-fast@4.0.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "type-fest@0.6.0",
+      "license_expr": "(MIT OR CC0-1.0)",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "read-pkg@5.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "find-up@4.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "locate-path@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "p-limit@2.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "p-locate@4.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "type-fest@0.8.1",
+      "license_expr": "(MIT OR CC0-1.0)",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "read-pkg-up@7.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "isarray@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "readable-stream@2.3.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "readdirp@4.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "recma-build-jsx@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "recma-jsx@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "recma-parse@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "recma-stringify@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "reflect.getprototypeof@1.0.10",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "regenerate@1.4.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "regenerate-unicode-properties@10.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "regex@6.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "regex-recursion@6.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "regex-utilities@2.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "regexp-tree@0.1.27",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "regexp.prototype.flags@1.5.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jsesc@3.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "regjsparser@0.12.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "regexpu-core@6.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "regjsgen@0.8.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jsesc@0.5.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "regjsparser@0.10.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rehype@13.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rehype-autolink-headings@7.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rehype-parse@9.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rehype-raw@7.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rehype-recma@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rehype-stringify@10.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "remark@15.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "remark-gfm@4.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "remark-html@16.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "remark-mdx@3.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "remark-parse@11.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "remark-rehype@11.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "remark-smartypants@3.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "remark-stringify@11.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "request-light@0.7.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "require-directory@2.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "require-from-string@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "requires-port@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "resolve@1.22.10",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "baz",
+      "license_expr": null,
+      "source": "package.json has no license field",
+      "class": "unresolved"
+    },
+    {
+      "package": "browser_field",
+      "license_expr": null,
+      "source": "package.json has no license field",
+      "class": "unresolved"
+    },
+    {
+      "package": "false_main",
+      "license_expr": null,
+      "source": "package.json has no license field",
+      "class": "unresolved"
+    },
+    {
+      "package": "invalid_main",
+      "license_expr": null,
+      "source": "package.json has no license field",
+      "class": "unresolved"
+    },
+    {
+      "package": "ljharb-monorepo-symlink-test@0.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@my-scope/package-a@0.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@my-scope/package-b@0.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mylib@0.0.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "resolve-from@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "restructure@3.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "retext@9.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "retext-latin@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "retext-smartypants@6.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "retext-stringify@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "reusify@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rfdc@1.4.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rimraf@3.0.2",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rollup@4.46.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rollup-plugin-istanbul@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "rtlcss@4.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "run-parallel@1.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "s.color@0.0.15",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "safe-array-concat@1.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "safe-buffer@5.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "safe-push-apply@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "safe-regex-test@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "safer-buffer@2.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "sass@1.78.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "sass-formatter@0.7.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "sass-true@9.0.0",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "sax@1.4.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "search-insights@2.17.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "select@1.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "semver@6.3.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "set-function-length@1.2.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "set-function-name@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "set-proto@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "setimmediate@1.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "setprototypeof@1.2.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "sharp@0.33.5",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "shebang-command@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "shebang-regex@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "shell-quote@1.8.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "shelljs@0.10.0",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "shiki@3.9.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "side-channel@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "side-channel-list@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "side-channel-map@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "side-channel-weakmap@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "signal-exit@3.0.7",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "is-arrayish@0.3.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "simple-swizzle@0.2.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "simple-update-notifier@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "sisteransi@1.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "@types/node@17.0.45",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "sitemap@8.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "slash@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "slice-ansi@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "smol-toml@1.4.2",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "socket.io@4.8.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "socket.io-adapter@2.5.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "socket.io-parser@4.2.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "source-map@0.7.6",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "source-map-js@1.2.1",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "source-map-support@0.5.21",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "space-separated-tokens@2.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "spdx-correct@3.2.0",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "spdx-exceptions@2.5.0",
+      "license_expr": "CC-BY-3.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "spdx-expression-parse@3.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "spdx-license-ids@3.0.22",
+      "license_expr": "CC0-1.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "sprintf-js@1.0.3",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "statuses@1.5.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stop-iteration-iterator@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stream-replace-string@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "fs-extra@8.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jsonfile@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "universalify@0.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "streamroller@3.1.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "string-width@7.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "string.prototype.trim@1.2.10",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "string.prototype.trimend@1.0.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "string.prototype.trimstart@1.0.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "string_decoder@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stringify-entities@4.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "strip-ansi@6.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "strip-bom@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "strip-final-newline@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "strip-indent@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "strip-json-comments@3.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "style-search@0.1.0",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "style-to-js@1.1.17",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "style-to-object@1.0.9",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "balanced-match@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "file-entry-cache@10.1.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "flat-cache@6.1.13",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "globby@11.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "resolve-from@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "slash@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stylelint@16.23.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stylelint-config-recess-order@5.1.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stylelint-config-recommended@14.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stylelint-config-recommended-scss@14.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stylelint-config-standard@36.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stylelint-config-standard-scss@14.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stylelint-config-twbs-bootstrap@16.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stylelint-order@6.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "known-css-properties@0.36.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "mdn-data@2.24.0",
+      "license_expr": "CC0-1.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "stylelint-scss@6.12.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "suf-log@2.5.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "supports-color@7.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "supports-hyperlinks@3.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "supports-preserve-symlinks-flag@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "svg-tags@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ajv@8.17.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "json-schema-traverse@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "table@6.9.0",
+      "license_expr": "BSD-3-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "bin@1.0.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "dist@1.0.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "commander@2.20.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "terser@5.43.1",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "text-table@0.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "thenby@1.3.4",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "tiny-emitter@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "tiny-inflate@1.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "tinyexec@0.3.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "tinyglobby@0.2.14",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "tmp@0.2.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "to-regex-range@5.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "toidentifier@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "touch@3.1.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "tr46@0.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "traverse@0.3.9",
+      "license_expr": "MIT/X11",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "trim-lines@3.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "trough@2.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "tsconfck@3.1.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "json5@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "strip-bom@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "tsconfig-paths@3.15.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "tslib@2.8.1",
+      "license_expr": "0BSD",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "type-check@0.4.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "type-fest@4.41.0",
+      "license_expr": "(MIT OR CC0-1.0)",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "type-is@1.6.18",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "typed-array-buffer@1.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "typed-array-byte-length@1.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "typed-array-byte-offset@1.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "typed-array-length@1.0.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "typesafe-path@0.2.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "typescript@5.9.2",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "typescript-auto-import-cache@0.3.6",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ua-parser-js@0.7.40",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ufo@1.6.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ultrahtml@1.6.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unbox-primitive@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "uncrypto@0.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "undefsafe@2.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "undici-types@5.26.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unicode-canonical-property-names-ecmascript@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unicode-match-property-ecmascript@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unicode-match-property-value-ecmascript@2.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unicode-properties@1.4.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unicode-property-aliases-ecmascript@2.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unicode-trie@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unicorn-magic@0.3.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unified@11.0.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unifont@0.5.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unist-util-find-after@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unist-util-is@6.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unist-util-modify-children@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unist-util-position@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unist-util-position-from-estree@2.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unist-util-remove-position@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unist-util-stringify-position@4.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unist-util-visit@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unist-util-visit-children@3.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unist-util-visit-parents@6.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "universalify@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unpipe@1.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unstorage@1.16.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "unzipper@0.9.15",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "update-browserslist-db@1.1.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "punycode@2.3.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "uri-js@4.4.1",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "util-deprecate@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "utils-merge@1.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "validate-npm-package-license@3.0.4",
+      "license_expr": "Apache-2.0",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vary@1.1.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vfile@6.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vfile-location@5.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vfile-message@4.0.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vite@6.3.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vitefu@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vnu-jar@24.10.17",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "void-elements@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "volar-service-css@0.0.62",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "volar-service-emmet@0.0.62",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "volar-service-html@0.0.62",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "volar-service-prettier@0.0.62",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "volar-service-typescript@0.0.62",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "volar-service-typescript-twoslash-queries@0.0.62",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "volar-service-yaml@0.0.62",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-css-languageservice@6.3.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-html-languageservice@5.5.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "jsonc-parser@3.3.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-json-languageservice@4.1.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-jsonrpc@8.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-languageserver@9.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-languageserver-protocol@3.17.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-languageserver-textdocument@1.0.12",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-languageserver-types@3.17.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-nls@5.2.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-uri@3.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "web-namespaces@2.0.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "webidl-conversions@3.0.1",
+      "license_expr": "BSD-2-Clause",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "whatwg-url@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "which@2.0.2",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "which-boxed-primitive@1.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "which-builtin-type@1.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "which-collection@1.0.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "which-pm-runs@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "which-typed-array@1.1.19",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "widest-line@5.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "word-wrap@1.2.5",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "wrap-ansi@9.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "wrappy@1.0.2",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "write-file-atomic@5.0.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "ws@8.17.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "xxhash-wasm@1.1.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "y18n@5.0.8",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yallist@3.1.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yaml@2.8.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "prettier@2.8.7",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "request-light@0.5.8",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-jsonrpc@6.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-languageserver@7.0.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-languageserver-protocol@3.16.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "vscode-languageserver-types@3.16.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yaml@2.2.2",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yaml-language-server@1.15.0",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yargs@17.7.2",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yargs-parser@21.1.1",
+      "license_expr": "ISC",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yocto-queue@1.2.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yocto-spinner@0.2.3",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "yoctocolors@2.1.1",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "zod@4.0.17",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    },
+    {
+      "package": "zwitch@2.0.4",
+      "license_expr": "MIT",
+      "source": "package.json license",
+      "class": "permissive"
+    }
+  ]
+}

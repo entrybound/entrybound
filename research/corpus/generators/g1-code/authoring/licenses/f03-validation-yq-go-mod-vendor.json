@@ -1,0 +1,156 @@
+{
+  "item_id": "f03-validation-yq-go-mod-vendor",
+  "ecosystem": "go",
+  "package_count": 24,
+  "class_counts": {
+    "permissive": 24
+  },
+  "non_permissive_packages": [],
+  "recommended_redistributable": true,
+  "packages": [
+    {
+      "package": "github.com/a8m/envsubst@v1.4.2",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/alecthomas/participle/v2@v2.1.1",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on COPYING",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/alecthomas/repr@v0.3.0",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on COPYING",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/dimchansky/utfbom@v1.1.1",
+      "license_expr": "Apache-2.0",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/elliotchance/orderedmap@v1.5.1",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/fatih/color@v1.16.0",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE.md",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/goccy/go-json@v0.10.2",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/goccy/go-yaml@v1.11.2",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/inconshreveable/mousetrap@v1.1.0",
+      "license_expr": "Apache-2.0",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/jinzhu/copier@v0.4.0",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on License",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/magiconair/properties@v1.8.7",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE.md",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/mattn/go-colorable@v0.1.13",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/mattn/go-isatty@v0.0.20",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/pelletier/go-toml/v2@v2.1.0",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/pkg/diff@v0.0.0-20210226163009-20ebb0f2a09e",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/spf13/cobra@v1.8.0",
+      "license_expr": "Apache-2.0",
+      "source": "heuristic keyword match on LICENSE.txt",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/spf13/pflag@v1.0.5",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/yuin/gopher-lua@v1.1.1",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "golang.org/x/net@v0.19.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "golang.org/x/sys@v0.15.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "golang.org/x/text@v0.14.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "golang.org/x/xerrors@v0.0.0-20220907171357-04be3eba64a2",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "gopkg.in/op/go-logging.v1@v1.0.0-20160211212156-b2cb9fa56473",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "gopkg.in/yaml.v3@v3.0.1",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    }
+  ]
+}

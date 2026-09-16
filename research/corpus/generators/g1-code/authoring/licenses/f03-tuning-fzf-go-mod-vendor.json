@@ -1,0 +1,84 @@
+{
+  "item_id": "f03-tuning-fzf-go-mod-vendor",
+  "ecosystem": "go",
+  "package_count": 12,
+  "class_counts": {
+    "permissive": 12
+  },
+  "non_permissive_packages": [],
+  "recommended_redistributable": true,
+  "packages": [
+    {
+      "package": "github.com/gdamore/encoding@v1.0.0",
+      "license_expr": "Apache-2.0",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/gdamore/tcell/v2@v2.7.0",
+      "license_expr": "Apache-2.0",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/lucasb-eyer/go-colorful@v1.2.0",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/mattn/go-isatty@v0.0.17",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/mattn/go-runewidth@v0.0.15",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/mattn/go-shellwords@v1.0.12",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/rivo/uniseg@v0.4.6",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE.txt",
+      "class": "permissive"
+    },
+    {
+      "package": "github.com/saracen/walker@v0.1.3",
+      "license_expr": "MIT",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "golang.org/x/sync@v0.5.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "golang.org/x/sys@v0.16.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "golang.org/x/term@v0.16.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    },
+    {
+      "package": "golang.org/x/text@v0.14.0",
+      "license_expr": "BSD-2-Clause",
+      "source": "heuristic keyword match on LICENSE",
+      "class": "permissive"
+    }
+  ]
+}

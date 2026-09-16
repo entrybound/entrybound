@@ -1,0 +1,113 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-tuning-ubuntu-noble-cloud-images",
+  "family": "F18",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "ubuntu-noble",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "6d8606d2345285279937567524299b706eab57bf6bcdc2aadb3cbac0f3859d2a",
+  "materialization_key": "21af834952d5667fb680a9a2675eb5086d7bf78dd0643f1fe418147ee32cfa77",
+  "materialized_utc": "2026-09-16T23:15:02Z",
+  "materialized_relpath": "corpus/tuning/f18-tuning-ubuntu-noble-cloud-images",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "43830dda135473a502d6eb46ab77d0259161078e68cc1e7c779dd7f51bca0930",
+    "pinned_utc": "2026-09-16T23:15:02Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 1250086912,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "cloudimg-20260826",
+        "url": "https://cloud-images.ubuntu.com/releases/noble/release-20260826/ubuntu-24.04-server-cloudimg-amd64.img",
+        "final_url": "https://cloud-images.ubuntu.com/releases/noble/release-20260826/ubuntu-24.04-server-cloudimg-amd64.img",
+        "sha256": "d0fe84bb5f80853425fa6be28e2c106f30104c3cfe8611933f2e65c9b63f0e30",
+        "size": 624829952,
+        "retrieved_utc": "2026-09-16T23:14:59Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "ubuntu-24.04-server-cloudimg-amd64.img"
+      },
+      {
+        "name": "cloudimg-20260911",
+        "url": "https://cloud-images.ubuntu.com/releases/noble/release-20260911/ubuntu-24.04-server-cloudimg-amd64.img",
+        "final_url": "https://cloud-images.ubuntu.com/releases/noble/release-20260911/ubuntu-24.04-server-cloudimg-amd64.img",
+        "sha256": "612b2c0cc1bc413a6cb8c38fd611794caf0f2b436c50013d8b3794db12ad7354",
+        "size": 625256960,
+        "retrieved_utc": "2026-09-13T02:30:25Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "ubuntu-24.04-server-cloudimg-amd64.img"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "cloudimg-20260826",
+        "dest": "ubuntu-24.04-server-cloudimg-amd64.release-20260826.img"
+      },
+      {
+        "op": "copy",
+        "input": "cloudimg-20260911",
+        "dest": "ubuntu-24.04-server-cloudimg-amd64.release-20260911.img"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "7425b6439d9b3165871b840dba56cc6a0bc388dc1fde2af2fb54754b3905e276",
+    "logical_tree_sha256": "43830dda135473a502d6eb46ab77d0259161078e68cc1e7c779dd7f51bca0930",
+    "content_tree_sha256": "37b2d96ceeb04fabeaf7b894cc655ebdd2b066dd98d6799d1441794f964668c8",
+    "extended_tree_sha256": "5f3b7ac4b22e816fc3cedd8f1f32b7728c94ba6f52435dcea2117abbf39fa341",
+    "bytes": 1250086912,
+    "bytes_all_paths": 1250086912,
+    "allocated_bytes": 1250091008,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "unique_file_inodes": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 55,
+      "path_length_bytes": {
+        "min": 55,
+        "max": 55,
+        "mean": 55.0,
+        "p50": 55,
+        "p95": 55
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

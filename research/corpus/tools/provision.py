@@ -48,7 +48,14 @@ import fingerprint as fpm  # noqa: E402
 SAFE_PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 SOURCE_DATE_EPOCH = "1767225600"  # 2026-01-01T00:00:00Z, fixed for reproducible generators/builds
 USER_AGENT = "entrybound-research-corpus-provision/1"
+# Wikimedia's User-Agent policy (meta.wikimedia.org/wiki/User-Agent_policy) asks bots to identify
+# themselves with a project URL and purpose; generic/undescriptive UAs are throttled more
+# aggressively. Used only for commons.wikimedia.org / upload.wikimedia.org requests.
+WIKIMEDIA_USER_AGENT = ("EntryboundResearchCorpus/1.0 "
+                        "(https://github.com/entrybound/entrybound; research corpus provisioning; "
+                        "polite, rate-limited, contact via repository issues) Python-urllib/" + sys.version.split()[0])
 _print_lock = threading.Lock()
+_max_retry_after = 900  # seconds; cap so a single throttle wait cannot stall a run indefinitely
 
 
 def log(msg: str) -> None:
@@ -186,7 +193,34 @@ def _verified_blob(blob: Path, expected_size: int | None, reverify: bool) -> boo
     return ok
 
 
-def fetch_url(ctx: Ctx, url: str, expected_sha: str | None, expected_size: int | None) -> dict:
+def _retry_after_seconds(headers, default: float) -> float:
+    """Parse a Retry-After header (delay-seconds or HTTP-date form); fall back to `default`."""
+    raw = ""
+    with contextlib.suppress(Exception):
+        raw = (headers or {}).get("Retry-After", "") if hasattr(headers, "get") else ""
+    raw = str(raw).strip()
+    if not raw:
+        return default
+    if raw.isdigit():
+        return min(float(raw), _max_retry_after)
+    with contextlib.suppress(Exception):
+        import email.utils
+        dt = email.utils.parsedate_to_datetime(raw)
+        if dt is not None:
+            now = _dt_now_utc()
+            secs = (dt - now).total_seconds()
+            if secs > 0:
+                return min(secs, _max_retry_after)
+    return default
+
+
+def _dt_now_utc():
+    import datetime
+    return datetime.datetime.now(datetime.timezone.utc)
+
+
+def fetch_url(ctx: Ctx, url: str, expected_sha: str | None, expected_size: int | None,
+              headers: dict | None = None) -> dict:
     cache = ctx.layout.cache_dir
     blobs = cache / "sha256"
     index = cache / "by-url"
@@ -214,12 +248,20 @@ def fetch_url(ctx: Ctx, url: str, expected_sha: str | None, expected_size: int |
                 return info
         if ctx.args.offline:
             raise cl.CorpusError(f"{ctx.iid}: {url} not in cache and --offline given")
+        req_headers = {"User-Agent": USER_AGENT}
+        if headers:
+            req_headers.update(headers)
         last_err = None
-        for attempt in range(1, 4):
+        attempt = 0
+        throttle_retries = 0
+        max_throttle_retries = 20  # 429/503 waits are expected under polite crawling, not failures
+        max_attempts = 4  # for genuine network/HTTP errors
+        while True:
+            attempt += 1
             tmp = tmpdir / f"{url_key}.{os.getpid()}.{secrets.token_hex(4)}.part"
             try:
                 log(f"[{ctx.iid}] download {url} (attempt {attempt})")
-                req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+                req = urllib.request.Request(url, headers=req_headers)
                 h = hashlib.sha256()
                 size = 0
                 with urllib.request.urlopen(req, timeout=120) as resp, open(tmp, "wb") as out:
@@ -233,13 +275,27 @@ def fetch_url(ctx: Ctx, url: str, expected_sha: str | None, expected_size: int |
                         size += len(b)
                 digest = h.hexdigest()
                 break
+            except urllib.error.HTTPError as e:
+                with contextlib.suppress(OSError):
+                    tmp.unlink()
+                if e.code in (429, 503) and throttle_retries < max_throttle_retries:
+                    throttle_retries += 1
+                    wait = _retry_after_seconds(e.headers, default=min(30 * throttle_retries, _max_retry_after))
+                    log(f"[{ctx.iid}] HTTP {e.code} for {url}; honoring Retry-After, sleeping {wait:.0f}s "
+                        f"(throttle retry {throttle_retries}/{max_throttle_retries})")
+                    time.sleep(wait)
+                    continue
+                last_err = e
+                if attempt >= max_attempts:
+                    raise cl.CorpusError(f"{ctx.iid}: download failed for {url}: {last_err}")
+                time.sleep(2 * attempt)
             except Exception as e:  # network errors: retry
                 last_err = e
                 with contextlib.suppress(OSError):
                     tmp.unlink()
+                if attempt >= max_attempts:
+                    raise cl.CorpusError(f"{ctx.iid}: download failed for {url}: {last_err}")
                 time.sleep(2 * attempt)
-        else:
-            raise cl.CorpusError(f"{ctx.iid}: download failed for {url}: {last_err}")
         if expected_size is not None and size != expected_size:
             tmp.unlink()
             raise cl.HashMismatch(f"SIZE MISMATCH for {url}: got {size} bytes, expected {expected_size}")
@@ -297,8 +353,70 @@ def acquire_inputs(ctx: Ctx) -> None:
         ctx.provenance["inputs"] = prov
 
 
+def acquire_git_full(ctx: Ctx) -> None:
+    """git.history == "full": cache a full-history bare mirror once, bundle it
+    (`git bundle create --all`, SHA-256 recorded for provenance/caching), then
+    materialize the item by cloning from that cached bundle and checking out the
+    pinned commit -- so the item's tree is a real working copy with a complete
+    `.git` (refs, packed objects, reflog), not just a commit snapshot. Output is
+    always unpinned (recipe.output_pin: null is enforced by validate_item): the
+    .git/index and any reflog timestamps are not byte-reproducible across clones."""
+    g = ctx.item["recipe"]["git"]
+    ctx.used_tools.add("git")
+    key = cl.sha256_bytes(cl._norm_git_repo(g["repo"]).encode())[:24]
+    mirror = ctx.layout.cache_dir / "git-full" / f"{key}.git"
+    mirror.parent.mkdir(parents=True, exist_ok=True)
+    bundles_dir = ctx.layout.cache_dir / "git-full-bundles"
+    bundles_dir.mkdir(parents=True, exist_ok=True)
+    with cl.file_lock(ctx.layout.lock_path("git-full-" + key)):
+        if not (mirror / "HEAD").exists():
+            if ctx.args.offline:
+                raise cl.CorpusError(f"{ctx.iid}: full mirror of {g['repo']} not cached and --offline given")
+            log(f"[{ctx.iid}] git clone --mirror {g['repo']} (full history)")
+            ctx.run(["git", "clone", "--mirror", "--", g["repo"], mirror], what="git clone --mirror")
+        have = subprocess.run(["git", "-C", mirror, "cat-file", "-e", f"{g['commit']}^{{commit}}"],
+                              capture_output=True, env=ctx.env()).returncode == 0
+        if not have:
+            if ctx.args.offline:
+                raise cl.CorpusError(f"{ctx.iid}: commit {g['commit']} not cached and --offline given")
+            log(f"[{ctx.iid}] git fetch {g['repo']} into full mirror (updating cached history)")
+            ctx.run(["git", "-C", mirror, "fetch", "--tags", "--prune", "origin", "+refs/*:refs/*"],
+                    what="git fetch --mirror-update")
+            if subprocess.run(["git", "-C", mirror, "cat-file", "-e", f"{g['commit']}^{{commit}}"],
+                              capture_output=True, env=ctx.env()).returncode != 0:
+                raise cl.HashMismatch(f"{ctx.iid}: commit {g['commit']} not present in full mirror of {g['repo']}")
+        bundle_tmp = ctx.scratch / "repo.bundle.tmp"
+        ctx.run(["git", "-C", mirror, "bundle", "create", bundle_tmp, "--all"], what="git bundle create")
+        bundle_sha, bundle_size = cl.sha256_file(bundle_tmp)
+        bundle = bundles_dir / f"{key}.{bundle_sha}.bundle"
+        if not bundle.exists():
+            os.replace(bundle_tmp, bundle)
+        else:
+            bundle_tmp.unlink()
+    ctx.run(["git", "clone", "--", bundle, ctx.staging], what="git clone (from cached bundle)")
+    ctx.run(["git", "-C", ctx.staging, "checkout", "--quiet", g["commit"]], what="git checkout")
+    ctx.run(["git", "-C", ctx.staging, "remote", "remove", "origin"], what="git remote remove origin")
+    # the clone/checkout above leave the local cache's bundle path in .git/logs/* (reflog messages)
+    # and possibly stale remote-tracking cruft; expire+gc so the materialized .git carries no trace
+    # of this machine's cache layout (the item is meant to look like an ordinary repository clone).
+    ctx.run(["git", "-C", ctx.staging, "reflog", "expire", "--expire=now", "--expire-unreachable=now", "--all"],
+            what="git reflog expire")
+    ctx.run(["git", "-C", ctx.staging, "gc", "--prune=now", "--quiet"], what="git gc")
+    ctx.provenance["git"] = {
+        "repo": g["repo"], "commit": g["commit"], "ref": g.get("ref"), "history": "full",
+        "mirror_bundle_sha256": bundle_sha, "mirror_bundle_bytes": bundle_size,
+        "git_version": cl.command_version(["git", "--version"]),
+        "notes": "materialized tree is a full working clone (with .git: refs, packed objects, reflog) "
+                 "checked out at the pinned commit; cloned from a cached `git bundle create --all` of a "
+                 "full-history bare mirror of the repository, not from a shallow archive",
+    }
+
+
 def acquire_git(ctx: Ctx) -> None:
     g = ctx.item["recipe"]["git"]
+    if g.get("history") == "full":
+        acquire_git_full(ctx)
+        return
     ctx.used_tools.add("git")
     key = cl.sha256_bytes(cl._norm_git_repo(g["repo"]).encode())[:24]
     gitdir = ctx.layout.cache_dir / "git" / f"{key}.git"
@@ -509,6 +627,8 @@ def default_steps(ctx: Ctx) -> list:
     if kind == "download":
         return [{"op": "copy", "input": inp["name"]} for inp in ctx.item["recipe"]["inputs"]]
     if kind == "git-archive":
+        if (ctx.item["recipe"].get("git") or {}).get("history") == "full":
+            return []  # acquire_git_full() already populated ctx.staging directly (a real clone)
         return [{"op": "extract", "input": "git-archive", "format": "tar"}]
     if kind == "docker-export":
         return [{"op": "extract", "input": "docker-rootfs", "format": "tar"}]

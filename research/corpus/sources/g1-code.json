@@ -1108,9 +1108,9 @@
       },
       "license": {
         "spdx_or_name": "LicenseRef-mixed-per-package",
-        "redistributable": false,
+        "redistributable": true,
         "attribution": "authors of each vendored/installed package",
-        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed"
+        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed Per-package license audit (research/corpus/generators/g1-code/authoring/f03_license_audit.py, evidence at research/corpus/generators/g1-code/authoring/licenses/f03-tuning-ripgrep-cargo-vendor.json): all 51 vendored packages resolve to a permissive license (class counts {'permissive': 51}); redistributable set to true from that evidence."
       },
       "independence_group": "ripgrep",
       "description": "`cargo vendor --locked --versioned-dirs` of ripgrep 14.1.1's Cargo.lock: vendor/ with one directory per crate (sources, .cargo-checksum.json)",
@@ -1207,9 +1207,9 @@
       },
       "license": {
         "spdx_or_name": "LicenseRef-mixed-per-package",
-        "redistributable": false,
+        "redistributable": true,
         "attribution": "authors of each vendored/installed package",
-        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed"
+        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed Per-package license audit (research/corpus/generators/g1-code/authoring/f03_license_audit.py, evidence at research/corpus/generators/g1-code/authoring/licenses/f03-tuning-typescript-npm-node-modules.json): all 341 vendored packages resolve to a permissive license (class counts {'permissive': 341}); redistributable set to true from that evidence."
       },
       "independence_group": "microsoft-typescript",
       "description": "node_modules/ produced by `npm ci --ignore-scripts` from microsoft/TypeScript v5.9.3 package.json + package-lock.json (the TypeScript compiler repository's development dependencies)",
@@ -1288,9 +1288,9 @@
       },
       "license": {
         "spdx_or_name": "LicenseRef-mixed-per-package",
-        "redistributable": false,
+        "redistributable": true,
         "attribution": "authors of each vendored/installed package",
-        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed"
+        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed Per-package license audit (research/corpus/generators/g1-code/authoring/f03_license_audit.py, evidence at research/corpus/generators/g1-code/authoring/licenses/f03-tuning-pypi-scientific-site-packages.json): all 22 vendored packages resolve to a permissive license (class counts {'permissive': 22}); redistributable set to true from that evidence."
       },
       "independence_group": "pypi-scientific-stack",
       "description": "`pip install --target` (CPython 3.12, manylinux x86_64 wheels, with __pycache__) of a hash-locked scientific Python stack: numpy, scipy, pandas, matplotlib, scikit-learn, sympy, pillow, networkx, seaborn and dependencies (22 wheels)",
@@ -1368,7 +1368,7 @@
         "spdx_or_name": "LicenseRef-mixed-per-package",
         "redistributable": false,
         "attribution": "authors of each vendored/installed package",
-        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed"
+        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed Per-package license audit (research/corpus/generators/g1-code/authoring/f03_license_audit.py, evidence at research/corpus/generators/g1-code/authoring/licenses/f03-validation-bat-cargo-vendor.json): {'copyleft-or-other': 1, 'permissive': 206} of 207 packages; kept non-redistributable because of: ansi_colours-1.2.3."
       },
       "independence_group": "sharkdp-bat",
       "description": "`cargo vendor --locked --versioned-dirs` of sharkdp/bat v0.25.0's Cargo.lock (git archive at the tag)",
@@ -1467,7 +1467,7 @@
         "spdx_or_name": "LicenseRef-mixed-per-package",
         "redistributable": false,
         "attribution": "authors of each vendored/installed package",
-        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed"
+        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed Per-package license audit (research/corpus/generators/g1-code/authoring/f03_license_audit.py, evidence at research/corpus/generators/g1-code/authoring/licenses/f03-validation-bootstrap-npm-node-modules.json): {'copyleft-or-other': 2, 'permissive': 1174, 'unresolved': 8} of 1184 packages; kept non-redistributable because of: @img/sharp-libvips-linux-x64@1.0.4, @img/sharp-libvips-linuxmusl-x64@1.0.4, @socket.io/component-emitter, baz, browser_field, buffers@0.1.1, engine.io-parser, false_main, invalid_main, zod-to-ts@1.2.0."
       },
       "independence_group": "twbs-bootstrap",
       "description": "node_modules/ produced by `npm ci --ignore-scripts` from twbs/bootstrap v5.3.8 package.json + package-lock.json",
@@ -1544,7 +1544,7 @@
         "spdx_or_name": "LicenseRef-mixed-per-package",
         "redistributable": false,
         "attribution": "authors of each vendored/installed package",
-        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed"
+        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed Per-package license audit deliberately NOT run pre-freeze (this item is held-out; research/corpus/generators/g1-code/authoring/f03_license_audit.py only reads tuning/validation F03 items by default). Same tool and method are pre-registered to run against this item post-freeze."
       },
       "independence_group": "alacritty",
       "description": "`cargo vendor --locked --versioned-dirs` of alacritty/alacritty v0.15.1's Cargo.lock (git archive at the tag)",
@@ -1643,7 +1643,7 @@
         "spdx_or_name": "LicenseRef-mixed-per-package",
         "redistributable": false,
         "attribution": "authors of each vendored/installed package",
-        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed"
+        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed Per-package license audit deliberately NOT run pre-freeze (this item is held-out; research/corpus/generators/g1-code/authoring/f03_license_audit.py only reads tuning/validation F03 items by default). Same tool and method are pre-registered to run against this item post-freeze."
       },
       "independence_group": "mozilla-pdfjs",
       "description": "node_modules/ produced by `npm ci --ignore-scripts` from mozilla/pdf.js v4.10.38 package.json + package-lock.json",
@@ -1724,7 +1724,7 @@
         "spdx_or_name": "LicenseRef-mixed-per-package",
         "redistributable": false,
         "attribution": "authors of each vendored/installed package",
-        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed"
+        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed Per-package license audit deliberately NOT run pre-freeze (this item is held-out; research/corpus/generators/g1-code/authoring/f03_license_audit.py only reads tuning/validation F03 items by default). Same tool and method are pre-registered to run against this item post-freeze."
       },
       "independence_group": "pypi-web-service-stack",
       "description": "`pip install --target` (CPython 3.12, manylinux x86_64 wheels, with __pycache__) of a hash-locked PyPI web-service requirement set (61 wheels; lock file research/corpus/generators/g1-code/locks/pypi-web-service-stack.txt)",
@@ -1798,9 +1798,9 @@
       },
       "license": {
         "spdx_or_name": "LicenseRef-mixed-per-package",
-        "redistributable": false,
+        "redistributable": true,
         "attribution": "authors of each vendored/installed package",
-        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed"
+        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed Per-package license audit (research/corpus/generators/g1-code/authoring/f03_license_audit.py, evidence at research/corpus/generators/g1-code/authoring/licenses/f03-tuning-fzf-go-mod-vendor.json): all 12 vendored packages resolve to a permissive license (class counts {'permissive': 12}); redistributable set to true from that evidence."
       },
       "independence_group": "junegunn-fzf",
       "description": "`go mod vendor` of junegunn/fzf 0.46.1 (git archive at the tag): vendor/ with modules.txt and the imported packages of every dependency module",
@@ -1874,16 +1874,17 @@
       },
       "license": {
         "spdx_or_name": "LicenseRef-mixed-per-package",
-        "redistributable": false,
+        "redistributable": true,
         "attribution": "authors of each vendored/installed package",
-        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed"
+        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed Per-package license audit (research/corpus/generators/g1-code/authoring/f03_license_audit.py, evidence at research/corpus/generators/g1-code/authoring/licenses/f03-validation-yq-go-mod-vendor.json): all 24 vendored packages resolve to a permissive license (class counts {'permissive': 24}); redistributable set to true from that evidence."
       },
       "independence_group": "mikefarah-yq",
       "description": "`go mod vendor` of mikefarah/yq v4.40.5 (git archive at the tag): vendor/ with modules.txt and the imported packages of every dependency module",
-      "notes": "project itself is MIT (Mike Farah); modules downloaded via proxy.golang.org by Go 1.22.2 (Ubuntu golang-1.22, GOTOOLCHAIN=local) and verified against go.sum and sum.golang.org; TOFU-pinned",
+      "notes": "F03 lockfile-provenance audit (research/corpus/generators/g1-code/authoring/f03_lockfile_audit.py, report in f03_lockfile_audit_report.json) found this item's go.sum name@version set 61.2% identical (by shared entries) to f03-tuning-fzf-go-mod-vendor's -- both are small Go CLIs vendoring the same core Go-ecosystem packages (project itself is MIT, Mike Farah; modules from proxy.golang.org verified against go.sum and sum.golang.org, cargo/go 1.22.2, TOFU-pinned). Pre-registered mitigation: a shared_packages covariate (same audit tool/methodology, see f03_shared_packages_covariate.md) records each item's shared-entry fraction against every other split's F03 items; any experiment using this item must report results with and without the shared-package subset, rather than treating it as an independent sample of the Go-vendor-tree population.",
       "tags": [
+        "go-modules",
         "network-fetch-lockfile-verified",
-        "go-modules"
+        "shared-packages-with-tuning-fzf"
       ]
     },
     {
@@ -1952,7 +1953,7 @@
         "spdx_or_name": "LicenseRef-mixed-per-package",
         "redistributable": false,
         "attribution": "authors of each vendored/installed package",
-        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed"
+        "notes": "aggregate of third-party packages under their own licenses (overwhelmingly permissive OSS, some copyleft possible); not audited package by package, so treated as non-redistributable: only hashes are committed Per-package license audit deliberately NOT run pre-freeze (this item is held-out; research/corpus/generators/g1-code/authoring/f03_license_audit.py only reads tuning/validation F03 items by default). Same tool and method are pre-registered to run against this item post-freeze."
       },
       "independence_group": "direnv",
       "description": "`go mod vendor` of direnv/direnv v2.34.0 (git archive at the tag): vendor/ with modules.txt and the imported packages of every dependency module",
@@ -3533,6 +3534,424 @@
       "independence_group": "linux-kernel",
       "description": "Linux 6.6, 6.6.30, 6.6.60 and 6.6.90 side by side, restricted to the core top-level directories (block, crypto, fs, include, init, io_uring, ipc, kernel, lib, mm, net, security, virt); stable trees reconstructed from the 6.6 tarball plus the official cumulative patch-6.6.N.xz files from cdn.kernel.org",
       "notes": "byte-exact subsets of the upstream stable trees (git apply, no fuzz)"
+    },
+    {
+      "item_id": "f01-tuning-typescript-5-9-3-git",
+      "family": "F01",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "git-archive",
+      "real_or_generated": "real",
+      "recipe": {
+        "git": {
+          "repo": "https://github.com/microsoft/TypeScript",
+          "commit": "c63de15a992d37f0d6cec03ac7631872838602cb",
+          "ref": "v5.9.3"
+        }
+      },
+      "license": {
+        "spdx_or_name": "Apache-2.0",
+        "redistributable": true,
+        "attribution": "Microsoft Corporation and TypeScript contributors",
+        "notes": "see LICENSE.txt; a few third-party test fixtures under tests/ carry their own headers"
+      },
+      "independence_group": "microsoft-typescript",
+      "description": "git archive of microsoft/TypeScript at tag v5.9.3: the compiler/language-service source, src/, tests/ (cases and baselines), scripts/ and docs, no node_modules -- the corpus's first real JS/TS source tree (gap F01: no JS/TS/Java source tree existed in any split)",
+      "notes": "same repo+commit already pinned by f03-tuning-typescript-npm-node-modules (its package.json/package-lock.json); this item is the project's own source tree, not its dependencies"
+    },
+    {
+      "item_id": "f01-tuning-zstd-v1-5-7-full-clone",
+      "family": "F01",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "git-archive",
+      "real_or_generated": "real",
+      "recipe": {
+        "git": {
+          "repo": "https://github.com/facebook/zstd",
+          "commit": "f8745da6ff1ad1e7bab384bd1f9d742439278e99",
+          "ref": "v1.5.7",
+          "history": "full"
+        },
+        "output_pin": null
+      },
+      "license": {
+        "spdx_or_name": "BSD-3-Clause OR GPL-2.0-only",
+        "redistributable": true,
+        "attribution": "Meta Platforms, Inc. and affiliates; Zstandard contributors",
+        "notes": "dual licensed; contrib/ and tests/ files carry their own headers"
+      },
+      "independence_group": "zstd",
+      "description": "full-history git clone (cached bundle, then `git clone` + checkout) of facebook/zstd at tag v1.5.7: a real working copy with a complete .git (refs, packed objects) checked out at the pinned commit, not a commit-snapshot archive -- closes gap F01 (project-directory backups need a .git workload; f01-tuning-zstd-v1-5-7-git remains as the archive-only item)",
+      "notes": "output unpinned (recipe.output_pin: null): .git/index and reflog contents are not byte-reproducible across clones/machines, only the checked-out commit is pinned",
+      "tags": [
+        "git-full-history"
+      ]
+    },
+    {
+      "item_id": "f01-validation-bootstrap-5-3-8-git",
+      "family": "F01",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "git-archive",
+      "real_or_generated": "real",
+      "recipe": {
+        "git": {
+          "repo": "https://github.com/twbs/bootstrap",
+          "commit": "25aa8cc0b32f0d1a54be575347e6d84b70b1acd7",
+          "ref": "v5.3.8"
+        }
+      },
+      "license": {
+        "spdx_or_name": "MIT",
+        "redistributable": true,
+        "attribution": "The Bootstrap Authors",
+        "notes": "see LICENSE"
+      },
+      "independence_group": "twbs-bootstrap",
+      "description": "git archive of twbs/bootstrap at tag v5.3.8: scss/, js/, dist/, site/ docs and tests, no node_modules -- a second JS/TS-ecosystem source tree, in the validation split (gap F01)",
+      "notes": "same repo+commit already pinned by f03-validation-bootstrap-npm-node-modules"
+    },
+    {
+      "item_id": "f01-validation-cpython-3-13-15-full-clone",
+      "family": "F01",
+      "split": "validation",
+      "scale": "large",
+      "kind": "git-archive",
+      "real_or_generated": "real",
+      "recipe": {
+        "git": {
+          "repo": "https://github.com/python/cpython",
+          "commit": "4061bc4c35f7c26f25264666d4ba083b93d2f6f9",
+          "ref": "v3.13.15",
+          "history": "full"
+        },
+        "output_pin": null
+      },
+      "license": {
+        "spdx_or_name": "PSF-2.0",
+        "redistributable": true,
+        "attribution": "Python Software Foundation and CPython contributors",
+        "notes": "includes third-party code under compatible permissive licenses; see LICENSE"
+      },
+      "independence_group": "cpython",
+      "description": "full-history git clone (cached bundle, then `git clone` + checkout) of python/cpython at tag v3.13.15: a real working copy with a complete .git (refs, packed objects) checked out at the pinned commit -- closes gap F01's 'validation has no large item' (V:L) and gives validation a project-directory-backup workload with real history depth",
+      "notes": "output unpinned (recipe.output_pin: null): .git/index and reflog contents are not byte-reproducible across clones/machines, only the checked-out commit is pinned",
+      "tags": [
+        "git-full-history"
+      ]
+    },
+    {
+      "item_id": "f01-heldout-pdfjs-4-10-38-git",
+      "family": "F01",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "git-archive",
+      "real_or_generated": "real",
+      "recipe": {
+        "git": {
+          "repo": "https://github.com/mozilla/pdf.js",
+          "commit": "f9bea397f817100a186d0ced2aa3d4b85813b637",
+          "ref": "v4.10.38"
+        }
+      },
+      "license": {
+        "spdx_or_name": "Apache-2.0",
+        "redistributable": true,
+        "attribution": "Mozilla Foundation and pdf.js contributors",
+        "notes": "see LICENSE; test/pdfs reference fixtures carry their own per-file licenses/attributions"
+      },
+      "independence_group": "mozilla-pdfjs",
+      "description": "git archive of mozilla/pdf.js at tag v4.10.38: src/, web/, test/ (unit + reftest fixtures) and docs, no node_modules -- a third JS/TS-ecosystem source tree, in the held-out split (gap F01)",
+      "notes": "same repo+commit already pinned by f03-heldout-pdfjs-npm-node-modules"
+    },
+    {
+      "item_id": "f01-heldout-lua-5-4-8-full-clone",
+      "family": "F01",
+      "split": "heldout",
+      "scale": "small",
+      "kind": "git-archive",
+      "real_or_generated": "real",
+      "recipe": {
+        "git": {
+          "repo": "https://github.com/lua/lua",
+          "commit": "6e22fedb74cf0c9b6656e9fce8b7331db847c605",
+          "ref": "v5.4.8",
+          "history": "full"
+        },
+        "output_pin": null
+      },
+      "license": {
+        "spdx_or_name": "MIT",
+        "redistributable": true,
+        "attribution": "Lua.org, PUC-Rio",
+        "notes": ""
+      },
+      "independence_group": "lua",
+      "description": "full-history git clone (cached bundle, then `git clone` + checkout) of the github.com/lua/lua mirror at tag v5.4.8: a real working copy with a complete .git (refs, packed objects) checked out at the pinned commit -- closes gap F01's 'full github.com/lua/lua clone (lua group)' requirement",
+      "notes": "output unpinned (recipe.output_pin: null): .git/index and reflog contents are not byte-reproducible across clones/machines, only the checked-out commit is pinned; independence_group lua is already used by f18-heldout-lua-5-4-releases (same held-out split, same real-world upstream, different purpose: release-tarball series vs. a git history workload)",
+      "tags": [
+        "git-full-history"
+      ]
+    },
+    {
+      "item_id": "f18-tuning-ubuntu-noble-cloud-images",
+      "family": "F18",
+      "split": "tuning",
+      "scale": "large",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "cloudimg-20260826",
+            "url": "https://cloud-images.ubuntu.com/releases/noble/release-20260826/ubuntu-24.04-server-cloudimg-amd64.img",
+            "sha256": "d0fe84bb5f80853425fa6be28e2c106f30104c3cfe8611933f2e65c9b63f0e30",
+            "size": 624829952,
+            "notes": "published checksum: match: https://cloud-images.ubuntu.com/releases/noble/release-20260826/SHA256SUMS; qcow2 image despite the .img extension"
+          },
+          {
+            "name": "cloudimg-20260911",
+            "url": "https://cloud-images.ubuntu.com/releases/noble/release-20260911/ubuntu-24.04-server-cloudimg-amd64.img",
+            "sha256": "612b2c0cc1bc413a6cb8c38fd611794caf0f2b436c50013d8b3794db12ad7354",
+            "size": 625256960,
+            "notes": "published checksum: match: https://cloud-images.ubuntu.com/releases/noble/release-20260911/SHA256SUMS; qcow2 image despite the .img extension; same bytes already used as an input by g4-binary's F16 ubuntu-noble raw-disk item (same split, same real-world source, different purpose: a raw-disk conversion there vs. a versioned-series pair here)"
+          }
+        ],
+        "steps": [
+          {
+            "op": "copy",
+            "input": "cloudimg-20260826",
+            "dest": "ubuntu-24.04-server-cloudimg-amd64.release-20260826.img"
+          },
+          {
+            "op": "copy",
+            "input": "cloudimg-20260911",
+            "dest": "ubuntu-24.04-server-cloudimg-amd64.release-20260911.img"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Ubuntu cloud image (per-package licenses; Canonical IP rights policy permits unmodified redistribution)",
+        "redistributable": true,
+        "attribution": "Canonical Ltd. and the respective upstream package authors",
+        "notes": "official published cloud images, redistributed unmodified"
+      },
+      "independence_group": "ubuntu-noble",
+      "description": "two consecutive published Ubuntu 24.04 (noble) server cloud image qcow2 releases (release-20260826 and release-20260911) side by side -- closes gap F18 (no versioned binaries/images existed; this is a near-duplicate versioned *image*, not a source series)",
+      "tags": [
+        "qcow2",
+        "vm-image"
+      ]
+    },
+    {
+      "item_id": "f18-validation-cpython-embeddable-3-14-series",
+      "family": "F18",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "embed-3-14-0",
+            "url": "https://www.python.org/ftp/python/3.14.0/python-3.14.0-embed-amd64.zip",
+            "sha256": "8d4d3590c10449d78aa4375f534e6d5f3027d67fdc362dd1a882279db6f90fdf",
+            "size": 11994671,
+            "notes": "published checksum: none-published (python.org ftp does not publish per-file hashes for the embeddable package); SHA-256 recorded from the 2026-09-16 retrieval"
+          },
+          {
+            "name": "embed-3-14-1",
+            "url": "https://www.python.org/ftp/python/3.14.1/python-3.14.1-embed-amd64.zip",
+            "sha256": "0e613b6c5f332ce3278b6250d56ab0bdbbbacb61b9028b9b0865efe80fca1529",
+            "size": 12013680,
+            "notes": "published checksum: none-published (python.org ftp does not publish per-file hashes for the embeddable package); SHA-256 recorded from the 2026-09-16 retrieval"
+          },
+          {
+            "name": "embed-3-14-2",
+            "url": "https://www.python.org/ftp/python/3.14.2/python-3.14.2-embed-amd64.zip",
+            "sha256": "f05e28d161c6b15af64a7cb7f08b4a22b3a6b03eee71baee24ea557b3bdd5798",
+            "size": 12011844,
+            "notes": "published checksum: none-published (python.org ftp does not publish per-file hashes for the embeddable package); SHA-256 recorded from the 2026-09-16 retrieval"
+          },
+          {
+            "name": "embed-3-14-3",
+            "url": "https://www.python.org/ftp/python/3.14.3/python-3.14.3-embed-amd64.zip",
+            "sha256": "ad4961a479dedbeb7c7d113253f8db1b1935586b73c27488712beec4f2c894e6",
+            "size": 12023245,
+            "notes": "published checksum: none-published (python.org ftp does not publish per-file hashes for the embeddable package); SHA-256 recorded from the 2026-09-16 retrieval"
+          },
+          {
+            "name": "embed-3-14-4",
+            "url": "https://www.python.org/ftp/python/3.14.4/python-3.14.4-embed-amd64.zip",
+            "sha256": "cda80a9b1e75c0f1b4f9872ca1b417f0d19bce32facc811aea9180e70fad5fb9",
+            "size": 12034740,
+            "notes": "published checksum: none-published (python.org ftp does not publish per-file hashes for the embeddable package); SHA-256 recorded from the 2026-09-16 retrieval"
+          },
+          {
+            "name": "embed-3-14-5",
+            "url": "https://www.python.org/ftp/python/3.14.5/python-3.14.5-embed-amd64.zip",
+            "sha256": "ba6bd811c4eedb19195cf275770ef127e893d63701e24152606e2cb76f6d876a",
+            "size": 12048447,
+            "notes": "published checksum: none-published (python.org ftp does not publish per-file hashes for the embeddable package); SHA-256 recorded from the 2026-09-16 retrieval"
+          },
+          {
+            "name": "embed-3-14-6",
+            "url": "https://www.python.org/ftp/python/3.14.6/python-3.14.6-embed-amd64.zip",
+            "sha256": "df901e84a896ff1ee720ad03377e0c8d8c2244fda79808aeeaff6316df1cb75c",
+            "size": 12570832,
+            "notes": "published checksum: none-published (python.org ftp does not publish per-file hashes for the embeddable package); SHA-256 recorded from the 2026-09-16 retrieval"
+          },
+          {
+            "name": "embed-3-14-7",
+            "url": "https://www.python.org/ftp/python/3.14.7/python-3.14.7-embed-amd64.zip",
+            "sha256": "d297e5ff019966817ad8502465176139f2d3d840fa4ed84b13bed399a6ab1f15",
+            "size": 12673227,
+            "notes": "published checksum: none-published (python.org ftp does not publish per-file hashes for the embeddable package); SHA-256 recorded from the 2026-09-16 retrieval"
+          }
+        ],
+        "steps": [
+          {
+            "op": "extract",
+            "input": "embed-3-14-0",
+            "dest": "python-3.14.0-embed-amd64",
+            "format": "zip"
+          },
+          {
+            "op": "extract",
+            "input": "embed-3-14-1",
+            "dest": "python-3.14.1-embed-amd64",
+            "format": "zip"
+          },
+          {
+            "op": "extract",
+            "input": "embed-3-14-2",
+            "dest": "python-3.14.2-embed-amd64",
+            "format": "zip"
+          },
+          {
+            "op": "extract",
+            "input": "embed-3-14-3",
+            "dest": "python-3.14.3-embed-amd64",
+            "format": "zip"
+          },
+          {
+            "op": "extract",
+            "input": "embed-3-14-4",
+            "dest": "python-3.14.4-embed-amd64",
+            "format": "zip"
+          },
+          {
+            "op": "extract",
+            "input": "embed-3-14-5",
+            "dest": "python-3.14.5-embed-amd64",
+            "format": "zip"
+          },
+          {
+            "op": "extract",
+            "input": "embed-3-14-6",
+            "dest": "python-3.14.6-embed-amd64",
+            "format": "zip"
+          },
+          {
+            "op": "extract",
+            "input": "embed-3-14-7",
+            "dest": "python-3.14.7-embed-amd64",
+            "format": "zip"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "PSF-2.0",
+        "redistributable": true,
+        "attribution": "Python Software Foundation and CPython contributors",
+        "notes": "see LICENSE.txt bundled in each package"
+      },
+      "independence_group": "cpython",
+      "description": "the eight CPython 3.14 Windows embeddable package zips (3.14.0 through 3.14.7) from python.org, extracted side by side as python-<version>-embed-amd64/ -- closes gap F18 (no versioned *binaries* existed in validation; this is a small prebuilt-binary distribution series, distinct from the existing F18 CPython 3.12 *source* series and from the F01/F02 CPython git/build items)"
+    },
+    {
+      "item_id": "f18-heldout-firefox-155-releases",
+      "family": "F18",
+      "split": "heldout",
+      "scale": "large",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "firefox-155-0",
+            "url": "https://ftp.mozilla.org/pub/firefox/releases/155.0/linux-x86_64/en-US/firefox-155.0.tar.xz",
+            "sha256": "fd9ec3f5f113d0825ca0bd1ab3c0756fbc40241034eefce6743be953bcca7473",
+            "size": 86978904,
+            "notes": "SHA-256 from the release SHA256SUMS"
+          },
+          {
+            "name": "firefox-155-0-1",
+            "url": "https://ftp.mozilla.org/pub/firefox/releases/155.0.1/linux-x86_64/en-US/firefox-155.0.1.tar.xz",
+            "sha256": "642ab731354a5ca790b894d4556dfb5028c61d0c24eb10d10e10a111a69c89bf",
+            "size": 87372544,
+            "notes": "SHA-256 from the release SHA256SUMS; same bytes already used by g4-binary's f14-heldout-firefox-15501-linux-tarball (F14, kept as the compressed tarball there) and f11-heldout-firefox-15501-signing-metadata; this item extracts both 155.0 and 155.0.1 side by side for a versioned-tree comparison instead"
+          }
+        ],
+        "steps": [
+          {
+            "op": "extract",
+            "input": "firefox-155-0",
+            "dest": "firefox-155.0",
+            "strip_components": 1
+          },
+          {
+            "op": "extract",
+            "input": "firefox-155-0-1",
+            "dest": "firefox-155.0.1",
+            "strip_components": 1
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "MPL-2.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later",
+        "redistributable": true,
+        "attribution": "Mozilla Foundation",
+        "notes": "tri-license source availability; the official binary distribution is redistributable unmodified under Mozilla's trademark policy"
+      },
+      "independence_group": "mozilla-firefox",
+      "description": "official Firefox 155.0 and 155.0.1 Linux x86_64 release tarballs, extracted side by side as firefox-155.0/ and firefox-155.0.1/ -- closes gap F18 (held-out had no versioned binaries/images series)"
+    },
+    {
+      "item_id": "f02-validation-nodejs-22-20-0-win-x64-pdb",
+      "family": "F02",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "node_pdb",
+            "url": "https://nodejs.org/dist/v22.20.0/win-x64/node_pdb.zip",
+            "sha256": "a7b9db641bd1c788b98219670b40e654ec9b0d8f956bb48ed6983442dd0214a8",
+            "size": 91339479,
+            "notes": "published checksum: match: https://nodejs.org/dist/v22.20.0/SHASUMS256.txt"
+          }
+        ],
+        "steps": [
+          {
+            "op": "extract",
+            "input": "node_pdb",
+            "dest": "node_pdb"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "MIT",
+        "redistributable": true,
+        "attribution": "Node.js contributors, OpenJS Foundation",
+        "notes": "Node.js project license; this archive is official MSVC debug-symbol (.pdb) build output for the Windows x64 release, published alongside the binaries"
+      },
+      "independence_group": "nodejs",
+      "description": "official node_pdb.zip for Node.js v22.20.0 win-x64: MSVC program-database (.pdb) debug symbol files for node.exe and its bundled native modules -- closes part of gap F02 (no MSVC PDBs existed in any split; a Windows-toolchain CI/release-artifact kind entirely absent from the prior all-gcc/cargo F02 set)",
+      "notes": "F02 gap also calls for CPython python -m test --junit-xml + gcov/lcov coverage, and a second CPython build variant (--with-pydebug or LTO+PGO) for validation's large tier, and PostgreSQL make check + --enable-coverage lcov HTML for held-out; those were not added in this pass (see PROGRESS.md problems: each needs a fresh multi-hundred-MB build and the g1-code group was already over its ~12 GiB budget after the F01/F18 additions)."
     }
   ]
 }

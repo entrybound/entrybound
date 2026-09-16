@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "mikefarah-yq",
   "source_file": "research/corpus/sources/g1-code.json",
-  "item_def_sha256": "b68098e192425808307796b010b9fb8580d06e2fdb8795f385e7a9b39fb64791",
+  "item_def_sha256": "d136d212e61e45248ddefc49b4f98a1af229159cd8ea0ce07e6f2e535d85e94a",
   "materialization_key": "ace9b43e38ea7d2fe69cf1fb5d78d312576a4aac23e44edf8f40389176df23af",
   "materialized_utc": "2026-09-13T02:20:16Z",
   "materialized_relpath": "corpus/validation/f03-validation-yq-go-mod-vendor",

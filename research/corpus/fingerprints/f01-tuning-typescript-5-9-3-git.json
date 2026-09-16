@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f01-tuning-typescript-5-9-3-git",
+  "family": "F01",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "microsoft-typescript",
+  "source_file": "research/corpus/sources/g1-code.json",
+  "item_def_sha256": "09b2d3f0450d095d8640f556ddb6e449d560fbefd846141b73dfbb42624ceffe",
+  "materialization_key": "2ad454b5974765a4c96240e33a69e595e131e82160c6ef5bfce6a0776de0c7c5",
+  "materialized_utc": "2026-09-16T23:16:09Z",
+  "materialized_relpath": "corpus/tuning/f01-tuning-typescript-5-9-3-git",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "463f65885b6e73baada27e53452dbe4e1f69f1cc07ac0c62b8861d04d9f2111c",
+    "pinned_utc": "2026-09-16T23:16:09Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 391819141,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/microsoft/TypeScript",
+      "commit": "c63de15a992d37f0d6cec03ac7631872838602cb",
+      "ref": "v5.9.3",
+      "subpaths": null,
+      "archive_sha256": "5f8205af464f5128c06807368ca9db32c1113b444e910a13c2beafbf8f3c853c",
+      "archive_bytes": 451010560,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "git-archive",
+        "format": "tar"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "96ecac60e3bd1ebb08f8303068bb72a665c962113b921d4c0fc6f6a4baf2e6eb",
+    "logical_tree_sha256": "463f65885b6e73baada27e53452dbe4e1f69f1cc07ac0c62b8861d04d9f2111c",
+    "content_tree_sha256": "bbb8735a2712eef16d07cbc751136638c30f5508d6878089e2b7061ff69a0fa2",
+    "extended_tree_sha256": "c958dee351a3bbd1257abae28531ae6b7e2185368246c85727a68ce5dadb15a0",
+    "bytes": 391819141,
+    "bytes_all_paths": 391819141,
+    "allocated_bytes": 625369088,
+    "counts": {
+      "objects": 77308,
+      "files": 74474,
+      "unique_file_inodes": 74474,
+      "dirs": 2833,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 11,
+      "max_name_length_bytes": 177,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 231,
+        "mean": 68.129,
+        "p50": 63,
+        "p95": 109
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

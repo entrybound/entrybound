@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f02-validation-nodejs-22-20-0-win-x64-pdb",
+  "inputs": {},
+  "output": {
+    "materialization_key": "8f95169067b7b9d9b7487f9f2efff5d815b4f4ee83d326c573a44bb07e9a3009",
+    "logical_tree_sha256": "31e26f6ae48a677f3c77a00ddf1b171a7b19529430e3341aeea4d0b6e16f52c9",
+    "pinned_utc": "2026-09-16T23:26:56Z"
+  },
+  "history": []
+}

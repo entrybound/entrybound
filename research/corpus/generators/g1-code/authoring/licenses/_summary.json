@@ -1,0 +1,54 @@
+{
+  "f03-tuning-fzf-go-mod-vendor": {
+    "package_count": 12,
+    "class_counts": {
+      "permissive": 12
+    },
+    "recommended_redistributable": true
+  },
+  "f03-tuning-pypi-scientific-site-packages": {
+    "package_count": 22,
+    "class_counts": {
+      "permissive": 22
+    },
+    "recommended_redistributable": true
+  },
+  "f03-tuning-ripgrep-cargo-vendor": {
+    "package_count": 51,
+    "class_counts": {
+      "permissive": 51
+    },
+    "recommended_redistributable": true
+  },
+  "f03-tuning-typescript-npm-node-modules": {
+    "package_count": 341,
+    "class_counts": {
+      "permissive": 341
+    },
+    "recommended_redistributable": true
+  },
+  "f03-validation-bat-cargo-vendor": {
+    "package_count": 207,
+    "class_counts": {
+      "copyleft-or-other": 1,
+      "permissive": 206
+    },
+    "recommended_redistributable": false
+  },
+  "f03-validation-bootstrap-npm-node-modules": {
+    "package_count": 1184,
+    "class_counts": {
+      "copyleft-or-other": 2,
+      "permissive": 1174,
+      "unresolved": 8
+    },
+    "recommended_redistributable": false
+  },
+  "f03-validation-yq-go-mod-vendor": {
+    "package_count": 24,
+    "class_counts": {
+      "permissive": 24
+    },
+    "recommended_redistributable": true
+  }
+}

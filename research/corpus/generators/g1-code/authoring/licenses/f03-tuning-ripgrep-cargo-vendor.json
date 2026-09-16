@@ -1,0 +1,318 @@
+{
+  "item_id": "f03-tuning-ripgrep-cargo-vendor",
+  "ecosystem": "cargo",
+  "package_count": 51,
+  "class_counts": {
+    "permissive": 51
+  },
+  "non_permissive_packages": [],
+  "recommended_redistributable": true,
+  "packages": [
+    {
+      "package": "aho-corasick-1.1.3",
+      "license_expr": "Unlicense OR MIT",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "anyhow-1.0.87",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "bstr-1.10.0",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "cc-1.1.18",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "cfg-if-1.0.0",
+      "license_expr": "MIT/Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "crossbeam-channel-0.5.13",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "crossbeam-deque-0.8.5",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "crossbeam-epoch-0.9.18",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "crossbeam-utils-0.8.20",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "encoding_rs-0.8.34",
+      "license_expr": "(Apache-2.0 OR MIT) AND BSD-3-Clause",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "encoding_rs_io-0.1.7",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "glob-0.3.1",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "itoa-1.0.11",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "jemalloc-sys-0.5.4+5.3.0-patched",
+      "license_expr": "MIT/Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "jemallocator-0.5.4",
+      "license_expr": "MIT/Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "jobserver-0.1.32",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "lexopt-0.3.0",
+      "license_expr": "MIT",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "libc-0.2.158",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "log-0.4.22",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "memchr-2.7.4",
+      "license_expr": "Unlicense OR MIT",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "memmap2-0.9.4",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "pcre2-0.2.9",
+      "license_expr": "Unlicense OR MIT",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "pcre2-sys-0.2.9",
+      "license_expr": "Unlicense OR MIT",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "pkg-config-0.3.30",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "proc-macro2-1.0.86",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "quote-1.0.37",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "regex-1.10.6",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "regex-automata-0.4.7",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "regex-syntax-0.8.4",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "ryu-1.0.18",
+      "license_expr": "Apache-2.0 OR BSL-1.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "same-file-1.0.6",
+      "license_expr": "Unlicense/MIT",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "serde-1.0.210",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "serde_derive-1.0.210",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "serde_json-1.0.128",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "shlex-1.3.0",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "syn-2.0.77",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "termcolor-1.4.1",
+      "license_expr": "Unlicense OR MIT",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "textwrap-0.16.1",
+      "license_expr": "MIT",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "unicode-ident-1.0.12",
+      "license_expr": "(MIT OR Apache-2.0) AND Unicode-DFS-2016",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "walkdir-2.5.0",
+      "license_expr": "Unlicense/MIT",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "winapi-util-0.1.9",
+      "license_expr": "Unlicense OR MIT",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "windows-sys-0.59.0",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "windows-targets-0.52.6",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "windows_aarch64_gnullvm-0.52.6",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "windows_aarch64_msvc-0.52.6",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "windows_i686_gnu-0.52.6",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "windows_i686_gnullvm-0.52.6",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "windows_i686_msvc-0.52.6",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "windows_x86_64_gnu-0.52.6",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "windows_x86_64_gnullvm-0.52.6",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    },
+    {
+      "package": "windows_x86_64_msvc-0.52.6",
+      "license_expr": "MIT OR Apache-2.0",
+      "source": "Cargo.toml [package].license",
+      "class": "permissive"
+    }
+  ]
+}

@@ -478,7 +478,7 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
         if not isinstance(git, dict):
             errors.append(f"{where}: recipe.git must be an object")
         else:
-            extra = set(git) - {"repo", "commit", "ref", "subpaths", "notes"}
+            extra = set(git) - {"repo", "commit", "ref", "subpaths", "history", "notes"}
             if extra:
                 errors.append(f"{where}: recipe.git unknown keys {sorted(extra)}")
             if not isinstance(git.get("repo"), str) or not _url_ok(git["repo"]):
@@ -488,6 +488,19 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
             for sp in git.get("subpaths", []) or []:
                 if not isinstance(sp, str) or not safe_relpath(sp, allow_empty=False):
                     errors.append(f"{where}: recipe.git.subpaths entries must be safe relative paths")
+            history = git.get("history", "archive")
+            if history not in ("archive", "full"):
+                errors.append(f"{where}: recipe.git.history must be \"archive\" or \"full\"")
+            if history == "full":
+                if git.get("subpaths"):
+                    errors.append(f"{where}: recipe.git.subpaths is not supported with history=full "
+                                  f"(a full clone carries the whole repository)")
+                # a full clone's .git/index and working-tree stat metadata are not
+                # reproducible across clones/machines, so the output must be unpinned.
+                pin = recipe.get("output_pin", DEFAULT_OUTPUT_PIN.get(kind))
+                if pin is not None:
+                    errors.append(f"{where}: recipe.git.history=full requires recipe.output_pin: null "
+                                  f"(.git/index stat data is not reproducible)")
     docker = recipe.get("docker")
     if docker is not None:
         if not isinstance(docker, dict):
