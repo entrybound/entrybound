@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-heldout-bombvariants",
+  "inputs": {},
+  "output": {
+    "materialization_key": "08f219b64faeaa35c4e372ffc263879b460b0127afb585b34f66e57b0b88358b",
+    "logical_tree_sha256": "39b6f8c0e316e64fdd630a0d5716fd1ed489704a3b09144aa8850d6eaf7f3928",
+    "pinned_utc": "2026-09-16T21:39:09Z"
+  },
+  "history": []
+}

@@ -784,7 +784,7 @@
       "item_id": "f20-tuning-csprng",
       "family": "F20",
       "split": "tuning",
-      "scale": "small",
+      "scale": "medium",
       "kind": "generate",
       "real_or_generated": "generated",
       "recipe": {
@@ -1069,7 +1069,7 @@
       "item_id": "f20-heldout-gearstraddle",
       "family": "F20",
       "split": "heldout",
-      "scale": "small",
+      "scale": "medium",
       "kind": "generate",
       "real_or_generated": "generated",
       "recipe": {

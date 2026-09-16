@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-validation-aesctr",
+  "inputs": {},
+  "output": {
+    "materialization_key": "e8d2878445829af3d2176150031003acff5c1872b8488c5fee279e0c92dd966e",
+    "logical_tree_sha256": "311f6ed76641f6f64d55e3951e5fc53b5cb8dcadba1b60408c3aade75e7e1678",
+    "pinned_utc": "2026-09-16T21:38:46Z"
+  },
+  "history": []
+}

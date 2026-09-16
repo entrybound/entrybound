@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-heldout-chacha-volume",
+  "inputs": {},
+  "output": {
+    "materialization_key": "fc40e0262ba54e2335a90d9daa8fc5243a4272f7a867fdf0ddfcdbcd6fe27988",
+    "logical_tree_sha256": "354200a16d2f1694f2118ed2d84ccc21484b49ff06a072303f958fa6e7b0dde3",
+    "pinned_utc": "2026-09-16T21:38:40Z"
+  },
+  "history": []
+}

@@ -1,0 +1,71 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f20-heldout-gearstraddle",
+  "family": "F20",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "generate",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-g2-f20-gearstraddle",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "933820ae9cc12b5f9041c1f534562d212fd0ae738c9814a25a112b7c28854acd",
+  "materialization_key": "d99adc3da93e291a1d55ab08ccab488272e241ce877e5a759cdc1a1533fab3fa",
+  "materialized_utc": "2026-09-16T21:40:27Z",
+  "materialized_relpath": "heldout/f20-heldout-gearstraddle",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "f8bfa1e655944033da3a86f918b2017b384c0a4f5679fa47d89b1b151677e6aa",
+    "pinned_utc": "2026-09-16T21:40:27Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 172976346,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g2-generated/gear_straddle.py",
+      "script_sha256": "931b2faa15270d2293878626a26d247bfabfe388f8653a7296cbc6dc23d19eb1",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 81010,
+      "params": {
+        "size_mib": 16
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "786764c37ce55efb910eaadacca976dca13701576c83a789b976c38857283f14",
+    "logical_tree_sha256": "f8bfa1e655944033da3a86f918b2017b384c0a4f5679fa47d89b1b151677e6aa",
+    "content_tree_sha256": "164a5b7e94bc50279a596e4623c91acc469658800681004c2f41678c799286d8",
+    "extended_tree_sha256": "e58cf890d5a522a4fdfd4f67326c67a1ccc3746920e04ff1dc6c38c3d2ff3382",
+    "bytes": 172976346,
+    "counts": {
+      "objects": 24,
+      "files": 22,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

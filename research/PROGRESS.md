@@ -140,3 +140,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T21:35Z — crypto-keys-recipients merged: 86 requirements, 28 decisions, 528/528 keys mapped
 - 2026-09-16T21:37Z — g2-generated F17 provisioned and fingerprinted (6 items: 2 tuning, 2 validation, 2 heldout).
 - 2026-09-16T21:38Z — g2-generated F19 provisioned and fingerprinted (6 items: 2 tuning, 2 validation, 2 heldout).
+- 2026-09-16T21:40Z — g2-generated F20 provisioned and fingerprinted (10 items: 3 tuning, 3 validation, 4 heldout across 3 independence groups); all 5 g2-generated families now provisioned. gear-norm-v1 reference generators cross-checked against entrybound::chunker (0 mismatches).

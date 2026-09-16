@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-validation-bombs-compressed",
+  "inputs": {},
+  "output": {
+    "materialization_key": "cfdc06c90f9b3a9785cbc7d834050d9a42a2cc649968c9fc7cfd69015bd41c91",
+    "logical_tree_sha256": "9e8e749ab0ec9a349653f45cfae401a51cd1480626f655c9ce297a938803d51f",
+    "pinned_utc": "2026-09-16T21:39:42Z"
+  },
+  "history": []
+}

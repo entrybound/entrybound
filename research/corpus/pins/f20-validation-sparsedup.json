@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-validation-sparsedup",
+  "inputs": {},
+  "output": {
+    "materialization_key": "efae3839ce5993c43ec65b28f51b4a153f7f71d7da92cf93d19f14c294dbd198",
+    "logical_tree_sha256": "9fe90ed3e5516b793569711d714e583a9ec4389ee1276a56f3cb3cefcc0e990c",
+    "pinned_utc": "2026-09-16T21:39:24Z"
+  },
+  "history": []
+}

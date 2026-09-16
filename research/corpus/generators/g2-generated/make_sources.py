@@ -300,7 +300,7 @@ ITEMS += [
 # F20 adversarial/high-entropy inputs
 # =======================================================================================
 ITEMS += [
-    item("f20-tuning-csprng", "F20", "tuning", "small", "generate", "generated",
+    item("f20-tuning-csprng", "F20", "tuning", "medium", "generate", "generated",
          {"generator": gen("csprng_files.py", 81001, {"mode": "files", "count": 60, "max_mib": 4})},
          GENERATED_LIC, "ebrc-g2-f20-csprng",
          "Generated maximal-entropy files from a seeded CSPRNG (SHAKE-256 counter mode): a fixed list of boundary "
@@ -375,7 +375,7 @@ ITEMS += [
          notes="Held-out: a different generator from compressible_bombs.py (other codecs and container shapes, "
                "entry-count rather than byte-count blow-ups); per bomb_variants.py's own docstring.",
          tags=["generated"]),
-    item("f20-heldout-gearstraddle", "F20", "heldout", "small", "generate", "generated",
+    item("f20-heldout-gearstraddle", "F20", "heldout", "medium", "generate", "generated",
          {"generator": gen("gear_straddle.py", 81010, {"size_mib": 16})},
          GENERATED_LIC, "ebrc-g2-f20-gearstraddle",
          "Generated CDC-adversarial inputs targeting gear-norm-v1 mask transitions and near-misses: late-flood "

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-tuning-csprng",
+  "inputs": {},
+  "output": {
+    "materialization_key": "5097078810a0a63baeb19719b99b11bcb40f4bb65a7defe18927b07df7357664",
+    "logical_tree_sha256": "feff88ae2761edefc2c2585b133f61afbdd7046c50f33aaf687013ab13e57207",
+    "pinned_utc": "2026-09-16T21:40:09Z"
+  },
+  "history": []
+}

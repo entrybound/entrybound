@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-tuning-gear-extremes",
+  "inputs": {},
+  "output": {
+    "materialization_key": "c9a0363dd5af068edd8cd83284801ef2b96d8c04b1befb50370730296eda241b",
+    "logical_tree_sha256": "00aab77844b76cc8e852a1caca501b043af9b36b571ff6b696533e87b3fac34f",
+    "pinned_utc": "2026-09-16T21:38:58Z"
+  },
+  "history": []
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-heldout-gearstraddle",
+  "inputs": {},
+  "output": {
+    "materialization_key": "d99adc3da93e291a1d55ab08ccab488272e241ce877e5a759cdc1a1533fab3fa",
+    "logical_tree_sha256": "f8bfa1e655944033da3a86f918b2017b384c0a4f5679fa47d89b1b151677e6aa",
+    "pinned_utc": "2026-09-16T21:40:27Z"
+  },
+  "history": []
+}
