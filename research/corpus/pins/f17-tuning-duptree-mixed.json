@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f17-tuning-duptree-mixed",
+  "inputs": {},
+  "output": {
+    "materialization_key": "94ac83913b1155f067a924d40620ec5be1f6acdef9d5ed4d826ebf8ffae763b5",
+    "logical_tree_sha256": "c577f3c802d1b97648776d5cfc69eac9ea9a04ba3ad5316c96d582dceb777839",
+    "pinned_utc": "2026-09-16T21:36:52Z"
+  },
+  "history": []
+}

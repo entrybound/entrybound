@@ -362,7 +362,7 @@
       "item_id": "f17-tuning-duptree-mixed",
       "family": "F17",
       "split": "tuning",
-      "scale": "small",
+      "scale": "medium",
       "kind": "generate",
       "real_or_generated": "generated",
       "recipe": {
@@ -399,7 +399,7 @@
       "item_id": "f17-tuning-duptree-nested",
       "family": "F17",
       "split": "tuning",
-      "scale": "small",
+      "scale": "medium",
       "kind": "generate",
       "real_or_generated": "generated",
       "recipe": {
@@ -497,7 +497,7 @@
       "item_id": "f17-validation-duptree-vendor",
       "family": "F17",
       "split": "validation",
-      "scale": "small",
+      "scale": "medium",
       "kind": "generate",
       "real_or_generated": "generated",
       "recipe": {
@@ -568,7 +568,7 @@
       "item_id": "f17-heldout-duptree-renamed",
       "family": "F17",
       "split": "heldout",
-      "scale": "small",
+      "scale": "medium",
       "kind": "generate",
       "real_or_generated": "generated",
       "recipe": {

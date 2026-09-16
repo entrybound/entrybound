@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f17-heldout-duptree-mono",
+  "inputs": {},
+  "output": {
+    "materialization_key": "c364f019936581d71b136119459a791ba1ca676243beae71ad81b054a593c4f8",
+    "logical_tree_sha256": "c7302c4a54067dca8ad200062ca3b102a2f59975646cf9e1f1b0ffe0e8cd9237",
+    "pinned_utc": "2026-09-16T21:36:01Z"
+  },
+  "history": []
+}

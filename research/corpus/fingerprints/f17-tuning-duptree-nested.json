@@ -1,0 +1,94 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f17-tuning-duptree-nested",
+  "family": "F17",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "generate",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-g2-f17-duptree-nested",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "7a321505dc3eea472a5793af2b0700ee5097ef89ef44fcb31b495a01b0352eb6",
+  "materialization_key": "ad0528d0ffb3a087fcadeea409beaba7007fa85c7768763311ff0f444f0fce10",
+  "materialized_utc": "2026-09-16T21:36:55Z",
+  "materialized_relpath": "corpus/tuning/f17-tuning-duptree-nested",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "83d1d2ed4dcce4b7d07c1e2fe912e42dc95f96f11ea8907291f72db09c66f2b3",
+    "pinned_utc": "2026-09-16T21:36:55Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 58354145,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g2-generated/duplicate_tree.py",
+      "script_sha256": "2208da1cd9fe0285180434bc9d3f0dbbdfcc616d3256e04a99e345459281a23b",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 61002,
+      "params": {
+        "base_files": 1000,
+        "renamed_copies": [
+          "renamed-a",
+          "renamed-b",
+          "renamed-c"
+        ],
+        "nested_copy": true
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "e457830e117802e7eaa07bd47cdf4278a223e3a3c48204db5d3c47bb7d077df7",
+    "logical_tree_sha256": "83d1d2ed4dcce4b7d07c1e2fe912e42dc95f96f11ea8907291f72db09c66f2b3",
+    "content_tree_sha256": "b1a725e354156968669825a5fc52b3aa81e6c8af25893747f4d35c8d54140371",
+    "extended_tree_sha256": "9b5170d58e2e9b9167dcba47995a33bd04917f419402f2dc8ba534f6c1d56e8e",
+    "bytes": 58354145,
+    "bytes_all_paths": 58354145,
+    "allocated_bytes": 70287360,
+    "counts": {
+      "objects": 5307,
+      "files": 5000,
+      "unique_file_inodes": 5000,
+      "dirs": 206,
+      "symlinks": 100,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 9,
+      "max_name_length_bytes": 23,
+      "path_length_bytes": {
+        "min": 7,
+        "max": 91,
+        "mean": 44.108,
+        "p50": 43,
+        "p95": 76
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,126 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f17-validation-real-yq-vendor-8x",
+  "family": "F17",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "derive",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "real-yq-vendor-8x",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "a5eb254113204b1e3077a1c24745d25da2b2104bb14fc3494a1282c76ad6ccea",
+  "materialization_key": "fcf7eba46a0919db77acbdfa11884bc5338137d1f52a31cedcfafc0419df16fb",
+  "materialized_utc": "2026-09-16T21:36:22Z",
+  "materialized_relpath": "corpus/validation/f17-validation-real-yq-vendor-8x",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "073bce63b403ba1300d433c446a8d72d0dc342426eb15f4813bcf5e34245ac9d",
+    "pinned_utc": "2026-09-16T21:36:22Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 141230448,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "from_items": [
+      {
+        "item_id": "f03-validation-yq-go-mod-vendor",
+        "logical_tree_sha256": "e6e075ee93b3f3d70a94f4dec7f8fdc42de2dcfc0eb2ac633db46ea992d19f7c"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy-item",
+        "from_item": "f03-validation-yq-go-mod-vendor",
+        "dest": "copy-01"
+      },
+      {
+        "op": "copy-item",
+        "from_item": "f03-validation-yq-go-mod-vendor",
+        "dest": "copy-02"
+      },
+      {
+        "op": "copy-item",
+        "from_item": "f03-validation-yq-go-mod-vendor",
+        "dest": "copy-03"
+      },
+      {
+        "op": "copy-item",
+        "from_item": "f03-validation-yq-go-mod-vendor",
+        "dest": "copy-04"
+      },
+      {
+        "op": "copy-item",
+        "from_item": "f03-validation-yq-go-mod-vendor",
+        "dest": "copy-05"
+      },
+      {
+        "op": "copy-item",
+        "from_item": "f03-validation-yq-go-mod-vendor",
+        "dest": "copy-06"
+      },
+      {
+        "op": "copy-item",
+        "from_item": "f03-validation-yq-go-mod-vendor",
+        "dest": "copy-07"
+      },
+      {
+        "op": "copy-item",
+        "from_item": "f03-validation-yq-go-mod-vendor",
+        "dest": "copy-08"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "cp": "cp (GNU coreutils) 9.4",
+    "tool_sha256": {
+      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "ff2ca88bddbe9320e8814175d1971c785d1507122460628a118214384fa634b6",
+    "logical_tree_sha256": "073bce63b403ba1300d433c446a8d72d0dc342426eb15f4813bcf5e34245ac9d",
+    "content_tree_sha256": "477e7486ffeccb1fa4c9e7815497de9f957cace3bd039065f16085c66629d048",
+    "extended_tree_sha256": "233a9a0b8b73081455d1e5ca30feb6533487c4109fe7bff9385cf6776d249794",
+    "bytes": 141230448,
+    "bytes_all_paths": 141230448,
+    "allocated_bytes": 156565504,
+    "counts": {
+      "objects": 6961,
+      "files": 6128,
+      "unique_file_inodes": 6128,
+      "dirs": 832,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 9,
+      "max_name_length_bytes": 27,
+      "path_length_bytes": {
+        "min": 7,
+        "max": 84,
+        "mean": 54.551,
+        "p50": 56,
+        "p95": 67
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

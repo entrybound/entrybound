@@ -187,7 +187,7 @@ ITEMS += [
 # F17 duplicate trees
 # =======================================================================================
 ITEMS += [
-    item("f17-tuning-duptree-mixed", "F17", "tuning", "small", "generate", "generated",
+    item("f17-tuning-duptree-mixed", "F17", "tuning", "medium", "generate", "generated",
          {"generator": gen("duplicate_tree.py", 61001,
                            {"base_files": 1200, "exact_copies": ["copy-a", "copy-b"],
                             "vendored_subtree": {"count": 4, "min_files": 15}, "renamed_files": 40})},
@@ -195,7 +195,7 @@ ITEMS += [
          "Generated base project tree with 2 exact (cp -a) copies, a subtree vendored into 4 third_party/"
          "node_modules-style paths, and 40 file-level renamed duplicates.",
          tags=["generated"]),
-    item("f17-tuning-duptree-nested", "F17", "tuning", "small", "generate", "generated",
+    item("f17-tuning-duptree-nested", "F17", "tuning", "medium", "generate", "generated",
          {"generator": gen("duplicate_tree.py", 61002,
                            {"base_files": 1000, "renamed_copies": ["renamed-a", "renamed-b", "renamed-c"],
                             "nested_copy": True})},
@@ -211,7 +211,7 @@ ITEMS += [
          "reused from the already-provisioned F03 vendor-tree item.",
          notes="Same underlying bytes as f03-validation-yq-go-mod-vendor; here the object of study is the 8x exact "
                "duplication, not the vendoring itself."),
-    item("f17-validation-duptree-vendor", "F17", "validation", "small", "generate", "generated",
+    item("f17-validation-duptree-vendor", "F17", "validation", "medium", "generate", "generated",
          {"generator": gen("duplicate_tree.py", 61003,
                            {"base_files": 1500, "vendored_subtree": {"count": 6, "min_files": 10},
                             "exact_copies": ["mirror"]})},
@@ -229,7 +229,7 @@ ITEMS += [
          notes="Held-out: distinct independence group and distinct topology (heavier vendoring fan-out) from every "
                "tuning/validation F17 item; fresh seed, no shared bytes.",
          tags=["generated"]),
-    item("f17-heldout-duptree-renamed", "F17", "heldout", "small", "generate", "generated",
+    item("f17-heldout-duptree-renamed", "F17", "heldout", "medium", "generate", "generated",
          {"generator": gen("duplicate_tree.py", 61005,
                            {"base_files": 900, "renamed_files": 150, "nested_copy": True,
                             "renamed_copies": ["r1", "r2"]})},

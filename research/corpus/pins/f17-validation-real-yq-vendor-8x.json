@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f17-validation-real-yq-vendor-8x",
+  "inputs": {},
+  "output": {
+    "materialization_key": "fcf7eba46a0919db77acbdfa11884bc5338137d1f52a31cedcfafc0419df16fb",
+    "logical_tree_sha256": "073bce63b403ba1300d433c446a8d72d0dc342426eb15f4813bcf5e34245ac9d",
+    "pinned_utc": "2026-09-16T21:36:22Z"
+  },
+  "history": []
+}

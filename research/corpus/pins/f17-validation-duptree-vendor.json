@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f17-validation-duptree-vendor",
+  "inputs": {},
+  "output": {
+    "materialization_key": "b754857ab688e6fa2b637ec8d640d30d48ce3ff792396cf268f4ef124dc9d047",
+    "logical_tree_sha256": "ba4b50f2fb7d25db8bebcafed77cb1a5a3457ba4a83381b7276dcc2191ac5621",
+    "pinned_utc": "2026-09-16T21:36:57Z"
+  },
+  "history": []
+}

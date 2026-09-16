@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f17-tuning-duptree-nested",
+  "inputs": {},
+  "output": {
+    "materialization_key": "ad0528d0ffb3a087fcadeea409beaba7007fa85c7768763311ff0f444f0fce10",
+    "logical_tree_sha256": "83d1d2ed4dcce4b7d07c1e2fe912e42dc95f96f11ea8907291f72db09c66f2b3",
+    "pinned_utc": "2026-09-16T21:36:55Z"
+  },
+  "history": []
+}
