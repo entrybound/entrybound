@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f19-validation-rsnapshot-b",
+  "inputs": {},
+  "output": {
+    "materialization_key": "7da918813344e2e9b91591fec832df8898930eb65a009185b5b7909e1f6bbfa8",
+    "logical_tree_sha256": "ee108bd50b97feac50c5178b614f624beb522abd0cd0990c9ff68e5dd4d410e0",
+    "pinned_utc": "2026-09-16T21:37:39Z"
+  },
+  "history": []
+}

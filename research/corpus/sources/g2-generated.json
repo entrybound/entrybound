@@ -603,7 +603,7 @@
       "item_id": "f19-tuning-zoo",
       "family": "F19",
       "split": "tuning",
-      "scale": "medium",
+      "scale": "small",
       "kind": "generate",
       "real_or_generated": "generated",
       "recipe": {
@@ -663,7 +663,7 @@
       "item_id": "f19-validation-deep",
       "family": "F19",
       "split": "validation",
-      "scale": "medium",
+      "scale": "small",
       "kind": "generate",
       "real_or_generated": "generated",
       "recipe": {
@@ -723,7 +723,7 @@
       "item_id": "f19-heldout-matrix",
       "family": "F19",
       "split": "heldout",
-      "scale": "medium",
+      "scale": "small",
       "kind": "generate",
       "real_or_generated": "generated",
       "recipe": {

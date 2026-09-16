@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f19-tuning-rsnapshot-a",
+  "inputs": {},
+  "output": {
+    "materialization_key": "9f10dc52817953ee0197c54150c78f1b17942f34236235fc2558166913810ec4",
+    "logical_tree_sha256": "785a9a3ba8ca32b118c6d1c158106d070c7cc8b7527143391383e23fcad90561",
+    "pinned_utc": "2026-09-16T21:37:26Z"
+  },
+  "history": []
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f19-validation-deep",
+  "inputs": {},
+  "output": {
+    "materialization_key": "d71e2cfe45f4254ecf0dcac78fc0927d48398a52b10a3c48938a70f2915deded",
+    "logical_tree_sha256": "6cfe313b356bc7c4dacae6a6fe0d990e9f5e2d78fcdecde2c0eff051abe6bad6",
+    "pinned_utc": "2026-09-16T21:37:39Z"
+  },
+  "history": []
+}

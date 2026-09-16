@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f19-tuning-zoo",
+  "inputs": {},
+  "output": {
+    "materialization_key": "f73c85e20c21cf40938d32689ec828f54edeb0de1247d4bf5b291bb26d6ad2ae",
+    "logical_tree_sha256": "e9c775cb8c8460e554a9bd263aea71da8ed38fc864943e588a604366a095754b",
+    "pinned_utc": "2026-09-16T21:37:29Z"
+  },
+  "history": []
+}

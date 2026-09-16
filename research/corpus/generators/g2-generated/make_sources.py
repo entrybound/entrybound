@@ -245,7 +245,7 @@ ITEMS += [
 # F19 metadata-heavy filesystem trees
 # =======================================================================================
 ITEMS += [
-    item("f19-tuning-zoo", "F19", "tuning", "medium", "generate", "generated",
+    item("f19-tuning-zoo", "F19", "tuning", "small", "generate", "generated",
          {"generator": gen("metadata_tree.py", 71001, {"profile": "zoo", "scale": 1.0})},
          GENERATED_LIC, "ebrc-g2-f19-zoo",
          "Generated broad-coverage metadata tree: exhaustive permission matrix (all 4096 modes), varied uids/gids, "
@@ -261,7 +261,7 @@ ITEMS += [
          "newer snapshot hardlinking unchanged files, writing changed files as new inodes, renaming directories "
          "(files stay hardlinked) and breaking links on metadata-only changes.",
          tags=["generated"]),
-    item("f19-validation-deep", "F19", "validation", "medium", "generate", "generated",
+    item("f19-validation-deep", "F19", "validation", "small", "generate", "generated",
          {"generator": gen("metadata_tree.py", 71003, {"profile": "deep", "scale": 1.0})},
          GENERATED_LIC, "ebrc-g2-f19-deep",
          "Generated depth/width metadata tree: 1000-level one-character directory chain, near-PATH_MAX name chain, "
@@ -275,7 +275,7 @@ ITEMS += [
          "Generated rsync --link-dest/rsnapshot-style rotating backup snapshots (independent seed/topology from "
          "f19-tuning-rsnapshot-a: more base files, fewer/higher-churn snapshots).",
          tags=["generated"]),
-    item("f19-heldout-matrix", "F19", "heldout", "medium", "generate", "generated",
+    item("f19-heldout-matrix", "F19", "heldout", "small", "generate", "generated",
          {"generator": gen("metadata_tree.py", 71005, {"profile": "matrix", "scale": 1.0})},
          GENERATED_LIC, "ebrc-g2-f19-matrix",
          "Generated owner x group x mode x ACL-variant cross-product metadata tree: xattr value-size ladder to the "

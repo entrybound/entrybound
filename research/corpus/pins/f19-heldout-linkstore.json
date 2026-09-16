@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f19-heldout-linkstore",
+  "inputs": {},
+  "output": {
+    "materialization_key": "21c75077ae4aeb7a2702cd623b1e59277d7a836a4466f27fddca85f23d3dfaee",
+    "logical_tree_sha256": "5e5d9d6ffd4f805e1370a16da4351c701b6abdda6e53b5b267f48996c4bacf15",
+    "pinned_utc": "2026-09-16T21:37:24Z"
+  },
+  "history": []
+}
