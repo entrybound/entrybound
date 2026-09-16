@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-validation-phone-matrix-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "08d4b388eae6185cbb504f5287ecfb031dae514a1a7102914e89746e9ed0deb8",
+    "logical_tree_sha256": "eb219a3156a42564cdfbce84bc0189bfe08a69fc91a1ad3e93f79e14e7222580",
+    "pinned_utc": "2026-09-16T23:31:08Z"
+  },
+  "history": []
+}

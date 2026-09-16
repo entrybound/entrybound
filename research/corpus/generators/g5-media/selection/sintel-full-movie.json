@@ -1,0 +1,40 @@
+{
+  "pool": "sintel-full-movie",
+  "rules": "F13 validation large tier (round-1 fix G21): \"higher Sintel renditions\" than the trailer\n    already used by f13-validation-sintel-media-medium -- the complete film instead of the\n    ~1-minute trailer, from download.blender.org/durian/movies/ (a separate directory from\n    /durian/trailer/). Same independence group (g5-blender-sintel) as the existing item: same\n    film, same production pipeline, just the full-length release. A standalone pool (not folded\n    into the \"blender\" pool/BLENDER dict) so refreshing it can never overwrite the already-fetched\n    bbb/sintel-trailer/tos/elephants-dream selection records.",
+  "selection_seed": 20260912,
+  "selected_utc": "2026-09-16T23:19:50Z",
+  "entries": [
+    {
+      "key": "sintel-full-26aa7d75cfe3",
+      "url": "https://download.blender.org/durian/movies/Sintel.2010.720p.mkv.zip",
+      "name": "Sintel.2010.720p.mkv.zip",
+      "api_size": 681285470,
+      "alloc": "f13-validation-sintel-media-large",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright Blender Foundation | durian.blender.org",
+        "source_page": "https://download.blender.org/durian/movies/"
+      },
+      "sha256": "d252f898641b20f51c64206f31063e659c28b152a9d988936736d1b56e6e4db3",
+      "size": 681285470,
+      "retrieved_utc": "2026-09-16T23:20:32Z",
+      "final_url": "https://download.blender.org/durian/movies/Sintel.2010.720p.mkv.zip"
+    },
+    {
+      "key": "sintel-full-7daefc26a122",
+      "url": "https://download.blender.org/durian/movies/Sintel.2010.1080p.mkv",
+      "name": "Sintel.2010.1080p.mkv",
+      "api_size": 1180090590,
+      "alloc": "f13-validation-sintel-media-large",
+      "license": {
+        "spdx_or_name": "CC-BY-3.0",
+        "attribution": "(c) copyright Blender Foundation | durian.blender.org",
+        "source_page": "https://download.blender.org/durian/movies/"
+      },
+      "sha256": "97f1dbc66231df42ad49bd8c29aa174b8f48933058e47e7157d4ba63d93a8efa",
+      "size": 1180090590,
+      "retrieved_utc": "2026-09-16T23:20:36Z",
+      "final_url": "https://download.blender.org/durian/movies/Sintel.2010.1080p.mkv"
+    }
+  ]
+}

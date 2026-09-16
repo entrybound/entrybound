@@ -1,0 +1,192 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f12-heldout-usgov-photos-small",
+  "family": "F12",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-commons-usgov-photos",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "93cdabe353502f8bfeb09adedb99a789f7023a909a61d735aed70e592b7ffb0d",
+  "materialization_key": "154199c7eb1aa9549938a2a1f2b121725b7be20c4e1c80e1a729050ce1e65c59",
+  "materialized_utc": "2026-09-16T23:28:29Z",
+  "materialized_relpath": "heldout/f12-heldout-usgov-photos-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "8f960847d4e840ead091f56e90ef52167520ed049d2da04d6c98fe551b5e6a28",
+    "pinned_utc": "2026-09-16T23:28:29Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 15647367,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "commons-31314387",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/2013_National_Fishing_and_Boating_Week_%288958290593%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/2013_National_Fishing_and_Boating_Week_%288958290593%29.jpg",
+        "sha256": "241d3cb951d90e3d36be235dbead1cfee0cc83df554985a64af894ea37b61fff",
+        "size": 1401345,
+        "retrieved_utc": "2026-09-16T21:10:34Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-31314387"
+      },
+      {
+        "name": "commons-29826266",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Grand_Isle_news_conference_1_%284930068165%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Grand_Isle_news_conference_1_%284930068165%29.jpg",
+        "sha256": "48f730d47bb46345554d443dc3ccb7d9a95a147e6e9599f568628b05191469d1",
+        "size": 1213064,
+        "retrieved_utc": "2026-09-16T23:08:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-29826266"
+      },
+      {
+        "name": "commons-47029642",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Ivory_Crush_2013_%2810897819583%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Ivory_Crush_2013_%2810897819583%29.jpg",
+        "sha256": "45ce02dc3d402dbc2588efd52fcf7169afca250d7f3a43d3b1b96f6970fa183e",
+        "size": 2357754,
+        "retrieved_utc": "2026-09-16T23:07:30Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-47029642"
+      },
+      {
+        "name": "commons-127502660",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/64/A_B-1B_Lancer.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/64/A_B-1B_Lancer.jpg",
+        "sha256": "5bb01dc0c6e93af01460a76b89ad4e3eaca73bd7dfdae17ba6acc12b18680835",
+        "size": 2505892,
+        "retrieved_utc": "2026-09-16T21:10:17Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "A_B-1B_Lancer.jpg"
+      },
+      {
+        "name": "commons-1697801",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/47/B-2_Spirit_original.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/B-2_Spirit_original.jpg",
+        "sha256": "cffd477b8d31db328f43f9c9eb5e544160bb25a9558fcba28a001f8795f135b2",
+        "size": 1770335,
+        "retrieved_utc": "2026-09-16T23:07:17Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "B-2_Spirit_original.jpg"
+      },
+      {
+        "name": "commons-11499339",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/World_Military_Women%27s_Championship_Game_4_2009-06-07_3.JPG",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/World_Military_Women%27s_Championship_Game_4_2009-06-07_3.JPG",
+        "sha256": "ef1c2a5b7b94130e80c8180ce40595927fc7cca8b55bf65943fed0d09424e0ba",
+        "size": 1682845,
+        "retrieved_utc": "2026-09-16T23:07:55Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-11499339"
+      },
+      {
+        "name": "commons-70781155",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/17/170609-N-HO612-046_%2834517906894%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/17/170609-N-HO612-046_%2834517906894%29.jpg",
+        "sha256": "e7fb04618f3bcfeb88cc2fa8997f7034abe5714f8e08f2254e1763fd8723cf01",
+        "size": 2391488,
+        "retrieved_utc": "2026-09-16T21:10:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-70781155"
+      },
+      {
+        "name": "commons-70741875",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/23/80-G-14244_%2834608768920%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/23/80-G-14244_%2834608768920%29.jpg",
+        "sha256": "881d842562ea77d3add2010d1ae94781ea6ed39e5011f98ec1839fc9e0a29a31",
+        "size": 2324644,
+        "retrieved_utc": "2026-09-16T23:08:04Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-70741875"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "commons-31314387",
+        "dest": "FWS/2013 National Fishing and Boating Week (8958290593).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-29826266",
+        "dest": "FWS/Grand Isle news conference 1 (4930068165).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-47029642",
+        "dest": "FWS/Ivory Crush 2013 (10897819583).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-127502660",
+        "dest": "Military-Air-Force/A B-1B Lancer.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-1697801",
+        "dest": "Military-Air-Force/B-2 Spirit original.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-11499339",
+        "dest": "Military-Air-Force/World Military Women's Championship Game 4 2009-06-07 3.JPG"
+      },
+      {
+        "op": "copy",
+        "input": "commons-70781155",
+        "dest": "Military-Navy/170609-N-HO612-046 (34517906894).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-70741875",
+        "dest": "Military-Navy/80-G-14244 (34608768920).jpg"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "15c5dbeeffc5377aebdb2317d7a5797f303415c99587ccccf9685e3a20502260",
+    "logical_tree_sha256": "8f960847d4e840ead091f56e90ef52167520ed049d2da04d6c98fe551b5e6a28",
+    "content_tree_sha256": "8d7ffc833f39f7549f8e1bb08c50550e81745d9d2712195d234ad4517a13b6ea",
+    "extended_tree_sha256": "59d313970b0813ee63040d73b9f4774e3a1d400814be57e15b4bc43b3ecea58b",
+    "bytes": 15647367,
+    "counts": {
+      "objects": 12,
+      "files": 8,
+      "dirs": 3,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

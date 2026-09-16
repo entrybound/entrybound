@@ -1,0 +1,817 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f12-validation-commons-cc0-photos-medium",
+  "family": "F12",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-commons-cc0-photos",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "afe6853e98441339460343fa844dad454cffb906d7622cf4982acfe5e280d766",
+  "materialization_key": "d009f1ff94f3fc522a386d1e15b055971c83395d7c9052e423511685282cde50",
+  "materialized_utc": "2026-09-16T23:28:31Z",
+  "materialized_relpath": "corpus/validation/f12-validation-commons-cc0-photos-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "25b34786dbc690d72582395850ad7f03b3c52c04f565866d318e823fa03884a1",
+    "pinned_utc": "2026-09-16T23:28:31Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 313387271,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "commons-77820734",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/20141025_Shockwave_Truck_Alliance_Air_Show_2014-3.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/20141025_Shockwave_Truck_Alliance_Air_Show_2014-3.jpg",
+        "sha256": "09dcd2896a1905cf4a66b161b4ca895ed3510cc8738aab93d0e12d5f6da0dcf2",
+        "size": 8983849,
+        "retrieved_utc": "2026-09-16T23:06:10Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "20141025_Shockwave_Truck_Alliance_Air_Show_2014-3.jpg"
+      },
+      {
+        "name": "commons-149174649",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/2024_Most_Forteczny_w_K%C5%82odzku_%282%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/2024_Most_Forteczny_w_K%C5%82odzku_%282%29.jpg",
+        "sha256": "a8d3be9501d67fd196330a82c09b07632e0e46bee5c3a3ada37313d015f6fbba",
+        "size": 10150548,
+        "retrieved_utc": "2026-09-16T23:04:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-149174649"
+      },
+      {
+        "name": "commons-153745269",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/2024_O%C5%82drzychowice_K%C5%82odzkie%2C_ul._K%C5%82odzka_65.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/2024_O%C5%82drzychowice_K%C5%82odzkie%2C_ul._K%C5%82odzka_65.jpg",
+        "sha256": "d93df0d28b28e92dadd055f5c0baee64d76a7300693402d595a9b454deefdf02",
+        "size": 8767359,
+        "retrieved_utc": "2026-09-16T23:05:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-153745269"
+      },
+      {
+        "name": "commons-144675465",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/AC_-_Protest_wir_sind_Aachen_Nazis_sind_es_nicht_-_3.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/AC_-_Protest_wir_sind_Aachen_Nazis_sind_es_nicht_-_3.jpg",
+        "sha256": "82801cb01b2a7d60fb2fc033225c0b5dc04ff91fafb04d83862c96df5a415c1b",
+        "size": 15154610,
+        "retrieved_utc": "2026-09-16T23:06:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "AC_-_Protest_wir_sind_Aachen_Nazis_sind_es_nicht_-_3.jpg"
+      },
+      {
+        "name": "commons-155344193",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Allamanda_in_Bangladesh.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Allamanda_in_Bangladesh.jpg",
+        "sha256": "af7f6be6201f0ef5eda02a65e70245bad30e3948638ecae3cb3e532bc0f21120",
+        "size": 5962422,
+        "retrieved_utc": "2026-09-16T23:03:26Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Allamanda_in_Bangladesh.jpg"
+      },
+      {
+        "name": "commons-101606609",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/54/Alligator_mississippiensis_113744549.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/54/Alligator_mississippiensis_113744549.jpg",
+        "sha256": "d50ae3825038a79e8ac65da6cf65d0d89e027b06ae11b8c057dec18fc920346b",
+        "size": 730917,
+        "retrieved_utc": "2026-09-16T23:04:33Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Alligator_mississippiensis_113744549.jpg"
+      },
+      {
+        "name": "commons-63307887",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Among_the_branches_of_a_potted_jade_plant.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Among_the_branches_of_a_potted_jade_plant.jpg",
+        "sha256": "1d86ebc3158738f1663d269eaab916ac76dda4c9a0a7610611770f0bf318bb55",
+        "size": 8816121,
+        "retrieved_utc": "2026-09-16T23:05:11Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Among_the_branches_of_a_potted_jade_plant.jpg"
+      },
+      {
+        "name": "commons-14727640",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/26/Angela_Merkel_IMG_4162_edit.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/26/Angela_Merkel_IMG_4162_edit.jpg",
+        "sha256": "c0739ecf17f05e8922756f1bf265358aeb898c89c73319764370786fd6266e75",
+        "size": 2095831,
+        "retrieved_utc": "2026-09-16T23:05:40Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Angela_Merkel_IMG_4162_edit.jpg"
+      },
+      {
+        "name": "commons-17179743",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Big_Mac_hamburger.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Big_Mac_hamburger.jpg",
+        "sha256": "a479d5022e9d3b33b4da0d9c28e9a8042f0d14b2be73d71eb6e1373816caf9ba",
+        "size": 3678991,
+        "retrieved_utc": "2026-09-16T23:05:02Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Big_Mac_hamburger.jpg"
+      },
+      {
+        "name": "commons-145845070",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Buda_de_Ibira%C3%A7u_%28B%26W%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Buda_de_Ibira%C3%A7u_%28B%26W%29.jpg",
+        "sha256": "f13f309c955444c6a4a76831ae03822656eb4dd4cf443bcf02a90a77ac9e2b65",
+        "size": 10848124,
+        "retrieved_utc": "2026-09-16T23:05:49Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-145845070"
+      },
+      {
+        "name": "commons-84193032",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/7/77/C-Train_of_Calgary%2C_Canada%3B_October_2019.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/77/C-Train_of_Calgary%2C_Canada%3B_October_2019.jpg",
+        "sha256": "a3f1dba606d2b95a27bf4cb190e8e130291d6a56e545bc5bc315f7a2ed63ca23",
+        "size": 12290684,
+        "retrieved_utc": "2026-09-16T23:05:44Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-84193032"
+      },
+      {
+        "name": "commons-26091551",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Chlosyne_lacinia.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Chlosyne_lacinia.jpg",
+        "sha256": "11c878f294e0a38c44ab800f093f625db87c20ffb909a88c1d261dc0df0ef74e",
+        "size": 1360163,
+        "retrieved_utc": "2026-09-16T23:04:03Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Chlosyne_lacinia.jpg"
+      },
+      {
+        "name": "commons-14975131",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Church_of_the_virgin_of_the_burgh_Rhodes_14th_century_night.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Church_of_the_virgin_of_the_burgh_Rhodes_14th_century_night.jpg",
+        "sha256": "2c8b20d0300d8d0fa98b9b5e6c4f0291eab6bd27f03f24fd03aca5aadf8cf77f",
+        "size": 5237557,
+        "retrieved_utc": "2026-09-16T23:05:35Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Church_of_the_virgin_of_the_burgh_Rhodes_14th_century_night.jpg"
+      },
+      {
+        "name": "commons-173688480",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/25/Columbia_Center.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/25/Columbia_Center.jpg",
+        "sha256": "fe50aa3aa0d2fa0c9d979b218959f04819319b48fb3942fd576da27fcf7ca2f4",
+        "size": 5711118,
+        "retrieved_utc": "2026-09-16T23:03:02Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Columbia_Center.jpg"
+      },
+      {
+        "name": "commons-22032541",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/96/Common_Jezebel_Delias_eucharis_by_kadavoor_3.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/96/Common_Jezebel_Delias_eucharis_by_kadavoor_3.jpg",
+        "sha256": "70aae71b4c6ff590bc832697e8f6ae35232208ac0e3ad69eaf71963103fa16fd",
+        "size": 2355646,
+        "retrieved_utc": "2026-09-16T23:04:24Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Common_Jezebel_Delias_eucharis_by_kadavoor_3.jpg"
+      },
+      {
+        "name": "commons-30469436",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Dome_Cappella_Chigi_from_inside%2C_Santa_Maria_del_Popolo%2C_Rome%2C_Italy.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Dome_Cappella_Chigi_from_inside%2C_Santa_Maria_del_Popolo%2C_Rome%2C_Italy.jpg",
+        "sha256": "a1986c3af6ae2ddda2a2d2b1b2201c18575657aac5c7d8631c46895b1536239f",
+        "size": 6895348,
+        "retrieved_utc": "2026-09-16T23:06:05Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-30469436"
+      },
+      {
+        "name": "commons-62409447",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Eriksberg_shipyard_crane.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Eriksberg_shipyard_crane.jpg",
+        "sha256": "9dbb84e2d8f02f28656478e70de61b19e7aa2c0f290aafad5466790b204f7ae7",
+        "size": 8623311,
+        "retrieved_utc": "2026-09-16T23:06:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Eriksberg_shipyard_crane.jpg"
+      },
+      {
+        "name": "commons-33523211",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/42/F-HEPG_Air_France_Airbus_A320-214%28WL%29_takeoff_from_Schiphol_%28AMS_-_EHAM%29%2C_The_Netherlands%2C_11june2014%2C_pic-1.JPG",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/42/F-HEPG_Air_France_Airbus_A320-214%28WL%29_takeoff_from_Schiphol_%28AMS_-_EHAM%29%2C_The_Netherlands%2C_11june2014%2C_pic-1.JPG",
+        "sha256": "ab2da617889f6567a89e55ab34d61ec56dd6fdc59296f40d1b0e3eabe41326d5",
+        "size": 1945440,
+        "retrieved_utc": "2026-09-16T23:03:31Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-33523211"
+      },
+      {
+        "name": "commons-62202478",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/93/Frozen_soap_bubble_behind_fir_twigs_%28Unsplash_BojuZpqw4zM%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/93/Frozen_soap_bubble_behind_fir_twigs_%28Unsplash_BojuZpqw4zM%29.jpg",
+        "sha256": "b8be0813bf74f4c473308bd0070d850fc876bcc2c8871ff0ac4bd3d97699f037",
+        "size": 7358570,
+        "retrieved_utc": "2026-09-16T23:03:42Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-62202478"
+      },
+      {
+        "name": "commons-140660731",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Grote_sponszwam_%28Sparassis_crispa%29._09-11-2023._%28d.j.b%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Grote_sponszwam_%28Sparassis_crispa%29._09-11-2023._%28d.j.b%29.jpg",
+        "sha256": "c4685261c2097f39603996b326c2cc47756bec26c416a20adc91fabc162f4efd",
+        "size": 12625917,
+        "retrieved_utc": "2026-09-16T23:02:45Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-140660731"
+      },
+      {
+        "name": "commons-22642084",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Iguanidae_head_from_Venezuela.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Iguanidae_head_from_Venezuela.jpg",
+        "sha256": "33eed976432613fcc6c51521d485e5367149510079a98323fe00d25bfbc96233",
+        "size": 7815538,
+        "retrieved_utc": "2026-09-16T23:02:29Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Iguanidae_head_from_Venezuela.jpg"
+      },
+      {
+        "name": "commons-90044392",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/91/Justizgeb%C3%A4ude_in_T%C3%BCbingen_zur_goldenen_Stunde.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/91/Justizgeb%C3%A4ude_in_T%C3%BCbingen_zur_goldenen_Stunde.jpg",
+        "sha256": "04bd40c99806c6cd55d975bec1dff013fab1cf9d8ab180097130eebb1d601f3b",
+        "size": 15171990,
+        "retrieved_utc": "2026-09-16T23:04:57Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-90044392"
+      },
+      {
+        "name": "commons-140530706",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/10/Knolparasolzwammen._09-11-2023._%28d.j.b%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/10/Knolparasolzwammen._09-11-2023._%28d.j.b%29.jpg",
+        "sha256": "d9211b71386fb6d87ed366a645c3ebffcfc1c1d2da29c025c58790544293b12b",
+        "size": 10832927,
+        "retrieved_utc": "2026-09-16T23:05:06Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-140530706"
+      },
+      {
+        "name": "commons-144961546",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/28/Laranjas-pera.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/28/Laranjas-pera.jpg",
+        "sha256": "c416617c78124e29c968b9d9eeeedcbdc9d9e711e6517c00697d5e3d22c91ee8",
+        "size": 7284918,
+        "retrieved_utc": "2026-09-16T23:06:18Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Laranjas-pera.jpg"
+      },
+      {
+        "name": "commons-80379553",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Lion%27s_mane_jellyfish_in_Gullmarn_fjord_at_S%C3%A4mstad_3.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Lion%27s_mane_jellyfish_in_Gullmarn_fjord_at_S%C3%A4mstad_3.jpg",
+        "sha256": "0049ea52edd6e73f74762a5c6d503cf9f24a0977eb0042494e074a0e1ae77618",
+        "size": 8374234,
+        "retrieved_utc": "2026-09-16T23:06:44Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-80379553"
+      },
+      {
+        "name": "commons-180410157",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Lyon_5e_-_Cath%C3%A9drale_Saint-Jean_-_Statue_de_saint_Fran%C3%A7ois_d%27Assise_%28Jean-Marie_Bonnassieux%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Lyon_5e_-_Cath%C3%A9drale_Saint-Jean_-_Statue_de_saint_Fran%C3%A7ois_d%27Assise_%28Jean-Marie_Bonnassieux%29.jpg",
+        "sha256": "50bea3961f0a4ebf1cd56df9eeda5938ecd6b177a60e83ef0e8df0fb57944e74",
+        "size": 9869547,
+        "retrieved_utc": "2026-09-16T23:02:36Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-180410157"
+      },
+      {
+        "name": "commons-17956146",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/MAP_Expo_Empereur_Ojin_Poup%C3%A9e_03_01_2012.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/MAP_Expo_Empereur_Ojin_Poup%C3%A9e_03_01_2012.jpg",
+        "sha256": "79d1e0f90337f5b1aed0eeb2db8bca121526fd32213bb5c1239dc3c3334025fa",
+        "size": 2187883,
+        "retrieved_utc": "2026-09-16T23:04:53Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-17956146"
+      },
+      {
+        "name": "commons-49159239",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Main_Range_Track%2C_Kosciuszko_National_Park_12.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Main_Range_Track%2C_Kosciuszko_National_Park_12.jpg",
+        "sha256": "4d8e633264366596accc7f8eefd14c55a71bf94c83008451f770725e9e410b8f",
+        "size": 10326016,
+        "retrieved_utc": "2026-09-16T23:03:22Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-49159239"
+      },
+      {
+        "name": "commons-144876601",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Mam%C3%B5es.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Mam%C3%B5es.jpg",
+        "sha256": "adf18dd92aca35fdce97ac418611e7a162f37a3685e4589f679ebd2a896df791",
+        "size": 3194703,
+        "retrieved_utc": "2026-09-16T23:05:19Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-144876601"
+      },
+      {
+        "name": "commons-65426603",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Martinus_R%C3%B8rbye%2C_Portr%C3%A6t_af_maleren_C.A._Lorentzen%2C_1827%2C_0218NMK%2C_Nivaagaards_Malerisamling.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Martinus_R%C3%B8rbye%2C_Portr%C3%A6t_af_maleren_C.A._Lorentzen%2C_1827%2C_0218NMK%2C_Nivaagaards_Malerisamling.jpg",
+        "sha256": "2d87ecf7e8fd5839b2165d2545ca639dfc3262f86306d4a738da63af07ce028a",
+        "size": 4699156,
+        "retrieved_utc": "2026-09-16T23:03:50Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-65426603"
+      },
+      {
+        "name": "commons-78055805",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Masque_eharo_MHNT_ETH_AC_NB9.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Masque_eharo_MHNT_ETH_AC_NB9.jpg",
+        "sha256": "66a1271b147ef8ff1d8bfb8e8473460b9a9758a549b5cc811228b0f823dc2bb5",
+        "size": 2044730,
+        "retrieved_utc": "2026-09-16T23:06:48Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Masque_eharo_MHNT_ETH_AC_NB9.jpg"
+      },
+      {
+        "name": "commons-48824505",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Mikronisi_as_seen_from_Chrysi.JPG",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Mikronisi_as_seen_from_Chrysi.JPG",
+        "sha256": "9284c6d7f3c565289a8c9b0ac5ee66ac205b471d82b82177d56275800ac5be7c",
+        "size": 5717858,
+        "retrieved_utc": "2026-09-16T23:05:31Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Mikronisi_as_seen_from_Chrysi.JPG"
+      },
+      {
+        "name": "commons-143610619",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Mill_Creek_Canyon_Earthworks%2C_Double_Ring_Pond_-_2.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Mill_Creek_Canyon_Earthworks%2C_Double_Ring_Pond_-_2.jpg",
+        "sha256": "1bab9167b80213bfce142819e956933c359550eb15c4288fd63016e78f451dce",
+        "size": 5743705,
+        "retrieved_utc": "2026-09-16T23:04:37Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-143610619"
+      },
+      {
+        "name": "commons-162124914",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Paris_4e_-_Cath%C3%A9drale_Notre-Dame_-_Chapelle_des_%C3%82mes_du_Purgatoire_-_Statue_de_saint_Denys_pr%C3%AAchant_la_Foi_%28Nicolas_Coustou%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Paris_4e_-_Cath%C3%A9drale_Notre-Dame_-_Chapelle_des_%C3%82mes_du_Purgatoire_-_Statue_de_saint_Denys_pr%C3%AAchant_la_Foi_%28Nicolas_Coustou%29.jpg",
+        "sha256": "6317dcea4931f19eefc101b1090e1c5dc0702e60735ae61a942fc4f2d6772bc3",
+        "size": 2312071,
+        "retrieved_utc": "2026-09-16T23:05:58Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-162124914"
+      },
+      {
+        "name": "commons-37062773",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Playing_with_water%2C_light_and_leaves.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Playing_with_water%2C_light_and_leaves.jpg",
+        "sha256": "be512ec928c91511d266eca8ce3850a4d7d9897d6de97dfdbb96b13f3dba6d01",
+        "size": 6080021,
+        "retrieved_utc": "2026-09-16T23:06:39Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-37062773"
+      },
+      {
+        "name": "commons-173390477",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Reflection_of_the_Flamingo_Hotel_in_front_of_the_Bellagio.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Reflection_of_the_Flamingo_Hotel_in_front_of_the_Bellagio.jpg",
+        "sha256": "151814c6ccefe2aec44f573153f2b57507af51d7462404501dda018fa2233037",
+        "size": 13466532,
+        "retrieved_utc": "2026-09-16T23:06:23Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Reflection_of_the_Flamingo_Hotel_in_front_of_the_Bellagio.jpg"
+      },
+      {
+        "name": "commons-163867240",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/46/Ren%C3%A9_Magritte_in_1961.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/46/Ren%C3%A9_Magritte_in_1961.jpg",
+        "sha256": "550b4fe3ca74d954a6daa8391621429b9c30d4a66d08ecc2cff580d11f034f9a",
+        "size": 3348113,
+        "retrieved_utc": "2026-09-16T23:04:46Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-163867240"
+      },
+      {
+        "name": "commons-140172937",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Scuol-Motta_Naluns%2C_15-09-2023._%28actm.%29_09.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Scuol-Motta_Naluns%2C_15-09-2023._%28actm.%29_09.jpg",
+        "sha256": "75d72c0c5a769bc4d26b1dbb5f293535f02b9861027604d0704f8b9ed41c19e7",
+        "size": 4763822,
+        "retrieved_utc": "2026-09-16T23:04:20Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-140172937"
+      },
+      {
+        "name": "commons-117608568",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/95/Staircase_of_the_BGK_Building_%2826620981474%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/95/Staircase_of_the_BGK_Building_%2826620981474%29.jpg",
+        "sha256": "648d1796c96a95a60c1b56263ecd2a567cf5465f74dfdc1bf2d7d99baa837d4a",
+        "size": 1336320,
+        "retrieved_utc": "2026-09-16T23:06:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-117608568"
+      },
+      {
+        "name": "commons-77321792",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/67/Stiftskirche_in_T%C3%BCbingen_bei_Nacht_2019_mit_Neckarfront.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/67/Stiftskirche_in_T%C3%BCbingen_bei_Nacht_2019_mit_Neckarfront.jpg",
+        "sha256": "c0e09735a90863db472e8e6debb3dcfe585486f3ad01d08b207f43a67efddf89",
+        "size": 11977360,
+        "retrieved_utc": "2026-09-16T23:04:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-77321792"
+      },
+      {
+        "name": "commons-179278744",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Sunset_Key_and_Sailboats%2C_Florida%2C_2025.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Sunset_Key_and_Sailboats%2C_Florida%2C_2025.jpg",
+        "sha256": "9804ac2c73f8a478d01f6648b2e9a06a6779f20e96f3a7e1cf1d6c67d1fce2a7",
+        "size": 12520519,
+        "retrieved_utc": "2026-09-16T23:05:27Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-179278744"
+      },
+      {
+        "name": "commons-79218054",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/cb/The_Green_and_Golden_Bell_Frog.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cb/The_Green_and_Golden_Bell_Frog.jpg",
+        "sha256": "7a0f3ac2b611c19dafd0834dfd172f7e62fccb2670209d4ede33b3a3086b0b31",
+        "size": 1980997,
+        "retrieved_utc": "2026-09-16T23:03:46Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "The_Green_and_Golden_Bell_Frog.jpg"
+      },
+      {
+        "name": "commons-35194421",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/3/39/Vitral_em_Igreja_Santa_Efigenia.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/39/Vitral_em_Igreja_Santa_Efigenia.jpg",
+        "sha256": "df5f720e2dc196a853419539254794b7f2d191e4f6c00d5442f1fa0fde7ed230",
+        "size": 6609486,
+        "retrieved_utc": "2026-09-16T23:05:53Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Vitral_em_Igreja_Santa_Efigenia.jpg"
+      },
+      {
+        "name": "commons-115128940",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Walter_Francis_White_by_Clara_Sipprell.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Walter_Francis_White_by_Clara_Sipprell.jpg",
+        "sha256": "5d13f451183c2c265cb44525a5e0e5d64fca3d35a260e008754a448f63bbd639",
+        "size": 6061381,
+        "retrieved_utc": "2026-09-16T23:04:41Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Walter_Francis_White_by_Clara_Sipprell.jpg"
+      },
+      {
+        "name": "commons-35906396",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Watch_tower_of_the_dam%2C_Embalse_de_los_Bermejales%2C_Andalusia%2C_Spain.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Watch_tower_of_the_dam%2C_Embalse_de_los_Bermejales%2C_Andalusia%2C_Spain.jpg",
+        "sha256": "bf1066ad426e09b27fd5a11d987e8838a724f3d3e1c02100a83ed29438c920cc",
+        "size": 8376937,
+        "retrieved_utc": "2026-09-16T23:04:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-35906396"
+      },
+      {
+        "name": "commons-143766970",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Zicht_op_de_spoorbrug_vanuit_het_verlengde_van_het_spoor%2C_Bestanddeelnr_657_%28cropped%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Zicht_op_de_spoorbrug_vanuit_het_verlengde_van_het_spoor%2C_Bestanddeelnr_657_%28cropped%29.jpg",
+        "sha256": "1ea2902e71614c18c6dc3beab096af22b18fd709b6565369af2b287d92b4e1d2",
+        "size": 1697981,
+        "retrieved_utc": "2026-09-16T23:03:59Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-143766970"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "commons-77820734",
+        "dest": "photos/20141025 Shockwave Truck Alliance Air Show 2014-3.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-149174649",
+        "dest": "photos/2024 Most Forteczny w Kłodzku (2).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-153745269",
+        "dest": "photos/2024 Ołdrzychowice Kłodzkie, ul. Kłodzka 65.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-144675465",
+        "dest": "photos/AC - Protest wir sind Aachen Nazis sind es nicht - 3.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-155344193",
+        "dest": "photos/Allamanda in Bangladesh.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-101606609",
+        "dest": "photos/Alligator mississippiensis 113744549.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-63307887",
+        "dest": "photos/Among the branches of a potted jade plant.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-14727640",
+        "dest": "photos/Angela Merkel IMG 4162 edit.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-17179743",
+        "dest": "photos/Big Mac hamburger.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-145845070",
+        "dest": "photos/Buda de Ibiraçu (B&W).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-84193032",
+        "dest": "photos/C-Train of Calgary, Canada; October 2019.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-26091551",
+        "dest": "photos/Chlosyne lacinia.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-14975131",
+        "dest": "photos/Church of the virgin of the burgh Rhodes 14th century night.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-173688480",
+        "dest": "photos/Columbia Center.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-22032541",
+        "dest": "photos/Common Jezebel Delias eucharis by kadavoor 3.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-30469436",
+        "dest": "photos/Dome Cappella Chigi from inside, Santa Maria del Popolo, Rome, Italy.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-62409447",
+        "dest": "photos/Eriksberg shipyard crane.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-33523211",
+        "dest": "photos/F-HEPG Air France Airbus A320-214(WL) takeoff from Schiphol (AMS - EHAM), The Netherlands, 11june2014, pic-1.JPG"
+      },
+      {
+        "op": "copy",
+        "input": "commons-62202478",
+        "dest": "photos/Frozen soap bubble behind fir twigs (Unsplash BojuZpqw4zM).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-140660731",
+        "dest": "photos/Grote sponszwam (Sparassis crispa). 09-11-2023. (d.j.b).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-22642084",
+        "dest": "photos/Iguanidae head from Venezuela.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-90044392",
+        "dest": "photos/Justizgebäude in Tübingen zur goldenen Stunde.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-140530706",
+        "dest": "photos/Knolparasolzwammen. 09-11-2023. (d.j.b).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-144961546",
+        "dest": "photos/Laranjas-pera.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-80379553",
+        "dest": "photos/Lion's mane jellyfish in Gullmarn fjord at Sämstad 3.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-180410157",
+        "dest": "photos/Lyon 5e - Cathédrale Saint-Jean - Statue de saint François d'Assise (Jean-Marie Bonnassieux).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-17956146",
+        "dest": "photos/MAP Expo Empereur Ojin Poupée 03 01 2012.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-49159239",
+        "dest": "photos/Main Range Track, Kosciuszko National Park 12.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-144876601",
+        "dest": "photos/Mamões.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-65426603",
+        "dest": "photos/Martinus Rørbye, Portræt af maleren C.A. Lorentzen, 1827, 0218NMK, Nivaagaards Malerisamling.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-78055805",
+        "dest": "photos/Masque eharo MHNT ETH AC NB9.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-48824505",
+        "dest": "photos/Mikronisi as seen from Chrysi.JPG"
+      },
+      {
+        "op": "copy",
+        "input": "commons-143610619",
+        "dest": "photos/Mill Creek Canyon Earthworks, Double Ring Pond - 2.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-162124914",
+        "dest": "photos/Paris 4e - Cathédrale Notre-Dame - Chapelle des Âmes du Purgatoire - Statue de saint Denys prêchant la Foi (Nicolas Coustou).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-37062773",
+        "dest": "photos/Playing with water, light and leaves.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-173390477",
+        "dest": "photos/Reflection of the Flamingo Hotel in front of the Bellagio.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-163867240",
+        "dest": "photos/René Magritte in 1961.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-140172937",
+        "dest": "photos/Scuol-Motta Naluns, 15-09-2023. (actm.) 09.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-117608568",
+        "dest": "photos/Staircase of the BGK Building (26620981474).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-77321792",
+        "dest": "photos/Stiftskirche in Tübingen bei Nacht 2019 mit Neckarfront.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-179278744",
+        "dest": "photos/Sunset Key and Sailboats, Florida, 2025.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-79218054",
+        "dest": "photos/The Green and Golden Bell Frog.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-35194421",
+        "dest": "photos/Vitral em Igreja Santa Efigenia.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-115128940",
+        "dest": "photos/Walter Francis White by Clara Sipprell.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-35906396",
+        "dest": "photos/Watch tower of the dam, Embalse de los Bermejales, Andalusia, Spain.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-143766970",
+        "dest": "photos/Zicht op de spoorbrug vanuit het verlengde van het spoor, Bestanddeelnr 657 (cropped).jpg"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "d6d28867b140e02fa041217d0e5cc1000af8f3e7097096a23d904671a39e7b83",
+    "logical_tree_sha256": "25b34786dbc690d72582395850ad7f03b3c52c04f565866d318e823fa03884a1",
+    "content_tree_sha256": "9133fa1d9edae2be9d7a77f22b437f5d50d19fe8c4e98f71a95317cf5f6bf98f",
+    "extended_tree_sha256": "9de028415bc7e6c313f604803900f763a32b4aa6d8a02a0bfb5fbbb58a1d5636",
+    "bytes": 313387271,
+    "bytes_all_paths": 313387271,
+    "allocated_bytes": 313487360,
+    "counts": {
+      "objects": 48,
+      "files": 46,
+      "unique_file_inodes": 46,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 131,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 138,
+        "mean": 55.064,
+        "p50": 52,
+        "p95": 105
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

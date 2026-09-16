@@ -1,0 +1,143 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-validation-phone-matrix-small",
+  "family": "F13",
+  "split": "validation",
+  "scale": "small",
+  "kind": "build",
+  "real_or_generated": "generated",
+  "independence_group": "g5-loc-fsa-owi-color",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "2010a3db7dcdbabfa03aa5b0128a8464e0348f49025cf8029ee9fdd43bf1e6d5",
+  "materialization_key": "08d4b388eae6185cbb504f5287ecfb031dae514a1a7102914e89746e9ed0deb8",
+  "materialized_utc": "2026-09-16T23:31:08Z",
+  "materialized_relpath": "corpus/validation/f13-validation-phone-matrix-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "eb219a3156a42564cdfbce84bc0189bfe08a69fc91a1ad3e93f79e14e7222580",
+    "pinned_utc": "2026-09-16T23:31:08Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 2723072,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "commons-68279153",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Sawmill_at_the_Greensboro_Lumber_Co.%2C_Greensboro%2C_Ga._LCCN2017877511.tif",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Sawmill_at_the_Greensboro_Lumber_Co.%2C_Greensboro%2C_Ga._LCCN2017877511.tif",
+        "sha256": "fb4b20058eb225a3c9145df17055e09c8e6e7891c4565e6a20884a4c1213ae5b",
+        "size": 63390168,
+        "retrieved_utc": "2026-09-13T02:16:34Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "commons-68279153"
+      },
+      {
+        "name": "commons-68280143",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Burley_tobacco_is_placed_on_sticks_to_wilt_after_cutting%2Cbefore_it_is_taken_into_the_barn_for_drying_and_curing%2C_on_the_Russell_Spears%27_farm%2C_vicinity_of_Lexington%2C_Ky._LCCN2017877538.tif",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Burley_tobacco_is_placed_on_sticks_to_wilt_after_cutting%2Cbefore_it_is_taken_into_the_barn_for_drying_and_curing%2C_on_the_Russell_Spears%27_farm%2C_vicinity_of_Lexington%2C_Ky._LCCN2017877538.tif",
+        "sha256": "939d34888f4963197073c9dee7449bfa6308b6ddbb3799fec4bef693c5407ba6",
+        "size": 62885264,
+        "retrieved_utc": "2026-09-13T02:16:14Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "commons-68280143"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g5-media/phone_matrix.py",
+      "script_sha256": "9f91265670e0e2c1183df3a936bb99145611b2e4e91cc3e01391033c0ec16158",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 2401,
+      "params": {
+        "inputs": [
+          "commons-68279153",
+          "commons-68280143"
+        ],
+        "long_edge": 4032,
+        "heic_qualities": [
+          35,
+          55
+        ],
+        "heic_thumb_at": 1,
+        "video": {
+          "seconds": 2,
+          "fps": 30,
+          "crf": 30,
+          "keyint": 60,
+          "resolutions": [
+            [
+              1920,
+              1080
+            ],
+            [
+              1080,
+              1920
+            ]
+          ]
+        },
+        "require_tools": {
+          "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5",
+          "heif-enc": "1.17.6",
+          "pillow": "Pillow 12.3.0"
+        },
+        "max_bytes": 15728640
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "d1677d528b762c0ffb4c927555befc46842d5994b19f684d3687e23bfce4ae88",
+    "logical_tree_sha256": "eb219a3156a42564cdfbce84bc0189bfe08a69fc91a1ad3e93f79e14e7222580",
+    "content_tree_sha256": "f7ee3e6e8cdd7eb34c0d325e07c0f62b84cad1bb9475fb055c0ef7fe89df272f",
+    "extended_tree_sha256": "3b1eb324f8b80173064c8a3b2ef6b71ef821e65c11ee7597b93731c1d1ac8de7",
+    "bytes": 2723072,
+    "bytes_all_paths": 2723072,
+    "allocated_bytes": 2740224,
+    "counts": {
+      "objects": 11,
+      "files": 8,
+      "unique_file_inodes": 8,
+      "dirs": 2,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 40,
+      "path_length_bytes": {
+        "min": 4,
+        "max": 46,
+        "mean": 31.1,
+        "p50": 30,
+        "p95": 46
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

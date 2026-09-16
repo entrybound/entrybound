@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f12-validation-commons-cc0-photos-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "eb27174f8e92384e9ac4b84748801e6f06c4d07e095b03052db3015dd68db7e5",
+    "logical_tree_sha256": "b25fc1866d1947ca0d8bc01486a05327e8cd184f53272cf74142a47d49cec9d9",
+    "pinned_utc": "2026-09-16T23:28:31Z"
+  },
+  "history": []
+}

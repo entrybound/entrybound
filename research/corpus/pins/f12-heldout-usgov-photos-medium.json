@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f12-heldout-usgov-photos-medium",
+  "inputs": {},
+  "output": {
+    "materialization_key": "e38f9d025ed4290d21df50fb9a841997336ee2f30374d7121b1e6f58ac72741d",
+    "logical_tree_sha256": "9038695ed0b73bec397c85da3eadbcd9d313d892e228fd5bb25575c4b83c6516",
+    "pinned_utc": "2026-09-16T23:28:29Z"
+  },
+  "history": []
+}

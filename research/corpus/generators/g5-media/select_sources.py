@@ -130,6 +130,32 @@ _api_lock = threading.Lock()
 _api_last = [0.0]
 COMMONS_API_SPACING = 20.0  # seconds; Wikimedia rate-limits anonymous API clients per IP (HTTP 429)
 
+# Wikimedia hosts get a policy-compliant User-Agent (see provision.WIKIMEDIA_USER_AGENT) and are
+# rate-limited to at most 1 request/s network-wide (search API and file downloads share the gate),
+# per Wikimedia's robot/API etiquette. Retry-After on 429/503 is honored inside provision.fetch_url.
+WIKIMEDIA_HOSTS = {"commons.wikimedia.org", "upload.wikimedia.org"}
+WIKIMEDIA_HEADERS = {"User-Agent": provision.WIKIMEDIA_USER_AGENT}
+
+
+class RateLimiter:
+    """Enforces a minimum interval between successive request starts, across threads."""
+
+    def __init__(self, min_interval):
+        self.min_interval = min_interval
+        self._lock = threading.Lock()
+        self._last = 0.0
+
+    def wait(self):
+        with self._lock:
+            now = time.time()
+            delay = self._last + self.min_interval - now
+            if delay > 0:
+                time.sleep(delay)
+            self._last = time.time()
+
+
+WIKIMEDIA_RATE_LIMITER = RateLimiter(1.05)  # >=1s between requests to commons/upload.wikimedia.org
+
 
 def commons_search(search, want, gsrlimit=50, max_pages=None):
     """Return page dicts (formatversion=2) in search-rank order with imageinfo + common metadata.
@@ -147,7 +173,7 @@ def commons_search(search, want, gsrlimit=50, max_pages=None):
             wait = _api_last[0] + COMMONS_API_SPACING - time.time()
             if wait > 0:
                 time.sleep(wait)
-            d = get_json(COMMONS_API + "?" + urllib.parse.urlencode(params))
+            d = get_json(COMMONS_API + "?" + urllib.parse.urlencode(params), headers=WIKIMEDIA_HEADERS)
             _api_last[0] = time.time()
         pages = sorted((d.get("query") or {}).get("pages", []), key=lambda p: p.get("index", 0))
         out.extend(p for p in pages if p.get("imageinfo"))
@@ -680,6 +706,88 @@ def pool_blender():
     return out
 
 
+@pool("sintel-full-movie")
+def pool_sintel_full():
+    """F13 validation large tier (round-1 fix G21): "higher Sintel renditions" than the trailer
+    already used by f13-validation-sintel-media-medium -- the complete film instead of the
+    ~1-minute trailer, from download.blender.org/durian/movies/ (a separate directory from
+    /durian/trailer/). Same independence group (g5-blender-sintel) as the existing item: same
+    film, same production pipeline, just the full-length release. A standalone pool (not folded
+    into the "blender" pool/BLENDER dict) so refreshing it can never overwrite the already-fetched
+    bbb/sintel-trailer/tos/elephants-dream selection records."""
+    urls = [
+        "https://download.blender.org/durian/movies/Sintel.2010.720p.mkv.zip",
+        "https://download.blender.org/durian/movies/Sintel.2010.1080p.mkv",
+    ]
+    out = []
+    for url in urls:
+        st, size, _, _ = head(url)
+        if st != 200 or not size:
+            raise RuntimeError(f"sintel-full {url}: HTTP {st}")
+        name = urllib.parse.unquote(url.rsplit("/", 1)[1])
+        out.append({"key": "sintel-full-" + hashlib.sha1(url.encode()).hexdigest()[:12], "url": url, "name": name,
+                    "api_size": size, "alloc": "f13-validation-sintel-media-large",
+                    "license": {"spdx_or_name": "CC-BY-3.0", "attribution": "(c) copyright Blender Foundation | durian.blender.org",
+                                "source_page": url.rsplit("/", 1)[0] + "/"}})
+    return out
+
+
+@pool("nasa-video-naca")
+def pool_nasa_video_naca():
+    """F13 held-out non-benchmark large item (round-1 fix G21): a real NASA-produced mp4 from the
+    NASA Image and Video Library video search. Every other F13 production pipeline (Blender
+    open-movie renders, LibriVox audiobooks, Musopen/Prelinger archive.org transcodes, scanner/PDF
+    government documents) already appears somewhere else in the corpus; NASA video does not appear
+    in F13 at all (only NASA *photos*, a different family, use NASA). Excludes third-party-credited
+    footage with the same rule as nasa-ivl-photos (F12), then picks deterministically: the
+    smallest-nasa_id candidate (stable across reruns unless NASA's catalog itself changes) whose
+    ~orig.mp4/.mov lands in a moderate large-tier band, so this stays a single real file rather
+    than a multi-gigabyte download."""
+    centers = ["JSC", "KSC", "HQ", "GRC", "MSFC", "AFRC", "LARC", "GSFC", "ARC", "SSC"]
+    cands = {}
+    for c in centers:
+        q = urllib.parse.urlencode({"media_type": "video", "center": c, "page_size": 100, "page": 1})
+        try:
+            d = get_json("https://images-api.nasa.gov/search?" + q)
+        except RuntimeError as e:
+            log(f"  nasa-video search {c}: {e}")
+            continue
+        for it in d["collection"]["items"]:
+            dd = it["data"][0]
+            nid = dd.get("nasa_id", "")
+            if not re.match(r"^[A-Za-z0-9_.-]+$", nid) or nid in cands:
+                continue
+            desc = f"{dd.get('description', '')} {dd.get('secondary_creator', '')} {dd.get('photographer', '')}"
+            if third_party(desc):
+                continue
+            cands[nid] = {"center": dd.get("center", c), "date": dd.get("date_created", ""),
+                          "title": (dd.get("title") or "")[:160]}
+        time.sleep(0.2)
+    log(f"  nasa-video: {len(cands)} non-third-party candidate ids")
+    for nid in sorted(cands):
+        c = cands[nid]
+        try:
+            coll = get_json(f"https://images-assets.nasa.gov/video/{nid}/collection.json")
+        except Exception:  # noqa: BLE001
+            continue
+        hrefs = sorted({h.replace("http://", "https://") for h in coll
+                        if isinstance(h, str) and re.search(r"~orig\.(mp4|mov)$", h)})
+        if not hrefs:
+            continue
+        url = hrefs[0]
+        st, size, etag, _ = head(url)
+        if st != 200 or size is None or not (600 * MiB <= size <= 2048 * MiB):
+            continue
+        return [{"key": f"nasa-video-{nid}", "url": url, "name": url.rsplit("/", 1)[1], "api_size": size,
+                 "api_md5": etag if re.match(r"^[0-9a-f]{32}$", etag or "") else None,
+                 "alloc": "f13-heldout-nasa-video-naca-large",
+                 "license": {"spdx_or_name": "NASA media (US Government work, public domain in the US)",
+                             "attribution": f"NASA/{c['center']}",
+                             "source_page": f"https://images.nasa.gov/details/{nid}"},
+                 "meta": {"center": c["center"], "date": (c["date"] or "")[:10], "title": c["title"]}}]
+    raise RuntimeError("nasa-video-naca: no candidate found in the target size band")
+
+
 @pool("nasa-ntrs-pdf")
 def pool_ntrs():
     """F13 tuning PDFs: NASA Technical Reports Server documents whose copyright determination is
@@ -831,18 +939,28 @@ def stage_fetch(pools, jobs):
         def one(e):
             host = urllib.parse.urlparse(e["url"]).hostname
             sem = host_sem.get(host)
+            wikimedia = host in WIKIMEDIA_HOSTS
+            fetch_headers = WIKIMEDIA_HEADERS if wikimedia else None
             if sem:
                 sem.acquire()
             try:
                 for attempt in range(1, 41):
                     try:
-                        info = provision.fetch_url(ctx, e["url"], e.get("sha256"), e.get("size"))
+                        if wikimedia and not e.get("sha256"):
+                            # Not yet fetched: pace to <=1 request/s. (Cached/verified entries skip
+                            # the network entirely inside fetch_url, so resuming a partial fetch
+                            # does not re-throttle already-recorded files.)
+                            WIKIMEDIA_RATE_LIMITER.wait()
+                        info = provision.fetch_url(ctx, e["url"], e.get("sha256"), e.get("size"), headers=fetch_headers)
                         break
                     except cl.HashMismatch:
                         raise
                     except cl.CorpusError as err:
                         if attempt == 40:
                             raise
+                        # provision.fetch_url already honors Retry-After internally for 429/503 up
+                        # to its own retry budget; a CorpusError reaching here means that budget was
+                        # exhausted or a different error occurred, so back off further and retry.
                         wait = 620 if "429" in str(err) else 60
                         log(f"  retry {attempt} for {e['url'][-80:]} after error ...{str(err)[-60:]}; sleeping {wait}s")
                         time.sleep(wait)

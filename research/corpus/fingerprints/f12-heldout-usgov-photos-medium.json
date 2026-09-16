@@ -1,0 +1,928 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f12-heldout-usgov-photos-medium",
+  "family": "F12",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-commons-usgov-photos",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "7c60cf9380fde9f4bb14b73b973b3b04a96881e1b5097e6dc96a3f9875612878",
+  "materialization_key": "e38f9d025ed4290d21df50fb9a841997336ee2f30374d7121b1e6f58ac72741d",
+  "materialized_utc": "2026-09-16T23:28:29Z",
+  "materialized_relpath": "heldout/f12-heldout-usgov-photos-medium",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "9038695ed0b73bec397c85da3eadbcd9d313d892e228fd5bb25575c4b83c6516",
+    "pinned_utc": "2026-09-16T23:28:29Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 313995507,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "commons-29813066",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/CARE_Group_Lowry-USFWS_%2869%29_%286436191559%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/CARE_Group_Lowry-USFWS_%2869%29_%286436191559%29.jpg",
+        "sha256": "4454b29d1d180f4400f60d8b40bdd443c71de817c6920dc9831d619308ba62da",
+        "size": 3661752,
+        "retrieved_utc": "2026-09-16T23:09:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-29813066"
+      },
+      {
+        "name": "commons-163064628",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/02/Ed_Bangs_Receives_a_Department_of_Justice_Seal_%285755523428%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/02/Ed_Bangs_Receives_a_Department_of_Justice_Seal_%285755523428%29.jpg",
+        "sha256": "27a6991420a5bd9188d292e23acd79f6ff54d90f111a8b9c1cd94ce6f55721cd",
+        "size": 6169462,
+        "retrieved_utc": "2026-09-16T23:10:22Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-163064628"
+      },
+      {
+        "name": "commons-162516264",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Girls_kayaking_%2823666294889%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Girls_kayaking_%2823666294889%29.jpg",
+        "sha256": "28de9b8456584edada95ecea53798dc0aad59158a06a94a174abfd7c940ad7df",
+        "size": 1019512,
+        "retrieved_utc": "2026-09-16T23:11:19Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-162516264"
+      },
+      {
+        "name": "commons-162929835",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Greater_sage-grouse_at_Seedskadee_National_Wildlife_Refuge_%2851068837773%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Greater_sage-grouse_at_Seedskadee_National_Wildlife_Refuge_%2851068837773%29.jpg",
+        "sha256": "0fcfa12c643441de03ecef4de8200cf9f5cefafa3c1fcc38908c527b5c322e51",
+        "size": 10887246,
+        "retrieved_utc": "2026-09-16T23:08:42Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-162929835"
+      },
+      {
+        "name": "commons-54754186",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/19/Sarracenia_jonesii_FWS_%2826611756954%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/19/Sarracenia_jonesii_FWS_%2826611756954%29.jpg",
+        "sha256": "9e890867f30c10bfe0f745d5d521a747c78491ae4549ef1840743126575f518a",
+        "size": 10277844,
+        "retrieved_utc": "2026-09-16T23:10:50Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-54754186"
+      },
+      {
+        "name": "commons-29815866",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Three_girls_check_the_content_of_their_kick_net_%285029099565%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Three_girls_check_the_content_of_their_kick_net_%285029099565%29.jpg",
+        "sha256": "448e50e9a09eaa18cc11832806cdfef3749efcf2abfa935457c15943419d0716",
+        "size": 6255645,
+        "retrieved_utc": "2026-09-16T23:09:48Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-29815866"
+      },
+      {
+        "name": "commons-6645990",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Air_Force_Fire_Training.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Air_Force_Fire_Training.jpg",
+        "sha256": "fd1bbf0c1018751a1900b954bba0950050455f1f192a0ce8b7c011a21b9ccc02",
+        "size": 1114485,
+        "retrieved_utc": "2026-09-16T23:10:35Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Air_Force_Fire_Training.jpg"
+      },
+      {
+        "name": "commons-2159062",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Firefighting_exercise.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Firefighting_exercise.jpg",
+        "sha256": "cb58087e5200c87b5f8d81e36818107ae406aec20aebd9eb27418bf2b24525ba",
+        "size": 2296742,
+        "retrieved_utc": "2026-09-16T23:09:35Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Firefighting_exercise.jpg"
+      },
+      {
+        "name": "commons-97354953",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/55/Global_Power_Bomber_CTF_conducts_B-1B_external_captive_carry_demonstration_%28201120-F-JG201-9095%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/55/Global_Power_Bomber_CTF_conducts_B-1B_external_captive_carry_demonstration_%28201120-F-JG201-9095%29.jpg",
+        "sha256": "637d1b420489d457113e196b1d2305001b576bbc2173378babd8e8836f05287b",
+        "size": 4926132,
+        "retrieved_utc": "2026-09-16T23:08:29Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-97354953"
+      },
+      {
+        "name": "commons-8799558",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Malnurished_Afghan_Child.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Malnurished_Afghan_Child.jpg",
+        "sha256": "199eeebf953026da704970584a616641c37542b8a29d399d4e16be1c5c3d53c8",
+        "size": 1565456,
+        "retrieved_utc": "2026-09-16T23:09:02Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Malnurished_Afghan_Child.jpg"
+      },
+      {
+        "name": "commons-8822174",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Schoolboys_in_Bamozai.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Schoolboys_in_Bamozai.jpg",
+        "sha256": "9494e11c5aa7e2457145398857c31c3dd49576cd222329e20948843937a39ed4",
+        "size": 4040424,
+        "retrieved_utc": "2026-09-16T23:11:04Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Schoolboys_in_Bamozai.jpg"
+      },
+      {
+        "name": "commons-5613112",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Shea_Smith-edit1.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Shea_Smith-edit1.jpg",
+        "sha256": "b32c2c1b536aff8b86fd4a9cf8cf7e8d95080ae01555e152aeaedff1c2d11cd0",
+        "size": 1252991,
+        "retrieved_utc": "2026-09-16T23:10:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Shea_Smith-edit1.jpg"
+      },
+      {
+        "name": "commons-51782195",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/%2A%2AHOLD%2A%2ABoys_School_Up_for_Renovations_DVIDS238746.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/%2A%2AHOLD%2A%2ABoys_School_Up_for_Renovations_DVIDS238746.jpg",
+        "sha256": "2ee89406490c8fc9eecf048ad14d947cd40925f73215e7db98df129d7e4f2a60",
+        "size": 5777925,
+        "retrieved_utc": "2026-09-16T23:09:57Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-51782195"
+      },
+      {
+        "name": "commons-188423092",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/8/88/2-27_Air_Assault_Marine_Corps_Base_Hawaii_2026_17.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/88/2-27_Air_Assault_Marine_Corps_Base_Hawaii_2026_17.jpg",
+        "sha256": "77fc2e88b903f0aa5506e2397f377fd4634f863b0afbbfa353aec9c2d5c9e7a7",
+        "size": 7299256,
+        "retrieved_utc": "2026-09-16T23:07:01Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "2-27_Air_Assault_Marine_Corps_Base_Hawaii_2026_17.jpg"
+      },
+      {
+        "name": "commons-70537108",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/2009_ETW_IMG_5196_%283424898586%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/2009_ETW_IMG_5196_%283424898586%29.jpg",
+        "sha256": "66d0e8a09a29c740e09dd39f8e4ba16a271a516f5a74ac5eafb798d0b9f2f71c",
+        "size": 2700582,
+        "retrieved_utc": "2026-09-16T23:10:59Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-70537108"
+      },
+      {
+        "name": "commons-167329221",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/f/ff/3d_U.S._Infantry_Regiment_%28The_Old_Guard%29_BBQ%2C_followed_by_a_Distinguished_and_Honorary_Member_of_the_Regiment_Ceremony_on_Summerall_Field%2C_Fort_Myer%2C_Virginia_on_June_4%2C_2025_-_51.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/ff/3d_U.S._Infantry_Regiment_%28The_Old_Guard%29_BBQ%2C_followed_by_a_Distinguished_and_Honorary_Member_of_the_Regiment_Ceremony_on_Summerall_Field%2C_Fort_Myer%2C_Virginia_on_June_4%2C_2025_-_51.jpg",
+        "sha256": "6cae6e43633f0722263a530e7907fbdb694952dff027dabdce1a093b4a2c1eda",
+        "size": 10825182,
+        "retrieved_utc": "2026-09-16T23:08:51Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-167329221"
+      },
+      {
+        "name": "commons-58165676",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/7/77/Base_Security_110616-A-JQ157-007.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/77/Base_Security_110616-A-JQ157-007.jpg",
+        "sha256": "8910172fd818ed0d6b095ab106d271b103dff91734fe45b0d78c4755b0785b1b",
+        "size": 2002758,
+        "retrieved_utc": "2026-09-16T23:11:29Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Base_Security_110616-A-JQ157-007.jpg"
+      },
+      {
+        "name": "commons-39990476",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c1/Fire_safety_121011-A-TT389-029.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c1/Fire_safety_121011-A-TT389-029.jpg",
+        "sha256": "a2d166dabd2f832c065f251e56d9c4d36c1601b16b01976f595f75f86959514f",
+        "size": 8565710,
+        "retrieved_utc": "2026-09-16T23:08:17Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Fire_safety_121011-A-TT389-029.jpg"
+      },
+      {
+        "name": "commons-9456495",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/3/39/Flickr_-_The_U.S._Army_-_Army_Brass_Quintet_honors_the_Army_Chaplain_Corps.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/39/Flickr_-_The_U.S._Army_-_Army_Brass_Quintet_honors_the_Army_Chaplain_Corps.jpg",
+        "sha256": "b731a93017acd691e31d3233e05538fb0f8864e137d9d76de9cf20281fed7508",
+        "size": 2449003,
+        "retrieved_utc": "2026-09-16T23:10:30Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Flickr_-_The_U.S._Army_-_Army_Brass_Quintet_honors_the_Army_Chaplain_Corps.jpg"
+      },
+      {
+        "name": "commons-39226772",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Forces_fire_flare_130418-A-QU939-011.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Forces_fire_flare_130418-A-QU939-011.jpg",
+        "sha256": "f4e3aa9c467997641453fbffcd9d2e643cef88c8708bd83e81d0a0e2f37c77de",
+        "size": 4110640,
+        "retrieved_utc": "2026-09-16T23:09:24Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Forces_fire_flare_130418-A-QU939-011.jpg"
+      },
+      {
+        "name": "commons-72280516",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/44/SGT_Hillary_Bor_%2827627074664%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/44/SGT_Hillary_Bor_%2827627074664%29.jpg",
+        "sha256": "c70bd95f7f46189542ea705cf56c56791fa89526b7582132b970d9c7ed597817",
+        "size": 6361072,
+        "retrieved_utc": "2026-09-16T23:07:39Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-72280516"
+      },
+      {
+        "name": "commons-70786317",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/3/36/80-CF-8811-14_Box_175_%2822933872969%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/36/80-CF-8811-14_Box_175_%2822933872969%29.jpg",
+        "sha256": "0dc7e76a58a88864aa408dcdf11ed6a3ebcc518257dc0b55f261a1cb0a7f0b25",
+        "size": 2032756,
+        "retrieved_utc": "2026-09-16T23:11:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-70786317"
+      },
+      {
+        "name": "commons-645281",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/a/ab/AnnapolisGraduation.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/ab/AnnapolisGraduation.jpg",
+        "sha256": "ab469cae2b34ff986af8e839f0497873e40ab6c1695be34e10e44770800b3e48",
+        "size": 1838308,
+        "retrieved_utc": "2026-09-16T23:10:46Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "AnnapolisGraduation.jpg"
+      },
+      {
+        "name": "commons-185794740",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/7/78/NMCB_11_Participates_in_Exercise_Iron_Fist_2026_%289549791%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/78/NMCB_11_Participates_in_Exercise_Iron_Fist_2026_%289549791%29.jpg",
+        "sha256": "3dcff9eba704e256207cfdd9bcb9ded9fc5194222d2b1687319547a42ba2b361",
+        "size": 11620272,
+        "retrieved_utc": "2026-09-16T23:10:17Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-185794740"
+      },
+      {
+        "name": "commons-4193254",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/T-45A_Goshawk_03.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/T-45A_Goshawk_03.jpg",
+        "sha256": "25b39a22941f96e3d9cca5470643d1eed3eab6b0f766c3824da9eb374abe44ab",
+        "size": 1957882,
+        "retrieved_utc": "2026-09-16T23:09:11Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "T-45A_Goshawk_03.jpg"
+      },
+      {
+        "name": "commons-8225213",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/US_Navy_081012-N-3392P-052_A_landing_craft_utility_%28LCU%29_assigned_to_Assault_Craft_Unit_%28ACU%29_4_maneuvers_toward_the_amphibious_dock_landing_ship_USS_Carter_Hall_%28LSD_50%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/US_Navy_081012-N-3392P-052_A_landing_craft_utility_%28LCU%29_assigned_to_Assault_Craft_Unit_%28ACU%29_4_maneuvers_toward_the_amphibious_dock_landing_ship_USS_Carter_Hall_%28LSD_50%29.jpg",
+        "sha256": "ae3518ceb09c733904748442924bd642de5677a32473ead51076e68c00da0f84",
+        "size": 1894741,
+        "retrieved_utc": "2026-09-16T23:09:43Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-8225213"
+      },
+      {
+        "name": "commons-8243924",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/27/US_Navy_090210-N-9671T-144_A_port_security_boat_patrols_the_waters_near_Kuwait_Naval_Base.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/27/US_Navy_090210-N-9671T-144_A_port_security_boat_patrols_the_waters_near_Kuwait_Naval_Base.jpg",
+        "sha256": "53bd8460e210965453cc3736ff2824f556e87ec5327ee3278aed7c8ed33adf19",
+        "size": 3464665,
+        "retrieved_utc": "2026-09-16T23:07:26Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "US_Navy_090210-N-9671T-144_A_port_security_boat_patrols_the_waters_near_Kuwait_Naval_Base.jpg"
+      },
+      {
+        "name": "commons-17450317",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/US_Navy_111116-N-VH839-027_Sailors_conduct_VBSS_drills.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/US_Navy_111116-N-VH839-027_Sailors_conduct_VBSS_drills.jpg",
+        "sha256": "26adbe734caaa28f1aeabe55ae8c3ec248d51413649d0e74daf75b599e93245f",
+        "size": 1281384,
+        "retrieved_utc": "2026-09-16T23:08:37Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "US_Navy_111116-N-VH839-027_Sailors_conduct_VBSS_drills.jpg"
+      },
+      {
+        "name": "commons-50115994",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/40/Aurora_australis_dancing_over_an_LED_illuminated_igloo.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/40/Aurora_australis_dancing_over_an_LED_illuminated_igloo.jpg",
+        "sha256": "f3900b0d65289aa266c5ab04306d18e2b322db0d4041a5b59cad4bb54937692d",
+        "size": 10220410,
+        "retrieved_utc": "2026-09-16T23:07:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Aurora_australis_dancing_over_an_LED_illuminated_igloo.jpg"
+      },
+      {
+        "name": "commons-131405681",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Low-end_EF3_damage_to_a_home_in_Virginia_Beach%2C_Virginia.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Low-end_EF3_damage_to_a_home_in_Virginia_Beach%2C_Virginia.jpg",
+        "sha256": "8b635d87cdede01bb5d46f61243c5d95a5bc142e90202ddd2d97eff07dc56a23",
+        "size": 4765183,
+        "retrieved_utc": "2026-09-16T23:07:51Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-131405681"
+      },
+      {
+        "name": "commons-126968431",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/A_coyote_rests_on_ice_on_the_Lamar_River_%281%29_%2852564282558%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/A_coyote_rests_on_ice_on_the_Lamar_River_%281%29_%2852564282558%29.jpg",
+        "sha256": "b22f1e3244747a05f383b20fed7bcd3c1a479519e7baf074e73f909caa112c72",
+        "size": 10536038,
+        "retrieved_utc": "2026-09-16T23:10:41Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-126968431"
+      },
+      {
+        "name": "commons-139706649",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/3/39/DVRR_No._2_at_the_Borax_Museum_at_Furnace_Creek%2C_California.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/39/DVRR_No._2_at_the_Borax_Museum_at_Furnace_Creek%2C_California.jpg",
+        "sha256": "ef89f12851ab3bca09b1157c994b8e093e1506ec8ffb362d9c81af6f58ec1c77",
+        "size": 7893293,
+        "retrieved_utc": "2026-09-16T23:09:39Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-139706649"
+      },
+      {
+        "name": "commons-89322587",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Earthwatch_Volunteers_Work_with_Park_Resource_Managers_to_Study_Climate_Change_%2817116079540%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Earthwatch_Volunteers_Work_with_Park_Resource_Managers_to_Study_Climate_Change_%2817116079540%29.jpg",
+        "sha256": "54c2e8d76d5641ae8cd1c808e7064c9b19a83ae7b9b5b5ce2fcf530e9221ea66",
+        "size": 4511208,
+        "retrieved_utc": "2026-09-16T23:09:06Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-89322587"
+      },
+      {
+        "name": "commons-163319867",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Grand_Teton_and_Mount_Owen_in_Winter_%2852098524701%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Grand_Teton_and_Mount_Owen_in_Winter_%2852098524701%29.jpg",
+        "sha256": "ac757b2baa1fb4c2c63fedc7d4dcf40ac60c74a0d11c062cc564fc19785ed7fe",
+        "size": 4336826,
+        "retrieved_utc": "2026-09-16T21:10:21Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-163319867"
+      },
+      {
+        "name": "commons-161442331",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/Hidden_Valley_Campground_%2853458214025%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/Hidden_Valley_Campground_%2853458214025%29.jpg",
+        "sha256": "d27f1e6040282f03938b00d1d0b3fcc4f0dfa9f3f783628db1f21aaf271c338e",
+        "size": 13439245,
+        "retrieved_utc": "2026-09-16T23:10:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-161442331"
+      },
+      {
+        "name": "commons-55178437",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c1/National_Public_Lands_Day_2013_at_Mount_Rainier_National_Park%2C_NPLD_volunteer_2_%2810027338815%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c1/National_Public_Lands_Day_2013_at_Mount_Rainier_National_Park%2C_NPLD_volunteer_2_%2810027338815%29.jpg",
+        "sha256": "74ab9c4d74c89bff7a62d87bd03f5616808515ceb080a87b04836aee7ad63cf3",
+        "size": 13598031,
+        "retrieved_utc": "2026-09-16T23:11:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-55178437"
+      },
+      {
+        "name": "commons-82260262",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Naturalization_Ceremony_at_Harriet_Tumban_National_Historical_Park_on_August_8%2C_2019._%28c1ddaef3-e2f7-4c6b-8681-704968e3c529%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Naturalization_Ceremony_at_Harriet_Tumban_National_Historical_Park_on_August_8%2C_2019._%28c1ddaef3-e2f7-4c6b-8681-704968e3c529%29.jpg",
+        "sha256": "8614e743b7494646366155b9b6959ba98c334233eac9282960392be667909ca6",
+        "size": 13975763,
+        "retrieved_utc": "2026-09-16T23:07:22Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-82260262"
+      },
+      {
+        "name": "commons-46864644",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Sourdough_Ridge_Trail_%2814791377103%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Sourdough_Ridge_Trail_%2814791377103%29.jpg",
+        "sha256": "395c6fe149311852e08d5ad3c2661540b1ced421d7f39b7a46d9336feaa8ee19",
+        "size": 2175371,
+        "retrieved_utc": "2026-09-16T23:08:33Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-46864644"
+      },
+      {
+        "name": "commons-96587859",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Total_Lunar_Eclipse_04142014_02_%2813875499995%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Total_Lunar_Eclipse_04142014_02_%2813875499995%29.jpg",
+        "sha256": "1dd482fcd20b00bd494187ac9b0a16493b4e96fc0fdd64afc7065327b3e5135d",
+        "size": 4083279,
+        "retrieved_utc": "2026-09-16T23:07:59Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-96587859"
+      },
+      {
+        "name": "commons-119258055",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/d5/20220606-OSEC-TEW-162_%2852126805913%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/d5/20220606-OSEC-TEW-162_%2852126805913%29.jpg",
+        "sha256": "8750ed97bb02aa52911752c02273f7c3c0f3d68ebbf56998f2cf47b7592dc2da",
+        "size": 4564551,
+        "retrieved_utc": "2026-09-16T23:10:26Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-119258055"
+      },
+      {
+        "name": "commons-163490917",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/20250408-USDA-OSEC-TEW-820_U.S._Secretary_of_Agriculture_Rollins_with_the_Texas_Agricultural_Lifetime_Leadership_Cohort.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/20250408-USDA-OSEC-TEW-820_U.S._Secretary_of_Agriculture_Rollins_with_the_Texas_Agricultural_Lifetime_Leadership_Cohort.jpg",
+        "sha256": "8aaa242bd1fcb27837241182a0a504a275fe7df6766b937d66c139fabcec992e",
+        "size": 6160185,
+        "retrieved_utc": "2026-09-16T23:08:12Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "20250408-USDA-OSEC-TEW-820_U.S._Secretary_of_Agriculture_Rollins_with_the_Texas_Agricultural_Lifetime_Leadership_Cohort.jpg"
+      },
+      {
+        "name": "commons-166653204",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/20250602-USDA-OSEC-TEW-0132_USDA_Presidential_Political_Appointee_Swearing_In_Ceremony.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/20250602-USDA-OSEC-TEW-0132_USDA_Presidential_Political_Appointee_Swearing_In_Ceremony.jpg",
+        "sha256": "b7f2935d225657e4bd42eb2c3b2d69fc25bbc9d078d145d2305987b8ff7db7e9",
+        "size": 9203593,
+        "retrieved_utc": "2026-09-16T23:07:35Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "20250602-USDA-OSEC-TEW-0132_USDA_Presidential_Political_Appointee_Swearing_In_Ceremony.jpg"
+      },
+      {
+        "name": "commons-68796349",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/f/fb/DSC4137_%2824998133972%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/fb/DSC4137_%2824998133972%29.jpg",
+        "sha256": "76a1a5429736cbc8bbf24d717df9bba2328aed076d871fee328a441bc4fb4d83",
+        "size": 3736173,
+        "retrieved_utc": "2026-09-16T23:06:57Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-68796349"
+      },
+      {
+        "name": "commons-68796267",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/3/38/DSC4301_%2825023073981%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/38/DSC4301_%2825023073981%29.jpg",
+        "sha256": "4284e8825f074a3d4a9466b1952fea81a0fe4ba3d351b7c3e56c3c068b7dc7e9",
+        "size": 4520640,
+        "retrieved_utc": "2026-09-16T23:08:46Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-68796267"
+      },
+      {
+        "name": "commons-68905275",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/27/P6070610_%2834799611420%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/27/P6070610_%2834799611420%29.jpg",
+        "sha256": "f5a7a975280fb539a4eea77911f03e7d3ce5cbca37a19094f54902a8260ede1c",
+        "size": 2324979,
+        "retrieved_utc": "2026-09-16T23:11:51Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-68905275"
+      },
+      {
+        "name": "commons-128824050",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/1a/SNAP_Employment_and_Training_at_Cafe_Reconcile_in_New_Orleans%2C_16_February_2023_-_39.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/1a/SNAP_Employment_and_Training_at_Cafe_Reconcile_in_New_Orleans%2C_16_February_2023_-_39.jpg",
+        "sha256": "64518fab4b9e5292a4b0e15b13540144b2c6b68d929dd3c0f6a2ebf067cc166d",
+        "size": 7315488,
+        "retrieved_utc": "2026-09-16T23:09:19Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-128824050"
+      },
+      {
+        "name": "commons-128787874",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Sec_Vilsacks_at_Southern_University_in_Baton_Rouge%2C_and_press_conference_afterward_14_Feb_2023_-_16.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Sec_Vilsacks_at_Southern_University_in_Baton_Rouge%2C_and_press_conference_afterward_14_Feb_2023_-_16.jpg",
+        "sha256": "2ee5ba7d4f508d8b4ebaf7564fa5898eec7a0e77eba0dcdde7ebec57077fbde9",
+        "size": 13279758,
+        "retrieved_utc": "2026-09-16T23:10:55Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-128787874"
+      },
+      {
+        "name": "commons-113588098",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/World_Food_Prize_2021_20211020-OSEC-LSC-1898_%2851615326945%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/World_Food_Prize_2021_20211020-OSEC-LSC-1898_%2851615326945%29.jpg",
+        "sha256": "865ffef7aef3b59b0a5622155a249e83e5a228845d1aa9ed4d20a7e62f398d93",
+        "size": 12212125,
+        "retrieved_utc": "2026-09-16T23:09:53Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-113588098"
+      },
+      {
+        "name": "commons-105004755",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/61/Andrena_rehni%2C_m%2C_face%2C_Prince_George%27s_Co._Maryland_2019-12-16-20.22.02_ZS_PMax_UDR_%2849807224241%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/61/Andrena_rehni%2C_m%2C_face%2C_Prince_George%27s_Co._Maryland_2019-12-16-20.22.02_ZS_PMax_UDR_%2849807224241%29.jpg",
+        "sha256": "f752c54ee98a472b02bd4d6f3e6def3dd6874f08f1fcd99aebcc1a422d0b6836",
+        "size": 12489952,
+        "retrieved_utc": "2026-09-16T23:08:55Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-105004755"
+      },
+      {
+        "name": "commons-164008120",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Fonda_1894_1-62%2C500_-_PCL_Map_Collection_-_txu-pclmaps-topo-ny-fonda-1894.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Fonda_1894_1-62%2C500_-_PCL_Map_Collection_-_txu-pclmaps-topo-ny-fonda-1894.jpg",
+        "sha256": "430e31a3c5258a7cd944aa2dfdaf27888f5cdc093015ffb15d60ed177bcf4c87",
+        "size": 3226502,
+        "retrieved_utc": "2026-09-16T23:07:06Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-164008120"
+      },
+      {
+        "name": "commons-68177590",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Lava_fountain_dome_2.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Lava_fountain_dome_2.jpg",
+        "sha256": "8deae767bc81919a1194742b2cf772ffc4c1fbe53e881806f02e054e9b016c18",
+        "size": 4959352,
+        "retrieved_utc": "2026-09-16T23:07:46Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Lava_fountain_dome_2.jpg"
+      },
+      {
+        "name": "commons-18518124",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Mount_Marcy_New_York_USGS_topo_map_1892.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Mount_Marcy_New_York_USGS_topo_map_1892.jpg",
+        "sha256": "a3b1ea9215785f16de3783aef35a5f8fd8c4ae58b331688754ec82cac6afb66c",
+        "size": 3779589,
+        "retrieved_utc": "2026-09-16T23:10:01Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Mount_Marcy_New_York_USGS_topo_map_1892.jpg"
+      },
+      {
+        "name": "commons-6318818",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/65/Mt_Redoubt_2009-03-21_1237756418_ak231.JPG",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/65/Mt_Redoubt_2009-03-21_1237756418_ak231.JPG",
+        "sha256": "3d7a392e645b28281dc02ca3c8862ac3956ed25b0920b4a1d1ad2f1c9e9466f1",
+        "size": 3046467,
+        "retrieved_utc": "2026-09-16T23:09:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Mt_Redoubt_2009-03-21_1237756418_ak231.JPG"
+      },
+      {
+        "name": "commons-40571271",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/52/Xylocopa_virginica_male_face.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/52/Xylocopa_virginica_male_face.jpg",
+        "sha256": "90b84484347ce2830e9eb5454c8c367d034e4053912039dc6d08b11bd33cd943",
+        "size": 5991679,
+        "retrieved_utc": "2026-09-16T23:08:24Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Xylocopa_virginica_male_face.jpg"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "commons-29813066",
+        "dest": "FWS/CARE Group Lowry-USFWS (69) (6436191559).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-163064628",
+        "dest": "FWS/Ed Bangs Receives a Department of Justice Seal (5755523428).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-162516264",
+        "dest": "FWS/Girls kayaking (23666294889).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-162929835",
+        "dest": "FWS/Greater sage-grouse at Seedskadee National Wildlife Refuge (51068837773).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-54754186",
+        "dest": "FWS/Sarracenia jonesii FWS (26611756954).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-29815866",
+        "dest": "FWS/Three girls check the content of their kick net (5029099565).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-6645990",
+        "dest": "Military-Air-Force/Air Force Fire Training.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-2159062",
+        "dest": "Military-Air-Force/Firefighting exercise.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-97354953",
+        "dest": "Military-Air-Force/Global Power Bomber CTF conducts B-1B external captive carry demonstration (201120-F-JG201-9095).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-8799558",
+        "dest": "Military-Air-Force/Malnurished Afghan Child.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-8822174",
+        "dest": "Military-Air-Force/Schoolboys in Bamozai.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-5613112",
+        "dest": "Military-Air-Force/Shea Smith-edit1.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-51782195",
+        "dest": "Military-Army/**HOLD**Boys School Up for Renovations DVIDS238746.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-188423092",
+        "dest": "Military-Army/2-27 Air Assault Marine Corps Base Hawaii 2026 17.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-70537108",
+        "dest": "Military-Army/2009 ETW IMG 5196 (3424898586).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-167329221",
+        "dest": "Military-Army/3d U.S. Infantry Regiment (The Old Guard) BBQ, followed by a Distinguished and Honorary Member of the Regiment Ceremony on Summerall Field, Fort Myer, Virginia on June 4, 2025 - 51"
+      },
+      {
+        "op": "copy",
+        "input": "commons-58165676",
+        "dest": "Military-Army/Base Security 110616-A-JQ157-007.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-39990476",
+        "dest": "Military-Army/Fire safety 121011-A-TT389-029.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-9456495",
+        "dest": "Military-Army/Flickr - The U.S. Army - Army Brass Quintet honors the Army Chaplain Corps.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-39226772",
+        "dest": "Military-Army/Forces fire flare 130418-A-QU939-011.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-72280516",
+        "dest": "Military-Army/SGT Hillary Bor (27627074664).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-70786317",
+        "dest": "Military-Navy/80-CF-8811-14 Box 175 (22933872969).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-645281",
+        "dest": "Military-Navy/AnnapolisGraduation.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-185794740",
+        "dest": "Military-Navy/NMCB 11 Participates in Exercise Iron Fist 2026 (9549791).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-4193254",
+        "dest": "Military-Navy/T-45A Goshawk 03.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-8225213",
+        "dest": "Military-Navy/US Navy 081012-N-3392P-052 A landing craft utility (LCU) assigned to Assault Craft Unit (ACU) 4 maneuvers toward the amphibious dock landing ship USS Carter Hall (LSD 50).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-8243924",
+        "dest": "Military-Navy/US Navy 090210-N-9671T-144 A port security boat patrols the waters near Kuwait Naval Base.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-17450317",
+        "dest": "Military-Navy/US Navy 111116-N-VH839-027 Sailors conduct VBSS drills.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-50115994",
+        "dest": "NOAA/Aurora australis dancing over an LED illuminated igloo.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-131405681",
+        "dest": "NOAA/Low-end EF3 damage to a home in Virginia Beach, Virginia.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-126968431",
+        "dest": "NPS/A coyote rests on ice on the Lamar River (1) (52564282558).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-139706649",
+        "dest": "NPS/DVRR No. 2 at the Borax Museum at Furnace Creek, California.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-89322587",
+        "dest": "NPS/Earthwatch Volunteers Work with Park Resource Managers to Study Climate Change (17116079540).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-163319867",
+        "dest": "NPS/Grand Teton and Mount Owen in Winter (52098524701).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-161442331",
+        "dest": "NPS/Hidden Valley Campground (53458214025).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-55178437",
+        "dest": "NPS/National Public Lands Day 2013 at Mount Rainier National Park, NPLD volunteer 2 (10027338815).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-82260262",
+        "dest": "NPS/Naturalization Ceremony at Harriet Tumban National Historical Park on August 8, 2019. (c1ddaef3-e2f7-4c6b-8681-704968e3c529).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-46864644",
+        "dest": "NPS/Sourdough Ridge Trail (14791377103).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-96587859",
+        "dest": "NPS/Total Lunar Eclipse 04142014 02 (13875499995).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-119258055",
+        "dest": "USDA/20220606-OSEC-TEW-162 (52126805913).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-163490917",
+        "dest": "USDA/20250408-USDA-OSEC-TEW-820 U.S. Secretary of Agriculture Rollins with the Texas Agricultural Lifetime Leadership Cohort.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-166653204",
+        "dest": "USDA/20250602-USDA-OSEC-TEW-0132 USDA Presidential Political Appointee Swearing In Ceremony.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-68796349",
+        "dest": "USDA/DSC4137 (24998133972).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-68796267",
+        "dest": "USDA/DSC4301 (25023073981).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-68905275",
+        "dest": "USDA/P6070610 (34799611420).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-128824050",
+        "dest": "USDA/SNAP Employment and Training at Cafe Reconcile in New Orleans, 16 February 2023 - 39.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-128787874",
+        "dest": "USDA/Sec Vilsacks at Southern University in Baton Rouge, and press conference afterward 14 Feb 2023 - 16.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-113588098",
+        "dest": "USDA/World Food Prize 2021 20211020-OSEC-LSC-1898 (51615326945).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-105004755",
+        "dest": "USGS/Andrena rehni, m, face, Prince George's Co. Maryland 2019-12-16-20.22.02 ZS PMax UDR (49807224241).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-164008120",
+        "dest": "USGS/Fonda 1894 1-62,500 - PCL Map Collection - txu-pclmaps-topo-ny-fonda-1894.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-68177590",
+        "dest": "USGS/Lava fountain dome 2.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-18518124",
+        "dest": "USGS/Mount Marcy New York USGS topo map 1892.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-6318818",
+        "dest": "USGS/Mt Redoubt 2009-03-21 1237756418 ak231.JPG"
+      },
+      {
+        "op": "copy",
+        "input": "commons-40571271",
+        "dest": "USGS/Xylocopa virginica male face.jpg"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c1119d36c60c4166d4688a0284ab763b84d7477b423990834d00b84f8af415bf",
+    "logical_tree_sha256": "9038695ed0b73bec397c85da3eadbcd9d313d892e228fd5bb25575c4b83c6516",
+    "content_tree_sha256": "b1bba37089dcf9caf38b04e2bf8a4e2fa640c89a7275b76f3a342f72e1e4d7b9",
+    "extended_tree_sha256": "69e316230cf4ccf9cd48060a0ebac9cd5aeb3b948c71fb81246c68191e02ae99",
+    "bytes": 313995507,
+    "counts": {
+      "objects": 63,
+      "files": 54,
+      "dirs": 8,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

@@ -1,0 +1,80 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-heldout-nasa-video-naca-large",
+  "family": "F13",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-nasa-video-naca",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "3a3d63af4b0adcb09b82edf0d7aa93bb841f9102c676f86d7ff8530d2e3f98d7",
+  "materialization_key": "4738cee2d74651b54eef0eb3aac92a6d7806aa08e03fb51b1e7ad7b9ef7cc9bc",
+  "materialized_utc": "2026-09-16T23:29:16Z",
+  "materialized_relpath": "heldout/f13-heldout-nasa-video-naca-large",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "13cf5ce26176ecae5955d26da2114571478d7fe1127751afca0abad4d3a2f65d",
+    "pinned_utc": "2026-09-16T23:29:16Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 2135226142,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "nasa-video-20250220-aav3549-naca-series-allepisodes-v1",
+        "url": "https://images-assets.nasa.gov/video/20250220-AAV3549-NACA-Series-AllEpisodes-v1/20250220-AAV3549-NACA-Series-AllEpisodes-v1~orig.mp4",
+        "final_url": "https://images-assets.nasa.gov/video/20250220-AAV3549-NACA-Series-AllEpisodes-v1/20250220-AAV3549-NACA-Series-AllEpisodes-v1~orig.mp4",
+        "sha256": "497efb209e36285dc5518cd2371bab3c9efb37a11d2ef8e83e3f97831a1ca46f",
+        "size": 2135226142,
+        "retrieved_utc": "2026-09-16T23:21:16Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "nasa-video-20250220-aav3549-naca-series-allepisodes-v1"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "nasa-video-20250220-aav3549-naca-series-allepisodes-v1",
+        "dest": "20250220-AAV3549-NACA-Series-AllEpisodes-v1~orig.mp4"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "9ffd9b55ab3d1f6604c333ba6baa342d68fcb0e919d06926bcaae49307def765",
+    "logical_tree_sha256": "13cf5ce26176ecae5955d26da2114571478d7fe1127751afca0abad4d3a2f65d",
+    "content_tree_sha256": "80b085e38076f5b7d200c2f5f80e18f55e4463680fd29342790757f56f48faae",
+    "extended_tree_sha256": "5c74ffcf5e1dd0396cf38500fd64f12b5df1517a23c5db74f7450cb314c29dfd",
+    "bytes": 2135226142,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

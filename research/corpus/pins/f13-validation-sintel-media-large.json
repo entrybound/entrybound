@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-validation-sintel-media-large",
+  "inputs": {},
+  "output": {
+    "materialization_key": "e37f6a2ac53f5ddc82ab3a811c3ca7395d10a013c420ad8cfb12d06e1859acc9",
+    "logical_tree_sha256": "8208545aaefec2aa921e5b064d7702f18dcd32ec4d1d6437f5837585f6ef2e1d",
+    "pinned_utc": "2026-09-16T23:31:27Z"
+  },
+  "history": []
+}

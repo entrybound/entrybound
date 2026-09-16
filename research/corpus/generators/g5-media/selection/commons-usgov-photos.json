@@ -29,7 +29,11 @@
       "height": 1744,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-small"
+      "alloc": "f12-heldout-usgov-photos-small",
+      "sha256": "5bb01dc0c6e93af01460a76b89ad4e3eaca73bd7dfdae17ba6acc12b18680835",
+      "size": 2505892,
+      "retrieved_utc": "2026-09-16T21:10:17Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/64/A_B-1B_Lancer.jpg"
     },
     {
       "key": "commons-163319867",
@@ -55,7 +59,11 @@
       "height": 4000,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "ac757b2baa1fb4c2c63fedc7d4dcf40ac60c74a0d11c062cc564fc19785ed7fe",
+      "size": 4336826,
+      "retrieved_utc": "2026-09-16T21:10:21Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Grand_Teton_and_Mount_Owen_in_Winter_%2852098524701%29.jpg"
     },
     {
       "key": "commons-70781155",
@@ -81,7 +89,11 @@
       "height": 4800,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-small"
+      "alloc": "f12-heldout-usgov-photos-small",
+      "sha256": "e7fb04618f3bcfeb88cc2fa8997f7034abe5714f8e08f2254e1763fd8723cf01",
+      "size": 2391488,
+      "retrieved_utc": "2026-09-16T21:10:28Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/17/170609-N-HO612-046_%2834517906894%29.jpg"
     },
     {
       "key": "commons-31314387",
@@ -108,7 +120,11 @@
       "height": 1848,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-small"
+      "alloc": "f12-heldout-usgov-photos-small",
+      "sha256": "241d3cb951d90e3d36be235dbead1cfee0cc83df554985a64af894ea37b61fff",
+      "size": 1401345,
+      "retrieved_utc": "2026-09-16T21:10:34Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/2013_National_Fishing_and_Boating_Week_%288958290593%29.jpg"
     },
     {
       "key": "commons-68796349",
@@ -135,7 +151,11 @@
       "height": 2792,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "76a1a5429736cbc8bbf24d717df9bba2328aed076d871fee328a441bc4fb4d83",
+      "size": 3736173,
+      "retrieved_utc": "2026-09-16T23:06:57Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/fb/DSC4137_%2824998133972%29.jpg"
     },
     {
       "key": "commons-188423092",
@@ -162,7 +182,11 @@
       "height": 4969,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "77fc2e88b903f0aa5506e2397f377fd4634f863b0afbbfa353aec9c2d5c9e7a7",
+      "size": 7299256,
+      "retrieved_utc": "2026-09-16T23:07:01Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/88/2-27_Air_Assault_Marine_Corps_Base_Hawaii_2026_17.jpg"
     },
     {
       "key": "commons-164008120",
@@ -189,7 +213,11 @@
       "height": 3901,
       "group_label": "PD-USGov-USGS",
       "dir": "USGS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "430e31a3c5258a7cd944aa2dfdaf27888f5cdc093015ffb15d60ed177bcf4c87",
+      "size": 3226502,
+      "retrieved_utc": "2026-09-16T23:07:06Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Fonda_1894_1-62%2C500_-_PCL_Map_Collection_-_txu-pclmaps-topo-ny-fonda-1894.jpg"
     },
     {
       "key": "commons-50115994",
@@ -216,7 +244,11 @@
       "height": 2893,
       "group_label": "PD-USGov-NOAA",
       "dir": "NOAA",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "f3900b0d65289aa266c5ab04306d18e2b322db0d4041a5b59cad4bb54937692d",
+      "size": 10220410,
+      "retrieved_utc": "2026-09-16T23:07:13Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/40/Aurora_australis_dancing_over_an_LED_illuminated_igloo.jpg"
     },
     {
       "key": "commons-1697801",
@@ -243,7 +275,11 @@
       "height": 1252,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-small"
+      "alloc": "f12-heldout-usgov-photos-small",
+      "sha256": "cffd477b8d31db328f43f9c9eb5e544160bb25a9558fcba28a001f8795f135b2",
+      "size": 1770335,
+      "retrieved_utc": "2026-09-16T23:07:17Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/B-2_Spirit_original.jpg"
     },
     {
       "key": "commons-82260262",
@@ -270,7 +306,11 @@
       "height": 4000,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "8614e743b7494646366155b9b6959ba98c334233eac9282960392be667909ca6",
+      "size": 13975763,
+      "retrieved_utc": "2026-09-16T23:07:22Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Naturalization_Ceremony_at_Harriet_Tumban_National_Historical_Park_on_August_8%2C_2019._%28c1ddaef3-e2f7-4c6b-8681-704968e3c529%29.jpg"
     },
     {
       "key": "commons-8243924",
@@ -297,7 +337,11 @@
       "height": 1881,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "53bd8460e210965453cc3736ff2824f556e87ec5327ee3278aed7c8ed33adf19",
+      "size": 3464665,
+      "retrieved_utc": "2026-09-16T23:07:26Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/27/US_Navy_090210-N-9671T-144_A_port_security_boat_patrols_the_waters_near_Kuwait_Naval_Base.jpg"
     },
     {
       "key": "commons-47029642",
@@ -324,7 +368,11 @@
       "height": 2592,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-small"
+      "alloc": "f12-heldout-usgov-photos-small",
+      "sha256": "45ce02dc3d402dbc2588efd52fcf7169afca250d7f3a43d3b1b96f6970fa183e",
+      "size": 2357754,
+      "retrieved_utc": "2026-09-16T23:07:30Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Ivory_Crush_2013_%2810897819583%29.jpg"
     },
     {
       "key": "commons-166653204",
@@ -351,7 +399,11 @@
       "height": 3208,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "b7f2935d225657e4bd42eb2c3b2d69fc25bbc9d078d145d2305987b8ff7db7e9",
+      "size": 9203593,
+      "retrieved_utc": "2026-09-16T23:07:35Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/20250602-USDA-OSEC-TEW-0132_USDA_Presidential_Political_Appointee_Swearing_In_Ceremony.jpg"
     },
     {
       "key": "commons-72280516",
@@ -378,7 +430,11 @@
       "height": 3200,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "c70bd95f7f46189542ea705cf56c56791fa89526b7582132b970d9c7ed597817",
+      "size": 6361072,
+      "retrieved_utc": "2026-09-16T23:07:39Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/44/SGT_Hillary_Bor_%2827627074664%29.jpg"
     },
     {
       "key": "commons-68177590",
@@ -405,7 +461,11 @@
       "height": 3471,
       "group_label": "PD-USGov-USGS",
       "dir": "USGS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "8deae767bc81919a1194742b2cf772ffc4c1fbe53e881806f02e054e9b016c18",
+      "size": 4959352,
+      "retrieved_utc": "2026-09-16T23:07:46Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Lava_fountain_dome_2.jpg"
     },
     {
       "key": "commons-131405681",
@@ -432,7 +492,11 @@
       "height": 3024,
       "group_label": "PD-USGov-NOAA",
       "dir": "NOAA",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "8b635d87cdede01bb5d46f61243c5d95a5bc142e90202ddd2d97eff07dc56a23",
+      "size": 4765183,
+      "retrieved_utc": "2026-09-16T23:07:51Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Low-end_EF3_damage_to_a_home_in_Virginia_Beach%2C_Virginia.jpg"
     },
     {
       "key": "commons-11499339",
@@ -459,7 +523,11 @@
       "height": 2100,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-small"
+      "alloc": "f12-heldout-usgov-photos-small",
+      "sha256": "ef1c2a5b7b94130e80c8180ce40595927fc7cca8b55bf65943fed0d09424e0ba",
+      "size": 1682845,
+      "retrieved_utc": "2026-09-16T23:07:55Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/World_Military_Women%27s_Championship_Game_4_2009-06-07_3.JPG"
     },
     {
       "key": "commons-96587859",
@@ -486,7 +554,11 @@
       "height": 3264,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "1dd482fcd20b00bd494187ac9b0a16493b4e96fc0fdd64afc7065327b3e5135d",
+      "size": 4083279,
+      "retrieved_utc": "2026-09-16T23:07:59Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Total_Lunar_Eclipse_04142014_02_%2813875499995%29.jpg"
     },
     {
       "key": "commons-70741875",
@@ -513,7 +585,11 @@
       "height": 2136,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-small"
+      "alloc": "f12-heldout-usgov-photos-small",
+      "sha256": "881d842562ea77d3add2010d1ae94781ea6ed39e5011f98ec1839fc9e0a29a31",
+      "size": 2324644,
+      "retrieved_utc": "2026-09-16T23:08:04Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/23/80-G-14244_%2834608768920%29.jpg"
     },
     {
       "key": "commons-29826266",
@@ -539,7 +615,11 @@
       "height": 1936,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-small"
+      "alloc": "f12-heldout-usgov-photos-small",
+      "sha256": "48f730d47bb46345554d443dc3ccb7d9a95a147e6e9599f568628b05191469d1",
+      "size": 1213064,
+      "retrieved_utc": "2026-09-16T23:08:08Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Grand_Isle_news_conference_1_%284930068165%29.jpg"
     },
     {
       "key": "commons-163490917",
@@ -566,7 +646,11 @@
       "height": 3403,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "8aaa242bd1fcb27837241182a0a504a275fe7df6766b937d66c139fabcec992e",
+      "size": 6160185,
+      "retrieved_utc": "2026-09-16T23:08:12Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/20250408-USDA-OSEC-TEW-820_U.S._Secretary_of_Agriculture_Rollins_with_the_Texas_Agricultural_Lifetime_Leadership_Cohort.jpg"
     },
     {
       "key": "commons-39990476",
@@ -593,7 +677,11 @@
       "height": 3744,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "a2d166dabd2f832c065f251e56d9c4d36c1601b16b01976f595f75f86959514f",
+      "size": 8565710,
+      "retrieved_utc": "2026-09-16T23:08:17Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c1/Fire_safety_121011-A-TT389-029.jpg"
     },
     {
       "key": "commons-40571271",
@@ -620,7 +708,11 @@
       "height": 3468,
       "group_label": "PD-USGov-USGS",
       "dir": "USGS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "90b84484347ce2830e9eb5454c8c367d034e4053912039dc6d08b11bd33cd943",
+      "size": 5991679,
+      "retrieved_utc": "2026-09-16T23:08:24Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/52/Xylocopa_virginica_male_face.jpg"
     },
     {
       "key": "commons-97354953",
@@ -646,7 +738,11 @@
       "height": 3321,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "637d1b420489d457113e196b1d2305001b576bbc2173378babd8e8836f05287b",
+      "size": 4926132,
+      "retrieved_utc": "2026-09-16T23:08:29Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/55/Global_Power_Bomber_CTF_conducts_B-1B_external_captive_carry_demonstration_%28201120-F-JG201-9095%29.jpg"
     },
     {
       "key": "commons-46864644",
@@ -673,7 +769,11 @@
       "height": 5184,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "395c6fe149311852e08d5ad3c2661540b1ced421d7f39b7a46d9336feaa8ee19",
+      "size": 2175371,
+      "retrieved_utc": "2026-09-16T23:08:33Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Sourdough_Ridge_Trail_%2814791377103%29.jpg"
     },
     {
       "key": "commons-17450317",
@@ -700,7 +800,11 @@
       "height": 2832,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "26adbe734caaa28f1aeabe55ae8c3ec248d51413649d0e74daf75b599e93245f",
+      "size": 1281384,
+      "retrieved_utc": "2026-09-16T23:08:37Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/US_Navy_111116-N-VH839-027_Sailors_conduct_VBSS_drills.jpg"
     },
     {
       "key": "commons-162929835",
@@ -727,7 +831,11 @@
       "height": 3559,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "0fcfa12c643441de03ecef4de8200cf9f5cefafa3c1fcc38908c527b5c322e51",
+      "size": 10887246,
+      "retrieved_utc": "2026-09-16T23:08:42Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Greater_sage-grouse_at_Seedskadee_National_Wildlife_Refuge_%2851068837773%29.jpg"
     },
     {
       "key": "commons-68796267",
@@ -754,7 +862,11 @@
       "height": 4256,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "4284e8825f074a3d4a9466b1952fea81a0fe4ba3d351b7c3e56c3c068b7dc7e9",
+      "size": 4520640,
+      "retrieved_utc": "2026-09-16T23:08:46Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/38/DSC4301_%2825023073981%29.jpg"
     },
     {
       "key": "commons-167329221",
@@ -781,7 +893,11 @@
       "height": 5393,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "6cae6e43633f0722263a530e7907fbdb694952dff027dabdce1a093b4a2c1eda",
+      "size": 10825182,
+      "retrieved_utc": "2026-09-16T23:08:51Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/ff/3d_U.S._Infantry_Regiment_%28The_Old_Guard%29_BBQ%2C_followed_by_a_Distinguished_and_Honorary_Member_of_the_Regiment_Ceremony_on_Summerall_Field%2C_Fort_Myer%2C_Virginia_on_June_4%2C_2025_-_51.jpg"
     },
     {
       "key": "commons-105004755",
@@ -808,7 +924,11 @@
       "height": 3670,
       "group_label": "PD-USGov-USGS",
       "dir": "USGS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "f752c54ee98a472b02bd4d6f3e6def3dd6874f08f1fcd99aebcc1a422d0b6836",
+      "size": 12489952,
+      "retrieved_utc": "2026-09-16T23:08:55Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/61/Andrena_rehni%2C_m%2C_face%2C_Prince_George%27s_Co._Maryland_2019-12-16-20.22.02_ZS_PMax_UDR_%2849807224241%29.jpg"
     },
     {
       "key": "commons-8799558",
@@ -835,7 +955,11 @@
       "height": 2000,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "199eeebf953026da704970584a616641c37542b8a29d399d4e16be1c5c3d53c8",
+      "size": 1565456,
+      "retrieved_utc": "2026-09-16T23:09:02Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Malnurished_Afghan_Child.jpg"
     },
     {
       "key": "commons-89322587",
@@ -862,7 +986,11 @@
       "height": 2817,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "54c2e8d76d5641ae8cd1c808e7064c9b19a83ae7b9b5b5ce2fcf530e9221ea66",
+      "size": 4511208,
+      "retrieved_utc": "2026-09-16T23:09:06Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Earthwatch_Volunteers_Work_with_Park_Resource_Managers_to_Study_Climate_Change_%2817116079540%29.jpg"
     },
     {
       "key": "commons-4193254",
@@ -889,7 +1017,11 @@
       "height": 2085,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "25b39a22941f96e3d9cca5470643d1eed3eab6b0f766c3824da9eb374abe44ab",
+      "size": 1957882,
+      "retrieved_utc": "2026-09-16T23:09:11Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/T-45A_Goshawk_03.jpg"
     },
     {
       "key": "commons-29813066",
@@ -915,7 +1047,11 @@
       "height": 2848,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "4454b29d1d180f4400f60d8b40bdd443c71de817c6920dc9831d619308ba62da",
+      "size": 3661752,
+      "retrieved_utc": "2026-09-16T23:09:15Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/CARE_Group_Lowry-USFWS_%2869%29_%286436191559%29.jpg"
     },
     {
       "key": "commons-128824050",
@@ -942,7 +1078,11 @@
       "height": 5504,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "64518fab4b9e5292a4b0e15b13540144b2c6b68d929dd3c0f6a2ebf067cc166d",
+      "size": 7315488,
+      "retrieved_utc": "2026-09-16T23:09:19Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/1a/SNAP_Employment_and_Training_at_Cafe_Reconcile_in_New_Orleans%2C_16_February_2023_-_39.jpg"
     },
     {
       "key": "commons-39226772",
@@ -969,7 +1109,11 @@
       "height": 2937,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "f4e3aa9c467997641453fbffcd9d2e643cef88c8708bd83e81d0a0e2f37c77de",
+      "size": 4110640,
+      "retrieved_utc": "2026-09-16T23:09:24Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Forces_fire_flare_130418-A-QU939-011.jpg"
     },
     {
       "key": "commons-6318818",
@@ -996,7 +1140,11 @@
       "height": 2848,
       "group_label": "PD-USGov-USGS",
       "dir": "USGS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "3d7a392e645b28281dc02ca3c8862ac3956ed25b0920b4a1d1ad2f1c9e9466f1",
+      "size": 3046467,
+      "retrieved_utc": "2026-09-16T23:09:28Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/65/Mt_Redoubt_2009-03-21_1237756418_ak231.JPG"
     },
     {
       "key": "commons-2159062",
@@ -1023,7 +1171,11 @@
       "height": 2848,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "cb58087e5200c87b5f8d81e36818107ae406aec20aebd9eb27418bf2b24525ba",
+      "size": 2296742,
+      "retrieved_utc": "2026-09-16T23:09:35Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Firefighting_exercise.jpg"
     },
     {
       "key": "commons-139706649",
@@ -1050,7 +1202,11 @@
       "height": 2752,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "ef89f12851ab3bca09b1157c994b8e093e1506ec8ffb362d9c81af6f58ec1c77",
+      "size": 7893293,
+      "retrieved_utc": "2026-09-16T23:09:39Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/39/DVRR_No._2_at_the_Borax_Museum_at_Furnace_Creek%2C_California.jpg"
     },
     {
       "key": "commons-8225213",
@@ -1077,7 +1233,11 @@
       "height": 1500,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "ae3518ceb09c733904748442924bd642de5677a32473ead51076e68c00da0f84",
+      "size": 1894741,
+      "retrieved_utc": "2026-09-16T23:09:43Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/US_Navy_081012-N-3392P-052_A_landing_craft_utility_%28LCU%29_assigned_to_Assault_Craft_Unit_%28ACU%29_4_maneuvers_toward_the_amphibious_dock_landing_ship_USS_Carter_Hall_%28LSD_50%29.jpg"
     },
     {
       "key": "commons-29815866",
@@ -1103,7 +1263,11 @@
       "height": 4416,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "448e50e9a09eaa18cc11832806cdfef3749efcf2abfa935457c15943419d0716",
+      "size": 6255645,
+      "retrieved_utc": "2026-09-16T23:09:48Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Three_girls_check_the_content_of_their_kick_net_%285029099565%29.jpg"
     },
     {
       "key": "commons-113588098",
@@ -1130,7 +1294,11 @@
       "height": 6000,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "865ffef7aef3b59b0a5622155a249e83e5a228845d1aa9ed4d20a7e62f398d93",
+      "size": 12212125,
+      "retrieved_utc": "2026-09-16T23:09:53Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/World_Food_Prize_2021_20211020-OSEC-LSC-1898_%2851615326945%29.jpg"
     },
     {
       "key": "commons-51782195",
@@ -1157,7 +1325,11 @@
       "height": 2848,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "2ee89406490c8fc9eecf048ad14d947cd40925f73215e7db98df129d7e4f2a60",
+      "size": 5777925,
+      "retrieved_utc": "2026-09-16T23:09:57Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/%2A%2AHOLD%2A%2ABoys_School_Up_for_Renovations_DVIDS238746.jpg"
     },
     {
       "key": "commons-18518124",
@@ -1184,7 +1356,11 @@
       "height": 3596,
       "group_label": "PD-USGov-USGS",
       "dir": "USGS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "a3b1ea9215785f16de3783aef35a5f8fd8c4ae58b331688754ec82cac6afb66c",
+      "size": 3779589,
+      "retrieved_utc": "2026-09-16T23:10:01Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Mount_Marcy_New_York_USGS_topo_map_1892.jpg"
     },
     {
       "key": "commons-5613112",
@@ -1211,7 +1387,11 @@
       "height": 1993,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "b32c2c1b536aff8b86fd4a9cf8cf7e8d95080ae01555e152aeaedff1c2d11cd0",
+      "size": 1252991,
+      "retrieved_utc": "2026-09-16T23:10:08Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Shea_Smith-edit1.jpg"
     },
     {
       "key": "commons-161442331",
@@ -1238,7 +1418,11 @@
       "height": 5472,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "d27f1e6040282f03938b00d1d0b3fcc4f0dfa9f3f783628db1f21aaf271c338e",
+      "size": 13439245,
+      "retrieved_utc": "2026-09-16T23:10:13Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/Hidden_Valley_Campground_%2853458214025%29.jpg"
     },
     {
       "key": "commons-185794740",
@@ -1265,7 +1449,11 @@
       "height": 4672,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "3dcff9eba704e256207cfdd9bcb9ded9fc5194222d2b1687319547a42ba2b361",
+      "size": 11620272,
+      "retrieved_utc": "2026-09-16T23:10:17Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/78/NMCB_11_Participates_in_Exercise_Iron_Fist_2026_%289549791%29.jpg"
     },
     {
       "key": "commons-163064628",
@@ -1292,7 +1480,11 @@
       "height": 2592,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "27a6991420a5bd9188d292e23acd79f6ff54d90f111a8b9c1cd94ce6f55721cd",
+      "size": 6169462,
+      "retrieved_utc": "2026-09-16T23:10:22Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/02/Ed_Bangs_Receives_a_Department_of_Justice_Seal_%285755523428%29.jpg"
     },
     {
       "key": "commons-119258055",
@@ -1319,7 +1511,11 @@
       "height": 3055,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "8750ed97bb02aa52911752c02273f7c3c0f3d68ebbf56998f2cf47b7592dc2da",
+      "size": 4564551,
+      "retrieved_utc": "2026-09-16T23:10:26Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/d5/20220606-OSEC-TEW-162_%2852126805913%29.jpg"
     },
     {
       "key": "commons-9456495",
@@ -1346,7 +1542,11 @@
       "height": 2592,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "b731a93017acd691e31d3233e05538fb0f8864e137d9d76de9cf20281fed7508",
+      "size": 2449003,
+      "retrieved_utc": "2026-09-16T23:10:30Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/39/Flickr_-_The_U.S._Army_-_Army_Brass_Quintet_honors_the_Army_Chaplain_Corps.jpg"
     },
     {
       "key": "commons-6645990",
@@ -1373,7 +1573,11 @@
       "height": 1955,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "fd1bbf0c1018751a1900b954bba0950050455f1f192a0ce8b7c011a21b9ccc02",
+      "size": 1114485,
+      "retrieved_utc": "2026-09-16T23:10:35Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Air_Force_Fire_Training.jpg"
     },
     {
       "key": "commons-126968431",
@@ -1400,7 +1604,11 @@
       "height": 4480,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "b22f1e3244747a05f383b20fed7bcd3c1a479519e7baf074e73f909caa112c72",
+      "size": 10536038,
+      "retrieved_utc": "2026-09-16T23:10:41Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/A_coyote_rests_on_ice_on_the_Lamar_River_%281%29_%2852564282558%29.jpg"
     },
     {
       "key": "commons-645281",
@@ -1427,7 +1635,11 @@
       "height": 2000,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "ab469cae2b34ff986af8e839f0497873e40ab6c1695be34e10e44770800b3e48",
+      "size": 1838308,
+      "retrieved_utc": "2026-09-16T23:10:46Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/ab/AnnapolisGraduation.jpg"
     },
     {
       "key": "commons-54754186",
@@ -1454,7 +1666,11 @@
       "height": 4000,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "9e890867f30c10bfe0f745d5d521a747c78491ae4549ef1840743126575f518a",
+      "size": 10277844,
+      "retrieved_utc": "2026-09-16T23:10:50Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/19/Sarracenia_jonesii_FWS_%2826611756954%29.jpg"
     },
     {
       "key": "commons-128787874",
@@ -1481,7 +1697,11 @@
       "height": 5504,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "2ee5ba7d4f508d8b4ebaf7564fa5898eec7a0e77eba0dcdde7ebec57077fbde9",
+      "size": 13279758,
+      "retrieved_utc": "2026-09-16T23:10:55Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Sec_Vilsacks_at_Southern_University_in_Baton_Rouge%2C_and_press_conference_afterward_14_Feb_2023_-_16.jpg"
     },
     {
       "key": "commons-70537108",
@@ -1507,7 +1727,11 @@
       "height": 2048,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "66d0e8a09a29c740e09dd39f8e4ba16a271a516f5a74ac5eafb798d0b9f2f71c",
+      "size": 2700582,
+      "retrieved_utc": "2026-09-16T23:10:59Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/2009_ETW_IMG_5196_%283424898586%29.jpg"
     },
     {
       "key": "commons-8822174",
@@ -1534,7 +1758,11 @@
       "height": 2000,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "9494e11c5aa7e2457145398857c31c3dd49576cd222329e20948843937a39ed4",
+      "size": 4040424,
+      "retrieved_utc": "2026-09-16T23:11:04Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Schoolboys_in_Bamozai.jpg"
     },
     {
       "key": "commons-55178437",
@@ -1561,7 +1789,11 @@
       "height": 3840,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "74ab9c4d74c89bff7a62d87bd03f5616808515ceb080a87b04836aee7ad63cf3",
+      "size": 13598031,
+      "retrieved_utc": "2026-09-16T23:11:08Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c1/National_Public_Lands_Day_2013_at_Mount_Rainier_National_Park%2C_NPLD_volunteer_2_%2810027338815%29.jpg"
     },
     {
       "key": "commons-70786317",
@@ -1588,7 +1820,11 @@
       "height": 2256,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "0dc7e76a58a88864aa408dcdf11ed6a3ebcc518257dc0b55f261a1cb0a7f0b25",
+      "size": 2032756,
+      "retrieved_utc": "2026-09-16T23:11:15Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/36/80-CF-8811-14_Box_175_%2822933872969%29.jpg"
     },
     {
       "key": "commons-162516264",
@@ -1615,7 +1851,11 @@
       "height": 1816,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "28de9b8456584edada95ecea53798dc0aad59158a06a94a174abfd7c940ad7df",
+      "size": 1019512,
+      "retrieved_utc": "2026-09-16T23:11:19Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Girls_kayaking_%2823666294889%29.jpg"
     },
     {
       "key": "commons-129218882",
@@ -1642,7 +1882,11 @@
       "height": 4369,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "6b2c66dc00eb424e59d3d4ae1f20582fc70c0b302637f96b5a3e4a3ece9cb59b",
+      "size": 6883169,
+      "retrieved_utc": "2026-09-16T23:11:24Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/01/20230222-OSEC-TEW-2110_%2852704618491%29.jpg"
     },
     {
       "key": "commons-58165676",
@@ -1669,7 +1913,11 @@
       "height": 3814,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "8910172fd818ed0d6b095ab106d271b103dff91734fe45b0d78c4755b0785b1b",
+      "size": 2002758,
+      "retrieved_utc": "2026-09-16T23:11:29Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/77/Base_Security_110616-A-JQ157-007.jpg"
     },
     {
       "key": "commons-327224",
@@ -1696,7 +1944,11 @@
       "height": 2213,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "cdd61d6904bd88bc1152f420fd689f207d76f0d6e1f766f446158d3164606882",
+      "size": 3484329,
+      "retrieved_utc": "2026-09-16T23:11:34Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/aa/GMAW.welding.af.ncs.jpg"
     },
     {
       "key": "commons-118956339",
@@ -1723,7 +1975,11 @@
       "height": 3264,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "15ffad0378a7fa1b367e08f433f4c49dfaa4eedd58b550361935536fa24cb15b",
+      "size": 4127305,
+      "retrieved_utc": "2026-09-16T23:11:38Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Venomous_snakes_of_Russell_Cave_%288175dea2-f42e-47f5-aed3-8d08261e8a0a%29.JPG"
     },
     {
       "key": "commons-160061154",
@@ -1750,7 +2006,11 @@
       "height": 3712,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "d07ba0c22d7b5d5282a452f413f930ecc58c7ec2448aa870cb8cb147ba70ccd7",
+      "size": 7364771,
+      "retrieved_utc": "2026-09-16T23:11:43Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/ba/USS_Carl_Vinson_%28CVN_70%29_Conducts_Routine_Operations_in_the_Celebes_Sea_%288860610%29.jpg"
     },
     {
       "key": "commons-50679026",
@@ -1777,7 +2037,11 @@
       "height": 2448,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "3c6af28ef06d0ea627cbf6b66e93ab302bb58be2576a23a758443f30874927ac",
+      "size": 3623285,
+      "retrieved_utc": "2026-09-16T23:11:47Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/USFWS_Improved_Habitat_for_lesser_Sandhill_cranes_%2824504171574%29.jpg"
     },
     {
       "key": "commons-68905275",
@@ -1804,7 +2068,11 @@
       "height": 2976,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-medium"
+      "alloc": "f12-heldout-usgov-photos-medium",
+      "sha256": "f5a7a975280fb539a4eea77911f03e7d3ce5cbca37a19094f54902a8260ede1c",
+      "size": 2324979,
+      "retrieved_utc": "2026-09-16T23:11:51Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/27/P6070610_%2834799611420%29.jpg"
     },
     {
       "key": "commons-40647707",
@@ -1830,7 +2098,11 @@
       "height": 3456,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "2bf5e921f952318dae13c3ddf006e6dcfacd190b47128fd171efb161a39bf8c8",
+      "size": 7730811,
+      "retrieved_utc": "2026-09-16T23:11:56Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Blood_specialist_prepares_for_deployment_while_general_visits_140207-A-ZP772-455.jpg"
     },
     {
       "key": "commons-101154565",
@@ -1856,7 +2128,11 @@
       "height": 2883,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "87c979062079cc6206da1a65faa100399fbc86b28266914b672fce879a95d640",
+      "size": 2104432,
+      "retrieved_utc": "2026-09-16T23:12:03Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Thunderbirds%2C_Blue_Angels_perform_%27Super_Delta%27_210302-F-JV039-9090.jpg"
     },
     {
       "key": "commons-133471445",
@@ -1883,7 +2159,11 @@
       "height": 3283,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "1179768f249187d0fd3587d0a18989dc4aa84ef3ec1e616d7e0c1d8125e1246b",
+      "size": 3602537,
+      "retrieved_utc": "2026-09-16T23:12:07Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Greenhouse_on_the_grounds_of_Eisenhower_National_Historic_Site._%288ac4a3c8-817d-4f0c-937f-731d59c50d62%29.jpg"
     },
     {
       "key": "commons-8774847",
@@ -1910,7 +2190,11 @@
       "height": 1993,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "2abf1e75416eca0d2a1f411d440c148e6a7776a005871f49885419abde678532",
+      "size": 1092327,
+      "retrieved_utc": "2026-09-16T23:12:11Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/ff/USS_Annapolis_ICEX.jpg"
     },
     {
       "key": "commons-29814322",
@@ -1937,7 +2221,11 @@
       "height": 1944,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "0bf8b724aa9d87683612059aa4db03f5dcbff48f2c196e795c4efc698ab57e7f",
+      "size": 1046083,
+      "retrieved_utc": "2026-09-16T23:12:15Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Firefighters_Conduct_an_Operational_Planning_Meeting._New_Containment_Lines_are_Being_Established_After_the_Fire_Broke_Through_on_the_Northern_Side_May_23_%285759187228%29.jpg"
     },
     {
       "key": "commons-171287043",
@@ -1964,7 +2252,11 @@
       "height": 2666,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "faad072801f8b332a5234719b1014de32ae2c42dcc90862be53b2172bbf5c17e",
+      "size": 9129152,
+      "retrieved_utc": "2026-09-16T23:12:20Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9f/20190416-USDA-OC-PSD-0103_Agriculture_in_the_United_States.jpg"
     },
     {
       "key": "commons-165628917",
@@ -1991,7 +2283,11 @@
       "height": 4049,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "0ff4cd4658257c3c4898b9a7b3acb074aa7478fb15ceaba53b72b2c6ad6e6ab7",
+      "size": 1828469,
+      "retrieved_utc": "2026-09-16T23:12:24Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/Non-commissioned_Officer_induction_ceremony_on_Fort_Myer%2C_Virginia_on_May_15%2C_2025_-_48.jpg"
     },
     {
       "key": "commons-45208441",
@@ -2017,7 +2313,11 @@
       "height": 1481,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "11fda23f0f87d108aa08c903dc36d20c2e2cd53e33e24b704f174a1d6095b679",
+      "size": 5362442,
+      "retrieved_utc": "2026-09-16T23:12:29Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Fine_Art%2C_War_and_peace_%28Honorable_Mention%29_141202-F-PO994-001.jpg"
     },
     {
       "key": "commons-162376867",
@@ -2043,7 +2343,11 @@
       "height": 3648,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "d84c9a4a0624b204ac927da273963fd05e46c5d9948d16298f117a0ec2f93cad",
+      "size": 5258314,
+      "retrieved_utc": "2026-09-16T23:12:35Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/71/Insect_under_the_scope_%2827094469251%29.jpg"
     },
     {
       "key": "commons-142106482",
@@ -2070,7 +2374,11 @@
       "height": 3914,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "7a92bbe8c46ac7c991e8d7b82e53b4faa7a7fb4737b94d38e34ef7abc1be2eb8",
+      "size": 4529278,
+      "retrieved_utc": "2026-09-16T23:12:40Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c2/FA-18F_Super_Hornet_of_VFA-103_makes_a_touch_and_go_landing_aboard_USS_George_Washington_%28CVN-73%29_in_the_Atlantic_Ocean%2C_6_December_2023_%28231206-N-VX022-1050%29.JPG"
     },
     {
       "key": "commons-866291",
@@ -2096,7 +2404,11 @@
       "height": 2304,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "170f055a77be5aeec1b81940c64ab1bac9e909af9ad858c0ae61555fc23e56cc",
+      "size": 3600874,
+      "retrieved_utc": "2026-09-16T23:12:44Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/59/Sterna_fuscata.JPG"
     },
     {
       "key": "commons-134288927",
@@ -2123,7 +2435,11 @@
       "height": 6723,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "1c6259f41d225c29c073920f43e9e0e625aa13c5caa553769c087a12fb555832",
+      "size": 8216191,
+      "retrieved_utc": "2026-09-16T23:12:48Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/The_U.S._Department_of_Agriculture%2C_Jamie_L._Whitten_building_in_Washington%2C_D.C._is_illuminated_with_rainbow_colors_during_the_kick-off_to_Pride_Month_on_June_1%2C_2023_-_20230601-OSEC-TEW-0821.jpg"
     },
     {
       "key": "commons-57352155",
@@ -2150,7 +2466,11 @@
       "height": 2615,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "75d6c1ab44c8a5b34fb449774cbceae7bf8400d5f027e41ba36fd6c519509228",
+      "size": 1885049,
+      "retrieved_utc": "2026-09-16T23:12:53Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Back_to_the_basics%2C_ADT_visits_tree_nurseries_to_assess_progress_120905-A-GH622-183.jpg"
     },
     {
       "key": "commons-18818931",
@@ -2177,7 +2497,11 @@
       "height": 1916,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "3ff69155c7fa30af8d35ba28d0921b692f7420462e60a5c3e8d0acee8c0e1a80",
+      "size": 4476512,
+      "retrieved_utc": "2026-09-16T23:12:57Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/SSG_Desiree_Palacios_makes_final_settings_on_her_camera_before_a_sortie_in_a_F-16D_Fighting_Falcon.jpg"
     },
     {
       "key": "commons-82245653",
@@ -2204,7 +2528,11 @@
       "height": 5631,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "4bf7643abce44f32be33da0d237ff92c363f796a2f074311ecebd826c654a4d5",
+      "size": 10488024,
+      "retrieved_utc": "2026-09-16T23:13:02Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Frederick_Douglass_at_the_Stanton_House_%2881b5c576-3712-4635-8718-8ca353d3c28d%29.jpg"
     },
     {
       "key": "commons-54062449",
@@ -2231,7 +2559,11 @@
       "height": 2400,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "ca3987e39cf340faa3cb5b09f9e28e38e8d5f6345734b92050cf4ba41418e7dd",
+      "size": 1428780,
+      "retrieved_utc": "2026-09-16T23:13:08Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Sailor_directs_an_EA-18G_during_snow_storm_in_Japan_%288367035559%29.jpg"
     },
     {
       "key": "commons-162777971",
@@ -2258,7 +2590,11 @@
       "height": 2720,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "aef250a89ff5f7ca69fa89a1c3fef03a2f0812b65d3df0a8074e1b955867a80a",
+      "size": 2642668,
+      "retrieved_utc": "2026-09-16T23:13:13Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Ebony_Jewelwing_Lovers%21_A_male_%28L%29_and_female_%28R%29_rest_on_vegetation_in_Michigan_%2814721663549%29.jpg"
     },
     {
       "key": "commons-126373858",
@@ -2285,7 +2621,11 @@
       "height": 2832,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "a9a1ffc75426308a857165a0a036790e2220e5caf9297e89f3bfbe45c77f7967",
+      "size": 4880967,
+      "retrieved_utc": "2026-09-16T23:13:17Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9b/20221129-FS-IG-0009_%2852547171805%29.jpg"
     },
     {
       "key": "commons-70566364",
@@ -2312,7 +2652,11 @@
       "height": 2782,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "9bfdbf7d545dd8afd2704663e04354cc245e2642b704f1e49df494ab2c661891",
+      "size": 2810237,
+      "retrieved_utc": "2026-09-16T23:13:22Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Whalen_%2822733340171%29.jpg"
     },
     {
       "key": "commons-154174024",
@@ -2339,7 +2683,11 @@
       "height": 4177,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "e291978bafd8d25d02c1a40552780268b5aad03214b4b6055000f635ac91031b",
+      "size": 1663041,
+      "retrieved_utc": "2026-09-16T23:13:26Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Pararescueman_fast_ropes_out_of_a_U.S._Air_Force_HH-60G_Pave_Hawk.jpg"
     },
     {
       "key": "commons-65806189",
@@ -2366,7 +2714,11 @@
       "height": 3648,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "aa24e3a8b92647727d3e7416b020da45748b1ef057d01d3ac981372685172e19",
+      "size": 14137411,
+      "retrieved_utc": "2026-09-16T23:13:31Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Red_Legged_Frogs_%2836408174150%29.jpg"
     },
     {
       "key": "commons-19581212",
@@ -2393,7 +2745,11 @@
       "height": 1187,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "d3ab5eb9a2b2cb9144b0e7befe8b14cc4b8c0abe9e5fb36abae5062f59ed430a",
+      "size": 2015242,
+      "retrieved_utc": "2026-09-16T23:13:35Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/120416-N-PK218-028_Royal_Navy_destroyer_HMS_Daring_%28D_32%29.jpg"
     },
     {
       "key": "commons-162799906",
@@ -2420,7 +2776,11 @@
       "height": 2704,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "810409e39c04e28d562ffe34d90a89df62f1b9be85d6cbbcf6955f2a6d76d93a",
+      "size": 5201089,
+      "retrieved_utc": "2026-09-16T23:13:42Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Greater_Yellowlegs_at_Seedskadee_National_Wildlife_Refuge_%2843945505284%29.jpg"
     },
     {
       "key": "commons-68910019",
@@ -2447,7 +2807,11 @@
       "height": 4032,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "8d14822066e10ced26670c41005dcbbc427b66f6d2e3eb1aca5207f8c19368aa",
+      "size": 2941454,
+      "retrieved_utc": "2026-09-16T23:13:46Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a3/B_%2836629884274%29.jpg"
     },
     {
       "key": "commons-70535564",
@@ -2474,7 +2838,11 @@
       "height": 3504,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "be5145a2530ea8acde9e717b3787fd50a4221e0358e062de8cdb61e0ec04ce1d",
+      "size": 2666769,
+      "retrieved_utc": "2026-09-16T23:13:51Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/United_States_Army_Band_Concerts_IMG_8938_%282277839890%29.jpg"
     },
     {
       "key": "commons-133410146",
@@ -2500,7 +2868,11 @@
       "height": 4420,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "82a5fbd75f71bcad83ac8e0ab769e7d79846cbc8fb3da528024c39c3bb5c91aa",
+      "size": 2013134,
+      "retrieved_utc": "2026-09-16T23:13:55Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/45/Ohio_Senator_Receives_Orientation_Flight_%288%29.jpg"
     },
     {
       "key": "commons-163844260",
@@ -2527,7 +2899,11 @@
       "height": 2784,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "619e786df75d811f4fdf3012f061232c435ba748c1bab5fb399cb4b53880253f",
+      "size": 4190533,
+      "retrieved_utc": "2026-09-16T23:13:59Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/36/Rime_ice_on_a_tree_near_Mound_Terrace_%2852559924420%29.jpg"
     },
     {
       "key": "commons-70781004",
@@ -2554,7 +2930,11 @@
       "height": 2200,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "c503b9f3007bfca84a2789c74fb25a8286f39ec33ee363963dedea1b0c68feaf",
+      "size": 2632193,
+      "retrieved_utc": "2026-09-16T23:14:04Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e2/80-G-225185_%2822138709406%29.jpg"
     },
     {
       "key": "commons-162448418",
@@ -2581,7 +2961,11 @@
       "height": 3056,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "4e3e768b2de31203a3c2b36b772dfa07675efd4dc0711981fddecfd402c5f6a6",
+      "size": 10297684,
+      "retrieved_utc": "2026-09-16T23:14:08Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Pectoral_Sandpiper_in_the_midnight_sun_-_Arctic_Bird_Fest_2019_%2848751730448%29.jpg"
     },
     {
       "key": "commons-133415162",
@@ -2608,7 +2992,11 @@
       "height": 4373,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "cf7a4f2249201c969e659b3dcc268169e2ed607b6b92544ef626819353345578",
+      "size": 7502269,
+      "retrieved_utc": "2026-09-16T23:14:15Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/1d/20230620-OSEC-TEW-0317_%2852990190668%29.jpg"
     },
     {
       "key": "commons-56579115",
@@ -2635,7 +3023,11 @@
       "height": 4288,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "575f605f45607b6a0ae5923bfecc0797caa0c83e55613a8064bb84705d00cbdc",
+      "size": 4639745,
+      "retrieved_utc": "2026-09-16T23:14:19Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/69/West_Market_Construction_DVIDS244649.jpg"
     },
     {
       "key": "commons-66421794",
@@ -2662,7 +3054,11 @@
       "height": 2456,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f13916e102eb618d0f1edf3fd8af2e0983ab4ae17b5c5bcbb138ac247afe970f",
+      "size": 3839554,
+      "retrieved_utc": "2026-09-16T23:14:24Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Ramstein_AB_Airmen_honor_U.S._veterans_in_Belgium_171111-F-ZF730-0486.jpg"
     },
     {
       "key": "commons-89324102",
@@ -2689,7 +3085,11 @@
       "height": 2724,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "d933df9765d9365f32227e598ce8312890f646fbc4d4e9c886a79957eced75e1",
+      "size": 8398174,
+      "retrieved_utc": "2026-09-16T23:14:28Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Road_to_Stirrup_Tank_%2814816030239%29.jpg"
     },
     {
       "key": "commons-6953763",
@@ -2716,7 +3116,11 @@
       "height": 2848,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f69b3673cc1d633b83143ead18c796a8ad2abc5dceac4b1d92f67d782b5b65e6",
+      "size": 1970869,
+      "retrieved_utc": "2026-09-16T23:14:32Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e5/JMSDF_ship_Haruna_%28DDH_141%29.jpg"
     },
     {
       "key": "commons-162604492",
@@ -2743,7 +3147,11 @@
       "height": 3648,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "8a461c860102434ff382744daddc5f29d27cf9ca23978ce702b473a8571b7416",
+      "size": 3551538,
+      "retrieved_utc": "2026-09-16T23:14:37Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/19/Hundreds_of_common_murres_nesting_at_Farallon_Islands_National_Wildlife_Refuge_%2854230493214%29.jpg"
     },
     {
       "key": "commons-79979933",
@@ -2770,7 +3178,11 @@
       "height": 2000,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f344df1e9c20cc487d89fe0db1c7ef49ab9d221f76357944867c66f0d3d79598",
+      "size": 3579499,
+      "retrieved_utc": "2026-09-16T23:14:45Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/01/Ohio_farmer_David_Brandt.jpg"
     },
     {
       "key": "commons-40915140",
@@ -2796,7 +3208,11 @@
       "height": 1020,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "5e461ab2f24ae5f83e308e54d547bef94989db979e073cf576d0d2c1d420891e",
+      "size": 1459716,
+      "retrieved_utc": "2026-09-16T23:14:49Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Patrol_in_Ghazni_DVIDS343155.jpg"
     },
     {
       "key": "commons-62795",
@@ -2823,7 +3239,11 @@
       "height": 1960,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "7640426cdc715710d71e42143c11c4c4e3f5ce5951e0048778cef95a29aa034c",
+      "size": 6113106,
+      "retrieved_utc": "2026-09-16T23:14:53Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/13/WashMonument_WhiteHouse.jpg"
     },
     {
       "key": "commons-44836587",
@@ -2850,7 +3270,11 @@
       "height": 2400,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "301ecd7e1099ba784986e4c6a18114bd42598201f659719bc7583d6f31c79c76",
+      "size": 5361674,
+      "retrieved_utc": "2026-09-16T23:14:58Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Picnic-_Nine_Mile_Pond_NPSPhoto%2C_R._Cammauf_%289255461089%29.jpg"
     },
     {
       "key": "commons-2050869",
@@ -2877,7 +3301,11 @@
       "height": 3504,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "812b8aab597ec0bca3467eb9695a60ae0aa547fc52cee1168222b4076c205a77",
+      "size": 1038939,
+      "retrieved_utc": "2026-09-16T23:15:02Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/ae/USS_Lake_Erie_%28CG_70%29_missile_test.jpg"
     },
     {
       "key": "commons-150989915",
@@ -2903,7 +3331,11 @@
       "height": 2448,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "b0aef21e25d4385e3502c63f772f0429fa8d18060d30805241286c51dccd20ef",
+      "size": 1795682,
+      "retrieved_utc": "2026-09-16T23:15:06Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/af/Oregon_Spotted_Frog_Egg_Mass.jpg"
     },
     {
       "key": "commons-150632637",
@@ -2930,7 +3362,11 @@
       "height": 4912,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "c3d71f13be8fc11fde07288ac8699083c5ee151cfe095602bde74919e8df7600",
+      "size": 10170620,
+      "retrieved_utc": "2026-09-16T23:15:11Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Investing_in_Wastewater_Infrastructure_is_Key_to_Preserving_Smith_Island%2C_Maryland_on_3_April_2024_-_37.jpg"
     },
     {
       "key": "commons-106886710",
@@ -2956,7 +3392,11 @@
       "height": 3133,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "687e913d982a4904c720aac3fa622a2b692ac5a1362a198ebb9c3f0790d65b0c",
+      "size": 9923043,
+      "retrieved_utc": "2026-09-16T23:15:17Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/86/AFFHC_CHOD_Israel_3.jpg"
     },
     {
       "key": "commons-149002449",
@@ -2983,7 +3423,11 @@
       "height": 1947,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "eb26629169a96e29c75056de0d3299dd0b996d1aa013c7f800a05fe4cb586d19",
+      "size": 2484778,
+      "retrieved_utc": "2026-09-16T23:15:22Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Arctic_Thunder_160729-F-YH552-021_-_edit1.jpg"
     },
     {
       "key": "commons-160590540",
@@ -3010,7 +3454,11 @@
       "height": 3315,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "1bf7c357053666293574fea75095c44b4386c949482865ac6a0ef50fc42ba0fe",
+      "size": 12861045,
+      "retrieved_utc": "2026-09-16T23:15:26Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/df/St_Mary_Amphitheater_%2852395045402%29.jpg"
     },
     {
       "key": "commons-18385493",
@@ -3037,7 +3485,11 @@
       "height": 1848,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "04056bf2db38a1a9c99574067012ae32811d4578ccbee7d24422a0388e130ec1",
+      "size": 2785097,
+      "retrieved_utc": "2026-09-16T23:15:31Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/US_Navy_120209-N-XD935-302_Mass_Communication_Specialist_1st_Class_Shane_Tuck%2C_assigned_to_the_Expeditionary_Combat_Camera_Underwater_Photo_Team%2C_c.jpg"
     },
     {
       "key": "commons-29812176",
@@ -3064,7 +3516,11 @@
       "height": 2848,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "2829c10c2e7744574df4fb8cc0fdead0898e9ebab21a97296ebfa10888f7a948",
+      "size": 7404389,
+      "retrieved_utc": "2026-09-16T23:15:35Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/TR_Russ_and_Tiffany_Penland_look_for_young_mussels_%287067521313%29.jpg"
     },
     {
       "key": "commons-132086725",
@@ -3091,7 +3547,11 @@
       "height": 6048,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "25ff0ec150e526264ab1b95e3b1f78c07b53241cac1af77f264a4f1cf530543f",
+      "size": 9340736,
+      "retrieved_utc": "2026-09-16T23:15:40Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Sankofa_USDA_People%27s_Garden%2C_New_Orleans%2C_April_2023_-_07.jpg"
     },
     {
       "key": "commons-54579932",
@@ -3117,7 +3577,11 @@
       "height": 3677,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "28b4d3a10015f56e5691b4b58ef8bf79aa80055bf168a53a09b27901df557b19",
+      "size": 6938137,
+      "retrieved_utc": "2026-09-16T23:15:44Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e9/All_American_Marathon_extends_to_Kabul%2C_Afghanistan_140504-A-LH364-166.jpg"
     },
     {
       "key": "commons-6092419",
@@ -3144,7 +3608,11 @@
       "height": 2196,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "b92c58b5a3907b487d24a60117e6074c7babe9f3cfe2c828c575af7e4aee952a",
+      "size": 1738488,
+      "retrieved_utc": "2026-09-16T23:15:52Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Russian_honour_guard_in_Alexander_Garden.jpg"
     },
     {
       "key": "commons-170191204",
@@ -3171,7 +3639,11 @@
       "height": 3833,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "1f17692f4eb86f8d0e5347869525ac95d480cac9db9f9df2ed5080bd8e00fda2",
+      "size": 12144597,
+      "retrieved_utc": "2026-09-16T23:15:56Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0b/White-faced_ibis_%28Plegadis_chihi%29_%2854554288560%29.jpg"
     },
     {
       "key": "commons-40734739",
@@ -3198,7 +3670,11 @@
       "height": 2202,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "0043a3d4d858760d4a990fdf7cf9944b3ee0591f476b7ec5e75073c25276de9f",
+      "size": 4477071,
+      "retrieved_utc": "2026-09-16T23:16:01Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/f0/The_Hermione_being_escorted_by_the_USS_Mitscher_%28DDG-57%29_%281%29.jpg"
     },
     {
       "key": "commons-51830154",
@@ -3224,7 +3700,11 @@
       "height": 3744,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "9df5556189c5a8141686534a0ae3cd21a25462bf005534a8895b0cc207759005",
+      "size": 8698442,
+      "retrieved_utc": "2026-09-16T23:16:05Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/ed/Stewart_B._McKinney_National_Wildlife_Refuge-Duck_Island_%28CT%29_%288162084301%29.jpg"
     },
     {
       "key": "commons-160320833",
@@ -3251,7 +3731,11 @@
       "height": 3176,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "7d68574a5392a0821f76792d8c0b62bab1a309bb88ba94c3d61cdee0b34bcff6",
+      "size": 5310801,
+      "retrieved_utc": "2026-09-16T23:16:09Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Natural_Resources_Conservation_Service_Acting_Chief_Louis_Aspey_presents_the_2025_NRCS_Engineer_of_the_Year_Award_to_Shane_Ice_on_February_20%2C_2025%2C_at_the_USDA_headquarters_in_Washington%2C_D.C._-_11.jpg"
     },
     {
       "key": "commons-39658051",
@@ -3277,7 +3761,11 @@
       "height": 2395,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "068b8f8206957283824b6c8c692a8fc7a4a7afadecdcf8f50ede3eb96a184ddb",
+      "size": 2006968,
+      "retrieved_utc": "2026-09-16T23:16:14Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/ABP_seizes_more_than_360_anti-personnel_mines_121218-A-XX000-001.jpg"
     },
     {
       "key": "commons-54543133",
@@ -3303,7 +3791,11 @@
       "height": 3280,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "eb3139301746dbc34d5c563a6e54a0bc0c4783b3be14b1311cfd527a170f40d6",
+      "size": 3376378,
+      "retrieved_utc": "2026-09-16T23:16:18Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/08/2nd_Air_Refueling_Squadron_refuels_B-2%27s_161110-F-GV347-141.jpg"
     },
     {
       "key": "commons-78836659",
@@ -3329,7 +3821,11 @@
       "height": 2848,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f2feaee2d5e01339e641ec0f611aaceea36e428358fba6b10ee1a7e91aaf6f1d",
+      "size": 3889246,
+      "retrieved_utc": "2026-09-16T23:16:25Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/68/Ground_Squirrel_%28d82f764d-a03f-4b7d-a8ed-29e6592ae7eb%29.jpg"
     },
     {
       "key": "commons-188336571",
@@ -3356,7 +3852,11 @@
       "height": 3897,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "dacc529fa5fcda04ecb1cc5fc366bcb96c5fded869a0b57befe368b6ff11c461",
+      "size": 3353789,
+      "retrieved_utc": "2026-09-16T23:16:29Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Therapy_Dogs_visit_CNFJ_%289599372%29.jpg"
     },
     {
       "key": "commons-155449765",
@@ -3383,7 +3883,11 @@
       "height": 2242,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "2e60bcd1969af3de1e0b2556cef2a44ccd25d1888ca942156d6d9adf80fbdf4d",
+      "size": 3600714,
+      "retrieved_utc": "2026-09-16T23:16:33Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Anchorage_White_Raven.jpg"
     },
     {
       "key": "commons-68904853",
@@ -3410,7 +3914,11 @@
       "height": 4032,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "73924bc6ee30a024a0ded8bfe8279e78ded9fd5b7c141264aa4828fe1a914fa4",
+      "size": 4418413,
+      "retrieved_utc": "2026-09-16T23:16:38Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/ad/G_%2823488388678%29.jpg"
     },
     {
       "key": "commons-56210204",
@@ -3437,7 +3945,11 @@
       "height": 2848,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "1e8499b1945f90581c826893cbf94f236a0051332ef61edc681f8d85de3b1775",
+      "size": 4861232,
+      "retrieved_utc": "2026-09-16T23:16:42Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Last_Marine_team_of_Operation_New_Dawn_leaves_Iraq_DVIDS474262.jpg"
     },
     {
       "key": "commons-10541701",
@@ -3464,7 +3976,11 @@
       "height": 1960,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "872fbfac8e33101861d45b9ec69d97ca1b161e287379533fad7b043432a72362",
+      "size": 3480462,
+      "retrieved_utc": "2026-09-16T23:16:46Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/F16_Idaho_airshow.jpg"
     },
     {
       "key": "commons-163844268",
@@ -3491,7 +4007,11 @@
       "height": 2784,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "dba390b10a4ceb4c65a37dd7332eb3b80a99e330c5ce65bf89fca6c9f45b0af6",
+      "size": 4846059,
+      "retrieved_utc": "2026-09-16T23:16:54Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Icicles_near_Mound_Terrace_%281%29_%2852559002197%29.jpg"
     },
     {
       "key": "commons-3994981",
@@ -3518,7 +4038,11 @@
       "height": 1532,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "3b5e90751ba5e6a0e85007bb0584389710793a9bcb355827518466811317ccc1",
+      "size": 2234170,
+      "retrieved_utc": "2026-09-16T23:16:59Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/55/20080406165033%21V-22_Osprey_refueling_edit1.jpg"
     },
     {
       "key": "commons-21102586",
@@ -3544,7 +4068,11 @@
       "height": 3168,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "c8aa749680b544018ceea2d5df963a65f03bf87313ce9bcf83e521ec1fb22288",
+      "size": 6504764,
+      "retrieved_utc": "2026-09-16T23:17:03Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/93/Fish_Car_in_Black_and_White_%287186912567%29.jpg"
     },
     {
       "key": "commons-68775412",
@@ -3571,7 +4099,11 @@
       "height": 6016,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "319caf1c8109052c06a82fbe6afb6d6ef78c8f1b43318a4945e53cdb5d759298",
+      "size": 5907173,
+      "retrieved_utc": "2026-09-16T23:17:07Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0f/DSC_1079_%2824999654772%29.jpg"
     },
     {
       "key": "commons-54538067",
@@ -3598,7 +4130,11 @@
       "height": 2129,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "8e6727c005ef90d9c5c8656f107011e6190cfb073d8d8b758742a3c23a6d993b",
+      "size": 1725903,
+      "retrieved_utc": "2026-09-16T23:17:12Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/bd/JBLM_families_make_the_best_of_bad_weather_DVIDS513921.jpg"
     },
     {
       "key": "commons-49810",
@@ -3625,7 +4161,11 @@
       "height": 1960,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "04af373ecb1feede3f2433adc14afe67492ea0e831fa205164c2e840c4eb832f",
+      "size": 2713879,
+      "retrieved_utc": "2026-09-16T23:17:16Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Polarlicht.jpg"
     },
     {
       "key": "commons-82264142",
@@ -3651,7 +4191,11 @@
       "height": 2112,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "c89517f2c0833347f1d792f01b367b827602702ba919cb0836a9d78860950a0a",
+      "size": 2662194,
+      "retrieved_utc": "2026-09-16T23:17:20Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/f4/Late_meltout-_note_date._In_background_are_%28L_to_R%29_Unicorn%2C_Foss%2C_Castle%2C_Pinnacle._%28cdeba445d5e84795b7bb6f2fd687a0e4%29.JPG"
     },
     {
       "key": "commons-8096474",
@@ -3678,7 +4222,11 @@
       "height": 1312,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "ad23e8d4edc74ebf4b334f211649b385d2478a69ae7c618134699c4df9dd32c4",
+      "size": 1391473,
+      "retrieved_utc": "2026-09-16T23:17:27Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e9/011218-N-9769P-047_F-A-18_With_Weapons_Ready_for_Mission.jpg"
     },
     {
       "key": "commons-133405365",
@@ -3705,7 +4253,11 @@
       "height": 3461,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "3ce8e798843d04d885410499df66d9bd93bc0d75dc1e44825db4f37bfae68592",
+      "size": 4363862,
+      "retrieved_utc": "2026-09-16T23:17:32Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Virginia_rail_%2852884613940%29.jpg"
     },
     {
       "key": "commons-126575418",
@@ -3732,7 +4284,11 @@
       "height": 3031,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "941609306691544987a7bfd5072ded0632d6d42bceaceaada9c61cea3ea2a403",
+      "size": 2622991,
+      "retrieved_utc": "2026-09-16T23:17:36Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/25/20171023-FAS-PJK-226_TONED_%2837857516932%29.jpg"
     },
     {
       "key": "commons-39625020",
@@ -3759,7 +4315,11 @@
       "height": 3377,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "46c5938b0ef118d042771f174aa2e210a0a7a41840f23072c4719e5c887f3276",
+      "size": 2082917,
+      "retrieved_utc": "2026-09-16T23:17:40Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/72/FETs_work_to_pave_way_to_stable%2C_prosperous_Afghanistan_111112-A-CU451-001.jpg"
     },
     {
       "key": "commons-1740175",
@@ -3786,7 +4346,11 @@
       "height": 2400,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "7c15e355e0d9f2312ca0118b953bb0e1fd7b9a298004dea7224da77d315ef5e6",
+      "size": 1064408,
+      "retrieved_utc": "2026-09-16T23:17:45Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5e/FA22_Raptors_Oct2005_yfb_edit.jpg"
     },
     {
       "key": "commons-119041463",
@@ -3813,7 +4377,11 @@
       "height": 3024,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "c11849c9a1dc38d7d51fefbb4004eab0048b7eb16d1919f3dd12f48defd375d2",
+      "size": 5645651,
+      "retrieved_utc": "2026-09-16T23:17:49Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/59/Views_from_atop_La_Bajada_Mesa_outside_of_Santa_Fe%2C_NM_%28e3bed96e-c294-4b7f-bf70-244359633d75%29.JPG"
     },
     {
       "key": "commons-70770557",
@@ -3840,7 +4408,11 @@
       "height": 3404,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "9ead3900001969d0c594e3e71d7d4246b3b25ee049ef4e9fcec37559b4cd8774",
+      "size": 3145959,
+      "retrieved_utc": "2026-09-16T23:17:53Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/81/1701201-N-OW182-0426_%2827159353559%29.jpg"
     },
     {
       "key": "commons-51923858",
@@ -3866,7 +4438,11 @@
       "height": 3456,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f9cb1da6fc126364309d211ef54a793eb9084d23376ab8da448caf0dabb476f1",
+      "size": 5571298,
+      "retrieved_utc": "2026-09-16T23:18:00Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Pollinators_in_Hadley%2C_MA._%286771896043%29.jpg"
     },
     {
       "key": "commons-68910469",
@@ -3893,7 +4469,11 @@
       "height": 3456,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "e902289734ba82948de96da2b58cc2cc25d119cc3f52b26df2a6b079f328fcda",
+      "size": 3142257,
+      "retrieved_utc": "2026-09-16T23:18:04Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/22/170708-FS-Eldorado-PRW-096_%2835690283642%29.jpg"
     },
     {
       "key": "commons-20727532",
@@ -3920,7 +4500,11 @@
       "height": 2848,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "61da5c3c09e74a03848c2e71bb650da4547ed40806238b76ebea8ca3cec8d19b",
+      "size": 1902336,
+      "retrieved_utc": "2026-09-16T23:18:09Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Defense.gov_News_Photo_090215-A-2927M-061.jpg"
     },
     {
       "key": "commons-8822138",
@@ -3947,7 +4531,11 @@
       "height": 2000,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f1d3280fd0714b0febda9267566b9f4c25c8959194ccc35dc04e542f496f2fc1",
+      "size": 4624470,
+      "retrieved_utc": "2026-09-16T23:18:13Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/99/Schoolgirls_in_Bamozai.JPG"
     },
     {
       "key": "commons-114321965",
@@ -3974,7 +4562,11 @@
       "height": 2448,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "c20709dc20c656028d67daa9204b6eaf3a310036e000542399631fbf68a09fea",
+      "size": 935974,
+      "retrieved_utc": "2026-09-16T23:18:17Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/40/Eastern_box_turtles_are_commonly_seen_along_the_river._%288fb271ab-e4ac-4066-ab63-49a9d85cae5e%29.JPG"
     },
     {
       "key": "commons-8229650",
@@ -4001,7 +4593,11 @@
       "height": 2000,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "e665029d149ddafdcc902ffd9c1edfa81590634b1fb0c856eb38a3a419341232",
+      "size": 1787150,
+      "retrieved_utc": "2026-09-16T23:18:22Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/51/US_Navy_040925-N-0295M-091_Retired_U.S._Navy_Capt._Dale_Snodgrass_takes_off_in_his_Korean_War-era_F-86_Sabre.jpg"
     },
     {
       "key": "commons-36896658",
@@ -4028,7 +4624,11 @@
       "height": 2848,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "3ebba195b0fc796247a10e233405204f7488ec9ff208e33cd2ed38db009f2b20",
+      "size": 5995504,
+      "retrieved_utc": "2026-09-16T23:18:26Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/57/Male_Greater_Sage-Grouse_%287094241359%29.jpg"
     },
     {
       "key": "commons-132741325",
@@ -4055,7 +4655,11 @@
       "height": 2667,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "77059f7cfcc13e6f97f7fdf5c50ee21453065040b5a3f589635cd6a7916ebcf4",
+      "size": 3609477,
+      "retrieved_utc": "2026-09-16T23:18:30Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Rolling_Fork%2C_Mississippi_tornado_disaster_area_on_April_12%2C_2023_-_20230412-USDA-RD-MS-LSC-_-_27.jpg"
     },
     {
       "key": "commons-41456043",
@@ -4082,7 +4686,11 @@
       "height": 2776,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "d82d7d81ea8ea30e9b6104e517ba2bfa3e6a8834ace1c5defbf6cd021d951bdd",
+      "size": 5603665,
+      "retrieved_utc": "2026-09-16T23:18:37Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Purple_Heart_recipient_140222-A-SF654-002.jpg"
     },
     {
       "key": "commons-10581306",
@@ -4109,7 +4717,11 @@
       "height": 2100,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "b4993addf7b963139ddde99080e3a3dc63f538aee710606875eb7fbf1a762f17",
+      "size": 2192522,
+      "retrieved_utc": "2026-09-16T23:18:42Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/50/4th_FW_Strike_Eagles_assist_shuttle_launch.jpg"
     },
     {
       "key": "commons-45046611",
@@ -4136,7 +4748,11 @@
       "height": 2784,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f8e4ecb80df807d7c2242fc4939d598bc17291214aac76666b005bdfc785e5af",
+      "size": 3233437,
+      "retrieved_utc": "2026-09-16T23:18:46Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Bears_and_bear_watchers_at_Brooks_Falls_%28NPS-M._Fitz%29_%2816520547402%29.jpg"
     },
     {
       "key": "commons-16185482",
@@ -4163,7 +4779,11 @@
       "height": 2357,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "247ce0fcf636735a2dd1b7f9d1fc4114104934b525273dac24c05050b92cd021",
+      "size": 4070527,
+      "retrieved_utc": "2026-09-16T23:18:50Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/fb/CF-1_flight_test.jpg"
     },
     {
       "key": "commons-29814746",
@@ -4190,7 +4810,11 @@
       "height": 2000,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "27cb147bf3d9d9f7d4573472a588fe32a67000ef8884538bde5e5c58b9eedb3c",
+      "size": 2509916,
+      "retrieved_utc": "2026-09-16T23:18:55Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9b/Field_visit_Mario_Rodr%C3%ADguez%2CNRCS%3B_Elieser_Castillo%2C_farm_owner%3B_Ricardo_Col%C3%B3n%2C_USFWS%3B_Bevery_Yoshioka%2C_USFWS_%285661619427%29.jpg"
     },
     {
       "key": "commons-68899973",
@@ -4217,7 +4841,11 @@
       "height": 3264,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "0e721d1a39a7fdb39aafb66524443c20b90bac33c0159258b76e5777aa934bfc",
+      "size": 1084442,
+      "retrieved_utc": "2026-09-16T23:18:59Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/e/e2/170828-FS-Inyo-PRW-MountRitter_%2836911163291%29.jpg"
     },
     {
       "key": "commons-40767931",
@@ -4244,7 +4872,11 @@
       "height": 1820,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "7cc64d910972de18487ab56a15b3620c74c9a7a596b43b119ad3c2d84ee288db",
+      "size": 1907794,
+      "retrieved_utc": "2026-09-16T23:19:03Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/84/Grafenwoehr_Army_Health_Clinic_earns_national_recognition_as_Army_medical_home_070726-A-ZQ898-319.jpg"
     },
     {
       "key": "commons-140485809",
@@ -4271,7 +4903,11 @@
       "height": 2511,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "387042afe68b5401e28ec81978f8a22bff90f8e88b4b4021f42721913d5d5a89",
+      "size": 4574740,
+      "retrieved_utc": "2026-09-16T23:19:10Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/18/T-7A_Red_Hawk_over_Edwards_Air_Force_Base.jpg"
     },
     {
       "key": "commons-50245900",
@@ -4298,7 +4934,11 @@
       "height": 3456,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f3863a7b2346c615cac133af761a51c44ce70898d43f3f35283ef3681e915885",
+      "size": 11414485,
+      "retrieved_utc": "2026-09-16T23:19:15Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Bridge_Bay_Campground_site_%2816154681854%29.jpg"
     },
     {
       "key": "commons-2591001",
@@ -4325,7 +4965,11 @@
       "height": 1862,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "8635c7ab791f28ae406d26630754aadfbeabbd4f5066432cf6de7f1256eda2e7",
+      "size": 1451676,
+      "retrieved_utc": "2026-09-16T23:19:19Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Ernest-Borgnine_2004.JPEG"
     },
     {
       "key": "commons-51943194",
@@ -4352,7 +4996,11 @@
       "height": 3672,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "9c2821a1f5a93221d3086c30c491121797d2ebb37b035561ebede6cd52f63436",
+      "size": 5881038,
+      "retrieved_utc": "2026-09-16T23:19:23Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Current_high_bacterial_counts_should_decrease_with_improved_tidal_flow_%2816023110419%29.jpg"
     },
     {
       "key": "commons-78168363",
@@ -4379,7 +5027,11 @@
       "height": 1365,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "7cd571f72687caa37fb9fa7cf7b9f3425298b1496bbb119a154f5a58b0a4c476",
+      "size": 2934593,
+      "retrieved_utc": "2026-09-16T23:19:28Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/37/Gray%27s_Peak_Trail_%2844291177830%29.jpg"
     },
     {
       "key": "commons-72273661",
@@ -4406,7 +5058,11 @@
       "height": 4800,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "e5c75f1558981bcda5650c4ae67446b0c5c7c729d11b92b2efb3fa63c6f45279",
+      "size": 12546052,
+      "retrieved_utc": "2026-09-16T23:19:32Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/DSC_5674_%2843487207974%29.jpg"
     },
     {
       "key": "commons-3036750",
@@ -4433,7 +5089,11 @@
       "height": 1500,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "631da5734ab39697ee1a370f421d9943d6838f95048e35baf19b901d8b2a859a",
+      "size": 1695443,
+      "retrieved_utc": "2026-09-16T23:19:37Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/54/CV-22_Osprey_in_flight.jpg"
     },
     {
       "key": "commons-162336754",
@@ -4459,7 +5119,11 @@
       "height": 3000,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "4ff50f235121a82f21daf316b3282649e5ee61ea968473f83f8ffe752c05636e",
+      "size": 4011796,
+      "retrieved_utc": "2026-09-16T23:19:41Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/86/SRDS-Field_Pictures_%2832106569052%29.jpg"
     },
     {
       "key": "commons-70729515",
@@ -4486,7 +5150,11 @@
       "height": 1120,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "789e0900cd1448b9b099e945d0417bcc3b87361739f7d650898171a6eaf834c7",
+      "size": 1166247,
+      "retrieved_utc": "2026-09-16T23:19:48Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/14/80-G-100268_%2830786520714%29.jpg"
     },
     {
       "key": "commons-29826523",
@@ -4512,7 +5180,11 @@
       "height": 2480,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "0c4cf4fa972e45bbe7615824a5b369bef9901b92e6d3a829ddbad2cc57425524",
+      "size": 4338389,
+      "retrieved_utc": "2026-09-16T23:19:52Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/88/Jim_Haas%2C_Service_Natural_Resource_Damage_Assessment_and_Restoration_coordinator_%284831762921%29.jpg"
     },
     {
       "key": "commons-146133811",
@@ -4539,7 +5211,11 @@
       "height": 3469,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "e593f3d2e56d9a79cfb24465e372cd1ddfeebd29963ec6548007ee2b353f032b",
+      "size": 13106824,
+      "retrieved_utc": "2026-09-16T23:19:57Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/USDA_Deputy_Secretary_Xochitl_Torres_Small_met_with_select_representatives_from_participating_U.S._agribusinesses_in_Angola_on_February_28%2C_2024_-_25.jpg"
     },
     {
       "key": "commons-39451532",
@@ -4566,7 +5242,11 @@
       "height": 2136,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "4ff60e02702efc36e5125cc10a5296068e19ac26d23e6aa18ec1032e089e5ccc",
+      "size": 5388542,
+      "retrieved_utc": "2026-09-16T23:20:01Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Food_delivery_DVIDS205288.jpg"
     },
     {
       "key": "commons-134019589",
@@ -4592,7 +5272,11 @@
       "height": 4000,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "986e77bbbc93e15f2bd111a09528050b3e7157e76ae135bfb3414bb22eb775b6",
+      "size": 2832604,
+      "retrieved_utc": "2026-09-16T23:20:05Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Lt._Col._Josh_Padgett%2C_detachment_commander%2C_457th_Fighter_Squadron%2C_Campia_Turzii%2C_Romania.jpg"
     },
     {
       "key": "commons-105388955",
@@ -4618,7 +5302,11 @@
       "height": 3000,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "783b9d423f13def2491f4f8e36e9b1a40bd70f45b5b88f1276ef168da5a2006c",
+      "size": 3637306,
+      "retrieved_utc": "2026-09-16T23:20:10Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/69/New_Town_Eagle_Feather_Dancers_%28182c4fbb-b9af-4ddf-8d5d-1edd55366778%29.JPG"
     },
     {
       "key": "commons-41083",
@@ -4645,7 +5333,11 @@
       "height": 1632,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "75651f821e54e39288d205e47d72f9d450afde142d3fb97c2f076542643b28ff",
+      "size": 3110208,
+      "retrieved_utc": "2026-09-16T23:20:14Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Meulaboh_Hovercraft_050110-N-7586B-120.jpg"
     },
     {
       "key": "commons-50680994",
@@ -4672,7 +5364,11 @@
       "height": 1793,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "50aed21e950cb8a53bb4cd2cf5564896a73387c04049588dae6792ff51fdc78f",
+      "size": 2245640,
+      "retrieved_utc": "2026-09-16T23:20:21Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/68/USFWS_Kate_Freund%2C_-ScienceWoman_%2816710575906%29.jpg"
     },
     {
       "key": "commons-141783026",
@@ -4699,7 +5395,11 @@
       "height": 3523,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "57d2fb7567ec69685f553a4f57874762a6c7e8197d5dc3ad95d71f62e182690d",
+      "size": 3781371,
+      "retrieved_utc": "2026-09-16T23:20:25Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Prominent_Native_American_chefs_gathered_at_USDA_to_prepare_Indigenous_cuisine_for_the_White_House_Tribal_Nations_Summit_on_5_December_2023_-_16.jpg"
     },
     {
       "key": "commons-75553763",
@@ -4726,7 +5426,11 @@
       "height": 2293,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "9c1a09443e38d7f5ad083c848b11cc6564fcdcdce27fd0af21b98a8bc5705626",
+      "size": 2813379,
+      "retrieved_utc": "2026-09-16T23:20:30Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/61/NARA_111-CCV-93-CC44042_Downed_9th_Infantry_Division_UH-1_and_M113_1967.jpg"
     },
     {
       "key": "commons-20784072",
@@ -4753,7 +5457,11 @@
       "height": 3008,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "77e79fa453ad27291bbe2bc8ddd96514fab23ccc69353c65a327432b53040889",
+      "size": 1527981,
+      "retrieved_utc": "2026-09-16T23:20:34Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/50/Defense.gov_News_Photo_050525-F-0007M-002.jpg"
     },
     {
       "key": "commons-82233854",
@@ -4780,7 +5488,11 @@
       "height": 3024,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "1313ed62eb2b03736179feab0ddb73c67ae41b51fb81dfbe083702de19bf4299",
+      "size": 1143864,
+      "retrieved_utc": "2026-09-16T23:20:39Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Fire_Island_National_Seashore_%28688d837f-567c-4bf8-ba8d-80c4b2ab5211%29.jpg"
     },
     {
       "key": "commons-17043221",
@@ -4807,7 +5519,11 @@
       "height": 3000,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f75a4bab1307383b47841cbe3fe52dd5468fba0b011e87f8cfee552ea100cd20",
+      "size": 1841885,
+      "retrieved_utc": "2026-09-16T23:20:45Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/02/US_Navy_111017-N-VN693-553_wo_F-A-18C_Hornets_assigned_to_the_Golden_Dragons_of_Strike_Fighter_Squadron_%28VFA%29_192_fly_over_the_aircraft_carrier_USS.jpg"
     },
     {
       "key": "commons-31314104",
@@ -4833,7 +5549,11 @@
       "height": 1280,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "11500f8a97d88a2485a9878089f4e777f59d6209e514d7c598460825ff1a689d",
+      "size": 1356035,
+      "retrieved_utc": "2026-09-16T23:20:49Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Pennies_for_Paws_%282%29_%2811120876464%29.jpg"
     },
     {
       "key": "commons-68910501",
@@ -4860,7 +5580,11 @@
       "height": 3456,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "697a3c42cea21395c73871d66c9841ef90ab8e20e1d7a50f4b6226ed13e05c75",
+      "size": 3098622,
+      "retrieved_utc": "2026-09-16T23:20:53Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8a/170708-FS-Eldorado-PRW-081_%2835471897860%29.jpg"
     },
     {
       "key": "commons-41378843",
@@ -4887,7 +5611,11 @@
       "height": 3607,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "4705cbcb992be30e28dcff251cb4b89ee980591ebeec20345c34b5d9c12601b7",
+      "size": 1136113,
+      "retrieved_utc": "2026-09-16T23:20:58Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Heavy_boat_unit_preps_for_deployment_130521-A-IO170-019.jpg"
     },
     {
       "key": "commons-121661550",
@@ -4913,7 +5641,11 @@
       "height": 2615,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "9302c20574d381f32f8ed186fa712f26c897e9bf293d1c76055e1bf984793b9f",
+      "size": 2980779,
+      "retrieved_utc": "2026-09-16T23:21:02Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/F-35_Heritage_Flight_Team_performs_in_Bell_Fort_Worth_Alliance_AirShow.jpg"
     },
     {
       "key": "commons-161537402",
@@ -4939,7 +5671,11 @@
       "height": 3888,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "0627ada2c62b7cf9c9e6e026ce850867650914525d0a681dffddde0d40990390",
+      "size": 9457738,
+      "retrieved_utc": "2026-09-16T23:21:06Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/346_Fall_%2852455398592%29.jpg"
     },
     {
       "key": "commons-30268749",
@@ -4966,7 +5702,11 @@
       "height": 1860,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "fa18ad4bcc71bddf747cac352345cb377e9f515c7f71a70957de0e6c9b260856",
+      "size": 1180212,
+      "retrieved_utc": "2026-09-16T23:21:11Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/25/AH-1W_Super_Cobra_assigned_to_HMLA_167.jpg"
     },
     {
       "key": "commons-31315018",
@@ -4992,7 +5732,11 @@
       "height": 2592,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "7b4f9d1a6abbc7a925dc86d15b09b3acdf8361986ea57242fd1bcaa3132061cd",
+      "size": 3133318,
+      "retrieved_utc": "2026-09-16T23:21:17Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/f4/Mexican_free-tailed_bats_exiting_Bracken_Bat_Cave_%288006845825%29.jpg"
     },
     {
       "key": "commons-68776756",
@@ -5019,7 +5763,11 @@
       "height": 2832,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "6225656a042d934e39ca637eb99a8e486238f9d2f80502a39daa0b039e13cd0f",
+      "size": 7443784,
+      "retrieved_utc": "2026-09-16T23:21:22Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Mesquite_and_Red_Cedar_grubbed_and_raked_on_Walking_M_Ranch_in_Baylor_County_near_Seymour%2C_Texas._%2824749741359%29.jpg"
     },
     {
       "key": "commons-63832219",
@@ -5046,7 +5794,11 @@
       "height": 2336,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "ca1ded4190520e16a2124f0cbc3d206a91f6ae7d9f616378c7ed4250ef7863e5",
+      "size": 4621884,
+      "retrieved_utc": "2026-09-16T23:21:26Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Atlanta_Falcons_Leadership_and_Players_Lay_a_Wreath_at_the_Tomb_of_the_Unknown_Soldier_at_Arlington_National_Cemetery_%2835309963206%29.jpg"
     },
     {
       "key": "commons-15600632",
@@ -5073,7 +5825,11 @@
       "height": 2832,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "8c1506f416ef81ed14704bf9722fdfa6bf154e8fdb58a49b30a8c1a18d46f9eb",
+      "size": 2985352,
+      "retrieved_utc": "2026-09-16T23:21:31Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Green_Flag_West_11-08.jpg"
     },
     {
       "key": "commons-135947807",
@@ -5100,7 +5856,11 @@
       "height": 2800,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "ac1c5cb555a38aa8f2561984bf3cbc2f2ad50fbe1e3f643b33ddb6539b14b58f",
+      "size": 3504561,
+      "retrieved_utc": "2026-09-16T23:21:35Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Cougar_Rock_Campground_A_Loop_Restroom_%283ad613c7-f3ce-4204-af02-c36f6fb27a79%29.jpg"
     },
     {
       "key": "commons-8355925",
@@ -5127,7 +5887,11 @@
       "height": 1730,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "bcb3734f923daf59c6644a5a3b3f7408c869e706aecd3a58c16c3dcbaac15b93",
+      "size": 3483302,
+      "retrieved_utc": "2026-09-16T23:21:39Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/US_Navy_090414-N-1722M-048_Builder_2nd_Class_Thomas_Thorton%2C_assigned_to_Navy_Mobile_Construction_Battalion_%28NMCB%29_4%2C_instructs_sailors_assigned_to_the_Arleigh_Burke-class_guided-missile_destroyer_USS_Stockdale_%28DDG-106%29_on_con.jpg"
     },
     {
       "key": "commons-51880114",
@@ -5154,7 +5918,11 @@
       "height": 2547,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "b59bc503a3a63eeafc85c7f4787aabc460b22d3efe3a52a66e0754ebe8bf3fc7",
+      "size": 3405702,
+      "retrieved_utc": "2026-09-16T23:21:44Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Buyer_Beware_Exhibit_at_Logan_Airport_%285610691875%29.jpg"
     },
     {
       "key": "commons-68911308",
@@ -5180,7 +5948,11 @@
       "height": 3000,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "1dd340425eca2faa265b8787d2dfba4008ef8a4e473e45e9488a778becc63bef",
+      "size": 5370505,
+      "retrieved_utc": "2026-09-16T23:21:50Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Mess_Hall_After_%286351829126%29.jpg"
     },
     {
       "key": "commons-280165",
@@ -5207,7 +5979,11 @@
       "height": 2660,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "11ff4a8a4d2d4e208d898aecfe692f6c7e97ac237e9268ad17b27808e7203449",
+      "size": 3318900,
+      "retrieved_utc": "2026-09-16T23:21:55Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/ad/C-17_paratroopers.jpg"
     },
     {
       "key": "commons-3623108",
@@ -5234,7 +6010,11 @@
       "height": 1960,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "a7bd1e9df489ade7c146335dc867965cdfce16b749677357ff570f00436aa1c3",
+      "size": 1011397,
+      "retrieved_utc": "2026-09-16T23:21:59Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/6f/USAF_F-16C_Profile.jpg"
     },
     {
       "key": "commons-55179475",
@@ -5261,7 +6041,11 @@
       "height": 3840,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "635b778e83d815a2fa5a63ee023af5cbd6fb3dcd773ef25f2383aba2afeceabc",
+      "size": 9495983,
+      "retrieved_utc": "2026-09-16T23:22:03Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0f/4th_of_July_Parade_2013_%28MRNP%29_in_Eatonville%2C_WA_%E2%80%94_016.jpg"
     },
     {
       "key": "commons-70729773",
@@ -5288,7 +6072,11 @@
       "height": 2280,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "08eefe326a2bc355e6ef03e570c3410c8eb55f9c4944f696f17bb418fbc071c9",
+      "size": 3668021,
+      "retrieved_utc": "2026-09-16T23:22:08Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/37/26-G-2587_%2817906494261%29.jpg"
     },
     {
       "key": "commons-51981810",
@@ -5315,7 +6103,11 @@
       "height": 2582,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "68cad2e12571731d30561c22104b5ddce64aa0889b0e2d4e2dd8919f5ffdeb03",
+      "size": 5400505,
+      "retrieved_utc": "2026-09-16T23:22:12Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Student_Artwork_%286477131487%29.jpg"
     },
     {
       "key": "commons-68904323",
@@ -5342,7 +6134,11 @@
       "height": 2448,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "c8d6d6c807d44f2c994aab12c382d6278f32fe8b6b78700f74972ceb82aa251a",
+      "size": 1596450,
+      "retrieved_utc": "2026-09-16T23:22:19Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Award_Nominees_%2838191669465%29.jpg"
     },
     {
       "key": "commons-160344805",
@@ -5369,7 +6165,11 @@
       "height": 4000,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "155b3761c7eebc95a64214ad94a7afed47ecb9d4757ef01c9c5eb8e80d85feb6",
+      "size": 11953914,
+      "retrieved_utc": "2026-09-16T23:22:24Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9e/250216-A-DG191-1033_%2854337832834%29.jpg"
     },
     {
       "key": "commons-6997597",
@@ -5396,7 +6196,11 @@
       "height": 1993,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "bf5b28fc14e5f858221eabada50d0056a5c04709191b69fb83924c8424b60ca0",
+      "size": 1474440,
+      "retrieved_utc": "2026-09-16T23:22:28Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/13/720th_Special_Tactics_Group_airmen_jump_20071003.jpg"
     },
     {
       "key": "commons-55212012",
@@ -5423,7 +6227,11 @@
       "height": 3840,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f65f5fb539e758a2ed4e1211108b7f4f55ab4b1ac145eeb81e206fa3cd60baf0",
+      "size": 13255498,
+      "retrieved_utc": "2026-09-16T23:22:33Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/2016_Mount_Rainier_National_Park_BioBlitz%2C_IMG_6I8A9816.jpg"
     },
     {
       "key": "commons-31986963",
@@ -5450,7 +6258,11 @@
       "height": 3000,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "205b2fc8f1582259c48b3669add12a84aaece846163d5195a829856dbac63423",
+      "size": 1263444,
+      "retrieved_utc": "2026-09-16T23:22:37Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/ae/U.S._Navy_Diver_enters_the_water_during_a_training_evolution_at_the_Naval_Diving_and_Salvage_Training_Center_140218-N-IC111-156.jpg"
     },
     {
       "key": "commons-50679058",
@@ -5477,7 +6289,11 @@
       "height": 2909,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "1f19f1b4e9a40319c8eb0981564b34e678f2460d61572b6362632e3c04644825",
+      "size": 7301323,
+      "retrieved_utc": "2026-09-16T23:22:41Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/USFWS_Wisdom%27s_New_Chick_02-08-16_%2824271261474%29.jpg"
     },
     {
       "key": "commons-78240790",
@@ -5504,7 +6320,11 @@
       "height": 608,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "2c287fe43a98b065763d29f1a3b4cd735af127fc0e82e74ba74f7a320fd70092",
+      "size": 1370545,
+      "retrieved_utc": "2026-09-16T23:22:45Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Texas_Alternative_Banner_1.jpg"
     },
     {
       "key": "commons-72371724",
@@ -5530,7 +6350,11 @@
       "height": 3456,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "ab703248348fd56bbccd240c3a5b3913d7eb345fe60a259626b336bdc8d7c3d6",
+      "size": 10933113,
+      "retrieved_utc": "2026-09-16T23:22:53Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Lab_-4-_KIA_%26_First_Aid_IMG_3097_%288018454062%29.jpg"
     },
     {
       "key": "commons-15436733",
@@ -5557,7 +6381,11 @@
       "height": 2736,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "378f64e8559102628f36319b7480d3dd53d5426d65b7ec7a39a5cb9113406d9b",
+      "size": 6182306,
+      "retrieved_utc": "2026-09-16T23:22:57Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/d1/View_in_the_small_resort_town_of_Garmisch-Partenkirchen.jpg"
     },
     {
       "key": "commons-56932141",
@@ -5584,7 +6412,11 @@
       "height": 1888,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "876923fe9e268fffbbe11c1cd8e347558b1e93308ef963ce0992f777d5de835a",
+      "size": 1291394,
+      "retrieved_utc": "2026-09-16T23:23:01Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/56/AD092A0902_%2822926826815%29.jpg"
     },
     {
       "key": "commons-3578367",
@@ -5611,7 +6443,11 @@
       "height": 1960,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "7f3a2507782f3b3d4c49e89ab99bc6839071dc972216866707ecfb9bd09d5d34",
+      "size": 3233493,
+      "retrieved_utc": "2026-09-16T23:23:06Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/WTC-Fireman_requests_10_more_colleagues.jpg"
     },
     {
       "key": "commons-29811722",
@@ -5638,7 +6474,11 @@
       "height": 1054,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "2a37993402d3f29865860c70564da8272d5fc310c60e73d0fab61c58df803b0f",
+      "size": 1266472,
+      "retrieved_utc": "2026-09-16T23:23:10Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/46/Can_You_See_Me%3F_%287609575172%29.jpg"
     },
     {
       "key": "commons-68905716",
@@ -5665,7 +6505,11 @@
       "height": 2976,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "3c4ea480f6235ba1e188f41adc115f2712d9e5cbd75b6bb38333f0e7c337ac62",
+      "size": 1774288,
+      "retrieved_utc": "2026-09-16T23:23:14Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/90/P6070505_%2834799773600%29.jpg"
     },
     {
       "key": "commons-70588283",
@@ -5692,7 +6536,11 @@
       "height": 3456,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "1b0bf36e0982e9f7726eeb8282a69811c62565d12f8d513c59311b0f9de56ab7",
+      "size": 4374486,
+      "retrieved_utc": "2026-09-16T23:23:18Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/VDC_2530_%2828229386339%29.jpg"
     },
     {
       "key": "commons-59183888",
@@ -5718,7 +6566,11 @@
       "height": 2810,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "eb4a4f5a37c7e7c4c605bfe9538ecdedfea89d2fbe77eac96dc9a3bb52c53ed2",
+      "size": 1880894,
+      "retrieved_utc": "2026-09-16T23:23:25Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8d/U.S._Air_Force_at_Pittsburgh_air_show.jpg"
     },
     {
       "key": "commons-163832964",
@@ -5745,7 +6597,11 @@
       "height": 3645,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "ed9e079d1653b08af16de86561672a505f5b13bdb66cd490bad62c0ff91602b5",
+      "size": 4850141,
+      "retrieved_utc": "2026-09-16T23:23:30Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9b/Marmot_near_Beartooth_Highway_%2853071329063%29.jpg"
     },
     {
       "key": "commons-172991",
@@ -5772,7 +6628,11 @@
       "height": 2000,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "eb7e8aec0079b352665ad549b72e44926520d1ce355cf6258bdb21c6e048ee86",
+      "size": 1551911,
+      "retrieved_utc": "2026-09-16T23:23:34Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/September_14_2001.jpg"
     },
     {
       "key": "commons-29814738",
@@ -5799,7 +6659,11 @@
       "height": 2848,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f0fe37c33e65ed4703a2dce7dbd37a54203095a070f3e1828cc35b2244a7bdfd",
+      "size": 9027807,
+      "retrieved_utc": "2026-09-16T23:23:39Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Lilies_at_the_river_%285686997885%29.jpg"
     },
     {
       "key": "commons-126575426",
@@ -5826,7 +6690,11 @@
       "height": 2386,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "ea32764c246bfc6f09f2dca49aa84b925acfcd2fff99d1584fcda8a18fdcb442",
+      "size": 1083676,
+      "retrieved_utc": "2026-09-16T23:23:43Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/20171023-FAS-PJK-270_TONED_%2837857516632%29.jpg"
     },
     {
       "key": "commons-72280164",
@@ -5853,7 +6721,11 @@
       "height": 3200,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "d568162d8f1b6b89ada57e274b41873887d3f40939f8faa11ed4ca635442f305",
+      "size": 5967026,
+      "retrieved_utc": "2026-09-16T23:23:47Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/20/SGT_Hillary_Bor_%2828164553121%29.jpg"
     },
     {
       "key": "commons-126577058",
@@ -5880,7 +6752,11 @@
       "height": 2621,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "e8a730974ec7cda21d6e5469c45d638f936cb4f4bb26a7726e5d4aa0c8a742fb",
+      "size": 2637101,
+      "retrieved_utc": "2026-09-16T23:23:52Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/05/Toys_for_Tots_McGrath_%2823564738909%29.jpg"
     },
     {
       "key": "commons-155220173",
@@ -5907,7 +6783,11 @@
       "height": 3024,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "43309ba40344f4e8ba555e8625c1d92aea215d3dcbe9747e6bb2488183d6b9a3",
+      "size": 4775574,
+      "retrieved_utc": "2026-09-16T23:23:58Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Bathrooms_at_Theodore_Roosevelt_Area_%2822232c0c-3baf-4f30-a597-4d66ddef0ce6%29.JPG"
     },
     {
       "key": "commons-70742275",
@@ -5934,7 +6814,11 @@
       "height": 2088,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "ec090f3c0d00650a96d9a0d634faad74275af8de58c67c874968dc81e77ab3af",
+      "size": 931942,
+      "retrieved_utc": "2026-09-16T23:24:03Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/76/208-PU-115-CC-9_%2829345178403%29.jpg"
     },
     {
       "key": "commons-31315250",
@@ -5961,7 +6845,11 @@
       "height": 1197,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "10d73cd3dab4f8713988a74e47e17083d80cf62c7f3031fd3272e6cca871d170",
+      "size": 2026938,
+      "retrieved_utc": "2026-09-16T23:24:07Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Ann_Froschauer_talks_about_threats_to_bats_%287241386226%29.jpg"
     },
     {
       "key": "commons-26251979",
@@ -5988,7 +6876,11 @@
       "height": 2301,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "89058f1cf46b0573a6f4823904537cdff0fe474c12d1706a0a9a4e1eb9d1d39b",
+      "size": 6174022,
+      "retrieved_utc": "2026-09-16T23:24:11Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/b9/Flickr_-_USDAgov_-_20130430-NRCS-LSC-4712.jpg"
     },
     {
       "key": "commons-63832197",
@@ -6015,7 +6907,11 @@
       "height": 2336,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "b769004e4a5c7493505d6badff8d5daa7f6ef41bc62acded411526ea53d1b9b0",
+      "size": 3733366,
+      "retrieved_utc": "2026-09-16T23:24:16Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Atlanta_Falcons_Leadership_and_Players_Lay_a_Wreath_at_the_Tomb_of_the_Unknown_Soldier_at_Arlington_National_Cemetery_%2834539630043%29.jpg"
     },
     {
       "key": "commons-9043944",
@@ -6042,7 +6938,11 @@
       "height": 1377,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "4ce1bc51ce42b035785b99e93e49cf3ba1f9936c26344c025b7c416928f22fc7",
+      "size": 1778851,
+      "retrieved_utc": "2026-09-16T23:24:20Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/AirdropcloseJan18haiti_edited.jpg"
     },
     {
       "key": "commons-161580547",
@@ -6069,7 +6969,11 @@
       "height": 5472,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "a72dc71edafbc8f8832152d7a93d593d6eeca54ab6b8f02d3fff1abe398e2246",
+      "size": 5810933,
+      "retrieved_utc": "2026-09-16T23:24:24Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Gray%27s_Lovage_%2853125475984%29.jpg"
     },
     {
       "key": "commons-70767000",
@@ -6096,7 +7000,11 @@
       "height": 3824,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "bdcd5d97ffe541b4257f24e9b48f476ad638dab6cb0798b41d335bd5675b07ce",
+      "size": 4513830,
+      "retrieved_utc": "2026-09-16T23:24:31Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/USS_Zumwalt_%28DDG_1000%29.jpg"
     },
     {
       "key": "commons-29813810",
@@ -6122,7 +7030,11 @@
       "height": 4416,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "087347407031ea0b54ae7a943837222253fc24f22216c4540dbbecf628dffda1",
+      "size": 11038661,
+      "retrieved_utc": "2026-09-16T23:24:36Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Lone_collector_%285939696957%29.jpg"
     },
     {
       "key": "commons-166653218",
@@ -6149,7 +7061,11 @@
       "height": 3988,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "eaeffbd061e1a61d008f751e250865169ebdb8a573ce7f91815a1e86f2546121",
+      "size": 13262495,
+      "retrieved_utc": "2026-09-16T23:24:40Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/20250602-USDA-OSEC-TEW-0134_USDA_Presidential_Political_Appointee_Swearing_In_Ceremony.jpg"
     },
     {
       "key": "commons-52037475",
@@ -6176,7 +7092,11 @@
       "height": 2848,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "6496d11235e5ceec26b7dbff0c91fb36ae5f572d24d86d85fb7ea8cc32dd67cf",
+      "size": 4568726,
+      "retrieved_utc": "2026-09-16T23:24:45Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/65/California_National_Guard%27s_Homeland_Response_Force_trains_in_the_desert_during_the_2011_Arizona_Statewide_Vigilant_Guard_Exercise_111105-A-PP889-001.jpg"
     },
     {
       "key": "commons-4433729",
@@ -6203,7 +7123,11 @@
       "height": 2036,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "2c4dd1f8e03730dd9942becc08bc36111b534c4837eb631b40d200af19bdf3f7",
+      "size": 3842764,
+      "retrieved_utc": "2026-09-16T23:24:49Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/ab/AC-130H_Spectre_jettisons_flares.jpg"
     },
     {
       "key": "commons-50245867",
@@ -6230,7 +7154,11 @@
       "height": 3456,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "9ca9c9958528beb57bc921c6d00db4bd44636df4efbe11ba0f53c223d19a741d",
+      "size": 10975271,
+      "retrieved_utc": "2026-09-16T23:24:54Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/df/Bridge_Bay_Campground_Welcome_sign_%2816569423057%29.jpg"
     },
     {
       "key": "commons-157391242",
@@ -6256,7 +7184,11 @@
       "height": 4480,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "ee555ee72309a05c656c4953497641728507698bb0775b374373e4141cfdeb88",
+      "size": 1334992,
+      "retrieved_utc": "2026-09-16T23:24:58Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Exercise_Sea_Breeze_2021_%286720941%29.jpg"
     },
     {
       "key": "commons-69187555",
@@ -6283,7 +7215,11 @@
       "height": 2490,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "db6b4d36ee9514f618860d637acc885eaa3a7970dafefa0d3cccbee1d61303c6",
+      "size": 5353576,
+      "retrieved_utc": "2026-09-16T23:25:05Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/06/Great_horned_owl_on_Seedskadee_National_Wildlife_Refuge_%2836512564303%29.jpg"
     },
     {
       "key": "commons-163490915",
@@ -6310,7 +7246,11 @@
       "height": 3768,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "a6ba84e8f92016e9ca0058c24982f1f1a027572d6b045ec5aa1799cd71a1c84c",
+      "size": 3275783,
+      "retrieved_utc": "2026-09-16T23:25:09Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/61/20250408-USDA-OSEC-TEW-801_U.S._Secretary_of_Agriculture_Rollins_with_the_Texas_Agricultural_Lifetime_Leadership_Cohort.jpg"
     },
     {
       "key": "commons-57332844",
@@ -6336,7 +7276,11 @@
       "height": 3344,
       "group_label": "PD-USGov-Military-Army",
       "dir": "Military-Army",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "491f5166c3e3d931074c31135e35fdd2a38765e7af42e400763f20b318c25069",
+      "size": 1664435,
+      "retrieved_utc": "2026-09-16T23:25:13Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Military_working_dog_team_recognized_for_service_by_U.S._leaders_of_Kosovo_mission_131015-A-TR629-732.jpg"
     },
     {
       "key": "commons-130122",
@@ -6363,7 +7307,11 @@
       "height": 1960,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "6b18ac13d805686c07588e028694cc36e75fbfc74c36c0ea6d090be8c6ba60b2",
+      "size": 1445217,
+      "retrieved_utc": "2026-09-16T23:25:17Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/Casing.jpg"
     },
     {
       "key": "commons-161437188",
@@ -6390,7 +7338,11 @@
       "height": 3648,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "0ff347b83784c988892708d34ac57b71230f2685b3f48d529984c719124462d5",
+      "size": 13938784,
+      "retrieved_utc": "2026-09-16T23:25:22Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/72/Graffiti_Removal_%2853769351802%29.jpg"
     },
     {
       "key": "commons-1767080",
@@ -6417,7 +7369,11 @@
       "height": 2000,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "5baaa543f9882a4c4cd96a829fe8192539c393fa544d3c2a7a37bffab92cd1a2",
+      "size": 1726393,
+      "retrieved_utc": "2026-09-16T23:25:27Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Grumman_E-2C_Hawkeyes_of_VAW-115_fly_past_Mount_Fuji_on_15_February_2007_%28070215-N-2604L-024%29.jpg"
     },
     {
       "key": "commons-29826922",
@@ -6444,7 +7400,11 @@
       "height": 2736,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "2899cdbe97600d03724d6070736ff41aa51720a7ef43b258ba8bc748cca98bfa",
+      "size": 1728822,
+      "retrieved_utc": "2026-09-16T23:25:31Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/For_Documentation%2C_GPS_Coordinates_Must_be_Photographed_with_the_Evidence_%284804557261%29.jpg"
     },
     {
       "key": "commons-68899979",
@@ -6471,7 +7431,11 @@
       "height": 3264,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "37868ea1e28ac4750cb264f510a655a72f31b63fb77a2a44eb679c3f075067ec",
+      "size": 1850846,
+      "retrieved_utc": "2026-09-16T23:25:38Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/170828-FS-Inyo-PRW-MountRitter_%2836217715654%29.jpg"
     },
     {
       "key": "commons-167487288",
@@ -6498,7 +7462,11 @@
       "height": 2577,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "b9bf2d3722716227c124a3870a187aee9671f267c8aeb6b8f204bb1b6cb89254",
+      "size": 3466789,
+      "retrieved_utc": "2026-09-16T23:25:42Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/36/US_Air_Force_A-10_Thunderbolt_II_formation_flight_over_Wake_Island_-_June_2025.jpg"
     },
     {
       "key": "commons-52789404",
@@ -6525,7 +7493,11 @@
       "height": 2752,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "30e39cb8e2d59db711ae118a9c70cbdca35bc8cc95a424b66084538b241d2ff2",
+      "size": 5625856,
+      "retrieved_utc": "2026-09-16T23:25:46Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/05/Furnace_Creek_Resort_%288%29.JPG"
     },
     {
       "key": "commons-452665",
@@ -6552,7 +7524,11 @@
       "height": 1395,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f21151c88d52e91fe7accb38b0234fa601e82a1028dc8dfad12f92a0d39ab19d",
+      "size": 1422159,
+      "retrieved_utc": "2026-09-16T23:25:51Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Navy_binoculars.jpg"
     },
     {
       "key": "commons-131832269",
@@ -6578,7 +7554,11 @@
       "height": 4000,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "6c43736433480b687221760f311b30c59351d1f526576b47f9f0aa1ccbd2fd8d",
+      "size": 6868603,
+      "retrieved_utc": "2026-09-16T23:25:55Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/66/Grazing_on_Eldridge_WPA_Lake_Andes_Wetland_Management_District_South_Dakota_%2852892317783%29.jpg"
     },
     {
       "key": "commons-68899780",
@@ -6605,7 +7585,11 @@
       "height": 3264,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "c161a59c4adf011fa77b6c2f6f758073e7f4b9b2d1a6922f0a15d4659ffc5dc6",
+      "size": 2515505,
+      "retrieved_utc": "2026-09-16T23:25:59Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/38/170828-FS-Inyo-PRW-MountRitter_%2837049555245%29.jpg"
     },
     {
       "key": "commons-61587687",
@@ -6632,7 +7616,11 @@
       "height": 2304,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "a823d06122d7cd7976916accd5b8fb021c2dd2f50f470567a6cee0a8d4e6177a",
+      "size": 2347960,
+      "retrieved_utc": "2026-09-16T23:26:04Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/80/Fairchild_Republic_A-10_Thunderbolt_II_-_32156159151.jpg"
     },
     {
       "key": "commons-161500172",
@@ -6659,7 +7647,11 @@
       "height": 2478,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "eee8151f7a64e07b5b3eb477e5122bcbcca9e12f964d11e2ef6276662a941222",
+      "size": 10329831,
+      "retrieved_utc": "2026-09-16T23:26:11Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/53/White-crowned_Sparrow_%2851152535875%29.jpg"
     },
     {
       "key": "commons-72230724",
@@ -6686,7 +7678,11 @@
       "height": 4000,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "edbf0b50bdbc46c3399b3ff42039bf3143341b6f1055d7d3d5329d2deb289c51",
+      "size": 2374022,
+      "retrieved_utc": "2026-09-16T23:26:15Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/3/35/170426-N-N0901-006_%2834244860332%29.jpg"
     },
     {
       "key": "commons-29808570",
@@ -6713,7 +7709,11 @@
       "height": 4000,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "dd94f5fc596d1807f40783aedab8f26ac55ad78bbfd64b1a6a7cb2f82078f6cf",
+      "size": 11239424,
+      "retrieved_utc": "2026-09-16T23:26:20Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/10/The_National_Park_Services_Matt_Cooke_rappels_to_reach_spread_avens_plantseum_survey_Matt_Cooke_4-GP_%289408863704%29.jpg"
     },
     {
       "key": "commons-68904949",
@@ -6740,7 +7740,11 @@
       "height": 4139,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "75f2eaba033d98279dd6b0689bdff59ec8b204e25b0b683005af00e206328bd9",
+      "size": 15208741,
+      "retrieved_utc": "2026-09-16T23:26:24Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/2017_Interagency_Wilderness_Ranger_Academy_%2835575212195%29.jpg"
     },
     {
       "key": "commons-20630708",
@@ -6767,7 +7771,11 @@
       "height": 2832,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "ab6ad568aff20691af5cf5dde6cb8aea4e160c9a288c325174953152370fb0eb",
+      "size": 4867759,
+      "retrieved_utc": "2026-09-16T23:26:29Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/11/Defense.gov_News_Photo_120723-F-HA794-089_-_A_U.S._Air_Force_firefighter_sprays_water_at_the_fire_of_a_simulated_C-130_Hercules_plane_crash_during_operational_readiness_exercise_Beverly.jpg"
     },
     {
       "key": "commons-96586278",
@@ -6794,7 +7802,11 @@
       "height": 2848,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "ff3d2ad61cbd91ba3b31ef95f9464c293191f0c2e9b067ec73e035de9c4d1395",
+      "size": 7060434,
+      "retrieved_utc": "2026-09-16T23:26:33Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/78/814_Lurch_on_a_bear_carcass_%2810462986403%29.jpg"
     },
     {
       "key": "commons-120905461",
@@ -6820,7 +7832,11 @@
       "height": 2396,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "63dc5c67a2c652acfd081dea7a6d225c07085a71a31e9ae0ec33e678ede23813",
+      "size": 6835434,
+      "retrieved_utc": "2026-09-16T23:26:38Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Secretary_of_the_Army_visits_USSPACECOM_%287329672%29.jpeg"
     },
     {
       "key": "commons-51832594",
@@ -6846,7 +7862,11 @@
       "height": 3744,
       "group_label": "PD-USGov-FWS",
       "dir": "FWS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "3ce93e55ca09192b1558a946092f5e0dec48dcbab078f2699b843f499f28a047",
+      "size": 4933378,
+      "retrieved_utc": "2026-09-16T23:26:44Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/02/Day_4_-_Tom%27s_Cove%2C_Chincoteague_National_Wildlife_Refuge-_Hurricane_Sandy_Aerial_Tour_%2816042991404%29.jpg"
     },
     {
       "key": "commons-68785757",
@@ -6873,7 +7893,11 @@
       "height": 4256,
       "group_label": "PD-USGov-USDA",
       "dir": "USDA",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "adedf2b93c22eeb8947458fa62f58ea270d8b9290b5d6a75918ccd75f503b9c3",
+      "size": 4472538,
+      "retrieved_utc": "2026-09-16T23:26:49Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/2/27/DSC0122_%2824746204969%29.jpg"
     },
     {
       "key": "commons-97354045",
@@ -6899,7 +7923,11 @@
       "height": 2931,
       "group_label": "PD-USGov-Military-Air Force",
       "dir": "Military-Air-Force",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "207cb7faef3d451f9f0c867c04827caa37d7096b1baa9f33c0f1b0b3e42c54e9",
+      "size": 3125198,
+      "retrieved_utc": "2026-09-16T23:26:53Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/f9/A_Boeing_B-52H_Stratofortress_in_flight_over_the_Persian_Gulf_%28190521-F-XN348-9173%29.jpg"
     },
     {
       "key": "commons-45992547",
@@ -6926,7 +7954,11 @@
       "height": 2848,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "cd71184f07950bda98ed5ffd8ea830700c96513e7616bef3f8b58144439ab5fb",
+      "size": 5805978,
+      "retrieved_utc": "2026-09-16T23:26:58Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Oolah_Valley_%2816089307144%29.jpg"
     },
     {
       "key": "commons-3569442",
@@ -6953,7 +7985,11 @@
       "height": 2480,
       "group_label": "PD-USGov-Military-Navy",
       "dir": "Military-Navy",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "3a9b039d677f46417b6dfbc42f5c05210b0a60eea17c734c663861ceaccb7deb",
+      "size": 1185097,
+      "retrieved_utc": "2026-09-16T23:27:02Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/8a/JDS_Inazuma_DD105.jpg"
     },
     {
       "key": "commons-24123427",
@@ -6980,7 +8016,11 @@
       "height": 1712,
       "group_label": "PD-USGov-NPS",
       "dir": "NPS",
-      "alloc": "f12-heldout-usgov-photos-large"
+      "alloc": "f12-heldout-usgov-photos-large",
+      "sha256": "f2f4c40d25c1b7b8c54b2a97fc437818867a4a2ac2d455226e77f5bfafee5f13",
+      "size": 1121290,
+      "retrieved_utc": "2026-09-16T23:27:06Z",
+      "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Big_Bend_National_Park_PB112584.jpg"
     }
   ]
 }

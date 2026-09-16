@@ -1,0 +1,114 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-validation-sintel-media-large",
+  "family": "F13",
+  "split": "validation",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-blender-sintel",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "85fefe12eac3ceebe72ea9f4c415db58659144ef6aa2dfd192b288a8ac425963",
+  "materialization_key": "e37f6a2ac53f5ddc82ab3a811c3ca7395d10a013c420ad8cfb12d06e1859acc9",
+  "materialized_utc": "2026-09-16T23:31:27Z",
+  "materialized_relpath": "corpus/validation/f13-validation-sintel-media-large",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "8208545aaefec2aa921e5b064d7702f18dcd32ec4d1d6437f5837585f6ef2e1d",
+    "pinned_utc": "2026-09-16T23:31:27Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 1861375870,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "sintel-full-7daefc26a122",
+        "url": "https://download.blender.org/durian/movies/Sintel.2010.1080p.mkv",
+        "final_url": "https://download.blender.org/durian/movies/Sintel.2010.1080p.mkv",
+        "sha256": "97f1dbc66231df42ad49bd8c29aa174b8f48933058e47e7157d4ba63d93a8efa",
+        "size": 1180090590,
+        "retrieved_utc": "2026-09-16T23:20:36Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Sintel.2010.1080p.mkv"
+      },
+      {
+        "name": "sintel-full-26aa7d75cfe3",
+        "url": "https://download.blender.org/durian/movies/Sintel.2010.720p.mkv.zip",
+        "final_url": "https://download.blender.org/durian/movies/Sintel.2010.720p.mkv.zip",
+        "sha256": "d252f898641b20f51c64206f31063e659c28b152a9d988936736d1b56e6e4db3",
+        "size": 681285470,
+        "retrieved_utc": "2026-09-16T23:20:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Sintel.2010.720p.mkv.zip"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "sintel-full-7daefc26a122",
+        "dest": "Sintel.2010.1080p.mkv"
+      },
+      {
+        "op": "extract",
+        "input": "sintel-full-26aa7d75cfe3",
+        "format": "zip"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "bsdtar": "bsdtar 3.7.2 - libarchive 3.7.2 zlib/1.3 liblzma/5.4.5 bz2lib/1.0.8 liblz4/1.9.4 libzstd/1.5.5",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "4bc8cc30931e35328268080b995b29296a4e37518af9261b716ece28498c7c9d",
+    "logical_tree_sha256": "8208545aaefec2aa921e5b064d7702f18dcd32ec4d1d6437f5837585f6ef2e1d",
+    "content_tree_sha256": "3f3475eeff73b62a171f5771e22c1b422f86992978d9b25f7524f632f6920e0b",
+    "extended_tree_sha256": "68311121b7cb8aff95f29cdaeb845bfb9755c6b5c57a6128f862508cf0ee0238",
+    "bytes": 1861375870,
+    "bytes_all_paths": 1861375870,
+    "allocated_bytes": 1861386240,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "unique_file_inodes": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 21,
+      "path_length_bytes": {
+        "min": 20,
+        "max": 21,
+        "mean": 20.5,
+        "p50": 20,
+        "p95": 21
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,126 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f13-heldout-phone-matrix-small",
+  "family": "F13",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "build",
+  "real_or_generated": "generated",
+  "independence_group": "g5-loc-highsmith",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "63ed2493be5cbc9bc98a0de5f5fda88f696fb03878c78cee130e02d94c603472",
+  "materialization_key": "184fdd6d68ad87b548d8ddf45f01488be94d82496ac581af102175524db867df",
+  "materialized_utc": "2026-09-16T23:30:53Z",
+  "materialized_relpath": "heldout/f13-heldout-phone-matrix-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "9f04c7ab5cc523646fc1fac53c2860ac050643fbeb8936ca79fc31e661aabea3",
+    "pinned_utc": "2026-09-16T23:30:53Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 3124069,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "loc-highsm-02603",
+        "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/02600/02603u.tif",
+        "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/02600/02603u.tif",
+        "sha256": "d9a652adec7c8cae8e033efbe461d2e346126cef93e99d74d55346f72274ff8c",
+        "size": 78474306,
+        "retrieved_utc": "2026-09-13T02:27:35Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "02603u.tif"
+      },
+      {
+        "name": "loc-highsm-03632",
+        "url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03632u.tif",
+        "final_url": "https://tile.loc.gov/storage-services/master/pnp/highsm/03600/03632u.tif",
+        "sha256": "2acc9a649ffccaef644d7e16e21438a0300f81f33b396e958ea6ae9edaa62fcd",
+        "size": 51266504,
+        "retrieved_utc": "2026-09-13T02:27:36Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "03632u.tif"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g5-media/phone_matrix.py",
+      "script_sha256": "9f91265670e0e2c1183df3a936bb99145611b2e4e91cc3e01391033c0ec16158",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 3401,
+      "params": {
+        "inputs": [
+          "loc-highsm-02603",
+          "loc-highsm-03632"
+        ],
+        "long_edge": 4032,
+        "heic_qualities": [
+          35,
+          55
+        ],
+        "heic_thumb_at": 1,
+        "video": {
+          "seconds": 2,
+          "fps": 30,
+          "crf": 30,
+          "keyint": 60,
+          "resolutions": [
+            [
+              1920,
+              1080
+            ],
+            [
+              1080,
+              1920
+            ]
+          ]
+        },
+        "require_tools": {
+          "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5",
+          "heif-enc": "1.17.6",
+          "pillow": "Pillow 12.3.0"
+        },
+        "max_bytes": 15728640
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "dd42448b901d77c162af134712d15ad901354c670b34596d848f69324f67fbe8",
+    "logical_tree_sha256": "9f04c7ab5cc523646fc1fac53c2860ac050643fbeb8936ca79fc31e661aabea3",
+    "content_tree_sha256": "567092d780eb9694f3afc7326d286e87ec6d748df9352e77853a80b8e4f638bb",
+    "extended_tree_sha256": "7ec363bcafb525abd8deb90937c197afb881f16751f620d821fb956e41ced49c",
+    "bytes": 3124069,
+    "counts": {
+      "objects": 11,
+      "files": 8,
+      "dirs": 2,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

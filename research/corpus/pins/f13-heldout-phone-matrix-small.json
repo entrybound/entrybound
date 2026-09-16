@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f13-heldout-phone-matrix-small",
+  "inputs": {},
+  "output": {
+    "materialization_key": "184fdd6d68ad87b548d8ddf45f01488be94d82496ac581af102175524db867df",
+    "logical_tree_sha256": "9f04c7ab5cc523646fc1fac53c2860ac050643fbeb8936ca79fc31e661aabea3",
+    "pinned_utc": "2026-09-16T23:30:53Z"
+  },
+  "history": []
+}

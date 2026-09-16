@@ -1,0 +1,30 @@
+{
+  "pool": "nasa-video-naca",
+  "rules": "F13 held-out non-benchmark large item (round-1 fix G21): a real NASA-produced mp4 from the\n    NASA Image and Video Library video search. Every other F13 production pipeline (Blender\n    open-movie renders, LibriVox audiobooks, Musopen/Prelinger archive.org transcodes, scanner/PDF\n    government documents) already appears somewhere else in the corpus; NASA video does not appear\n    in F13 at all (only NASA *photos*, a different family, use NASA). Excludes third-party-credited\n    footage with the same rule as nasa-ivl-photos (F12), then picks deterministically: the\n    smallest-nasa_id candidate (stable across reruns unless NASA's catalog itself changes) whose\n    ~orig.mp4/.mov lands in a moderate large-tier band, so this stays a single real file rather\n    than a multi-gigabyte download.",
+  "selection_seed": 20260912,
+  "selected_utc": "2026-09-16T23:19:59Z",
+  "entries": [
+    {
+      "key": "nasa-video-20250220-AAV3549-NACA-Series-AllEpisodes-v1",
+      "url": "https://images-assets.nasa.gov/video/20250220-AAV3549-NACA-Series-AllEpisodes-v1/20250220-AAV3549-NACA-Series-AllEpisodes-v1~orig.mp4",
+      "name": "20250220-AAV3549-NACA-Series-AllEpisodes-v1~orig.mp4",
+      "api_size": 2135226142,
+      "api_md5": null,
+      "alloc": "f13-heldout-nasa-video-naca-large",
+      "license": {
+        "spdx_or_name": "NASA media (US Government work, public domain in the US)",
+        "attribution": "NASA/ARC",
+        "source_page": "https://images.nasa.gov/details/20250220-AAV3549-NACA-Series-AllEpisodes-v1"
+      },
+      "meta": {
+        "center": "ARC",
+        "date": "2025-02-20",
+        "title": "Launching the Future of Flight, The National Advisory Committee for Aeronautics (Complete NACA series)"
+      },
+      "sha256": "497efb209e36285dc5518cd2371bab3c9efb37a11d2ef8e83e3f97831a1ca46f",
+      "size": 2135226142,
+      "retrieved_utc": "2026-09-16T23:21:16Z",
+      "final_url": "https://images-assets.nasa.gov/video/20250220-AAV3549-NACA-Series-AllEpisodes-v1/20250220-AAV3549-NACA-Series-AllEpisodes-v1~orig.mp4"
+    }
+  ]
+}

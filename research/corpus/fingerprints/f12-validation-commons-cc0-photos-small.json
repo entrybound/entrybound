@@ -1,0 +1,225 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f12-validation-commons-cc0-photos-small",
+  "family": "F12",
+  "split": "validation",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "g5-commons-cc0-photos",
+  "source_file": "research/corpus/sources/g5-media.json",
+  "item_def_sha256": "e14c602a93df98812112b8827f9faafb74caece3e338fd4458b7d265a866a4e4",
+  "materialization_key": "eb27174f8e92384e9ac4b84748801e6f06c4d07e095b03052db3015dd68db7e5",
+  "materialized_utc": "2026-09-16T23:28:31Z",
+  "materialized_relpath": "corpus/validation/f12-validation-commons-cc0-photos-small",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "b25fc1866d1947ca0d8bc01486a05327e8cd184f53272cf74142a47d49cec9d9",
+    "pinned_utc": "2026-09-16T23:28:31Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 15358461,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "commons-25958014",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Ardea_cinerea_in_flight.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Ardea_cinerea_in_flight.jpg",
+        "sha256": "aa48945970dc34cec0d9093984bfba3b2287e43f6d85da7ed2d113b57311fc36",
+        "size": 2508558,
+        "retrieved_utc": "2026-09-16T23:02:58Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Ardea_cinerea_in_flight.jpg"
+      },
+      {
+        "name": "commons-164595216",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c2/C62_3_Niseko_%282%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/c/c2/C62_3_Niseko_%282%29.jpg",
+        "sha256": "304db70951a2c9f0e3d8d14835c60a09d569113e1fe76d75ea1285161912a5ea",
+        "size": 739000,
+        "retrieved_utc": "2026-09-16T23:03:55Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-164595216"
+      },
+      {
+        "name": "commons-48095355",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/54/CRS-8_%2826239020092%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/54/CRS-8_%2826239020092%29.jpg",
+        "sha256": "2964448fbe82732bb1cb03a06f1e6b258be9ad0722bc967b580bb8aac8bc20ee",
+        "size": 795301,
+        "retrieved_utc": "2026-09-16T23:03:35Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-48095355"
+      },
+      {
+        "name": "commons-14832281",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Common_Pierrot_Castalius_rosimon_by_kadavoor.JPG",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Common_Pierrot_Castalius_rosimon_by_kadavoor.JPG",
+        "sha256": "9ed604042c5bc558f1fa92a051879e3a03f42925dd950494da8ed5c1ae035119",
+        "size": 1212715,
+        "retrieved_utc": "2026-09-16T23:02:49Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Common_Pierrot_Castalius_rosimon_by_kadavoor.JPG"
+      },
+      {
+        "name": "commons-11726877",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Great_Wall_of_China_July_2006.JPG",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Great_Wall_of_China_July_2006.JPG",
+        "sha256": "047aa0874b244ed68973843d8bb52b5c998084c98e273e6adf66eb29ab8179fa",
+        "size": 754922,
+        "retrieved_utc": "2026-09-16T23:03:17Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Great_Wall_of_China_July_2006.JPG"
+      },
+      {
+        "name": "commons-18942829",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/17/La_mort_Saint-Innocent_Louvre_R.F.2625.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/1/17/La_mort_Saint-Innocent_Louvre_R.F.2625.jpg",
+        "sha256": "3b548327c424ee871fab3457989e67cd65510f716f9b0e843a965a5524e5185b",
+        "size": 1492029,
+        "retrieved_utc": "2026-09-16T23:02:40Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "La_mort_Saint-Innocent_Louvre_R.F.2625.jpg"
+      },
+      {
+        "name": "commons-89073563",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/8/81/Pr%C3%A9paration_d%27une_tarte_%C3%A0_la_tomate_%2806%29_-_sortie_du_four.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/8/81/Pr%C3%A9paration_d%27une_tarte_%C3%A0_la_tomate_%2806%29_-_sortie_du_four.jpg",
+        "sha256": "e1478791d2fe8dba4815178447a95642a4bd07bb7790bcfd3e604641b1447116",
+        "size": 3022211,
+        "retrieved_utc": "2026-09-16T23:03:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-89073563"
+      },
+      {
+        "name": "commons-99480286",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Sally_Lightfoot_Crab_2019.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Sally_Lightfoot_Crab_2019.jpg",
+        "sha256": "b961ee6a9e06088e06628e6e4b305ed35255fb7d466d175d466af667c4499968",
+        "size": 1797489,
+        "retrieved_utc": "2026-09-16T23:03:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "Sally_Lightfoot_Crab_2019.jpg"
+      },
+      {
+        "name": "commons-100803904",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/08/The_dunnock_%28Prunella_modularis%29.jpg",
+        "final_url": "https://upload.wikimedia.org/wikipedia/commons/0/08/The_dunnock_%28Prunella_modularis%29.jpg",
+        "sha256": "60374108fe51f797bb21a7bc170716dede5a51a319b407632c4df9c6fd205e04",
+        "size": 3036236,
+        "retrieved_utc": "2026-09-16T23:02:54Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "commons-100803904"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "commons-25958014",
+        "dest": "photos/Ardea cinerea in flight.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-164595216",
+        "dest": "photos/C62 3 Niseko (2).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-48095355",
+        "dest": "photos/CRS-8 (26239020092).jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-14832281",
+        "dest": "photos/Common Pierrot Castalius rosimon by kadavoor.JPG"
+      },
+      {
+        "op": "copy",
+        "input": "commons-11726877",
+        "dest": "photos/Great Wall of China July 2006.JPG"
+      },
+      {
+        "op": "copy",
+        "input": "commons-18942829",
+        "dest": "photos/La mort Saint-Innocent Louvre R.F.2625.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-89073563",
+        "dest": "photos/Préparation d'une tarte à la tomate (06) - sortie du four.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-99480286",
+        "dest": "photos/Sally Lightfoot Crab 2019.jpg"
+      },
+      {
+        "op": "copy",
+        "input": "commons-100803904",
+        "dest": "photos/The dunnock (Prunella modularis).jpg"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "4535b66b258976d5ffec1e450101c375cd0372fb6eda84b4921fae3aae868b0a",
+    "logical_tree_sha256": "b25fc1866d1947ca0d8bc01486a05327e8cd184f53272cf74142a47d49cec9d9",
+    "content_tree_sha256": "f8c976263d18c10a8fff6667f2d9364aa3fb0ae2bb334581e15b5f14a9994b63",
+    "extended_tree_sha256": "b84cf5fa68c551c5578f08ce48d75476222517bc3e0cc302c9a6b300ed408c30",
+    "bytes": 15358461,
+    "bytes_all_paths": 15358461,
+    "allocated_bytes": 15380480,
+    "counts": {
+      "objects": 11,
+      "files": 9,
+      "unique_file_inodes": 9,
+      "dirs": 1,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 2,
+      "max_name_length_bytes": 63,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 70,
+        "mean": 39.0,
+        "p50": 36,
+        "p95": 70
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}
