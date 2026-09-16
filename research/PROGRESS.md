@@ -143,3 +143,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T22:32Z — Round 1 spec/research critic addenda: 1 new decision, 2 decision and 26 requirement corrections.
 - 2026-09-16T22:33Z — Corpus assembly round 0: manifest/statistics/coverage/licenses generated for all 196 items (131 tuning+validation stats, 0 missing/stale); heldout-lock draft (65 items, not frozen); 27/196 fingerprints (13.8%) spot-verified by recomputation; added an st_blocks/logical_tree_sha256 regression test; consolidated ebr's held-out guard onto corpuslib.assert_not_heldout().
 - 2026-09-16T22:33Z — round 1 appendix/docs critic addendum: 3 requirements + 1 decision added, 9 corrections
+- 2026-09-16T22:34Z — round1 program-code critic: 14 req + 10 dec added, 9 corrections; dry-run assembly 0 errors
