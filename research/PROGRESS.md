@@ -147,3 +147,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T22:41Z — Phase A assembly round 1: 1518 requirements, 593 decisions, 0 uncovered extraction keys, 0 validation errors (8 addenda near-duplicate candidates kept distinct; 70 primary keys made visible).
 - 2026-09-16T22:54Z — Corpus round-1 critic: INCOMPLETE, 25 gaps (7 blockers: ML weights, DB dumps, supply-chain, home backups, cross-platform metadata, encrypted private archives, F12 held-out groups)
 - 2026-09-16T23:01Z — archetypal-objective.md pre-registration draft: 17 HCs (all I1-I31 mapped, MVTs), 26 ODs, generated ledger screen
+- 2026-09-16T23:05Z — Prepared research/orchestration/workflows/phase-b2r-harness.js; launch after A3/B1d finish and usage permits (weekly 10% at 2026-09-16 ~23:05Z).
