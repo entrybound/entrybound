@@ -140,3 +140,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T21:40Z — g2-generated F20 provisioned and fingerprinted (10 items: 3 tuning, 3 validation, 4 heldout across 3 independence groups); all 5 g2-generated families now provisioned. gear-norm-v1 reference generators cross-checked against entrybound::chunker (0 mismatches).
 - 2026-09-16T21:45Z — legacy-tar-7z-streams merged: 98 requirements, 23 decisions, 429/429 keys, 41 cross-referenced committed decisions
 - 2026-09-16T22:12Z — Phase A assembly round 0: 1501 requirements, 581 decisions, 0 uncovered extraction keys, 0 validation errors (29+9 near-duplicate merges, 20 integrity addenda).
+- 2026-09-16T22:32Z — Round 1 spec/research critic addenda: 1 new decision, 2 decision and 26 requirement corrections.
