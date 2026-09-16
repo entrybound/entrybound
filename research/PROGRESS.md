@@ -126,3 +126,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T21:22Z — compression-chunking merged: 62 requirements, 16 decisions, 427/427 keys mapped
 - 2026-09-16T21:23Z — legacy-zip merged: 82 requirements, 30 decisions, 422/422 keys
 - 2026-09-16T21:24Z — ecosystem-conformance-deps merged: 75 requirements, 24 decisions, 475/475 keys
+- 2026-09-16T21:27Z — platform-metadata merge: 71 requirements, 41 decisions, 351/351 keys covered
