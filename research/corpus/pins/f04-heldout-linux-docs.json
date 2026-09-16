@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f04-heldout-linux-docs",
+  "inputs": {},
+  "output": {
+    "materialization_key": "a496ed90c8761d2b90b974796c44de48b07ac32ed9988d338877a52ba1aec9f0",
+    "logical_tree_sha256": "b55b1016d9abd543df33006f39331a96d6cddd7f06fb933beab6eaeea6a985ae",
+    "pinned_utc": "2026-09-16T21:32:33Z"
+  },
+  "history": []
+}

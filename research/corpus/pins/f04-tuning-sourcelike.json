@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f04-tuning-sourcelike",
+  "inputs": {},
+  "output": {
+    "materialization_key": "68ef7510dd6f06f658c2a6a2e2453089fd7afd19ef537c1bb481c6c80e3c7b7b",
+    "logical_tree_sha256": "9f1b793b5a8e326076062ffe3078b587b6450af425365ac759cf74507a20032c",
+    "pinned_utc": "2026-09-16T21:33:18Z"
+  },
+  "history": []
+}

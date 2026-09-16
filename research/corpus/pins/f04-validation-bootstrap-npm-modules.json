@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f04-validation-bootstrap-npm-modules",
+  "inputs": {},
+  "output": {
+    "materialization_key": "da2f87ba21b286d98bbf606dce02b155c52800f512a431dbef0c3cf2a87e4b28",
+    "logical_tree_sha256": "9348e03e8c316a9724d765a0901ae969c53e96625b519434e249fe0cd8087e74",
+    "pinned_utc": "2026-09-16T21:32:53Z"
+  },
+  "history": []
+}

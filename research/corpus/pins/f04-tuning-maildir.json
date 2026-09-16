@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f04-tuning-maildir",
+  "inputs": {},
+  "output": {
+    "materialization_key": "e7ee7b7c276f9dab0d1f1a85454a6a03fe4eb602adebaaf48f0744be98e017ea",
+    "logical_tree_sha256": "7eff2fdcd39279f79ff04d1609519a52b35192b574ba2b18c2e9429be3b3ebe8",
+    "pinned_utc": "2026-09-16T21:32:04Z"
+  },
+  "history": []
+}

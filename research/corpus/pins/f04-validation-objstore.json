@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f04-validation-objstore",
+  "inputs": {},
+  "output": {
+    "materialization_key": "dc75d4f951564c492241468a72c4c17ed94c3f676f78b4d20ac6d015f9b0163b",
+    "logical_tree_sha256": "27ff02c7123fc31afbde0fe58f3123a6746b4b1c9cc475bed651c5be686c1c7f",
+    "pinned_utc": "2026-09-16T21:32:19Z"
+  },
+  "history": []
+}
