@@ -190,3 +190,46 @@ def test_families_without_manifest_rejected(spec_dict):
     spec_dict["corpus"] = {"splits": ["dev"], "families": ["text"]}
     with pytest.raises(SpecError, match="manifest"):
         parse_spec(spec_dict)
+
+
+def test_reads_corpus_framework_manifest_via_materialized_relpath(spec_dict, layout, tmp_path):
+    """corpus.manifest can point straight at research/corpus/tools' generated
+    research/corpus/manifest.json: item paths come from materialized_relpath
+    (relative to the data root), the same layout provision.py writes into it."""
+    (layout.data_root / "corpus" / "tuning").mkdir(parents=True)
+    (layout.data_root / "corpus" / "tuning" / "a").write_text("a")
+    (layout.heldout_root / "z").write_text("z")
+    man = tmp_path / "manifest.json"
+    man.write_text(json.dumps({
+        "manifest_format": "ebrc-manifest-v1",
+        "items": [
+            {"item_id": "a", "family": "F01", "split": "tuning", "status": "ok",
+             "materialized_relpath": "corpus/tuning/a"},
+            {"item_id": "z", "family": "F01", "split": "heldout", "status": "ok",
+             "materialized_relpath": "heldout/z"},
+        ],
+    }))
+    spec_dict["corpus"] = {"manifest": str(man)}
+    items = resolve_items(parse_spec(spec_dict), layout, heldout_ok=False)
+    assert [(i.split, i.item_id) for i in items] == [("tuning", "a")]
+    assert items[0].path == layout.data_root / "corpus" / "tuning" / "a"
+
+
+def test_heldout_refusal_delegates_to_corpuslib(spec_dict, layout):
+    """The path-membership check in resolve_items() is corpuslib.assert_not_heldout(),
+    not a second reimplementation (PROGRESS.md integration item)."""
+    from ebr import corpus as corpus_mod
+
+    cl = corpus_mod._corpuslib()
+    assert cl.__name__ == "ebr._corpuslib"
+    assert cl.assert_not_heldout.__module__ == "ebr._corpuslib"
+    assert callable(cl.assert_not_heldout) and issubclass(cl.HeldoutAccessError, Exception)
+    # and it is actually consulted: a manifest "path" override into the held-out root is refused.
+    man_dir = layout.data_root / "man"
+    man_dir.mkdir()
+    (layout.heldout_root / "secret").write_text("x")
+    man = man_dir / "manifest.jsonl"
+    man.write_text(json.dumps({"item_id": "secret", "split": "dev", "path": str(layout.heldout_root / "secret")}))
+    spec_dict["corpus"] = {"manifest": str(man)}
+    with pytest.raises(HeldoutLocked, match="inside the held-out root"):
+        resolve_items(parse_spec(spec_dict), layout, heldout_ok=False)

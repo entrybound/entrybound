@@ -151,7 +151,37 @@ print("sensitivity: mtime->extended only, mode->logical, xattr->logical, hardlin
 PY
 pass "fingerprint semantics"
 
-# ---- 5. tamper and pin mismatch fail loudly ----------------------------------------------------
+# ---- 5. regression: logical_tree_sha256 excludes st_blocks (ext4 delayed-allocation defect) ------
+# tree_sha256 records raw st_blocks, which ext4 can settle to a different value after delayed
+# allocation flushes (same content, same logical layout, different allocated block count). Corpus
+# identity, held-out locking and verification must key on logical_tree_sha256, which must be
+# unaffected. This constructs two fabricated stat_results that agree on every field except
+# st_blocks and drives fingerprint.finalize() directly, so the check does not depend on coaxing a
+# real filesystem into delayed allocation.
+"$PY" - <<'PY' || fail "st_blocks regression"
+import os, stat, sys
+sys.path.insert(0, os.environ["HERE"])
+import fingerprint as f
+
+def make(blocks):
+    seq = (stat.S_IFREG | 0o644, 424242, 7, 1, 1000, 1000, 4096, 0, 0, 0)
+    st = os.stat_result(seq, {"st_blocks": blocks, "st_mtime_ns": 1700000000000000000,
+                              "st_ctime_ns": 1700000000000000000, "st_atime_ns": 0})
+    entry = f.Entry(b"", st, "file", None, (), 0)
+    sc = f.Scan(b"/selftest-synthetic", [entry], "file")
+    contents = {(st.st_dev, st.st_ino): ("ab" * 32, [(0, 4096)])}  # single "full" extent, no holes
+    return f.finalize(sc, contents)
+
+a, b = make(8), make(999999)  # same content/layout, wildly different allocated-block counts
+assert a["logical_tree_sha256"] == b["logical_tree_sha256"], "st_blocks must not affect logical_tree_sha256"
+assert a["content_tree_sha256"] == b["content_tree_sha256"], "st_blocks must not affect content_tree_sha256"
+assert a["tree_sha256"] != b["tree_sha256"], "tree_sha256 is documented as allocation-bound (includes st_blocks)"
+assert a["extended_tree_sha256"] != b["extended_tree_sha256"]
+print("st_blocks 8 vs 999999: logical/content_tree_sha256 stable, tree/extended_tree_sha256 differ as documented")
+PY
+pass "logical_tree_sha256 is st_blocks-independent (regression for the ext4 delayed-allocation defect)"
+
+# ---- 6. tamper and pin mismatch fail loudly ----------------------------------------------------
 printf 'tamper' >> "$ITEM/empty.txt"
 expect_rc 1 "HASH MISMATCH" T provision --item st-gen-tuning --verify full
 expect_rc 0 "materialized" T provision --item st-gen-tuning --rebuild
@@ -169,7 +199,7 @@ printf 'upstream blob v1\n' > "$ST/upstream/blob.txt"
 expect_rc 0 "materialized" T provision --item st-dl-tuning --rebuild
 pass "TOFU-pinned download drift fails loudly"
 
-# ---- 6. stats ------------------------------------------------------------------------------------
+# ---- 7. stats ------------------------------------------------------------------------------------
 expect_rc 0 "5 ok, 0 failed" T stats --all --jobs 2
 cat "$ST/last.out"
 expect_rc 0 "up-to-date" T stats --item st-gen-tuning
@@ -211,12 +241,15 @@ assert got == 3 * (1 << 20), got
 PY
 pass "compressibility sampler takes exactly the budget"
 
-# ---- 7. assemble, determinism, freeze ---------------------------------------------------------------
+# ---- 8. assemble, determinism, freeze ---------------------------------------------------------------
 expect_rc 0 "status=draft" T assemble --require-all --require-stats
 cat "$ST/last.out"
 cp "$ST/corpus/manifest.json" "$ST/m1.json"; cp "$ST/corpus/statistics.json" "$ST/s1.json"
+cp "$ST/corpus/coverage.md" "$ST/c1.md"; cp "$ST/corpus/licenses.md" "$ST/lic1.md"
 expect_rc 0 "manifest" T assemble
-cmp "$ST/m1.json" "$ST/corpus/manifest.json" && cmp "$ST/s1.json" "$ST/corpus/statistics.json" || fail "assemble not deterministic"
+cmp "$ST/m1.json" "$ST/corpus/manifest.json" && cmp "$ST/s1.json" "$ST/corpus/statistics.json" \
+  && cmp "$ST/c1.md" "$ST/corpus/coverage.md" && cmp "$ST/lic1.md" "$ST/corpus/licenses.md" \
+  || fail "assemble not deterministic"
 "$PY" - "$ST/corpus/manifest.json" <<'PY' || fail "manifest_sha256"
 import json, sys, hashlib
 m = json.load(open(sys.argv[1])); h = m.pop("manifest_sha256")
@@ -224,6 +257,13 @@ assert hashlib.sha256(json.dumps(m, sort_keys=True, separators=(",", ":"), ensur
 assert m["coverage"]["family_split_scale"]["F19"]["heldout"]["small"]["items"] == 1
 PY
 pass "assemble deterministic; manifest_sha256 verifies"
+grep -q "Independence groups" "$ST/corpus/coverage.md" || fail "coverage.md missing independence groups section"
+grep -q "Real vs. generated" "$ST/corpus/coverage.md" || fail "coverage.md missing real-vs-generated section"
+grep -q "st-gen-a" "$ST/corpus/coverage.md" || fail "coverage.md missing independence group ids"
+grep -q "^# Corpus licenses" "$ST/corpus/licenses.md" || fail "licenses.md missing header"
+grep -q "CC0-1.0" "$ST/corpus/licenses.md" || fail "licenses.md missing selftest license"
+grep -q "every item is marked .redistributable: true." "$ST/corpus/licenses.md" || fail "licenses.md non-redistributable section wrong"
+pass "coverage.md and licenses.md generated and deterministic"
 expect_rc 0 "status=frozen" T assemble --freeze
 expect_rc 0 "OK" T assemble --verify-heldout
 write_sources 4 ""
@@ -235,7 +275,7 @@ expect_rc 0 "status=frozen" T assemble
 pass "frozen held-out set guarded; restored set accepted"
 echo "fingerprint of held-out lock: $(jget "$ST/corpus/heldout-lock.json" heldout_set_sha256)"
 
-# ---- 8. optional docker-export (network): SELFTEST_DOCKER_IMAGE=name:tag@sha256:<index digest> ----
+# ---- 9. optional docker-export (network): SELFTEST_DOCKER_IMAGE=name:tag@sha256:<index digest> ----
 if [[ -n "${SELFTEST_DOCKER_IMAGE:-}" ]]; then
   mkdir -p "$ST/dcorpus/sources"
   printf '%s\n' "{\"schema\":\"ebrc-sources-v1\",\"items\":[

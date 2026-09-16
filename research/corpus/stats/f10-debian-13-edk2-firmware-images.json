@@ -1,0 +1,281 @@
+{
+  "format": "ebrc-stats-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f10-debian-13-edk2-firmware-images",
+  "family": "F10",
+  "split": "validation",
+  "scale": "medium",
+  "logical_tree_sha256": "f191fac833b6fd97fe5d5da15cb33455f203bd58c4856838a0272d71fe45a766",
+  "tool": {
+    "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "file_version": "file-5.45",
+    "magic_mgc": {
+      "path": "/usr/lib/file/magic.mgc",
+      "sha256": "72a25195a2623fe160e926bf20952b6b74b29d6c91e0174a5fa062f02beee1aa"
+    },
+    "zstd_version": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+    "xz_version": "xz (XZ Utils) 5.4.5",
+    "numpy_version": "2.5.3",
+    "python": "3.12.3"
+  },
+  "params": {
+    "block_bytes": 4096,
+    "compress_max_bytes": 1073741824,
+    "zstd": "-3 -T1",
+    "xz": "-6 -T1",
+    "mime": "file --mime-type -b -N"
+  },
+  "totals": {
+    "unique_file_inodes": 34,
+    "bytes": 422658915,
+    "empty_files": 0,
+    "objects": 59
+  },
+  "content_types": {
+    "distinct": 6,
+    "by_count": {
+      "application/octet-stream": 10,
+      "text/plain": 8,
+      "application/json": 6,
+      "application/gzip": 5,
+      "application/x-compress-ttcomp": 4,
+      "text/x-shellscript": 1
+    },
+    "by_bytes": {
+      "application/octet-stream": 218103808,
+      "application/x-compress-ttcomp": 204472320,
+      "text/plain": 49786,
+      "application/gzip": 27733,
+      "application/json": 4324,
+      "text/x-shellscript": 944
+    }
+  },
+  "extensions": {
+    "distinct": 8,
+    "by_count": {
+      "fd": 14,
+      "json": 6,
+      "gz": 5,
+      "(none)": 2,
+      "debian": 2,
+      "key": 2,
+      "pem": 2,
+      "sh": 1
+    },
+    "by_bytes": {
+      "fd": 422576128,
+      "(none)": 36404,
+      "gz": 27733,
+      "debian": 6892,
+      "json": 4324,
+      "key": 3708,
+      "pem": 2782,
+      "sh": 944
+    }
+  },
+  "exact_duplicates": {
+    "nonempty_files": 34,
+    "nonempty_bytes": 422658915,
+    "distinct_contents": 31,
+    "duplicate_files": 3,
+    "duplicate_bytes": 21447,
+    "duplicate_file_ratio": 0.088235,
+    "duplicate_byte_ratio": 5.1e-05,
+    "note": "unique inodes (hardlinks counted once); empty files excluded"
+  },
+  "block_duplicates": {
+    "block_bytes": 4096,
+    "blocks": 103202,
+    "bytes": 422658915,
+    "duplicate_blocks": 101168,
+    "duplicate_bytes": 414376903,
+    "duplicate_block_ratio": 0.980291,
+    "duplicate_byte_ratio": 0.980405,
+    "full_blocks": 103182,
+    "zero_full_blocks": 95428,
+    "zero_full_block_ratio": 0.924851,
+    "unique_block_keys": 2034,
+    "method": "per-file fixed 4 KiB blocks from offset 0; tail block keyed with its length; BLAKE2b-128"
+  },
+  "entropy": {
+    "stream_order0_bits_per_byte": 0.676422,
+    "mean_full_block_entropy_bits_per_byte": 0.223122,
+    "byte_weighted_mean_file_entropy_bits_per_byte": 0.461139,
+    "file_entropy_histogram": {
+      "bins_bits_per_byte": [
+        "[0,1)",
+        "[1,2)",
+        "[2,3)",
+        "[3,4)",
+        "[4,5)",
+        "[5,6)",
+        "[6,7)",
+        "[7,8]"
+      ],
+      "files": [
+        9,
+        0,
+        0,
+        0,
+        13,
+        5,
+        2,
+        5
+      ],
+      "bytes": [
+        404275200,
+        0,
+        0,
+        0,
+        18312144,
+        40130,
+        3708,
+        27733
+      ]
+    },
+    "block_entropy_histogram": {
+      "block_bytes": 4096,
+      "note": "full 4 KiB blocks only",
+      "bins_bits_per_byte": [
+        "[0,0.5)",
+        "[0.5,1)",
+        "[1,1.5)",
+        "[1.5,2)",
+        "[2,2.5)",
+        "[2.5,3)",
+        "[3,3.5)",
+        "[3.5,4)",
+        "[4,4.5)",
+        "[4.5,5)",
+        "[5,5.5)",
+        "[5.5,6)",
+        "[6,6.5)",
+        "[6.5,7)",
+        "[7,7.5)",
+        "[7.5,8]"
+      ],
+      "blocks": [
+        100220,
+        8,
+        4,
+        1,
+        5,
+        8,
+        8,
+        4,
+        6,
+        8,
+        20,
+        31,
+        85,
+        6,
+        4,
+        2764
+      ]
+    }
+  },
+  "compressibility": {
+    "zstd -3": {
+      "input_bytes": 422658915,
+      "output_bytes": 11731123,
+      "ratio": 0.027756
+    },
+    "xz -6": {
+      "input_bytes": 422658915,
+      "output_bytes": 10895088,
+      "ratio": 0.025777
+    },
+    "sampled": false,
+    "note": "single-shot ratios over concatenated unique file contents in path order; indicator only, not a benchmark"
+  },
+  "metadata": {
+    "object_types": {
+      "dir": 19,
+      "file": 34,
+      "symlink": 6
+    },
+    "symlinks": {
+      "total": 6,
+      "absolute_target": 0,
+      "relative_escaping_root": 0,
+      "dangling_relative": 0,
+      "non_utf8_target": 0
+    },
+    "hardlinks": {
+      "groups": 0,
+      "extra_paths": 0,
+      "max_group_size": 0,
+      "files_with_links_outside_item": 0
+    },
+    "xattrs": {
+      "objects_with_xattrs": 0,
+      "names_by_namespace": {},
+      "total_value_bytes": 0,
+      "max_names_per_object": 0,
+      "acl_access_objects": 0,
+      "acl_default_dirs": 0
+    },
+    "sparse": {
+      "sparse_files": 0,
+      "apparent_bytes": 0,
+      "allocated_bytes": 0,
+      "data_extent_bytes": 0,
+      "hole_bytes": 0,
+      "all_hole_files": 0
+    },
+    "modes": {
+      "distinct": 2,
+      "top": {
+        "file:0644": 34,
+        "dir:0755": 19
+      },
+      "setuid": 0,
+      "setgid": 0,
+      "sticky": 0,
+      "world_writable_non_symlink": 0,
+      "executable_files": 0
+    },
+    "ownership": {
+      "distinct_uids": 1,
+      "distinct_gids": 1,
+      "top_uids": {
+        "0": 59
+      },
+      "top_gids": {
+        "0": 59
+      }
+    },
+    "names": {
+      "non_utf8": 0,
+      "control_chars": 0,
+      "newline": 0,
+      "windows_hostile": 0,
+      "case_insensitive_collisions": 1,
+      "max_name_bytes": 36
+    },
+    "mtimes": {
+      "min_s": 1762625177,
+      "max_s": 1789266400,
+      "distinct": 3,
+      "subsecond_nonzero": 3,
+      "before_1970": 0,
+      "after_2038_01_19": 0
+    },
+    "directories": {
+      "max_entries": 9,
+      "mean_entries": 3.052632
+    }
+  },
+  "structure": {
+    "max_depth": 6,
+    "max_name_length_bytes": 36,
+    "path_length_bytes": {
+      "min": 4,
+      "max": 77,
+      "mean": 41.845,
+      "p50": 43,
+      "p95": 64
+    }
+  }
+}

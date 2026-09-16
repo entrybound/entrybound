@@ -1,0 +1,363 @@
+{
+  "format": "ebrc-stats-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f03-tuning-ripgrep-cargo-vendor",
+  "family": "F03",
+  "split": "tuning",
+  "scale": "medium",
+  "logical_tree_sha256": "c9b78a73b5afefc97f77f059790229a001052c60c2485def1691ec0b52ead241",
+  "tool": {
+    "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "file_version": "file-5.45",
+    "magic_mgc": {
+      "path": "/usr/lib/file/magic.mgc",
+      "sha256": "72a25195a2623fe160e926bf20952b6b74b29d6c91e0174a5fa062f02beee1aa"
+    },
+    "zstd_version": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+    "xz_version": "xz (XZ Utils) 5.4.5",
+    "numpy_version": "2.5.3",
+    "python": "3.12.3"
+  },
+  "params": {
+    "block_bytes": 4096,
+    "compress_max_bytes": 1073741824,
+    "zstd": "-3 -T1",
+    "xz": "-6 -T1",
+    "mime": "file --mime-type -b -N"
+  },
+  "totals": {
+    "unique_file_inodes": 2568,
+    "bytes": 105438818,
+    "empty_files": 2,
+    "objects": 3254
+  },
+  "content_types": {
+    "distinct": 20,
+    "by_count": {
+      "text/plain": 1663,
+      "text/x-c": 627,
+      "application/json": 105,
+      "text/x-shellscript": 70,
+      "application/octet-stream": 49,
+      "text/xml": 9,
+      "application/x-archive": 8,
+      "text/html": 7,
+      "text/x-Algol68": 5,
+      "text/x-script.python": 5,
+      "text/csv": 4,
+      "text/x-c++": 3,
+      "text/x-makefile": 3,
+      "inode/x-empty": 2,
+      "text/x-asm": 2,
+      "text/x-java": 2,
+      "application/javascript": 1,
+      "image/svg+xml": 1,
+      "text/x-m4": 1,
+      "text/x-perl": 1
+    },
+    "by_bytes": {
+      "application/x-archive": 53722958,
+      "text/plain": 39150090,
+      "text/x-c": 9157238,
+      "application/octet-stream": 1643079,
+      "text/x-shellscript": 534980,
+      "text/xml": 268622,
+      "application/json": 263098,
+      "text/x-perl": 182667,
+      "text/x-java": 85714,
+      "text/x-m4": 83744,
+      "text/x-Algol68": 83432,
+      "text/x-script.python": 75742,
+      "text/csv": 40536,
+      "text/html": 35598,
+      "text/x-makefile": 33969,
+      "text/x-c++": 28777,
+      "application/javascript": 18091,
+      "image/svg+xml": 16154,
+      "text/x-asm": 14329,
+      "inode/x-empty": 0
+    }
+  },
+  "extensions": {
+    "distinct": 35,
+    "by_count": {
+      "rs": 1299,
+      "c": 256,
+      "(none)": 216,
+      "h": 165,
+      "json": 105,
+      "toml": 99,
+      "md": 77,
+      "txt": 70,
+      "sh": 61,
+      "orig": 51,
+      "yml": 32,
+      "dfa": 24,
+      "stderr": 24,
+      "in": 18,
+      "0": 10,
+      "lock": 9,
+      "cpp": 6,
+      "a": 5,
+      "py": 5,
+      "filters": 4,
+      "log": 4,
+      "pc": 4,
+      "vcxproj": 4,
+      "csv": 3,
+      "dat": 3,
+      "lib": 3,
+      "fst": 2,
+      "sln": 2,
+      "ac": 1,
+      "cfg": 1,
+      "guess": 1,
+      "m4": 1,
+      "sub": 1,
+      "svg": 1,
+      "xsl": 1
+    },
+    "by_bytes": {
+      "rs": 38174483,
+      "a": 37742426,
+      "lib": 15980532,
+      "c": 5122381,
+      "txt": 1886499,
+      "(none)": 1553854,
+      "dfa": 1312340,
+      "h": 1200609,
+      "md": 520057,
+      "in": 422254,
+      "toml": 291493,
+      "json": 263098,
+      "fst": 138736,
+      "0": 113510,
+      "yml": 84498,
+      "ac": 83744,
+      "orig": 82248,
+      "vcxproj": 80140,
+      "py": 75742,
+      "lock": 53451,
+      "guess": 49448,
+      "log": 44704,
+      "sub": 34267,
+      "m4": 19367,
+      "dat": 18243,
+      "sh": 17454,
+      "svg": 16154,
+      "filters": 15706,
+      "stderr": 14219,
+      "cpp": 12302,
+      "sln": 7760,
+      "csv": 5410,
+      "pc": 1167,
+      "xsl": 415,
+      "cfg": 107
+    }
+  },
+  "exact_duplicates": {
+    "nonempty_files": 2566,
+    "nonempty_bytes": 105438818,
+    "distinct_contents": 2406,
+    "duplicate_files": 160,
+    "duplicate_bytes": 487596,
+    "duplicate_file_ratio": 0.062354,
+    "duplicate_byte_ratio": 0.004624,
+    "note": "unique inodes (hardlinks counted once); empty files excluded"
+  },
+  "block_duplicates": {
+    "block_bytes": 4096,
+    "blocks": 27307,
+    "bytes": 105438818,
+    "duplicate_blocks": 1157,
+    "duplicate_bytes": 4241971,
+    "duplicate_block_ratio": 0.04237,
+    "duplicate_byte_ratio": 0.040232,
+    "full_blocks": 24741,
+    "zero_full_blocks": 0,
+    "zero_full_block_ratio": 0.0,
+    "unique_block_keys": 26150,
+    "method": "per-file fixed 4 KiB blocks from offset 0; tail block keyed with its length; BLAKE2b-128"
+  },
+  "entropy": {
+    "stream_order0_bits_per_byte": 5.530712,
+    "mean_full_block_entropy_bits_per_byte": 4.425278,
+    "byte_weighted_mean_file_entropy_bits_per_byte": 4.837344,
+    "file_entropy_histogram": {
+      "bins_bits_per_byte": [
+        "[0,1)",
+        "[1,2)",
+        "[2,3)",
+        "[3,4)",
+        "[4,5)",
+        "[5,6)",
+        "[6,7)",
+        "[7,8]"
+      ],
+      "files": [
+        3,
+        17,
+        5,
+        73,
+        1578,
+        890,
+        0,
+        0
+      ],
+      "bytes": [
+        1875,
+        60316,
+        62872,
+        3420282,
+        53891696,
+        48001777,
+        0,
+        0
+      ]
+    },
+    "block_entropy_histogram": {
+      "block_bytes": 4096,
+      "note": "full 4 KiB blocks only",
+      "bins_bits_per_byte": [
+        "[0,0.5)",
+        "[0.5,1)",
+        "[1,1.5)",
+        "[1.5,2)",
+        "[2,2.5)",
+        "[2.5,3)",
+        "[3,3.5)",
+        "[3.5,4)",
+        "[4,4.5)",
+        "[4.5,5)",
+        "[5,5.5)",
+        "[5.5,6)",
+        "[6,6.5)",
+        "[6.5,7)",
+        "[7,7.5)",
+        "[7.5,8]"
+      ],
+      "blocks": [
+        0,
+        0,
+        6,
+        1,
+        14,
+        228,
+        1307,
+        6243,
+        5072,
+        5708,
+        5496,
+        589,
+        17,
+        33,
+        27,
+        0
+      ]
+    }
+  },
+  "compressibility": {
+    "zstd -3": {
+      "input_bytes": 105438818,
+      "output_bytes": 14532476,
+      "ratio": 0.137829
+    },
+    "xz -6": {
+      "input_bytes": 105438818,
+      "output_bytes": 9186820,
+      "ratio": 0.087129
+    },
+    "sampled": false,
+    "note": "single-shot ratios over concatenated unique file contents in path order; indicator only, not a benchmark"
+  },
+  "metadata": {
+    "object_types": {
+      "dir": 686,
+      "file": 2568
+    },
+    "symlinks": {
+      "total": 0,
+      "absolute_target": 0,
+      "relative_escaping_root": 0,
+      "dangling_relative": 0,
+      "non_utf8_target": 0
+    },
+    "hardlinks": {
+      "groups": 0,
+      "extra_paths": 0,
+      "max_group_size": 0,
+      "files_with_links_outside_item": 0
+    },
+    "xattrs": {
+      "objects_with_xattrs": 0,
+      "names_by_namespace": {},
+      "total_value_bytes": 0,
+      "max_names_per_object": 0,
+      "acl_access_objects": 0,
+      "acl_default_dirs": 0
+    },
+    "sparse": {
+      "sparse_files": 0,
+      "apparent_bytes": 0,
+      "allocated_bytes": 0,
+      "data_extent_bytes": 0,
+      "hole_bytes": 0,
+      "all_hole_files": 0
+    },
+    "modes": {
+      "distinct": 3,
+      "top": {
+        "file:0644": 2545,
+        "dir:0755": 686,
+        "file:0755": 23
+      },
+      "setuid": 0,
+      "setgid": 0,
+      "sticky": 0,
+      "world_writable_non_symlink": 0,
+      "executable_files": 23
+    },
+    "ownership": {
+      "distinct_uids": 1,
+      "distinct_gids": 1,
+      "top_uids": {
+        "0": 3254
+      },
+      "top_gids": {
+        "0": 3254
+      }
+    },
+    "names": {
+      "non_utf8": 0,
+      "control_chars": 0,
+      "newline": 0,
+      "windows_hostile": 0,
+      "case_insensitive_collisions": 0,
+      "max_name_bytes": 73
+    },
+    "mtimes": {
+      "min_s": 1153704088,
+      "max_s": 1789266211,
+      "distinct": 49,
+      "subsecond_nonzero": 736,
+      "before_1970": 0,
+      "after_2038_01_19": 0
+    },
+    "directories": {
+      "max_entries": 134,
+      "mean_entries": 4.741983
+    }
+  },
+  "structure": {
+    "max_depth": 10,
+    "max_name_length_bytes": 73,
+    "path_length_bytes": {
+      "min": 6,
+      "max": 121,
+      "mean": 52.405,
+      "p50": 50,
+      "p95": 84
+    }
+  }
+}

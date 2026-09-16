@@ -1,0 +1,265 @@
+{
+  "format": "ebrc-stats-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f10-rust-fd-find-1050-multiprofile",
+  "family": "F10",
+  "split": "tuning",
+  "scale": "medium",
+  "logical_tree_sha256": "19c7a503eac31c5e02f1b0380d84574dc5a46e89170ef2f1f045b3c4d1b39fe3",
+  "tool": {
+    "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "file_version": "file-5.45",
+    "magic_mgc": {
+      "path": "/usr/lib/file/magic.mgc",
+      "sha256": "72a25195a2623fe160e926bf20952b6b74b29d6c91e0174a5fa062f02beee1aa"
+    },
+    "zstd_version": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+    "xz_version": "xz (XZ Utils) 5.4.5",
+    "numpy_version": "2.5.3",
+    "python": "3.12.3"
+  },
+  "params": {
+    "block_bytes": 4096,
+    "compress_max_bytes": 1073741824,
+    "zstd": "-3 -T1",
+    "xz": "-6 -T1",
+    "mime": "file --mime-type -b -N"
+  },
+  "totals": {
+    "unique_file_inodes": 57,
+    "bytes": 167407484,
+    "empty_files": 0,
+    "objects": 65
+  },
+  "content_types": {
+    "distinct": 3,
+    "by_count": {
+      "application/x-archive": 52,
+      "application/x-pie-executable": 4,
+      "text/plain": 1
+    },
+    "by_bytes": {
+      "application/x-archive": 86167752,
+      "application/x-pie-executable": 81239112,
+      "text/plain": 620
+    }
+  },
+  "extensions": {
+    "distinct": 3,
+    "by_count": {
+      "rlib": 52,
+      "(none)": 4,
+      "txt": 1
+    },
+    "by_bytes": {
+      "rlib": 86167752,
+      "(none)": 81239112,
+      "txt": 620
+    }
+  },
+  "exact_duplicates": {
+    "nonempty_files": 57,
+    "nonempty_bytes": 167407484,
+    "distinct_contents": 57,
+    "duplicate_files": 0,
+    "duplicate_bytes": 0,
+    "duplicate_file_ratio": 0.0,
+    "duplicate_byte_ratio": 0.0,
+    "note": "unique inodes (hardlinks counted once); empty files excluded"
+  },
+  "block_duplicates": {
+    "block_bytes": 4096,
+    "blocks": 40898,
+    "bytes": 167407484,
+    "duplicate_blocks": 263,
+    "duplicate_bytes": 1077248,
+    "duplicate_block_ratio": 0.006431,
+    "duplicate_byte_ratio": 0.006435,
+    "full_blocks": 40841,
+    "zero_full_blocks": 194,
+    "zero_full_block_ratio": 0.00475,
+    "unique_block_keys": 40635,
+    "method": "per-file fixed 4 KiB blocks from offset 0; tail block keyed with its length; BLAKE2b-128"
+  },
+  "entropy": {
+    "stream_order0_bits_per_byte": 5.713808,
+    "mean_full_block_entropy_bits_per_byte": 4.323984,
+    "byte_weighted_mean_file_entropy_bits_per_byte": 5.600711,
+    "file_entropy_histogram": {
+      "bins_bits_per_byte": [
+        "[0,1)",
+        "[1,2)",
+        "[2,3)",
+        "[3,4)",
+        "[4,5)",
+        "[5,6)",
+        "[6,7)",
+        "[7,8]"
+      ],
+      "files": [
+        0,
+        0,
+        0,
+        0,
+        10,
+        44,
+        3,
+        0
+      ],
+      "bytes": [
+        0,
+        0,
+        0,
+        0,
+        3187820,
+        124599960,
+        39619704,
+        0
+      ]
+    },
+    "block_entropy_histogram": {
+      "block_bytes": 4096,
+      "note": "full 4 KiB blocks only",
+      "bins_bits_per_byte": [
+        "[0,0.5)",
+        "[0.5,1)",
+        "[1,1.5)",
+        "[1.5,2)",
+        "[2,2.5)",
+        "[2.5,3)",
+        "[3,3.5)",
+        "[3.5,4)",
+        "[4,4.5)",
+        "[4.5,5)",
+        "[5,5.5)",
+        "[5.5,6)",
+        "[6,6.5)",
+        "[6.5,7)",
+        "[7,7.5)",
+        "[7.5,8]"
+      ],
+      "blocks": [
+        937,
+        343,
+        1170,
+        2164,
+        2732,
+        2887,
+        1068,
+        634,
+        2239,
+        5930,
+        14371,
+        4408,
+        1606,
+        134,
+        14,
+        204
+      ]
+    }
+  },
+  "compressibility": {
+    "zstd -3": {
+      "input_bytes": 167407484,
+      "output_bytes": 40689102,
+      "ratio": 0.243054
+    },
+    "xz -6": {
+      "input_bytes": 167407484,
+      "output_bytes": 27791464,
+      "ratio": 0.166011
+    },
+    "sampled": false,
+    "note": "single-shot ratios over concatenated unique file contents in path order; indicator only, not a benchmark"
+  },
+  "metadata": {
+    "object_types": {
+      "dir": 8,
+      "file": 57
+    },
+    "symlinks": {
+      "total": 0,
+      "absolute_target": 0,
+      "relative_escaping_root": 0,
+      "dangling_relative": 0,
+      "non_utf8_target": 0
+    },
+    "hardlinks": {
+      "groups": 0,
+      "extra_paths": 0,
+      "max_group_size": 0,
+      "files_with_links_outside_item": 0
+    },
+    "xattrs": {
+      "objects_with_xattrs": 0,
+      "names_by_namespace": {},
+      "total_value_bytes": 0,
+      "max_names_per_object": 0,
+      "acl_access_objects": 0,
+      "acl_default_dirs": 0
+    },
+    "sparse": {
+      "sparse_files": 2,
+      "apparent_bytes": 33025840,
+      "allocated_bytes": 32878592,
+      "data_extent_bytes": 32874288,
+      "hole_bytes": 151552,
+      "all_hole_files": 0
+    },
+    "modes": {
+      "distinct": 3,
+      "top": {
+        "file:0644": 53,
+        "dir:0755": 8,
+        "file:0755": 4
+      },
+      "setuid": 0,
+      "setgid": 0,
+      "sticky": 0,
+      "world_writable_non_symlink": 0,
+      "executable_files": 4
+    },
+    "ownership": {
+      "distinct_uids": 1,
+      "distinct_gids": 1,
+      "top_uids": {
+        "0": 65
+      },
+      "top_gids": {
+        "0": 65
+      }
+    },
+    "names": {
+      "non_utf8": 0,
+      "control_chars": 0,
+      "newline": 0,
+      "windows_hostile": 0,
+      "case_insensitive_collisions": 0,
+      "max_name_bytes": 45
+    },
+    "mtimes": {
+      "min_s": 1789266739,
+      "max_s": 1789266836,
+      "distinct": 18,
+      "subsecond_nonzero": 64,
+      "before_1970": 0,
+      "after_2038_01_19": 0
+    },
+    "directories": {
+      "max_entries": 52,
+      "mean_entries": 8.0
+    }
+  },
+  "structure": {
+    "max_depth": 3,
+    "max_name_length_bytes": 45,
+    "path_length_bytes": {
+      "min": 5,
+      "max": 55,
+      "mean": 38.969,
+      "p50": 42,
+      "p95": 50
+    }
+  }
+}

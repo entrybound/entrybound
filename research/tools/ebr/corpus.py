@@ -2,16 +2,24 @@
 
 Layout (outside git): ``<data_root>/corpus/<split>/<item_id>`` (file or directory),
 held-out items at ``<data_root>/heldout/<item_id>``, generated items at
-``<data_root>/generated/<experiment_id>/<item_id>``.
+``<data_root>/generated/<experiment_id>/<item_id>``. This is the same layout the
+corpus framework (``research/corpus/tools``) materializes, and ``corpus.manifest``
+may point at its generated ``research/corpus/manifest.json`` directly: rows carry
+``item_id``/``split``/``family`` and (when materialized) ``materialized_relpath``,
+which resolves relative to the data root (see :func:`_row_path`).
 
 The held-out directory is never listed, stat'ed or hashed here unless the spec's
-held-out guard has been passed (see :func:`ebr.spec.check_heldout`).
+held-out guard has been passed (see :func:`ebr.spec.check_heldout`). Membership in
+the held-out root is decided by ``corpuslib.assert_not_heldout`` (see
+:func:`_corpuslib`), the same guard the corpus framework itself uses, so the two
+tools cannot silently disagree about what counts as held-out.
 """
 
 from __future__ import annotations
 
 import csv
 import hashlib
+import importlib.util
 import json
 import os
 import sqlite3
@@ -22,6 +30,42 @@ from typing import Any, Dict, Iterable, List, Optional
 
 from .paths import Layout
 from .spec import HELDOUT_SPLIT, GeneratedItem, HeldoutLocked, Spec, SpecError
+
+_CORPUSLIB = None  # lazily loaded module; see _corpuslib()
+
+
+def _corpuslib():
+    """Load research/corpus/tools/corpuslib.py by path (it is not a package inside
+    a package ebr can import normally) and cache the module. Gives ebr the corpus
+    framework's own held-out guard (``assert_not_heldout``) instead of a
+    reimplementation, per the PROGRESS.md integration item."""
+    global _CORPUSLIB
+    if _CORPUSLIB is None:
+        research_dir = Path(__file__).resolve().parents[2]  # research/tools/ebr/corpus.py -> research
+        src = research_dir / "corpus" / "tools" / "corpuslib.py"
+        spec = importlib.util.spec_from_file_location("ebr._corpuslib", src)
+        module = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(module)
+        except ImportError as e:
+            raise RuntimeError(
+                f"could not load {src} ({e}); it targets the Linux research environment "
+                "(WSL Ubuntu) like the rest of research/corpus/tools, see research/PROGRESS.md"
+            ) from e
+        _CORPUSLIB = module
+    return _CORPUSLIB
+
+
+class _HeldoutRootView:
+    """Minimal stand-in for corpuslib.Layout: exposes only the ``heldout_root``
+    corpuslib.assert_not_heldout() needs, resolved ebr's own way (honoring
+    EB_HELDOUT_ROOT) rather than recomputed from a second data-root guess."""
+
+    __slots__ = ("heldout_root",)
+
+    def __init__(self, heldout_root: Path) -> None:
+        self.heldout_root = heldout_root
+
 
 FINGERPRINT_VERSION = "tree-sha256-v1"
 
@@ -234,12 +278,18 @@ def _load_manifest(path: Path) -> List[Dict[str, Any]]:
     return rows
 
 
-def _inside(child: Path, parent: Path) -> bool:
-    try:
-        child.resolve().relative_to(parent.resolve())
-        return True
-    except (ValueError, OSError):
-        return False
+def _row_path(row: Dict[str, Any], split: str, split_dir, layout: Layout) -> Path:
+    """A manifest row's item path: an explicit ``path`` wins; otherwise a corpus-
+    framework row's ``materialized_relpath`` (relative to the data root, as written
+    by ``research/corpus/tools/provision.py`` into ``research/corpus/manifest.json``)
+    is used directly; otherwise fall back to the plain ``<split_dir>/<item_id>``
+    layout for ad hoc manifests."""
+    if row.get("path"):
+        return Path(row["path"])
+    rel = row.get("materialized_relpath")
+    if rel and layout.data_root is not None:
+        return layout.data_root / rel
+    return split_dir(split) / row["item_id"]
 
 
 def resolve_items(spec: Spec, layout: Layout, heldout_ok: bool) -> List[Item]:
@@ -271,7 +321,7 @@ def resolve_items(spec: Spec, layout: Layout, heldout_ok: bool) -> List[Item]:
             fam = r.get("family") or None
             if sel.families and fam not in sel.families:
                 continue
-            p = Path(r["path"]) if r.get("path") else split_dir(split) / r["item_id"]
+            p = _row_path(r, split, split_dir, layout)
             items[(split, r["item_id"])] = Item(r["item_id"], split, fam, p)
     else:
         for split in sel.splits:
@@ -300,9 +350,13 @@ def resolve_items(spec: Spec, layout: Layout, heldout_ok: bool) -> List[Item]:
         raise SpecError(f"{spec.experiment_id}: corpus selector matched no items")
     if not heldout_ok and layout.data_root is not None:
         hroot = layout.heldout_root
+        cl = _corpuslib()
+        view = _HeldoutRootView(hroot)
         for it in out:
-            if _inside(it.path, hroot):
-                raise HeldoutLocked(f"item {it.item_id} resolves inside the held-out root {hroot}")
+            try:
+                cl.assert_not_heldout(it.path, view)
+            except cl.HeldoutAccessError as e:
+                raise HeldoutLocked(f"item {it.item_id} resolves inside the held-out root {hroot}") from e
     return out
 
 

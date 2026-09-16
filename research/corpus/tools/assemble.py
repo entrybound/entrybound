@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble the corpus manifest, statistics, coverage table and held-out lock.
+"""Assemble the corpus manifest, statistics, coverage table, licenses and held-out lock.
 
 Writes (under research/corpus/):
   manifest.json       corpus_version ebrc-2026.09-v1; every defined item with provenance,
@@ -8,6 +8,8 @@ Writes (under research/corpus/):
   statistics.json     per-item statistics for tuning+validation (from stats/<id>.json),
                       family x split aggregates; held-out = fingerprint-only with note
   coverage.md         the coverage table rendered as Markdown
+  licenses.md         per-item license/attribution table grouped by spdx_or_name, generated
+                      entirely from manifest license fields (no hand-entered figures)
   heldout-lock.json   held-out item ids and tree hashes (status draft|frozen)
 
 manifest_sha256 = SHA-256 of the canonical JSON (sorted keys, no whitespace, UTF-8) of
@@ -277,7 +279,85 @@ def main(argv=None) -> int:
                 cells.append(f"{c['materialized']}/{c['items']}" if c["items"] else "-")
         rows.append(f"| {fam} {name} | " + " | ".join(cells) + " |")
     rows += ["", f"Empty family/split combinations: {len(gaps)}" + (": " + ", ".join(gaps) if gaps else ""), ""]
+
+    # -- real vs generated, per split -----------------------------------------------------
+    rog_split: dict = {s: {r: 0 for r in cl.REAL_OR_GENERATED} for s in cl.SPLITS}
+    for e in manifest_items:
+        rog_split[e["split"]][e["real_or_generated"]] += 1
+    rows += ["## Real vs. generated, by split", "",
+             "| Split | " + " | ".join(cl.REAL_OR_GENERATED) + " | Total |",
+             "|---|" + "---:|" * (len(cl.REAL_OR_GENERATED) + 1)]
+    for s in cl.SPLITS:
+        counts = rog_split[s]
+        rows.append(f"| {s} | " + " | ".join(str(counts[r]) for r in cl.REAL_OR_GENERATED)
+                    + f" | {sum(counts.values())} |")
+    rows += ["", "Overall: " + ", ".join(f"{r}={by_rog.get(r, 0)}" for r in cl.REAL_OR_GENERATED), ""]
+
+    # -- independence groups ---------------------------------------------------------------
+    groups: dict = {}
+    for e in manifest_items:
+        g = groups.setdefault(e["independence_group"], {"families": set(), "splits": set(), "items": []})
+        g["families"].add(e["family"])
+        g["splits"].add(e["split"])
+        g["items"].append(e["item_id"])
+    rows += ["## Independence groups", "",
+             "An independence group is a set of items sharing upstream origin (same project, dataset, "
+             "image or derivation lineage). Within a family a group appears in one split only; a group "
+             "shared with `heldout` across families is a manifest error (`split_audit`); see "
+             "methodology.md section 3.", "",
+             f"{len(groups)} groups over {len(manifest_items)} items.", "",
+             "| Group | Families | Splits | Items | Item ids |", "|---|---|---|---:|---|"]
+    for g in sorted(groups):
+        rec = groups[g]
+        rows.append(f"| {g} | {', '.join(sorted(rec['families']))} | {', '.join(sorted(rec['splits']))} | "
+                    f"{len(rec['items'])} | {', '.join(sorted(rec['items']))} |")
+    rows.append("")
     coverage_md = "\n".join(rows)
+
+    # ---- licenses.md ---------------------------------------------------------------------
+    def _md_cell(s) -> str:
+        return (s or "").replace("|", "\\|").replace("\n", " ")
+
+    by_spdx: dict = {}
+    for e in manifest_items:
+        by_spdx.setdefault(e["license"]["spdx_or_name"], []).append(e)
+    non_redist = [e for e in manifest_items if not e["license"]["redistributable"]]
+    attributed = [e for e in manifest_items if e["license"].get("attribution")]
+
+    lrows = [f"# Corpus licenses ({cl.CORPUS_VERSION})", "",
+             f"manifest_sha256 `{manifest['manifest_sha256']}`", "",
+             "Generated entirely from `license` fields in `manifest.json` (sourced from "
+             "`sources/*.json`); no hand-entered figures.", "",
+             f"- {len(manifest_items)} items across {len(by_spdx)} distinct `spdx_or_name` values.",
+             f"- {len(non_redist)} item(s) marked `redistributable: false`.",
+             f"- {len(attributed)} item(s) carry a non-empty `attribution` string.",
+             "", "## By license", "",
+             "| SPDX / name | Items | Redistributable | Item ids |", "|---|---:|---|---|"]
+    for spdx in sorted(by_spdx):
+        grp = sorted(by_spdx[spdx], key=lambda e: e["item_id"])
+        flags = {e["license"]["redistributable"] for e in grp}
+        redist_col = "yes" if flags == {True} else ("no" if flags == {False} else "mixed")
+        ids_col = ", ".join(f"`{e['item_id']}`" for e in grp)
+        lrows.append(f"| {_md_cell(spdx)} | {len(grp)} | {redist_col} | {ids_col} |")
+    lrows += ["", "## Non-redistributable items", ""]
+    if non_redist:
+        lrows += ["| Item id | Family | Split | SPDX / name | Notes |", "|---|---|---|---|---|"]
+        for e in sorted(non_redist, key=lambda e: e["item_id"]):
+            lic = e["license"]
+            lrows.append(f"| {e['item_id']} | {e['family']} | {e['split']} | {_md_cell(lic['spdx_or_name'])} | "
+                         f"{_md_cell(lic.get('notes'))} |")
+    else:
+        lrows.append("None: every item is marked `redistributable: true`.")
+    lrows += ["", "## Attribution", ""]
+    if attributed:
+        lrows += ["| Item id | SPDX / name | Attribution |", "|---|---|---|"]
+        for e in sorted(attributed, key=lambda e: e["item_id"]):
+            lic = e["license"]
+            lrows.append(f"| {e['item_id']} | {_md_cell(lic['spdx_or_name'])} | {_md_cell(lic['attribution'])} |")
+    else:
+        lrows.append("None recorded.")
+    lrows.append("")
+    licenses_md = "\n".join(lrows)
 
     # ---- held-out lock -----------------------------------------------------------------
     held = [e for e in manifest_items if e["split"] == "heldout"]
@@ -328,11 +408,13 @@ def main(argv=None) -> int:
     cl.write_json_atomic(layout.corpus_dir / "manifest.json", manifest)
     cl.write_json_atomic(layout.corpus_dir / "statistics.json", statistics)
     cl.write_text_atomic(layout.corpus_dir / "coverage.md", coverage_md)
+    cl.write_text_atomic(layout.corpus_dir / "licenses.md", licenses_md)
     cl.write_json_atomic(lock_path, lock)
     for w in warnings:
         print(f"WARNING: {w}")
     print(f"manifest: {len(manifest_items)} items, complete={complete}, manifest_sha256={manifest['manifest_sha256']}")
     print(f"statistics: {len(stats_items)} items with stats, {len(stats_problems)} missing/stale")
+    print(f"licenses: {len(by_spdx)} spdx/name values, {len(non_redist)} non-redistributable")
     print(f"heldout-lock: {len(lock_items)} items, status={lock['status']}, heldout_set_sha256={set_sha}")
     if problems:
         for p in problems:

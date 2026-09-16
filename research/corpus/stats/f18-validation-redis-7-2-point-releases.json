@@ -1,0 +1,380 @@
+{
+  "format": "ebrc-stats-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f18-validation-redis-7-2-point-releases",
+  "family": "F18",
+  "split": "validation",
+  "scale": "medium",
+  "logical_tree_sha256": "c101f0ed5e733368ddd9e0fe58d73b547c4101d6453b137063b1cd830a2c5294",
+  "tool": {
+    "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "file_version": "file-5.45",
+    "magic_mgc": {
+      "path": "/usr/lib/file/magic.mgc",
+      "sha256": "72a25195a2623fe160e926bf20952b6b74b29d6c91e0174a5fa062f02beee1aa"
+    },
+    "zstd_version": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+    "xz_version": "xz (XZ Utils) 5.4.5",
+    "numpy_version": "2.5.3",
+    "python": "3.12.3"
+  },
+  "params": {
+    "block_bytes": 4096,
+    "compress_max_bytes": 1073741824,
+    "zstd": "-3 -T1",
+    "xz": "-6 -T1",
+    "mime": "file --mime-type -b -N"
+  },
+  "totals": {
+    "unique_file_inodes": 15828,
+    "bytes": 154647912,
+    "empty_files": 10,
+    "objects": 16699
+  },
+  "content_types": {
+    "distinct": 22,
+    "by_count": {
+      "text/x-c": 6920,
+      "application/json": 3920,
+      "text/plain": 3478,
+      "text/x-shellscript": 790,
+      "application/octet-stream": 100,
+      "text/xml": 100,
+      "text/x-ruby": 90,
+      "text/html": 70,
+      "text/x-c++": 70,
+      "text/x-makefile": 60,
+      "text/x-script.python": 60,
+      "application/javascript": 40,
+      "text/x-tcl": 30,
+      "text/troff": 20,
+      "image/gif": 10,
+      "image/png": 10,
+      "image/svg+xml": 10,
+      "image/vnd.microsoft.icon": 10,
+      "inode/x-empty": 10,
+      "text/x-m4": 10,
+      "text/x-msdos-batch": 10,
+      "text/x-perl": 10
+    },
+    "by_bytes": {
+      "text/x-c": 103689815,
+      "text/plain": 27491787,
+      "application/json": 6978370,
+      "text/x-shellscript": 5756410,
+      "text/html": 3331740,
+      "text/xml": 2691460,
+      "text/x-perl": 1826670,
+      "text/x-m4": 837430,
+      "text/x-script.python": 527980,
+      "text/x-makefile": 416350,
+      "text/x-c++": 406640,
+      "text/x-ruby": 231920,
+      "image/svg+xml": 161540,
+      "text/troff": 72360,
+      "text/x-tcl": 71840,
+      "image/gif": 42320,
+      "image/png": 33050,
+      "application/octet-stream": 31870,
+      "application/javascript": 26880,
+      "image/vnd.microsoft.icon": 10780,
+      "text/x-msdos-batch": 10700,
+      "inode/x-empty": 0
+    }
+  },
+  "extensions": {
+    "distinct": 44,
+    "by_count": {
+      "c": 4180,
+      "json": 3920,
+      "h": 2740,
+      "tcl": 2088,
+      "sh": 690,
+      "(none)": 530,
+      "in": 220,
+      "md": 210,
+      "lua": 200,
+      "yml": 160,
+      "txt": 100,
+      "rb": 90,
+      "rdb": 80,
+      "cpp": 70,
+      "py": 60,
+      "conf": 50,
+      "html": 50,
+      "filters": 40,
+      "vcxproj": 40,
+      "acl": 30,
+      "1": 20,
+      "css": 20,
+      "service": 20,
+      "sln": 20,
+      "ac": 10,
+      "aof": 10,
+      "bat": 10,
+      "cfg": 10,
+      "def": 10,
+      "gif": 10,
+      "guess": 10,
+      "hpp": 10,
+      "ico": 10,
+      "js": 10,
+      "m4": 10,
+      "markdown": 10,
+      "pc": 10,
+      "png": 10,
+      "sub": 10,
+      "sup": 10,
+      "(other)": 40
+    },
+    "by_bytes": {
+      "c": 83563836,
+      "tcl": 20723281,
+      "h": 16573624,
+      "json": 6978370,
+      "(none)": 6415059,
+      "def": 4330485,
+      "in": 4235590,
+      "html": 2859080,
+      "md": 1647490,
+      "conf": 1234240,
+      "yml": 980697,
+      "ac": 837430,
+      "vcxproj": 801400,
+      "py": 527980,
+      "guess": 494480,
+      "sh": 355950,
+      "sub": 342670,
+      "txt": 274360,
+      "rb": 231920,
+      "m4": 193670,
+      "svg": 161540,
+      "filters": 157060,
+      "cpp": 133490,
+      "lua": 118870,
+      "markdown": 106280,
+      "sln": 77600,
+      "1": 72360,
+      "gif": 42320,
+      "png": 33050,
+      "rdb": 30170,
+      "service": 28600,
+      "css": 16470,
+      "ico": 10780,
+      "bat": 10700,
+      "tpl": 10470,
+      "js": 9530,
+      "pc": 6580,
+      "targets": 5240,
+      "xsl": 4150,
+      "sup": 3920,
+      "(other)": 7120
+    }
+  },
+  "exact_duplicates": {
+    "nonempty_files": 15818,
+    "nonempty_bytes": 154647912,
+    "distinct_contents": 1718,
+    "duplicate_files": 14100,
+    "duplicate_bytes": 127757359,
+    "duplicate_file_ratio": 0.89139,
+    "duplicate_byte_ratio": 0.826118,
+    "note": "unique inodes (hardlinks counted once); empty files excluded"
+  },
+  "block_duplicates": {
+    "block_bytes": 4096,
+    "blocks": 47258,
+    "bytes": 154647912,
+    "duplicate_blocks": 40599,
+    "duplicate_bytes": 131558447,
+    "duplicate_block_ratio": 0.859093,
+    "duplicate_byte_ratio": 0.850697,
+    "full_blocks": 31440,
+    "zero_full_blocks": 0,
+    "zero_full_block_ratio": 0.0,
+    "unique_block_keys": 6659,
+    "method": "per-file fixed 4 KiB blocks from offset 0; tail block keyed with its length; BLAKE2b-128"
+  },
+  "entropy": {
+    "stream_order0_bits_per_byte": 5.15087,
+    "mean_full_block_entropy_bits_per_byte": 4.768698,
+    "byte_weighted_mean_file_entropy_bits_per_byte": 4.82174,
+    "file_entropy_histogram": {
+      "bins_bits_per_byte": [
+        "[0,1)",
+        "[1,2)",
+        "[2,3)",
+        "[3,4)",
+        "[4,5)",
+        "[5,6)",
+        "[6,7)",
+        "[7,8]"
+      ],
+      "files": [
+        10,
+        20,
+        486,
+        2877,
+        7055,
+        5350,
+        0,
+        20
+      ],
+      "bytes": [
+        10,
+        110470,
+        2050114,
+        5567818,
+        90326937,
+        56517193,
+        0,
+        75370
+      ]
+    },
+    "block_entropy_histogram": {
+      "block_bytes": 4096,
+      "note": "full 4 KiB blocks only",
+      "bins_bits_per_byte": [
+        "[0,0.5)",
+        "[0.5,1)",
+        "[1,1.5)",
+        "[1.5,2)",
+        "[2,2.5)",
+        "[2.5,3)",
+        "[3,3.5)",
+        "[3.5,4)",
+        "[4,4.5)",
+        "[4.5,5)",
+        "[5,5.5)",
+        "[5.5,6)",
+        "[6,6.5)",
+        "[6.5,7)",
+        "[7,7.5)",
+        "[7.5,8]"
+      ],
+      "blocks": [
+        0,
+        0,
+        10,
+        10,
+        40,
+        150,
+        208,
+        759,
+        5652,
+        15397,
+        8479,
+        725,
+        0,
+        0,
+        0,
+        10
+      ]
+    }
+  },
+  "compressibility": {
+    "zstd -3": {
+      "input_bytes": 154647912,
+      "output_bytes": 33446726,
+      "ratio": 0.216277
+    },
+    "xz -6": {
+      "input_bytes": 154647912,
+      "output_bytes": 23937996,
+      "ratio": 0.15479
+    },
+    "sampled": false,
+    "note": "single-shot ratios over concatenated unique file contents in path order; indicator only, not a benchmark"
+  },
+  "metadata": {
+    "object_types": {
+      "dir": 871,
+      "file": 15828
+    },
+    "symlinks": {
+      "total": 0,
+      "absolute_target": 0,
+      "relative_escaping_root": 0,
+      "dangling_relative": 0,
+      "non_utf8_target": 0
+    },
+    "hardlinks": {
+      "groups": 0,
+      "extra_paths": 0,
+      "max_group_size": 0,
+      "files_with_links_outside_item": 0
+    },
+    "xattrs": {
+      "objects_with_xattrs": 0,
+      "names_by_namespace": {},
+      "total_value_bytes": 0,
+      "max_names_per_object": 0,
+      "acl_access_objects": 0,
+      "acl_default_dirs": 0
+    },
+    "sparse": {
+      "sparse_files": 0,
+      "apparent_bytes": 0,
+      "allocated_bytes": 0,
+      "data_extent_bytes": 0,
+      "hole_bytes": 0,
+      "all_hole_files": 0
+    },
+    "modes": {
+      "distinct": 4,
+      "top": {
+        "file:0664": 15398,
+        "dir:0775": 870,
+        "file:0775": 430,
+        "dir:0755": 1
+      },
+      "setuid": 0,
+      "setgid": 0,
+      "sticky": 0,
+      "world_writable_non_symlink": 0,
+      "executable_files": 430
+    },
+    "ownership": {
+      "distinct_uids": 1,
+      "distinct_gids": 1,
+      "top_uids": {
+        "0": 16699
+      },
+      "top_gids": {
+        "0": 16699
+      }
+    },
+    "names": {
+      "non_utf8": 0,
+      "control_chars": 0,
+      "newline": 0,
+      "windows_hostile": 0,
+      "case_insensitive_collisions": 0,
+      "max_name_bytes": 39
+    },
+    "mtimes": {
+      "min_s": 1692092316,
+      "max_s": 1748349549,
+      "distinct": 10,
+      "subsecond_nonzero": 0,
+      "before_1970": 0,
+      "after_2038_01_19": 0
+    },
+    "directories": {
+      "max_entries": 392,
+      "mean_entries": 19.171068
+    }
+  },
+  "structure": {
+    "max_depth": 8,
+    "max_name_length_bytes": 39,
+    "path_length_bytes": {
+      "min": 11,
+      "max": 88,
+      "mean": 41.316,
+      "p50": 40,
+      "p95": 63
+    }
+  }
+}

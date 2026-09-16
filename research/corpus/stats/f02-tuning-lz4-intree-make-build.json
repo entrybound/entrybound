@@ -1,0 +1,341 @@
+{
+  "format": "ebrc-stats-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f02-tuning-lz4-intree-make-build",
+  "family": "F02",
+  "split": "tuning",
+  "scale": "small",
+  "logical_tree_sha256": "b1fbc451b6a53cf7f42275539e3a82bbca36097b7877419a1801d95e5f5eae3c",
+  "tool": {
+    "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "file_version": "file-5.45",
+    "magic_mgc": {
+      "path": "/usr/lib/file/magic.mgc",
+      "sha256": "72a25195a2623fe160e926bf20952b6b74b29d6c91e0174a5fa062f02beee1aa"
+    },
+    "zstd_version": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+    "xz_version": "xz (XZ Utils) 5.4.5",
+    "numpy_version": "2.5.3",
+    "python": "3.12.3"
+  },
+  "params": {
+    "block_bytes": 4096,
+    "compress_max_bytes": 1073741824,
+    "zstd": "-3 -T1",
+    "xz": "-6 -T1",
+    "mime": "file --mime-type -b -N"
+  },
+  "totals": {
+    "unique_file_inodes": 224,
+    "bytes": 3115924,
+    "empty_files": 1,
+    "objects": 270
+  },
+  "content_types": {
+    "distinct": 16,
+    "by_count": {
+      "text/plain": 91,
+      "text/x-c": 70,
+      "text/x-shellscript": 16,
+      "application/x-object": 12,
+      "text/xml": 9,
+      "text/x-makefile": 8,
+      "text/x-script.python": 5,
+      "text/x-msdos-batch": 4,
+      "text/html": 2,
+      "application/octet-stream": 1,
+      "application/x-archive": 1,
+      "application/x-pie-executable": 1,
+      "application/x-sharedlib": 1,
+      "inode/x-empty": 1,
+      "text/troff": 1,
+      "text/x-c++": 1
+    },
+    "by_bytes": {
+      "text/x-c": 1120497,
+      "application/x-object": 528248,
+      "application/x-pie-executable": 376024,
+      "application/x-archive": 278242,
+      "text/plain": 269538,
+      "application/x-sharedlib": 258272,
+      "text/xml": 89933,
+      "text/html": 64844,
+      "text/x-makefile": 50023,
+      "text/x-script.python": 42693,
+      "text/x-shellscript": 17744,
+      "text/troff": 10666,
+      "text/x-c++": 8642,
+      "text/x-msdos-batch": 520,
+      "application/octet-stream": 38,
+      "inode/x-empty": 0
+    }
+  },
+  "extensions": {
+    "distinct": 26,
+    "by_count": {
+      "c": 48,
+      "(none)": 38,
+      "md": 23,
+      "h": 20,
+      "sh": 19,
+      "o": 12,
+      "build": 9,
+      "vcxproj": 9,
+      "bat": 7,
+      "cmd": 5,
+      "py": 5,
+      "yml": 5,
+      "in": 4,
+      "txt": 3,
+      "html": 2,
+      "install": 2,
+      "rc": 2,
+      "sln": 2,
+      "yaml": 2,
+      "0": 1,
+      "1": 1,
+      "a": 1,
+      "bin": 1,
+      "cpp": 1,
+      "inc": 1,
+      "pc": 1
+    },
+    "by_bytes": {
+      "c": 946097,
+      "o": 528248,
+      "(none)": 507763,
+      "a": 278242,
+      "0": 258272,
+      "h": 171678,
+      "vcxproj": 89933,
+      "md": 86706,
+      "html": 64844,
+      "yml": 44652,
+      "py": 42693,
+      "sh": 20741,
+      "build": 17910,
+      "txt": 12601,
+      "1": 10666,
+      "cpp": 8642,
+      "sln": 8373,
+      "bat": 5478,
+      "inc": 3349,
+      "rc": 2776,
+      "in": 2416,
+      "cmd": 2103,
+      "yaml": 1242,
+      "pc": 396,
+      "install": 65,
+      "bin": 38
+    }
+  },
+  "exact_duplicates": {
+    "nonempty_files": 223,
+    "nonempty_bytes": 3115924,
+    "distinct_contents": 221,
+    "duplicate_files": 2,
+    "duplicate_bytes": 29802,
+    "duplicate_file_ratio": 0.008969,
+    "duplicate_byte_ratio": 0.009564,
+    "note": "unique inodes (hardlinks counted once); empty files excluded"
+  },
+  "block_duplicates": {
+    "block_bytes": 4096,
+    "blocks": 898,
+    "bytes": 3115924,
+    "duplicate_blocks": 9,
+    "duplicate_bytes": 33898,
+    "duplicate_block_ratio": 0.010022,
+    "duplicate_byte_ratio": 0.010879,
+    "full_blocks": 675,
+    "zero_full_blocks": 0,
+    "zero_full_block_ratio": 0.0,
+    "unique_block_keys": 889,
+    "method": "per-file fixed 4 KiB blocks from offset 0; tail block keyed with its length; BLAKE2b-128"
+  },
+  "entropy": {
+    "stream_order0_bits_per_byte": 6.17515,
+    "mean_full_block_entropy_bits_per_byte": 5.063257,
+    "byte_weighted_mean_file_entropy_bits_per_byte": 5.323142,
+    "file_entropy_histogram": {
+      "bins_bits_per_byte": [
+        "[0,1)",
+        "[1,2)",
+        "[2,3)",
+        "[3,4)",
+        "[4,5)",
+        "[5,6)",
+        "[6,7)",
+        "[7,8]"
+      ],
+      "files": [
+        1,
+        1,
+        1,
+        6,
+        122,
+        87,
+        5,
+        0
+      ],
+      "bytes": [
+        38,
+        2,
+        1552,
+        20368,
+        1412928,
+        541434,
+        1139602,
+        0
+      ]
+    },
+    "block_entropy_histogram": {
+      "block_bytes": 4096,
+      "note": "full 4 KiB blocks only",
+      "bins_bits_per_byte": [
+        "[0,0.5)",
+        "[0.5,1)",
+        "[1,1.5)",
+        "[1.5,2)",
+        "[2,2.5)",
+        "[2.5,3)",
+        "[3,3.5)",
+        "[3.5,4)",
+        "[4,4.5)",
+        "[4.5,5)",
+        "[5,5.5)",
+        "[5.5,6)",
+        "[6,6.5)",
+        "[6.5,7)",
+        "[7,7.5)",
+        "[7.5,8]"
+      ],
+      "blocks": [
+        2,
+        2,
+        0,
+        4,
+        11,
+        32,
+        3,
+        11,
+        54,
+        205,
+        115,
+        55,
+        181,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "compressibility": {
+    "zstd -3": {
+      "input_bytes": 3115924,
+      "output_bytes": 612441,
+      "ratio": 0.196552
+    },
+    "xz -6": {
+      "input_bytes": 3115924,
+      "output_bytes": 452392,
+      "ratio": 0.145187
+    },
+    "sampled": false,
+    "note": "single-shot ratios over concatenated unique file contents in path order; indicator only, not a benchmark"
+  },
+  "metadata": {
+    "object_types": {
+      "dir": 43,
+      "file": 224,
+      "symlink": 3
+    },
+    "symlinks": {
+      "total": 3,
+      "absolute_target": 0,
+      "relative_escaping_root": 0,
+      "dangling_relative": 0,
+      "non_utf8_target": 0
+    },
+    "hardlinks": {
+      "groups": 0,
+      "extra_paths": 0,
+      "max_group_size": 0,
+      "files_with_links_outside_item": 0
+    },
+    "xattrs": {
+      "objects_with_xattrs": 0,
+      "names_by_namespace": {},
+      "total_value_bytes": 0,
+      "max_names_per_object": 0,
+      "acl_access_objects": 0,
+      "acl_default_dirs": 0
+    },
+    "sparse": {
+      "sparse_files": 0,
+      "apparent_bytes": 0,
+      "allocated_bytes": 0,
+      "data_extent_bytes": 0,
+      "hole_bytes": 0,
+      "all_hole_files": 0
+    },
+    "modes": {
+      "distinct": 6,
+      "top": {
+        "file:0664": 190,
+        "dir:0775": 42,
+        "file:0775": 18,
+        "file:0644": 14,
+        "file:0755": 2,
+        "dir:0755": 1
+      },
+      "setuid": 0,
+      "setgid": 0,
+      "sticky": 0,
+      "world_writable_non_symlink": 0,
+      "executable_files": 20
+    },
+    "ownership": {
+      "distinct_uids": 1,
+      "distinct_gids": 1,
+      "top_uids": {
+        "0": 270
+      },
+      "top_gids": {
+        "0": 270
+      }
+    },
+    "names": {
+      "non_utf8": 0,
+      "control_chars": 0,
+      "newline": 0,
+      "windows_hostile": 0,
+      "case_insensitive_collisions": 0,
+      "max_name_bytes": 38
+    },
+    "mtimes": {
+      "min_s": 1721582989,
+      "max_s": 1789266231,
+      "distinct": 16,
+      "subsecond_nonzero": 21,
+      "before_1970": 0,
+      "after_2038_01_19": 0
+    },
+    "directories": {
+      "max_entries": 41,
+      "mean_entries": 6.255814
+    }
+  },
+  "structure": {
+    "max_depth": 6,
+    "max_name_length_bytes": 38,
+    "path_length_bytes": {
+      "min": 3,
+      "max": 48,
+      "mean": 21.855,
+      "p50": 21,
+      "p95": 38
+    }
+  }
+}

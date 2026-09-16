@@ -1,0 +1,256 @@
+{
+  "format": "ebrc-stats-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f16-debian-13-nocloud-20260831-qcow2",
+  "family": "F16",
+  "split": "validation",
+  "scale": "medium",
+  "logical_tree_sha256": "cf58e83693e527d99adecd5cc9a1cf4c3f94fcd29672ebeaf0b71ce8707e04f2",
+  "tool": {
+    "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "file_version": "file-5.45",
+    "magic_mgc": {
+      "path": "/usr/lib/file/magic.mgc",
+      "sha256": "72a25195a2623fe160e926bf20952b6b74b29d6c91e0174a5fa062f02beee1aa"
+    },
+    "zstd_version": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+    "xz_version": "xz (XZ Utils) 5.4.5",
+    "numpy_version": "2.5.3",
+    "python": "3.12.3"
+  },
+  "params": {
+    "block_bytes": 4096,
+    "compress_max_bytes": 1073741824,
+    "zstd": "-3 -T1",
+    "xz": "-6 -T1",
+    "mime": "file --mime-type -b -N"
+  },
+  "totals": {
+    "unique_file_inodes": 1,
+    "bytes": 406716416,
+    "empty_files": 0,
+    "objects": 2
+  },
+  "content_types": {
+    "distinct": 1,
+    "by_count": {
+      "application/x-qemu-disk": 1
+    },
+    "by_bytes": {
+      "application/x-qemu-disk": 406716416
+    }
+  },
+  "extensions": {
+    "distinct": 1,
+    "by_count": {
+      "qcow2": 1
+    },
+    "by_bytes": {
+      "qcow2": 406716416
+    }
+  },
+  "exact_duplicates": {
+    "nonempty_files": 1,
+    "nonempty_bytes": 406716416,
+    "distinct_contents": 1,
+    "duplicate_files": 0,
+    "duplicate_bytes": 0,
+    "duplicate_file_ratio": 0.0,
+    "duplicate_byte_ratio": 0.0,
+    "note": "unique inodes (hardlinks counted once); empty files excluded"
+  },
+  "block_duplicates": {
+    "block_bytes": 4096,
+    "blocks": 99296,
+    "bytes": 406716416,
+    "duplicate_blocks": 2543,
+    "duplicate_bytes": 10416128,
+    "duplicate_block_ratio": 0.02561,
+    "duplicate_byte_ratio": 0.02561,
+    "full_blocks": 99296,
+    "zero_full_blocks": 906,
+    "zero_full_block_ratio": 0.009124,
+    "unique_block_keys": 96753,
+    "method": "per-file fixed 4 KiB blocks from offset 0; tail block keyed with its length; BLAKE2b-128"
+  },
+  "entropy": {
+    "stream_order0_bits_per_byte": 7.987347,
+    "mean_full_block_entropy_bits_per_byte": 7.850476,
+    "byte_weighted_mean_file_entropy_bits_per_byte": 7.987347,
+    "file_entropy_histogram": {
+      "bins_bits_per_byte": [
+        "[0,1)",
+        "[1,2)",
+        "[2,3)",
+        "[3,4)",
+        "[4,5)",
+        "[5,6)",
+        "[6,7)",
+        "[7,8]"
+      ],
+      "files": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "bytes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        406716416
+      ]
+    },
+    "block_entropy_histogram": {
+      "block_bytes": 4096,
+      "note": "full 4 KiB blocks only",
+      "bins_bits_per_byte": [
+        "[0,0.5)",
+        "[0.5,1)",
+        "[1,1.5)",
+        "[1.5,2)",
+        "[2,2.5)",
+        "[2.5,3)",
+        "[3,3.5)",
+        "[3.5,4)",
+        "[4,4.5)",
+        "[4.5,5)",
+        "[5,5.5)",
+        "[5.5,6)",
+        "[6,6.5)",
+        "[6.5,7)",
+        "[7,7.5)",
+        "[7.5,8]"
+      ],
+      "blocks": [
+        926,
+        13,
+        7,
+        11,
+        21,
+        8,
+        15,
+        15,
+        10,
+        13,
+        36,
+        26,
+        34,
+        56,
+        363,
+        97742
+      ]
+    }
+  },
+  "compressibility": {
+    "zstd -3": {
+      "input_bytes": 406716416,
+      "output_bytes": 398747485,
+      "ratio": 0.980407
+    },
+    "xz -6": {
+      "input_bytes": 406716416,
+      "output_bytes": 387548048,
+      "ratio": 0.95287
+    },
+    "sampled": false,
+    "note": "single-shot ratios over concatenated unique file contents in path order; indicator only, not a benchmark"
+  },
+  "metadata": {
+    "object_types": {
+      "dir": 1,
+      "file": 1
+    },
+    "symlinks": {
+      "total": 0,
+      "absolute_target": 0,
+      "relative_escaping_root": 0,
+      "dangling_relative": 0,
+      "non_utf8_target": 0
+    },
+    "hardlinks": {
+      "groups": 0,
+      "extra_paths": 0,
+      "max_group_size": 0,
+      "files_with_links_outside_item": 0
+    },
+    "xattrs": {
+      "objects_with_xattrs": 0,
+      "names_by_namespace": {},
+      "total_value_bytes": 0,
+      "max_names_per_object": 0,
+      "acl_access_objects": 0,
+      "acl_default_dirs": 0
+    },
+    "sparse": {
+      "sparse_files": 0,
+      "apparent_bytes": 0,
+      "allocated_bytes": 0,
+      "data_extent_bytes": 0,
+      "hole_bytes": 0,
+      "all_hole_files": 0
+    },
+    "modes": {
+      "distinct": 2,
+      "top": {
+        "dir:0755": 1,
+        "file:0644": 1
+      },
+      "setuid": 0,
+      "setgid": 0,
+      "sticky": 0,
+      "world_writable_non_symlink": 0,
+      "executable_files": 0
+    },
+    "ownership": {
+      "distinct_uids": 1,
+      "distinct_gids": 1,
+      "top_uids": {
+        "0": 2
+      },
+      "top_gids": {
+        "0": 2
+      }
+    },
+    "names": {
+      "non_utf8": 0,
+      "control_chars": 0,
+      "newline": 0,
+      "windows_hostile": 0,
+      "case_insensitive_collisions": 0,
+      "max_name_bytes": 43
+    },
+    "mtimes": {
+      "min_s": 1789266620,
+      "max_s": 1789266620,
+      "distinct": 1,
+      "subsecond_nonzero": 1,
+      "before_1970": 0,
+      "after_2038_01_19": 0
+    },
+    "directories": {
+      "max_entries": 1,
+      "mean_entries": 1.0
+    }
+  },
+  "structure": {
+    "max_depth": 1,
+    "max_name_length_bytes": 43,
+    "path_length_bytes": {
+      "min": 43,
+      "max": 43,
+      "mean": 43.0,
+      "p50": 43,
+      "p95": 43
+    }
+  }
+}
