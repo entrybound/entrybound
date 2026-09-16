@@ -137,3 +137,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T21:35Z — g2-generated F04 provisioned and fingerprinted (6 items); sources.json written for all 5 families (34 items); Docker unavailable this session (com.docker.service needs admin).
 - 2026-09-16T21:35Z — Phase A3: platform-paths-extraction merged (91 requirements, 24 decisions)
 - 2026-09-16T21:35Z — g2-generated F15 provisioned and fingerprinted (6 items: 2 tuning, 2 validation, 2 heldout).
+- 2026-09-16T21:35Z — crypto-keys-recipients merged: 86 requirements, 28 decisions, 528/528 keys mapped
