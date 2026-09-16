@@ -1,0 +1,1341 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f11-cosign-v250-signing-assets",
+  "family": "F11",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "sigstore-cosign",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "815c601e9524bcfcfb5566bbb4de2332b26730dcfff99c50886d2b5ee02f5502",
+  "materialization_key": "491c7a947b23f46e45d02a082cd6ae03e5b91ac102365786650ff5a2dfa0d043",
+  "materialized_utc": "2026-09-16T23:08:34Z",
+  "materialized_relpath": "corpus/tuning/f11-cosign-v250-signing-assets",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "e8fb4c4d543a695ec48895462eed60fc69a6ffacdd9cfc2623867d9aac2004fc",
+    "pinned_utc": "2026-09-16T23:08:34Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 4626616,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "cosign-2-5-0-1-aarch64-rpm-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.aarch64.rpm-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/9146b945-20b8-413a-a016-07b5fc96b600?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A53%3A21Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.aarch64.rpm-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A52%3A46Z&ske=2026-09-16T23%3A53%3A21Z&sks=b&skv=2018-11-09&sig=QnYt1oAvNKvCKbj6ty947tvuaPr5%2FhhhIAoeXwNTRMk%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM4OSwibmJmIjoxNzg5NjAwMDg5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.pK7ODWPgG4OQj89IOyjyoDChntQL3XOkiwPBCMYoKDY&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.aarch64.rpm-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "f357b7f551ff19fe6f6825231cf323728612e86226b7e834d34fa99a64f23f2c",
+        "size": 1424,
+        "retrieved_utc": "2026-09-16T23:08:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.aarch64.rpm-keyless.pem"
+      },
+      {
+        "name": "cosign-2-5-0-1-aarch64-rpm-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.aarch64.rpm-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/2b547dbf-6894-41bd-8bbc-4d6cf10c3c0a?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A53%3A26Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.aarch64.rpm-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A52%3A34Z&ske=2026-09-16T23%3A53%3A26Z&sks=b&skv=2018-11-09&sig=AdNpH2IBGKo0Ybc7yB7z4Fcu6u5nCIt02lBtR3Na9gk%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM4OSwibmJmIjoxNzg5NjAwMDg5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.pK7ODWPgG4OQj89IOyjyoDChntQL3XOkiwPBCMYoKDY&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.aarch64.rpm-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "c0eaacbe00f2a66ae7a09962ca36ab194dba2973fd9cbc7550ee87faf5c80bc9",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.aarch64.rpm-keyless.sig"
+      },
+      {
+        "name": "cosign-2-5-0-1-armv7hl-rpm-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.armv7hl.rpm-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/456cf4ef-7640-4efb-b053-40fb9a8444d8?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A51%3A13Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.armv7hl.rpm-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A50%3A39Z&ske=2026-09-16T23%3A51%3A13Z&sks=b&skv=2018-11-09&sig=VbUHtF5pn2BFUB1rgurMdOY%2BCMCPZWuEUIl4sJzl1SA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MCwibmJmIjoxNzg5NjAwMDkwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.NESD98U1ekKu24Bs9YjA7u44XDfqOMCgsI-xGMW3ahc&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.armv7hl.rpm-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "0952ba1ec0036abb556fa335268bd8197c9dc0431b3ebd894ca87f274336c8c3",
+        "size": 1424,
+        "retrieved_utc": "2026-09-16T23:08:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.armv7hl.rpm-keyless.pem"
+      },
+      {
+        "name": "cosign-2-5-0-1-armv7hl-rpm-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.armv7hl.rpm-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/cf431dc4-a5fc-4b5a-af51-02064247e6d2?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A42%3A20Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.armv7hl.rpm-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A42%3A06Z&ske=2026-09-16T23%3A42%3A20Z&sks=b&skv=2018-11-09&sig=ITHUxcAq7Sa5DEz1XMZmn5GP1Y%2FPOkIfr6T8sWg6btM%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MCwibmJmIjoxNzg5NjAwMDkwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.NESD98U1ekKu24Bs9YjA7u44XDfqOMCgsI-xGMW3ahc&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.armv7hl.rpm-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "d26c8565f3d408f69760249bd757df293824ccf2eb014247c00aff189467a6e9",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.armv7hl.rpm-keyless.sig"
+      },
+      {
+        "name": "cosign-2-5-0-1-ppc64le-rpm-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.ppc64le.rpm-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/6f52d320-71df-4991-9d53-224012e66c65?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A07%3A23Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.ppc64le.rpm-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A06%3A27Z&ske=2026-09-17T00%3A07%3A23Z&sks=b&skv=2018-11-09&sig=1r4k%2FrQTlp0BMP2WHwlUT1qVeYiY5qcjKK00orZ%2FG4g%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MCwibmJmIjoxNzg5NjAwMDkwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.NESD98U1ekKu24Bs9YjA7u44XDfqOMCgsI-xGMW3ahc&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.ppc64le.rpm-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "418ebcc1c9532b7dffc4e0051b4d0c74e88a468bce1608b09eee37148bef1273",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.ppc64le.rpm-keyless.pem"
+      },
+      {
+        "name": "cosign-2-5-0-1-ppc64le-rpm-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.ppc64le.rpm-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/2b8e7813-7901-4211-9156-09118d0ef999?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A04%3A09Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.ppc64le.rpm-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A03%3A38Z&ske=2026-09-17T00%3A04%3A09Z&sks=b&skv=2018-11-09&sig=VIbZuCXeuqt5z%2BhReVHmzdvK7L6ndnXSQGrDcLKGBAM%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MCwibmJmIjoxNzg5NjAwMDkwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.NESD98U1ekKu24Bs9YjA7u44XDfqOMCgsI-xGMW3ahc&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.ppc64le.rpm-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "8327618114998f79f7ef9ee3bb8bf2bfaacb282d974d44a9cd194866b9dd9715",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.ppc64le.rpm-keyless.sig"
+      },
+      {
+        "name": "cosign-2-5-0-1-riscv64-rpm-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.riscv64.rpm-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/c92f9fe1-2eac-4cc8-9da2-3e35c6fba6a7?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A06%3A03Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.riscv64.rpm-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A05%3A06Z&ske=2026-09-17T00%3A06%3A03Z&sks=b&skv=2018-11-09&sig=Bq7%2BNSmQB4IK7v4Y3BW2vibojCkLUofioWodbYQPzEw%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MSwibmJmIjoxNzg5NjAwMDkxLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Y5N3Odkq_cPIPFMzzW7rboKEZZe5SLiqUWYL0uPuKUk&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.riscv64.rpm-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "2f97cc10a79a37dcc94b0c4f7380b24970e041c319a90f16e7b29aa969a5593f",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.riscv64.rpm-keyless.pem"
+      },
+      {
+        "name": "cosign-2-5-0-1-riscv64-rpm-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.riscv64.rpm-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/ef1ff03c-b6ad-4557-988e-db0e241a07f0?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A08%3A33Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.riscv64.rpm-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A08%3A03Z&ske=2026-09-17T00%3A08%3A33Z&sks=b&skv=2018-11-09&sig=UJ0raZHUYAURWbVsj54XZ7GXovylC0TjCxNZBklJI2M%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MSwibmJmIjoxNzg5NjAwMDkxLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Y5N3Odkq_cPIPFMzzW7rboKEZZe5SLiqUWYL0uPuKUk&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.riscv64.rpm-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "489b2f3c7aa2b177e2751bb8db8173a47714801f17ec9e692655d56f4474ff98",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.riscv64.rpm-keyless.sig"
+      },
+      {
+        "name": "cosign-2-5-0-1-s390x-rpm-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.s390x.rpm-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/b8ff9dc3-17ca-46c1-b1df-fd569d6f1abb?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A04%3A22Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.s390x.rpm-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A04%3A06Z&ske=2026-09-17T00%3A04%3A22Z&sks=b&skv=2018-11-09&sig=VdXW1AEwLjui4RCCsIJ1%2F4m%2F7ppix7zuWBFanHSVEdE%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MSwibmJmIjoxNzg5NjAwMDkxLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Y5N3Odkq_cPIPFMzzW7rboKEZZe5SLiqUWYL0uPuKUk&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.s390x.rpm-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "f7d69f67e6dc4e904881ded402ff9c85d236d5f6527933c07fceee824174be64",
+        "size": 1424,
+        "retrieved_utc": "2026-09-16T23:08:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.s390x.rpm-keyless.pem"
+      },
+      {
+        "name": "cosign-2-5-0-1-s390x-rpm-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.s390x.rpm-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/d56fca84-ab93-488c-883c-196f1ce38f0e?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A53%3A26Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.s390x.rpm-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A52%3A34Z&ske=2026-09-16T23%3A53%3A26Z&sks=b&skv=2018-11-09&sig=DPsLUJRIGC7rxnqQcBDt80oNZidlBkEjixxmglNRW84%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MiwibmJmIjoxNzg5NjAwMDkyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.-DHg6zvHKq4Q-RaGBpR4eKv_CeV8zOdKvGI8CtoegGU&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.s390x.rpm-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "8fa87ed02d95849c4fc823571dedf7623c6c2d75d1993f69c4711434a85c734e",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:10Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.s390x.rpm-keyless.sig"
+      },
+      {
+        "name": "cosign-2-5-0-1-x86_64-rpm-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.x86_64.rpm-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/0a5bc2ef-79ea-42f4-85bb-44edb39409d9?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A43%3A55Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.x86_64.rpm-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A43%3A38Z&ske=2026-09-16T23%3A43%3A55Z&sks=b&skv=2018-11-09&sig=IPGu%2Fix1QbJYc02LzTzitxNCROCQMtZ8F7DOvflrSI0%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MiwibmJmIjoxNzg5NjAwMDkyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.-DHg6zvHKq4Q-RaGBpR4eKv_CeV8zOdKvGI8CtoegGU&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.x86_64.rpm-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "3ad1a6295cafd3392c3886325be542f87e0089e59ec201fdbb8f1ae98242cd55",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:10Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.x86_64.rpm-keyless.pem"
+      },
+      {
+        "name": "cosign-2-5-0-1-x86_64-rpm-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-2.5.0-1.x86_64.rpm-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/d5008f1b-53d4-42c2-9008-97073d045f17?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A47%3A33Z&rscd=attachment%3B+filename%3Dcosign-2.5.0-1.x86_64.rpm-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A47%3A21Z&ske=2026-09-16T23%3A47%3A33Z&sks=b&skv=2018-11-09&sig=2q5oXmLTsJ%2BaPp7nsWDJCCyER09%2FPUAUvUIfvboq70M%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MiwibmJmIjoxNzg5NjAwMDkyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.-DHg6zvHKq4Q-RaGBpR4eKv_CeV8zOdKvGI8CtoegGU&response-content-disposition=attachment%3B%20filename%3Dcosign-2.5.0-1.x86_64.rpm-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "84674c2b811e243847dd6a3c9a0024715b93b3a9e6e09c2fdee5da19b61935dd",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:10Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-2.5.0-1.x86_64.rpm-keyless.sig"
+      },
+      {
+        "name": "cosign-darwin-amd64-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-amd64-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/5fcf13bf-5f0d-4ea7-a6f0-ac33cf996d95?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A43%3A38Z&rscd=attachment%3B+filename%3Dcosign-darwin-amd64-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A43%3A13Z&ske=2026-09-16T23%3A43%3A38Z&sks=b&skv=2018-11-09&sig=m4xUIr4nJ9u4nz2Ug9t4FUjD0lBRBV1PGaaiuNEAoN8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MiwibmJmIjoxNzg5NjAwMDkyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.-DHg6zvHKq4Q-RaGBpR4eKv_CeV8zOdKvGI8CtoegGU&response-content-disposition=attachment%3B%20filename%3Dcosign-darwin-amd64-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "c307cfd37b39c6f43105f9e9893d1131ce133c63937782070a9fe160c6c4b0ae",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:10Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-darwin-amd64-keyless.pem"
+      },
+      {
+        "name": "cosign-darwin-amd64-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-amd64-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/fce336d5-adef-4036-8cb8-cfd9d85d85fe?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A47%3A19Z&rscd=attachment%3B+filename%3Dcosign-darwin-amd64-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A47%3A18Z&ske=2026-09-16T23%3A47%3A19Z&sks=b&skv=2018-11-09&sig=gU%2BqXxpefDaO4Enn9y0QBJoH508295gba9vjyOdmhRM%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MywibmJmIjoxNzg5NjAwMDkzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.4F4zH5IE6KqnspM8nAphcy43EBagujqpNH6o0m6Cq7U&response-content-disposition=attachment%3B%20filename%3Dcosign-darwin-amd64-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "38d4c63346970eaab4dc942ec249caced66a9aaf9dad2b601d933953b11443c6",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:11Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-darwin-amd64-keyless.sig"
+      },
+      {
+        "name": "cosign-darwin-amd64-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-amd64.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/7b54123a-514e-4842-8a2a-c872eaf19735?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A52%3A06Z&rscd=attachment%3B+filename%3Dcosign-darwin-amd64.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A51%3A19Z&ske=2026-09-16T23%3A52%3A06Z&sks=b&skv=2018-11-09&sig=A4MfZe46HH7fl8PTkk56EVVXAMFhEkuu2cTVPDQT79s%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MywibmJmIjoxNzg5NjAwMDkzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.4F4zH5IE6KqnspM8nAphcy43EBagujqpNH6o0m6Cq7U&response-content-disposition=attachment%3B%20filename%3Dcosign-darwin-amd64.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "c88e76c93136de14ff08990d7879208bba77a7e60372f2d0453e29f0449f817b",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:11Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-darwin-amd64.sig"
+      },
+      {
+        "name": "cosign-darwin-amd64_2-5-0_darwin_amd64-sbom-json",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-amd64_2.5.0_darwin_amd64.sbom.json",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/d2e2d0ed-e4ad-4d43-bef5-ee8992121831?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A57%3A27Z&rscd=attachment%3B+filename%3Dcosign-darwin-amd64_2.5.0_darwin_amd64.sbom.json&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A56%3A49Z&ske=2026-09-16T23%3A57%3A27Z&sks=b&skv=2018-11-09&sig=Xyl22l07c27ohQR2sHrRA0gWI%2BSqa1PFEquqyypFZu0%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5MywibmJmIjoxNzg5NjAwMDkzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.4F4zH5IE6KqnspM8nAphcy43EBagujqpNH6o0m6Cq7U&response-content-disposition=attachment%3B%20filename%3Dcosign-darwin-amd64_2.5.0_darwin_amd64.sbom.json&response-content-type=application%2Foctet-stream",
+        "sha256": "1a35955f48a3887af561f135be72ad65b88732c8ad0175a52f12f0efa019962b",
+        "size": 417687,
+        "retrieved_utc": "2026-09-16T23:08:11Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-darwin-amd64_2.5.0_darwin_amd64.sbom.json"
+      },
+      {
+        "name": "cosign-darwin-arm64-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-arm64-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/b69c7ae2-d1de-4db7-8650-5b36b4ecead2?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A45%3A31Z&rscd=attachment%3B+filename%3Dcosign-darwin-arm64-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A45%3A10Z&ske=2026-09-16T23%3A45%3A31Z&sks=b&skv=2018-11-09&sig=qey0NuMVHm9Qxr7YMbTg0It5kJHRKZLu3AxiQi6BNN8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NCwibmJmIjoxNzg5NjAwMDk0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.5D9CVo8Y9gLPbt5AhA44IN5_8pgPGMxtY45Aaetw0IU&response-content-disposition=attachment%3B%20filename%3Dcosign-darwin-arm64-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "2f37343d9dc1bada256313b97da6fc8eed0efa8441a1c376999dd0bd5a7b86b8",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:12Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-darwin-arm64-keyless.pem"
+      },
+      {
+        "name": "cosign-darwin-arm64-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-arm64-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/527e3040-6c51-45aa-8a35-a367dc8ba05c?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A49%3A03Z&rscd=attachment%3B+filename%3Dcosign-darwin-arm64-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A48%3A47Z&ske=2026-09-16T23%3A49%3A03Z&sks=b&skv=2018-11-09&sig=XOnw7zsmP3NkkFvprmEspX9zuHndMvGlijlM7DkmwXo%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NCwibmJmIjoxNzg5NjAwMDk0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.5D9CVo8Y9gLPbt5AhA44IN5_8pgPGMxtY45Aaetw0IU&response-content-disposition=attachment%3B%20filename%3Dcosign-darwin-arm64-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "5426fcd56d92d2b8ebf6b725b148c88909bf8a2681724d39bd57df552fa521a6",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:12Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-darwin-arm64-keyless.sig"
+      },
+      {
+        "name": "cosign-darwin-arm64-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-arm64.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/da97c75d-5e9f-4ce9-b873-446733dd3e83?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A06%3A24Z&rscd=attachment%3B+filename%3Dcosign-darwin-arm64.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A06%3A24Z&ske=2026-09-17T00%3A06%3A24Z&sks=b&skv=2018-11-09&sig=2wRilbczjLyXGtCW33S%2F5zO34Hc8t6aEA820nXIzjOg%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NCwibmJmIjoxNzg5NjAwMDk0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.5D9CVo8Y9gLPbt5AhA44IN5_8pgPGMxtY45Aaetw0IU&response-content-disposition=attachment%3B%20filename%3Dcosign-darwin-arm64.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "8ed387839dbdb1dacc7dd5a42a07a7ec1f3e1095f3db43e2bf785eba457af21f",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:12Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-darwin-arm64.sig"
+      },
+      {
+        "name": "cosign-darwin-arm64_2-5-0_darwin_arm64-sbom-json",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-darwin-arm64_2.5.0_darwin_arm64.sbom.json",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/1c77a51e-b253-419b-92d5-e8291d9000a6?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A07%3A42Z&rscd=attachment%3B+filename%3Dcosign-darwin-arm64_2.5.0_darwin_arm64.sbom.json&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A07%3A01Z&ske=2026-09-17T00%3A07%3A42Z&sks=b&skv=2018-11-09&sig=g%2F4TOIomvtUB8DqnZ6OKvZAMVD9swJMOI8oCzoxR%2FJs%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NCwibmJmIjoxNzg5NjAwMDk0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.5D9CVo8Y9gLPbt5AhA44IN5_8pgPGMxtY45Aaetw0IU&response-content-disposition=attachment%3B%20filename%3Dcosign-darwin-arm64_2.5.0_darwin_arm64.sbom.json&response-content-type=application%2Foctet-stream",
+        "sha256": "a3f347b74d2e073147b328dd7bf1b4a7f1337d76b1d08844f209f1d5d3755f3f",
+        "size": 417687,
+        "retrieved_utc": "2026-09-16T23:08:12Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-darwin-arm64_2.5.0_darwin_arm64.sbom.json"
+      },
+      {
+        "name": "cosign-linux-amd64-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-amd64-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/9abd6028-5932-4e77-9497-9ce675f6fb60?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A05%3A49Z&rscd=attachment%3B+filename%3Dcosign-linux-amd64-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A05%3A38Z&ske=2026-09-17T00%3A05%3A49Z&sks=b&skv=2018-11-09&sig=XfEMZtEby4TiG0Bs8Puk1j%2BLz29B8NsXdi2kOuGkOPM%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NSwibmJmIjoxNzg5NjAwMDk1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.wjd4o2FHKUfIV8b_dL8qpeKdRaQvclp_M9AdKD9ONbY&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-amd64-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "3ef9738123dc20796cc7e002a25b8f9054a6ebd4a1f3ae66e997b45f39e3d2bf",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-amd64-keyless.pem"
+      },
+      {
+        "name": "cosign-linux-amd64-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-amd64-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/ca3d826c-5352-4bb2-88ab-fa49ee92e40f?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A03%3A47Z&rscd=attachment%3B+filename%3Dcosign-linux-amd64-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A03%3A03Z&ske=2026-09-17T00%3A03%3A47Z&sks=b&skv=2018-11-09&sig=8pz4U9kSoi8hoSGiYpLlHdynlVuXkYMvzx0H7dKGDBU%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NSwibmJmIjoxNzg5NjAwMDk1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.wjd4o2FHKUfIV8b_dL8qpeKdRaQvclp_M9AdKD9ONbY&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-amd64-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "76e797a5fc81f5338bbd13fbc1322931d35d1ad0e2c65a076671516ce61ed669",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-amd64-keyless.sig"
+      },
+      {
+        "name": "cosign-linux-amd64-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-amd64.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/ab2eb99b-dea3-4a2a-a3fe-dc5ab713fea1?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A04%3A21Z&rscd=attachment%3B+filename%3Dcosign-linux-amd64.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A04%3A03Z&ske=2026-09-17T00%3A04%3A21Z&sks=b&skv=2018-11-09&sig=glFJXUb1Br4Z2KnrvfLr1Hx%2BfeGojjkX%2BKPlupVcIg8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NSwibmJmIjoxNzg5NjAwMDk1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.wjd4o2FHKUfIV8b_dL8qpeKdRaQvclp_M9AdKD9ONbY&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-amd64.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "46ae6d99440933dacbef4f24a333b6b10bd4d65468bc1cd5e53e0149b6a4c4d6",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-amd64.sig"
+      },
+      {
+        "name": "cosign-linux-amd64_2-5-0_linux_amd64-sbom-json",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-amd64_2.5.0_linux_amd64.sbom.json",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/339d6108-a43c-456f-9f5b-9ea09bb3612b?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A56%3A20Z&rscd=attachment%3B+filename%3Dcosign-linux-amd64_2.5.0_linux_amd64.sbom.json&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A56%3A20Z&ske=2026-09-16T23%3A56%3A20Z&sks=b&skv=2018-11-09&sig=HSIA%2Btatp9P6jheXscpM5q6kcxD%2BEOI48DF9%2BwFAtRY%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NiwibmJmIjoxNzg5NjAwMDk2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.PbWIhXA-H69muypo9gVuizxfK-uF6ziaXO3F5aN1_9M&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-amd64_2.5.0_linux_amd64.sbom.json&response-content-type=application%2Foctet-stream",
+        "sha256": "27c8f8ca3c0308c40969a66d684a76f36afb54fc870c41a9f6c713d56150b23a",
+        "size": 408257,
+        "retrieved_utc": "2026-09-16T23:08:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-amd64_2.5.0_linux_amd64.sbom.json"
+      },
+      {
+        "name": "cosign-linux-arm-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/38015b5b-6d05-4758-9a63-9c40a6061661?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A51%3A53Z&rscd=attachment%3B+filename%3Dcosign-linux-arm-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A50%3A54Z&ske=2026-09-16T23%3A51%3A53Z&sks=b&skv=2018-11-09&sig=EKdpc4Y6%2Bhoqk%2FA4qP6TR8%2BeH%2Bq7l8w2w%2FgyVXoI2jQ%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NiwibmJmIjoxNzg5NjAwMDk2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.PbWIhXA-H69muypo9gVuizxfK-uF6ziaXO3F5aN1_9M&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-arm-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "83034ff482a103dcd709430e73c95658bcedc816d71c61b606e3776f89608ee4",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-arm-keyless.pem"
+      },
+      {
+        "name": "cosign-linux-arm-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/e7b0a2ac-db3d-4616-8b69-1a2204c3a697?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A07%3A05Z&rscd=attachment%3B+filename%3Dcosign-linux-arm-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A07%3A03Z&ske=2026-09-17T00%3A07%3A05Z&sks=b&skv=2018-11-09&sig=uCzodpbyQo%2Bgn0lijbMLcaQGnJhbbVowqlj4a6o%2BiXg%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NiwibmJmIjoxNzg5NjAwMDk2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.PbWIhXA-H69muypo9gVuizxfK-uF6ziaXO3F5aN1_9M&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-arm-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "424a197a629c434ed6a7e153c63bd72b27b137ccf164581869b0136869a6406e",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-arm-keyless.sig"
+      },
+      {
+        "name": "cosign-linux-arm-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/34a99962-3c88-4180-af96-cfb2461c4f96?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A07%3A35Z&rscd=attachment%3B+filename%3Dcosign-linux-arm.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A07%3A30Z&ske=2026-09-17T00%3A07%3A35Z&sks=b&skv=2018-11-09&sig=rpotJcBLDBGG4WqxNcT35Abv%2Bcw63xUuINamNIPyOxs%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NywibmJmIjoxNzg5NjAwMDk3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.wNKUqH2QronlWeaMWIpTBATJqEDgYqLNX7i-OVxEH3w&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-arm.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "fbbc65614a8a3f34df78db7528b5fc1226f4dc9bd3f08bc349675d124dc2d7e9",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-arm.sig"
+      },
+      {
+        "name": "cosign-linux-arm64-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm64-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/c59d614c-d0c2-471d-94d6-85a41d0d1c8f?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A06%3A11Z&rscd=attachment%3B+filename%3Dcosign-linux-arm64-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A05%3A18Z&ske=2026-09-17T00%3A06%3A11Z&sks=b&skv=2018-11-09&sig=nJuAi0puFYMNTnCn7nqeO6E9WkbgMUc262c2PhEdHkw%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NywibmJmIjoxNzg5NjAwMDk3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.wNKUqH2QronlWeaMWIpTBATJqEDgYqLNX7i-OVxEH3w&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-arm64-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "fb62e9df1609256dcf76fd4fdac41a3169586722d731d6f32019791b42aad4f6",
+        "size": 1424,
+        "retrieved_utc": "2026-09-16T23:08:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-arm64-keyless.pem"
+      },
+      {
+        "name": "cosign-linux-arm64-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm64-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/2c205ed7-b751-49af-a1c9-8b959671e32a?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A06%3A28Z&rscd=attachment%3B+filename%3Dcosign-linux-arm64-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A06%3A23Z&ske=2026-09-17T00%3A06%3A28Z&sks=b&skv=2018-11-09&sig=SFfvBKUXj7rqejVLdcbgejRi7etsE1F74p6khqDRO3E%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NywibmJmIjoxNzg5NjAwMDk3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.wNKUqH2QronlWeaMWIpTBATJqEDgYqLNX7i-OVxEH3w&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-arm64-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "da7e74d8573b351b84a2013c78ecee7e37f903038afef2bd0c5ab15f71a79ff7",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-arm64-keyless.sig"
+      },
+      {
+        "name": "cosign-linux-arm64-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm64.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/470a7b9c-3824-45e4-86f2-38ba728ba765?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A46%3A48Z&rscd=attachment%3B+filename%3Dcosign-linux-arm64.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A46%3A36Z&ske=2026-09-16T23%3A46%3A48Z&sks=b&skv=2018-11-09&sig=Ao4QJ%2BicGJ%2BY63R%2FtedhirplyrnpzJybFfJLTVGSM1M%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5NywibmJmIjoxNzg5NjAwMDk3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.wNKUqH2QronlWeaMWIpTBATJqEDgYqLNX7i-OVxEH3w&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-arm64.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "84ae68aaea61f3283cee4bf9a92f9c2a0bedab925b691e6971eb13b3e975db1d",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-arm64.sig"
+      },
+      {
+        "name": "cosign-linux-arm64_2-5-0_linux_arm64-sbom-json",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm64_2.5.0_linux_arm64.sbom.json",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/119627c4-f978-4917-8500-06416b6c7ca1?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A00%3A47Z&rscd=attachment%3B+filename%3Dcosign-linux-arm64_2.5.0_linux_arm64.sbom.json&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A00%3A41Z&ske=2026-09-17T00%3A00%3A47Z&sks=b&skv=2018-11-09&sig=uS5ByA6c9XWKuq6yuJErc6rmF54ZfHHYRU2DPuV4cMU%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5OCwibmJmIjoxNzg5NjAwMDk4LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.AlD6DU1IxNXNZKIz153xQGfuTxUBkqDBgAQ4xq1r91Q&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-arm64_2.5.0_linux_arm64.sbom.json&response-content-type=application%2Foctet-stream",
+        "sha256": "6896e1471a46e4250b684e391799fcf66065d42d246d03ec9825d6e06b62ebd9",
+        "size": 408257,
+        "retrieved_utc": "2026-09-16T23:08:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-arm64_2.5.0_linux_arm64.sbom.json"
+      },
+      {
+        "name": "cosign-linux-arm_2-5-0_linux_arm-sbom-json",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-arm_2.5.0_linux_arm.sbom.json",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/42817912-5792-4679-89e2-3d56bf3c1933?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A43%3A53Z&rscd=attachment%3B+filename%3Dcosign-linux-arm_2.5.0_linux_arm.sbom.json&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A42%3A54Z&ske=2026-09-16T23%3A43%3A53Z&sks=b&skv=2018-11-09&sig=MDc%2BJ7sqe%2FJUtRDcDeXQ%2BXLXQofUQwPilBcMwgG5Vn0%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5OCwibmJmIjoxNzg5NjAwMDk4LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.AlD6DU1IxNXNZKIz153xQGfuTxUBkqDBgAQ4xq1r91Q&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-arm_2.5.0_linux_arm.sbom.json&response-content-type=application%2Foctet-stream",
+        "sha256": "10b34ae71782467640596f935ee5f15c9ce92503faf66445b2f34c57b6696d60",
+        "size": 406761,
+        "retrieved_utc": "2026-09-16T23:08:16Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-arm_2.5.0_linux_arm.sbom.json"
+      },
+      {
+        "name": "cosign-linux-pivkey-pkcs11key-amd64-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-amd64-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/656ea487-4ef7-4a0c-a99c-3b60d1056fc0?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A01%3A56Z&rscd=attachment%3B+filename%3Dcosign-linux-pivkey-pkcs11key-amd64-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A01%3A49Z&ske=2026-09-17T00%3A01%3A56Z&sks=b&skv=2018-11-09&sig=Rfnowec3n2e%2B3PDU9Zgh9Z0pGEHvHhiyHiYLBs8k%2BDk%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5OSwibmJmIjoxNzg5NjAwMDk5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Ap_eZETxjyAfKLiMBGAqnMCjO-G0ZKqIUcIyvcaHAjk&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-pivkey-pkcs11key-amd64-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "8d56e40b90926f6d356bca294740d84e5c2b9cd702c14daf89b02759e30a363c",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:16Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-pivkey-pkcs11key-amd64-keyless.pem"
+      },
+      {
+        "name": "cosign-linux-pivkey-pkcs11key-amd64-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-amd64-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/8da89392-bcdc-4e6a-a7e1-c10958599538?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A48%3A22Z&rscd=attachment%3B+filename%3Dcosign-linux-pivkey-pkcs11key-amd64-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A48%3A13Z&ske=2026-09-16T23%3A48%3A22Z&sks=b&skv=2018-11-09&sig=H6ScTsSWtlVQNuQqT7ta557bCwmmSzckLmtmg%2Fr5f64%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5OSwibmJmIjoxNzg5NjAwMDk5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Ap_eZETxjyAfKLiMBGAqnMCjO-G0ZKqIUcIyvcaHAjk&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-pivkey-pkcs11key-amd64-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "a82bfa2a2880ef345b761d5b154e9af987e775b3c0ded800c8e48b6aa6788a3c",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:16Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-pivkey-pkcs11key-amd64-keyless.sig"
+      },
+      {
+        "name": "cosign-linux-pivkey-pkcs11key-amd64-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-amd64.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/a770a428-0e0e-4d74-b354-38701c9a6bd7?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A07%3A53Z&rscd=attachment%3B+filename%3Dcosign-linux-pivkey-pkcs11key-amd64.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A07%3A07Z&ske=2026-09-17T00%3A07%3A53Z&sks=b&skv=2018-11-09&sig=1cXdzj5eCuzCeRw8zITqtI0M%2FDDOkq%2BZ6ABxGk9a%2BWI%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5OSwibmJmIjoxNzg5NjAwMDk5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Ap_eZETxjyAfKLiMBGAqnMCjO-G0ZKqIUcIyvcaHAjk&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-pivkey-pkcs11key-amd64.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "9bc26aaf9820063ccf5af149aff6c4dfe51cc47362544bfc8cadb3adc8369924",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:17Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-pivkey-pkcs11key-amd64.sig"
+      },
+      {
+        "name": "cosign-linux-pivkey-pkcs11key-amd64_2-5-0_linux_amd64-sbom-json",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-amd64_2.5.0_linux_amd64.sbom.json",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/8b7f39ac-779d-4d5b-bbab-eb12213fb569?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A07%3A11Z&rscd=attachment%3B+filename%3Dcosign-linux-pivkey-pkcs11key-amd64_2.5.0_linux_amd64.sbom.json&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A06%3A15Z&ske=2026-09-17T00%3A07%3A11Z&sks=b&skv=2018-11-09&sig=k3UoiEL%2BPOF%2BdRW7UkO5IhtlD711vb2HW1m325ZmGTE%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDM5OSwibmJmIjoxNzg5NjAwMDk5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Ap_eZETxjyAfKLiMBGAqnMCjO-G0ZKqIUcIyvcaHAjk&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-pivkey-pkcs11key-amd64_2.5.0_linux_amd64.sbom.json&response-content-type=application%2Foctet-stream",
+        "sha256": "b41767c8d86596549f64d9f1b88b90dd87c60073716ba068470d2d999be94dd9",
+        "size": 431445,
+        "retrieved_utc": "2026-09-16T23:08:17Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-pivkey-pkcs11key-amd64_2.5.0_linux_amd64.sbom.json"
+      },
+      {
+        "name": "cosign-linux-pivkey-pkcs11key-arm64-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-arm64-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/1681645a-8dab-4058-9695-2ce53ce4476d?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A06%3A23Z&rscd=attachment%3B+filename%3Dcosign-linux-pivkey-pkcs11key-arm64-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A06%3A22Z&ske=2026-09-17T00%3A06%3A23Z&sks=b&skv=2018-11-09&sig=11vEe4f5nvv8f3rKa%2FDndwLPf4yswViuH23HKeNsfcU%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMCwibmJmIjoxNzg5NjAwMTAwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2h82CMPX1V3fdeFz2eI-ErwKxf8k0ND5nwbIsO2Q5is&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-pivkey-pkcs11key-arm64-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "16dea34c98544ec2079b2e095e5074e98453f55f29e8dc09b088c44560da106b",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:17Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-pivkey-pkcs11key-arm64-keyless.pem"
+      },
+      {
+        "name": "cosign-linux-pivkey-pkcs11key-arm64-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-arm64-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/f684c3b5-c1a1-4f16-86f3-4d9dd11e5a71?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A45%3A42Z&rscd=attachment%3B+filename%3Dcosign-linux-pivkey-pkcs11key-arm64-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A45%3A22Z&ske=2026-09-16T23%3A45%3A42Z&sks=b&skv=2018-11-09&sig=nJbf8d6C2Ga3nXX7baOs%2BZMvG1MxKjlau1%2FT%2BKEPlsY%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMCwibmJmIjoxNzg5NjAwMTAwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2h82CMPX1V3fdeFz2eI-ErwKxf8k0ND5nwbIsO2Q5is&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-pivkey-pkcs11key-arm64-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "e00e4cbc6261cd3d71a63a7b1109d13ce2f2c4799984d06fcc706d0d5f4eff5a",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:17Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-pivkey-pkcs11key-arm64-keyless.sig"
+      },
+      {
+        "name": "cosign-linux-pivkey-pkcs11key-arm64-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-arm64.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/b1634425-b2ae-4a7e-a8cd-d7cbe6c9ad9a?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A51%3A01Z&rscd=attachment%3B+filename%3Dcosign-linux-pivkey-pkcs11key-arm64.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A50%3A57Z&ske=2026-09-16T23%3A51%3A01Z&sks=b&skv=2018-11-09&sig=7afuHPGi4%2FHZHTAlvSMMWZtCRbaMTR2WaCPvHOgslc8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMCwibmJmIjoxNzg5NjAwMTAwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2h82CMPX1V3fdeFz2eI-ErwKxf8k0ND5nwbIsO2Q5is&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-pivkey-pkcs11key-arm64.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "de71d89c98b6dbbba3181e26275305f7f7d1f9d40f78f5b963ec57663fa23b5c",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:18Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-pivkey-pkcs11key-arm64.sig"
+      },
+      {
+        "name": "cosign-linux-pivkey-pkcs11key-arm64_2-5-0_linux_arm64-sbom-json",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-pivkey-pkcs11key-arm64_2.5.0_linux_arm64.sbom.json",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/048d1c08-52e8-4f4e-906b-ebe23f23aaa3?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A06%3A25Z&rscd=attachment%3B+filename%3Dcosign-linux-pivkey-pkcs11key-arm64_2.5.0_linux_arm64.sbom.json&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A06%3A03Z&ske=2026-09-17T00%3A06%3A25Z&sks=b&skv=2018-11-09&sig=d3zUGURm9gXvsSMhEPrs3goqQcJBOuGQNjZUvz69Koo%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMSwibmJmIjoxNzg5NjAwMTAxLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.5Ty3pgVU2qpcSbpu0bDrdaRQOFDmimPuNDUXcnqxO78&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-pivkey-pkcs11key-arm64_2.5.0_linux_arm64.sbom.json&response-content-type=application%2Foctet-stream",
+        "sha256": "64a8823e8777e667cc1cf49b3250a830b7d746a7b0775305e06af7e348e84332",
+        "size": 431445,
+        "retrieved_utc": "2026-09-16T23:08:21Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-pivkey-pkcs11key-arm64_2.5.0_linux_arm64.sbom.json"
+      },
+      {
+        "name": "cosign-linux-ppc64le-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-ppc64le-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/6952bc94-71b5-41f7-a656-87886b38f74c?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A07%3A11Z&rscd=attachment%3B+filename%3Dcosign-linux-ppc64le-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A06%3A15Z&ske=2026-09-17T00%3A07%3A11Z&sks=b&skv=2018-11-09&sig=M%2FrPB2bgVcrW6XEGyXRCwCwZhvny8AZf4Jw4lBCjmaQ%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMSwibmJmIjoxNzg5NjAwMTAxLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.5Ty3pgVU2qpcSbpu0bDrdaRQOFDmimPuNDUXcnqxO78&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-ppc64le-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "0d2a03981cff73c6777483a4d3e459c2aa4bda200b17fa2589eaea47d7e373b4",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:21Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-ppc64le-keyless.pem"
+      },
+      {
+        "name": "cosign-linux-ppc64le-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-ppc64le-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/d77fbab1-f7fd-495d-a924-b321adb4ec6c?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A58%3A23Z&rscd=attachment%3B+filename%3Dcosign-linux-ppc64le-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A58%3A16Z&ske=2026-09-16T23%3A58%3A23Z&sks=b&skv=2018-11-09&sig=RO82dbmtU%2Fm3L0cHkR3bQEJKPn1anewGVgqjj%2F8q%2FOk%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMSwibmJmIjoxNzg5NjAwMTAxLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.5Ty3pgVU2qpcSbpu0bDrdaRQOFDmimPuNDUXcnqxO78&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-ppc64le-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "7449d3125541ed624d2bd539560f06441637f5d651b00f5ce4fd35801a4400f8",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:21Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-ppc64le-keyless.sig"
+      },
+      {
+        "name": "cosign-linux-ppc64le-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-ppc64le.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/1b7e7abb-cd75-4731-ac71-f8b519766c08?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A47%3A48Z&rscd=attachment%3B+filename%3Dcosign-linux-ppc64le.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A46%3A55Z&ske=2026-09-16T23%3A47%3A48Z&sks=b&skv=2018-11-09&sig=kJz2hk%2F4Md1uV90qSuUY1HeBTZeedhXmKF%2FCDc1DqUw%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMSwibmJmIjoxNzg5NjAwMTAxLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.5Ty3pgVU2qpcSbpu0bDrdaRQOFDmimPuNDUXcnqxO78&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-ppc64le.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "6a191e0fb0a2bc929ff94e1d4ff46726a5aa487b38bbaeb87a74a8c0d39aaa07",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:21Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-ppc64le.sig"
+      },
+      {
+        "name": "cosign-linux-ppc64le_2-5-0_linux_ppc64le-sbom-json",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-ppc64le_2.5.0_linux_ppc64le.sbom.json",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/d447e29a-d3ea-42c8-89ef-9a923cf0d93c?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A51%3A49Z&rscd=attachment%3B+filename%3Dcosign-linux-ppc64le_2.5.0_linux_ppc64le.sbom.json&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A51%3A01Z&ske=2026-09-16T23%3A51%3A49Z&sks=b&skv=2018-11-09&sig=H6chfzAkuUWh5HqkXiMfYgInVml9UNBI%2BFu%2FJE0yy1w%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMiwibmJmIjoxNzg5NjAwMTAyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.XUgP_yD-XHxbp6U7rDJvTzkB4TKayVFnsKndI-HXhHk&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-ppc64le_2.5.0_linux_ppc64le.sbom.json&response-content-type=application%2Foctet-stream",
+        "sha256": "2ee00bf999737cb2137635d61fb3194a92a4b63acaa076f8b401db6270857c82",
+        "size": 409753,
+        "retrieved_utc": "2026-09-16T23:08:22Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-ppc64le_2.5.0_linux_ppc64le.sbom.json"
+      },
+      {
+        "name": "cosign-linux-riscv64-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-riscv64-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/4c3b4fe3-876a-43b6-a640-bd7024c6c42e?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A46%3A20Z&rscd=attachment%3B+filename%3Dcosign-linux-riscv64-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A45%3A52Z&ske=2026-09-16T23%3A46%3A20Z&sks=b&skv=2018-11-09&sig=kBItlcBq0ALZV9fMbvRhgQKbKnHDVSzg6O1o1wsBZZU%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMiwibmJmIjoxNzg5NjAwMTAyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.XUgP_yD-XHxbp6U7rDJvTzkB4TKayVFnsKndI-HXhHk&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-riscv64-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "0e8e60669bd95b6340198fd7aed8bdb2e69557ed1426da0f1412ae8791ac3a87",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:22Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-riscv64-keyless.pem"
+      },
+      {
+        "name": "cosign-linux-riscv64-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-riscv64-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/25545f6c-5020-4772-b151-f47d73bda5f5?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A00%3A51Z&rscd=attachment%3B+filename%3Dcosign-linux-riscv64-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A59%3A55Z&ske=2026-09-17T00%3A00%3A51Z&sks=b&skv=2018-11-09&sig=eCE6pObKsSSZ7WNxzfukaOaRkgDG%2BhFPyibeyZEn9uE%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMiwibmJmIjoxNzg5NjAwMTAyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.XUgP_yD-XHxbp6U7rDJvTzkB4TKayVFnsKndI-HXhHk&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-riscv64-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "312fdee41e7903ef9142aab30ef2b35262fa71038b27fe042b2d55d63549093b",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:22Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-riscv64-keyless.sig"
+      },
+      {
+        "name": "cosign-linux-riscv64-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-riscv64.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/64138055-4d8b-46d2-b7a9-ee418a29fec8?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A04%3A51Z&rscd=attachment%3B+filename%3Dcosign-linux-riscv64.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A04%3A01Z&ske=2026-09-17T00%3A04%3A51Z&sks=b&skv=2018-11-09&sig=PhBpc31OGVpHHYVkogx3q5sqNZR37FbK%2BHp8VJkzzkU%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMywibmJmIjoxNzg5NjAwMTAzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.JrJJxDuBgF0JoYIgmplvPBthIE-ABVt8nrcw7VUOc5g&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-riscv64.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "eed573a9655fade5687b5f4edd5fbf21aa5e2f5a55780dcbc16db3456954665d",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:23Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-riscv64.sig"
+      },
+      {
+        "name": "cosign-linux-riscv64_2-5-0_linux_riscv64-sbom-json",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-riscv64_2.5.0_linux_riscv64.sbom.json",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/bc76788e-e62a-43ff-802b-12696aec6db8?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A05%3A40Z&rscd=attachment%3B+filename%3Dcosign-linux-riscv64_2.5.0_linux_riscv64.sbom.json&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A05%3A30Z&ske=2026-09-17T00%3A05%3A40Z&sks=b&skv=2018-11-09&sig=Jm3gd8QK1%2FyRXV7ybnAc2FATa8mLEWBh5wOaDYDPd7U%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMywibmJmIjoxNzg5NjAwMTAzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.JrJJxDuBgF0JoYIgmplvPBthIE-ABVt8nrcw7VUOc5g&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-riscv64_2.5.0_linux_riscv64.sbom.json&response-content-type=application%2Foctet-stream",
+        "sha256": "3c5b7dd322819a897dba848758a4d42a2be407665998ad08ec2561a09f703bce",
+        "size": 409753,
+        "retrieved_utc": "2026-09-16T23:08:23Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-riscv64_2.5.0_linux_riscv64.sbom.json"
+      },
+      {
+        "name": "cosign-linux-s390x-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-s390x-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/023b2474-9aae-46eb-a638-a088b5da6870?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A04%3A56Z&rscd=attachment%3B+filename%3Dcosign-linux-s390x-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A04%3A06Z&ske=2026-09-17T00%3A04%3A56Z&sks=b&skv=2018-11-09&sig=C51xuoDFE8MBSwJ03uwGIqz8iYhatXSZzV%2FyxFBUMJk%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwMywibmJmIjoxNzg5NjAwMTAzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.JrJJxDuBgF0JoYIgmplvPBthIE-ABVt8nrcw7VUOc5g&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-s390x-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "3a43a3ae1948cf1234da6cc88832d6cec234e50607c9423bf71ed079c6a20605",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:23Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-s390x-keyless.pem"
+      },
+      {
+        "name": "cosign-linux-s390x-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-s390x-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/52d278e2-32a7-4358-ab14-4a286bd11675?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A43%3A45Z&rscd=attachment%3B+filename%3Dcosign-linux-s390x-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A43%3A31Z&ske=2026-09-16T23%3A43%3A45Z&sks=b&skv=2018-11-09&sig=Ajw46h9zZr5Y5xrtS%2BDnloJV9m%2F%2BDJJuHt7rsiBdpDY%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNCwibmJmIjoxNzg5NjAwMTA0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.NnEKyLxWeSL4-k5Xj0prruBMgajAa7_ZWSLu91nvYis&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-s390x-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "65f46abe48f46b1a048ea910aad861b891e68c3b5a11c4805020e7a97ae0090a",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:24Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-s390x-keyless.sig"
+      },
+      {
+        "name": "cosign-linux-s390x-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-s390x.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/d609bd62-53c2-4223-bf6a-e34715ae1778?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A46%3A52Z&rscd=attachment%3B+filename%3Dcosign-linux-s390x.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A46%3A48Z&ske=2026-09-16T23%3A46%3A52Z&sks=b&skv=2018-11-09&sig=sOKRRpmxQlA%2FvDwywdYysJQ1f1rH1%2F7wjP9eToTaq7g%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNCwibmJmIjoxNzg5NjAwMTA0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.NnEKyLxWeSL4-k5Xj0prruBMgajAa7_ZWSLu91nvYis&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-s390x.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "409d1d983ede2815e2ed411b6062e6fc170383467aed23b42403cad892fd552a",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:24Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-s390x.sig"
+      },
+      {
+        "name": "cosign-linux-s390x_2-5-0_linux_s390x-sbom-json",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-linux-s390x_2.5.0_linux_s390x.sbom.json",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/ada599b6-ae52-45c5-abe6-12e317ade38f?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A05%3A40Z&rscd=attachment%3B+filename%3Dcosign-linux-s390x_2.5.0_linux_s390x.sbom.json&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A04%3A47Z&ske=2026-09-17T00%3A05%3A40Z&sks=b&skv=2018-11-09&sig=KHgU%2B8HELeQhLMCw%2BN%2F06BZK%2F2Ok0LWe%2BUEx8O85NWk%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNCwibmJmIjoxNzg5NjAwMTA0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.NnEKyLxWeSL4-k5Xj0prruBMgajAa7_ZWSLu91nvYis&response-content-disposition=attachment%3B%20filename%3Dcosign-linux-s390x_2.5.0_linux_s390x.sbom.json&response-content-type=application%2Foctet-stream",
+        "sha256": "6525e73945b365cf4e941548dc687e9f05d1215d9a3e496b1c18f2f95ed50e45",
+        "size": 408257,
+        "retrieved_utc": "2026-09-16T23:08:25Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-linux-s390x_2.5.0_linux_s390x.sbom.json"
+      },
+      {
+        "name": "cosign-windows-amd64-exe-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-windows-amd64.exe-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/6ade3cf7-c80c-41cc-9d66-a5b0d888fa2c?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A46%3A22Z&rscd=attachment%3B+filename%3Dcosign-windows-amd64.exe-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A46%3A10Z&ske=2026-09-16T23%3A46%3A22Z&sks=b&skv=2018-11-09&sig=uahXH9aToIkZFcpkAimmH84ZthYrxzkf975CYw9%2Ftso%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNSwibmJmIjoxNzg5NjAwMTA1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.62AEIIwVNjpeHjfxVC72hK0nSjjxGNItZb9Pf9OevxE&response-content-disposition=attachment%3B%20filename%3Dcosign-windows-amd64.exe-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "3709e33a4bf762434271e02dd511d0a0418366bdfb154d9ef67bebc05dead7a5",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:25Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-windows-amd64.exe-keyless.pem"
+      },
+      {
+        "name": "cosign-windows-amd64-exe-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-windows-amd64.exe-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/6b18de40-71a8-490f-a0ad-f56747688f54?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A01%3A51Z&rscd=attachment%3B+filename%3Dcosign-windows-amd64.exe-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A01%3A34Z&ske=2026-09-17T00%3A01%3A51Z&sks=b&skv=2018-11-09&sig=VCIRJUknMEBUeMf0hNVs4vLG10ANCNJg9n1qhE3G6u0%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNSwibmJmIjoxNzg5NjAwMTA1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.62AEIIwVNjpeHjfxVC72hK0nSjjxGNItZb9Pf9OevxE&response-content-disposition=attachment%3B%20filename%3Dcosign-windows-amd64.exe-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "1a7c826f6d24f0802f7a554ace92924c47348e1c38ecab839c5b7a7a37896b60",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:25Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-windows-amd64.exe-keyless.sig"
+      },
+      {
+        "name": "cosign-windows-amd64-exe-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-windows-amd64.exe.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/5bdb8dc0-48b9-4e02-9804-80448e5024c2?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A51%3A04Z&rscd=attachment%3B+filename%3Dcosign-windows-amd64.exe.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A50%3A41Z&ske=2026-09-16T23%3A51%3A04Z&sks=b&skv=2018-11-09&sig=sB0k09%2FqdSE%2FSjqAMKM2DoVn%2FVjL1ZNlmcB5hH17Isw%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNSwibmJmIjoxNzg5NjAwMTA1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.62AEIIwVNjpeHjfxVC72hK0nSjjxGNItZb9Pf9OevxE&response-content-disposition=attachment%3B%20filename%3Dcosign-windows-amd64.exe.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "c9bdac16a172aa972fc978e3387ed31a2793f027ea7b3982f78851322295da60",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:25Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-windows-amd64.exe.sig"
+      },
+      {
+        "name": "cosign-windows-amd64-exe_2-5-0_windows_amd64-sbom-json",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign-windows-amd64.exe_2.5.0_windows_amd64.sbom.json",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/da0e19c4-9f51-43e1-8630-3f269cec9cf7?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A56%3A54Z&rscd=attachment%3B+filename%3Dcosign-windows-amd64.exe_2.5.0_windows_amd64.sbom.json&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A55%3A58Z&ske=2026-09-16T23%3A56%3A54Z&sks=b&skv=2018-11-09&sig=iO6Yb8r8OITZnRcmj1WYmp%2FvyYYsQAYEVTaad5CkYM8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNiwibmJmIjoxNzg5NjAwMTA2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.a_wIumBaQZsVIzpeFAcyk1IVf4QDHkD80KCjjRLUNaY&response-content-disposition=attachment%3B%20filename%3Dcosign-windows-amd64.exe_2.5.0_windows_amd64.sbom.json&response-content-type=application%2Foctet-stream",
+        "sha256": "23c1021e9810bc424b3aea1bee623742f5e81a7f2747d49aac882afc5227a290",
+        "size": 426482,
+        "retrieved_utc": "2026-09-16T23:08:26Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign-windows-amd64.exe_2.5.0_windows_amd64.sbom.json"
+      },
+      {
+        "name": "cosign_2-5-0_aarch64-apk-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_aarch64.apk-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/c7f4e0ba-4296-4d34-b7b5-e026c252ae44?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A08%3A20Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_aarch64.apk-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A07%3A36Z&ske=2026-09-17T00%3A08%3A20Z&sks=b&skv=2018-11-09&sig=8GJxgA7p0KUjonJ72lYENFoaXo40LgOFL1szTv7T3AY%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNiwibmJmIjoxNzg5NjAwMTA2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.a_wIumBaQZsVIzpeFAcyk1IVf4QDHkD80KCjjRLUNaY&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_aarch64.apk-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "e7063581e82c045d6cf8043689cc1bcf13530dc2a7072a462b87796dd68d238b",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:26Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_aarch64.apk-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_aarch64-apk-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_aarch64.apk-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/aaf0fa00-d63c-4fad-9538-781bb7e3550d?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A04%3A20Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_aarch64.apk-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A03%3A50Z&ske=2026-09-17T00%3A04%3A20Z&sks=b&skv=2018-11-09&sig=qWu28U6YMruzhmNG4IgmV1ROgILeO8TFREnNT2CnwPY%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNiwibmJmIjoxNzg5NjAwMTA2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.a_wIumBaQZsVIzpeFAcyk1IVf4QDHkD80KCjjRLUNaY&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_aarch64.apk-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "ebeb809d2ec8afeb2bab78244ac92636e6458b1769e29a270d2cf232362a4fb8",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:26Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_aarch64.apk-keyless.sig"
+      },
+      {
+        "name": "cosign_2-5-0_amd64-deb-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_amd64.deb-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/32cc4a9e-d044-461c-ab4f-5b4597654601?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A57%3A28Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_amd64.deb-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A57%3A05Z&ske=2026-09-16T23%3A57%3A28Z&sks=b&skv=2018-11-09&sig=%2F9GtRkn4uYsz01IlLHGB51lTmYGF8r%2BIr2Krk%2BN67LQ%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNywibmJmIjoxNzg5NjAwMTA3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.iLtBazeHBdU_DIm73cjldNlhqeIXzcdEu3arReDqEe8&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_amd64.deb-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "429a3a8b06c149037568bd5d62690e4ee4b123a8562300aaf7cc81fe3cd1e570",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:27Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_amd64.deb-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_amd64-deb-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_amd64.deb-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/f2963a62-4bf7-4959-b5e3-3c3d7ba52a31?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A50%3A06Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_amd64.deb-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A49%3A45Z&ske=2026-09-16T23%3A50%3A06Z&sks=b&skv=2018-11-09&sig=9UwBa92QWb89fFeEzDnrrB5IFzd8JXajQ%2FFGXet7RaE%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNywibmJmIjoxNzg5NjAwMTA3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.iLtBazeHBdU_DIm73cjldNlhqeIXzcdEu3arReDqEe8&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_amd64.deb-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "baaad22f738ff978c659d6c3b47300f575d80a092d819a12fbc29ce14b2b7aa6",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:27Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_amd64.deb-keyless.sig"
+      },
+      {
+        "name": "cosign_2-5-0_arm64-deb-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_arm64.deb-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/7c5646ff-6d73-4a5c-bbd1-36551cbff844?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A03%3A35Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_arm64.deb-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A03%3A29Z&ske=2026-09-17T00%3A03%3A35Z&sks=b&skv=2018-11-09&sig=mzlB875ZnP%2FsNBkVQe7fVNtYCdc%2FRCPAU3qsEzNZiTU%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNywibmJmIjoxNzg5NjAwMTA3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.iLtBazeHBdU_DIm73cjldNlhqeIXzcdEu3arReDqEe8&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_arm64.deb-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "57732b60a69e7e9d5ae854548f5cae7660279f6d0b09cbc26f74b05162897dbe",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:27Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_arm64.deb-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_arm64-deb-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_arm64.deb-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/0429df0a-d50b-4f8e-8e53-440e617da4f9?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A08%3A11Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_arm64.deb-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A07%3A54Z&ske=2026-09-17T00%3A08%3A11Z&sks=b&skv=2018-11-09&sig=t3qbTVlfNRkciLncxi8VEAN3FySGly4JAZ4K%2BwZIYlE%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwNywibmJmIjoxNzg5NjAwMTA3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.iLtBazeHBdU_DIm73cjldNlhqeIXzcdEu3arReDqEe8&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_arm64.deb-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "cf8fa00f9bb10d23585c5ef3c325df1c60bb1f03fe4603b2ab8eca90ea3199cf",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:27Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_arm64.deb-keyless.sig"
+      },
+      {
+        "name": "cosign_2-5-0_armhf-deb-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_armhf.deb-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/ede19df3-2b3e-4435-a2e8-e6515c1a9638?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A46%3A30Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_armhf.deb-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A45%3A42Z&ske=2026-09-16T23%3A46%3A30Z&sks=b&skv=2018-11-09&sig=z0npxXMS2tPI6hE4OacZsNaYJD53YclBZyleT9qLn8w%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwOCwibmJmIjoxNzg5NjAwMTA4LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.TI2ULuukpN0XIky30uA183FohlWjWgY6pMyFy3kvoXo&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_armhf.deb-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "73b67d6700e24ce6430a347db690d1a90a846c5664592e3bd994971616c47f98",
+        "size": 1424,
+        "retrieved_utc": "2026-09-16T23:08:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_armhf.deb-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_armhf-deb-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_armhf.deb-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/1c6583af-f7e9-4b66-bd76-76781ebe532a?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A59%3A11Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_armhf.deb-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A59%3A09Z&ske=2026-09-16T23%3A59%3A11Z&sks=b&skv=2018-11-09&sig=Dukq6wy4QuoRev6Qg%2BMQ%2BsVVqvpWtW0a8MFOkd0LU9A%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwOCwibmJmIjoxNzg5NjAwMTA4LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.TI2ULuukpN0XIky30uA183FohlWjWgY6pMyFy3kvoXo&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_armhf.deb-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "ba491d937ae0ea9e07b5849672f47cb5b477729b0a327a9284d2ec70a66554e7",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_armhf.deb-keyless.sig"
+      },
+      {
+        "name": "cosign_2-5-0_armv7-apk-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_armv7.apk-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/8529895a-928b-4876-860b-3f65d416e147?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A06%3A10Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_armv7.apk-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A05%3A17Z&ske=2026-09-17T00%3A06%3A10Z&sks=b&skv=2018-11-09&sig=%2Fg3iv8Z5PbQT8Q%2B4fH8ya1tw%2B3ZvGznAFiHBONX2zTM%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwOCwibmJmIjoxNzg5NjAwMTA4LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.TI2ULuukpN0XIky30uA183FohlWjWgY6pMyFy3kvoXo&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_armv7.apk-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "6229abb0bd430f38ee9b9431d966b4a0e842a0dfed70ba5ca2e943ab84240292",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_armv7.apk-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_armv7-apk-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_armv7.apk-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/1759debb-3dbc-4209-ab1e-9025ce861155?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A04%3A01Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_armv7.apk-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A03%3A13Z&ske=2026-09-17T00%3A04%3A01Z&sks=b&skv=2018-11-09&sig=iNaB%2FHfYBhyeyJkHWyzhrs6KZP7nKR9gQoz7z4riqO4%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwOCwibmJmIjoxNzg5NjAwMTA4LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.TI2ULuukpN0XIky30uA183FohlWjWgY6pMyFy3kvoXo&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_armv7.apk-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "3c0614f0d660cea8ea4cd99853501b723160b550851fd1b6a556afc5a403c948",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_armv7.apk-keyless.sig"
+      },
+      {
+        "name": "cosign_2-5-0_ppc64el-deb-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_ppc64el.deb-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/60d2a598-6016-412c-ae9f-2cf99da27cc8?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A07%3A28Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_ppc64el.deb-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A06%3A51Z&ske=2026-09-17T00%3A07%3A28Z&sks=b&skv=2018-11-09&sig=7wAi5SMZOYB8w9O9NUqzhGGNj7d3BKwPFRkfxeUs97A%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwOSwibmJmIjoxNzg5NjAwMTA5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2gsI6hg_d0lOVh54lxpGV9B-zw083_xtBh9JUeP1bUA&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_ppc64el.deb-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "a9f30169552d1911dd1a98017e41c4fc619022db9ca263d81f7c39f5c527fddc",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:29Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_ppc64el.deb-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_ppc64el-deb-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_ppc64el.deb-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/ad1f0f5e-c296-4878-8121-0549a62e2105?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A04%3A27Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_ppc64el.deb-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A03%3A45Z&ske=2026-09-17T00%3A04%3A27Z&sks=b&skv=2018-11-09&sig=a7tFtaWLEbOqLc1eVEgdL2LHZORmoBjnXXyqlX4r%2BYA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwOSwibmJmIjoxNzg5NjAwMTA5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2gsI6hg_d0lOVh54lxpGV9B-zw083_xtBh9JUeP1bUA&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_ppc64el.deb-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "e900ea0920ae40446da5525d0ab55ea59cdbfeb71a859c3a572d3d69076eb9b9",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:29Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_ppc64el.deb-keyless.sig"
+      },
+      {
+        "name": "cosign_2-5-0_ppc64le-apk-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_ppc64le.apk-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/74738959-e45c-4735-9692-ea7eb1ebd29a?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A59%3A37Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_ppc64le.apk-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A59%3A07Z&ske=2026-09-16T23%3A59%3A37Z&sks=b&skv=2018-11-09&sig=6heaM322oApEDjgPYmHJw9ENU1HXA8nG0nfA3Rr%2BOmU%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwOSwibmJmIjoxNzg5NjAwMTA5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2gsI6hg_d0lOVh54lxpGV9B-zw083_xtBh9JUeP1bUA&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_ppc64le.apk-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "486cf6492ddbfa825af44145054506ab4b5cb1fc6d8c512c66e1a6e1f76013de",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:29Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_ppc64le.apk-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_ppc64le-apk-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_ppc64le.apk-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/2cc719ef-7974-45ee-839d-1fb6f1b5a108?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A43%3A59Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_ppc64le.apk-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A43%3A56Z&ske=2026-09-16T23%3A43%3A59Z&sks=b&skv=2018-11-09&sig=bZ4SA7dAVP5y29LWO9v3zcZJ562MVUTKVit8lm279fA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQwOSwibmJmIjoxNzg5NjAwMTA5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2gsI6hg_d0lOVh54lxpGV9B-zw083_xtBh9JUeP1bUA&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_ppc64le.apk-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "7dc720eec20452f8c50a46e80156f2eff4b47a807fe99849f8dca3e88cc3e4ee",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:29Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_ppc64le.apk-keyless.sig"
+      },
+      {
+        "name": "cosign_2-5-0_riscv64-apk-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_riscv64.apk-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/09f65c5f-a797-4361-b460-85a650408548?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A57%3A42Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_riscv64.apk-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A57%3A33Z&ske=2026-09-16T23%3A57%3A42Z&sks=b&skv=2018-11-09&sig=O2JiR%2Bau1xhTaU5H0ltolZqlkc0JNh5a92KFkelNVc0%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxMCwibmJmIjoxNzg5NjAwMTEwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.mjnF4h31etBWEYnWtjmC1eMOOr63gmjAVRRvyVspOFU&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_riscv64.apk-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "f9fbf5b9e237688e45228fbeef95d0ecf25a20762981c09ec38ccc30aa5e34bd",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:31Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_riscv64.apk-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_riscv64-apk-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_riscv64.apk-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/1b45e613-d184-41ff-af38-1304563cbe2d?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A07%3A02Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_riscv64.apk-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A06%3A53Z&ske=2026-09-17T00%3A07%3A02Z&sks=b&skv=2018-11-09&sig=ViVaYB%2FY5XNCoT7Z8AXBxSVzVr4vN5OUOylvcm8oGT0%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxMSwibmJmIjoxNzg5NjAwMTExLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.v3Yx1FliWRqqavaD16FtgoQUKE6tzh1w9m30buf2a7I&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_riscv64.apk-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "6e3ae4cc6f2839d5a1b3a992685a7c5ffe69066cbee4c0c5701a240b91188d49",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:31Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_riscv64.apk-keyless.sig"
+      },
+      {
+        "name": "cosign_2-5-0_riscv64-deb-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_riscv64.deb-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/5dc3a69d-a0e1-42ee-ac82-5388307b6c78?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A41%3A42Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_riscv64.deb-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A41%3A30Z&ske=2026-09-16T23%3A41%3A42Z&sks=b&skv=2018-11-09&sig=6ACt4sqHJNdKTMAy%2BJWjrnyryakvAHArQz%2FzVIUTBzw%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxMSwibmJmIjoxNzg5NjAwMTExLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.v3Yx1FliWRqqavaD16FtgoQUKE6tzh1w9m30buf2a7I&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_riscv64.deb-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "b2457cb0eb9f0d15863f5493ccf440436115624968d01e74027add0f66ab9a47",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:31Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_riscv64.deb-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_riscv64-deb-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_riscv64.deb-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/5fd0cc90-10f9-4c95-9a2e-0ff4d4984e8f?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A08%3A24Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_riscv64.deb-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A07%3A32Z&ske=2026-09-17T00%3A08%3A24Z&sks=b&skv=2018-11-09&sig=FW1ZWdFexFQzzvosrBCNv75%2FQGwwTb7gDU3q9ajtox8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxMiwibmJmIjoxNzg5NjAwMTEyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.0HYnWOcfkiYRq955mprsT6NP5m8L4GJRkKZ6KQm-pkk&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_riscv64.deb-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "2ebca60fa7b43218e913654086c3be31cd07fb72d9b635a74f31583aa04e81e3",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:31Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_riscv64.deb-keyless.sig"
+      },
+      {
+        "name": "cosign_2-5-0_s390x-apk-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_s390x.apk-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/5de344fc-7780-443f-8738-d9c43a93f798?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A08%3A18Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_s390x.apk-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A07%3A36Z&ske=2026-09-17T00%3A08%3A18Z&sks=b&skv=2018-11-09&sig=LbAQC62AHkfrXP56wP9E0rrr2S0HFhUxjfJJbsMrkYg%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxMiwibmJmIjoxNzg5NjAwMTEyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.0HYnWOcfkiYRq955mprsT6NP5m8L4GJRkKZ6KQm-pkk&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_s390x.apk-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "86e4473940dfad35b62a9b3cfbe36182a15947a1f6d9d6f43ecb1b72419fb12f",
+        "size": 1424,
+        "retrieved_utc": "2026-09-16T23:08:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_s390x.apk-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_s390x-apk-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_s390x.apk-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/966e5181-2179-4280-91b1-3708ec278745?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A04%3A31Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_s390x.apk-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A03%3A55Z&ske=2026-09-17T00%3A04%3A31Z&sks=b&skv=2018-11-09&sig=FJe3YNn4019bbNmHMfwlhuxOeR0sGBOtd0zoDtH9toQ%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxMiwibmJmIjoxNzg5NjAwMTEyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.0HYnWOcfkiYRq955mprsT6NP5m8L4GJRkKZ6KQm-pkk&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_s390x.apk-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "2a15ea3621ad1e3674f77cad0ac645eed6fc3086cc4e5716616fc6084eb753e3",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_s390x.apk-keyless.sig"
+      },
+      {
+        "name": "cosign_2-5-0_s390x-deb-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_s390x.deb-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/487987db-eab8-42f2-b882-21b6262704e3?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A07%3A06Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_s390x.deb-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A06%3A28Z&ske=2026-09-17T00%3A07%3A06Z&sks=b&skv=2018-11-09&sig=TCQweJavFOibQw9UOC1cGHFUgJyJfu1q%2Fv06BnUdR74%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxMiwibmJmIjoxNzg5NjAwMTEyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.0HYnWOcfkiYRq955mprsT6NP5m8L4GJRkKZ6KQm-pkk&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_s390x.deb-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "2d7c1d29d78a76c11ff823f204343536c5868e70c69c8605c21511f1d6437f1c",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_s390x.deb-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_s390x-deb-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_s390x.deb-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/e13d9c22-11d5-4ef9-be50-793958cdbfab?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A04%3A50Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_s390x.deb-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A04%3A06Z&ske=2026-09-17T00%3A04%3A50Z&sks=b&skv=2018-11-09&sig=T99mVtIoe017fM7PR5ra%2B1ShfhDu9jevwjEAb5sRVK8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxMywibmJmIjoxNzg5NjAwMTEzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.CGSVyP7DB3ywSk9WcHpDNOgMFoACZMyk7OVtf6egOxQ&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_s390x.deb-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "d174618fe0c581636147b58c8020a6996a0dbba9be52ec07072dbf038f836229",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_s390x.deb-keyless.sig"
+      },
+      {
+        "name": "cosign_2-5-0_x86_64-apk-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_x86_64.apk-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/668aaecb-bdb4-4b12-b04c-770ea118de91?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A03%3A58Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_x86_64.apk-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A03%3A40Z&ske=2026-09-17T00%3A03%3A58Z&sks=b&skv=2018-11-09&sig=lZLRT96ILSuQu6fb37eCLDXiWzxS5Le7ZjQduTiLbsg%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxMywibmJmIjoxNzg5NjAwMTEzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.CGSVyP7DB3ywSk9WcHpDNOgMFoACZMyk7OVtf6egOxQ&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_x86_64.apk-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "3b0593b8bc2bb2dfce1eb1724cbb77536205866fdb941f1065b682ccd2b103aa",
+        "size": 1424,
+        "retrieved_utc": "2026-09-16T23:08:33Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_x86_64.apk-keyless.pem"
+      },
+      {
+        "name": "cosign_2-5-0_x86_64-apk-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_2.5.0_x86_64.apk-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/99a6704b-5a9d-44ab-b404-287ff373b917?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A07%3A27Z&rscd=attachment%3B+filename%3Dcosign_2.5.0_x86_64.apk-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A07%3A18Z&ske=2026-09-17T00%3A07%3A27Z&sks=b&skv=2018-11-09&sig=ze7yKmwje4qhqZeQHXHxC79CwzLd8GL2OWpSlb22HTc%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxMywibmJmIjoxNzg5NjAwMTEzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.CGSVyP7DB3ywSk9WcHpDNOgMFoACZMyk7OVtf6egOxQ&response-content-disposition=attachment%3B%20filename%3Dcosign_2.5.0_x86_64.apk-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "28b56e569b4f954a577ec07e82f378699f5b028a1fa5d89e764b847580bb9008",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:33Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_2.5.0_x86_64.apk-keyless.sig"
+      },
+      {
+        "name": "cosign_checksums-txt",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_checksums.txt",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/367285d1-c3c1-4ec1-8b71-6cc15e86ebbe?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A05%3A12Z&rscd=attachment%3B+filename%3Dcosign_checksums.txt&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A05%3A11Z&ske=2026-09-17T00%3A05%3A12Z&sks=b&skv=2018-11-09&sig=o1gQyl0cgKN3zyk7pKShWHnC4ahDyGZtJRbZcxFpXHo%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxMywibmJmIjoxNzg5NjAwMTEzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.CGSVyP7DB3ywSk9WcHpDNOgMFoACZMyk7OVtf6egOxQ&response-content-disposition=attachment%3B%20filename%3Dcosign_checksums.txt&response-content-type=application%2Foctet-stream",
+        "sha256": "7cb837d10e9f8fa84f40cbc0310be5d0c2f18e40ff3bfcba3c9ae447920a092e",
+        "size": 3906,
+        "retrieved_utc": "2026-09-16T23:08:33Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_checksums.txt"
+      },
+      {
+        "name": "cosign_checksums-txt-keyless-pem",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_checksums.txt-keyless.pem",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/53657bb4-3fc6-401f-a56c-260b50bb74e6?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T00%3A05%3A16Z&rscd=attachment%3B+filename%3Dcosign_checksums.txt-keyless.pem&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T23%3A04%3A31Z&ske=2026-09-17T00%3A05%3A16Z&sks=b&skv=2018-11-09&sig=e2sJn03Z1YuPtHWtsTqsVcoJGyQESYVVmEIFtjYFU%2F8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxNCwibmJmIjoxNzg5NjAwMTE0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.NfP02AI4SArxkzemjTM8AfNtVScXFwtDvOzDA5QhAUs&response-content-disposition=attachment%3B%20filename%3Dcosign_checksums.txt-keyless.pem&response-content-type=application%2Foctet-stream",
+        "sha256": "3a3e912d712083174cffd3e09fdbd8520366186f2bcb77aa4da6ca61d5c58c71",
+        "size": 1428,
+        "retrieved_utc": "2026-09-16T23:08:33Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_checksums.txt-keyless.pem"
+      },
+      {
+        "name": "cosign_checksums-txt-keyless-sig",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/cosign_checksums.txt-keyless.sig",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/6f54cdb3-bb77-4656-8928-923fe023c3e3?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A48%3A07Z&rscd=attachment%3B+filename%3Dcosign_checksums.txt-keyless.sig&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A47%3A17Z&ske=2026-09-16T23%3A48%3A07Z&sks=b&skv=2018-11-09&sig=Sd1yBFuqcnBWhjsGpHfZ3nXMiGBEj4jUJsPWrIr%2BLoA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxNCwibmJmIjoxNzg5NjAwMTE0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.NfP02AI4SArxkzemjTM8AfNtVScXFwtDvOzDA5QhAUs&response-content-disposition=attachment%3B%20filename%3Dcosign_checksums.txt-keyless.sig&response-content-type=application%2Foctet-stream",
+        "sha256": "d3fd76d05d757405e91b11bf53c9dc76388dfe7384f82a272c427032c52d45b7",
+        "size": 96,
+        "retrieved_utc": "2026-09-16T23:08:34Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cosign_checksums.txt-keyless.sig"
+      },
+      {
+        "name": "release-cosign-pub",
+        "url": "https://github.com/sigstore/cosign/releases/download/v2.5.0/release-cosign.pub",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/335952417/b1ac67f1-dd0e-4a2f-81fd-dca1e700d9ee?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-16T23%3A46%3A29Z&rscd=attachment%3B+filename%3Drelease-cosign.pub&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-16T22%3A46%3A24Z&ske=2026-09-16T23%3A46%3A29Z&sks=b&skv=2018-11-09&sig=VtC3izR%2Fkx%2BVMg6lPzXs7uHOVj83YQuFi3OS7koago4%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYwMDQxNCwibmJmIjoxNzg5NjAwMTE0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.NfP02AI4SArxkzemjTM8AfNtVScXFwtDvOzDA5QhAUs&response-content-disposition=attachment%3B%20filename%3Drelease-cosign.pub&response-content-type=application%2Foctet-stream",
+        "sha256": "f4cea466e5e887a45da5031757fa1d32655d83420639dc1758749b744179f126",
+        "size": 178,
+        "retrieved_utc": "2026-09-16T23:08:34Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "release-cosign.pub"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-aarch64-rpm-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-aarch64-rpm-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-armv7hl-rpm-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-armv7hl-rpm-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-ppc64le-rpm-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-ppc64le-rpm-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-riscv64-rpm-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-riscv64-rpm-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-s390x-rpm-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-s390x-rpm-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-x86_64-rpm-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-2-5-0-1-x86_64-rpm-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-darwin-amd64-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-darwin-amd64-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-darwin-amd64-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-darwin-amd64_2-5-0_darwin_amd64-sbom-json"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-darwin-arm64-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-darwin-arm64-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-darwin-arm64-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-darwin-arm64_2-5-0_darwin_arm64-sbom-json"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-amd64-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-amd64-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-amd64-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-amd64_2-5-0_linux_amd64-sbom-json"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-arm-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-arm-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-arm-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-arm64-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-arm64-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-arm64-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-arm64_2-5-0_linux_arm64-sbom-json"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-arm_2-5-0_linux_arm-sbom-json"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-pivkey-pkcs11key-amd64-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-pivkey-pkcs11key-amd64-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-pivkey-pkcs11key-amd64-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-pivkey-pkcs11key-amd64_2-5-0_linux_amd64-sbom-json"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-pivkey-pkcs11key-arm64-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-pivkey-pkcs11key-arm64-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-pivkey-pkcs11key-arm64-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-pivkey-pkcs11key-arm64_2-5-0_linux_arm64-sbom-json"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-ppc64le-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-ppc64le-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-ppc64le-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-ppc64le_2-5-0_linux_ppc64le-sbom-json"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-riscv64-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-riscv64-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-riscv64-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-riscv64_2-5-0_linux_riscv64-sbom-json"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-s390x-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-s390x-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-s390x-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-linux-s390x_2-5-0_linux_s390x-sbom-json"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-windows-amd64-exe-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-windows-amd64-exe-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-windows-amd64-exe-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign-windows-amd64-exe_2-5-0_windows_amd64-sbom-json"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_aarch64-apk-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_aarch64-apk-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_amd64-deb-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_amd64-deb-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_arm64-deb-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_arm64-deb-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_armhf-deb-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_armhf-deb-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_armv7-apk-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_armv7-apk-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_ppc64el-deb-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_ppc64el-deb-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_ppc64le-apk-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_ppc64le-apk-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_riscv64-apk-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_riscv64-apk-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_riscv64-deb-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_riscv64-deb-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_s390x-apk-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_s390x-apk-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_s390x-deb-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_s390x-deb-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_x86_64-apk-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_2-5-0_x86_64-apk-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_checksums-txt"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_checksums-txt-keyless-pem"
+      },
+      {
+        "op": "copy",
+        "input": "cosign_checksums-txt-keyless-sig"
+      },
+      {
+        "op": "copy",
+        "input": "release-cosign-pub"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "b1066502d9ba92a4d4d9f5524a36c4385f6927aea1a8cc57a30a8ab6fc137b97",
+    "logical_tree_sha256": "e8fb4c4d543a695ec48895462eed60fc69a6ffacdd9cfc2623867d9aac2004fc",
+    "content_tree_sha256": "503d55b14243a2c1ccb1fac8d1fca89fd98f599a845338a372e978d04c3525a2",
+    "extended_tree_sha256": "9b96e5a5abd3c9cb2095682bda51fb4a1b0b40523848b196fcc147a43098f72c",
+    "bytes": 4626616,
+    "bytes_all_paths": 4626616,
+    "allocated_bytes": 4898816,
+    "counts": {
+      "objects": 85,
+      "files": 84,
+      "unique_file_inodes": 84,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 63,
+      "path_length_bytes": {
+        "min": 18,
+        "max": 63,
+        "mean": 35.476,
+        "p50": 35,
+        "p95": 50
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

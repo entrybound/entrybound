@@ -1,0 +1,124 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f11-heldout-firefox-15501-signing-metadata",
+  "family": "F11",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "mozilla-firefox",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "32f840b75f2a8194fae4490317d976bb1225291807d3dab076fd16563c872bf3",
+  "materialization_key": "2e62aae18fecf6f3ecec88017f60b9978cd7ffb723a0ef43d1c9276ec0693c5d",
+  "materialized_utc": "2026-09-16T23:08:07Z",
+  "materialized_relpath": "heldout/f11-heldout-firefox-15501-signing-metadata",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "e5e397fcb2b6dbec651ddd9612f32d481ef124378108ca0ddef0284b3775be79",
+    "pinned_utc": "2026-09-16T23:08:07Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 584792,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "sha256sums",
+        "url": "https://archive.mozilla.org/pub/firefox/releases/155.0.1/SHA256SUMS",
+        "final_url": "https://archive.mozilla.org/pub/firefox/releases/155.0.1/SHA256SUMS",
+        "sha256": "db3dc80c3937115a00cc37d082811cd3e81ff80140c7ed0ff835c3aba05e096b",
+        "size": 551210,
+        "retrieved_utc": "2026-09-16T23:08:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "SHA256SUMS"
+      },
+      {
+        "name": "sha256sums-asc",
+        "url": "https://archive.mozilla.org/pub/firefox/releases/155.0.1/SHA256SUMS.asc",
+        "final_url": "https://archive.mozilla.org/pub/firefox/releases/155.0.1/SHA256SUMS.asc",
+        "sha256": "844630f36e21f463ee2a3480a782a1dbd35833fdaeb9c8fa86383637ff21f28f",
+        "size": 833,
+        "retrieved_utc": "2026-09-16T23:08:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "SHA256SUMS.asc"
+      },
+      {
+        "name": "key",
+        "url": "https://archive.mozilla.org/pub/firefox/releases/155.0.1/KEY",
+        "final_url": "https://archive.mozilla.org/pub/firefox/releases/155.0.1/KEY",
+        "sha256": "b0c538f0f145fa902ac55455d92d4e9a627c2c6865d79c81b280bcb55d75b798",
+        "size": 31916,
+        "retrieved_utc": "2026-09-16T23:08:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "KEY"
+      },
+      {
+        "name": "firefox-155-0-1-tar-xz-asc",
+        "url": "https://archive.mozilla.org/pub/firefox/releases/155.0.1/linux-x86_64/en-US/firefox-155.0.1.tar.xz.asc",
+        "final_url": "https://archive.mozilla.org/pub/firefox/releases/155.0.1/linux-x86_64/en-US/firefox-155.0.1.tar.xz.asc",
+        "sha256": "627feebeb0ddf13aa016be746a3a85ccd9299479311d6e3918747ce4af2bf23f",
+        "size": 833,
+        "retrieved_utc": "2026-09-16T23:08:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "firefox-155.0.1.tar.xz.asc"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "sha256sums"
+      },
+      {
+        "op": "copy",
+        "input": "sha256sums-asc"
+      },
+      {
+        "op": "copy",
+        "input": "key"
+      },
+      {
+        "op": "copy",
+        "input": "firefox-155-0-1-tar-xz-asc"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "06825ba54cd5e00671614627a1fe7f1c8eb875f046aff5564d7085d9ed2b79bc",
+    "logical_tree_sha256": "e5e397fcb2b6dbec651ddd9612f32d481ef124378108ca0ddef0284b3775be79",
+    "content_tree_sha256": "9a244e1ca40e4177f8f269d9d1658dc11b7394efbe1856d5c632726e8a0c1936",
+    "extended_tree_sha256": "21df775550f01523bc5ad7d691eb149f25bfa75b4ba0dd55bd93c3046afc0454",
+    "bytes": 584792,
+    "counts": {
+      "objects": 5,
+      "files": 4,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

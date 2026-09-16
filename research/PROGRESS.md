@@ -149,3 +149,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T23:01Z — archetypal-objective.md pre-registration draft: 17 HCs (all I1-I31 mapped, MVTs), 26 ODs, generated ledger screen
 - 2026-09-16T23:05Z — Prepared research/orchestration/workflows/phase-b2r-harness.js; launch after A3/B1d finish and usage permits (weekly 10% at 2026-09-16 ~23:05Z).
 - 2026-09-16T23:07Z — g2-generated F17: added 3 real kernel-headers duplicate-tree items (tuning/validation/heldout), closing the F17 real-duplicate-tree gap; F20 scale label fixed (bombs-compressed -> small).
+- 2026-09-16T23:10Z — g4-binary F11 gap-closing: 3 items added (cosign signing assets, cpython release set, firefox signing metadata), F09 Silesia licence fixed; group now 45 items / ~11.994 GiB. F09 arch-skew, F14, F16, F10 large-tier, and remaining F11 sub-items deferred (budget).

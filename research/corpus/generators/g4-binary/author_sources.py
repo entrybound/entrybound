@@ -320,6 +320,24 @@ def gh_asset(repo, tag, name):
     raise SystemExit(f"asset {name} not in {repo}@{tag}")
 
 
+def gh_signing_assets(repo, tag):
+    """All detached-signature/checksum/SBOM assets of a GitHub release, excluding the signed binaries
+    themselves (used to close the F11 supply-chain-verification gap without the multi-hundred-MB payloads)."""
+    d = json.loads(fetch(f"https://api.github.com/repos/{repo}/releases/tags/{tag}", False))
+    out = []
+    for a in d["assets"]:
+        n = a["name"]
+        if (n.endswith("-keyless.pem") or n.endswith("-keyless.sig") or n.endswith(".sbom.json")
+                or n == f"{repo.split('/')[-1]}_checksums.txt" or n.startswith("release-") and n.endswith(".pub")
+                or (n.endswith(".sig") and "keyless" not in n)):
+            dig = (a.get("digest") or "").removeprefix("sha256:")
+            out.append(inp(n, a["browser_download_url"], dig if len(dig) == 64 else "TOFU", a["size"],
+                           notes=f"GitHub release {repo}@{tag} (detached keyless signature/cert, checksum "
+                                 "manifest, or per-platform SBOM; the signed binaries themselves are excluded "
+                                 "to keep this item small)"))
+    return out
+
+
 def sums_lookup(url, fname, algo_style="gnu"):
     text = fetch(url, False)
     for ln in text.splitlines():
@@ -403,8 +421,12 @@ def items():
                 "notes": "Individual Silesia files from the corpus home page (not silesia.zip). samba (source code tar) "
                          "was deliberately not used: it is text, not a binary object (belongs to F01)."},
         license=lic("Silesia corpus (mozilla: Mozilla 1.0 binaries MPL-1.1/NPL-1.1; ooffice: OpenOffice.org 1.01 DLL LGPL-2.1/SISSL-1.1)",
-                    True, "Sebastian Deorowicz, Silesian University of Technology (corpus); Mozilla; Sun Microsystems",
-                    "Freely distributed research corpus; upstream licenses permit redistribution."),
+                    False, "Sebastian Deorowicz, Silesian University of Technology (corpus); Mozilla; Sun Microsystems",
+                    "Freely distributed research corpus; upstream licenses permit redistribution. Set to false "
+                    "(hashes only) on 2026-09-16 to match the same silesia-corpus distribution license "
+                    "classification used by f07-tuning-silesia-{mr,sao,xray} and f08-tuning-silesia-osdb (F09 "
+                    "round-1 critic gap): the Silesia corpus terms permit benchmark use but not blanket "
+                    "redistribution of the files themselves."),
         independence_group="silesia-corpus",
         description="Silesia corpus 'mozilla' (tarred executables of Mozilla 1.0, Tru64 UNIX edition) and 'ooffice' "
                     "(a DLL from OpenOffice.org 1.01), bzip2-decompressed as published.",
@@ -715,6 +737,80 @@ def items():
         description="Held-out: official 7-Zip 26.03 release archives (.7z and .tar.xz) as published on the ip7z/7zip "
                     "GitHub release.",
         tags=["7z", "xz"])
+
+    # --- F11 gap-closing 2026-09-16: supply-chain verification (signatures/checksums/SBOM/provenance) and
+    # registry source-package release sets, added without re-resolving the F11 items above (see PROGRESS.md
+    # 2026-09-16 change log; g4-binary is at its ~12 GiB group budget, so these three items were chosen for a
+    # high value-to-size ratio and the remaining F11 tuning items (ripgrep .crate files, an apt metadata
+    # snapshot, npm pack tarballs for bootstrap's lockfile, PyPI sdists for locks/pypi-web-service-stack.txt)
+    # are deferred; see problems reported alongside this checkpoint).
+    add(item_id="f11-cosign-v250-signing-assets", family="F11", split="tuning", scale="small",
+        kind="download", real_or_generated="real",
+        recipe={"inputs": gh_signing_assets("sigstore/cosign", "v2.5.0"),
+                "notes": "Every detached Sigstore keyless signature (.sig) and Fulcio-issued certificate (.pem), "
+                         "the release checksum manifest, the maintainer public key, and every per-platform "
+                         "CycloneDX SBOM (.sbom.json) from the sigstore/cosign v2.5.0 GitHub release; the signed "
+                         "release binaries/packages are not fetched."},
+        license=lic("Apache-2.0", True, "The Sigstore Authors / cosign contributors", ""),
+        independence_group="sigstore-cosign",
+        description="Supply-chain verification artifacts for cosign v2.5.0: detached keyless signatures and "
+                    "certs, a SHA-256 checksum manifest, and per-platform SBOMs, as published on GitHub.",
+        tags=["signature", "sbom", "checksum-manifest", "supply-chain"])
+    add(item_id="f11-cpython-3137-release-set", family="F11", split="validation", scale="medium",
+        kind="download", real_or_generated="real",
+        recipe={"inputs": [
+            inp("Python-3.13.7.tar.xz", "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz",
+                "TOFU", 22769492, notes="python.org publishes Sigstore bundles, not SHA-256 lists"),
+            inp("Python-3.13.7.tar.xz.asc", "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz.asc",
+                "TOFU", 963, notes="detached PGP signature"),
+            inp("Python-3.13.7.tar.xz.sigstore",
+                "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz.sigstore", "TOFU", 4951,
+                notes="Sigstore bundle"),
+            inp("Python-3.13.7.tgz.spdx.json",
+                "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tgz.spdx.json", "TOFU", 2935829,
+                notes="release SPDX SBOM"),
+        ] + [
+            inp("amd64-" + n, f"https://www.python.org/ftp/python/3.13.7/amd64/{n}", "TOFU", sz,
+                notes="per-component Windows Installer (amd64); python.org publishes Sigstore bundles, not "
+                      "SHA-256 lists; TOFU")
+            for n, sz in [("appendpath.msi", 53248), ("core.msi", 2084864), ("core_pdb.msi", 4489216),
+                          ("dev.msi", 491520), ("doc.msi", 7839744), ("exe.msi", 815104), ("exe_pdb.msi", 139264),
+                          ("lib.msi", 7213056), ("lib_pdb.msi", 8814592), ("path.msi", 53248), ("pip.msi", 294912),
+                          ("tcltk.msi", 3276800), ("tcltk_pdb.msi", 192512), ("test.msi", 5980160),
+                          ("test_pdb.msi", 888832), ("ucrt.msi", 552960)]
+        ],
+                "notes": "The 16 core/pdb/lib/doc/test/tcltk/pip/ucrt amd64 MSI components of the Windows "
+                         "installer (including core_pdb.msi) are kept; the debug (_d) and free-threaded MSI "
+                         "variants are omitted to keep the item at the medium scale tier."},
+        license=lic("PSF-2.0 (installer MSIs additionally bundle OpenSSL Apache-2.0, libffi MIT, SQLite blessing, "
+                    "Tcl/Tk-style, zlib)", True, "Python Software Foundation", ""),
+        independence_group="cpython",
+        description="Official CPython 3.13.7 release set: source sdist (.tar.xz) plus its detached PGP signature "
+                    "and Sigstore bundle, the release SPDX SBOM, and 16 amd64 MSI installer components.",
+        tags=["tar.xz", "msi", "signature", "sbom", "sdist"])
+    add(item_id="f11-heldout-firefox-15501-signing-metadata", family="F11", split="heldout", scale="small",
+        kind="download", real_or_generated="real",
+        recipe={"inputs": [
+            inp("SHA256SUMS", "https://archive.mozilla.org/pub/firefox/releases/155.0.1/SHA256SUMS", "TOFU", 551210,
+                notes="release checksum manifest covering all platform artifacts for 155.0.1; Mozilla publishes "
+                      "PGP, not a separate hash pin; TOFU"),
+            inp("SHA256SUMS.asc", "https://archive.mozilla.org/pub/firefox/releases/155.0.1/SHA256SUMS.asc",
+                "TOFU", 833, notes="detached PGP signature over SHA256SUMS; TOFU"),
+            inp("KEY", "https://archive.mozilla.org/pub/firefox/releases/155.0.1/KEY", "TOFU", 31916,
+                notes="Mozilla's release-signing public PGP key block; TOFU"),
+            inp("firefox-155.0.1.tar.xz.asc",
+                "https://archive.mozilla.org/pub/firefox/releases/155.0.1/linux-x86_64/en-US/"
+                "firefox-155.0.1.tar.xz.asc", "TOFU", 833,
+                notes="detached PGP signature for the Linux x86_64 tarball already held in "
+                      "f14-heldout-firefox-15501-linux-tarball (that tarball is not re-fetched here); TOFU"),
+        ]},
+        license=lic("MPL-2.0 (Mozilla trademark policy applies to the KEY block and checksums as "
+                    "Mozilla-published verification artifacts)", True, "Mozilla Foundation", ""),
+        independence_group="mozilla-firefox",
+        description="Held-out: Firefox 155.0.1 release-verification artifacts (SHA256SUMS, its detached PGP "
+                    "signature, Mozilla's release-signing public key, and the Linux tarball's detached "
+                    "signature); the tarball itself is the existing f14-heldout-firefox-15501-linux-tarball item.",
+        tags=["signature", "checksum-manifest", "supply-chain"])
 
     # ======================= F14 archive-inside-archive =======================
     add(item_id="f14-apache-maven-3916-bin-tarball", family="F14", split="tuning", scale="small",
