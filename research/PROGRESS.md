@@ -88,10 +88,7 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 
 - `research/methods/thresholds.json` is a null template; fill it from the pre-registered `decision-method.md` (Phase A output) before any timing run. The runner refuses timing runs while quiet-machine limits are unset.
 - `research/decisions/design-freeze.json` must use one of the key names `design_freeze_sha`, `commit_sha`, or `sha`; the `ebr` held-out unlock reads those.
-- The `ebr` corpus module and `research/corpus/tools/corpuslib.py` both implement held-out guards. Consolidate them so `ebr` calls `corpuslib.assert_not_heldout()` and reads `research/corpus/manifest.json` (Phase B2 task).
-- An extra directory, `/root/eb-research/generated`, was created by a framework agent and may overlap the corpus framework; reconcile it during corpus assembly.
 - `fingerprint.py`/`stats.py` memory grows roughly 0.5–1 KB per filesystem object; generated items are hashed in memory. Streaming generators are needed for multi-GB synthetic items.
-- Corpus fingerprint `tree_sha256` includes `st_blocks`, which is unstable on ext4 under delayed allocation: 14 of 40 g1-code items re-verified with an allocation-only difference. Corpus identity and held-out locking must use `logical_tree_sha256`; fix `fingerprint.py`/`assemble.py` if assembly has not already done so.
 - Some corpus build trees are not bit-reproducible (e.g. cJSON's CMake build), and the Docker database data directories use `output_pin: null`. Experiments must reference the committed fingerprint of the materialized bytes, not assume a rebuild reproduces them.
 - `tools/zip-compat/observed-outcomes-v1.json` (tracked production tooling) was transiently modified by an agent during extraction and was verified byte-identical to `HEAD` afterwards. Agents must not run regeneration tools against tracked files.
 
@@ -142,3 +139,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T21:38Z — g2-generated F19 provisioned and fingerprinted (6 items: 2 tuning, 2 validation, 2 heldout).
 - 2026-09-16T21:40Z — g2-generated F20 provisioned and fingerprinted (10 items: 3 tuning, 3 validation, 4 heldout across 3 independence groups); all 5 g2-generated families now provisioned. gear-norm-v1 reference generators cross-checked against entrybound::chunker (0 mismatches).
 - 2026-09-16T21:45Z — legacy-tar-7z-streams merged: 98 requirements, 23 decisions, 429/429 keys, 41 cross-referenced committed decisions
+- 2026-09-16T22:12Z — Phase A assembly round 0: 1501 requirements, 581 decisions, 0 uncovered extraction keys, 0 validation errors (29+9 near-duplicate merges, 20 integrity addenda).

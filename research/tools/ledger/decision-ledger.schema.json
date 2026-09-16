@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/entrybound/entrybound/research/tools/ledger/decision-ledger.schema.json",
+  "title": "Entrybound decision ledger row",
+  "description": "One line of research/decision-ledger.jsonl; lines are sorted by decision_id.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision_id",
+    "status",
+    "blocker_class",
+    "cluster",
+    "question",
+    "requirement_ids",
+    "program_sections",
+    "release_relevance",
+    "archetypal_objective",
+    "hard_constraints",
+    "candidate_set",
+    "candidate_exclusion_reasons",
+    "required_evidence",
+    "experiment_ids",
+    "raw_result_refs",
+    "normalized_result_refs",
+    "heldout_result_refs",
+    "counterevidence",
+    "sensitivity_analysis",
+    "complexity_cost",
+    "dependency_cost",
+    "security_cost",
+    "wire_cost",
+    "selected_decision",
+    "decision_scope",
+    "confidence",
+    "known_limitations",
+    "reopen_trigger",
+    "external_review_requirement",
+    "remaining_unknowns_ref",
+    "history"
+  ],
+  "properties": {
+    "decision_id": {
+      "type": "string",
+      "pattern": "^DEC-(MOD|CON|CMP|ACC|PLT|CRY|LEG|INT|ECO)-\\d{3}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "EXTERNAL_REVIEW_REQUIRED",
+        "INSUFFICIENT_EVIDENCE",
+        "DECIDED"
+      ]
+    },
+    "blocker_class": {
+      "type": "string",
+      "enum": [
+        "NONE",
+        "EVIDENCE",
+        "PLATFORM",
+        "EXTERNAL_REVIEW",
+        "HUMAN_PARTICIPANTS",
+        "RESOURCES"
+      ]
+    },
+    "cluster": {
+      "type": "string",
+      "enum": [
+        "access",
+        "compression",
+        "container",
+        "crypto",
+        "ecosystem",
+        "integrity",
+        "legacy",
+        "model",
+        "platform"
+      ]
+    },
+    "question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requirement_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^REQ-(MOD|CON|CMP|ACC|PLT|CRY|LEG|INT|ECO)-\\d{4}$"
+      }
+    },
+    "program_sections": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "2",
+          "3",
+          "5",
+          "6",
+          "7",
+          "8.1",
+          "8.2",
+          "8.3",
+          "8.4",
+          "8.5",
+          "8.6",
+          "8.7",
+          "8.8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22.1",
+          "22.2",
+          "22.3",
+          "22.4",
+          "22.5",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35"
+        ]
+      }
+    },
+    "release_relevance": {
+      "type": "string",
+      "enum": [
+        "V1_BLOCKING",
+        "V1_IMPORTANT",
+        "POST_V1",
+        "INFORMATIONAL"
+      ]
+    },
+    "archetypal_objective": {
+      "type": "string"
+    },
+    "hard_constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "candidate_set": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "candidate_id",
+          "description"
+        ],
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "candidate_exclusion_reasons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "candidate_id",
+          "reason"
+        ],
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string"
+          },
+          "invariant_violated": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "required_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "experiment_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "raw_result_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "normalized_result_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "heldout_result_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "counterevidence": {
+      "type": "string"
+    },
+    "sensitivity_analysis": {
+      "type": "string"
+    },
+    "complexity_cost": {
+      "type": "string"
+    },
+    "dependency_cost": {
+      "type": "string"
+    },
+    "security_cost": {
+      "type": "string"
+    },
+    "wire_cost": {
+      "type": "string"
+    },
+    "selected_decision": {
+      "type": "string"
+    },
+    "decision_scope": {
+      "type": "string"
+    },
+    "confidence": {
+      "type": "string"
+    },
+    "known_limitations": {
+      "type": "string"
+    },
+    "reopen_trigger": {
+      "type": "string"
+    },
+    "external_review_requirement": {
+      "type": "string"
+    },
+    "remaining_unknowns_ref": {
+      "type": "string"
+    },
+    "history": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "change"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "change": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/entrybound/entrybound/research/tools/ledger/requirement-ledger.schema.json",
+  "title": "Entrybound requirement ledger row",
+  "description": "One decoded row of research/requirement-ledger.csv (RFC 4180, UTF-8, header row, CRLF). CSV encoding: additional_sources is a JSON array; decision_ids and program_sections are '; '-separated lists (empty string for none). Rows are sorted by req_id.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "req_id",
+    "cluster",
+    "kind",
+    "requirement_or_question",
+    "source",
+    "source_location",
+    "additional_sources",
+    "superseding_authority",
+    "supersession_note",
+    "implementation_state",
+    "implementation_evidence",
+    "evidence_state",
+    "research_needed",
+    "decision_needed",
+    "decision_ids",
+    "release_relevance",
+    "program_sections"
+  ],
+  "properties": {
+    "req_id": {
+      "type": "string",
+      "pattern": "^REQ-(MOD|CON|CMP|ACC|PLT|CRY|LEG|INT|ECO)-\\d{4}$"
+    },
+    "cluster": {
+      "type": "string",
+      "enum": [
+        "access",
+        "compression",
+        "container",
+        "crypto",
+        "ecosystem",
+        "integrity",
+        "legacy",
+        "model",
+        "platform"
+      ]
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "INVARIANT",
+        "REQUIREMENT",
+        "FROZEN_DECISION",
+        "DEFERRED_QUESTION",
+        "OPEN_QUESTION",
+        "CLAIM_NEEDING_EVIDENCE",
+        "NON_GOAL",
+        "CAPABILITY"
+      ]
+    },
+    "requirement_or_question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^(SPEC|R1|R2|R3|R3-INSTR|PROGRAM|APPX/.+|docs/.+|code:.+)$"
+    },
+    "source_location": {
+      "type": "string",
+      "minLength": 1
+    },
+    "additional_sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source_ref"
+      }
+    },
+    "superseding_authority": {
+      "type": "string"
+    },
+    "supersession_note": {
+      "type": "string"
+    },
+    "implementation_state": {
+      "type": "string",
+      "enum": [
+        "IMPLEMENTED",
+        "PARTIAL",
+        "MISSING",
+        "BLOCKED_PLATFORM",
+        "DEFERRED_APPROVED",
+        "REJECTED"
+      ]
+    },
+    "implementation_evidence": {
+      "type": "string"
+    },
+    "evidence_state": {
+      "type": "string",
+      "enum": [
+        "CONTRADICTED",
+        "EXTERNAL_REVIEW_REQUIRED",
+        "UNTESTED",
+        "INSUFFICIENT",
+        "SUPPORTED_WITH_LIMITATIONS",
+        "EMPIRICALLY_SUPPORTED",
+        "PROVEN"
+      ]
+    },
+    "research_needed": {
+      "type": "string"
+    },
+    "decision_needed": {
+      "type": "string"
+    },
+    "decision_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^DEC-(MOD|CON|CMP|ACC|PLT|CRY|LEG|INT|ECO)-\\d{3}$"
+      }
+    },
+    "release_relevance": {
+      "type": "string",
+      "enum": [
+        "V1_BLOCKING",
+        "V1_IMPORTANT",
+        "POST_V1",
+        "INFORMATIONAL"
+      ]
+    },
+    "program_sections": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "2",
+          "3",
+          "5",
+          "6",
+          "7",
+          "8.1",
+          "8.2",
+          "8.3",
+          "8.4",
+          "8.5",
+          "8.6",
+          "8.7",
+          "8.8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22.1",
+          "22.2",
+          "22.3",
+          "22.4",
+          "22.5",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "source_ref": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "location",
+            "local_key"
+          ],
+          "properties": {
+            "source": {
+              "type": "string",
+              "pattern": "^(SPEC|R1|R2|R3|R3-INSTR|APPX/.+|docs(/.+)?|code:.+)$"
+            },
+            "location": {
+              "type": "string"
+            },
+            "local_key": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*-\\d{4}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "location",
+            "local_key"
+          ],
+          "properties": {
+            "source": {
+              "const": "PROGRAM"
+            },
+            "location": {
+              "type": "string"
+            },
+            "local_key": {
+              "const": ""
+            }
+          }
+        }
+      ]
+    }
+  }
+}

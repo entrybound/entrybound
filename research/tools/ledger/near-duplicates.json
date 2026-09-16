@@ -1,0 +1,1801 @@
+{
+  "schema": "entrybound-near-duplicates/v1",
+  "description": "Adjudications for near-duplicate candidates: rows from different merge jobs of one cluster whose TF-IDF cosine (requirement_or_question or question plus key tokens) is at least review_threshold. Merges fold rows into the named survivor; distinct pairs stay separate. Every candidate at or above review_threshold in round 0 was reviewed on 2026-09-16.",
+  "review_threshold": 0.3,
+  "auto_merge_threshold": 0.7,
+  "merges": [
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "zip-compat-java-zipinputstream-and-libarchive-rules",
+      "merged": [
+        "zip-compat-java-libarchive-observed-behaviour"
+      ],
+      "reason": "Same frozen java-zipinputstream and libarchive-bsdtar compatibility-profile rules stated by two merge jobs."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "sevenz-coder-support-set",
+      "merged": [
+        "sevenz-codec-filter-coverage",
+        "sevenz-supported-coder-set"
+      ],
+      "reason": "Same strict 7z supported coder and filter set (COPY/LZMA/LZMA2/BZip2/DEFLATE with Delta and x86 BCJ) and unsupported-coder reporting."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "synthesized-ancestor-directories",
+      "merged": [
+        "synthesized-ancestor-omission-policy",
+        "zip-implied-directory-synthesis-as-omission"
+      ],
+      "reason": "Same rule: omitted ancestor directories are synthesised as recorded Omission resolutions."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "tar-end-of-archive-and-extension-chain-strictness",
+      "merged": [
+        "tar-end-marker-and-trailing-data"
+      ],
+      "reason": "Same tar end-marker and trailing-data strictness; survivor also covers dangling extension records."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "compat-preserve-mode-composition",
+      "merged": [
+        "zip-preserve-requires-compat-profile"
+      ],
+      "reason": "Same import-mode composition: --preserve requires an exact-version --compat profile and reuses its projection."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "legacy-compat-preserve-zip-only-status",
+      "merged": [
+        "compat-preserve-modes-zip-only",
+        "tar-7z-stream-preservation-unavailable"
+      ],
+      "reason": "Same fact: compatibility and preservation modes exist only for ZIP; tar, 7z and stream sources are strict-only."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "survivor": "special-file-and-device-extraction-gating",
+      "merged": [
+        "special-file-extraction-gating"
+      ],
+      "reason": "Same requirement: device nodes, FIFOs and sockets need explicit (privileged) extraction policy."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "survivor": "unknown-stanzas-authenticated-extensibility",
+      "merged": [
+        "recipient-stanza-single-extensibility-seam",
+        "unknown-recipient-stanza-extension-contract"
+      ],
+      "reason": "Same extensibility seam: unknown recipient stanza types are skipped for matching but stay authenticated; unknown classes fail closed."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "preserved-source-recovery-api",
+      "merged": [
+        "zip-preserved-source-recovery-surface"
+      ],
+      "reason": "Same recover_preserved_source API and its surface."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "compression",
+      "survivor": "profile-numeric-parameters-deferred",
+      "merged": [
+        "profile-parameter-values-undecided"
+      ],
+      "reason": "Same finding: profile numeric parameter values are deferred to SPEC 25.3 and never specified."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "survivor": "two-level-segment-key-derivation",
+      "merged": [
+        "two-level-keying-and-counter-nonces"
+      ],
+      "reason": "Same two-level per-segment key derivation with counter nonces."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "legacy-format-detection-authority",
+      "merged": [
+        "legacy-import-format-detection-dispatch"
+      ],
+      "reason": "Same byte-based legacy format detection order and --from agreement rule."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "survivor": "recipient-add-preserves-afk-stales-addressing",
+      "merged": [
+        "recipient-add-requires-afk-and-reauthenticates"
+      ],
+      "reason": "Same recipient-add semantics: wrap the existing AFK and re-authenticate the envelope."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "survivor": "program-crypto-external-review-dossier",
+      "merged": [
+        "program-external-review-dossier-key-hierarchy-commitment"
+      ],
+      "reason": "Same PROGRAM obligation: one external-review dossier (key hierarchy and commitment analysis is part of it)."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "survivor": "metadata-restore-order",
+      "merged": [
+        "extraction-ordering-contract"
+      ],
+      "reason": "Same normative extraction and metadata restore order."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "survivor": "encrypted-archive-final-and-segment-binding",
+      "merged": [
+        "segment-end-and-archive-final-truncation-binding"
+      ],
+      "reason": "Same segment END and ArchiveFinal binding against truncation and reordering."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "zip-entry-name-path-safety",
+      "merged": [
+        "zip-path-safety-refusals"
+      ],
+      "reason": "Same strict ZIP path-safety refusal set."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "preserved-source-bytes-inline-overhead",
+      "merged": [
+        "zip-preserve-archive-size-overhead"
+      ],
+      "reason": "Same finding: preservation embeds the whole source, roughly doubling archive size."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "survivor": "privilege-bearing-xattr-restoration",
+      "merged": [
+        "xattr-security-namespace-restoration"
+      ],
+      "reason": "Same issue: privilege-bearing xattr namespaces (security.*, trusted.*) are captured and restored without a namespace policy."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "survivor": "setuid-setgid-sticky-restoration-gate",
+      "merged": [
+        "special-mode-bits-and-umask-default"
+      ],
+      "reason": "Same requirement: setuid, setgid and sticky bits must not be restored by default (repo restores them unmasked)."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "tar-dot-prefix-and-empty-name-entries",
+      "merged": [
+        "tar-dot-slash-prefix-and-v7-directories"
+      ],
+      "reason": "Same finding: dot-slash-prefixed tar members are refused by strict import."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "zip-name-resolution-and-separators",
+      "merged": [
+        "zip-name-encoding-cp437-and-utf8-flag"
+      ],
+      "reason": "Same ZIP name decoding rules (UTF-8 flag, CP437, Unicode Path extra refinement)."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "survivor": "password-kdf-cost-refused-before-kdf",
+      "merged": [
+        "kdf-parameter-caps-on-read"
+      ],
+      "reason": "Same requirement: attacker-declared KDF cost is capped and refused before the KDF runs."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "survivor": "encrypted-stream-and-pipe-output-refused",
+      "merged": [
+        "encrypted-indexed-only-no-encrypted-stream"
+      ],
+      "reason": "Same fact: crypto v1 is INDEXED-only; encrypted STREAM and pipe output are refused."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "survivor": "compat-exact-version-runtime-profiles",
+      "merged": [
+        "compat-runtime-identifiers-versioned"
+      ],
+      "reason": "Same rule: compatibility runtimes are exact-version identifiers with no anonymous default."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "legacy",
+      "survivor": "legacy-synthesized-ancestor-recording",
+      "merged": [
+        "synthesized-ancestor-directory-metadata"
+      ],
+      "reason": "Same question: metadata of synthesised ancestor directories and how synthesis is recorded."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "ecosystem",
+      "survivor": "cli-machine-readable-output-contract",
+      "merged": [
+        "machine-readable-output-schema-and-canonicalization"
+      ],
+      "reason": "Same question: machine-readable output contract, schema publication and stability (canonical JSON rules folded into candidates)."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "platform",
+      "survivor": "xattr-count-and-size-bounds",
+      "merged": [
+        "xattr-value-and-count-bounds"
+      ],
+      "reason": "Same question: normative xattr count and value bounds."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "platform",
+      "survivor": "dangerous-restoration-defaults-and-capability-grants",
+      "merged": [
+        "dangerous-restoration-opt-in-surface"
+      ],
+      "reason": "Same question: default extraction policy and opt-in surface for dangerous restorations."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "legacy",
+      "survivor": "sevenz-import-coder-and-encryption-scope",
+      "merged": [
+        "sevenz-coder-and-graph-coverage"
+      ],
+      "reason": "Same question: which 7z coders, filters and folder graphs are in v1 import scope."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "platform",
+      "survivor": "handle-based-no-follow-metadata-operations",
+      "merged": [
+        "no-follow-metadata-operations-strategy"
+      ],
+      "reason": "Same question: handle-based no-follow metadata operations in safe Rust."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "ecosystem",
+      "survivor": "research-verdict-reconciliation-and-artifact-sequencing",
+      "merged": [
+        "research-iii-no-go-reconciliation"
+      ],
+      "reason": "Same question: reconciling Research II/III positions (including the NO-GO) with SPEC v1.2."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "platform",
+      "survivor": "metadata-restore-order",
+      "merged": [
+        "extraction-order-directory-metadata-and-symlinks"
+      ],
+      "reason": "Same question: the single normative extraction and restore order."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "legacy",
+      "survivor": "import-budget-default-values",
+      "merged": [
+        "legacy-import-budget-fields-and-defaults"
+      ],
+      "reason": "Same question: legacy import budget fields and default values (SPEC 25.1 #23)."
+    }
+  ],
+  "distinct": [
+    {
+      "record_type": "decision",
+      "cluster": "compression",
+      "keys": [
+        "clustering-mode-profile-assignment-and-base-order",
+        "profile-set-and-default"
+      ],
+      "cosine": 0.329,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "compression",
+      "keys": [
+        "deflate-reconstruction-scope-and-inclusion",
+        "stream-aligned-chunking-for-reconstruction"
+      ],
+      "cosine": 0.378,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "crypto-composition-matrix-semantics",
+        "encrypted-conversion-and-preservation-composition"
+      ],
+      "cosine": 0.327,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "crypto-open-policy-resource-ceilings",
+        "recipient-envelope-size-and-label-limits"
+      ],
+      "cosine": 0.392,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "encrypted-metadata-leakage-claims",
+        "encrypted-public-byte-leakage-inventory"
+      ],
+      "cosine": 0.333,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "encrypted-output-for-import-and-publish",
+        "encrypted-repack-mutation-contract"
+      ],
+      "cosine": 0.336,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "encrypted-public-byte-leakage-inventory",
+        "public-recipient-metadata-exposure-and-stanza-padding"
+      ],
+      "cosine": 0.443,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "encrypted-repack-mutation-contract",
+        "recipient-mutation-and-file-key-rotation-semantics"
+      ],
+      "cosine": 0.314,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "hmac-key-commitment-and-envelope-mac-construction-review",
+        "key-commitment-and-identifier-binding-coverage"
+      ],
+      "cosine": 0.46,
+      "reason": "Construction review versus identifier-binding coverage, explicitly split by the source row."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "hybrid-kem-long-term-trajectory",
+        "hybrid-recipient-kem-instantiation"
+      ],
+      "cosine": 0.362,
+      "reason": "v1 instantiation versus long-term KEM trajectory."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "identity-generation-key-file-format-and-key-command-scope",
+        "signature-management-cli-scope"
+      ],
+      "cosine": 0.346,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "incumbent-encryption-matrix-claims",
+        "incumbent-multi-recipient-and-pq-encryption-claims"
+      ],
+      "cosine": 0.481,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "incumbent-encryption-matrix-claims",
+        "incumbent-signature-parity-claims"
+      ],
+      "cosine": 0.334,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "key-hierarchy-and-commitment-formal-analysis",
+        "segment-construction-formal-analysis"
+      ],
+      "cosine": 0.302,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "key-rotation-boundary-preservation",
+        "recipient-mutation-and-file-key-rotation-semantics"
+      ],
+      "cosine": 0.397,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "nonce-uniqueness-under-mutation",
+        "recipient-mutation-and-file-key-rotation-semantics"
+      ],
+      "cosine": 0.319,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "nonce-uniqueness-under-mutation",
+        "signature-retention-after-recipient-mutation"
+      ],
+      "cosine": 0.3,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "recipient-mutation-and-file-key-rotation-semantics",
+        "signature-retention-after-recipient-mutation"
+      ],
+      "cosine": 0.497,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "crypto",
+      "keys": [
+        "recipient-stanza-extension-contract",
+        "unknown-stanza-only-unlock-outcome-and-directory-representation"
+      ],
+      "cosine": 0.503,
+      "reason": "Reader outcome for unknown-only stanzas is explicitly split from the general extension contract."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "ecosystem",
+      "keys": [
+        "funding-and-maintenance-model",
+        "maintenance-funding-and-security-disclosure-policy"
+      ],
+      "cosine": 0.494,
+      "reason": "Combined decision spans funding and disclosure; neither single-topic decision covers it."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "ecosystem",
+      "keys": [
+        "maintenance-funding-and-security-disclosure-policy",
+        "security-disclosure-policy"
+      ],
+      "cosine": 0.378,
+      "reason": "Combined decision spans funding and disclosure; neither single-topic decision covers it."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "ecosystem",
+      "keys": [
+        "observed-outcome-matrix-positioning",
+        "observed-outcome-matrix-scope-and-maintenance"
+      ],
+      "cosine": 0.331,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "legacy",
+      "keys": [
+        "encrypted-legacy-input-policy",
+        "zip-encryption-import-scope"
+      ],
+      "cosine": 0.305,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "legacy",
+      "keys": [
+        "import-budget-default-values",
+        "zip-import-resource-limit-defaults"
+      ],
+      "cosine": 0.351,
+      "reason": "Different adapters (tar, 7z and streams versus ZIP)."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "legacy",
+      "keys": [
+        "sevenz-name-separator-policy",
+        "zip-backslash-name-policy"
+      ],
+      "cosine": 0.446,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "legacy",
+      "keys": [
+        "zip-export-unix-and-platform-extras",
+        "zip-extra-field-interpretation-scope"
+      ],
+      "cosine": 0.341,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "legacy",
+      "keys": [
+        "zstd-dictionary-frame-import",
+        "zstd-frame-variant-acceptance"
+      ],
+      "cosine": 0.377,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "platform",
+      "keys": [
+        "dangerous-restoration-defaults-and-capability-grants",
+        "setuid-sticky-default-restoration"
+      ],
+      "cosine": 0.352,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "decision",
+      "cluster": "platform",
+      "keys": [
+        "dangerous-restoration-defaults-and-capability-grants",
+        "xattr-security-namespace-restore-policy"
+      ],
+      "cosine": 0.34,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "compression",
+      "keys": [
+        "balanced-jpeg-single-chunk-eligibility",
+        "reconstruction-eligibility-vs-cdc-boundaries"
+      ],
+      "cosine": 0.36,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "compression",
+      "keys": [
+        "cross-file-planner-generation-inheritance",
+        "experimental-frozen-generation-status"
+      ],
+      "cosine": 0.332,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "compression",
+      "keys": [
+        "embedded-and-nested-streams-not-scanned",
+        "reconstruction-eligibility-vs-cdc-boundaries"
+      ],
+      "cosine": 0.326,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "compression",
+      "keys": [
+        "evaluation-mode-sampled-or-full",
+        "planner-sampling-and-iteration-determinism"
+      ],
+      "cosine": 0.32,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "compression",
+      "keys": [
+        "registered-codec-set-and-canonical-parameters",
+        "transform-plan-record-and-closed-codec-parameters"
+      ],
+      "cosine": 0.392,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "compression",
+      "keys": [
+        "replan-planner-version-selection",
+        "replan-rechunking-path"
+      ],
+      "cosine": 0.39,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "compression",
+      "keys": [
+        "transform-plan-record-and-closed-codec-parameters",
+        "unknown-codec-or-transform-fails-closed"
+      ],
+      "cosine": 0.44,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "afk-derived-boundary-keys-applied-to-encrypted-plans",
+        "encrypted-boundary-modes-keyed-only-registry"
+      ],
+      "cosine": 0.365,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "archive-id-bound-associated-data",
+        "flat-recipient-wrap-associated-data"
+      ],
+      "cosine": 0.339,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "authenticated-encryption-required",
+        "incumbent-unauthenticated-encryption-claims"
+      ],
+      "cosine": 0.476,
+      "reason": "Requirement versus comparative incumbent claim needing evidence."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "common-recipient-wrap-construction",
+        "recipient-public-key-omitted-from-wrap-transcripts"
+      ],
+      "cosine": 0.447,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "compromised-host-and-rollback-non-goals",
+        "freshness-rollback-requires-caller-state"
+      ],
+      "cosine": 0.34,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "crypto-framing-limits-before-decryption",
+        "crypto-policy-default-caps"
+      ],
+      "cosine": 0.359,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "crypto-identifier-and-context-binding",
+        "envelope-mac-authenticates-full-recipient-set"
+      ],
+      "cosine": 0.314,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "crypto-policy-default-caps",
+        "kdf-parameter-caps-on-read"
+      ],
+      "cosine": 0.379,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "crypto-primitive-dependency-pins-and-api-use",
+        "external-primitive-kat-coverage"
+      ],
+      "cosine": 0.327,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "crypto-reason-code-taxonomy-and-assertions",
+        "signature-reason-codes-and-diagnostic-classes"
+      ],
+      "cosine": 0.358,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "deliberately-public-crypto-framing",
+        "public-crypto-framing-and-recipient-exposure"
+      ],
+      "cosine": 0.31,
+      "reason": "Complementary public-field lists (recipient envelope versus segment framing)."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "encrypted-archive-final-and-segment-binding",
+        "recipient-set-digest-definition-and-binding"
+      ],
+      "cosine": 0.406,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "envelope-mac-authenticates-full-recipient-set",
+        "insider-recipient-envelope-edits"
+      ],
+      "cosine": 0.304,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "external-primitive-kat-coverage",
+        "external-primitive-known-answer-vector-coverage"
+      ],
+      "cosine": 0.473,
+      "reason": "Different primitive sets (HKDF, Argon2id, ML-KEM, X-Wing versus AES-GCM-SIV, HMAC)."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "external-primitive-known-answer-vector-coverage",
+        "program-suite-1-primitive-review-aes-gcm-siv-sha-256"
+      ],
+      "cosine": 0.308,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "flat-recipient-wrap-associated-data",
+        "recipient-public-key-omitted-from-wrap-transcripts"
+      ],
+      "cosine": 0.44,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "hybrid-pq-recipient-kem-mandatory",
+        "post-quantum-confidentiality-rationale"
+      ],
+      "cosine": 0.383,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "identity-seed-at-rest-protection",
+        "signing-key-file-protection"
+      ],
+      "cosine": 0.386,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "key-separation-and-context-binding-by-labels",
+        "signature-transcript-coverage-and-domain-separation"
+      ],
+      "cosine": 0.347,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "os-csprng-randomness-fatal-failure",
+        "random-archive-file-key-per-encryption-epoch"
+      ],
+      "cosine": 0.379,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "password-kdf-salt-domain-separation",
+        "signature-transcript-coverage-and-domain-separation"
+      ],
+      "cosine": 0.331,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "program-crypto-composition-matrix",
+        "program-recipient-mutation-envelope-composition"
+      ],
+      "cosine": 0.467,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "program-suite-1-primitive-review-aes-gcm-siv-sha-256",
+        "single-payload-suite-per-format-version"
+      ],
+      "cosine": 0.343,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "recipient-add-preserves-afk-stales-addressing",
+        "recipient-mutation-file-key-rotation-and-cost"
+      ],
+      "cosine": 0.366,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "recipient-stanza-single-extensibility-seam",
+        "signature-method-extensibility-unknown-algorithms"
+      ],
+      "cosine": 0.369,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "signature-method-extensibility-unknown-algorithms",
+        "unknown-stanzas-authenticated-extensibility"
+      ],
+      "cosine": 0.318,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "crypto",
+      "keys": [
+        "unknown-recipient-stanza-extension-contract",
+        "unknown-recipient-stanza-type-reader-semantics"
+      ],
+      "cosine": 0.461,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "ecosystem",
+      "keys": [
+        "conformance-expectation-classes",
+        "expectation-class-design-finding"
+      ],
+      "cosine": 0.36,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "ecosystem",
+      "keys": [
+        "machine-readable-output-on-structured-commands",
+        "machine-readable-output-schema-and-canonical-json"
+      ],
+      "cosine": 0.352,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "ecosystem",
+      "keys": [
+        "maintenance-sustainability-and-security-disclosure",
+        "security-policy-and-disclosure-process"
+      ],
+      "cosine": 0.385,
+      "reason": "Disclosure process versus maintainer and funding sustainability."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "appledouble-member-import-disposition",
+        "zip-macos-appledouble-reconciliation"
+      ],
+      "cosine": 0.458,
+      "reason": "Format-specific AppleDouble handling (tar dot-underscore members versus ZIP __MACOSX/)."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "compat-models-from-observed-outcome-matrix",
+        "program-compat-behavioural-model-derivation"
+      ],
+      "cosine": 0.348,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "compat-preserve-mode-composition",
+        "compat-preserve-modes-zip-only"
+      ],
+      "cosine": 0.388,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "compat-preserve-mode-composition",
+        "legacy-compat-preserve-zip-only-status"
+      ],
+      "cosine": 0.324,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "compat-preserve-mode-composition",
+        "legacy-preservation-v1-zip-evidence-object"
+      ],
+      "cosine": 0.337,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "compat-preserve-modes-zip-only",
+        "zip-preserve-requires-compat-profile"
+      ],
+      "cosine": 0.33,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "compat-runtime-identifiers-versioned",
+        "zip-compat-frozen-versioned-profile-ids"
+      ],
+      "cosine": 0.312,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "conflict-severity-classes",
+        "zip-strict-conflict-resolution"
+      ],
+      "cosine": 0.326,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "differential-harness-methodology-and-corrections",
+        "r3-zip-differential-harness-provenance"
+      ],
+      "cosine": 0.348,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "duplicate-path-policy-consistent",
+        "tar-duplicate-path-refusal"
+      ],
+      "cosine": 0.355,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "duplicate-path-policy-consistent",
+        "zip-duplicate-name-differential-and-strict-refusal"
+      ],
+      "cosine": 0.302,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "gzip-bzip2-transport-member-validation",
+        "gzip-transport-framing"
+      ],
+      "cosine": 0.351,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "gzip-trailing-padding-refusal",
+        "gzip-transport-framing"
+      ],
+      "cosine": 0.458,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "import-budget-default-values",
+        "legacy-import-budget-field-completeness"
+      ],
+      "cosine": 0.324,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "import-budget-default-values",
+        "zip-import-resource-limit-defaults"
+      ],
+      "cosine": 0.491,
+      "reason": "Different adapters (tar, 7z and streams versus ZIP)."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "import-policy-resolutions-recorded",
+        "zip-compat-java-zipinputstream-and-libarchive-rules"
+      ],
+      "cosine": 0.309,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "legacy-adapter-boundary-lom-contract",
+        "lom-contract-stability-v1"
+      ],
+      "cosine": 0.383,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "legacy-compat-preserve-zip-only-status",
+        "program-tar-7z-compat-and-preservation-profiles"
+      ],
+      "cosine": 0.359,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "legacy-compat-preserve-zip-only-status",
+        "sidecar-cli-coverage-and-naming"
+      ],
+      "cosine": 0.302,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "legacy-format-detection-authority",
+        "standalone-stream-entry-name-and-tar-detection"
+      ],
+      "cosine": 0.328,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "legacy-import-interpretation-principle",
+        "lom-observations-precede-entries"
+      ],
+      "cosine": 0.367,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "legacy-preservation-v1-zip-evidence-object",
+        "preserved-source-recovery-api"
+      ],
+      "cosine": 0.302,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "legacy-reason-code-conformance-gaps",
+        "legacy-reason-codes-and-coverage"
+      ],
+      "cosine": 0.31,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "legacy-timestamp-carrier-precedence",
+        "tar-export-dialect-and-limit-policies"
+      ],
+      "cosine": 0.314,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "lom-typed-source-dialect",
+        "tar-dialect-support-set"
+      ],
+      "cosine": 0.327,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "preservation-resource-limits",
+        "zip-import-resource-limit-defaults"
+      ],
+      "cosine": 0.372,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "preserved-source-recovery-api",
+        "program-preservation-mode-evidence"
+      ],
+      "cosine": 0.321,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "program-compat-behavioural-model-derivation",
+        "program-tar-7z-compat-and-preservation-profiles"
+      ],
+      "cosine": 0.383,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "program-sevenz-runtime-differential-matrix",
+        "sevenz-differential-evidence-coverage"
+      ],
+      "cosine": 0.314,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "program-tar-runtime-differential-matrix",
+        "program-zip-runtime-differential-matrix"
+      ],
+      "cosine": 0.331,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "sevenz-backslash-separator",
+        "zip-backslash-name-policy"
+      ],
+      "cosine": 0.341,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "sevenz-compatibility-profiles-undefined",
+        "sevenz-export-non-goal-v1"
+      ],
+      "cosine": 0.372,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "sevenz-export-non-goal-v1",
+        "sevenz-header-recovery-non-goal"
+      ],
+      "cosine": 0.37,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "sevenz-folder-graph-contract",
+        "sevenz-streams-graph-and-bounded-decode"
+      ],
+      "cosine": 0.401,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "sevenz-path-safety",
+        "tar-dot-prefix-and-empty-name-entries"
+      ],
+      "cosine": 0.309,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "sevenz-sfx-and-trailing-data",
+        "sevenz-signature-and-header-crc-authority"
+      ],
+      "cosine": 0.41,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "sevenz-sfx-and-trailing-data",
+        "sevenz-strict-refused-structures"
+      ],
+      "cosine": 0.318,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "sevenz-sfx-and-trailing-data",
+        "zip-prefix-trailing-and-concatenated-data"
+      ],
+      "cosine": 0.338,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "sevenz-signature-and-header-crc-authority",
+        "sevenz-signature-and-header-handling"
+      ],
+      "cosine": 0.316,
+      "reason": "Encoded-header decoding versus version and CRC authority validation."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "tar-authority-precedence-and-refinement",
+        "tar-pax-record-parsing-and-authorities"
+      ],
+      "cosine": 0.328,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "tar-duplicate-path-refusal",
+        "zip-duplicate-name-differential-and-strict-refusal"
+      ],
+      "cosine": 0.305,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "tar-export-large-ids-and-sparse-encoding",
+        "tar-sparse-encodings-disposition"
+      ],
+      "cosine": 0.31,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "tar-gnu-pax-sparse-silent-import",
+        "tar-sparse-encodings-disposition"
+      ],
+      "cosine": 0.332,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "tar-hardlink-resolution-rules",
+        "tar-hardlink-to-symlink-resolution"
+      ],
+      "cosine": 0.332,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-compat-duplicate-last-member-projection",
+        "zip-compat-java-libarchive-observed-behaviour"
+      ],
+      "cosine": 0.366,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-compat-frozen-versioned-profile-ids",
+        "zip-compat-java-libarchive-observed-behaviour"
+      ],
+      "cosine": 0.33,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-compat-java-libarchive-observed-behaviour",
+        "zip-compat-java-zipfile-21-rules"
+      ],
+      "cosine": 0.463,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-compat-java-libarchive-observed-behaviour",
+        "zip-compat-python-zipfile-3135-rules"
+      ],
+      "cosine": 0.378,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-compat-java-libarchive-observed-behaviour",
+        "zip-lfh-cd-name-mismatch-outcomes"
+      ],
+      "cosine": 0.38,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-compat-safety-overrides",
+        "zip-path-safety-refusals"
+      ],
+      "cosine": 0.326,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-data-descriptor-acceptance",
+        "zip-export-data-descriptors-and-registry-ingest"
+      ],
+      "cosine": 0.353,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-directory-kind-attributes-and-mode",
+        "zip-unix-symlink-special-file-import"
+      ],
+      "cosine": 0.324,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-export-timestamp-and-platform-extras",
+        "zip-timestamp-import-policy"
+      ],
+      "cosine": 0.396,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-name-resolution-and-separators",
+        "zip-unicode-path-extra-handling"
+      ],
+      "cosine": 0.452,
+      "reason": "Overall ZIP name decoding versus the narrower Unicode Path extra acceptance rules."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-observation-parser-structure",
+        "zip-structural-refusals-strict"
+      ],
+      "cosine": 0.305,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zip-structural-refusals-strict",
+        "zip64-end-record-handling"
+      ],
+      "cosine": 0.347,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "legacy",
+      "keys": [
+        "zstd-transport-dictionary-and-window",
+        "zstd-transport-framing"
+      ],
+      "cosine": 0.568,
+      "reason": "Dictionary and window handling versus framing-variant acceptance; the texts disagree on skippable-frame retention, so both stay."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "acl-and-windows-descriptor-canonical-validation",
+        "acl-canonical-wire-registry"
+      ],
+      "cosine": 0.465,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "acl-and-windows-descriptor-canonical-validation",
+        "windows-security-descriptor-binary-form"
+      ],
+      "cosine": 0.322,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "dangerous-restoration-explicit-opt-in-library-default",
+        "extraction-policy-defaults"
+      ],
+      "cosine": 0.337,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "directory-entry-with-content-import-outcome",
+        "empty-and-dot-entry-names-refused"
+      ],
+      "cosine": 0.303,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "extraction-policy-defaults",
+        "macos-forks-finderinfo-quarantine-as-xattrs"
+      ],
+      "cosine": 0.321,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "fidelity-report-schema-and-vocabulary",
+        "structured-extraction-report-schema"
+      ],
+      "cosine": 0.358,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "filesystem-doc-authority-and-drift",
+        "native-capture-class-matrix-and-doc-authority"
+      ],
+      "cosine": 0.336,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "forks-and-alternate-streams-representation",
+        "ntfs-alternate-data-streams-capture"
+      ],
+      "cosine": 0.335,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "hardlink-group-capture-and-identity",
+        "hardlink-group-rules-and-inode-scoped-metadata"
+      ],
+      "cosine": 0.319,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "macos-capture-untested-platform-blocked",
+        "platform-metadata-restoration-unavailable"
+      ],
+      "cosine": 0.333,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "metadata-criticality-fail-closed",
+        "metadata-items-typed-namespaced-with-criticality"
+      ],
+      "cosine": 0.307,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "metadata-diff-and-inspection-evidence-tiers",
+        "repack-and-diff-preserve-link-and-platform-metadata"
+      ],
+      "cosine": 0.317,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "no-follow-and-opaque-reparse-api-feasibility-program",
+        "safe-rust-platform-api-feasibility-program"
+      ],
+      "cosine": 0.378,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "origin-marker-propagation",
+        "origin-marker-propagation-on-extraction"
+      ],
+      "cosine": 0.416,
+      "reason": "Platform obligation and Apple documentation gap versus SPEC-repo conflict and CVE evidence; both carry unique content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "ownership-ids-names-and-id-space",
+        "ownership-numeric-capture-and-restore-policy"
+      ],
+      "cosine": 0.346,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "ownership-not-restored-by-default",
+        "ownership-numeric-capture-and-restore-policy"
+      ],
+      "cosine": 0.315,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "platform-attribute-and-flag-masks",
+        "windows-file-attributes-registry-and-restoration"
+      ],
+      "cosine": 0.33,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "platform-metadata-restoration-unavailable",
+        "safe-rust-platform-api-feasibility-program"
+      ],
+      "cosine": 0.303,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "platform-metadata-restoration-unavailable",
+        "windows-security-capture-and-restore-unavailable"
+      ],
+      "cosine": 0.346,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "sparse-restoration-policy-and-expansion",
+        "sparse-restoration-writing"
+      ],
+      "cosine": 0.383,
+      "reason": "Implemented opt-in restore and test gap versus open hole-source and expansion-bound questions."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "special-file-entry-kinds",
+        "special-file-extraction-gating"
+      ],
+      "cosine": 0.503,
+      "reason": "Missing special-file EntryKinds (representation) versus extraction gating."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "special-file-extraction-gating",
+        "special-files-disposition-program"
+      ],
+      "cosine": 0.372,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "timestamp-capture-precision-and-restorability",
+        "timestamp-capture-set-beyond-mtime"
+      ],
+      "cosine": 0.317,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "unknown-critical-metadata-refusal",
+        "unknown-metadata-item-repack-preservation"
+      ],
+      "cosine": 0.315,
+      "reason": "Reviewed round 0: overlapping topic but different facet, scope, format or claim type; merging would drop substantive content."
+    },
+    {
+      "record_type": "requirement",
+      "cluster": "platform",
+      "keys": [
+        "xattr-count-and-size-bounds",
+        "xattr-exact-capture-and-bounds"
+      ],
+      "cosine": 0.418,
+      "reason": "Capture semantics and crate versus bound values and refusal classes."
+    }
+  ],
+  "distinct_collisions": []
+}
