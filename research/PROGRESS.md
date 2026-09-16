@@ -132,3 +132,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T21:30Z — Phase A: ecosystem cli-adoption shard merged (109 requirements, 53 decisions).
 - 2026-09-16T21:31Z — crypto-signatures-trust merged: 75 requirements, 51 decisions, 1 key deferred to model cluster
 - 2026-09-16T21:32Z — container cluster merged: 98 requirements, 29 decisions, 756/756 keys
+- 2026-09-16T21:33Z — compression-codecs-planner merge: 114 requirements, 29 decisions, 539/539 keys
