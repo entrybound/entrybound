@@ -124,3 +124,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T21:05Z — Relaunched A3 (wf_16094fa5-38e) and B1d (wf_3615a3d7-fe4); B2 relaunch deferred pending usage check.
 - 2026-09-16T21:20Z — g5-media (F12/F13) verified and finalized: 26 items hash-identical (logical_tree_sha256) and smoke-tested; F12 held-out/validation independence-group gap remains (commons-usgov-photos/commons-cc0-photos selected but not fetched -- Wikimedia rate-limited this session).
 - 2026-09-16T21:22Z — compression-chunking merged: 62 requirements, 16 decisions, 427/427 keys mapped
+- 2026-09-16T21:23Z — legacy-zip merged: 82 requirements, 30 decisions, 422/422 keys
