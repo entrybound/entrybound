@@ -145,3 +145,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-16T22:33Z — round 1 appendix/docs critic addendum: 3 requirements + 1 decision added, 9 corrections
 - 2026-09-16T22:34Z — round1 program-code critic: 14 req + 10 dec added, 9 corrections; dry-run assembly 0 errors
 - 2026-09-16T22:41Z — Phase A assembly round 1: 1518 requirements, 593 decisions, 0 uncovered extraction keys, 0 validation errors (8 addenda near-duplicate candidates kept distinct; 70 primary keys made visible).
+- 2026-09-16T22:54Z — Corpus round-1 critic: INCOMPLETE, 25 gaps (7 blockers: ML weights, DB dumps, supply-chain, home backups, cross-platform metadata, encrypted private archives, F12 held-out groups)
