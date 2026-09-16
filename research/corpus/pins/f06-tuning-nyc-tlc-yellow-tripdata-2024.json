@@ -1,0 +1,33 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f06-tuning-nyc-tlc-yellow-tripdata-2024",
+  "inputs": {
+    "m01": {
+      "url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet",
+      "sha256": "c4d59da7bbc8abaeeeb1727947ee93d9891a71acb42854bd80db1571b2030510",
+      "size": 49961641,
+      "retrieved_utc": "2026-09-16T23:31:09Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "m02": {
+      "url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-02.parquet",
+      "sha256": "c76c43c18c6c6664080dd920baab4928988d5786a6b65980792ca7cd796f9f20",
+      "size": 50349284,
+      "retrieved_utc": "2026-09-16T23:31:12Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "m03": {
+      "url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-03.parquet",
+      "sha256": "2d4cdc8fb96726cdd3803b13b02d2e61e71d45720aff0ebc693a8bdd1f249823",
+      "size": 60078280,
+      "retrieved_utc": "2026-09-16T23:31:14Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "e815162faf4489644cc33a8c0c198d8f8aa98759d3ce827e74187ad6645988eb",
+    "logical_tree_sha256": "79fede4a294cb8ad94218fcbf0dadbf0f8d0efba5425ec1ea388f2ad03cf1060",
+    "pinned_utc": "2026-09-16T23:31:15Z"
+  },
+  "history": []
+}

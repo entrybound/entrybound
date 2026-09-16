@@ -1,0 +1,201 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-validation-noaa-ghcn-daily-parquet-2023",
+  "family": "F06",
+  "split": "validation",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "noaa-ghcn-daily",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "0041d7eaecd9205e8fe222ae7c8d7666e63c38f5b0f1e7895c249acd801eefeb",
+  "materialization_key": "9684445a2d5da133db6c0dd94c7756ad0ef14b2765669f84300b9c5e09be4351",
+  "materialized_utc": "2026-09-16T23:31:23Z",
+  "materialized_relpath": "corpus/validation/f06-validation-noaa-ghcn-daily-parquet-2023",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "fb4854e6301f988e30cb154237604ae3175b78e3f1b1f0715c6feac28b9bf839",
+    "pinned_utc": "2026-09-16T23:31:23Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 10981403,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "tmax",
+        "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=TMAX/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "final_url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=TMAX/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "sha256": "9ccc16d12dc390f028f974660961496f32bc79823f4a1cdfc6cbdb71a9852912",
+        "size": 1681770,
+        "retrieved_utc": "2026-09-16T23:31:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "TMAX.snappy.parquet"
+      },
+      {
+        "name": "tmin",
+        "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=TMIN/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "final_url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=TMIN/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "sha256": "9120121c42471045d23e9f299549291f7a135969c01db2edbb48e399732723f1",
+        "size": 1685806,
+        "retrieved_utc": "2026-09-16T23:31:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "TMIN.snappy.parquet"
+      },
+      {
+        "name": "prcp",
+        "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=PRCP/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "final_url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=PRCP/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "sha256": "b5e07d281ad901a030ae980ad71b76f65652926f40ec968e284b6a477199d5eb",
+        "size": 1862505,
+        "retrieved_utc": "2026-09-16T23:31:16Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "PRCP.snappy.parquet"
+      },
+      {
+        "name": "snow",
+        "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=SNOW/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "final_url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=SNOW/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "sha256": "77b546380644324d88f942c297a6420c285cd76f3c38030adc51233ff71b1e33",
+        "size": 1508213,
+        "retrieved_utc": "2026-09-16T23:31:16Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "SNOW.snappy.parquet"
+      },
+      {
+        "name": "snwd",
+        "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=SNWD/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "final_url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=SNWD/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "sha256": "7b2d109d6cbf7fcdf7dcc9e3b68cc4d53b4c7b314b51562bba6e717fa47f3be6",
+        "size": 1628447,
+        "retrieved_utc": "2026-09-16T23:31:22Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "SNWD.snappy.parquet"
+      },
+      {
+        "name": "awnd",
+        "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=AWND/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "final_url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=AWND/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "sha256": "269ed200bc8342d1119ea0c9abe9eee7755d5eca7d6c1d91ba5336863fab6c7f",
+        "size": 847808,
+        "retrieved_utc": "2026-09-16T23:31:23Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "AWND.snappy.parquet"
+      },
+      {
+        "name": "tavg",
+        "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=TAVG/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "final_url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=TAVG/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "sha256": "8de15b73c547b3a9e2be7c4e7c9644ee95f138e27591d2de8b4e7c3726cdea7b",
+        "size": 1499747,
+        "retrieved_utc": "2026-09-16T23:31:23Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "TAVG.snappy.parquet"
+      },
+      {
+        "name": "wt01",
+        "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=WT01/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "final_url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=WT01/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+        "sha256": "4ab76db9e1e7d667159c53e16e389978ca0ec93159a68f853c6e7fb1c28707e2",
+        "size": 267107,
+        "retrieved_utc": "2026-09-16T23:31:23Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "WT01.snappy.parquet"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "tmax"
+      },
+      {
+        "op": "copy",
+        "input": "tmin"
+      },
+      {
+        "op": "copy",
+        "input": "prcp"
+      },
+      {
+        "op": "copy",
+        "input": "snow"
+      },
+      {
+        "op": "copy",
+        "input": "snwd"
+      },
+      {
+        "op": "copy",
+        "input": "awnd"
+      },
+      {
+        "op": "copy",
+        "input": "tavg"
+      },
+      {
+        "op": "copy",
+        "input": "wt01"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "b5574d826ad15e8f423ce9b25c762b22cd88d2df659e82bd190b767c58961f37",
+    "logical_tree_sha256": "fb4854e6301f988e30cb154237604ae3175b78e3f1b1f0715c6feac28b9bf839",
+    "content_tree_sha256": "b457cac557714aa4fce5d92416339ec72bb115a6e9d01c309e6ea418f81373f5",
+    "extended_tree_sha256": "765a0917f2a87714cd210c27340cae240d7d7e9833bae1d573ddfacd0c6ba79d",
+    "bytes": 10981403,
+    "bytes_all_paths": 10981403,
+    "allocated_bytes": 10997760,
+    "counts": {
+      "objects": 9,
+      "files": 8,
+      "unique_file_inodes": 8,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 19,
+      "path_length_bytes": {
+        "min": 19,
+        "max": 19,
+        "mean": 19.0,
+        "p50": 19,
+        "p95": 19
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

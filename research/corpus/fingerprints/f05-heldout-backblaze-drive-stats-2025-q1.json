@@ -1,0 +1,104 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-heldout-backblaze-drive-stats-2025-q1",
+  "family": "F05",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "backblaze-drive-stats",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "54153501203bed825aec53fb2c80a35f60a97e1863111db413813950851b05f1",
+  "materialization_key": "6dc7df8a6104d8873110e8e6c90da8cc2ba10e3e6303bef34dcbcdc49947e017",
+  "materialized_utc": "2026-09-16T23:36:27Z",
+  "materialized_relpath": "heldout/f05-heldout-backblaze-drive-stats-2025-q1",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "826d7a812195ea333530b2bc8e049e3606c8297f6404f41aa65285a21b5a514b",
+    "pinned_utc": "2026-09-16T23:36:27Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 7097027357,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "zip",
+        "url": "https://f001.backblazeb2.com/file/Backblaze-Hard-Drive-Data/data_Q1_2025.zip",
+        "final_url": "https://f001.backblazeb2.com/file/Backblaze-Hard-Drive-Data/data_Q1_2025.zip",
+        "sha256": "7a230565f72fdb3882c05fdcfab361c801e9a545ba18543899fc7618174171ec",
+        "size": 1020483699,
+        "retrieved_utc": "2026-09-16T23:32:00Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "data_Q1_2025.zip"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g3-data/extract_zip_subset.py",
+        "params": {
+          "input": "zip",
+          "prefixes": [
+            "2025-01-",
+            "2025-02-"
+          ],
+          "strip_components": 1
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g3-data/extract_zip_subset.py",
+        "script_sha256": "b0a26c11d7afc8b8e761667af6f8c810f4a011f0a160bb3c486c29c02a6e308c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "zip",
+          "prefixes": [
+            "2025-01-",
+            "2025-02-"
+          ],
+          "strip_components": 1
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "db9205db0c301c7e8259082ed03f39eed3a2147814fcec9c16daafc19183c8c1",
+    "logical_tree_sha256": "826d7a812195ea333530b2bc8e049e3606c8297f6404f41aa65285a21b5a514b",
+    "content_tree_sha256": "aa5da768f2c4bb6294d9b59114da7d06c5b06ea449beb8c823bd8f7fe683213a",
+    "extended_tree_sha256": "9666cb89054c4e12e07bc9684c3b88f1d83d10c9355f707d987951901e672d3d",
+    "bytes": 7097027357,
+    "counts": {
+      "objects": 61,
+      "files": 60,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-heldout-phi3-mini-safetensors-p2of2",
+  "family": "F07",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "microsoft-phi3",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "d83c534442e456afe12a231e01049c5f88b95ab00c0287f9c7268e0a7dae8bc5",
+  "materialization_key": "2ace8fb84c624808c787aeacc381ddf47b1df861835956a98d8d75715a6760bc",
+  "materialized_utc": "2026-09-16T23:29:33Z",
+  "materialized_relpath": "heldout/f07-heldout-phi3-mini-safetensors-p2of2",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "e72f94fd3f062dd98c100f61d72f6f44d32726a2ac4f21ebf72f5304f434601f",
+    "pinned_utc": "2026-09-16T23:29:33Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 2669692552,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "model",
+        "url": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct/resolve/f39ac1d28e925b323eae81227eaba4464caced4e/model-00002-of-00002.safetensors",
+        "final_url": "https://us.aws.cdn.hf.co/xet-bridge-us/66268dc9cd54f5fffb4e2e24/0c8a954e4a4ae5dc6305cf977feee675469fe96aa6ea5926d985eead8d0834d8?X-Xet-Cas-Uid=public&response-content-disposition=inline%3B+filename*%3DUTF-8%27%27model-00002-of-00002.safetensors%3B+filename%3D%22model-00002-of-00002.safetensors%22%3B&user_id=public&Expires=1789604923&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjYyNjhkYzljZDU0ZjVmZmZiNGUyZTI0LzBjOGE5NTRlNGE0YWU1ZGM2MzA1Y2Y5NzdmZWVlNjc1NDY5ZmU5NmFhNmVhNTkyNmQ5ODVlZWFkOGQwODM0ZDhcXD9YLVhldC1DYXMtVWlkPXB1YmxpYyZyZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPWlubGluZSUzQitmaWxlbmFtZSUyQSUzRFVURi04JTI3JTI3bW9kZWwtMDAwMDItb2YtMDAwMDIuc2FmZXRlbnNvcnMlM0IrZmlsZW5hbWUlM0QlMjJtb2RlbC0wMDAwMi1vZi0wMDAwMi5zYWZldGVuc29ycyUyMiUzQiZ1c2VyX2lkPXB1YmxpYyIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiRXBvY2hUaW1lIjoxNzg5NjA0OTIzfX19XX0_&Signature=MEUCIHBllXPoO0SrKrXAVsASwX8ncAiizpOlaNsW8ekt6m4NAiEAsXknPidIBkdBHfk-OP9VU2gQP-P301WEnwYjL0C4rPM_&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256",
+        "sha256": "3f311787aa136e858556caa8543015161edcad85ba81b6a36072443d7fa73c87",
+        "size": 2669692552,
+        "retrieved_utc": "2026-09-16T23:29:27Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "model-00002-of-00002.safetensors"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "model"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "e72e7d3fe74a8f4f82e207ee617befb8eb7e2719cedb4c6b4308d8af7c2eb6f9",
+    "logical_tree_sha256": "e72f94fd3f062dd98c100f61d72f6f44d32726a2ac4f21ebf72f5304f434601f",
+    "content_tree_sha256": "38cb5bbd5f131014d2fa46abfb0461aaea21d2f43d681d78e8246970053e6416",
+    "extended_tree_sha256": "b9f56ffb50c9d714ebe88948e066a154adb65789f0e3bc99ebc81d56f56776c8",
+    "bytes": 2669692552,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

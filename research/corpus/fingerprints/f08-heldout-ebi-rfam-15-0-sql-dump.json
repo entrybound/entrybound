@@ -1,0 +1,1252 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f08-heldout-ebi-rfam-15-0-sql-dump",
+  "family": "F08",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "ebi-rfam",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "5dd5da2557fd8a915b714120530bdb7fbbb5a2cfe4d38633e3edac96d7fe23d5",
+  "materialization_key": "343f178d06c6263c27d1d4b52ae362af4cef3da644971d746578d3dbb7200eaf",
+  "materialized_utc": "2026-09-16T23:35:29Z",
+  "materialized_relpath": "heldout/f08-heldout-ebi-rfam-15-0-sql-dump",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "36d8f8265bbd0d6179f384c35979d56395257578913c641c64eb71e2efb065ef",
+    "pinned_utc": "2026-09-16T23:35:29Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 2564211859,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "alignment_and_tree_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/alignment_and_tree.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/alignment_and_tree.sql",
+        "sha256": "906b3e53841f20b0640a8a988349fac29f5b362a2d168b9448551fd399efa1f3",
+        "size": 1919,
+        "retrieved_utc": "2026-09-16T23:31:01Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "alignment_and_tree.sql"
+      },
+      {
+        "name": "clan_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan.sql",
+        "sha256": "1a9f206510cd568fa6f6f54f8c30ced28375417a829bc7d6a7f1aef3ac4292ba",
+        "size": 1723,
+        "retrieved_utc": "2026-09-16T23:31:01Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "clan.sql"
+      },
+      {
+        "name": "clan_database_link_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_database_link.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_database_link.sql",
+        "sha256": "a88bcf553281a21bf65bdccd301bf0b91bd0f7648db24084cf5af73b8b083549",
+        "size": 1741,
+        "retrieved_utc": "2026-09-16T23:31:02Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "clan_database_link.sql"
+      },
+      {
+        "name": "clan_literature_reference_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_literature_reference.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_literature_reference.sql",
+        "sha256": "96f2cfedb07d89face43db4075ff302649f2630a80749808163b08106d217969",
+        "size": 1988,
+        "retrieved_utc": "2026-09-16T23:31:03Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "clan_literature_reference.sql"
+      },
+      {
+        "name": "clan_membership_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_membership.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_membership.sql",
+        "sha256": "57cb13dfa3ecedcf82fb7d9f7c61bfda98359392d4c004bd7e6ae075a5702fbe",
+        "size": 1860,
+        "retrieved_utc": "2026-09-16T23:31:03Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "clan_membership.sql"
+      },
+      {
+        "name": "database_link_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/database_link.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/database_link.sql",
+        "sha256": "00c713335f5bc36e2e81e568aeabadb1cc9afe10dcfd51f91ddcbe2395847049",
+        "size": 1730,
+        "retrieved_utc": "2026-09-16T23:31:03Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "database_link.sql"
+      },
+      {
+        "name": "db_version_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/db_version.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/db_version.sql",
+        "sha256": "f02983cd3eb81faa1532c4e63fab6870b2cd0a257600c2d3ef5467cfd09643bd",
+        "size": 1714,
+        "retrieved_utc": "2026-09-16T23:31:04Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "db_version.sql"
+      },
+      {
+        "name": "dead_clan_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/dead_clan.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/dead_clan.sql",
+        "sha256": "ef319471a2a3c103a9822c0791217321b5f8002b696c40fd86a305e5c13967bb",
+        "size": 1602,
+        "retrieved_utc": "2026-09-16T23:31:04Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "dead_clan.sql"
+      },
+      {
+        "name": "dead_family_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/dead_family.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/dead_family.sql",
+        "sha256": "39113adef7d06d798fcab35a8de59a7c0dac2c4a4a4b1dd8b3602eff9d40128b",
+        "size": 1680,
+        "retrieved_utc": "2026-09-16T23:31:04Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "dead_family.sql"
+      },
+      {
+        "name": "family_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family.sql",
+        "sha256": "184df7de518bcd9b305337dcada32dda062a885a4c2baf61f31f4bc704177dc7",
+        "size": 3056,
+        "retrieved_utc": "2026-09-16T23:31:05Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "family.sql"
+      },
+      {
+        "name": "family_literature_reference_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family_literature_reference.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family_literature_reference.sql",
+        "sha256": "8d6b20505c33ecef1e878ba0b945d7e2df55c3e85bd3c555f4ffbb545156c0f8",
+        "size": 2004,
+        "retrieved_utc": "2026-09-16T23:31:05Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "family_literature_reference.sql"
+      },
+      {
+        "name": "family_ncbi_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family_ncbi.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family_ncbi.sql",
+        "sha256": "f0f6030a161c2e49b6c215759c4259f9cde6aa22f7aa61f892a6f202de2049e3",
+        "size": 1868,
+        "retrieved_utc": "2026-09-16T23:31:05Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "family_ncbi.sql"
+      },
+      {
+        "name": "features_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/features.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/features.sql",
+        "sha256": "79ebb13f05e3c3debc31bfec0f15f9417e6dca2636b75c6439c134a22b185290",
+        "size": 1900,
+        "retrieved_utc": "2026-09-16T23:31:06Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "features.sql"
+      },
+      {
+        "name": "full_region_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/full_region.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/full_region.sql",
+        "sha256": "ac0ee7fa19f0bf275c00576d1c025d263582245fb63bd35032c0bd7fd47bdb6a",
+        "size": 2395,
+        "retrieved_utc": "2026-09-16T23:31:06Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "full_region.sql"
+      },
+      {
+        "name": "genome_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/genome.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/genome.sql",
+        "sha256": "b52c82058cff310bf20a86b785e54a792298e72d86062fc34ef7863310b92a09",
+        "size": 2483,
+        "retrieved_utc": "2026-09-16T23:31:06Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "genome.sql"
+      },
+      {
+        "name": "genseq_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/genseq.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/genseq.sql",
+        "sha256": "a16b9b73fefdfe6d8e84f18a6de22d5963faf2c8704f1359cabcb92d05997dbc",
+        "size": 1735,
+        "retrieved_utc": "2026-09-16T23:31:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "genseq.sql"
+      },
+      {
+        "name": "html_alignment_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/html_alignment.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/html_alignment.sql",
+        "sha256": "d02d3d00181ccf72fed34b5ee20a2fb5a5f0b93abbfcd3418aca7a5d80e5da97",
+        "size": 1879,
+        "retrieved_utc": "2026-09-16T23:31:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "html_alignment.sql"
+      },
+      {
+        "name": "keywords_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/keywords.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/keywords.sql",
+        "sha256": "7b18764df35cd256677fb8446349d2d41126ff44f4501518cf256c2742253c38",
+        "size": 1801,
+        "retrieved_utc": "2026-09-16T23:31:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "keywords.sql"
+      },
+      {
+        "name": "literature_reference_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/literature_reference.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/literature_reference.sql",
+        "sha256": "f20f4d201477f81def554ed83fbeb64e732707d5fb5b0ecb3f3514017ff99b74",
+        "size": 1572,
+        "retrieved_utc": "2026-09-16T23:31:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "literature_reference.sql"
+      },
+      {
+        "name": "matches_and_fasta_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/matches_and_fasta.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/matches_and_fasta.sql",
+        "sha256": "657b2a1977063f1d766a8e12ebb1a98844fe6e0e275c85e9ceaf4ba9edb4c3c8",
+        "size": 1731,
+        "retrieved_utc": "2026-09-16T23:31:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "matches_and_fasta.sql"
+      },
+      {
+        "name": "motif_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif.sql",
+        "sha256": "cce0f5eb263ca10306413fdfd81fdbc0f0948fbb8997fd0002342369ac03670c",
+        "size": 2468,
+        "retrieved_utc": "2026-09-16T23:31:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif.sql"
+      },
+      {
+        "name": "motif_database_link_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_database_link.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_database_link.sql",
+        "sha256": "6df75d553a5bb395824f206f748671635d07f1eb59ba673caa3938eaf4f18c21",
+        "size": 1722,
+        "retrieved_utc": "2026-09-16T23:31:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_database_link.sql"
+      },
+      {
+        "name": "motif_family_stats_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_family_stats.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_family_stats.sql",
+        "sha256": "e73d6a2b0b9b1ef7128f4c8f875001da7d8beeb14b3c575278dce3baebab1fb2",
+        "size": 2012,
+        "retrieved_utc": "2026-09-16T23:31:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_family_stats.sql"
+      },
+      {
+        "name": "motif_file_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_file.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_file.sql",
+        "sha256": "c0e94b484f3d3aa81d383e6c7f477b7befc4fe0cc46bd14e54ecdcf2c609869d",
+        "size": 1623,
+        "retrieved_utc": "2026-09-16T23:31:10Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_file.sql"
+      },
+      {
+        "name": "motif_literature_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_literature.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_literature.sql",
+        "sha256": "d799b33ecba593c1b4c7332d342f233aa37c695c1fd15d72c81cb11919cc5ead",
+        "size": 1884,
+        "retrieved_utc": "2026-09-16T23:31:10Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_literature.sql"
+      },
+      {
+        "name": "motif_matches_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_matches.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_matches.sql",
+        "sha256": "efeb959a2a18c09e93290068ba137e9ecaec38a52e025c0ce0b8a866870816e4",
+        "size": 2345,
+        "retrieved_utc": "2026-09-16T23:31:10Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_matches.sql"
+      },
+      {
+        "name": "motif_pdb_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_pdb.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_pdb.sql",
+        "sha256": "215d8bf8c9d91944a784286d7acc9a18d5dbad31e5a820bf19c77f93ae3edc50",
+        "size": 1753,
+        "retrieved_utc": "2026-09-16T23:31:12Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_pdb.sql"
+      },
+      {
+        "name": "motif_ss_image_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_ss_image.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_ss_image.sql",
+        "sha256": "2fc00d74b72bfefb5158a22f37fa53e7404d7837a985274890a291aed82c0690",
+        "size": 1856,
+        "retrieved_utc": "2026-09-16T23:31:12Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_ss_image.sql"
+      },
+      {
+        "name": "pdb_full_region_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/pdb_full_region.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/pdb_full_region.sql",
+        "sha256": "cfd3e0ebd6fa47b4bc8b12477790e0c0020263340a887052e2404526b388b97f",
+        "size": 2013,
+        "retrieved_utc": "2026-09-16T23:31:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pdb_full_region.sql"
+      },
+      {
+        "name": "rfamseq_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/rfamseq.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/rfamseq.sql",
+        "sha256": "1b23cc2937393ce727f44aabe3f983bd7c6701e29ce9fb5bee7cd63530a6a727",
+        "size": 2308,
+        "retrieved_utc": "2026-09-16T23:31:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "rfamseq.sql"
+      },
+      {
+        "name": "secondary_structure_image_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/secondary_structure_image.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/secondary_structure_image.sql",
+        "sha256": "1326f31cee762ee600a131db9a3f4eddd5c06569d6e0ca08d99ed34631d19e72",
+        "size": 1856,
+        "retrieved_utc": "2026-09-16T23:31:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "secondary_structure_image.sql"
+      },
+      {
+        "name": "seed_region_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/seed_region.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/seed_region.sql",
+        "sha256": "fac948bf54e735371c6bc173f7a3496259ebdc17e5fe0b2b2127730b3c07d37b",
+        "size": 1951,
+        "retrieved_utc": "2026-09-16T23:31:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "seed_region.sql"
+      },
+      {
+        "name": "sunburst_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/sunburst.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/sunburst.sql",
+        "sha256": "742c4dde250d5f0c526f056ed2382f638eee511f3101e8f8156c786ede31003f",
+        "size": 1617,
+        "retrieved_utc": "2026-09-16T23:31:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "sunburst.sql"
+      },
+      {
+        "name": "taxonomy_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/taxonomy.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/taxonomy.sql",
+        "sha256": "0833629de3396ac3effd5646148dfbf8d45ea6754f54a798b59f91ad332010bb",
+        "size": 1638,
+        "retrieved_utc": "2026-09-16T23:31:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "taxonomy.sql"
+      },
+      {
+        "name": "taxonomy_websearch_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/taxonomy_websearch.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/taxonomy_websearch.sql",
+        "sha256": "bac12e9329c3ee763b7f75912f931cefea8b44e227f6a132590102708cf232de",
+        "size": 1964,
+        "retrieved_utc": "2026-09-16T23:31:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "taxonomy_websearch.sql"
+      },
+      {
+        "name": "version_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/version.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/version.sql",
+        "sha256": "c0cfc4c8fe7f5ba60db19aa6ebee473a20e082e4c474341332bd006b32343085",
+        "size": 1531,
+        "retrieved_utc": "2026-09-16T23:31:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "version.sql"
+      },
+      {
+        "name": "wikitext_sql",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/wikitext.sql",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/wikitext.sql",
+        "sha256": "74391104f64d564381f1714ae881f3fc0c51a4c5cc8953b75fe1f2d93f0d0a9e",
+        "size": 1567,
+        "retrieved_utc": "2026-09-16T23:31:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "wikitext.sql"
+      },
+      {
+        "name": "alignment_and_tree_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/alignment_and_tree.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/alignment_and_tree.txt.gz",
+        "sha256": "175e9b92285d9e437221da64f97e9dcef96232eb10da4931354d670b702f51f7",
+        "size": 4467333,
+        "retrieved_utc": "2026-09-16T23:31:30Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "alignment_and_tree.txt.gz"
+      },
+      {
+        "name": "clan_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan.txt.gz",
+        "sha256": "576d6db6b09d272748c4a910a83ffe517314142a3f5e2e73e110bf64839148b9",
+        "size": 8356,
+        "retrieved_utc": "2026-09-16T23:31:31Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "clan.txt.gz"
+      },
+      {
+        "name": "clan_database_link_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_database_link.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_database_link.txt.gz",
+        "sha256": "0378690698bbc5c1addd3ca68092010137443dbeb92be81550520f16e1b8cb42",
+        "size": 649,
+        "retrieved_utc": "2026-09-16T23:31:31Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "clan_database_link.txt.gz"
+      },
+      {
+        "name": "clan_literature_reference_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_literature_reference.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_literature_reference.txt.gz",
+        "sha256": "42da8bceba2b977e7ec16c1d39e656b7aef2982ec827d5a8719db7f8554ec54b",
+        "size": 1435,
+        "retrieved_utc": "2026-09-16T23:31:31Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "clan_literature_reference.txt.gz"
+      },
+      {
+        "name": "clan_membership_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_membership.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/clan_membership.txt.gz",
+        "sha256": "c1088315e3f3876ed2d197a428ac8463e78bc0ae289c405af032e72a9321e097",
+        "size": 1654,
+        "retrieved_utc": "2026-09-16T23:31:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "clan_membership.txt.gz"
+      },
+      {
+        "name": "database_link_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/database_link.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/database_link.txt.gz",
+        "sha256": "592ed599faf425656890d8d3c140c9066c281ef1c275742ca4275dc3708378e6",
+        "size": 66132,
+        "retrieved_utc": "2026-09-16T23:31:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "database_link.txt.gz"
+      },
+      {
+        "name": "db_version_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/db_version.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/db_version.txt.gz",
+        "sha256": "4c18c9d6b5fcb007c2660a2512ccc5ee04e73ee69794d33b044819417edf05c2",
+        "size": 35,
+        "retrieved_utc": "2026-09-16T23:31:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "db_version.txt.gz"
+      },
+      {
+        "name": "dead_clan_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/dead_clan.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/dead_clan.txt.gz",
+        "sha256": "ddb21165710a937b90b25b6571733685caef2b1cafb567dde8df3057093eb858",
+        "size": 187,
+        "retrieved_utc": "2026-09-16T23:31:33Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "dead_clan.txt.gz"
+      },
+      {
+        "name": "dead_family_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/dead_family.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/dead_family.txt.gz",
+        "sha256": "9147b93aad117c5cfe809514c035e315903c72bb3802da7d47d82f7555eed440",
+        "size": 2623,
+        "retrieved_utc": "2026-09-16T23:31:33Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "dead_family.txt.gz"
+      },
+      {
+        "name": "family_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family.txt.gz",
+        "sha256": "d238563403e45d7b6a5293fe916e18b328494182e3161e8157d3e21e4a3ae668",
+        "size": 369713,
+        "retrieved_utc": "2026-09-16T23:31:34Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "family.txt.gz"
+      },
+      {
+        "name": "family_literature_reference_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family_literature_reference.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family_literature_reference.txt.gz",
+        "sha256": "2d2f85b46d31278bab054626a1b621025ff0a7085140256e4aa00f6699fba2a5",
+        "size": 29336,
+        "retrieved_utc": "2026-09-16T23:31:40Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "family_literature_reference.txt.gz"
+      },
+      {
+        "name": "family_ncbi_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family_ncbi.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family_ncbi.txt.gz",
+        "sha256": "dd084e5028ed32cc2bb7c421f7e71d6a3d2197ac7f10cb9cec921b0621ac78a6",
+        "size": 2393753,
+        "retrieved_utc": "2026-09-16T23:31:41Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "family_ncbi.txt.gz"
+      },
+      {
+        "name": "features_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/features.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/features.txt.gz",
+        "sha256": "79a8d5333a56469d4461d3d980a01d57f81a6cd99602e1d4274f4eb29385b2a3",
+        "size": 33,
+        "retrieved_utc": "2026-09-16T23:31:42Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "features.txt.gz"
+      },
+      {
+        "name": "full_region_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/full_region.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/full_region.txt.gz",
+        "sha256": "4f88cc1dba0d6f842d5ec95e07849afff56f23ccaaa31b12c77a693747b5c04b",
+        "size": 135765791,
+        "retrieved_utc": "2026-09-16T23:32:38Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "full_region.txt.gz"
+      },
+      {
+        "name": "genome_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/genome.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/genome.txt.gz",
+        "sha256": "f84d66f2e93441a0239f3f6a0e912773cc83fdf15bebd22fd8a9071987710b8d",
+        "size": 1565271,
+        "retrieved_utc": "2026-09-16T23:32:39Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "genome.txt.gz"
+      },
+      {
+        "name": "html_alignment_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/html_alignment.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/html_alignment.txt.gz",
+        "sha256": "a422b82cdf8a856213a2d009359ba2864586ae7a0cf2792f59d588797faaccc9",
+        "size": 6906053,
+        "retrieved_utc": "2026-09-16T23:32:45Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "html_alignment.txt.gz"
+      },
+      {
+        "name": "keywords_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/keywords.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/keywords.txt.gz",
+        "sha256": "6f8f76351b1772d80848afe8465aabb8f4a052735093b1ecaa56577f2f722b46",
+        "size": 16044653,
+        "retrieved_utc": "2026-09-16T23:32:56Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "keywords.txt.gz"
+      },
+      {
+        "name": "literature_reference_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/literature_reference.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/literature_reference.txt.gz",
+        "sha256": "e929c19f7538dbc9a12543736de4adf3878c7789ed6e2ee6ae39223c06c1a717",
+        "size": 131766,
+        "retrieved_utc": "2026-09-16T23:32:56Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "literature_reference.txt.gz"
+      },
+      {
+        "name": "matches_and_fasta_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/matches_and_fasta.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/matches_and_fasta.txt.gz",
+        "sha256": "69467be5648045ca901d3d89949bc22ba95fee6185b0a17d0805745a86c4e512",
+        "size": 2831310,
+        "retrieved_utc": "2026-09-16T23:32:58Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "matches_and_fasta.txt.gz"
+      },
+      {
+        "name": "motif_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif.txt.gz",
+        "sha256": "b77c7c5b92850fa334b0117d4de9fdc359784b93257266ae0e88e589e5b96a8d",
+        "size": 2996,
+        "retrieved_utc": "2026-09-16T23:32:58Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif.txt.gz"
+      },
+      {
+        "name": "motif_database_link_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_database_link.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_database_link.txt.gz",
+        "sha256": "47ec5b6b6eb98d2422dace7cb93fe68afbccf0ca2d9053d3b8ff85cbbef1e7cf",
+        "size": 1923,
+        "retrieved_utc": "2026-09-16T23:32:59Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_database_link.txt.gz"
+      },
+      {
+        "name": "motif_family_stats_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_family_stats.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_family_stats.txt.gz",
+        "sha256": "3fce0bef1a3a68856908f5366b972481997717aec5b2c26877914813c2ce88e6",
+        "size": 29243,
+        "retrieved_utc": "2026-09-16T23:32:59Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_family_stats.txt.gz"
+      },
+      {
+        "name": "motif_file_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_file.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_file.txt.gz",
+        "sha256": "4568859861edd9dc48dc63bc043950a4647696bb7f87abc82838b32ac916aec7",
+        "size": 322657,
+        "retrieved_utc": "2026-09-16T23:33:00Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_file.txt.gz"
+      },
+      {
+        "name": "motif_literature_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_literature.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_literature.txt.gz",
+        "sha256": "cff3a303cecf024f9f1dcdf53dc65526cccd6957fef9d43b8bd5a4984843f504",
+        "size": 522,
+        "retrieved_utc": "2026-09-16T23:33:00Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_literature.txt.gz"
+      },
+      {
+        "name": "motif_matches_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_matches.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_matches.txt.gz",
+        "sha256": "40e0df3d3e077a9c69b7c5a94e85e34ccf06803372d3c6da6b3c13ba7c44ae4b",
+        "size": 568894,
+        "retrieved_utc": "2026-09-16T23:33:01Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_matches.txt.gz"
+      },
+      {
+        "name": "motif_pdb_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_pdb.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_pdb.txt.gz",
+        "sha256": "75600901bacabddf497b58ed28ec96c6ce7d176f6880e9f2ef0defa4cb102e38",
+        "size": 2322,
+        "retrieved_utc": "2026-09-16T23:33:01Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_pdb.txt.gz"
+      },
+      {
+        "name": "motif_ss_image_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_ss_image.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/motif_ss_image.txt.gz",
+        "sha256": "0af91046995ae7fb948bb99d461df0b6b3c5e84071901e47b5f78093c4ce6dfe",
+        "size": 20785495,
+        "retrieved_utc": "2026-09-16T23:33:20Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "motif_ss_image.txt.gz"
+      },
+      {
+        "name": "pdb_full_region_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/pdb_full_region.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/pdb_full_region.txt.gz",
+        "sha256": "24aa6a4e3c100d74521f7a01a6c6b08d53a5d445d7e8677795c3f385f106dc3b",
+        "size": 163833,
+        "retrieved_utc": "2026-09-16T23:33:21Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pdb_full_region.txt.gz"
+      },
+      {
+        "name": "secondary_structure_image_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/secondary_structure_image.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/secondary_structure_image.txt.gz",
+        "sha256": "1342a90e3ca20853a787b75bde98799ac7adb0554f16a39c23dd462313f82bbb",
+        "size": 171323109,
+        "retrieved_utc": "2026-09-16T23:34:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "secondary_structure_image.txt.gz"
+      },
+      {
+        "name": "seed_region_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/seed_region.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/seed_region.txt.gz",
+        "sha256": "7db79be5b6565fc392f66daf19b08df487bf10493587d456fe9c1e2d26dfdc31",
+        "size": 2560016,
+        "retrieved_utc": "2026-09-16T23:34:34Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "seed_region.txt.gz"
+      },
+      {
+        "name": "sunburst_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/sunburst.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/sunburst.txt.gz",
+        "sha256": "d08ffd696be51f2cef4b186dbaf8e7427cf9c466abb21bc7fe1cdf163e67eded",
+        "size": 54069183,
+        "retrieved_utc": "2026-09-16T23:34:48Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "sunburst.txt.gz"
+      },
+      {
+        "name": "taxonomy_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/taxonomy.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/taxonomy.txt.gz",
+        "sha256": "bb1463df0fe39459c5e4fd399d226e69adf3bb5f17aea0a918debaef5760f355",
+        "size": 19668637,
+        "retrieved_utc": "2026-09-16T23:34:53Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "taxonomy.txt.gz"
+      },
+      {
+        "name": "taxonomy_websearch_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/taxonomy_websearch.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/taxonomy_websearch.txt.gz",
+        "sha256": "41d6362ddbbe603981815ee739ebecbc4600f303251dc7e01c3735f4b4c06aef",
+        "size": 56409373,
+        "retrieved_utc": "2026-09-16T23:35:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "taxonomy_websearch.txt.gz"
+      },
+      {
+        "name": "version_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/version.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/version.txt.gz",
+        "sha256": "ad769c95558650a012d46eb33484bbd75c986d434de7afc50201e9a8ecde3397",
+        "size": 58,
+        "retrieved_utc": "2026-09-16T23:35:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "version.txt.gz"
+      },
+      {
+        "name": "wikitext_txt_gz",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/wikitext.txt.gz",
+        "final_url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/wikitext.txt.gz",
+        "sha256": "786e3aaf72a8dc96669a1fde4b383eae312cf902cfd85cc05783e69c1767ec05",
+        "size": 13391,
+        "retrieved_utc": "2026-09-16T23:35:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "wikitext.txt.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "alignment_and_tree_sql",
+        "dest": "alignment_and_tree.sql"
+      },
+      {
+        "op": "copy",
+        "input": "clan_sql",
+        "dest": "clan.sql"
+      },
+      {
+        "op": "copy",
+        "input": "clan_database_link_sql",
+        "dest": "clan_database_link.sql"
+      },
+      {
+        "op": "copy",
+        "input": "clan_literature_reference_sql",
+        "dest": "clan_literature_reference.sql"
+      },
+      {
+        "op": "copy",
+        "input": "clan_membership_sql",
+        "dest": "clan_membership.sql"
+      },
+      {
+        "op": "copy",
+        "input": "database_link_sql",
+        "dest": "database_link.sql"
+      },
+      {
+        "op": "copy",
+        "input": "db_version_sql",
+        "dest": "db_version.sql"
+      },
+      {
+        "op": "copy",
+        "input": "dead_clan_sql",
+        "dest": "dead_clan.sql"
+      },
+      {
+        "op": "copy",
+        "input": "dead_family_sql",
+        "dest": "dead_family.sql"
+      },
+      {
+        "op": "copy",
+        "input": "family_sql",
+        "dest": "family.sql"
+      },
+      {
+        "op": "copy",
+        "input": "family_literature_reference_sql",
+        "dest": "family_literature_reference.sql"
+      },
+      {
+        "op": "copy",
+        "input": "family_ncbi_sql",
+        "dest": "family_ncbi.sql"
+      },
+      {
+        "op": "copy",
+        "input": "features_sql",
+        "dest": "features.sql"
+      },
+      {
+        "op": "copy",
+        "input": "full_region_sql",
+        "dest": "full_region.sql"
+      },
+      {
+        "op": "copy",
+        "input": "genome_sql",
+        "dest": "genome.sql"
+      },
+      {
+        "op": "copy",
+        "input": "genseq_sql",
+        "dest": "genseq.sql"
+      },
+      {
+        "op": "copy",
+        "input": "html_alignment_sql",
+        "dest": "html_alignment.sql"
+      },
+      {
+        "op": "copy",
+        "input": "keywords_sql",
+        "dest": "keywords.sql"
+      },
+      {
+        "op": "copy",
+        "input": "literature_reference_sql",
+        "dest": "literature_reference.sql"
+      },
+      {
+        "op": "copy",
+        "input": "matches_and_fasta_sql",
+        "dest": "matches_and_fasta.sql"
+      },
+      {
+        "op": "copy",
+        "input": "motif_sql",
+        "dest": "motif.sql"
+      },
+      {
+        "op": "copy",
+        "input": "motif_database_link_sql",
+        "dest": "motif_database_link.sql"
+      },
+      {
+        "op": "copy",
+        "input": "motif_family_stats_sql",
+        "dest": "motif_family_stats.sql"
+      },
+      {
+        "op": "copy",
+        "input": "motif_file_sql",
+        "dest": "motif_file.sql"
+      },
+      {
+        "op": "copy",
+        "input": "motif_literature_sql",
+        "dest": "motif_literature.sql"
+      },
+      {
+        "op": "copy",
+        "input": "motif_matches_sql",
+        "dest": "motif_matches.sql"
+      },
+      {
+        "op": "copy",
+        "input": "motif_pdb_sql",
+        "dest": "motif_pdb.sql"
+      },
+      {
+        "op": "copy",
+        "input": "motif_ss_image_sql",
+        "dest": "motif_ss_image.sql"
+      },
+      {
+        "op": "copy",
+        "input": "pdb_full_region_sql",
+        "dest": "pdb_full_region.sql"
+      },
+      {
+        "op": "copy",
+        "input": "rfamseq_sql",
+        "dest": "rfamseq.sql"
+      },
+      {
+        "op": "copy",
+        "input": "secondary_structure_image_sql",
+        "dest": "secondary_structure_image.sql"
+      },
+      {
+        "op": "copy",
+        "input": "seed_region_sql",
+        "dest": "seed_region.sql"
+      },
+      {
+        "op": "copy",
+        "input": "sunburst_sql",
+        "dest": "sunburst.sql"
+      },
+      {
+        "op": "copy",
+        "input": "taxonomy_sql",
+        "dest": "taxonomy.sql"
+      },
+      {
+        "op": "copy",
+        "input": "taxonomy_websearch_sql",
+        "dest": "taxonomy_websearch.sql"
+      },
+      {
+        "op": "copy",
+        "input": "version_sql",
+        "dest": "version.sql"
+      },
+      {
+        "op": "copy",
+        "input": "wikitext_sql",
+        "dest": "wikitext.sql"
+      },
+      {
+        "op": "decompress",
+        "input": "alignment_and_tree_txt_gz",
+        "dest": "alignment_and_tree.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "clan_txt_gz",
+        "dest": "clan.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "clan_database_link_txt_gz",
+        "dest": "clan_database_link.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "clan_literature_reference_txt_gz",
+        "dest": "clan_literature_reference.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "clan_membership_txt_gz",
+        "dest": "clan_membership.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "database_link_txt_gz",
+        "dest": "database_link.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "db_version_txt_gz",
+        "dest": "db_version.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "dead_clan_txt_gz",
+        "dest": "dead_clan.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "dead_family_txt_gz",
+        "dest": "dead_family.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "family_txt_gz",
+        "dest": "family.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "family_literature_reference_txt_gz",
+        "dest": "family_literature_reference.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "family_ncbi_txt_gz",
+        "dest": "family_ncbi.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "features_txt_gz",
+        "dest": "features.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "full_region_txt_gz",
+        "dest": "full_region.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "genome_txt_gz",
+        "dest": "genome.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "html_alignment_txt_gz",
+        "dest": "html_alignment.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "keywords_txt_gz",
+        "dest": "keywords.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "literature_reference_txt_gz",
+        "dest": "literature_reference.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "matches_and_fasta_txt_gz",
+        "dest": "matches_and_fasta.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "motif_txt_gz",
+        "dest": "motif.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "motif_database_link_txt_gz",
+        "dest": "motif_database_link.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "motif_family_stats_txt_gz",
+        "dest": "motif_family_stats.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "motif_file_txt_gz",
+        "dest": "motif_file.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "motif_literature_txt_gz",
+        "dest": "motif_literature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "motif_matches_txt_gz",
+        "dest": "motif_matches.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "motif_pdb_txt_gz",
+        "dest": "motif_pdb.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "motif_ss_image_txt_gz",
+        "dest": "motif_ss_image.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "pdb_full_region_txt_gz",
+        "dest": "pdb_full_region.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "secondary_structure_image_txt_gz",
+        "dest": "secondary_structure_image.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "seed_region_txt_gz",
+        "dest": "seed_region.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "sunburst_txt_gz",
+        "dest": "sunburst.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "taxonomy_txt_gz",
+        "dest": "taxonomy.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "taxonomy_websearch_txt_gz",
+        "dest": "taxonomy_websearch.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "version_txt_gz",
+        "dest": "version.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "wikitext_txt_gz",
+        "dest": "wikitext.txt",
+        "format": "gz"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "gzip": "gzip 1.12",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "9810477ce4cc64da6355d5ba9bb66e7253441dd7015383361407e5d5bb4849e1",
+    "logical_tree_sha256": "36d8f8265bbd0d6179f384c35979d56395257578913c641c64eb71e2efb065ef",
+    "content_tree_sha256": "341cf6f5e797fd268f9447719745bc4c1b62096feb00cfb93a1f3fedf74f03ec",
+    "extended_tree_sha256": "92026e5828a7c6dfb4cf7701b6a1f8ee781d742467e6c26e34a87cbb9e81558a",
+    "bytes": 2564211859,
+    "counts": {
+      "objects": 73,
+      "files": 72,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

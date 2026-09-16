@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-tuning-qwen2-5-1-5b-safetensors-bf16",
+  "inputs": {},
+  "output": {
+    "materialization_key": "8401dc58fed1ec3551e648937e2a1ac8987297f46a912257b4fc4684f1741564",
+    "logical_tree_sha256": "eca14e15541bf1005e304720ddb55f8fa986ddbadcecd43a8c923157e5557fcc",
+    "pinned_utc": "2026-09-16T23:31:44Z"
+  },
+  "history": []
+}

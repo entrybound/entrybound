@@ -1,0 +1,33 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f08-tuning-wikimedia-simplewiki-sql-dump",
+  "inputs": {
+    "page": {
+      "url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-page.sql.gz",
+      "sha256": "8e6e48a2ea20fab45e2478ca08429deaa9185fc9d6e6400b6ef8e6d65923de0b",
+      "size": 33064269,
+      "retrieved_utc": "2026-09-16T23:28:23Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "categorylinks": {
+      "url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-categorylinks.sql.gz",
+      "sha256": "1ff87577c208177ead0295134e7fd4d728cd0c257a619a9601d1a96e698712b5",
+      "size": 28305762,
+      "retrieved_utc": "2026-09-16T23:28:39Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "pagelinks": {
+      "url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-pagelinks.sql.gz",
+      "sha256": "26897fe06e9d883684371204f1c431f917258df086e98e1c50297e9c0ba7ed0d",
+      "size": 82424067,
+      "retrieved_utc": "2026-09-16T23:29:08Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "621bfef6947214949231847c051cc98a44f648a6c7c5f0ee11496da0bb6af779",
+    "logical_tree_sha256": "0dcca62c08876ee8f1c3db8f5fc100659214131d64cb581b1e69e79241a441cc",
+    "pinned_utc": "2026-09-16T23:29:19Z"
+  },
+  "history": []
+}

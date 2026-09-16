@@ -1,0 +1,133 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f08-tuning-wikimedia-simplewiki-sql-dump",
+  "family": "F08",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "wikimedia-simplewiki",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "7dc21bbac70c7fc11856c1e1ba5eda32ade5ba36ce77be2859024f8c9e249178",
+  "materialization_key": "621bfef6947214949231847c051cc98a44f648a6c7c5f0ee11496da0bb6af779",
+  "materialized_utc": "2026-09-16T23:29:19Z",
+  "materialized_relpath": "corpus/tuning/f08-tuning-wikimedia-simplewiki-sql-dump",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "0dcca62c08876ee8f1c3db8f5fc100659214131d64cb581b1e69e79241a441cc",
+    "pinned_utc": "2026-09-16T23:29:19Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 783019629,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "page",
+        "url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-page.sql.gz",
+        "final_url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-page.sql.gz",
+        "sha256": "8e6e48a2ea20fab45e2478ca08429deaa9185fc9d6e6400b6ef8e6d65923de0b",
+        "size": 33064269,
+        "retrieved_utc": "2026-09-16T23:28:23Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "simplewiki-20260901-page.sql.gz"
+      },
+      {
+        "name": "categorylinks",
+        "url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-categorylinks.sql.gz",
+        "final_url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-categorylinks.sql.gz",
+        "sha256": "1ff87577c208177ead0295134e7fd4d728cd0c257a619a9601d1a96e698712b5",
+        "size": 28305762,
+        "retrieved_utc": "2026-09-16T23:28:39Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "simplewiki-20260901-categorylinks.sql.gz"
+      },
+      {
+        "name": "pagelinks",
+        "url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-pagelinks.sql.gz",
+        "final_url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-pagelinks.sql.gz",
+        "sha256": "26897fe06e9d883684371204f1c431f917258df086e98e1c50297e9c0ba7ed0d",
+        "size": 82424067,
+        "retrieved_utc": "2026-09-16T23:29:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "simplewiki-20260901-pagelinks.sql.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "page",
+        "dest": "simplewiki-20260901-page.sql",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "categorylinks",
+        "dest": "simplewiki-20260901-categorylinks.sql",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "pagelinks",
+        "dest": "simplewiki-20260901-pagelinks.sql",
+        "format": "gz"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "gzip": "gzip 1.12",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "5bcf54558e4c04c32091735d2292875d20cac38f063ac4e8b1b5ff16de9befe4",
+    "logical_tree_sha256": "0dcca62c08876ee8f1c3db8f5fc100659214131d64cb581b1e69e79241a441cc",
+    "content_tree_sha256": "ffae653d338fbf234c0e4704b4104b1849a5df13d253c15e886ecc58145a933c",
+    "extended_tree_sha256": "8606fa4aeca97d859b908837e89da382764d0c8472b1f7e0f3304b6b01c325d8",
+    "bytes": 783019629,
+    "bytes_all_paths": 783019629,
+    "allocated_bytes": 783024128,
+    "counts": {
+      "objects": 4,
+      "files": 3,
+      "unique_file_inodes": 3,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 37,
+      "path_length_bytes": {
+        "min": 28,
+        "max": 37,
+        "mean": 32.667,
+        "p50": 33,
+        "p95": 37
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

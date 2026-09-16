@@ -1,0 +1,126 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f06-tuning-nyc-tlc-yellow-tripdata-2024",
+  "family": "F06",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "nyc-tlc",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "6f31eb31bb1114709c14b0d99e098fb431bf14a883c1f4f739047ada04498e06",
+  "materialization_key": "e815162faf4489644cc33a8c0c198d8f8aa98759d3ce827e74187ad6645988eb",
+  "materialized_utc": "2026-09-16T23:31:15Z",
+  "materialized_relpath": "corpus/tuning/f06-tuning-nyc-tlc-yellow-tripdata-2024",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "79fede4a294cb8ad94218fcbf0dadbf0f8d0efba5425ec1ea388f2ad03cf1060",
+    "pinned_utc": "2026-09-16T23:31:15Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 160389205,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "m01",
+        "url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet",
+        "final_url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet",
+        "sha256": "c4d59da7bbc8abaeeeb1727947ee93d9891a71acb42854bd80db1571b2030510",
+        "size": 49961641,
+        "retrieved_utc": "2026-09-16T23:31:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "yellow_tripdata_2024-01.parquet"
+      },
+      {
+        "name": "m02",
+        "url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-02.parquet",
+        "final_url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-02.parquet",
+        "sha256": "c76c43c18c6c6664080dd920baab4928988d5786a6b65980792ca7cd796f9f20",
+        "size": 50349284,
+        "retrieved_utc": "2026-09-16T23:31:12Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "yellow_tripdata_2024-02.parquet"
+      },
+      {
+        "name": "m03",
+        "url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-03.parquet",
+        "final_url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-03.parquet",
+        "sha256": "2d4cdc8fb96726cdd3803b13b02d2e61e71d45720aff0ebc693a8bdd1f249823",
+        "size": 60078280,
+        "retrieved_utc": "2026-09-16T23:31:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "yellow_tripdata_2024-03.parquet"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "m01"
+      },
+      {
+        "op": "copy",
+        "input": "m02"
+      },
+      {
+        "op": "copy",
+        "input": "m03"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "d139e86906c12f555421d4764fbfab44d712fdd53717aa3f2b2c6a8aba7782cc",
+    "logical_tree_sha256": "79fede4a294cb8ad94218fcbf0dadbf0f8d0efba5425ec1ea388f2ad03cf1060",
+    "content_tree_sha256": "7f2cf37924a0b8c15012b6c5579d77452e822acc50cb419f4c342201cc4589af",
+    "extended_tree_sha256": "ec94ca20748753f158e648a3e518fd9bb7b2346af42cc3044415796014f576f5",
+    "bytes": 160389205,
+    "bytes_all_paths": 160389205,
+    "allocated_bytes": 160395264,
+    "counts": {
+      "objects": 4,
+      "files": 3,
+      "unique_file_inodes": 3,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 31,
+      "path_length_bytes": {
+        "min": 31,
+        "max": 31,
+        "mean": 31.0,
+        "p50": 31,
+        "p95": 31
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

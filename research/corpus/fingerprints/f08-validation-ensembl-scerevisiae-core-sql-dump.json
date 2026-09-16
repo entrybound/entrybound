@@ -1,0 +1,1408 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f08-validation-ensembl-scerevisiae-core-sql-dump",
+  "family": "F08",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "ensembl",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "6537ac6a42741f62d8321166d64a70e1fba09619d44d511cf6445fdeceb8969c",
+  "materialization_key": "21e5761857837cabe70b86127f693155ab795b2f1026939f710b2f18a77b245d",
+  "materialized_utc": "2026-09-16T23:29:04Z",
+  "materialized_relpath": "corpus/validation/f08-validation-ensembl-scerevisiae-core-sql-dump",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "92cf946ed1aacc5b926dcd8d4ac0c461e563d5cc8f800c7d63dc49b4b3206287",
+    "pinned_utc": "2026-09-16T23:29:04Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 66379337,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "alt_allele",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/alt_allele.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/alt_allele.txt.gz",
+        "sha256": "2201ba079e1b0621d09af474acfd114788335ced5472f972240295a62612dcf0",
+        "size": 165,
+        "retrieved_utc": "2026-09-16T23:28:06Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "alt_allele.txt.gz"
+      },
+      {
+        "name": "alt_allele_attrib",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/alt_allele_attrib.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/alt_allele_attrib.txt.gz",
+        "sha256": "7460887ba15ea053280d18a32754aabd20bf9525c0f204b8ac9b84a28d3fa8de",
+        "size": 172,
+        "retrieved_utc": "2026-09-16T23:28:06Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "alt_allele_attrib.txt.gz"
+      },
+      {
+        "name": "alt_allele_group",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/alt_allele_group.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/alt_allele_group.txt.gz",
+        "sha256": "32aa76327ce7729211d74779a5578d2156d57b60c411938f8240098e73f076d8",
+        "size": 171,
+        "retrieved_utc": "2026-09-16T23:28:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "alt_allele_group.txt.gz"
+      },
+      {
+        "name": "analysis",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/analysis.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/analysis.txt.gz",
+        "sha256": "27fd2e0c71357b2d7bb438ab46a638be9441c77cc2a87c2246bd39d946676b01",
+        "size": 1958,
+        "retrieved_utc": "2026-09-16T23:28:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "analysis.txt.gz"
+      },
+      {
+        "name": "analysis_description",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/analysis_description.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/analysis_description.txt.gz",
+        "sha256": "801043122aa0a0db0c8a1c795ac8507ca66e4c6e32657b9bd84bb5bbe60aca63",
+        "size": 2925,
+        "retrieved_utc": "2026-09-16T23:28:07Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "analysis_description.txt.gz"
+      },
+      {
+        "name": "assembly",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/assembly.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/assembly.txt.gz",
+        "sha256": "2637e60c2c93ad13a2180bb465298522703b89f30b8a71329d500534b52fa462",
+        "size": 5896,
+        "retrieved_utc": "2026-09-16T23:28:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "assembly.txt.gz"
+      },
+      {
+        "name": "assembly_exception",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/assembly_exception.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/assembly_exception.txt.gz",
+        "sha256": "a2d18eea2e4ce40e4a484027afb17d113c7a710c06c4c218bc7eda15627dfaec",
+        "size": 173,
+        "retrieved_utc": "2026-09-16T23:28:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "assembly_exception.txt.gz"
+      },
+      {
+        "name": "associated_group",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/associated_group.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/associated_group.txt.gz",
+        "sha256": "db84477fbbc2011cc4d106ac0cca48cd52acb912f3e69fb14f7112526c0ee0a8",
+        "size": 258,
+        "retrieved_utc": "2026-09-16T23:28:08Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "associated_group.txt.gz"
+      },
+      {
+        "name": "associated_xref",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/associated_xref.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/associated_xref.txt.gz",
+        "sha256": "6363f08c204216b331d685ea2c2d3854d052aa4793f8adb8641936874786f265",
+        "size": 558,
+        "retrieved_utc": "2026-09-16T23:28:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "associated_xref.txt.gz"
+      },
+      {
+        "name": "attrib_type",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/attrib_type.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/attrib_type.txt.gz",
+        "sha256": "b2aeb51196b3e279da367fba5ffea8146f5b59bc4f7ff13cf87b02e76898e804",
+        "size": 12891,
+        "retrieved_utc": "2026-09-16T23:28:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "attrib_type.txt.gz"
+      },
+      {
+        "name": "biotype",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/biotype.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/biotype.txt.gz",
+        "sha256": "078671b11f2ba8d621b17327ae6388949756c8d037c8f910bd506e7e8fff70ea",
+        "size": 4059,
+        "retrieved_utc": "2026-09-16T23:28:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "biotype.txt.gz"
+      },
+      {
+        "name": "coord_system",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/coord_system.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/coord_system.txt.gz",
+        "sha256": "01015ac46cb6e8c44b213c32beae2843725a6f38c4cad2452ffa072ea593a3df",
+        "size": 264,
+        "retrieved_utc": "2026-09-16T23:28:10Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "coord_system.txt.gz"
+      },
+      {
+        "name": "data_file",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/data_file.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/data_file.txt.gz",
+        "sha256": "bb1077169ea2290e5a3f02b55538c8d602dbd410d36003cb4a69a4c2089fc695",
+        "size": 164,
+        "retrieved_utc": "2026-09-16T23:28:10Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "data_file.txt.gz"
+      },
+      {
+        "name": "density_feature",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/density_feature.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/density_feature.txt.gz",
+        "sha256": "2ac6f160620fdb1db8a533eedd9c8b417c68b438b8fec0bdae871c021939e55f",
+        "size": 140541,
+        "retrieved_utc": "2026-09-16T23:28:11Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "density_feature.txt.gz"
+      },
+      {
+        "name": "density_type",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/density_type.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/density_type.txt.gz",
+        "sha256": "7e685a46e367cc864ecea96a9967e927d49ee334b0c62eef619761acf544da38",
+        "size": 238,
+        "retrieved_utc": "2026-09-16T23:28:11Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "density_type.txt.gz"
+      },
+      {
+        "name": "dependent_xref",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dependent_xref.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dependent_xref.txt.gz",
+        "sha256": "087cf483e149fa40b6669a5185c078c2d4ccb9aea6bb6307c2d55ff3e21131d7",
+        "size": 1098962,
+        "retrieved_utc": "2026-09-16T23:28:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "dependent_xref.txt.gz"
+      },
+      {
+        "name": "ditag",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/ditag.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/ditag.txt.gz",
+        "sha256": "729ae3958895969964842503d8bdd8338887a03a2a2b1d5f18a66638d9fdc20c",
+        "size": 160,
+        "retrieved_utc": "2026-09-16T23:28:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "ditag.txt.gz"
+      },
+      {
+        "name": "ditag_feature",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/ditag_feature.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/ditag_feature.txt.gz",
+        "sha256": "462c4dd34c5b3df3247c189798da831e09d0d6c07cff056300d742ac6517cbfc",
+        "size": 168,
+        "retrieved_utc": "2026-09-16T23:28:13Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "ditag_feature.txt.gz"
+      },
+      {
+        "name": "dna",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dna.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dna.txt.gz",
+        "sha256": "75fa4b903dd3f3a613a78b134701c8dcf04c8717863cf759e2096a799e224d7f",
+        "size": 3516762,
+        "retrieved_utc": "2026-09-16T23:28:25Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "dna.txt.gz"
+      },
+      {
+        "name": "dna_align_feature",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dna_align_feature.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dna_align_feature.txt.gz",
+        "sha256": "503f26d7a3e08f024e4c07a6c184c3407b7dc75cb4420b7a2fe33b4d43456422",
+        "size": 9685,
+        "retrieved_utc": "2026-09-16T23:28:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "dna_align_feature.txt.gz"
+      },
+      {
+        "name": "dna_align_feature_attrib",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dna_align_feature_attrib.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dna_align_feature_attrib.txt.gz",
+        "sha256": "9426611dc9a1852f0c4429c05fb6e7d8cedde4f0aaede7c11ef6a25f835f9ae9",
+        "size": 14806,
+        "retrieved_utc": "2026-09-16T23:28:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "dna_align_feature_attrib.txt.gz"
+      },
+      {
+        "name": "exon",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/exon.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/exon.txt.gz",
+        "sha256": "1aabc5832c7b4fb822515132d1c431c2716e1297cdcee4f14f2fd618d68a655b",
+        "size": 128756,
+        "retrieved_utc": "2026-09-16T23:28:29Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "exon.txt.gz"
+      },
+      {
+        "name": "exon_transcript",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/exon_transcript.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/exon_transcript.txt.gz",
+        "sha256": "32bdd54c895137668c1e68c15df6d080f3be61d54a527ae5f5ccb279e5216e58",
+        "size": 35179,
+        "retrieved_utc": "2026-09-16T23:28:29Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "exon_transcript.txt.gz"
+      },
+      {
+        "name": "external_db",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/external_db.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/external_db.txt.gz",
+        "sha256": "b3b869e8ba3f5a8ec57cc23a892e48ed2fd98ec4255a7b887cf4eda2c701cc6e",
+        "size": 14260,
+        "retrieved_utc": "2026-09-16T23:28:30Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "external_db.txt.gz"
+      },
+      {
+        "name": "external_synonym",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/external_synonym.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/external_synonym.txt.gz",
+        "sha256": "cefaa49db2bb3f0e3515c128be59109da9df84b3f8388fc596517aca5a81f991",
+        "size": 88241,
+        "retrieved_utc": "2026-09-16T23:28:31Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "external_synonym.txt.gz"
+      },
+      {
+        "name": "gene",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/gene.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/gene.txt.gz",
+        "sha256": "0d9a7ec2a89cd9ac91301c863ed2a12cd40f9bf873ff46a8e55ac8b64b761814",
+        "size": 700972,
+        "retrieved_utc": "2026-09-16T23:28:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "gene.txt.gz"
+      },
+      {
+        "name": "gene_archive",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/gene_archive.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/gene_archive.txt.gz",
+        "sha256": "bbad015bb9b07f5f625863755fe1869818b714b34597f8bb0fdceab87516b2dd",
+        "size": 167,
+        "retrieved_utc": "2026-09-16T23:28:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "gene_archive.txt.gz"
+      },
+      {
+        "name": "gene_attrib",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/gene_attrib.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/gene_attrib.txt.gz",
+        "sha256": "a7147378917c3a7cb6fb7ab4baa7416824291de87efbecb0ec9b7f261530c508",
+        "size": 36864,
+        "retrieved_utc": "2026-09-16T23:28:32Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "gene_attrib.txt.gz"
+      },
+      {
+        "name": "genome_statistics",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/genome_statistics.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/genome_statistics.txt.gz",
+        "sha256": "c1568d6b3e8468573c81369263397b84b4803099c9be002601389ed49cc3d140",
+        "size": 381,
+        "retrieved_utc": "2026-09-16T23:28:34Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "genome_statistics.txt.gz"
+      },
+      {
+        "name": "identity_xref",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/identity_xref.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/identity_xref.txt.gz",
+        "sha256": "7c20d1da54d6958851df3eada5bdfc43c211d0e815d815838243528fc9a2614b",
+        "size": 168,
+        "retrieved_utc": "2026-09-16T23:28:34Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "identity_xref.txt.gz"
+      },
+      {
+        "name": "interpro",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/interpro.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/interpro.txt.gz",
+        "sha256": "68f3967892d60249da29938142571f824971492dc7003e31d47cb8a907365d4f",
+        "size": 63725,
+        "retrieved_utc": "2026-09-16T23:28:35Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "interpro.txt.gz"
+      },
+      {
+        "name": "intron_supporting_evidence",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/intron_supporting_evidence.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/intron_supporting_evidence.txt.gz",
+        "sha256": "1eed9e20e0cc7f354f14ca3dea9759c0de9e5bc5aed809b383397ca907aaaa76",
+        "size": 181,
+        "retrieved_utc": "2026-09-16T23:28:35Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "intron_supporting_evidence.txt.gz"
+      },
+      {
+        "name": "karyotype",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/karyotype.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/karyotype.txt.gz",
+        "sha256": "e6ab681e8207931b43fc3fa445a5d7a6c678037b8fa016bceee18e4946bb5bc4",
+        "size": 164,
+        "retrieved_utc": "2026-09-16T23:28:36Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "karyotype.txt.gz"
+      },
+      {
+        "name": "map",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/map.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/map.txt.gz",
+        "sha256": "15438bd924c9f05dd62de16c1aad7972cf5f964b5f9141868225a5f7241d31ad",
+        "size": 158,
+        "retrieved_utc": "2026-09-16T23:28:36Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "map.txt.gz"
+      },
+      {
+        "name": "mapping_session",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/mapping_session.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/mapping_session.txt.gz",
+        "sha256": "3ac885608fae3bf4d18091721c0d8cb001337e4acb1f1a7034f50fd7afa129e1",
+        "size": 251,
+        "retrieved_utc": "2026-09-16T23:28:36Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "mapping_session.txt.gz"
+      },
+      {
+        "name": "mapping_set",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/mapping_set.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/mapping_set.txt.gz",
+        "sha256": "e21e7ad1b3a18c093cabc2963b27412d5bdd276d291e4852adad39ca3c951cbd",
+        "size": 166,
+        "retrieved_utc": "2026-09-16T23:28:37Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "mapping_set.txt.gz"
+      },
+      {
+        "name": "marker",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker.txt.gz",
+        "sha256": "3a09da4f05cc4a9cd576e3a2df969c42790b70bf141a1b314c50f65d3610dd7a",
+        "size": 161,
+        "retrieved_utc": "2026-09-16T23:28:37Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "marker.txt.gz"
+      },
+      {
+        "name": "marker_feature",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker_feature.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker_feature.txt.gz",
+        "sha256": "33b7db894b617c4d0d42057a288f2a32e1d0f3352eb7e34b7387009bc47c5b3f",
+        "size": 169,
+        "retrieved_utc": "2026-09-16T23:28:37Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "marker_feature.txt.gz"
+      },
+      {
+        "name": "marker_map_location",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker_map_location.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker_map_location.txt.gz",
+        "sha256": "f22485854664a80aaa92382ea62687f6f3f8b2cfd53f7bf47aa1be47daaf3f12",
+        "size": 174,
+        "retrieved_utc": "2026-09-16T23:28:38Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "marker_map_location.txt.gz"
+      },
+      {
+        "name": "marker_synonym",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker_synonym.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker_synonym.txt.gz",
+        "sha256": "50b3c29f92fc3294a22cf034ae53a038c669c65877723bcc74161a1be42e843b",
+        "size": 169,
+        "retrieved_utc": "2026-09-16T23:28:38Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "marker_synonym.txt.gz"
+      },
+      {
+        "name": "meta",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/meta.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/meta.txt.gz",
+        "sha256": "358a27ab11694eda62dec3264c3b32088e59c5f80e63880cc79c784b0bf7d9b0",
+        "size": 3274,
+        "retrieved_utc": "2026-09-16T23:28:38Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "meta.txt.gz"
+      },
+      {
+        "name": "meta_coord",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/meta_coord.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/meta_coord.txt.gz",
+        "sha256": "79870d34827f7dec6ce02d16c3eac23685a4b08fdcefa2ecb16c430c057bd3db",
+        "size": 244,
+        "retrieved_utc": "2026-09-16T23:28:38Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "meta_coord.txt.gz"
+      },
+      {
+        "name": "misc_attrib",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_attrib.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_attrib.txt.gz",
+        "sha256": "126c16c3e0aaa9dc5a7e3a897c10e33a49e6bcf7b334fc779fdf63f8afd7aa03",
+        "size": 166,
+        "retrieved_utc": "2026-09-16T23:28:39Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "misc_attrib.txt.gz"
+      },
+      {
+        "name": "misc_feature",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_feature.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_feature.txt.gz",
+        "sha256": "3ebaac2180d814c23a1ffa31d9eae73f3cd979eade80070f4bac90ac14836860",
+        "size": 167,
+        "retrieved_utc": "2026-09-16T23:28:39Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "misc_feature.txt.gz"
+      },
+      {
+        "name": "misc_feature_misc_set",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_feature_misc_set.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_feature_misc_set.txt.gz",
+        "sha256": "d33eb22f8f05de8e4cf5af4a0eb281e1c07fe120f00e9a55b1636b2dc207eb9e",
+        "size": 176,
+        "retrieved_utc": "2026-09-16T23:28:39Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "misc_feature_misc_set.txt.gz"
+      },
+      {
+        "name": "misc_set",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_set.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_set.txt.gz",
+        "sha256": "1be405f3a29c4e76218d2ee967fcff4074d1a22c1e5101fd2351e324218f3385",
+        "size": 1992,
+        "retrieved_utc": "2026-09-16T23:28:40Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "misc_set.txt.gz"
+      },
+      {
+        "name": "object_xref",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/object_xref.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/object_xref.txt.gz",
+        "sha256": "9703fbc2ffcdd24451ef363527874355022e584e7857333c027f7b8b7fa4e214",
+        "size": 1833317,
+        "retrieved_utc": "2026-09-16T23:28:41Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "object_xref.txt.gz"
+      },
+      {
+        "name": "ontology_xref",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/ontology_xref.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/ontology_xref.txt.gz",
+        "sha256": "47d634932db688e1e8234eb8a8540a40f0952062c2a0c93433b97852864cf48a",
+        "size": 598862,
+        "retrieved_utc": "2026-09-16T23:28:41Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "ontology_xref.txt.gz"
+      },
+      {
+        "name": "operon",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/operon.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/operon.txt.gz",
+        "sha256": "5496ba5f01117150f562f59ed319ab49d5c76566366d83c9a5e9bc85d970e285",
+        "size": 161,
+        "retrieved_utc": "2026-09-16T23:28:42Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "operon.txt.gz"
+      },
+      {
+        "name": "operon_transcript",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/operon_transcript.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/operon_transcript.txt.gz",
+        "sha256": "1c9b2b1ee16671d3a3b1dbef8155c096ad8cf7d81515b487a8c574df11691add",
+        "size": 172,
+        "retrieved_utc": "2026-09-16T23:28:42Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "operon_transcript.txt.gz"
+      },
+      {
+        "name": "operon_transcript_gene",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/operon_transcript_gene.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/operon_transcript_gene.txt.gz",
+        "sha256": "bc61762206bc90e4637a10916defc00996236b2c9a62f9ce25f772afd977c190",
+        "size": 177,
+        "retrieved_utc": "2026-09-16T23:28:42Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "operon_transcript_gene.txt.gz"
+      },
+      {
+        "name": "peptide_archive",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/peptide_archive.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/peptide_archive.txt.gz",
+        "sha256": "c767797b4d7fba39da03968db1dcf6731b4bec4ce02c04ae3ecf1a845b18aa3c",
+        "size": 170,
+        "retrieved_utc": "2026-09-16T23:28:43Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "peptide_archive.txt.gz"
+      },
+      {
+        "name": "prediction_exon",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/prediction_exon.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/prediction_exon.txt.gz",
+        "sha256": "8419609003c0a901c9bf4923b69f9d5bac8f8781f6b4588dd42607ab9101201c",
+        "size": 170,
+        "retrieved_utc": "2026-09-16T23:28:43Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "prediction_exon.txt.gz"
+      },
+      {
+        "name": "prediction_transcript",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/prediction_transcript.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/prediction_transcript.txt.gz",
+        "sha256": "84c991fcacf8f0ec5da672ad8a1bc4a6bead41fa1a608ca4648dbea77ca8a4e0",
+        "size": 176,
+        "retrieved_utc": "2026-09-16T23:28:43Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "prediction_transcript.txt.gz"
+      },
+      {
+        "name": "protein_align_feature",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/protein_align_feature.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/protein_align_feature.txt.gz",
+        "sha256": "431ac5e4d500ee72c55d99d8bd527ac9956fc56f9449a3e90e3c6f6580d55804",
+        "size": 176,
+        "retrieved_utc": "2026-09-16T23:28:44Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "protein_align_feature.txt.gz"
+      },
+      {
+        "name": "protein_feature",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/protein_feature.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/protein_feature.txt.gz",
+        "sha256": "ce65a103165cdf25b7ae05e1b895622d91e20e982341ba607383a31e7a5f9a32",
+        "size": 2431644,
+        "retrieved_utc": "2026-09-16T23:28:45Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "protein_feature.txt.gz"
+      },
+      {
+        "name": "repeat_consensus",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/repeat_consensus.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/repeat_consensus.txt.gz",
+        "sha256": "b63d690c8d6cedf3faf1aa48ac53198f39d19ee4558fd0fd24653357b1fdbbff",
+        "size": 21576,
+        "retrieved_utc": "2026-09-16T23:28:45Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "repeat_consensus.txt.gz"
+      },
+      {
+        "name": "repeat_feature",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/repeat_feature.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/repeat_feature.txt.gz",
+        "sha256": "9431dcaff679e62fe92ded85213faa3f2d11713c450d00532d102fbeac284edf",
+        "size": 185345,
+        "retrieved_utc": "2026-09-16T23:28:46Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "repeat_feature.txt.gz"
+      },
+      {
+        "name": "rnaproduct",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/rnaproduct.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/rnaproduct.txt.gz",
+        "sha256": "8af0cfe6b7e9a035f3303c84a76aabf1606c855a0c762aa923f4906647cf0b29",
+        "size": 165,
+        "retrieved_utc": "2026-09-16T23:28:46Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "rnaproduct.txt.gz"
+      },
+      {
+        "name": "rnaproduct_attrib",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/rnaproduct_attrib.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/rnaproduct_attrib.txt.gz",
+        "sha256": "f4504fead8c25345c563ac54dbc0cc8e78d275e8e15fafb8f80f9b857fdaf661",
+        "size": 172,
+        "retrieved_utc": "2026-09-16T23:28:47Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "rnaproduct_attrib.txt.gz"
+      },
+      {
+        "name": "rnaproduct_type",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/rnaproduct_type.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/rnaproduct_type.txt.gz",
+        "sha256": "c700bd7661d1d43a99dd18f24e9d5c519664b4de7c579f7e50d2a4261f989e85",
+        "size": 170,
+        "retrieved_utc": "2026-09-16T23:28:47Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "rnaproduct_type.txt.gz"
+      },
+      {
+        "name": "saccharomyces_cerevisiae_core_114_4_schema",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/saccharomyces_cerevisiae_core_114_4.sql.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/saccharomyces_cerevisiae_core_114_4.sql.gz",
+        "sha256": "4d7d8788238d063248de19cfa12f6db176b02a677251f40703aa99861289025c",
+        "size": 6968,
+        "retrieved_utc": "2026-09-16T23:28:47Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "saccharomyces_cerevisiae_core_114_4.sql.gz"
+      },
+      {
+        "name": "seq_region",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region.txt.gz",
+        "sha256": "91b3a070c13e02b3cb8e4554f439340e70561d5818fc16112050e63193b815ed",
+        "size": 768,
+        "retrieved_utc": "2026-09-16T23:28:48Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "seq_region.txt.gz"
+      },
+      {
+        "name": "seq_region_attrib",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region_attrib.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region_attrib.txt.gz",
+        "sha256": "76c996ca4f70be2dfd212f93a7fdb9aff1bb4d9de04ab92445a2a0f9d425e17f",
+        "size": 1639,
+        "retrieved_utc": "2026-09-16T23:28:48Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "seq_region_attrib.txt.gz"
+      },
+      {
+        "name": "seq_region_mapping",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region_mapping.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region_mapping.txt.gz",
+        "sha256": "6bfce49f17c25d072ea982b51d36e2aba61f650d98f21a41053d8737b6c87a2f",
+        "size": 173,
+        "retrieved_utc": "2026-09-16T23:28:49Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "seq_region_mapping.txt.gz"
+      },
+      {
+        "name": "seq_region_synonym",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region_synonym.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region_synonym.txt.gz",
+        "sha256": "fdd3459d51b15de3daaa74c41f12273c662951ec6e7d7e08dea8cefe025bfb71",
+        "size": 297,
+        "retrieved_utc": "2026-09-16T23:28:49Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "seq_region_synonym.txt.gz"
+      },
+      {
+        "name": "simple_feature",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/simple_feature.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/simple_feature.txt.gz",
+        "sha256": "f9359a9df53e8afe60bc68f08cb1595cf64fc7b706c85f95b5968500e759981b",
+        "size": 169,
+        "retrieved_utc": "2026-09-16T23:28:49Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "simple_feature.txt.gz"
+      },
+      {
+        "name": "stable_id_event",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/stable_id_event.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/stable_id_event.txt.gz",
+        "sha256": "888f63d4402add43dee29f58ad7399fccf32fcd0e898696180605b9f2c2d9d15",
+        "size": 2061,
+        "retrieved_utc": "2026-09-16T23:28:50Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "stable_id_event.txt.gz"
+      },
+      {
+        "name": "supporting_feature",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/supporting_feature.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/supporting_feature.txt.gz",
+        "sha256": "e3931708e1e1fb39054841895776cd0fc9923751114572c3f09b386c86975e26",
+        "size": 173,
+        "retrieved_utc": "2026-09-16T23:28:50Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "supporting_feature.txt.gz"
+      },
+      {
+        "name": "transcript",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript.txt.gz",
+        "sha256": "4c97ea37bff814894274e71238cb37f470a0f86a9166143518df1d05a3eb3e5d",
+        "size": 182562,
+        "retrieved_utc": "2026-09-16T23:28:50Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "transcript.txt.gz"
+      },
+      {
+        "name": "transcript_attrib",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript_attrib.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript_attrib.txt.gz",
+        "sha256": "b501824f5057b2647b395908d35bef4f174f78659654a4686a645e2fd4ecd58a",
+        "size": 461797,
+        "retrieved_utc": "2026-09-16T23:28:51Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "transcript_attrib.txt.gz"
+      },
+      {
+        "name": "transcript_intron_supporting_evidence",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript_intron_supporting_evidence.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript_intron_supporting_evidence.txt.gz",
+        "sha256": "5e352b4c93913263a48098a66fa17850bdb0f19a9aa0e2342cda29ce249d56ce",
+        "size": 192,
+        "retrieved_utc": "2026-09-16T23:28:52Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "transcript_intron_supporting_evidence.txt.gz"
+      },
+      {
+        "name": "transcript_supporting_feature",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript_supporting_feature.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript_supporting_feature.txt.gz",
+        "sha256": "a597f98100aa00c60d7f977d588ca268a8c71473036b57db32272c75efa8a904",
+        "size": 184,
+        "retrieved_utc": "2026-09-16T23:28:52Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "transcript_supporting_feature.txt.gz"
+      },
+      {
+        "name": "translation",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/translation.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/translation.txt.gz",
+        "sha256": "ffed30087a7523650587b450fa18566ef6ac509ebb7da0c1534ae8bf5cc1f39d",
+        "size": 107947,
+        "retrieved_utc": "2026-09-16T23:28:53Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "translation.txt.gz"
+      },
+      {
+        "name": "translation_attrib",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/translation_attrib.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/translation_attrib.txt.gz",
+        "sha256": "bda6a31ae7de6964b52d45b6e4ba17e1651d5d5913a957ded69eae73cf820a63",
+        "size": 561454,
+        "retrieved_utc": "2026-09-16T23:28:58Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "translation_attrib.txt.gz"
+      },
+      {
+        "name": "unmapped_object",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/unmapped_object.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/unmapped_object.txt.gz",
+        "sha256": "0dcc71439817c03967d3e4a92bd00e3c4bf86607c59c4bb98e321d9dc5061a47",
+        "size": 142248,
+        "retrieved_utc": "2026-09-16T23:28:59Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "unmapped_object.txt.gz"
+      },
+      {
+        "name": "unmapped_reason",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/unmapped_reason.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/unmapped_reason.txt.gz",
+        "sha256": "46a0aee2d34d8805e98717d3d7f93e32d987fab7be001e67bf0b837d11bb7871",
+        "size": 1327,
+        "retrieved_utc": "2026-09-16T23:28:59Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "unmapped_reason.txt.gz"
+      },
+      {
+        "name": "xref",
+        "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/xref.txt.gz",
+        "final_url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/xref.txt.gz",
+        "sha256": "1354c9e13b6847baa417ed7eb411a12cfc721f0d26aa75e2ead7544b2eba87b9",
+        "size": 3071929,
+        "retrieved_utc": "2026-09-16T23:29:04Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "xref.txt.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "alt_allele",
+        "dest": "alt_allele.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "alt_allele_attrib",
+        "dest": "alt_allele_attrib.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "alt_allele_group",
+        "dest": "alt_allele_group.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "analysis",
+        "dest": "analysis.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "analysis_description",
+        "dest": "analysis_description.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "assembly",
+        "dest": "assembly.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "assembly_exception",
+        "dest": "assembly_exception.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "associated_group",
+        "dest": "associated_group.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "associated_xref",
+        "dest": "associated_xref.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "attrib_type",
+        "dest": "attrib_type.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "biotype",
+        "dest": "biotype.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "coord_system",
+        "dest": "coord_system.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "data_file",
+        "dest": "data_file.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "density_feature",
+        "dest": "density_feature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "density_type",
+        "dest": "density_type.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "dependent_xref",
+        "dest": "dependent_xref.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "ditag",
+        "dest": "ditag.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "ditag_feature",
+        "dest": "ditag_feature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "dna",
+        "dest": "dna.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "dna_align_feature",
+        "dest": "dna_align_feature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "dna_align_feature_attrib",
+        "dest": "dna_align_feature_attrib.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "exon",
+        "dest": "exon.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "exon_transcript",
+        "dest": "exon_transcript.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "external_db",
+        "dest": "external_db.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "external_synonym",
+        "dest": "external_synonym.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "gene",
+        "dest": "gene.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "gene_archive",
+        "dest": "gene_archive.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "gene_attrib",
+        "dest": "gene_attrib.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "genome_statistics",
+        "dest": "genome_statistics.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "identity_xref",
+        "dest": "identity_xref.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "interpro",
+        "dest": "interpro.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "intron_supporting_evidence",
+        "dest": "intron_supporting_evidence.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "karyotype",
+        "dest": "karyotype.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "map",
+        "dest": "map.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "mapping_session",
+        "dest": "mapping_session.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "mapping_set",
+        "dest": "mapping_set.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "marker",
+        "dest": "marker.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "marker_feature",
+        "dest": "marker_feature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "marker_map_location",
+        "dest": "marker_map_location.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "marker_synonym",
+        "dest": "marker_synonym.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "meta",
+        "dest": "meta.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "meta_coord",
+        "dest": "meta_coord.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "misc_attrib",
+        "dest": "misc_attrib.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "misc_feature",
+        "dest": "misc_feature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "misc_feature_misc_set",
+        "dest": "misc_feature_misc_set.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "misc_set",
+        "dest": "misc_set.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "object_xref",
+        "dest": "object_xref.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "ontology_xref",
+        "dest": "ontology_xref.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "operon",
+        "dest": "operon.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "operon_transcript",
+        "dest": "operon_transcript.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "operon_transcript_gene",
+        "dest": "operon_transcript_gene.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "peptide_archive",
+        "dest": "peptide_archive.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "prediction_exon",
+        "dest": "prediction_exon.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "prediction_transcript",
+        "dest": "prediction_transcript.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "protein_align_feature",
+        "dest": "protein_align_feature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "protein_feature",
+        "dest": "protein_feature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "repeat_consensus",
+        "dest": "repeat_consensus.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "repeat_feature",
+        "dest": "repeat_feature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "rnaproduct",
+        "dest": "rnaproduct.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "rnaproduct_attrib",
+        "dest": "rnaproduct_attrib.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "rnaproduct_type",
+        "dest": "rnaproduct_type.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "saccharomyces_cerevisiae_core_114_4_schema",
+        "dest": "saccharomyces_cerevisiae_core_114_4.sql",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "seq_region",
+        "dest": "seq_region.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "seq_region_attrib",
+        "dest": "seq_region_attrib.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "seq_region_mapping",
+        "dest": "seq_region_mapping.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "seq_region_synonym",
+        "dest": "seq_region_synonym.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "simple_feature",
+        "dest": "simple_feature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "stable_id_event",
+        "dest": "stable_id_event.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "supporting_feature",
+        "dest": "supporting_feature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "transcript",
+        "dest": "transcript.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "transcript_attrib",
+        "dest": "transcript_attrib.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "transcript_intron_supporting_evidence",
+        "dest": "transcript_intron_supporting_evidence.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "transcript_supporting_feature",
+        "dest": "transcript_supporting_feature.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "translation",
+        "dest": "translation.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "translation_attrib",
+        "dest": "translation_attrib.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "unmapped_object",
+        "dest": "unmapped_object.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "unmapped_reason",
+        "dest": "unmapped_reason.txt",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "xref",
+        "dest": "xref.txt",
+        "format": "gz"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "gzip": "gzip 1.12",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "ec5474729e9eed12fb3740cac3d0855a00990266ee2a6bcc90c3106a3ef616b5",
+    "logical_tree_sha256": "92cf946ed1aacc5b926dcd8d4ac0c461e563d5cc8f800c7d63dc49b4b3206287",
+    "content_tree_sha256": "3476e48fca392b165ae5beab998f56bb59d3cd48c2e7c14a25d61c3ab56f71d7",
+    "extended_tree_sha256": "586dd492a09287eb63c9106003898e4351933802cc036922b072dbd039847427",
+    "bytes": 66379337,
+    "bytes_all_paths": 66379337,
+    "allocated_bytes": 66490368,
+    "counts": {
+      "objects": 79,
+      "files": 78,
+      "unique_file_inodes": 78,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 41,
+      "path_length_bytes": {
+        "min": 7,
+        "max": 41,
+        "mean": 18.013,
+        "p50": 18,
+        "p95": 28
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

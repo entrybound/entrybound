@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-validation-bert-base-uncased-safetensors",
+  "inputs": {},
+  "output": {
+    "materialization_key": "00d5552677ba11926442e74b4ffc5c0c52182827e261f8e4a10306399a9c7e93",
+    "logical_tree_sha256": "ef005d331af59bb70ce865eea6c6e239db2ad7f7103cfd5c7dba33802e17152f",
+    "pinned_utc": "2026-09-16T23:30:54Z"
+  },
+  "history": []
+}

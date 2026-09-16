@@ -1,0 +1,19 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-heldout-1000genomes-chr22-vcf-region-subset",
+  "inputs": {
+    "vcf": {
+      "url": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz",
+      "sha256": "a90c16c4ff2b3196476d506ae13cb3047fae8670163c7c932c4b0239aef3daf5",
+      "size": 205612353,
+      "retrieved_utc": "2026-09-16T23:30:39Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "77afc212d9da44c091ed72737087a1491b6f30ff9c1d384fffd7a47f05ef8eac",
+    "logical_tree_sha256": "8816752031e7d604e7cbdeab015aad2cbcda296a4b3d62cbbe6c82b0abbecae8",
+    "pinned_utc": "2026-09-16T23:31:09Z"
+  },
+  "history": []
+}

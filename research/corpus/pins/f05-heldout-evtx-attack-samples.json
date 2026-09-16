@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-heldout-evtx-attack-samples",
+  "inputs": {},
+  "output": {
+    "materialization_key": "a37dc74d64b85c0399b2e95e8c58808d0451bdfe6e82478f828ed91fd26b52cb",
+    "logical_tree_sha256": "b311e802309fad8c7f9f144ba0ed622025d3204d1964a44190421f6a9e538587",
+    "pinned_utc": "2026-09-16T23:31:26Z"
+  },
+  "history": []
+}

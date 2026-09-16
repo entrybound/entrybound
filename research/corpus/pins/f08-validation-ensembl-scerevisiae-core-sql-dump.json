@@ -1,0 +1,558 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f08-validation-ensembl-scerevisiae-core-sql-dump",
+  "inputs": {
+    "alt_allele": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/alt_allele.txt.gz",
+      "sha256": "2201ba079e1b0621d09af474acfd114788335ced5472f972240295a62612dcf0",
+      "size": 165,
+      "retrieved_utc": "2026-09-16T23:28:06Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "alt_allele_attrib": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/alt_allele_attrib.txt.gz",
+      "sha256": "7460887ba15ea053280d18a32754aabd20bf9525c0f204b8ac9b84a28d3fa8de",
+      "size": 172,
+      "retrieved_utc": "2026-09-16T23:28:06Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "alt_allele_group": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/alt_allele_group.txt.gz",
+      "sha256": "32aa76327ce7729211d74779a5578d2156d57b60c411938f8240098e73f076d8",
+      "size": 171,
+      "retrieved_utc": "2026-09-16T23:28:07Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "analysis": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/analysis.txt.gz",
+      "sha256": "27fd2e0c71357b2d7bb438ab46a638be9441c77cc2a87c2246bd39d946676b01",
+      "size": 1958,
+      "retrieved_utc": "2026-09-16T23:28:07Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "analysis_description": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/analysis_description.txt.gz",
+      "sha256": "801043122aa0a0db0c8a1c795ac8507ca66e4c6e32657b9bd84bb5bbe60aca63",
+      "size": 2925,
+      "retrieved_utc": "2026-09-16T23:28:07Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "assembly": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/assembly.txt.gz",
+      "sha256": "2637e60c2c93ad13a2180bb465298522703b89f30b8a71329d500534b52fa462",
+      "size": 5896,
+      "retrieved_utc": "2026-09-16T23:28:08Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "assembly_exception": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/assembly_exception.txt.gz",
+      "sha256": "a2d18eea2e4ce40e4a484027afb17d113c7a710c06c4c218bc7eda15627dfaec",
+      "size": 173,
+      "retrieved_utc": "2026-09-16T23:28:08Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "associated_group": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/associated_group.txt.gz",
+      "sha256": "db84477fbbc2011cc4d106ac0cca48cd52acb912f3e69fb14f7112526c0ee0a8",
+      "size": 258,
+      "retrieved_utc": "2026-09-16T23:28:08Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "associated_xref": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/associated_xref.txt.gz",
+      "sha256": "6363f08c204216b331d685ea2c2d3854d052aa4793f8adb8641936874786f265",
+      "size": 558,
+      "retrieved_utc": "2026-09-16T23:28:09Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "attrib_type": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/attrib_type.txt.gz",
+      "sha256": "b2aeb51196b3e279da367fba5ffea8146f5b59bc4f7ff13cf87b02e76898e804",
+      "size": 12891,
+      "retrieved_utc": "2026-09-16T23:28:09Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "biotype": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/biotype.txt.gz",
+      "sha256": "078671b11f2ba8d621b17327ae6388949756c8d037c8f910bd506e7e8fff70ea",
+      "size": 4059,
+      "retrieved_utc": "2026-09-16T23:28:09Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "coord_system": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/coord_system.txt.gz",
+      "sha256": "01015ac46cb6e8c44b213c32beae2843725a6f38c4cad2452ffa072ea593a3df",
+      "size": 264,
+      "retrieved_utc": "2026-09-16T23:28:10Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "data_file": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/data_file.txt.gz",
+      "sha256": "bb1077169ea2290e5a3f02b55538c8d602dbd410d36003cb4a69a4c2089fc695",
+      "size": 164,
+      "retrieved_utc": "2026-09-16T23:28:10Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "density_feature": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/density_feature.txt.gz",
+      "sha256": "2ac6f160620fdb1db8a533eedd9c8b417c68b438b8fec0bdae871c021939e55f",
+      "size": 140541,
+      "retrieved_utc": "2026-09-16T23:28:11Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "density_type": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/density_type.txt.gz",
+      "sha256": "7e685a46e367cc864ecea96a9967e927d49ee334b0c62eef619761acf544da38",
+      "size": 238,
+      "retrieved_utc": "2026-09-16T23:28:11Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "dependent_xref": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dependent_xref.txt.gz",
+      "sha256": "087cf483e149fa40b6669a5185c078c2d4ccb9aea6bb6307c2d55ff3e21131d7",
+      "size": 1098962,
+      "retrieved_utc": "2026-09-16T23:28:13Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "ditag": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/ditag.txt.gz",
+      "sha256": "729ae3958895969964842503d8bdd8338887a03a2a2b1d5f18a66638d9fdc20c",
+      "size": 160,
+      "retrieved_utc": "2026-09-16T23:28:13Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "ditag_feature": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/ditag_feature.txt.gz",
+      "sha256": "462c4dd34c5b3df3247c189798da831e09d0d6c07cff056300d742ac6517cbfc",
+      "size": 168,
+      "retrieved_utc": "2026-09-16T23:28:13Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "dna": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dna.txt.gz",
+      "sha256": "75fa4b903dd3f3a613a78b134701c8dcf04c8717863cf759e2096a799e224d7f",
+      "size": 3516762,
+      "retrieved_utc": "2026-09-16T23:28:25Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "dna_align_feature": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dna_align_feature.txt.gz",
+      "sha256": "503f26d7a3e08f024e4c07a6c184c3407b7dc75cb4420b7a2fe33b4d43456422",
+      "size": 9685,
+      "retrieved_utc": "2026-09-16T23:28:28Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "dna_align_feature_attrib": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/dna_align_feature_attrib.txt.gz",
+      "sha256": "9426611dc9a1852f0c4429c05fb6e7d8cedde4f0aaede7c11ef6a25f835f9ae9",
+      "size": 14806,
+      "retrieved_utc": "2026-09-16T23:28:28Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "exon": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/exon.txt.gz",
+      "sha256": "1aabc5832c7b4fb822515132d1c431c2716e1297cdcee4f14f2fd618d68a655b",
+      "size": 128756,
+      "retrieved_utc": "2026-09-16T23:28:29Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "exon_transcript": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/exon_transcript.txt.gz",
+      "sha256": "32bdd54c895137668c1e68c15df6d080f3be61d54a527ae5f5ccb279e5216e58",
+      "size": 35179,
+      "retrieved_utc": "2026-09-16T23:28:29Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "external_db": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/external_db.txt.gz",
+      "sha256": "b3b869e8ba3f5a8ec57cc23a892e48ed2fd98ec4255a7b887cf4eda2c701cc6e",
+      "size": 14260,
+      "retrieved_utc": "2026-09-16T23:28:30Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "external_synonym": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/external_synonym.txt.gz",
+      "sha256": "cefaa49db2bb3f0e3515c128be59109da9df84b3f8388fc596517aca5a81f991",
+      "size": 88241,
+      "retrieved_utc": "2026-09-16T23:28:31Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "gene": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/gene.txt.gz",
+      "sha256": "0d9a7ec2a89cd9ac91301c863ed2a12cd40f9bf873ff46a8e55ac8b64b761814",
+      "size": 700972,
+      "retrieved_utc": "2026-09-16T23:28:32Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "gene_archive": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/gene_archive.txt.gz",
+      "sha256": "bbad015bb9b07f5f625863755fe1869818b714b34597f8bb0fdceab87516b2dd",
+      "size": 167,
+      "retrieved_utc": "2026-09-16T23:28:32Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "gene_attrib": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/gene_attrib.txt.gz",
+      "sha256": "a7147378917c3a7cb6fb7ab4baa7416824291de87efbecb0ec9b7f261530c508",
+      "size": 36864,
+      "retrieved_utc": "2026-09-16T23:28:32Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "genome_statistics": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/genome_statistics.txt.gz",
+      "sha256": "c1568d6b3e8468573c81369263397b84b4803099c9be002601389ed49cc3d140",
+      "size": 381,
+      "retrieved_utc": "2026-09-16T23:28:34Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "identity_xref": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/identity_xref.txt.gz",
+      "sha256": "7c20d1da54d6958851df3eada5bdfc43c211d0e815d815838243528fc9a2614b",
+      "size": 168,
+      "retrieved_utc": "2026-09-16T23:28:34Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "interpro": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/interpro.txt.gz",
+      "sha256": "68f3967892d60249da29938142571f824971492dc7003e31d47cb8a907365d4f",
+      "size": 63725,
+      "retrieved_utc": "2026-09-16T23:28:35Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "intron_supporting_evidence": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/intron_supporting_evidence.txt.gz",
+      "sha256": "1eed9e20e0cc7f354f14ca3dea9759c0de9e5bc5aed809b383397ca907aaaa76",
+      "size": 181,
+      "retrieved_utc": "2026-09-16T23:28:35Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "karyotype": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/karyotype.txt.gz",
+      "sha256": "e6ab681e8207931b43fc3fa445a5d7a6c678037b8fa016bceee18e4946bb5bc4",
+      "size": 164,
+      "retrieved_utc": "2026-09-16T23:28:36Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "map": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/map.txt.gz",
+      "sha256": "15438bd924c9f05dd62de16c1aad7972cf5f964b5f9141868225a5f7241d31ad",
+      "size": 158,
+      "retrieved_utc": "2026-09-16T23:28:36Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "mapping_session": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/mapping_session.txt.gz",
+      "sha256": "3ac885608fae3bf4d18091721c0d8cb001337e4acb1f1a7034f50fd7afa129e1",
+      "size": 251,
+      "retrieved_utc": "2026-09-16T23:28:36Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "mapping_set": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/mapping_set.txt.gz",
+      "sha256": "e21e7ad1b3a18c093cabc2963b27412d5bdd276d291e4852adad39ca3c951cbd",
+      "size": 166,
+      "retrieved_utc": "2026-09-16T23:28:37Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "marker": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker.txt.gz",
+      "sha256": "3a09da4f05cc4a9cd576e3a2df969c42790b70bf141a1b314c50f65d3610dd7a",
+      "size": 161,
+      "retrieved_utc": "2026-09-16T23:28:37Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "marker_feature": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker_feature.txt.gz",
+      "sha256": "33b7db894b617c4d0d42057a288f2a32e1d0f3352eb7e34b7387009bc47c5b3f",
+      "size": 169,
+      "retrieved_utc": "2026-09-16T23:28:37Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "marker_map_location": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker_map_location.txt.gz",
+      "sha256": "f22485854664a80aaa92382ea62687f6f3f8b2cfd53f7bf47aa1be47daaf3f12",
+      "size": 174,
+      "retrieved_utc": "2026-09-16T23:28:38Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "marker_synonym": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/marker_synonym.txt.gz",
+      "sha256": "50b3c29f92fc3294a22cf034ae53a038c669c65877723bcc74161a1be42e843b",
+      "size": 169,
+      "retrieved_utc": "2026-09-16T23:28:38Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "meta": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/meta.txt.gz",
+      "sha256": "358a27ab11694eda62dec3264c3b32088e59c5f80e63880cc79c784b0bf7d9b0",
+      "size": 3274,
+      "retrieved_utc": "2026-09-16T23:28:38Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "meta_coord": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/meta_coord.txt.gz",
+      "sha256": "79870d34827f7dec6ce02d16c3eac23685a4b08fdcefa2ecb16c430c057bd3db",
+      "size": 244,
+      "retrieved_utc": "2026-09-16T23:28:38Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "misc_attrib": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_attrib.txt.gz",
+      "sha256": "126c16c3e0aaa9dc5a7e3a897c10e33a49e6bcf7b334fc779fdf63f8afd7aa03",
+      "size": 166,
+      "retrieved_utc": "2026-09-16T23:28:39Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "misc_feature": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_feature.txt.gz",
+      "sha256": "3ebaac2180d814c23a1ffa31d9eae73f3cd979eade80070f4bac90ac14836860",
+      "size": 167,
+      "retrieved_utc": "2026-09-16T23:28:39Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "misc_feature_misc_set": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_feature_misc_set.txt.gz",
+      "sha256": "d33eb22f8f05de8e4cf5af4a0eb281e1c07fe120f00e9a55b1636b2dc207eb9e",
+      "size": 176,
+      "retrieved_utc": "2026-09-16T23:28:39Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "misc_set": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/misc_set.txt.gz",
+      "sha256": "1be405f3a29c4e76218d2ee967fcff4074d1a22c1e5101fd2351e324218f3385",
+      "size": 1992,
+      "retrieved_utc": "2026-09-16T23:28:40Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "object_xref": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/object_xref.txt.gz",
+      "sha256": "9703fbc2ffcdd24451ef363527874355022e584e7857333c027f7b8b7fa4e214",
+      "size": 1833317,
+      "retrieved_utc": "2026-09-16T23:28:41Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "ontology_xref": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/ontology_xref.txt.gz",
+      "sha256": "47d634932db688e1e8234eb8a8540a40f0952062c2a0c93433b97852864cf48a",
+      "size": 598862,
+      "retrieved_utc": "2026-09-16T23:28:41Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "operon": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/operon.txt.gz",
+      "sha256": "5496ba5f01117150f562f59ed319ab49d5c76566366d83c9a5e9bc85d970e285",
+      "size": 161,
+      "retrieved_utc": "2026-09-16T23:28:42Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "operon_transcript": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/operon_transcript.txt.gz",
+      "sha256": "1c9b2b1ee16671d3a3b1dbef8155c096ad8cf7d81515b487a8c574df11691add",
+      "size": 172,
+      "retrieved_utc": "2026-09-16T23:28:42Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "operon_transcript_gene": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/operon_transcript_gene.txt.gz",
+      "sha256": "bc61762206bc90e4637a10916defc00996236b2c9a62f9ce25f772afd977c190",
+      "size": 177,
+      "retrieved_utc": "2026-09-16T23:28:42Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "peptide_archive": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/peptide_archive.txt.gz",
+      "sha256": "c767797b4d7fba39da03968db1dcf6731b4bec4ce02c04ae3ecf1a845b18aa3c",
+      "size": 170,
+      "retrieved_utc": "2026-09-16T23:28:43Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "prediction_exon": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/prediction_exon.txt.gz",
+      "sha256": "8419609003c0a901c9bf4923b69f9d5bac8f8781f6b4588dd42607ab9101201c",
+      "size": 170,
+      "retrieved_utc": "2026-09-16T23:28:43Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "prediction_transcript": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/prediction_transcript.txt.gz",
+      "sha256": "84c991fcacf8f0ec5da672ad8a1bc4a6bead41fa1a608ca4648dbea77ca8a4e0",
+      "size": 176,
+      "retrieved_utc": "2026-09-16T23:28:43Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "protein_align_feature": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/protein_align_feature.txt.gz",
+      "sha256": "431ac5e4d500ee72c55d99d8bd527ac9956fc56f9449a3e90e3c6f6580d55804",
+      "size": 176,
+      "retrieved_utc": "2026-09-16T23:28:44Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "protein_feature": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/protein_feature.txt.gz",
+      "sha256": "ce65a103165cdf25b7ae05e1b895622d91e20e982341ba607383a31e7a5f9a32",
+      "size": 2431644,
+      "retrieved_utc": "2026-09-16T23:28:45Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "repeat_consensus": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/repeat_consensus.txt.gz",
+      "sha256": "b63d690c8d6cedf3faf1aa48ac53198f39d19ee4558fd0fd24653357b1fdbbff",
+      "size": 21576,
+      "retrieved_utc": "2026-09-16T23:28:45Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "repeat_feature": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/repeat_feature.txt.gz",
+      "sha256": "9431dcaff679e62fe92ded85213faa3f2d11713c450d00532d102fbeac284edf",
+      "size": 185345,
+      "retrieved_utc": "2026-09-16T23:28:46Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "rnaproduct": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/rnaproduct.txt.gz",
+      "sha256": "8af0cfe6b7e9a035f3303c84a76aabf1606c855a0c762aa923f4906647cf0b29",
+      "size": 165,
+      "retrieved_utc": "2026-09-16T23:28:46Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "rnaproduct_attrib": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/rnaproduct_attrib.txt.gz",
+      "sha256": "f4504fead8c25345c563ac54dbc0cc8e78d275e8e15fafb8f80f9b857fdaf661",
+      "size": 172,
+      "retrieved_utc": "2026-09-16T23:28:47Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "rnaproduct_type": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/rnaproduct_type.txt.gz",
+      "sha256": "c700bd7661d1d43a99dd18f24e9d5c519664b4de7c579f7e50d2a4261f989e85",
+      "size": 170,
+      "retrieved_utc": "2026-09-16T23:28:47Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "saccharomyces_cerevisiae_core_114_4_schema": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/saccharomyces_cerevisiae_core_114_4.sql.gz",
+      "sha256": "4d7d8788238d063248de19cfa12f6db176b02a677251f40703aa99861289025c",
+      "size": 6968,
+      "retrieved_utc": "2026-09-16T23:28:47Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "seq_region": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region.txt.gz",
+      "sha256": "91b3a070c13e02b3cb8e4554f439340e70561d5818fc16112050e63193b815ed",
+      "size": 768,
+      "retrieved_utc": "2026-09-16T23:28:48Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "seq_region_attrib": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region_attrib.txt.gz",
+      "sha256": "76c996ca4f70be2dfd212f93a7fdb9aff1bb4d9de04ab92445a2a0f9d425e17f",
+      "size": 1639,
+      "retrieved_utc": "2026-09-16T23:28:48Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "seq_region_mapping": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region_mapping.txt.gz",
+      "sha256": "6bfce49f17c25d072ea982b51d36e2aba61f650d98f21a41053d8737b6c87a2f",
+      "size": 173,
+      "retrieved_utc": "2026-09-16T23:28:49Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "seq_region_synonym": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/seq_region_synonym.txt.gz",
+      "sha256": "fdd3459d51b15de3daaa74c41f12273c662951ec6e7d7e08dea8cefe025bfb71",
+      "size": 297,
+      "retrieved_utc": "2026-09-16T23:28:49Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "simple_feature": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/simple_feature.txt.gz",
+      "sha256": "f9359a9df53e8afe60bc68f08cb1595cf64fc7b706c85f95b5968500e759981b",
+      "size": 169,
+      "retrieved_utc": "2026-09-16T23:28:49Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "stable_id_event": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/stable_id_event.txt.gz",
+      "sha256": "888f63d4402add43dee29f58ad7399fccf32fcd0e898696180605b9f2c2d9d15",
+      "size": 2061,
+      "retrieved_utc": "2026-09-16T23:28:50Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "supporting_feature": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/supporting_feature.txt.gz",
+      "sha256": "e3931708e1e1fb39054841895776cd0fc9923751114572c3f09b386c86975e26",
+      "size": 173,
+      "retrieved_utc": "2026-09-16T23:28:50Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "transcript": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript.txt.gz",
+      "sha256": "4c97ea37bff814894274e71238cb37f470a0f86a9166143518df1d05a3eb3e5d",
+      "size": 182562,
+      "retrieved_utc": "2026-09-16T23:28:50Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "transcript_attrib": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript_attrib.txt.gz",
+      "sha256": "b501824f5057b2647b395908d35bef4f174f78659654a4686a645e2fd4ecd58a",
+      "size": 461797,
+      "retrieved_utc": "2026-09-16T23:28:51Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "transcript_intron_supporting_evidence": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript_intron_supporting_evidence.txt.gz",
+      "sha256": "5e352b4c93913263a48098a66fa17850bdb0f19a9aa0e2342cda29ce249d56ce",
+      "size": 192,
+      "retrieved_utc": "2026-09-16T23:28:52Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "transcript_supporting_feature": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/transcript_supporting_feature.txt.gz",
+      "sha256": "a597f98100aa00c60d7f977d588ca268a8c71473036b57db32272c75efa8a904",
+      "size": 184,
+      "retrieved_utc": "2026-09-16T23:28:52Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "translation": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/translation.txt.gz",
+      "sha256": "ffed30087a7523650587b450fa18566ef6ac509ebb7da0c1534ae8bf5cc1f39d",
+      "size": 107947,
+      "retrieved_utc": "2026-09-16T23:28:53Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "translation_attrib": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/translation_attrib.txt.gz",
+      "sha256": "bda6a31ae7de6964b52d45b6e4ba17e1651d5d5913a957ded69eae73cf820a63",
+      "size": 561454,
+      "retrieved_utc": "2026-09-16T23:28:58Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "unmapped_object": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/unmapped_object.txt.gz",
+      "sha256": "0dcc71439817c03967d3e4a92bd00e3c4bf86607c59c4bb98e321d9dc5061a47",
+      "size": 142248,
+      "retrieved_utc": "2026-09-16T23:28:59Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "unmapped_reason": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/unmapped_reason.txt.gz",
+      "sha256": "46a0aee2d34d8805e98717d3d7f93e32d987fab7be001e67bf0b837d11bb7871",
+      "size": 1327,
+      "retrieved_utc": "2026-09-16T23:28:59Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "xref": {
+      "url": "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/xref.txt.gz",
+      "sha256": "1354c9e13b6847baa417ed7eb411a12cfc721f0d26aa75e2ead7544b2eba87b9",
+      "size": 3071929,
+      "retrieved_utc": "2026-09-16T23:29:04Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "21e5761857837cabe70b86127f693155ab795b2f1026939f710b2f18a77b245d",
+    "logical_tree_sha256": "92cf946ed1aacc5b926dcd8d4ac0c461e563d5cc8f800c7d63dc49b4b3206287",
+    "pinned_utc": "2026-09-16T23:29:04Z"
+  },
+  "history": []
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-tuning-pythia-160m-safetensors-step100000",
+  "inputs": {},
+  "output": {
+    "materialization_key": "03552eb581ba2e2bd2acb6f16fc09a54577f6e05715203da92192fc8d1b14254",
+    "logical_tree_sha256": "071f8c23e9d637732caf2203c27db171b1f28eabda01ff333a716573d95519f2",
+    "pinned_utc": "2026-09-16T23:30:17Z"
+  },
+  "history": []
+}

@@ -1,0 +1,200 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-tuning-sdss-dr17-frames",
+  "family": "F07",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "sdss-dr17",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "a20e92230dafeb4acace3bb517471dbc8519e4f07d723f06e4925ec6beeb1e0c",
+  "materialization_key": "635d9bc55d8d14caaa181e060db51c69ca3c9b3cbd4b6d3987f1259280ed9f8d",
+  "materialized_utc": "2026-09-16T23:30:29Z",
+  "materialized_relpath": "corpus/tuning/f07-tuning-sdss-dr17-frames",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "e8103bfd98a88d3e8445085aeab39372179a632ae06338428bc7dafcb49b001c",
+    "pinned_utc": "2026-09-16T23:30:29Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 87131520,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "frame_u_1",
+        "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-u-000756-1-0206.fits.bz2",
+        "final_url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-u-000756-1-0206.fits.bz2",
+        "sha256": "2bad4f86186c7808b8436723c07946d62c5ca750f0e8763909ce1383d6eeb7d4",
+        "size": 3085602,
+        "retrieved_utc": "2026-09-16T23:30:20Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "frame-u-000756-1-0206.fits.bz2"
+      },
+      {
+        "name": "frame_g_1",
+        "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-g-000756-1-0206.fits.bz2",
+        "final_url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-g-000756-1-0206.fits.bz2",
+        "sha256": "117dc5d6b20b65f946c007d12b2ba84f4c7a5385b0aefdc52e041fc3f33531e5",
+        "size": 3572185,
+        "retrieved_utc": "2026-09-16T23:30:21Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "frame-g-000756-1-0206.fits.bz2"
+      },
+      {
+        "name": "frame_r_1",
+        "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-r-000756-1-0206.fits.bz2",
+        "final_url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-r-000756-1-0206.fits.bz2",
+        "sha256": "1a221ebcbaf55ce4039108c5f49f57eb956f6c862a6c207f8d53352b71f60ead",
+        "size": 3281971,
+        "retrieved_utc": "2026-09-16T23:30:22Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "frame-r-000756-1-0206.fits.bz2"
+      },
+      {
+        "name": "frame_i_1",
+        "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-i-000756-1-0206.fits.bz2",
+        "final_url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-i-000756-1-0206.fits.bz2",
+        "sha256": "acd3835eeba5e668e3358de30681cc518c461f6c2629f1fe51e6f57443440462",
+        "size": 3664351,
+        "retrieved_utc": "2026-09-16T23:30:22Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "frame-i-000756-1-0206.fits.bz2"
+      },
+      {
+        "name": "frame_z_1",
+        "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-z-000756-1-0206.fits.bz2",
+        "final_url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-z-000756-1-0206.fits.bz2",
+        "sha256": "e5d45dce3681b1d2944c5eef562a749a7f27b72d3999b7396e1886f114ffc62e",
+        "size": 3645602,
+        "retrieved_utc": "2026-09-16T23:30:23Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "frame-z-000756-1-0206.fits.bz2"
+      },
+      {
+        "name": "frame_g_2",
+        "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/2/frame-g-000756-2-0206.fits.bz2",
+        "final_url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/2/frame-g-000756-2-0206.fits.bz2",
+        "sha256": "1ba42a44372b26349bf1f519c8ef481f81a7981dea7483099b8ef151e29529f6",
+        "size": 3218264,
+        "retrieved_utc": "2026-09-16T23:30:24Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "frame-g-000756-2-0206.fits.bz2"
+      },
+      {
+        "name": "frame_r_2",
+        "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/2/frame-r-000756-2-0206.fits.bz2",
+        "final_url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/2/frame-r-000756-2-0206.fits.bz2",
+        "sha256": "41562f88556b7a4f0334c69fc46b05247ba7fbadbb5b4f4514eef338b7cfc3fe",
+        "size": 3453331,
+        "retrieved_utc": "2026-09-16T23:30:24Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "frame-r-000756-2-0206.fits.bz2"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "frame_u_1",
+        "dest": "frame-u-000756-1-0206.fits",
+        "format": "bz2"
+      },
+      {
+        "op": "decompress",
+        "input": "frame_g_1",
+        "dest": "frame-g-000756-1-0206.fits",
+        "format": "bz2"
+      },
+      {
+        "op": "decompress",
+        "input": "frame_r_1",
+        "dest": "frame-r-000756-1-0206.fits",
+        "format": "bz2"
+      },
+      {
+        "op": "decompress",
+        "input": "frame_i_1",
+        "dest": "frame-i-000756-1-0206.fits",
+        "format": "bz2"
+      },
+      {
+        "op": "decompress",
+        "input": "frame_z_1",
+        "dest": "frame-z-000756-1-0206.fits",
+        "format": "bz2"
+      },
+      {
+        "op": "decompress",
+        "input": "frame_g_2",
+        "dest": "frame-g-000756-2-0206.fits",
+        "format": "bz2"
+      },
+      {
+        "op": "decompress",
+        "input": "frame_r_2",
+        "dest": "frame-r-000756-2-0206.fits",
+        "format": "bz2"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "1c13cb9d14ad0da3543bb4ba4ce5071d2b6f9693d90143e94a8a3145b24c2ed0",
+    "logical_tree_sha256": "e8103bfd98a88d3e8445085aeab39372179a632ae06338428bc7dafcb49b001c",
+    "content_tree_sha256": "902b96df289cb3c5f652725267c636e28fd7d0143c6fd7b0655ff9219b8c8dcd",
+    "extended_tree_sha256": "37baca714d3d4f68540a4e1f6394062b9c1932fe3be5f39c3a6c48b8513dc9f1",
+    "bytes": 87131520,
+    "bytes_all_paths": 87131520,
+    "allocated_bytes": 87134208,
+    "counts": {
+      "objects": 8,
+      "files": 7,
+      "unique_file_inodes": 7,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 26,
+      "path_length_bytes": {
+        "min": 26,
+        "max": 26,
+        "mean": 26.0,
+        "p50": 26,
+        "p95": 26
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

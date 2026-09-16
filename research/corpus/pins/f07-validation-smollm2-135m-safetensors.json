@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-validation-smollm2-135m-safetensors",
+  "inputs": {},
+  "output": {
+    "materialization_key": "845a6bf337de8bd364aed59695dc45db0ffd73d1ca1914c322641b295813822c",
+    "logical_tree_sha256": "59bdc875ae1aaf7ed98c93648f0e29f7f5b17777705936a202a2557d7268388b",
+    "pinned_utc": "2026-09-16T23:31:07Z"
+  },
+  "history": []
+}

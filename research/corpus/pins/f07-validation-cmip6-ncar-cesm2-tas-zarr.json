@@ -1,0 +1,201 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-validation-cmip6-ncar-cesm2-tas-zarr",
+  "inputs": {
+    "z_zattrs": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/.zattrs",
+      "sha256": "c385007383ee91493fd3319531ef4ea1dc856fdf25ad7fdaafdde8fa0bb2e49d",
+      "size": 3377,
+      "retrieved_utc": "2026-09-16T23:30:55Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_zgroup": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/.zgroup",
+      "sha256": "2383746e67b4bcc2762b3f100f06c3fa2d5f149ab5a8e5da5d33521464a01959",
+      "size": 24,
+      "retrieved_utc": "2026-09-16T23:30:55Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_zmetadata": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/.zmetadata",
+      "sha256": "8c53d117d34031c049b913c815e28f041358c50c676b0a2df88af878ed7277e6",
+      "size": 10516,
+      "retrieved_utc": "2026-09-16T23:30:55Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_tas_zarray": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/tas/.zarray",
+      "sha256": "524e24e24abaefc706811aed0113d0d3ff44b8d263940462b5569fae76e75d9d",
+      "size": 387,
+      "retrieved_utc": "2026-09-16T23:30:55Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_tas_zattrs": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/tas/.zattrs",
+      "sha256": "49d5606f0454150be58f92925c15371dd764709c3ff8bb32cf449ab50a976965",
+      "size": 723,
+      "retrieved_utc": "2026-09-16T23:30:56Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_tas_0_0_0": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/tas/0.0.0",
+      "sha256": "352f6d810cdf2326396c66d8b4845f579f3044832577185d178303d56264c3fc",
+      "size": 79307487,
+      "retrieved_utc": "2026-09-16T23:30:57Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_tas_1_0_0": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/tas/1.0.0",
+      "sha256": "4ac7a5a1115f6b1aaeab1b45de250ec5698013d4983ed96452ddae39c11c008f",
+      "size": 79243944,
+      "retrieved_utc": "2026-09-16T23:30:58Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_tas_2_0_0": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/tas/2.0.0",
+      "sha256": "26a0253c2361a18b7ad8817f999b7bdf2a3582de416bc569330aa88bde80fd1f",
+      "size": 79181912,
+      "retrieved_utc": "2026-09-16T23:30:59Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_tas_3_0_0": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/tas/3.0.0",
+      "sha256": "ca866e61a8fbeac16094b06049b17d648a33203b490a7800d03e82a98980d10a",
+      "size": 24118124,
+      "retrieved_utc": "2026-09-16T23:31:00Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lat_zarray": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lat/.zarray",
+      "sha256": "ce327e9243d456bc7cc75f089ac4618dfa318afde8c3bbcecefe4c612cb94abe",
+      "size": 317,
+      "retrieved_utc": "2026-09-16T23:31:00Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lat_zattrs": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lat/.zattrs",
+      "sha256": "7016de54a33240c12d63534cdc8e88db21bdf2cdf98232daf7f465631c0dfa11",
+      "size": 250,
+      "retrieved_utc": "2026-09-16T23:31:00Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lat_0": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lat/0",
+      "sha256": "d0280d2c411a9b8d9fa363b8d1ee139e2da92461f609c4819ca518723951bc8d",
+      "size": 1420,
+      "retrieved_utc": "2026-09-16T23:31:00Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lon_zarray": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lon/.zarray",
+      "sha256": "552be7396c8fa27b86869895db0ea0b79ed9d784eba60ff8b3d8df3d0105c8a5",
+      "size": 317,
+      "retrieved_utc": "2026-09-16T23:31:01Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lon_zattrs": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lon/.zattrs",
+      "sha256": "463cd20e3cf3d4ab5c9d9ea82ac73e4f598ca7f60b76c2415a45ac02f194cbb3",
+      "size": 250,
+      "retrieved_utc": "2026-09-16T23:31:01Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lon_0": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lon/0",
+      "sha256": "034873e19068784ef70f42d5a1bc660e9e6067bc9d0b27cd1c571c33e14b6f84",
+      "size": 657,
+      "retrieved_utc": "2026-09-16T23:31:01Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_time_zarray": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/time/.zarray",
+      "sha256": "5b8005aca0e134cb165e1b18604412c73dfb5c2f1da64564448b924cd261444a",
+      "size": 319,
+      "retrieved_utc": "2026-09-16T23:31:02Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_time_zattrs": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/time/.zattrs",
+      "sha256": "e411d7453918173a4be28533c78a2cc98548d0e5b3facf99c5456e9414ac0b00",
+      "size": 231,
+      "retrieved_utc": "2026-09-16T23:31:03Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_time_0": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/time/0",
+      "sha256": "a1e5ba59d2d811df55a93b5b440896621622a635d887abe041a6fe691441ae8a",
+      "size": 3391,
+      "retrieved_utc": "2026-09-16T23:31:03Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lat_bnds_zarray": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lat_bnds/.zarray",
+      "sha256": "4c548b8227c9b39bc8f4250b904aac597d1e1e3b53bfbffb4aadcf90fb62ac30",
+      "size": 339,
+      "retrieved_utc": "2026-09-16T23:31:03Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lat_bnds_zattrs": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lat_bnds/.zattrs",
+      "sha256": "5cf82223ea660f6c6c8952e36c267d149154e0402a0efddb117787b6f884171e",
+      "size": 96,
+      "retrieved_utc": "2026-09-16T23:31:03Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lat_bnds_0_0": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lat_bnds/0.0",
+      "sha256": "0df689e5f129d443eae8c1cc7b0a1b491a77e3279b8df5f29f6d89e3852beb3c",
+      "size": 1237,
+      "retrieved_utc": "2026-09-16T23:31:03Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lon_bnds_zarray": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lon_bnds/.zarray",
+      "sha256": "049ccdb8abd9fb1866ff143e508f8f219e0e504cfd0ad578adb5c486cad48686",
+      "size": 339,
+      "retrieved_utc": "2026-09-16T23:31:03Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lon_bnds_zattrs": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lon_bnds/.zattrs",
+      "sha256": "493be164b2fe6b8917308789eb7c6c9b9d1f4e226ec4e7da2a8008ad00110ee8",
+      "size": 95,
+      "retrieved_utc": "2026-09-16T23:31:04Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_lon_bnds_0_0": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/lon_bnds/0.0",
+      "sha256": "cabbfa17c815b44e82a23aafe393abf40bb9551a5f3335e73489675804e44edd",
+      "size": 739,
+      "retrieved_utc": "2026-09-16T23:31:04Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_time_bnds_zarray": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/time_bnds/.zarray",
+      "sha256": "fe26f753e71e99533227e7474f06cb73a618d6ca1ad06eaaa5b30d5980f0b8d8",
+      "size": 341,
+      "retrieved_utc": "2026-09-16T23:31:04Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_time_bnds_zattrs": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/time_bnds/.zattrs",
+      "sha256": "e8e8f9459afd860d771a799c20a2c7dc33e9b1b3ef1bff06d072bc360dd94bd6",
+      "size": 131,
+      "retrieved_utc": "2026-09-16T23:31:04Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "z_time_bnds_0_0": {
+      "url": "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308/time_bnds/0.0",
+      "sha256": "969069b399014b38a574f17aac2155eec237a05a98dfc3e44f4223aeaddb41fd",
+      "size": 4391,
+      "retrieved_utc": "2026-09-16T23:31:04Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "3d822b611c40bef67a46d952e05f5a8ecf91f4436d8276dc08cd72b7e245aa15",
+    "logical_tree_sha256": "becbb66b2eaed392aa4fb2029793e2245848e318eceb4323920e2df136c2b085",
+    "pinned_utc": "2026-09-16T23:31:05Z"
+  },
+  "history": []
+}

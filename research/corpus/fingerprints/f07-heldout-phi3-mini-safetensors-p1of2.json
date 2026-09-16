@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-heldout-phi3-mini-safetensors-p1of2",
+  "family": "F07",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "microsoft-phi3",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "015d181e8c5e4848a0d24b26b76089b588b5f0cce7bc4f9a23be724a351d47ea",
+  "materialization_key": "13361a7aa6436570295f72451c2c3c456518d31e17f4f6775431a8aa93009664",
+  "materialized_utc": "2026-09-16T23:30:07Z",
+  "materialized_relpath": "heldout/f07-heldout-phi3-mini-safetensors-p1of2",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "8724115786a1af59e6070b488a23ad01e938c019db5f987d8340230cd56a5326",
+    "pinned_utc": "2026-09-16T23:30:07Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 4972489328,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "model",
+        "url": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct/resolve/f39ac1d28e925b323eae81227eaba4464caced4e/model-00001-of-00002.safetensors",
+        "final_url": "https://us.aws.cdn.hf.co/xet-bridge-us/66268dc9cd54f5fffb4e2e24/bfc368ca8949251bb0f2f3021c89fee9ec7e27d3a38cf48b6d2c0245a2d2cff1?response-content-disposition=inline%3B+filename*%3DUTF-8%27%27model-00001-of-00002.safetensors%3B+filename%3D%22model-00001-of-00002.safetensors%22%3B&user_id=public&X-Xet-Cas-Uid=public&Expires=1789604885&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjYyNjhkYzljZDU0ZjVmZmZiNGUyZTI0L2JmYzM2OGNhODk0OTI1MWJiMGYyZjMwMjFjODlmZWU5ZWM3ZTI3ZDNhMzhjZjQ4YjZkMmMwMjQ1YTJkMmNmZjFcXD9yZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPWlubGluZSUzQitmaWxlbmFtZSUyQSUzRFVURi04JTI3JTI3bW9kZWwtMDAwMDEtb2YtMDAwMDIuc2FmZXRlbnNvcnMlM0IrZmlsZW5hbWUlM0QlMjJtb2RlbC0wMDAwMS1vZi0wMDAwMi5zYWZldGVuc29ycyUyMiUzQiZ1c2VyX2lkPXB1YmxpYyZYLVhldC1DYXMtVWlkPXB1YmxpYyIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiRXBvY2hUaW1lIjoxNzg5NjA0ODg1fX19XX0_&Signature=MEUCIQDcULw-1OrHQccCVyfli%7ET5xyJikuyQCw5z0YivK%7E9N8gIgOBXhibbOxUUuC0BGReA2gNPclemLbjZ3nMQwqaLSdE4_&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256",
+        "sha256": "b7492726c01287bf6e13c3d74c65ade3d436d50da1cf5bb6925bc962419d6610",
+        "size": 4972489328,
+        "retrieved_utc": "2026-09-16T23:29:40Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "model-00001-of-00002.safetensors"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "model"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "1b90d316fde087d4b3377d470fe7a5f13c3da4da99a68997a57876e5c4c26e54",
+    "logical_tree_sha256": "8724115786a1af59e6070b488a23ad01e938c019db5f987d8340230cd56a5326",
+    "content_tree_sha256": "5e797113d40280cd98ebade0c0d2fd10e275bfd18a98f0604b094f1c10fbf56e",
+    "extended_tree_sha256": "fa2cd9087f6447179b52a470d28e5ef81dff4d2d8d286bc87fb1032c42248dd9",
+    "bytes": 4972489328,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

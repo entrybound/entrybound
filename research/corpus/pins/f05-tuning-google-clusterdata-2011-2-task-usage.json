@@ -1,0 +1,47 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-tuning-google-clusterdata-2011-2-task-usage",
+  "inputs": {
+    "part0": {
+      "url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00000-of-00500.csv.gz",
+      "sha256": "841254d3bc4199c26c82890dcd6bc87fcfb1ff23d75be8e39f0337f0ed1c6e28",
+      "size": 91723415,
+      "retrieved_utc": "2026-09-16T23:31:23Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "part1": {
+      "url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00001-of-00500.csv.gz",
+      "sha256": "1fa83e39536baac92a1646dbe750541c6504e4c26a85b7f45d9259fd16d3919c",
+      "size": 87188987,
+      "retrieved_utc": "2026-09-16T23:31:25Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "part2": {
+      "url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00002-of-00500.csv.gz",
+      "sha256": "7d217e976b9d380635f7330e1c75719858daa636efb2f35b8507823476c7b235",
+      "size": 90861131,
+      "retrieved_utc": "2026-09-16T23:31:28Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "part3": {
+      "url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00003-of-00500.csv.gz",
+      "sha256": "4145a0bbd4cce2effc376f6e1204019bfeca49e635dfd358c2ead4be9e7c6416",
+      "size": 85937819,
+      "retrieved_utc": "2026-09-16T23:31:31Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "part4": {
+      "url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00004-of-00500.csv.gz",
+      "sha256": "7b05867afe28b7b829a1fe17b8ed052ac67f4d9242c2714e41fe7046b73fbffd",
+      "size": 91924797,
+      "retrieved_utc": "2026-09-16T23:31:33Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "d7d23027f3d66b17b3d43aea0ef7e6bc9682a389e4c140503e28e4e46131a5c8",
+    "logical_tree_sha256": "687acdb4f5683f0fb80d5de16018189f54f560a2e5d3f58a6617235f69db84e7",
+    "pinned_utc": "2026-09-16T23:32:06Z"
+  },
+  "history": []
+}

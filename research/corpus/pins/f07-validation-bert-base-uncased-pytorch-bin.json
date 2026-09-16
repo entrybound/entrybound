@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-validation-bert-base-uncased-pytorch-bin",
+  "inputs": {},
+  "output": {
+    "materialization_key": "34239fe950bb7327b9de746b4a52f7b7e4b2e6a0f6dc55e065f5d8953b85f0ad",
+    "logical_tree_sha256": "deb7bfd6479d9a7e2b16c88850cc47b40a6ef64b0c4d6fc07bcafd91fa343118",
+    "pinned_utc": "2026-09-16T23:30:40Z"
+  },
+  "history": []
+}

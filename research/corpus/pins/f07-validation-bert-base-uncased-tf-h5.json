@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-validation-bert-base-uncased-tf-h5",
+  "inputs": {},
+  "output": {
+    "materialization_key": "4d424ad3d4b91d877b7a5aae02f16edaffd08672a45e3e3f864f35dfb61ed5fc",
+    "logical_tree_sha256": "45b2cc8f643aca0c115cf46c47a51e033799bfbaa68e421027333a9a97e0765a",
+    "pinned_utc": "2026-09-16T23:30:58Z"
+  },
+  "history": []
+}

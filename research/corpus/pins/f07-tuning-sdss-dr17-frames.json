@@ -1,0 +1,61 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-tuning-sdss-dr17-frames",
+  "inputs": {
+    "frame_u_1": {
+      "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-u-000756-1-0206.fits.bz2",
+      "sha256": "2bad4f86186c7808b8436723c07946d62c5ca750f0e8763909ce1383d6eeb7d4",
+      "size": 3085602,
+      "retrieved_utc": "2026-09-16T23:30:20Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "frame_g_1": {
+      "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-g-000756-1-0206.fits.bz2",
+      "sha256": "117dc5d6b20b65f946c007d12b2ba84f4c7a5385b0aefdc52e041fc3f33531e5",
+      "size": 3572185,
+      "retrieved_utc": "2026-09-16T23:30:21Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "frame_r_1": {
+      "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-r-000756-1-0206.fits.bz2",
+      "sha256": "1a221ebcbaf55ce4039108c5f49f57eb956f6c862a6c207f8d53352b71f60ead",
+      "size": 3281971,
+      "retrieved_utc": "2026-09-16T23:30:22Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "frame_i_1": {
+      "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-i-000756-1-0206.fits.bz2",
+      "sha256": "acd3835eeba5e668e3358de30681cc518c461f6c2629f1fe51e6f57443440462",
+      "size": 3664351,
+      "retrieved_utc": "2026-09-16T23:30:22Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "frame_z_1": {
+      "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/1/frame-z-000756-1-0206.fits.bz2",
+      "sha256": "e5d45dce3681b1d2944c5eef562a749a7f27b72d3999b7396e1886f114ffc62e",
+      "size": 3645602,
+      "retrieved_utc": "2026-09-16T23:30:23Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "frame_g_2": {
+      "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/2/frame-g-000756-2-0206.fits.bz2",
+      "sha256": "1ba42a44372b26349bf1f519c8ef481f81a7981dea7483099b8ef151e29529f6",
+      "size": 3218264,
+      "retrieved_utc": "2026-09-16T23:30:24Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "frame_r_2": {
+      "url": "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756/2/frame-r-000756-2-0206.fits.bz2",
+      "sha256": "41562f88556b7a4f0334c69fc46b05247ba7fbadbb5b4f4514eef338b7cfc3fe",
+      "size": 3453331,
+      "retrieved_utc": "2026-09-16T23:30:24Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "635d9bc55d8d14caaa181e060db51c69ca3c9b3cbd4b6d3987f1259280ed9f8d",
+    "logical_tree_sha256": "e8103bfd98a88d3e8445085aeab39372179a632ae06338428bc7dafcb49b001c",
+    "pinned_utc": "2026-09-16T23:30:29Z"
+  },
+  "history": []
+}

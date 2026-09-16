@@ -1,0 +1,167 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-tuning-google-clusterdata-2011-2-task-usage",
+  "family": "F05",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "google-clusterdata-2011-2",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "3c05feddbfc3b76a7c3b627ab706bf1db015c851184c2a65d269efab7d853ade",
+  "materialization_key": "d7d23027f3d66b17b3d43aea0ef7e6bc9682a389e4c140503e28e4e46131a5c8",
+  "materialized_utc": "2026-09-16T23:32:06Z",
+  "materialized_relpath": "corpus/tuning/f05-tuning-google-clusterdata-2011-2-task-usage",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "687acdb4f5683f0fb80d5de16018189f54f560a2e5d3f58a6617235f69db84e7",
+    "pinned_utc": "2026-09-16T23:32:06Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 1880793384,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "part0",
+        "url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00000-of-00500.csv.gz",
+        "final_url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00000-of-00500.csv.gz",
+        "sha256": "841254d3bc4199c26c82890dcd6bc87fcfb1ff23d75be8e39f0337f0ed1c6e28",
+        "size": 91723415,
+        "retrieved_utc": "2026-09-16T23:31:23Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "part-00000-of-00500.csv.gz"
+      },
+      {
+        "name": "part1",
+        "url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00001-of-00500.csv.gz",
+        "final_url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00001-of-00500.csv.gz",
+        "sha256": "1fa83e39536baac92a1646dbe750541c6504e4c26a85b7f45d9259fd16d3919c",
+        "size": 87188987,
+        "retrieved_utc": "2026-09-16T23:31:25Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "part-00001-of-00500.csv.gz"
+      },
+      {
+        "name": "part2",
+        "url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00002-of-00500.csv.gz",
+        "final_url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00002-of-00500.csv.gz",
+        "sha256": "7d217e976b9d380635f7330e1c75719858daa636efb2f35b8507823476c7b235",
+        "size": 90861131,
+        "retrieved_utc": "2026-09-16T23:31:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "part-00002-of-00500.csv.gz"
+      },
+      {
+        "name": "part3",
+        "url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00003-of-00500.csv.gz",
+        "final_url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00003-of-00500.csv.gz",
+        "sha256": "4145a0bbd4cce2effc376f6e1204019bfeca49e635dfd358c2ead4be9e7c6416",
+        "size": 85937819,
+        "retrieved_utc": "2026-09-16T23:31:31Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "part-00003-of-00500.csv.gz"
+      },
+      {
+        "name": "part4",
+        "url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00004-of-00500.csv.gz",
+        "final_url": "https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-00004-of-00500.csv.gz",
+        "sha256": "7b05867afe28b7b829a1fe17b8ed052ac67f4d9242c2714e41fe7046b73fbffd",
+        "size": 91924797,
+        "retrieved_utc": "2026-09-16T23:31:33Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "part-00004-of-00500.csv.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "part0",
+        "dest": "part-00000-of-00500.csv",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "part1",
+        "dest": "part-00001-of-00500.csv",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "part2",
+        "dest": "part-00002-of-00500.csv",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "part3",
+        "dest": "part-00003-of-00500.csv",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "part4",
+        "dest": "part-00004-of-00500.csv",
+        "format": "gz"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "gzip": "gzip 1.12",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c9d1d76e7d2fe0c5019343c4d80fa20993a6b7a517c903713c165e7090eb33a2",
+    "logical_tree_sha256": "687acdb4f5683f0fb80d5de16018189f54f560a2e5d3f58a6617235f69db84e7",
+    "content_tree_sha256": "3cda974041bc7d0393c0712031133bccce2c3fb51ef1202d68531da5fc456ea6",
+    "extended_tree_sha256": "29060cdb0d5ba14142332fd5eab98211c90df5baf5c6ef441d2044b90112da0b",
+    "bytes": 1880793384,
+    "bytes_all_paths": 1880793384,
+    "allocated_bytes": 1880817664,
+    "counts": {
+      "objects": 6,
+      "files": 5,
+      "unique_file_inodes": 5,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 23,
+      "path_length_bytes": {
+        "min": 23,
+        "max": 23,
+        "mean": 23.0,
+        "p50": 23,
+        "p95": 23
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

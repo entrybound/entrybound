@@ -1,0 +1,19 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-tuning-mnist-npz",
+  "inputs": {
+    "mnist": {
+      "url": "https://storage.googleapis.com/tensorflow/tf-keras-datasets/mnist.npz",
+      "sha256": "731c5ac602752760c8e48fbffcf8c3b850d9dc2a2aedcf2cc48468fc17b673d1",
+      "size": 11490434,
+      "retrieved_utc": "2026-09-16T23:29:42Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "28c1a48c40d29215ecfdc1a656b5838d558360fb98a6067f5fee7952e435d02e",
+    "logical_tree_sha256": "dd3d7b52ae6f10c3a376710561ebe55ff6341d33de6ecbc6012ab33ba6063d62",
+    "pinned_utc": "2026-09-16T23:29:42Z"
+  },
+  "history": []
+}

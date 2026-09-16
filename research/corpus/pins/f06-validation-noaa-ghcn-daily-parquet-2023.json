@@ -1,0 +1,68 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f06-validation-noaa-ghcn-daily-parquet-2023",
+  "inputs": {
+    "tmax": {
+      "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=TMAX/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+      "sha256": "9ccc16d12dc390f028f974660961496f32bc79823f4a1cdfc6cbdb71a9852912",
+      "size": 1681770,
+      "retrieved_utc": "2026-09-16T23:31:14Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "tmin": {
+      "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=TMIN/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+      "sha256": "9120121c42471045d23e9f299549291f7a135969c01db2edbb48e399732723f1",
+      "size": 1685806,
+      "retrieved_utc": "2026-09-16T23:31:15Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "prcp": {
+      "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=PRCP/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+      "sha256": "b5e07d281ad901a030ae980ad71b76f65652926f40ec968e284b6a477199d5eb",
+      "size": 1862505,
+      "retrieved_utc": "2026-09-16T23:31:16Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "snow": {
+      "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=SNOW/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+      "sha256": "77b546380644324d88f942c297a6420c285cd76f3c38030adc51233ff71b1e33",
+      "size": 1508213,
+      "retrieved_utc": "2026-09-16T23:31:16Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "snwd": {
+      "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=SNWD/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+      "sha256": "7b2d109d6cbf7fcdf7dcc9e3b68cc4d53b4c7b314b51562bba6e717fa47f3be6",
+      "size": 1628447,
+      "retrieved_utc": "2026-09-16T23:31:22Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "awnd": {
+      "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=AWND/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+      "sha256": "269ed200bc8342d1119ea0c9abe9eee7755d5eca7d6c1d91ba5336863fab6c7f",
+      "size": 847808,
+      "retrieved_utc": "2026-09-16T23:31:23Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "tavg": {
+      "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=TAVG/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+      "sha256": "8de15b73c547b3a9e2be7c4e7c9644ee95f138e27591d2de8b4e7c3726cdea7b",
+      "size": 1499747,
+      "retrieved_utc": "2026-09-16T23:31:23Z",
+      "retrieval_date": "2026-09-16"
+    },
+    "wt01": {
+      "url": "https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT=WT01/88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet",
+      "sha256": "4ab76db9e1e7d667159c53e16e389978ca0ec93159a68f853c6e7fb1c28707e2",
+      "size": 267107,
+      "retrieved_utc": "2026-09-16T23:31:23Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "9684445a2d5da133db6c0dd94c7756ad0ef14b2765669f84300b9c5e09be4351",
+    "logical_tree_sha256": "fb4854e6301f988e30cb154237604ae3175b78e3f1b1f0715c6feac28b9bf839",
+    "pinned_utc": "2026-09-16T23:31:23Z"
+  },
+  "history": []
+}

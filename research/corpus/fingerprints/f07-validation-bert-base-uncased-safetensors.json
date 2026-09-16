@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-validation-bert-base-uncased-safetensors",
+  "family": "F07",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "google-bert",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "787277254152f6c373efbdc9155ed623dd317d1a114a769dd938c35bc2576b35",
+  "materialization_key": "00d5552677ba11926442e74b4ffc5c0c52182827e261f8e4a10306399a9c7e93",
+  "materialized_utc": "2026-09-16T23:30:54Z",
+  "materialized_relpath": "corpus/validation/f07-validation-bert-base-uncased-safetensors",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "ef005d331af59bb70ce865eea6c6e239db2ad7f7103cfd5c7dba33802e17152f",
+    "pinned_utc": "2026-09-16T23:30:54Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 440449768,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "model",
+        "url": "https://huggingface.co/google-bert/bert-base-uncased/resolve/86b5e0934494bd15c9632b12f734a8a67f723594/model.safetensors",
+        "final_url": "https://us.aws.cdn.hf.co/xet-bridge-us/621ffdc036468d709f174338/44172b48ce7a9d951000a9d76ae331b155df32c9fd4e93239a233d720f471725?response-content-disposition=inline%3B+filename*%3DUTF-8%27%27model.safetensors%3B+filename%3D%22model.safetensors%22%3B&user_id=public&X-Xet-Cas-Uid=public&Expires=1789605042&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjIxZmZkYzAzNjQ2OGQ3MDlmMTc0MzM4LzQ0MTcyYjQ4Y2U3YTlkOTUxMDAwYTlkNzZhZTMzMWIxNTVkZjMyYzlmZDRlOTMyMzlhMjMzZDcyMGY0NzE3MjVcXD9yZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPWlubGluZSUzQitmaWxlbmFtZSUyQSUzRFVURi04JTI3JTI3bW9kZWwuc2FmZXRlbnNvcnMlM0IrZmlsZW5hbWUlM0QlMjJtb2RlbC5zYWZldGVuc29ycyUyMiUzQiZ1c2VyX2lkPXB1YmxpYyZYLVhldC1DYXMtVWlkPXB1YmxpYyIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiRXBvY2hUaW1lIjoxNzg5NjA1MDQyfX19XX0_&Signature=MEUCIQDAcET7GvZyGy7WaJplJb-pC2YV8mofiBN5J0VV2Z03LAIgM-CxE3eFJKZV00clajJ1GwGfA-Q5Cg233pfIA4RM5nA_&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256",
+        "sha256": "68d45e234eb4a928074dfd868cead0219ab85354cc53d20e772753c6bb9169d3",
+        "size": 440449768,
+        "retrieved_utc": "2026-09-16T23:30:53Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "model.safetensors"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "model"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "9a4fc7e41977ed847d62b2c7f756f05f6efb315669efea05bc89a08552155b68",
+    "logical_tree_sha256": "ef005d331af59bb70ce865eea6c6e239db2ad7f7103cfd5c7dba33802e17152f",
+    "content_tree_sha256": "e289578a95aa2ef458550982ceedae855442c5a2fc250427aa4059f202880558",
+    "extended_tree_sha256": "dfaecb25e8afd058c139d74446365bc109cb4844b65b0f4eb416856df1dc46c3",
+    "bytes": 440449768,
+    "bytes_all_paths": 440449768,
+    "allocated_bytes": 440451072,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 17,
+      "path_length_bytes": {
+        "min": 17,
+        "max": 17,
+        "mean": 17.0,
+        "p50": 17,
+        "p95": 17
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

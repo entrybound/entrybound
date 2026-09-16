@@ -17,6 +17,7 @@ under Windows or WSL Python.
 import argparse
 import json
 import os
+import re
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -568,6 +569,515 @@ ITEMS += [
          tags=["generated"]),
 ]
 
+# =======================================================================================
+# GAP CLOSURE 2026-09-16: F07 ML model/data distribution (BLOCKER), F08 database dumps
+# (BLOCKER), F05 telemetry/binary logs (MAJOR), F07 scientific archive formats beyond NetCDF
+# (MAJOR), F06 columnar formats (MINOR).  See research/corpus/critique-round1.md G01/G02/G11/
+# G15/G20.  Docker Desktop's Linux engine is unavailable this session (non-admin; the
+# com.docker.service backend needs an administrator to start), so the Docker-dependent derive
+# sub-items from G01/G02 -- pg_dump -Fp/-Fc/-Fd of the existing postgres17-pgbench item,
+# Ensembl loaded into MariaDB (real-content InnoDB plus mysqldump), and a mysqldump of the
+# existing employees test db -- are NOT included here and remain open; see PROGRESS.md.
+# =======================================================================================
+
+
+def dlx(name, url, sha256, size, filename=None, notes=None):
+    """Like dl(), but with an explicit (verified) sha256/size instead of TOFU."""
+    d = {"name": name, "url": url, "sha256": sha256, "size": size}
+    if filename:
+        d["filename"] = filename
+    if notes:
+        d["notes"] = notes
+    return d
+
+
+def hf_resolve(repo, commit, path, dataset=False):
+    prefix = "datasets/" if dataset else ""
+    return f"https://huggingface.co/{prefix}{repo}/resolve/{commit}/{path}"
+
+
+# ---- F07 ML model weights and dataset-shard distribution (critique G01) ---------------
+
+PYTHIA_LIC = lic("Apache-2.0", True, "EleutherAI, https://huggingface.co/EleutherAI/pythia-160m",
+                 "Pythia suite model checkpoint.")
+QWEN_LIC = lic("Apache-2.0", True, "Qwen Team, Alibaba Cloud, https://huggingface.co/Qwen/Qwen2.5-1.5B", "")
+QWEN_GGUF_LIC = lic("Apache-2.0", True,
+                    "Qwen Team, Alibaba Cloud (GGUF quantization), "
+                    "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+                    "llama.cpp-format Q4_K_M quantized conversion of Qwen2.5-0.5B-Instruct.")
+MNIST_LIC = lic("CC-BY-SA-3.0 (MNIST database)", True,
+                "Yann LeCun and Corinna Cortes, http://yann.lecun.com/exdb/mnist/; "
+                "TensorFlow Keras datasets mirror",
+                "Retrieved from the tensorflow.org Keras datasets mirror on storage.googleapis.com.")
+SMOLLM2_LIC = lic("Apache-2.0", True, "HuggingFaceTB, https://huggingface.co/HuggingFaceTB/SmolLM2-360M", "")
+BERT_LIC = lic("Apache-2.0", True,
+               "Google Research; google-bert, https://huggingface.co/google-bert/bert-base-uncased",
+               "Identical weights distributed in three container formats (PyTorch pickle, safetensors, "
+               "Keras HDF5).")
+PHI3_LIC = lic("MIT", True, "Microsoft, https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
+               "Sharded BF16 safetensors checkpoint.")
+FINEWEB_LIC = lic("ODC-By-1.0", True,
+                  "HuggingFaceFW (G. Penedo et al.), https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu", "")
+
+ITEMS += [
+    # tuning: eleutherai-pythia -- a versioned checkpoint pair (same model, two revisions/dtypes)
+    item("f07-tuning-pythia-160m-safetensors-main", "F07", "tuning", "medium", "download", "real",
+         {"inputs": [dlx("model", hf_resolve("EleutherAI/pythia-160m",
+                                             "50f5173d932e8e61f858120bcb800b97af589f46", "model.safetensors"),
+                        "29d2e457a664e41c12c735f20a36dc0956a665f614a54ce5db21a32e75965270", 374998696,
+                        filename="model.safetensors")]},
+         PYTHIA_LIC, "eleutherai-pythia",
+         "EleutherAI Pythia-160M model weights (main revision, commit 50f5173d), safetensors, FP16 by file size.",
+         notes="REQ-CMP-0149 input: a real BF16/FP16-range model checkpoint for the sign/exponent/mantissa split.",
+         tags=["model-weights"]),
+    item("f07-tuning-pythia-160m-safetensors-step100000", "F07", "tuning", "large", "download", "real",
+         {"inputs": [dlx("model", hf_resolve("EleutherAI/pythia-160m",
+                                             "c507d0e63f5a7a833b1b1866116a04cc3e74dc70", "model.safetensors"),
+                        "3164be2625f407dd83703a2d218277b7e80a03e28c9d51fc9d40dd5e34c16c14", 649308728,
+                        filename="model.safetensors")]},
+         PYTHIA_LIC, "eleutherai-pythia",
+         "EleutherAI Pythia-160M model weights at training checkpoint revision step100000, safetensors, "
+         "FP32 by file size: a same-model, different-revision, different-dtype companion checkpoint.",
+         tags=["model-weights"]),
+    # tuning: qwen2-5 -- BF16 base model plus a quantized GGUF instruct model
+    item("f07-tuning-qwen2-5-1-5b-safetensors-bf16", "F07", "tuning", "large", "download", "real",
+         {"inputs": [dlx("model", hf_resolve("Qwen/Qwen2.5-1.5B",
+                                             "8faed761d45a263340a0528343f099c05c9a4323", "model.safetensors"),
+                        "a961db72e75d52b18e6b0c9d379e51a26973b233385e0e127fdda7d648aec796", 3087467144,
+                        filename="model.safetensors")]},
+         QWEN_LIC, "qwen2-5", "Qwen2.5-1.5B base model weights, BF16 safetensors.",
+         tags=["model-weights"]),
+    item("f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km", "F07", "tuning", "medium", "download", "real",
+         {"inputs": [dlx("model", hf_resolve("Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+                                             "9217f5db79a29953eb74d5343926648285ec7e67",
+                                             "qwen2.5-0.5b-instruct-q4_k_m.gguf"),
+                        "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db", 491400032,
+                        filename="qwen2.5-0.5b-instruct-q4_k_m.gguf")]},
+         QWEN_GGUF_LIC, "qwen2-5",
+         "Qwen2.5-0.5B-Instruct quantized to GGUF Q4_K_M: a near-incompressible, bit-packed quantized weight file.",
+         tags=["model-weights", "quantized"]),
+    # tuning: mnist -- small real .npz dataset array
+    item("f07-tuning-mnist-npz", "F07", "tuning", "small", "download", "real",
+         {"inputs": [dl("mnist", "https://storage.googleapis.com/tensorflow/tf-keras-datasets/mnist.npz",
+                       filename="mnist.npz")]},
+         MNIST_LIC, "mnist",
+         "MNIST handwritten-digit dataset as a compressed NumPy .npz archive (train/test images and labels).",
+         tags=["dataset-shard"]),
+    # validation: huggingfacetb-smollm2 -- two sizes of the same model family
+    item("f07-validation-smollm2-360m-safetensors", "F07", "validation", "large", "download", "real",
+         {"inputs": [dlx("model", hf_resolve("HuggingFaceTB/SmolLM2-360M",
+                                             "f8027fd0eaeea54caa13c31d31b9fdc459c38b49", "model.safetensors"),
+                        "7aaff6661428bed033abba9522bec81938678642cca3181fe752b6ca9e1e540f", 723674912,
+                        filename="model.safetensors")]},
+         SMOLLM2_LIC, "huggingfacetb-smollm2", "SmolLM2-360M model weights, safetensors.",
+         tags=["model-weights"]),
+    item("f07-validation-smollm2-135m-safetensors", "F07", "validation", "medium", "download", "real",
+         {"inputs": [dlx("model", hf_resolve("HuggingFaceTB/SmolLM2-135M",
+                                             "93efa2f097d58c2a74874c7e644dbc9b0cee75a2", "model.safetensors"),
+                        "80521b40281d6ce74e35c9282c22539e75aa0ac8578892b2a59955ef78d55da1", 269060552,
+                        filename="model.safetensors")]},
+         SMOLLM2_LIC, "huggingfacetb-smollm2",
+         "SmolLM2-135M model weights, safetensors: a smaller sibling checkpoint.",
+         tags=["model-weights"]),
+    # validation: google-bert -- same weights, three container formats
+    item("f07-validation-bert-base-uncased-pytorch-bin", "F07", "validation", "medium", "download", "real",
+         {"inputs": [dlx("model", hf_resolve("google-bert/bert-base-uncased",
+                                             "86b5e0934494bd15c9632b12f734a8a67f723594", "pytorch_model.bin"),
+                        "097417381d6c7230bd9e3557456d726de6e83245ec8b24f529f60198a67b203a", 440473133,
+                        filename="pytorch_model.bin")]},
+         BERT_LIC, "google-bert", "bert-base-uncased weights as a PyTorch pickle checkpoint (pytorch_model.bin).",
+         tags=["model-weights"]),
+    item("f07-validation-bert-base-uncased-safetensors", "F07", "validation", "medium", "download", "real",
+         {"inputs": [dlx("model", hf_resolve("google-bert/bert-base-uncased",
+                                             "86b5e0934494bd15c9632b12f734a8a67f723594", "model.safetensors"),
+                        "68d45e234eb4a928074dfd868cead0219ab85354cc53d20e772753c6bb9169d3", 440449768,
+                        filename="model.safetensors")]},
+         BERT_LIC, "google-bert",
+         "bert-base-uncased weights as safetensors: same weights as the pytorch_model.bin item.",
+         tags=["model-weights"]),
+    item("f07-validation-bert-base-uncased-tf-h5", "F07", "validation", "medium", "download", "real",
+         {"inputs": [dlx("model", hf_resolve("google-bert/bert-base-uncased",
+                                             "86b5e0934494bd15c9632b12f734a8a67f723594", "tf_model.h5"),
+                        "a7a17d6d844b5de815ccab5f42cad6d24496db3850a2a43d8258221018ce87d2", 536063208,
+                        filename="tf_model.h5")]},
+         BERT_LIC, "google-bert",
+         "bert-base-uncased weights as a Keras/TensorFlow HDF5 checkpoint: same weights, third container format.",
+         tags=["model-weights"]),
+    # held-out: microsoft-phi3 (sharded BF16 instruct model) and huggingfacefw-fineweb (dataset shard)
+    item("f07-heldout-phi3-mini-safetensors-p1of2", "F07", "heldout", "large", "download", "real",
+         {"inputs": [dlx("model", hf_resolve("microsoft/Phi-3-mini-4k-instruct",
+                                             "f39ac1d28e925b323eae81227eaba4464caced4e",
+                                             "model-00001-of-00002.safetensors"),
+                        "b7492726c01287bf6e13c3d74c65ade3d436d50da1cf5bb6925bc962419d6610", 4972489328,
+                        filename="model-00001-of-00002.safetensors")]},
+         PHI3_LIC, "microsoft-phi3", "Phi-3-mini-4k-instruct BF16 safetensors, shard 1 of 2.",
+         notes="Held-out item: description is provenance only.", tags=["model-weights"]),
+    item("f07-heldout-phi3-mini-safetensors-p2of2", "F07", "heldout", "large", "download", "real",
+         {"inputs": [dlx("model", hf_resolve("microsoft/Phi-3-mini-4k-instruct",
+                                             "f39ac1d28e925b323eae81227eaba4464caced4e",
+                                             "model-00002-of-00002.safetensors"),
+                        "3f311787aa136e858556caa8543015161edcad85ba81b6a36072443d7fa73c87", 2669692552,
+                        filename="model-00002-of-00002.safetensors")]},
+         PHI3_LIC, "microsoft-phi3", "Phi-3-mini-4k-instruct BF16 safetensors, shard 2 of 2.",
+         notes="Held-out item: description is provenance only.", tags=["model-weights"]),
+    item("f07-heldout-fineweb-edu-parquet-sample10bt", "F07", "heldout", "large", "download", "real",
+         {"inputs": [dlx("shard", hf_resolve("HuggingFaceFW/fineweb-edu",
+                                             "87f09149ef4734204d70ed1d046ddc9ca3f2b8f9",
+                                             "sample/10BT/000_00000.parquet", dataset=True),
+                        "b1ba7b2ce4cb5ea6ef42dca40263eabb85f37700d01693a68e9b30a31d78e871", 2152819114,
+                        filename="000_00000.parquet")]},
+         FINEWEB_LIC, "huggingfacefw-fineweb",
+         "fineweb-edu 10BT sample, shard 000_00000: one Parquet shard of a pretraining-scale web-text "
+         "dataset (also stands in as the F06 large-tier held-out columnar item; see G20 in critique-round1.md).",
+         notes="Held-out item: description is provenance only.", tags=["dataset-shard"]),
+]
+
+# ---- F08 database dumps (critique G02) -------------------------------------------------
+
+ITEMS += [
+    item("f08-tuning-wikimedia-simplewiki-sql-dump", "F08", "tuning", "large", "download", "real",
+         {"inputs": [dl("page", "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-page.sql.gz"),
+                     dl("categorylinks",
+                        "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-categorylinks.sql.gz"),
+                     dl("pagelinks",
+                        "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-pagelinks.sql.gz")],
+          "steps": [{"op": "decompress", "input": "page", "dest": "simplewiki-20260901-page.sql", "format": "gz"},
+                    {"op": "decompress", "input": "categorylinks",
+                     "dest": "simplewiki-20260901-categorylinks.sql", "format": "gz"},
+                    {"op": "decompress", "input": "pagelinks",
+                     "dest": "simplewiki-20260901-pagelinks.sql", "format": "gz"}]},
+         lic("CC-BY-SA-4.0 AND GFDL-1.3 (Wikipedia text); dump metadata CC0", True,
+             "Simple English Wikipedia contributors; Wikimedia Foundation dumps, https://dumps.wikimedia.org",
+             "mysqldump-format SQL table dumps; share-alike applies to the underlying wiki text."),
+         "wikimedia-simplewiki",
+         "Wikimedia Simple English Wikipedia (simplewiki) MySQL table dumps of 2026-09-01: page, "
+         "categorylinks and pagelinks tables, mysqldump/MediaWiki export SQL format, decompressed from gz."),
+]
+
+ENSEMBL_FILES = [
+    "alt_allele.txt.gz", "alt_allele_attrib.txt.gz", "alt_allele_group.txt.gz", "analysis.txt.gz",
+    "analysis_description.txt.gz", "assembly.txt.gz", "assembly_exception.txt.gz", "associated_group.txt.gz",
+    "associated_xref.txt.gz", "attrib_type.txt.gz", "biotype.txt.gz", "coord_system.txt.gz", "data_file.txt.gz",
+    "density_feature.txt.gz", "density_type.txt.gz", "dependent_xref.txt.gz", "ditag.txt.gz",
+    "ditag_feature.txt.gz", "dna.txt.gz", "dna_align_feature.txt.gz", "dna_align_feature_attrib.txt.gz",
+    "exon.txt.gz", "exon_transcript.txt.gz", "external_db.txt.gz", "external_synonym.txt.gz", "gene.txt.gz",
+    "gene_archive.txt.gz", "gene_attrib.txt.gz", "genome_statistics.txt.gz", "identity_xref.txt.gz",
+    "interpro.txt.gz", "intron_supporting_evidence.txt.gz", "karyotype.txt.gz", "map.txt.gz",
+    "mapping_session.txt.gz", "mapping_set.txt.gz", "marker.txt.gz", "marker_feature.txt.gz",
+    "marker_map_location.txt.gz", "marker_synonym.txt.gz", "meta.txt.gz", "meta_coord.txt.gz",
+    "misc_attrib.txt.gz", "misc_feature.txt.gz", "misc_feature_misc_set.txt.gz", "misc_set.txt.gz",
+    "object_xref.txt.gz", "ontology_xref.txt.gz", "operon.txt.gz", "operon_transcript.txt.gz",
+    "operon_transcript_gene.txt.gz", "peptide_archive.txt.gz", "prediction_exon.txt.gz",
+    "prediction_transcript.txt.gz", "protein_align_feature.txt.gz", "protein_feature.txt.gz",
+    "repeat_consensus.txt.gz", "repeat_feature.txt.gz", "rnaproduct.txt.gz", "rnaproduct_attrib.txt.gz",
+    "rnaproduct_type.txt.gz", "saccharomyces_cerevisiae_core_114_4.sql.gz", "seq_region.txt.gz",
+    "seq_region_attrib.txt.gz", "seq_region_mapping.txt.gz", "seq_region_synonym.txt.gz",
+    "simple_feature.txt.gz", "stable_id_event.txt.gz", "supporting_feature.txt.gz", "transcript.txt.gz",
+    "transcript_attrib.txt.gz", "transcript_intron_supporting_evidence.txt.gz",
+    "transcript_supporting_feature.txt.gz", "translation.txt.gz", "translation_attrib.txt.gz",
+    "unmapped_object.txt.gz", "unmapped_reason.txt.gz", "xref.txt.gz",
+]
+ENSEMBL_BASE = "https://ftp.ensembl.org/pub/release-114/mysql/saccharomyces_cerevisiae_core_114_4/"
+
+
+def _ensembl_name(fname):
+    return fname[:-7] + "_schema" if fname.endswith(".sql.gz") else fname[:-7]
+
+
+ITEMS += [
+    item("f08-validation-ensembl-scerevisiae-core-sql-dump", "F08", "validation", "medium", "download", "real",
+         {"inputs": [dl(_ensembl_name(f), ENSEMBL_BASE + f) for f in ENSEMBL_FILES],
+          "steps": [{"op": "decompress", "input": _ensembl_name(f), "dest": f[:-3], "format": "gz"}
+                    for f in ENSEMBL_FILES]},
+         lic("Ensembl data: no restrictions on use", True,
+             "Ensembl (EMBL-EBI), https://www.ensembl.org; release 114, Saccharomyces cerevisiae core database",
+             "See https://www.ensembl.org/info/about/legal/disclaimer.html."),
+         "ensembl",
+         "Ensembl release-114 MySQL table dumps (schema plus tab-delimited data, 78 files) for the "
+         "Saccharomyces cerevisiae core database (core_114_4), as published, decompressed from gz."),
+]
+
+ITEMS += [
+    item("f08-validation-stackexchange-cs-sqlite", "F08", "validation", "large", "download", "derived-from-real",
+         {"inputs": [dl("archive", "https://archive.org/download/stackexchange/cs.stackexchange.com.7z",
+                       filename="cs.stackexchange.com.7z")],
+          "steps": [{"op": "run", "script": f"{GEN}/build_stackexchange_sqlite.py",
+                     "params": {"input": "archive", "db_name": "cs.stackexchange.com.sqlite"}}]},
+         lic("CC-BY-SA-4.0", True,
+             "Stack Exchange, Inc. / cs.stackexchange.com contributors; Internet Archive mirror of the "
+             "Stack Exchange Data Dump, https://archive.org/details/stackexchange",
+             "Loaded from the published 7z into a single SQLite database by "
+             "research/corpus/generators/g3-data/build_stackexchange_sqlite.py (schema-on-read from the "
+             "XML row attributes); no content is altered beyond the XML-to-SQL container change."),
+         "stackexchange-cs",
+         "Computer Science Stack Exchange (cs.stackexchange.com) data dump loaded into a single SQLite "
+         "database: posts, users, comments, votes, tags, badges, post links and post history tables."),
+]
+
+RFAM_SQL_FILES = [
+    "alignment_and_tree.sql", "clan.sql", "clan_database_link.sql", "clan_literature_reference.sql",
+    "clan_membership.sql", "database_link.sql", "db_version.sql", "dead_clan.sql", "dead_family.sql",
+    "family.sql", "family_literature_reference.sql", "family_ncbi.sql", "features.sql", "full_region.sql",
+    "genome.sql", "genseq.sql", "html_alignment.sql", "keywords.sql", "literature_reference.sql",
+    "matches_and_fasta.sql", "motif.sql", "motif_database_link.sql", "motif_family_stats.sql",
+    "motif_file.sql", "motif_literature.sql", "motif_matches.sql", "motif_pdb.sql", "motif_ss_image.sql",
+    "pdb_full_region.sql", "rfamseq.sql", "secondary_structure_image.sql", "seed_region.sql",
+    "sunburst.sql", "taxonomy.sql", "taxonomy_websearch.sql", "version.sql", "wikitext.sql",
+]
+RFAM_TXT_GZ_FILES = [
+    "alignment_and_tree.txt.gz", "clan.txt.gz", "clan_database_link.txt.gz",
+    "clan_literature_reference.txt.gz", "clan_membership.txt.gz", "database_link.txt.gz",
+    "db_version.txt.gz", "dead_clan.txt.gz", "dead_family.txt.gz", "family.txt.gz",
+    "family_literature_reference.txt.gz", "family_ncbi.txt.gz", "features.txt.gz", "full_region.txt.gz",
+    "genome.txt.gz", "html_alignment.txt.gz", "keywords.txt.gz", "literature_reference.txt.gz",
+    "matches_and_fasta.txt.gz", "motif.txt.gz", "motif_database_link.txt.gz", "motif_family_stats.txt.gz",
+    "motif_file.txt.gz", "motif_literature.txt.gz", "motif_matches.txt.gz", "motif_pdb.txt.gz",
+    "motif_ss_image.txt.gz", "pdb_full_region.txt.gz", "secondary_structure_image.txt.gz",
+    "seed_region.txt.gz", "sunburst.txt.gz", "taxonomy.txt.gz", "taxonomy_websearch.txt.gz",
+    "version.txt.gz", "wikitext.txt.gz",
+]
+RFAM_BASE = "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/"
+
+ITEMS += [
+    item("f08-heldout-ebi-rfam-15-0-sql-dump", "F08", "heldout", "large", "download", "real",
+         {"inputs": [dl(f.replace(".", "_"), RFAM_BASE + f) for f in RFAM_SQL_FILES]
+                    + [dl(f.replace(".", "_"), RFAM_BASE + f) for f in RFAM_TXT_GZ_FILES],
+          "steps": [{"op": "copy", "input": f.replace(".", "_"), "dest": f} for f in RFAM_SQL_FILES]
+                   + [{"op": "decompress", "input": f.replace(".", "_"), "dest": f[:-3], "format": "gz"}
+                      for f in RFAM_TXT_GZ_FILES]},
+         lic("CC0-1.0", True, "Rfam / EMBL-EBI, https://rfam.org; release 15.0",
+             "Full MySQL schema for every table plus tab-delimited data for every table except the two "
+             "raw-sequence tables (genseq, rfamseq), excluded to keep the item well under the 8 GiB "
+             "decompressed budget; full_region.txt.gz alone is 135,765,791 B compressed."),
+         "ebi-rfam",
+         "Rfam 15.0 MySQL database dump: schema (.sql) for all 37 tables plus tab-delimited data (.txt.gz) "
+         "for 35 of them (excluding genseq and rfamseq), as published, decompressed."),
+]
+
+# ---- F05 telemetry, binary logs and logrotate-style rotation (critique G11) ------------
+
+ITEMS += [
+    item("f05-tuning-google-clusterdata-2011-2-task-usage", "F05", "tuning", "large", "download", "real",
+         {"inputs": [dl(f"part{i}",
+                       f"https://storage.googleapis.com/clusterdata-2011-2/task_usage/part-{i:05d}-of-00500.csv.gz")
+                     for i in range(5)],
+          "steps": [{"op": "decompress", "input": f"part{i}", "dest": f"part-{i:05d}-of-00500.csv", "format": "gz"}
+                    for i in range(5)]},
+         lic("CC-BY-4.0", True,
+             "Google Inc., Google Cluster Usage Traces v2 (2011), https://github.com/google/cluster-data", ""),
+         "google-clusterdata-2011-2",
+         "Google cluster usage trace 2011-2: five task_usage CSV shards (part-00000 through part-00004 of "
+         "500) with per-task five-minute resource-usage measurements (CPU, memory, disk I/O time, page "
+         "cache), decompressed."),
+    item("f05-validation-wikimedia-pageviews-20260801", "F05", "validation", "large", "download", "real",
+         {"inputs": [dl(f"h{h:02d}",
+                       f"https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-{h:02d}0000.gz")
+                     for h in range(24)],
+          "steps": [{"op": "decompress", "input": f"h{h:02d}", "dest": f"pageviews-20260801-{h:02d}0000",
+                     "format": "gz"} for h in range(24)]},
+         lic("CC0-1.0", True,
+             "Wikimedia Foundation, pageview complete dumps, https://dumps.wikimedia.org/other/pageviews/", ""),
+         "wikimedia-pageviews",
+         "Wikimedia hourly pageview count dumps for all 24 hours of 2026-08-01 (one full day), decompressed."),
+    item("f05-validation-gen-journal-systemd", "F05", "validation", "medium", "generate", "generated",
+         {"generator": gen("build_journal_export.py", 5401,
+                          {"boots": 6, "entries_per_boot": 20000, "base_epoch": 1769904000}),
+          "output_pin": None,
+          "notes": "systemd-journal-remote stamps a random 128-bit file ID per invocation; logical entry "
+                   "content is a pure function of seed/params but the journal file bytes are not (same "
+                   "pattern as the Docker-built database directories in this file)."},
+         GENERATED_LIC, "ebrc-gen-journal",
+         "Generated systemd-journald binary journal (native on-disk journal file format, produced by the "
+         "real systemd-journal-remote binary from a deterministic synthetic export stream): syslog-style "
+         "service, SSH, cron, nginx, dockerd and kernel-style entries across six synthetic boot sessions.",
+         tags=["generated"]),
+    item("f05-heldout-backblaze-drive-stats-2025-q1", "F05", "heldout", "large", "download", "real",
+         {"inputs": [dl("zip", "https://f001.backblazeb2.com/file/Backblaze-Hard-Drive-Data/data_Q1_2025.zip",
+                       filename="data_Q1_2025.zip")],
+          "steps": [{"op": "run", "script": f"{GEN}/extract_zip_subset.py",
+                     "params": {"input": "zip", "prefixes": ["2025-01-", "2025-02-"], "strip_components": 1}}]},
+         lic("Backblaze Drive Stats data terms: free to use with attribution; no resale of the dataset", False,
+             "Backblaze, Inc., Drive Stats, "
+             "https://www.backblaze.com/cloud-storage/resources/hard-drive-test-data",
+             "Attribution required; the terms restrict redistribution/resale of the dataset itself, so this "
+             "item is treated as not redistributable (hashes only)."),
+         "backblaze-drive-stats",
+         "Backblaze Drive Stats for Q1 2025: one CSV per day of SMART/health telemetry for every "
+         "operational hard drive in Backblaze's data centers; January and February (59 of the 90 quarterly "
+         "days) extracted from the quarterly zip, the remaining 31 March days dropped to stay under the "
+         "corpus's 8 GiB large-tier budget (the full quarter decompresses to 10,891,076,206 B).",
+         notes="Held-out item: description is provenance only."),
+    item("f05-heldout-evtx-attack-samples", "F05", "heldout", "medium", "git-archive", "real",
+         {"git": {"repo": "https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES.git",
+                  "commit": "4ceed2f4706daf601c212a8f91c113dd85349a2c", "ref": "master"}},
+         lic("GPL-3.0", True,
+             "sbousseaden (Samir Bousseaden), https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES", ""),
+         "evtx-attack-samples",
+         "sbousseaden/EVTX-ATTACK-SAMPLES: a curated collection of raw Windows Event Log (.evtx) binary "
+         "samples reproducing adversary techniques, git-archived at a pinned commit.",
+         notes="Held-out item: description is provenance only."),
+]
+
+ITEMS += [
+    item("f05-tuning-logrotate-from-loghub-hdfs", "F05", "tuning", "small", "derive", "derived-from-real",
+         {"from_items": ["f05-tuning-loghub-hdfs-v1"],
+          "steps": [{"op": "run", "script": f"{GEN}/logrotate_derive.py",
+                     "params": {"from_item": "f05-tuning-loghub-hdfs-v1", "src": "HDFS.log",
+                                "max_bytes": 9000000, "segments": 6}}]},
+         GENERATED_LIC, "ebrc-gen-logrotate-tuning",
+         "Logrotate-style rotated .gz directory (HDFS.log plus HDFS.log.1.gz .. HDFS.log.5.gz), derived by "
+         "taking a bounded prefix of the real Loghub HDFS_v1 log (same tuning split), splitting it into six "
+         "chronological segments and gzipping all but the newest, matching a `logrotate --compress` layout "
+         "with no delaycompress.",
+         tags=["derived"]),
+    item("f05-validation-logrotate-from-loghub-ssh", "F05", "validation", "small", "derive", "derived-from-real",
+         {"from_items": ["f05-validation-loghub-ssh"],
+          "steps": [{"op": "run", "script": f"{GEN}/logrotate_derive.py",
+                     "params": {"from_item": "f05-validation-loghub-ssh", "src": "SSH.log",
+                                "max_bytes": 9000000, "segments": 6}}]},
+         GENERATED_LIC, "ebrc-gen-logrotate-validation",
+         "Logrotate-style rotated .gz directory derived by taking a bounded prefix of the real Loghub SSH "
+         "log (same validation split), splitting it into six chronological segments and gzipping all but "
+         "the newest.",
+         tags=["derived"]),
+    item("f05-heldout-logrotate-from-maccdc2012", "F05", "heldout", "small", "derive", "derived-from-real",
+         {"from_items": ["f05-heldout-maccdc2012-zeek-logs"],
+          "steps": [{"op": "run", "script": f"{GEN}/logrotate_derive.py",
+                     "params": {"from_item": "f05-heldout-maccdc2012-zeek-logs", "src": "dns.log",
+                                "max_bytes": 9000000, "segments": 6}}]},
+         GENERATED_LIC, "ebrc-gen-logrotate-heldout",
+         "Logrotate-style rotated .gz directory derived by taking a bounded prefix of the real MACCDC 2012 "
+         "Zeek dns.log (same held-out split), splitting it into six chronological segments and gzipping "
+         "all but the newest.",
+         notes="Held-out item: description is provenance only.", tags=["derived"]),
+]
+
+# ---- F07 scientific archive formats beyond NetCDF/raw arrays (critique G15) -----------
+
+SDSS_BASE = "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/756"
+SDSS_FRAMES = [
+    ("u", 1, "0206"), ("g", 1, "0206"), ("r", 1, "0206"), ("i", 1, "0206"), ("z", 1, "0206"),
+    ("g", 2, "0206"), ("r", 2, "0206"),
+]
+
+ITEMS += [
+    item("f07-tuning-sdss-dr17-frames", "F07", "tuning", "medium", "download", "real",
+         {"inputs": [dl(f"frame_{filt}_{camcol}",
+                       f"{SDSS_BASE}/{camcol}/frame-{filt}-000756-{camcol}-{field}.fits.bz2")
+                     for filt, camcol, field in SDSS_FRAMES],
+          "steps": [{"op": "decompress", "input": f"frame_{filt}_{camcol}",
+                     "dest": f"frame-{filt}-000756-{camcol}-{field}.fits", "format": "bz2"}
+                    for filt, camcol, field in SDSS_FRAMES]},
+         lic("SDSS DR17 data usage terms (freely available for research/educational use; please cite SDSS)", True,
+             "Sloan Digital Sky Survey (SDSS) DR17, https://www.sdss.org/dr17/, https://data.sdss.org", ""),
+         "sdss-dr17",
+         "SDSS DR17 imaging frames (FITS), run 756: photometric bands u,g,r,i,z at camcol 1 field 206, plus "
+         "g,r at camcol 2 field 206 (several bands and two camcols of the same run), decompressed from bz2."),
+    item("f07-tuning-ann-benchmarks-fashion-mnist-hdf5", "F07", "tuning", "medium", "download", "real",
+         {"inputs": [dl("hdf5", "https://ann-benchmarks.com/fashion-mnist-784-euclidean.hdf5")]},
+         lic("MIT", True, "ann-benchmarks.com (E. Bernhardsson et al.); Fashion-MNIST by Zalando Research", ""),
+         "ann-benchmarks-fashion-mnist",
+         "ANN-Benchmarks Fashion-MNIST-784-Euclidean HDF5 file: train/test embeddings and ground-truth "
+         "nearest-neighbor indices/distances for approximate-nearest-neighbor benchmarking."),
+]
+
+CMIP6_BASE = "https://storage.googleapis.com/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/tas/gn/v20190308"
+CMIP6_KEYS = [
+    ".zattrs", ".zgroup", ".zmetadata",
+    "tas/.zarray", "tas/.zattrs", "tas/0.0.0", "tas/1.0.0", "tas/2.0.0", "tas/3.0.0",
+    "lat/.zarray", "lat/.zattrs", "lat/0",
+    "lon/.zarray", "lon/.zattrs", "lon/0",
+    "time/.zarray", "time/.zattrs", "time/0",
+    "lat_bnds/.zarray", "lat_bnds/.zattrs", "lat_bnds/0.0",
+    "lon_bnds/.zarray", "lon_bnds/.zattrs", "lon_bnds/0.0",
+    "time_bnds/.zarray", "time_bnds/.zattrs", "time_bnds/0.0",
+]
+
+
+def _zarr_name(key):
+    return "z_" + re.sub(r"[^a-z0-9]+", "_", key.lower()).strip("_")
+
+
+ITEMS += [
+    item("f07-validation-cmip6-ncar-cesm2-tas-zarr", "F07", "validation", "medium", "download", "real",
+         {"inputs": [dl(_zarr_name(k), f"{CMIP6_BASE}/{k}") for k in CMIP6_KEYS],
+          "steps": [{"op": "copy", "input": _zarr_name(k), "dest": k} for k in CMIP6_KEYS]},
+         lic("CC-BY-4.0", True,
+             "NCAR (D. Danabasoglu et al.), CESM2 historical r1i1p1f1, CMIP6; Pangeo/Google Cloud public "
+             "CMIP6 Zarr mirror",
+             "Full Zarr v2 directory store (consolidated metadata plus every chunk) for the tas variable."),
+         "cmip6-ncar-cesm2",
+         "CMIP6 CESM2 historical near-surface air temperature (tas), monthly, r1i1p1f1/Amon/tas/gn: the "
+         "complete Zarr v2 directory store (consolidated .zmetadata, coordinate arrays, and all four chunks "
+         "of the 1980-month tas array), 1850-2014."),
+]
+
+ITEMS += [
+    item("f07-heldout-1000genomes-chr22-vcf-bgzf", "F07", "heldout", "medium", "download", "real",
+         {"inputs": [dl("vcf", "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/"
+                        "ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz",
+                       filename="ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz")]},
+         lic("IGSR/1000 Genomes open-data terms (no restriction on use of the data)", True,
+             "International Genome Sample Resource (IGSR), 1000 Genomes Project Phase 3, "
+             "https://www.internationalgenome.org", ""),
+         "igsr-1000genomes",
+         "1000 Genomes Project Phase 3 integrated call set for chromosome 22 (2,504 samples), as-published "
+         "BGZF-compressed VCF.",
+         notes="Held-out item: description is provenance only."),
+    item("f07-heldout-1000genomes-chr22-vcf-region-subset", "F07", "heldout", "large", "download",
+         "derived-from-real",
+         {"inputs": [dl("vcf", "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/"
+                        "ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz",
+                       filename="ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz")],
+          "steps": [{"op": "run", "script": f"{GEN}/vcf_region_subset.py",
+                     "params": {"input": "vcf", "target_bytes": 4000000000,
+                                "output": "ALL.chr22.region-subset.vcf"}}]},
+         lic("IGSR/1000 Genomes open-data terms (no restriction on use of the data)", True,
+             "International Genome Sample Resource (IGSR), 1000 Genomes Project Phase 3, "
+             "https://www.internationalgenome.org",
+             "Decompressed with a byte-bounded prefix (a real contiguous region from the start of chr22, "
+             "kept under the 8 GiB large-tier budget; the full decompression is 11,212,370,718 B)."),
+         "igsr-1000genomes",
+         "1000 Genomes Project Phase 3 chromosome 22 call set, decompressed and truncated to a ~4 GiB "
+         "contiguous region subset starting at the first variant position (full-chromosome decompression "
+         "exceeds the corpus's 8 GiB large-tier budget).",
+         notes="Held-out item: description is provenance only."),
+]
+
+# ---- F06 columnar formats at scale (critique G20) --------------------------------------
+
+ITEMS += [
+    item("f06-tuning-nyc-tlc-yellow-tripdata-2024", "F06", "tuning", "medium", "download", "real",
+         {"inputs": [dl(f"m{m:02d}",
+                       f"https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-{m:02d}.parquet")
+                     for m in (1, 2, 3)]},
+         lic("NYC Open Data Terms of Use (no restriction on reuse)", True,
+             "NYC Taxi & Limousine Commission (TLC), distributed via CloudFront", ""),
+         "nyc-tlc",
+         "NYC TLC Yellow Taxi trip records for January-March 2024, Apache Parquet, as published (three "
+         "monthly shards)."),
+    item("f06-validation-noaa-ghcn-daily-parquet-2023", "F06", "validation", "small", "download", "real",
+         {"inputs": [dl(el.lower(),
+                       f"https://noaa-ghcn-pds.s3.amazonaws.com/parquet/by_year/YEAR=2023/ELEMENT={el}/"
+                       f"88c0fdff5eb544adbc2c20dbf589c1c3_0.snappy.parquet", filename=f"{el}.snappy.parquet")
+                     for el in ("TMAX", "TMIN", "PRCP", "SNOW", "SNWD", "AWND", "TAVG", "WT01")]},
+         lic("Public domain (NOAA GHCN-Daily)", True,
+             "NOAA National Centers for Environmental Information, Global Historical Climatology "
+             "Network daily (GHCN-Daily), https://registry.opendata.aws/noaa-ghcn/", ""),
+         "noaa-ghcn-daily",
+         "NOAA GHCN-Daily 2023 observations in Parquet, partitioned by element: eight common elements "
+         "(max/min temperature, precipitation, snowfall, snow depth, wind, average temperature, fog flag)."),
+    item("f06-validation-noaa-ghcn-daily-csv-2023", "F06", "validation", "large", "download", "real",
+         {"inputs": [dl("csv", "https://noaa-ghcn-pds.s3.amazonaws.com/csv.gz/by_year/2023.csv.gz")],
+          "steps": [{"op": "decompress", "input": "csv", "dest": "2023.csv", "format": "gz"}]},
+         lic("Public domain (NOAA GHCN-Daily)", True,
+             "NOAA National Centers for Environmental Information, GHCN-Daily, "
+             "https://registry.opendata.aws/noaa-ghcn/", ""),
+         "noaa-ghcn-daily",
+         "NOAA GHCN-Daily complete daily summaries for 2023, single decompressed CSV (large tier; same "
+         "source and independence group as the element-partitioned Parquet item)."),
+]
+
 
 DOC_NOTES = (
     "g3-data corpus group: F05 logs/text, F06 JSON/XML/CSV/structured text, F07 scientific/numeric arrays, F08 databases. "
@@ -577,7 +1087,22 @@ DOC_NOTES = (
     "RFC bulk tarballs unavailable over https -> individual RFC texts; OSM small-region XML is converted from a dated Geofabrik PBF; "
     "GHCN-Daily station CSVs (live-updated) -> NOAA Storm Events CSVs (dated file names). "
     "Public benchmark items (Silesia, enwik8, SDRBench, Loghub) are confined to tuning/validation and tagged public-benchmark. "
-    "Retrieval date of first download: 2026-09-12 (per-input SHA-256, size and UTC time recorded in research/corpus/pins/<item_id>.json)."
+    "Retrieval date of first download: 2026-09-12 (per-input SHA-256, size and UTC time recorded in research/corpus/pins/<item_id>.json). "
+    "Gap closure 2026-09-16 (critique-round1.md G01/G02/G11/G15/G20): added ML model weights and a dataset-shard "
+    "parquet (F07: EleutherAI Pythia-160M, Qwen2.5-1.5B/GGUF, MNIST npz, SmolLM2, bert-base-uncased x3 containers, "
+    "Phi-3-mini shards, fineweb-edu); database dumps (F08: Wikimedia simplewiki mysqldump, Ensembl core db, "
+    "Stack Exchange cs.stackexchange.com loaded into SQLite by build_stackexchange_sqlite.py, Rfam 15.0 dump "
+    "trimmed to exclude the two raw-sequence tables); telemetry/binary logs (F05: Google cluster-usage trace, "
+    "Wikimedia pageviews, a generated systemd journal via build_journal_export.py + real systemd-journal-remote, "
+    "Backblaze Drive Stats, EVTX-ATTACK-SAMPLES, and per-split logrotate-style derives via logrotate_derive.py); "
+    "scientific archive formats (F07: SDSS DR17 FITS frames, ann-benchmarks Fashion-MNIST HDF5, a CMIP6 Zarr "
+    "store, 1000 Genomes chr22 VCF as BGZF plus a region-subset via vcf_region_subset.py); and columnar formats "
+    "at scale (F06: NYC TLC and NOAA GHCN-Daily parquet/CSV). HF resolve URLs are pinned to the exact commit "
+    "returned in the x-repo-commit header at retrieval time; HF file sha256 values are the tree API's lfs.oid "
+    "(equivalently, the resolve response's x-linked-etag), verified against a downloaded copy for one file. "
+    "Docker Desktop's Linux engine was unavailable this session (non-admin), so the Docker-dependent parts of "
+    "G01/G02 (pg_dump derive of postgres17-pgbench, Ensembl loaded into MariaDB, employees mysqldump) are not "
+    "included; see PROGRESS.md."
 )
 
 

@@ -1,0 +1,19 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f06-validation-noaa-ghcn-daily-csv-2023",
+  "inputs": {
+    "csv": {
+      "url": "https://noaa-ghcn-pds.s3.amazonaws.com/csv.gz/by_year/2023.csv.gz",
+      "sha256": "e1c3b5493033f79d19898b6880e885de62723af0a7043f5d9bb7c3908f653b24",
+      "size": 172261078,
+      "retrieved_utc": "2026-09-16T23:31:47Z",
+      "retrieval_date": "2026-09-16"
+    }
+  },
+  "output": {
+    "materialization_key": "20374f82ae6063b49cf5090f4d25dd7bd074f34bdd2500f25da257788c6c140f",
+    "logical_tree_sha256": "8cf39a2ccda5f61d2e87620bbed0db9dfb9efe45a2c4a0936f7183af7fcc01ff",
+    "pinned_utc": "2026-09-16T23:32:10Z"
+  },
+  "history": []
+}

@@ -1,0 +1,113 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f08-validation-stackexchange-cs-sqlite",
+  "family": "F08",
+  "split": "validation",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "stackexchange-cs",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "76b8e658f56e2fb7353cd3514af75d28fc0a1d3af46c69a46e2a43ad80f4e15f",
+  "materialization_key": "8e68aaf2208472ecc2fcbf8f6dea44736ce2aff13e2125de097bb8c8ac28bc95",
+  "materialized_utc": "2026-09-16T23:32:34Z",
+  "materialized_relpath": "corpus/validation/f08-validation-stackexchange-cs-sqlite",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "a948cd75e1340c98ec7c05c7f9b2d770462fc5633899a711c2ce73a9814857a8",
+    "pinned_utc": "2026-09-16T23:32:34Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 606966077,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "archive",
+        "url": "https://archive.org/download/stackexchange/cs.stackexchange.com.7z",
+        "final_url": "https://dn720201.ca.archive.org/0/items/stackexchange/cs.stackexchange.com.7z",
+        "sha256": "38fa0fead7a9708f09f4e10fe9f1f640e3be0fddcdf1968a3b1b6d72c7a7cc71",
+        "size": 130990559,
+        "retrieved_utc": "2026-09-16T23:31:47Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "cs.stackexchange.com.7z"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g3-data/build_stackexchange_sqlite.py",
+        "params": {
+          "input": "archive",
+          "db_name": "cs.stackexchange.com.sqlite"
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g3-data/build_stackexchange_sqlite.py",
+        "script_sha256": "bdf9e1d1c0c54abc3b487eb275d3b8d4f81823824d81e84d3718c1c81b02c8fc",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "archive",
+          "db_name": "cs.stackexchange.com.sqlite"
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "26fe7b31326052ea359c94645ca7e87b311cc3b30b49b780c3deebbfda69c53a",
+    "logical_tree_sha256": "a948cd75e1340c98ec7c05c7f9b2d770462fc5633899a711c2ce73a9814857a8",
+    "content_tree_sha256": "543a120f33fa27be5cbc0657f49b50fcdca7ae3ba1c63a68adf80788e3c93d95",
+    "extended_tree_sha256": "a9e4ccd2179683cbebadbe4d5df776a55e61331ec35fbdae0ead71b4ccc22882",
+    "bytes": 606966077,
+    "bytes_all_paths": 606966077,
+    "allocated_bytes": 606973952,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "unique_file_inodes": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 27,
+      "path_length_bytes": {
+        "min": 17,
+        "max": 27,
+        "mean": 22.0,
+        "p50": 17,
+        "p95": 27
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

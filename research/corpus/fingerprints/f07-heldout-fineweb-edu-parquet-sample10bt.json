@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-heldout-fineweb-edu-parquet-sample10bt",
+  "family": "F07",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "huggingfacefw-fineweb",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "7b4b6e46c9f47f63de678be2b4c4914eb50a437110f223f7951be9ac2c707de4",
+  "materialization_key": "eecc0c44628070bc24983d9a86714fe724f01f4482d5d7b0b8c3575df11ef0e4",
+  "materialized_utc": "2026-09-16T23:28:42Z",
+  "materialized_relpath": "heldout/f07-heldout-fineweb-edu-parquet-sample10bt",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "174eba348b4ebf2eff55c8cdeb9d397af530ba21a42f50cbc3f1d15ea661d2aa",
+    "pinned_utc": "2026-09-16T23:28:42Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 2152819114,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "shard",
+        "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu/resolve/87f09149ef4734204d70ed1d046ddc9ca3f2b8f9/sample/10BT/000_00000.parquet",
+        "final_url": "https://us.aws.cdn.hf.co/xet-bridge-us/6655eb19d17e141dcb546ed5/75e3d0530e0153b1260904449807a6aca765eb899b669cf3d1da290e52eedae8?user_id=public&X-Xet-Cas-Uid=public&response-content-disposition=inline%3B+filename*%3DUTF-8%27%27000_00000.parquet%3B+filename%3D%22000_00000.parquet%22%3B&Expires=1789604883&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjY1NWViMTlkMTdlMTQxZGNiNTQ2ZWQ1Lzc1ZTNkMDUzMGUwMTUzYjEyNjA5MDQ0NDk4MDdhNmFjYTc2NWViODk5YjY2OWNmM2QxZGEyOTBlNTJlZWRhZThcXD91c2VyX2lkPXB1YmxpYyZYLVhldC1DYXMtVWlkPXB1YmxpYyZyZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPWlubGluZSUzQitmaWxlbmFtZSUyQSUzRFVURi04JTI3JTI3MDAwXzAwMDAwLnBhcnF1ZXQlM0IrZmlsZW5hbWUlM0QlMjIwMDBfMDAwMDAucGFycXVldCUyMiUzQiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiRXBvY2hUaW1lIjoxNzg5NjA0ODgzfX19XX0_&Signature=MEQCIGnFd7itTFyHlnHbtHoRGbUfA6TbHNXjlzAgFYaBU-rCAiAQWCYi5r-UJFiGrYvyZ5pp9eV6YHZs0%7EtKq46MOI0yiA__&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256",
+        "sha256": "b1ba7b2ce4cb5ea6ef42dca40263eabb85f37700d01693a68e9b30a31d78e871",
+        "size": 2152819114,
+        "retrieved_utc": "2026-09-16T23:28:38Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "000_00000.parquet"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "shard"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "6c066e97021e4d5c2d60b9578e28fdcf3f331cbae5a7c4699ff0ffdbe66cf283",
+    "logical_tree_sha256": "174eba348b4ebf2eff55c8cdeb9d397af530ba21a42f50cbc3f1d15ea661d2aa",
+    "content_tree_sha256": "476c73a531a587f0c7218070b3e01d83d6cf830bd46d32a33c2a51429929bb7e",
+    "extended_tree_sha256": "45cb6ef0ba9ef4f2e66ed0fc54a535afaa9a230ab46d8523c7aa4284f76c950c",
+    "bytes": 2152819114,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

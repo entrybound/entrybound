@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km",
+  "inputs": {},
+  "output": {
+    "materialization_key": "8d5ac7630ad98bfbcb8e49fe20f50c90bb11900b36cf6ffd2d3e7e3fcbc08604",
+    "logical_tree_sha256": "f220c07ca1f9d697cf6a3e8642342403aa60454aec52bb6891a5a91f226966ae",
+    "pinned_utc": "2026-09-16T23:30:18Z"
+  },
+  "history": []
+}

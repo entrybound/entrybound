@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-tuning-qwen2-5-1-5b-safetensors-bf16",
+  "family": "F07",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "qwen2-5",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "fc397ff4309c746a5ff350bfe485d2150abf6063be20f0398167de07dc591c6a",
+  "materialization_key": "8401dc58fed1ec3551e648937e2a1ac8987297f46a912257b4fc4684f1741564",
+  "materialized_utc": "2026-09-16T23:31:44Z",
+  "materialized_relpath": "corpus/tuning/f07-tuning-qwen2-5-1-5b-safetensors-bf16",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "eca14e15541bf1005e304720ddb55f8fa986ddbadcecd43a8c923157e5557fcc",
+    "pinned_utc": "2026-09-16T23:31:44Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 3087467144,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "model",
+        "url": "https://huggingface.co/Qwen/Qwen2.5-1.5B/resolve/8faed761d45a263340a0528343f099c05c9a4323/model.safetensors",
+        "final_url": "https://us.aws.cdn.hf.co/xet-bridge-us/66e6d032663c452ad2400439/8bff19ad30d83352b41b698b3a39904f966f62029771306387e57cb4b2664073?response-content-disposition=inline%3B+filename*%3DUTF-8%27%27model.safetensors%3B+filename%3D%22model.safetensors%22%3B&user_id=public&X-Xet-Cas-Uid=public&Expires=1789605017&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjZlNmQwMzI2NjNjNDUyYWQyNDAwNDM5LzhiZmYxOWFkMzBkODMzNTJiNDFiNjk4YjNhMzk5MDRmOTY2ZjYyMDI5NzcxMzA2Mzg3ZTU3Y2I0YjI2NjQwNzNcXD9yZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPWlubGluZSUzQitmaWxlbmFtZSUyQSUzRFVURi04JTI3JTI3bW9kZWwuc2FmZXRlbnNvcnMlM0IrZmlsZW5hbWUlM0QlMjJtb2RlbC5zYWZldGVuc29ycyUyMiUzQiZ1c2VyX2lkPXB1YmxpYyZYLVhldC1DYXMtVWlkPXB1YmxpYyIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiRXBvY2hUaW1lIjoxNzg5NjA1MDE3fX19XX0_&Signature=MEYCIQC0bf6B%7EcYSztFT3Ciszwwf6JHE9hu7dzFqn8K3Ol-PBgIhAI1xCApexwbrtIP2EZbSTtfepHIL6tpJyg9TAjjp2BpR&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256",
+        "sha256": "a961db72e75d52b18e6b0c9d379e51a26973b233385e0e127fdda7d648aec796",
+        "size": 3087467144,
+        "retrieved_utc": "2026-09-16T23:31:29Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "model.safetensors"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "model"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "3dc55dec08738feddd7acd52d112bece9a447d214868dfa979a83fa4e2e11e61",
+    "logical_tree_sha256": "eca14e15541bf1005e304720ddb55f8fa986ddbadcecd43a8c923157e5557fcc",
+    "content_tree_sha256": "d83f7316253d720e96b2fb87fc3a9a1af8705ccfcb1205edd7d51603add7af24",
+    "extended_tree_sha256": "136e06b309b1c6aab93711ed4d1cb36f689a5733af4ea2773a9011ea8e1db22d",
+    "bytes": 3087467144,
+    "bytes_all_paths": 3087467144,
+    "allocated_bytes": 3087474688,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 17,
+      "path_length_bytes": {
+        "min": 17,
+        "max": 17,
+        "mean": 17.0,
+        "p50": 17,
+        "p95": 17
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,98 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f07-heldout-1000genomes-chr22-vcf-region-subset",
+  "family": "F07",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "igsr-1000genomes",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "45f4e990480bfdeccc56a7b4ba063baaf89a17bca63b9406e1f78aa536ab7f19",
+  "materialization_key": "77afc212d9da44c091ed72737087a1491b6f30ff9c1d384fffd7a47f05ef8eac",
+  "materialized_utc": "2026-09-16T23:31:09Z",
+  "materialized_relpath": "heldout/f07-heldout-1000genomes-chr22-vcf-region-subset",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "8816752031e7d604e7cbdeab015aad2cbcda296a4b3d62cbbe6c82b0abbecae8",
+    "pinned_utc": "2026-09-16T23:31:09Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 4000001537,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "vcf",
+        "url": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz",
+        "final_url": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz",
+        "sha256": "a90c16c4ff2b3196476d506ae13cb3047fae8670163c7c932c4b0239aef3daf5",
+        "size": 205612353,
+        "retrieved_utc": "2026-09-16T23:30:39Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g3-data/vcf_region_subset.py",
+        "params": {
+          "input": "vcf",
+          "target_bytes": 4000000000,
+          "output": "ALL.chr22.region-subset.vcf"
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g3-data/vcf_region_subset.py",
+        "script_sha256": "ec35f44eccd17b941c1fc37ec4dcd783527470d4a8a5900ce4bfcabc1f1769d5",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "vcf",
+          "target_bytes": 4000000000,
+          "output": "ALL.chr22.region-subset.vcf"
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "6a9a66f197a1998b909eb1551f7e05cae43d83ed68f120944588151c7f5ead96",
+    "logical_tree_sha256": "8816752031e7d604e7cbdeab015aad2cbcda296a4b3d62cbbe6c82b0abbecae8",
+    "content_tree_sha256": "7751b6048203acb763015277cbd1256fd4df47b6ed8ef2a77c1de8f4c254bf06",
+    "extended_tree_sha256": "8ab3071fef15b79e769a45ddf2d6c3439e814a147df9d652dc56cc0618ff712a",
+    "bytes": 4000001537,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

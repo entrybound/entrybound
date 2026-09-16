@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f07-heldout-fineweb-edu-parquet-sample10bt",
+  "inputs": {},
+  "output": {
+    "materialization_key": "eecc0c44628070bc24983d9a86714fe724f01f4482d5d7b0b8c3575df11ef0e4",
+    "logical_tree_sha256": "174eba348b4ebf2eff55c8cdeb9d397af530ba21a42f50cbc3f1d15ea661d2aa",
+    "pinned_utc": "2026-09-16T23:28:42Z"
+  },
+  "history": []
+}
