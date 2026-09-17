@@ -1,0 +1,90 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CHUNK-014
+status: pre-registration-draft; NEEDS_TOOLING (sparse_model.py, hole census with fadvise-safe SEEK_HOLE, generated sparse probe item, EXP-CHUNK-004 SQ occurrence tables); arm Z spec
+question: >
+  Should holes in sparse files be represented as ordinary zero-filled chunks plus the
+  posix.sparse-map AUX record (status quo), as a registered hole TransformPlan storing no
+  bytes, as a hole plan plus AUX hint, or by relying on dedup of a canonical zero chunk, given
+  archive bytes, hashing and extraction cost and chunk-count headroom on sparse corpora?
+hypothesis: >
+  H1: on F15/F16 the modelled hole-transform-plan is within the T-01 band of the status quo
+  on artifact_bytes (zero chunks already deduplicate and compress to near nothing), so it
+  cannot pass its T3 minimum-gain band; the status quo spends a large share of chunking and
+  hashing work on zero extents (secondary). Falsification in protocol.md section 3.
+decision_ids: [DEC-MOD-026, DEC-CMP-002]
+
+candidates:
+  - name: sq-zero-chunks-aux-map-balanced
+    params: {profile: balanced, representation: actual}
+  - name: hole-transform-plan-balanced
+    params: {profile: balanced, representation: hole-transform-plan}
+  - name: hole-plan-plus-aux-hint-balanced
+    params: {profile: balanced, representation: hole-plan-plus-aux-hint}
+  - name: dedup-single-zero-chunk-balanced
+    params: {profile: balanced, representation: dedup-single-zero-chunk}
+  - name: sq-zero-chunks-aux-map-extreme
+    params: {profile: extreme, representation: actual}
+  - name: hole-transform-plan-extreme
+    params: {profile: extreme, representation: hole-transform-plan}
+  - name: hole-plan-plus-aux-hint-extreme
+    params: {profile: extreme, representation: hole-plan-plus-aux-hint}
+  - name: dedup-single-zero-chunk-extreme
+    params: {profile: extreme, representation: dedup-single-zero-chunk}
+command: >-
+  python3 /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-014/sparse_model.py
+  --item-path {item_path} --item-id {item_id} --profile {profile} --representation {representation}
+  --occurrences /root/eb-research/results/EXP-CHUNK-004/sq-gear-norm-v1-{profile}/{item_id}.occ.jsonl.gz
+  --ebr-pack /root/eb-research/target/exp-chunk/release/ebr-pack
+  --ebound /root/eb-research/target/exp-chunk-prod/release/ebound --scratch {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f15-tuning-dbprealloc
+    - f15-tuning-real-ubuntu-noble-ova-raw
+    - f15-tuning-vmraw
+    - f16-alpine-3241-minirootfs-ext4-qcow2
+    - f16-alpine-3241-minirootfs-ext4-raw
+    - f16-alpine-3241-minirootfs-ext4-vhdx
+    - f16-alpine-virt-3241-iso
+    - f16-oci-ubuntu-noble-multiarch-index
+    - f16-ubuntu-noble-cloudimg-20260911-raw
+
+metrics:
+  - {name: artifact_bytes, source: stdout_json, key: payload.artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: artifact_bytes_is_modelled, source: stdout_json, key: payload.modelled, family: other, direction: none, unit: bool}
+  - {name: side_data_bytes, source: stdout_json, key: payload.bytes.side_data_bytes, family: size, direction: minimize, unit: B}
+  - {name: metadata_bytes, source: stdout_json, key: payload.bytes.metadata_bytes, family: size, direction: minimize, unit: B}
+  - {name: logical_bytes, source: stdout_json, key: payload.census.logical_bytes, family: size, direction: none, unit: B}
+  - {name: hole_bytes, source: stdout_json, key: payload.census.hole_bytes, family: size, direction: none, unit: B}
+  - {name: hole_runs, source: stdout_json, key: payload.census.hole_runs, family: other, direction: none, unit: count}
+  - {name: zero_bytes_in_data_extents, source: stdout_json, key: payload.census.zero_bytes_in_data_extents, family: size, direction: none, unit: B}
+  - {name: bytes_hashed_by_chunker, source: stdout_json, key: payload.work.bytes_chunked_and_hashed, family: other, direction: minimize, unit: B}
+  - {name: max_chunks_in_one_object, source: stdout_json, key: payload.counts.max_chunks_in_one_object, family: other, direction: none, unit: count}
+  - {name: extracted_allocated_bytes, source: stdout_json, key: payload.extract.allocated_bytes_sparse_restore, family: size, direction: minimize, unit: B}
+  - {name: sparse_restore_hole_fidelity, source: stdout_json, key: payload.extract.hole_map_equal, family: correctness, direction: maximize, unit: bool}
+  - {name: model_validity_exact, source: stdout_json, key: payload.model_validity_exact, family: correctness, direction: maximize, unit: bool}
+  - {name: roundtrip_ok, source: stdout_json, key: payload.extract.content_equal, family: correctness, direction: maximize, unit: bool}
+  - {name: result_sha256, source: stdout_json, key: payload.result_sha256, family: correctness, kind: string}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091841, bootstrap: 2026091842, command: 2026091843}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/exp-chunk/release/ebr-pack, /root/eb-research/target/exp-chunk-prod/release/ebound, python3]
+  timeout_s: 28800
+
+analysis:
+  baseline: sq-zero-chunks-aux-map-balanced
+  pairing: item
+  report_metrics: [artifact_bytes, hole_bytes, bytes_hashed_by_chunker, extracted_allocated_bytes]

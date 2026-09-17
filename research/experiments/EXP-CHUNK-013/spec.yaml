@@ -1,0 +1,116 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CHUNK-013
+status: BLOCKED (native ARM64 hardware PLATFORM_BLOCKED; QEMU arm64 emulation needs Docker, unavailable; SIMD chunker build blocked by unsafe_code = forbid on stable Rust); native arm64 arm spec
+question: >
+  On native ARM64, do CDC constructions and keyed boundary modes produce boundaries
+  identical to x86-64 (scalar and accelerated paths), and what chunk-stage throughput do
+  they reach, including PHTE with and without ARMv8 cryptography extensions and a
+  VectorCDC-style NEON accelerated path?
+hypothesis: >
+  H1 (binary): boundary_set_sha256 on native arm64 equals x86-64 for every candidate and
+  item, including accelerated paths. H2: the throughput ranking of EXP-CHUNK-008 arm T1
+  holds on arm64 except that PHTE with hardware AES loses less than 1 band unit relative to
+  the secret Gear table. Falsification in protocol.md section 3.
+decision_ids: [DEC-CMP-001, DEC-CMP-005, DEC-CRY-023]
+
+candidates:
+  - name: gear-norm-v1
+    params: {algo: gear-norm-v1, mode: none, path_kind: scalar}
+  - name: gear-spread-nc2
+    params: {algo: gear-spread, mode: none, path_kind: scalar}
+  - name: fastcdc-2020-nc2
+    params: {algo: fastcdc-2020, mode: none, path_kind: scalar}
+  - name: vectorcdc-vram-neon
+    params: {algo: vram-simd, mode: none, path_kind: simd-neon}
+  - name: vectorcdc-vram-scalar
+    params: {algo: vram-scalar, mode: none, path_kind: scalar}
+  - name: secret-gear-table
+    params: {algo: gear-norm-v1, mode: secret-gear-table, path_kind: scalar}
+  - name: phte-aes128-armv8-crypto
+    params: {algo: gear-norm-v1, mode: phte-aes128, path_kind: hw-aes}
+  - name: phte-aes128-softaes
+    params: {algo: gear-norm-v1, mode: phte-aes128, path_kind: soft-aes}
+command: >-
+  /root/eb-research/target/exp-chunk-aarch64/release/ebr-chunk throughput
+  --item-path {item_path} --experiment-id EXP-CHUNK-013 --env-name linux-arm64-native
+  --algorithm {algo} --boundary-mode {mode} --accel {path_kind} --key-seed-base 20260917
+  --min 131072 --target 524288 --max 2097152 --preload true --min-batch-seconds 1.0
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-curl-8-19-0-git
+    - f01-tuning-ripgrep-14-1-1-git
+    - f02-tuning-lz4-intree-make-build
+    - f02-tuning-zstd-cmake-build
+    - f03-tuning-fzf-go-mod-vendor
+    - f03-tuning-pypi-scientific-site-packages
+    - f04-tuning-maildir
+    - f04-tuning-real-netbsd-pkgsrc
+    - f05-tuning-enwik8
+    - f05-tuning-gen-logs-a-medium
+    - f06-tuning-census-popest-2023
+    - f06-tuning-gen-structured-a-medium
+    - f07-tuning-ann-benchmarks-fashion-mnist-hdf5
+    - f07-tuning-gen-numeric-a-medium
+    - f08-tuning-chinook-sqlite
+    - f08-tuning-gen-sqlite-tpch-medium
+    - f09-alpine-324-arm64-rootfs-binaries
+    - f09-ripgrep-1411-arm64-darwin-multiplatform
+    - f10-gen-redundant-binary-blobs
+    - f10-linux-firmware-20260910-subset
+    - f11-alpine-324-apks
+    - f11-cosign-v250-signing-assets
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f12-tuning-nasa-ivl-photos-medium
+    - f13-tuning-bbb-video-medium
+    - f13-tuning-kodak-image-codecs-small
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f15-tuning-dbprealloc
+    - f15-tuning-vmraw
+    - f16-alpine-3241-minirootfs-ext4-qcow2
+    - f16-oci-ubuntu-noble-multiarch-index
+    - f17-tuning-duptree-mixed
+    - f17-tuning-duptree-nested
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-ripgrep-commit-snapshots
+    - f19-tuning-real-ext4-acl-selinux
+    - f19-tuning-real-home-snapshot
+    - f20-tuning-bombs-dense
+    - f20-tuning-csprng
+
+metrics:
+  - {name: boundary_set_sha256, source: stdout_json, key: payload.boundary_set_sha256, family: correctness, kind: string}
+  - {name: chunk_stage_throughput_bps, source: stdout_json, key: payload.in_process.bytes_per_second, family: throughput, direction: maximize, unit: B/s}
+  - {name: chunk_stage_cpu_seconds_per_pass, source: stdout_json, key: payload.in_process.thread_cpu_seconds_per_pass, family: time_cpu, direction: minimize, unit: s}
+  - {name: cpu_features, source: stdout_json, key: payload.cpu.features, family: correctness, kind: string}
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 10
+warmups: 2
+seeds: {order: 2026091831, bootstrap: 2026091832, command: 2026091833}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [aarch64]
+  emulated: false
+  cpu_affinity: [2]
+  requires: [/root/eb-research/target/exp-chunk-aarch64/release/ebr-chunk]
+  timeout_s: 3600
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  max_wait_s: 300
+
+analysis:
+  baseline: gear-norm-v1
+  pairing: item_repetition
+  report_metrics: [chunk_stage_throughput_bps, chunk_stage_cpu_seconds_per_pass]

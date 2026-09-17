@@ -1,0 +1,212 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CHUNK-006
+status: pre-registration-draft; NEEDS_TOOLING (keyed boundary modes in ebr-chunk tree-dedup/edit-sweep; ebr-pack --chunk-boundary/--pad; mvt14e subcommand); arm D spec
+question: >
+  Under encrypted creation, what do the keyed boundary constructions (status-quo secret
+  Gear table default, PHTE/AES-128 opt-in, and keyed variants of candidate successor
+  chunkers) cost in exact-chunk dedup and edit locality relative to unkeyed chunking,
+  do they pass the HC-14 keyed-boundary mechanical test, and what do encrypted archives
+  cost per padding mode (and without dedup)?
+hypothesis: >
+  Arm D: every keyed construction's key-averaged dedup_stored_fraction is within the
+  T-01 band of unkeyed gear-norm-v1 at the same sizes on every family except F20, with
+  between-key spread inside the band; hashless constructions under a keyed byte
+  permutation lose >= 1 band unit on at least one family. Falsification and the HC-14
+  arm K hypotheses are in protocol.md section 3.
+decision_ids: [DEC-CRY-023, DEC-CMP-001, DEC-CRY-025, DEC-CMP-017]
+
+candidates:
+  - name: unkeyed-gear-norm-v1-balanced
+    params: {algo: gear-norm-v1, boundary_mode: none, min: 131072, target: 524288, max: 2097152}
+  - name: unkeyed-gear-norm-v1-dense
+    params: {algo: gear-norm-v1, boundary_mode: none, min: 65536, target: 262144, max: 1048576}
+  - name: secret-gear-table-balanced
+    params: {algo: gear-norm-v1, boundary_mode: secret-gear-table, min: 131072, target: 524288, max: 2097152}
+  - name: secret-gear-table-dense
+    params: {algo: gear-norm-v1, boundary_mode: secret-gear-table, min: 65536, target: 262144, max: 1048576}
+  - name: phte-aes128-balanced
+    params: {algo: gear-norm-v1, boundary_mode: phte-aes128, min: 131072, target: 524288, max: 2097152}
+  - name: phte-aes128-dense
+    params: {algo: gear-norm-v1, boundary_mode: phte-aes128, min: 65536, target: 262144, max: 1048576}
+  - name: keyed-gear-spread-nc2-balanced
+    params: {algo: gear-spread-nc2, boundary_mode: secret-gear-table, min: 131072, target: 524288, max: 2097152}
+  - name: keyed-gear-spread-nc2-dense
+    params: {algo: gear-spread-nc2, boundary_mode: secret-gear-table, min: 65536, target: 262144, max: 1048576}
+  - name: keyed-buzhash-w64-balanced
+    params: {algo: buzhash-w64, boundary_mode: keyed-table, min: 131072, target: 524288, max: 2097152}
+  - name: keyed-buzhash-w64-dense
+    params: {algo: buzhash-w64, boundary_mode: keyed-table, min: 65536, target: 262144, max: 1048576}
+  - name: keyed-rabin-w64-balanced
+    params: {algo: rabin-w64, boundary_mode: keyed-polynomial, min: 131072, target: 524288, max: 2097152}
+  - name: keyed-rabin-w64-dense
+    params: {algo: rabin-w64, boundary_mode: keyed-polynomial, min: 65536, target: 262144, max: 1048576}
+  - name: keyed-permute-ae-w1-balanced
+    params: {algo: ae-w1, boundary_mode: keyed-byte-permutation, min: 131072, target: 524288, max: 2097152}
+  - name: keyed-permute-ae-w1-dense
+    params: {algo: ae-w1, boundary_mode: keyed-byte-permutation, min: 65536, target: 262144, max: 1048576}
+  - name: keyed-permute-ram-balanced
+    params: {algo: ram, boundary_mode: keyed-byte-permutation, min: 131072, target: 524288, max: 2097152}
+  - name: keyed-permute-ram-dense
+    params: {algo: ram, boundary_mode: keyed-byte-permutation, min: 65536, target: 262144, max: 1048576}
+  - name: fixed-size-balanced
+    params: {algo: fixed-size, boundary_mode: none, min: 131072, target: 524288, max: 2097152}
+  - name: fixed-size-dense
+    params: {algo: fixed-size, boundary_mode: none, min: 65536, target: 262144, max: 1048576}
+command: >-
+  /root/eb-research/target/exp-chunk/release/ebr-chunk tree-dedup
+  --item-path {item_path} --experiment-id EXP-CHUNK-006 --env-name wsl-ubuntu
+  --algorithm {algo} --min {min} --target {target} --max {max}
+  --boundary-mode {boundary_mode} --key-count 16 --key-seed-base 20260917
+  --scope archive --reference-algorithm gear-norm-v1
+  --detail-out /root/eb-research/results/EXP-CHUNK-006/{candidate}/{item_id}.detail.jsonl.gz
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-curl-8-19-0-git
+    - f01-tuning-llvm-project-20-1-8-git
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-typescript-5-9-3-git
+    - f01-tuning-zstd-v1-5-7-full-clone
+    - f01-tuning-zstd-v1-5-7-git
+    - f02-tuning-lz4-intree-make-build
+    - f02-tuning-ripgrep-cargo-target
+    - f02-tuning-zstd-cmake-build
+    - f03-tuning-fzf-go-mod-vendor
+    - f03-tuning-pypi-scientific-site-packages
+    - f03-tuning-ripgrep-cargo-vendor
+    - f03-tuning-typescript-npm-node-modules
+    - f04-tuning-maildir
+    - f04-tuning-real-netbsd-pkgsrc
+    - f04-tuning-sourcelike
+    - f05-tuning-enwik8
+    - f05-tuning-gen-logs-a-medium
+    - f05-tuning-gen-logs-a-small
+    - f05-tuning-google-clusterdata-2011-2-task-usage
+    - f05-tuning-gutenberg-books
+    - f05-tuning-loghub-hdfs-v1
+    - f05-tuning-loghub-openstack
+    - f05-tuning-logrotate-from-loghub-hdfs
+    - f06-tuning-census-popest-2023
+    - f06-tuning-gen-structured-a-medium
+    - f06-tuning-gen-structured-a-small
+    - f06-tuning-gharchive-2015-01-01-h15-h16
+    - f06-tuning-gharchive-2024-01-15-h15
+    - f06-tuning-nyc-tlc-yellow-tripdata-2024
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-ann-benchmarks-fashion-mnist-hdf5
+    - f07-tuning-gen-numeric-a-medium
+    - f07-tuning-gen-numeric-a-small
+    - f07-tuning-mnist-npz
+    - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+    - f07-tuning-pythia-160m-safetensors-main
+    - f07-tuning-pythia-160m-safetensors-step100000
+    - f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km
+    - f07-tuning-qwen2-5-1-5b-safetensors-bf16
+    - f07-tuning-sdrbench-hurricane-isabel
+    - f07-tuning-sdss-dr17-frames
+    - f07-tuning-silesia-mr
+    - f07-tuning-silesia-sao
+    - f07-tuning-silesia-xray
+    - f08-tuning-chinook-sqlite
+    - f08-tuning-gen-sqlite-tpch-medium
+    - f08-tuning-gen-sqlite-tpch-small
+    - f08-tuning-postgres17-pgbench-s40
+    - f08-tuning-silesia-osdb
+    - f08-tuning-wikimedia-simplewiki-sql-dump
+    - f09-alpine-324-arm64-rootfs-binaries
+    - f09-alpine-324-riscv64-rootfs-binaries
+    - f09-alpine-324-rootfs-binaries
+    - f09-ripgrep-1411-arm64-darwin-multiplatform
+    - f09-silesia-mozilla-ooffice
+    - f09-ubuntu-noble-arm64-usr-binaries
+    - f09-ubuntu-noble-riscv64-usr-binaries
+    - f09-ubuntu-noble-usr-binaries
+    - f10-gen-redundant-binary-blobs
+    - f10-linux-firmware-20260910-full-tree
+    - f10-linux-firmware-20260910-subset
+    - f10-rust-fd-find-1050-multiprofile
+    - f11-alpine-324-apks
+    - f11-cosign-v250-signing-assets
+    - f11-pypi-binary-wheels-cp312
+    - f11-ubuntu-noble-debs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f12-tuning-kodak-jpeg-matrix-medium
+    - f12-tuning-nasa-ivl-photos-large
+    - f12-tuning-nasa-ivl-photos-medium
+    - f12-tuning-nasa-ivl-photos-small
+    - f13-tuning-bbb-video-large
+    - f13-tuning-bbb-video-medium
+    - f13-tuning-kodak-image-codecs-small
+    - f13-tuning-librivox-audiobook-medium
+    - f13-tuning-musopen-flac-medium
+    - f13-tuning-nasa-ntrs-pdf-small
+    - f13-tuning-prelinger-video-medium
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f14-jenkins-25683-war
+    - f14-legacy-writer-matrix-tuning
+    - f15-tuning-dbprealloc
+    - f15-tuning-real-ubuntu-noble-ova-raw
+    - f15-tuning-vmraw
+    - f16-alpine-3241-minirootfs-ext4-qcow2
+    - f16-alpine-3241-minirootfs-ext4-raw
+    - f16-alpine-3241-minirootfs-ext4-vhdx
+    - f16-alpine-virt-3241-iso
+    - f16-oci-ubuntu-noble-multiarch-index
+    - f16-ubuntu-noble-cloudimg-20260911-raw
+    - f17-tuning-duptree-mixed
+    - f17-tuning-duptree-nested
+    - f17-tuning-real-ubuntu-kernel-headers-2ver
+    - f18-tuning-curl-8-x-release-series
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-ripgrep-commit-snapshots
+    - f18-tuning-sqlite-amalgamation-series
+    - f18-tuning-ubuntu-noble-cloud-images
+    - f18-tuning-zstd-releases-1-5-x
+    - f19-tuning-real-ext4-acl-selinux
+    - f19-tuning-real-home-snapshot
+    - f19-tuning-real-ntfs-metadata
+    - f19-tuning-rsnapshot-a
+    - f19-tuning-zoo
+    - f20-tuning-bombs-dense
+    - f20-tuning-csprng
+    - f20-tuning-gear-extremes
+    - f20-tuning-generated-malicious-structures
+    - f20-tuning-generated-private-vault
+    - f20-tuning-real-libarchive-testsuite
+
+metrics:
+  - {name: dedup_stored_fraction, source: stdout_json, key: payload.keys.dedup_stored_fraction_mean, family: size, direction: minimize, unit: ratio}
+  - {name: dedup_stored_fraction_key_min, source: stdout_json, key: payload.keys.dedup_stored_fraction_min, family: size, direction: none, unit: ratio}
+  - {name: dedup_stored_fraction_key_max, source: stdout_json, key: payload.keys.dedup_stored_fraction_max, family: size, direction: none, unit: ratio}
+  - {name: mean_chunk_bytes, source: stdout_json, key: payload.keys.mean_chunk_bytes_mean, family: other, direction: none, unit: B}
+  - {name: forced_max_fraction, source: stdout_json, key: payload.keys.forced_max_fraction_mean, family: other, direction: minimize, unit: fraction}
+  - {name: modelled_cost_bytes_frozen_constants, source: stdout_json, key: payload.keys.modelled_cost_bytes_frozen_constants_mean, family: size, direction: minimize, unit: B}
+  - {name: boundary_coincidence_with_reference, source: stdout_json, key: payload.keys.boundary_coincidence_with_reference_mean, family: other, direction: none, unit: fraction}
+  - {name: keyed_boundary_sets_distinct, source: stdout_json, key: payload.keys.distinct_boundary_set_count, family: correctness, direction: maximize, unit: count}
+  - {name: algorithm_id, source: stdout_json, key: payload.algorithm_id, family: correctness, kind: string}
+  - {name: result_sha256, source: stdout_json, key: payload.result_sha256, family: correctness, kind: string}
+  - {name: detail_sha256, source: path_sha256, path: '/root/eb-research/results/EXP-CHUNK-006/{candidate}/{item_id}.detail.jsonl.gz', family: correctness}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091761, bootstrap: 2026091762, command: 2026091763}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/exp-chunk/release/ebr-chunk]
+  timeout_s: 43200
+
+analysis:
+  baseline: secret-gear-table-balanced
+  pairing: item
+  report_metrics: [dedup_stored_fraction, dedup_stored_fraction_key_max, boundary_coincidence_with_reference, forced_max_fraction]

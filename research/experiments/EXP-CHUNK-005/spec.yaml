@@ -1,0 +1,228 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CHUNK-005
+status: pre-registration-draft; NEEDS_TOOLING (ebr-cdcpack granularity/selection modes, categorisers, constants fit, size-sets.json from EXP-CHUNK-004)
+question: >
+  Which chunking-parameter selection rule (frozen plaintext proxy, corrected constants,
+  end-to-end complete cost, sampled compressed proxy, first member, weighted objective)
+  and which parameter granularity (global, archive-wide per profile, per file-size class,
+  per content category under two deterministic categorisers, per ContentObject) minimise
+  complete archive bytes at bounded selection work, and what does mixed-parameter
+  chunking cost in cross-category dedup and identity binding?
+hypothesis: >
+  H1: the frozen 164/40-byte proxy mis-ranks list members on a measurable share of
+  archives, but end-to-end selection is not DISTINGUISHABLE_BETTER than the frozen
+  proxy on artifact_bytes against the T1 band at corpus level; per-category and
+  per-object granularity do not beat archive-wide selection against their tier band
+  (T2 or higher). Falsification in protocol.md section 3.
+decision_ids: [DEC-CMP-003, DEC-CMP-004, DEC-MOD-039, DEC-CMP-002]
+
+candidates:
+  - name: sel-proxy-frozen-dense
+    params: {profile: dense, selection: 'proxy-frozen', granularity: 'archive', sizes: 'frozen:dense'}
+  - name: sel-proxy-corrected-dense
+    params: {profile: dense, selection: 'proxy-corrected:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/proxy-corrected-constants.json', granularity: 'archive', sizes: 'frozen:dense'}
+  - name: sel-end-to-end-dense
+    params: {profile: dense, selection: 'end-to-end', granularity: 'archive', sizes: 'frozen:dense'}
+  - name: sel-sampled16-dense
+    params: {profile: dense, selection: 'sampled:16', granularity: 'archive', sizes: 'frozen:dense'}
+  - name: sel-first-member-dense
+    params: {profile: dense, selection: 'first-member', granularity: 'archive', sizes: 'frozen:dense'}
+  - name: sel-weighted-dense
+    params: {profile: dense, selection: 'weighted:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/weighted-objective.json', granularity: 'archive', sizes: 'frozen:dense'}
+  - name: sel-proxy-frozen-extreme
+    params: {profile: extreme, selection: 'proxy-frozen', granularity: 'archive', sizes: 'frozen:extreme'}
+  - name: sel-proxy-corrected-extreme
+    params: {profile: extreme, selection: 'proxy-corrected:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/proxy-corrected-constants.json', granularity: 'archive', sizes: 'frozen:extreme'}
+  - name: sel-end-to-end-extreme
+    params: {profile: extreme, selection: 'end-to-end', granularity: 'archive', sizes: 'frozen:extreme'}
+  - name: sel-sampled16-extreme
+    params: {profile: extreme, selection: 'sampled:16', granularity: 'archive', sizes: 'frozen:extreme'}
+  - name: sel-first-member-extreme
+    params: {profile: extreme, selection: 'first-member', granularity: 'archive', sizes: 'frozen:extreme'}
+  - name: sel-weighted-extreme
+    params: {profile: extreme, selection: 'weighted:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/weighted-objective.json', granularity: 'archive', sizes: 'frozen:extreme'}
+  - name: gran-global-single-balanced
+    params: {profile: balanced, selection: 'proxy-frozen', granularity: 'archive', sizes: 'frozen:balanced'}
+  - name: gran-archive-profile-balanced
+    params: {profile: balanced, selection: 'proxy-frozen', granularity: 'archive', sizes: 'frozen:balanced'}
+  - name: gran-size-class-balanced
+    params: {profile: balanced, selection: 'proxy-corrected:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/proxy-corrected-constants.json', granularity: 'size-class:65536,1048576,16777216', sizes: 'file:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/size-sets.json#balanced'}
+  - name: gran-category-c1-balanced
+    params: {profile: balanced, selection: 'proxy-corrected:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/proxy-corrected-constants.json', granularity: 'category:c1-magic-entropy-v0', sizes: 'file:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/size-sets.json#balanced'}
+  - name: gran-category-c2-balanced
+    params: {profile: balanced, selection: 'proxy-corrected:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/proxy-corrected-constants.json', granularity: 'category:c2-dwarfs-like-v0', sizes: 'file:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/size-sets.json#balanced'}
+  - name: gran-object-balanced
+    params: {profile: balanced, selection: 'end-to-end-per-object', granularity: 'object', sizes: 'file:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/size-sets.json#balanced'}
+  - name: gran-global-single-extreme
+    params: {profile: extreme, selection: 'proxy-frozen', granularity: 'archive', sizes: 'frozen:balanced'}
+  - name: gran-archive-profile-extreme
+    params: {profile: extreme, selection: 'proxy-frozen', granularity: 'archive', sizes: 'frozen:extreme'}
+  - name: gran-size-class-extreme
+    params: {profile: extreme, selection: 'proxy-corrected:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/proxy-corrected-constants.json', granularity: 'size-class:65536,1048576,16777216', sizes: 'file:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/size-sets.json#extreme'}
+  - name: gran-category-c1-extreme
+    params: {profile: extreme, selection: 'proxy-corrected:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/proxy-corrected-constants.json', granularity: 'category:c1-magic-entropy-v0', sizes: 'file:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/size-sets.json#extreme'}
+  - name: gran-category-c2-extreme
+    params: {profile: extreme, selection: 'proxy-corrected:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/proxy-corrected-constants.json', granularity: 'category:c2-dwarfs-like-v0', sizes: 'file:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/size-sets.json#extreme'}
+  - name: gran-object-extreme
+    params: {profile: extreme, selection: 'end-to-end-per-object', granularity: 'object', sizes: 'file:/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-005/size-sets.json#extreme'}
+command: >-
+  /root/eb-research/target/exp-chunk/release/ebr-cdcpack
+  --item-path {item_path} --experiment-id EXP-CHUNK-005 --env-name wsl-ubuntu
+  --algorithm gear-norm-v1 --size-set {sizes} --selection {selection} --granularity {granularity}
+  --codec-profile {profile} --planner v6 --layout indexed --archive-out {scratch}/cdc.eb
+  --selection-trace-out /root/eb-research/results/EXP-CHUNK-005/{candidate}/{item_id}.selection.jsonl.gz
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-curl-8-19-0-git
+    - f01-tuning-llvm-project-20-1-8-git
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-typescript-5-9-3-git
+    - f01-tuning-zstd-v1-5-7-full-clone
+    - f01-tuning-zstd-v1-5-7-git
+    - f02-tuning-lz4-intree-make-build
+    - f02-tuning-ripgrep-cargo-target
+    - f02-tuning-zstd-cmake-build
+    - f03-tuning-fzf-go-mod-vendor
+    - f03-tuning-pypi-scientific-site-packages
+    - f03-tuning-ripgrep-cargo-vendor
+    - f03-tuning-typescript-npm-node-modules
+    - f04-tuning-maildir
+    - f04-tuning-real-netbsd-pkgsrc
+    - f04-tuning-sourcelike
+    - f05-tuning-enwik8
+    - f05-tuning-gen-logs-a-medium
+    - f05-tuning-gen-logs-a-small
+    - f05-tuning-google-clusterdata-2011-2-task-usage
+    - f05-tuning-gutenberg-books
+    - f05-tuning-loghub-hdfs-v1
+    - f05-tuning-loghub-openstack
+    - f05-tuning-logrotate-from-loghub-hdfs
+    - f06-tuning-census-popest-2023
+    - f06-tuning-gen-structured-a-medium
+    - f06-tuning-gen-structured-a-small
+    - f06-tuning-gharchive-2015-01-01-h15-h16
+    - f06-tuning-gharchive-2024-01-15-h15
+    - f06-tuning-nyc-tlc-yellow-tripdata-2024
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-ann-benchmarks-fashion-mnist-hdf5
+    - f07-tuning-gen-numeric-a-medium
+    - f07-tuning-gen-numeric-a-small
+    - f07-tuning-mnist-npz
+    - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+    - f07-tuning-pythia-160m-safetensors-main
+    - f07-tuning-pythia-160m-safetensors-step100000
+    - f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km
+    - f07-tuning-qwen2-5-1-5b-safetensors-bf16
+    - f07-tuning-sdrbench-hurricane-isabel
+    - f07-tuning-sdss-dr17-frames
+    - f07-tuning-silesia-mr
+    - f07-tuning-silesia-sao
+    - f07-tuning-silesia-xray
+    - f08-tuning-chinook-sqlite
+    - f08-tuning-gen-sqlite-tpch-medium
+    - f08-tuning-gen-sqlite-tpch-small
+    - f08-tuning-postgres17-pgbench-s40
+    - f08-tuning-silesia-osdb
+    - f08-tuning-wikimedia-simplewiki-sql-dump
+    - f09-alpine-324-arm64-rootfs-binaries
+    - f09-alpine-324-riscv64-rootfs-binaries
+    - f09-alpine-324-rootfs-binaries
+    - f09-ripgrep-1411-arm64-darwin-multiplatform
+    - f09-silesia-mozilla-ooffice
+    - f09-ubuntu-noble-arm64-usr-binaries
+    - f09-ubuntu-noble-riscv64-usr-binaries
+    - f09-ubuntu-noble-usr-binaries
+    - f10-gen-redundant-binary-blobs
+    - f10-linux-firmware-20260910-full-tree
+    - f10-linux-firmware-20260910-subset
+    - f10-rust-fd-find-1050-multiprofile
+    - f11-alpine-324-apks
+    - f11-cosign-v250-signing-assets
+    - f11-pypi-binary-wheels-cp312
+    - f11-ubuntu-noble-debs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f12-tuning-kodak-jpeg-matrix-medium
+    - f12-tuning-nasa-ivl-photos-large
+    - f12-tuning-nasa-ivl-photos-medium
+    - f12-tuning-nasa-ivl-photos-small
+    - f13-tuning-bbb-video-large
+    - f13-tuning-bbb-video-medium
+    - f13-tuning-kodak-image-codecs-small
+    - f13-tuning-librivox-audiobook-medium
+    - f13-tuning-musopen-flac-medium
+    - f13-tuning-nasa-ntrs-pdf-small
+    - f13-tuning-prelinger-video-medium
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f14-jenkins-25683-war
+    - f14-legacy-writer-matrix-tuning
+    - f15-tuning-dbprealloc
+    - f15-tuning-real-ubuntu-noble-ova-raw
+    - f15-tuning-vmraw
+    - f16-alpine-3241-minirootfs-ext4-qcow2
+    - f16-alpine-3241-minirootfs-ext4-raw
+    - f16-alpine-3241-minirootfs-ext4-vhdx
+    - f16-alpine-virt-3241-iso
+    - f16-oci-ubuntu-noble-multiarch-index
+    - f16-ubuntu-noble-cloudimg-20260911-raw
+    - f17-tuning-duptree-mixed
+    - f17-tuning-duptree-nested
+    - f17-tuning-real-ubuntu-kernel-headers-2ver
+    - f18-tuning-curl-8-x-release-series
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-ripgrep-commit-snapshots
+    - f18-tuning-sqlite-amalgamation-series
+    - f18-tuning-ubuntu-noble-cloud-images
+    - f18-tuning-zstd-releases-1-5-x
+    - f19-tuning-real-ext4-acl-selinux
+    - f19-tuning-real-home-snapshot
+    - f19-tuning-real-ntfs-metadata
+    - f19-tuning-rsnapshot-a
+    - f19-tuning-zoo
+    - f20-tuning-bombs-dense
+    - f20-tuning-csprng
+    - f20-tuning-gear-extremes
+    - f20-tuning-generated-malicious-structures
+    - f20-tuning-generated-private-vault
+    - f20-tuning-real-libarchive-testsuite
+
+metrics:
+  - {name: artifact_bytes, source: path_size, path: '{scratch}/cdc.eb', family: size, direction: minimize, unit: B}
+  - {name: index_bytes, source: stdout_json, key: payload.bytes.index_bytes, family: size, direction: minimize, unit: B}
+  - {name: metadata_bytes, source: stdout_json, key: payload.bytes.metadata_bytes, family: size, direction: minimize, unit: B}
+  - {name: dedup_stored_fraction, source: stdout_json, key: payload.counts.dedup_stored_fraction, family: size, direction: minimize, unit: ratio}
+  - {name: modelled_binding_bytes, source: stdout_json, key: payload.selection.modelled_per_object_binding_bytes, family: size, direction: minimize, unit: B}
+  - {name: selection_candidates_evaluated, source: stdout_json, key: payload.selection.candidates_evaluated, family: other, direction: minimize, unit: count}
+  - {name: selection_bytes_encoded, source: stdout_json, key: payload.selection.bytes_encoded_for_selection, family: other, direction: minimize, unit: B}
+  - {name: archive_regret_bytes, source: stdout_json, key: payload.selection.regret_vs_best_list_member_bytes, family: size, direction: minimize, unit: B}
+  - {name: distinct_parameter_sets_used, source: stdout_json, key: payload.selection.distinct_parameter_sets, family: other, direction: none, unit: count}
+  - {name: cross_category_duplicate_bytes_lost, source: stdout_json, key: payload.selection.cross_category_duplicate_bytes_lost, family: size, direction: minimize, unit: B}
+  - {name: categoriser_bytes_examined, source: stdout_json, key: payload.selection.categoriser_bytes_examined, family: other, direction: minimize, unit: B}
+  - {name: selection_trace_sha256, source: path_sha256, path: '/root/eb-research/results/EXP-CHUNK-005/{candidate}/{item_id}.selection.jsonl.gz', family: correctness}
+  - {name: archive_sha256, source: path_sha256, path: '{scratch}/cdc.eb', family: correctness}
+  - {name: roundtrip_ok, source: check, family: correctness, command: 'python3 /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-004/roundtrip_eb.py --ebound /root/eb-research/target/exp-chunk-prod/release/ebound --item-path {item_path} --archive {scratch}/cdc.eb --dest {scratch}/x --report {scratch}/roundtrip.json'}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091751, bootstrap: 2026091752, command: 2026091753}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/exp-chunk/release/ebr-cdcpack, /root/eb-research/target/exp-chunk-prod/release/ebound, python3]
+  timeout_s: 86400
+
+analysis:
+  baseline: sel-proxy-frozen-extreme
+  pairing: item
+  report_metrics: [artifact_bytes, archive_regret_bytes, selection_bytes_encoded, cross_category_duplicate_bytes_lost]

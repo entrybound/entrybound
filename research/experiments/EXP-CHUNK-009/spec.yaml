@@ -1,0 +1,129 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CHUNK-009
+status: pre-registration-draft; NEEDS_TOOLING (ebr-access --mode archive with spawned loopback origin, latency model, ebr-cdcpack); arm D (deterministic bytes and requests)
+question: >
+  How do chunk size policies change the cost of local and remote access to INDEXED
+  archives: bytes read to open, bytes and HTTP range requests per random entry and per
+  4 KiB range, verified-range fetch bytes, and modelled remote latency per network profile;
+  and (timing arms) local first/random entry latency and full extraction time?
+hypothesis: >
+  Arm D: http_bytes per 4 KiB random range grows roughly in proportion to target chunk
+  size above 64 KiB, so the fast preset is DISTINGUISHABLE_WORSE than balanced on
+  verified_range_fetch_bytes by more than 1 band unit, while http_requests per random
+  entry is EQUIVALENT across sizes for entries smaller than the minimum chunk size; open
+  bytes are dominated by Index size, which grows as chunk size falls. Falsification in
+  protocol.md section 3.
+decision_ids: [DEC-CMP-002, DEC-CMP-001, DEC-CMP-017]
+
+candidates:
+  - name: sq-fast
+    params: {sizes: 'frozen:fast', codec_profile: fast}
+  - name: sq-balanced
+    params: {sizes: 'frozen:balanced', codec_profile: balanced}
+  - name: sq-dense
+    params: {sizes: 'frozen:dense', codec_profile: dense}
+  - name: sq-extreme
+    params: {sizes: 'frozen:extreme', codec_profile: extreme}
+  - name: gear-norm-v1-t64k-balanced-codec
+    params: {sizes: '16384/65536/262144', codec_profile: balanced}
+  - name: gear-norm-v1-t256k-balanced-codec
+    params: {sizes: '65536/262144/1048576', codec_profile: balanced}
+  - name: gear-norm-v1-t1m-balanced-codec
+    params: {sizes: '262144/1048576/4194304', codec_profile: balanced}
+  - name: gear-norm-v1-t4m-balanced-codec
+    params: {sizes: '1048576/4194304/16777216', codec_profile: balanced}
+command: >-
+  /root/eb-research/target/exp-chunk/release/ebr-cdcpack --item-path {item_path}
+  --experiment-id EXP-CHUNK-009 --env-name wsl-ubuntu --algorithm gear-norm-v1
+  --size-set {sizes} --selection proxy-frozen --codec-profile {codec_profile} --planner v6
+  --layout indexed --archive-out {scratch}/a.eb > {scratch}/pack.json &&
+  /root/eb-research/target/exp-chunk/release/ebr-access --mode archive --archive-path {scratch}/a.eb
+  --experiment-id EXP-CHUNK-009 --env-name wsl-ubuntu --source-kind http-spawn-origin
+  --sample-size 1000 --sample-seed 20260917 --large-entry-threshold-bytes 1048576
+  --byte-ranges-per-large-entry 16 --byte-range-len 4096 --verified-range true
+  --request-log-out /root/eb-research/results/EXP-CHUNK-009/{candidate}/{item_id}.requests.jsonl.gz
+  --latency-model /mnt/d/Projects/entrybound/entrybound/research/methods/thresholds.json
+  --connection-model /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-NETEM-CAL/connection-model.json
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-curl-8-19-0-git
+    - f01-tuning-ripgrep-14-1-1-git
+    - f02-tuning-lz4-intree-make-build
+    - f02-tuning-zstd-cmake-build
+    - f03-tuning-fzf-go-mod-vendor
+    - f03-tuning-pypi-scientific-site-packages
+    - f04-tuning-maildir
+    - f04-tuning-real-netbsd-pkgsrc
+    - f05-tuning-enwik8
+    - f05-tuning-gen-logs-a-medium
+    - f06-tuning-census-popest-2023
+    - f06-tuning-gen-structured-a-medium
+    - f07-tuning-ann-benchmarks-fashion-mnist-hdf5
+    - f07-tuning-gen-numeric-a-medium
+    - f08-tuning-chinook-sqlite
+    - f08-tuning-gen-sqlite-tpch-medium
+    - f09-alpine-324-arm64-rootfs-binaries
+    - f09-ripgrep-1411-arm64-darwin-multiplatform
+    - f10-gen-redundant-binary-blobs
+    - f10-linux-firmware-20260910-subset
+    - f11-alpine-324-apks
+    - f11-cosign-v250-signing-assets
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f12-tuning-nasa-ivl-photos-medium
+    - f13-tuning-bbb-video-medium
+    - f13-tuning-kodak-image-codecs-small
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f15-tuning-dbprealloc
+    - f15-tuning-vmraw
+    - f16-alpine-3241-minirootfs-ext4-qcow2
+    - f16-oci-ubuntu-noble-multiarch-index
+    - f17-tuning-duptree-mixed
+    - f17-tuning-duptree-nested
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-ripgrep-commit-snapshots
+    - f19-tuning-real-ext4-acl-selinux
+    - f19-tuning-real-home-snapshot
+    - f20-tuning-bombs-dense
+    - f20-tuning-csprng
+
+metrics:
+  - {name: open_bytes_read, source: stdout_json, key: payload.open.bytes_fetched, family: size, direction: minimize, unit: B}
+  - {name: http_requests_open, source: stdout_json, key: payload.open.range_requests, family: other, direction: minimize, unit: count}
+  - {name: http_requests_random_entry_mean, source: stdout_json, key: payload.random_entry.range_requests_mean, family: other, direction: minimize, unit: count}
+  - {name: http_bytes_random_entry_mean, source: stdout_json, key: payload.random_entry.bytes_fetched_mean, family: size, direction: minimize, unit: B}
+  - {name: http_bytes_range_4k_mean, source: stdout_json, key: payload.random_range_4k.bytes_fetched_mean, family: size, direction: minimize, unit: B}
+  - {name: verified_range_fetch_bytes, source: stdout_json, key: payload.random_range_4k.verified_fetch_bytes_mean, family: size, direction: minimize, unit: B}
+  - {name: verification_digest_ops, source: stdout_json, key: payload.random_range_4k.digest_ops_mean, family: other, direction: minimize, unit: count}
+  - {name: remote_random_entry_latency_s_np_metro_modelled, source: stdout_json, key: payload.model.np_metro.random_entry_latency_s_mean, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_random_entry_latency_s_np_cont_modelled, source: stdout_json, key: payload.model.np_cont.random_entry_latency_s_mean, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_random_entry_latency_s_np_inter_modelled, source: stdout_json, key: payload.model.np_inter.random_entry_latency_s_mean, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_first_entry_latency_s_np_cont_modelled, source: stdout_json, key: payload.model.np_cont.first_entry_latency_s, family: time_wall, direction: minimize, unit: s}
+  - {name: verified_fraction, source: stdout_json, key: payload.random_range_4k.verified_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: artifact_bytes, source: path_size, path: '{scratch}/a.eb', family: size, direction: minimize, unit: B}
+  - {name: archive_sha256, source: path_sha256, path: '{scratch}/a.eb', family: correctness}
+  - {name: request_log_sha256, source: path_sha256, path: '/root/eb-research/results/EXP-CHUNK-009/{candidate}/{item_id}.requests.jsonl.gz', family: correctness}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091791, bootstrap: 2026091792, command: 2026091793}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/exp-chunk/release/ebr-cdcpack, /root/eb-research/target/exp-chunk/release/ebr-access, /root/eb-research/target/exp-chunk/release/ebr-origin]
+  timeout_s: 14400
+
+analysis:
+  baseline: sq-balanced
+  pairing: item
+  report_metrics: [open_bytes_read, http_bytes_range_4k_mean, verified_range_fetch_bytes, http_requests_random_entry_mean, remote_random_entry_latency_s_np_cont_modelled]

@@ -1,0 +1,146 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CHUNK-008
+status: pre-registration-draft; NEEDS_TOOLING (ebr-chunk throughput, gear-norm-v1-copy, soft-AES build, runner additions and calibration per decision-method section 14 items 3-4); arm T1 on WSL st-v
+question: >
+  What single-thread in-process chunking throughput do CDC constructions and keyed
+  boundary modes achieve (P-core, E-core and WSL vCPU), and what complete pack CPU, wall
+  time and peak memory do the chunking size policies and selection rules cost?
+hypothesis: >
+  Arm T1: fastcdc-2020 and gear-spread-nc2 are DISTINGUISHABLE_BETTER than gear-norm-v1
+  on chunk-stage throughput; PHTE with AES-NI is DISTINGUISHABLE_WORSE than the secret
+  Gear table by more than 1 band unit, and software AES is worse still; gear-norm-v1-copy
+  is EQUIVALENT to gear-norm-v1 (codegen control). Chunk-stage differences shrink to within
+  the T-03 band in end-to-end encode_cpu_s for balanced packs (arm T2). Falsification in
+  protocol.md section 3.
+decision_ids: [DEC-CMP-001, DEC-CMP-002, DEC-CMP-003, DEC-CMP-004, DEC-CRY-023]
+
+candidates:
+  - name: gear-norm-v1
+    params: {algo: gear-norm-v1, mode: none, build: exp-chunk}
+  - name: gear-norm-v1-copy
+    params: {algo: gear-norm-v1-copy, mode: none, build: exp-chunk}
+  - name: gear-spread-nc2
+    params: {algo: gear-spread, mode: none, build: exp-chunk}
+  - name: fastcdc-2016-nc2
+    params: {algo: fastcdc-2016, mode: none, build: exp-chunk}
+  - name: fastcdc-2020-nc2
+    params: {algo: fastcdc-2020, mode: none, build: exp-chunk}
+  - name: rabin-w64
+    params: {algo: rabin, mode: none, build: exp-chunk}
+  - name: buzhash-w64
+    params: {algo: buzhash, mode: none, build: exp-chunk}
+  - name: ae-w1
+    params: {algo: ae, mode: none, build: exp-chunk}
+  - name: ram
+    params: {algo: ram, mode: none, build: exp-chunk}
+  - name: tttd
+    params: {algo: tttd, mode: none, build: exp-chunk}
+  - name: seqcdc
+    params: {algo: seqcdc, mode: none, build: exp-chunk}
+  - name: vram-scalar
+    params: {algo: vram-scalar, mode: none, build: exp-chunk}
+  - name: chonkers
+    params: {algo: chonkers, mode: none, build: exp-chunk}
+  - name: fixed-size
+    params: {algo: fixed-size, mode: none, build: exp-chunk}
+  - name: secret-gear-table
+    params: {algo: gear-norm-v1, mode: secret-gear-table, build: exp-chunk}
+  - name: keyed-gear-spread-nc2
+    params: {algo: gear-spread, mode: secret-gear-table, build: exp-chunk}
+  - name: phte-aes128-aesni
+    params: {algo: gear-norm-v1, mode: phte-aes128, build: exp-chunk}
+  - name: phte-aes128-softaes
+    params: {algo: gear-norm-v1, mode: phte-aes128, build: exp-chunk-softaes}
+  - name: sha256-chunk-digests-only
+    params: {algo: hash-only, mode: none, build: exp-chunk}
+command: >-
+  /root/eb-research/target/{build}/release/ebr-chunk throughput
+  --item-path {item_path} --experiment-id EXP-CHUNK-008 --env-name wsl-ubuntu
+  --algorithm {algo} --boundary-mode {mode} --key-seed-base 20260917
+  --min 131072 --target 524288 --max 2097152 --preload true --min-batch-seconds 1.0
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-curl-8-19-0-git
+    - f01-tuning-ripgrep-14-1-1-git
+    - f02-tuning-lz4-intree-make-build
+    - f02-tuning-zstd-cmake-build
+    - f03-tuning-fzf-go-mod-vendor
+    - f03-tuning-pypi-scientific-site-packages
+    - f04-tuning-maildir
+    - f04-tuning-real-netbsd-pkgsrc
+    - f05-tuning-enwik8
+    - f05-tuning-gen-logs-a-medium
+    - f06-tuning-census-popest-2023
+    - f06-tuning-gen-structured-a-medium
+    - f07-tuning-ann-benchmarks-fashion-mnist-hdf5
+    - f07-tuning-gen-numeric-a-medium
+    - f08-tuning-chinook-sqlite
+    - f08-tuning-gen-sqlite-tpch-medium
+    - f09-alpine-324-arm64-rootfs-binaries
+    - f09-ripgrep-1411-arm64-darwin-multiplatform
+    - f10-gen-redundant-binary-blobs
+    - f10-linux-firmware-20260910-subset
+    - f11-alpine-324-apks
+    - f11-cosign-v250-signing-assets
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f12-tuning-nasa-ivl-photos-medium
+    - f13-tuning-bbb-video-medium
+    - f13-tuning-kodak-image-codecs-small
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f15-tuning-dbprealloc
+    - f15-tuning-vmraw
+    - f16-alpine-3241-minirootfs-ext4-qcow2
+    - f16-oci-ubuntu-noble-multiarch-index
+    - f17-tuning-duptree-mixed
+    - f17-tuning-duptree-nested
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-ripgrep-commit-snapshots
+    - f19-tuning-real-ext4-acl-selinux
+    - f19-tuning-real-home-snapshot
+    - f20-tuning-bombs-dense
+    - f20-tuning-csprng
+
+metrics:
+  - {name: chunk_stage_seconds_per_pass, source: stdout_json, key: payload.in_process.seconds_per_pass, family: time_wall, direction: minimize, unit: s}
+  - {name: chunk_stage_throughput_bps, source: stdout_json, key: payload.in_process.bytes_per_second, family: throughput, direction: maximize, unit: B/s}
+  - {name: chunk_stage_cpu_seconds_per_pass, source: stdout_json, key: payload.in_process.thread_cpu_seconds_per_pass, family: time_cpu, direction: minimize, unit: s}
+  - {name: passes_in_batch, source: stdout_json, key: payload.in_process.passes, family: other, direction: none, unit: count}
+  - {name: boundary_set_sha256, source: stdout_json, key: payload.boundary_set_sha256, family: correctness, kind: string}
+  - {name: cpu_flags_aes, source: stdout_json, key: payload.cpu.aes, family: correctness, kind: string}
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 2026091781, bootstrap: 2026091782, command: 2026091783}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 4
+  cpu_affinity: [2]
+  requires: [/root/eb-research/target/exp-chunk/release/ebr-chunk, /root/eb-research/target/exp-chunk-softaes/release/ebr-chunk]
+  timeout_s: 3600
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+analysis:
+  baseline: gear-norm-v1
+  pairing: item_repetition
+  report_metrics: [chunk_stage_throughput_bps, chunk_stage_seconds_per_pass, chunk_stage_cpu_seconds_per_pass]

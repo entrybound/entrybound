@@ -1,0 +1,9 @@
+{
+  "schema": "ebr.exp-chunk-005.weighted-objective.v1",
+  "status": "pre-registered with EXP-CHUNK-005 protocol (INFERRED weights; sensitivity arms listed in protocol section 14)",
+  "base": "proxy-corrected constants from proxy-corrected-constants.json",
+  "w_index_bytes": 1.0,
+  "w_access_granularity_bytes_per_mib_per_unique_chunk": 64.0,
+  "w_encode_cpu": 0.0,
+  "sensitivity_w_access": [16.0, 64.0, 256.0]
+}

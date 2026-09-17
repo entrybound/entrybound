@@ -1,0 +1,231 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CHUNK-001
+status: pre-registration-draft (gate G-A pending; see protocol.md section 1)
+question: >
+  At the four frozen production CDC presets, how do the existing research CDC
+  algorithms (fixed-size baseline, FastCDC 2016/2020 at NC-1..3, Rabin, Buzhash,
+  AE, RAM, TTTD) compare with gear-norm-v1 on within-item exact-chunk dedup,
+  chunk-size distribution, boundary stability under small edits and chunk-level
+  random-access amplification, on tuning items with at most 64 files?
+hypothesis: >
+  Tuning screen (exploratory, R3/R4 without multiplicity control). H1: at matched
+  realized mean chunk size, gear-norm-v1 is not distinguishable from the best
+  alternative on dedup_stored_fraction in most families, but at least one alternative
+  beats it by more than the T-01 band on low-entropy or periodic content (F15, F16,
+  F20 gear-extremes). Negative control: fixed-size preserves almost no boundaries
+  after insert/delete edits. Falsified per protocol.md section 3.
+decision_ids: [DEC-CMP-001, DEC-CMP-002]
+
+candidates:
+  - name: gear-norm-v1-fast
+    params: {algo: gear-norm-v1, profile: fast, norm: 'none', vw: 'none'}
+  - name: gear-norm-v1-balanced
+    params: {algo: gear-norm-v1, profile: balanced, norm: 'none', vw: 'none'}
+  - name: gear-norm-v1-dense
+    params: {algo: gear-norm-v1, profile: dense, norm: 'none', vw: 'none'}
+  - name: gear-norm-v1-extreme
+    params: {algo: gear-norm-v1, profile: extreme, norm: 'none', vw: 'none'}
+  - name: fixed-size-fast
+    params: {algo: fixed-size, profile: fast, norm: 'none', vw: 'none'}
+  - name: fixed-size-balanced
+    params: {algo: fixed-size, profile: balanced, norm: 'none', vw: 'none'}
+  - name: fixed-size-dense
+    params: {algo: fixed-size, profile: dense, norm: 'none', vw: 'none'}
+  - name: fixed-size-extreme
+    params: {algo: fixed-size, profile: extreme, norm: 'none', vw: 'none'}
+  - name: fastcdc-2016-nc1-fast
+    params: {algo: fastcdc-2016, profile: fast, norm: '1', vw: 'none'}
+  - name: fastcdc-2016-nc1-balanced
+    params: {algo: fastcdc-2016, profile: balanced, norm: '1', vw: 'none'}
+  - name: fastcdc-2016-nc1-dense
+    params: {algo: fastcdc-2016, profile: dense, norm: '1', vw: 'none'}
+  - name: fastcdc-2016-nc1-extreme
+    params: {algo: fastcdc-2016, profile: extreme, norm: '1', vw: 'none'}
+  - name: fastcdc-2016-nc2-fast
+    params: {algo: fastcdc-2016, profile: fast, norm: '2', vw: 'none'}
+  - name: fastcdc-2016-nc2-balanced
+    params: {algo: fastcdc-2016, profile: balanced, norm: '2', vw: 'none'}
+  - name: fastcdc-2016-nc2-dense
+    params: {algo: fastcdc-2016, profile: dense, norm: '2', vw: 'none'}
+  - name: fastcdc-2016-nc2-extreme
+    params: {algo: fastcdc-2016, profile: extreme, norm: '2', vw: 'none'}
+  - name: fastcdc-2016-nc3-fast
+    params: {algo: fastcdc-2016, profile: fast, norm: '3', vw: 'none'}
+  - name: fastcdc-2016-nc3-balanced
+    params: {algo: fastcdc-2016, profile: balanced, norm: '3', vw: 'none'}
+  - name: fastcdc-2016-nc3-dense
+    params: {algo: fastcdc-2016, profile: dense, norm: '3', vw: 'none'}
+  - name: fastcdc-2016-nc3-extreme
+    params: {algo: fastcdc-2016, profile: extreme, norm: '3', vw: 'none'}
+  - name: fastcdc-2020-nc2-fast
+    params: {algo: fastcdc-2020, profile: fast, norm: '2', vw: 'none'}
+  - name: fastcdc-2020-nc2-balanced
+    params: {algo: fastcdc-2020, profile: balanced, norm: '2', vw: 'none'}
+  - name: fastcdc-2020-nc2-dense
+    params: {algo: fastcdc-2020, profile: dense, norm: '2', vw: 'none'}
+  - name: fastcdc-2020-nc2-extreme
+    params: {algo: fastcdc-2020, profile: extreme, norm: '2', vw: 'none'}
+  - name: rabin-w48-fast
+    params: {algo: rabin, profile: fast, norm: 'none', vw: 'none'}
+  - name: rabin-w48-balanced
+    params: {algo: rabin, profile: balanced, norm: 'none', vw: 'none'}
+  - name: rabin-w48-dense
+    params: {algo: rabin, profile: dense, norm: 'none', vw: 'none'}
+  - name: rabin-w48-extreme
+    params: {algo: rabin, profile: extreme, norm: 'none', vw: 'none'}
+  - name: buzhash-w64-fast
+    params: {algo: buzhash, profile: fast, norm: 'none', vw: 'none'}
+  - name: buzhash-w64-balanced
+    params: {algo: buzhash, profile: balanced, norm: 'none', vw: 'none'}
+  - name: buzhash-w64-dense
+    params: {algo: buzhash, profile: dense, norm: 'none', vw: 'none'}
+  - name: buzhash-w64-extreme
+    params: {algo: buzhash, profile: extreme, norm: 'none', vw: 'none'}
+  - name: ae-w1-fast
+    params: {algo: ae, profile: fast, norm: 'none', vw: '1'}
+  - name: ae-w1-balanced
+    params: {algo: ae, profile: balanced, norm: 'none', vw: '1'}
+  - name: ae-w1-dense
+    params: {algo: ae, profile: dense, norm: 'none', vw: '1'}
+  - name: ae-w1-extreme
+    params: {algo: ae, profile: extreme, norm: 'none', vw: '1'}
+  - name: ae-w8-fast
+    params: {algo: ae, profile: fast, norm: 'none', vw: '8'}
+  - name: ae-w8-balanced
+    params: {algo: ae, profile: balanced, norm: 'none', vw: '8'}
+  - name: ae-w8-dense
+    params: {algo: ae, profile: dense, norm: 'none', vw: '8'}
+  - name: ae-w8-extreme
+    params: {algo: ae, profile: extreme, norm: 'none', vw: '8'}
+  - name: ram-fast
+    params: {algo: ram, profile: fast, norm: 'none', vw: 'none'}
+  - name: ram-balanced
+    params: {algo: ram, profile: balanced, norm: 'none', vw: 'none'}
+  - name: ram-dense
+    params: {algo: ram, profile: dense, norm: 'none', vw: 'none'}
+  - name: ram-extreme
+    params: {algo: ram, profile: extreme, norm: 'none', vw: 'none'}
+  - name: tttd-fast
+    params: {algo: tttd, profile: fast, norm: 'none', vw: 'none'}
+  - name: tttd-balanced
+    params: {algo: tttd, profile: balanced, norm: 'none', vw: 'none'}
+  - name: tttd-dense
+    params: {algo: tttd, profile: dense, norm: 'none', vw: 'none'}
+  - name: tttd-extreme
+    params: {algo: tttd, profile: extreme, norm: 'none', vw: 'none'}
+command: >-
+  python3 /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-001/screen_item.py
+  --ebr-chunk /root/eb-research/target/exp-chunk/release/ebr-chunk
+  --item-path {item_path} --scratch {scratch} --experiment-id EXP-CHUNK-001 --env-name wsl-ubuntu
+  --algorithm {algo} --profile {profile} --normalization {norm} --value-width {vw}
+  --seed 20260917 --shift-seeds 4 --shift-prefix-bytes 16777216 --edit-bytes 64
+  --ra-range-bytes 4096 --ra-samples 200
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f05-tuning-enwik8
+    - f05-tuning-gen-logs-a-medium
+    - f05-tuning-gen-logs-a-small
+    - f05-tuning-gutenberg-books
+    - f05-tuning-loghub-openstack
+    - f05-tuning-logrotate-from-loghub-hdfs
+    - f06-tuning-census-popest-2023
+    - f06-tuning-gen-structured-a-medium
+    - f06-tuning-gen-structured-a-small
+    - f06-tuning-gharchive-2015-01-01-h15-h16
+    - f06-tuning-nyc-tlc-yellow-tripdata-2024
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-ann-benchmarks-fashion-mnist-hdf5
+    - f07-tuning-gen-numeric-a-medium
+    - f07-tuning-gen-numeric-a-small
+    - f07-tuning-mnist-npz
+    - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+    - f07-tuning-pythia-160m-safetensors-main
+    - f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km
+    - f07-tuning-sdss-dr17-frames
+    - f07-tuning-silesia-mr
+    - f07-tuning-silesia-sao
+    - f07-tuning-silesia-xray
+    - f08-tuning-chinook-sqlite
+    - f08-tuning-gen-sqlite-tpch-medium
+    - f08-tuning-gen-sqlite-tpch-small
+    - f08-tuning-silesia-osdb
+    - f09-alpine-324-arm64-rootfs-binaries
+    - f09-alpine-324-riscv64-rootfs-binaries
+    - f09-alpine-324-rootfs-binaries
+    - f09-ripgrep-1411-arm64-darwin-multiplatform
+    - f09-silesia-mozilla-ooffice
+    - f10-gen-redundant-binary-blobs
+    - f10-rust-fd-find-1050-multiprofile
+    - f11-alpine-324-apks
+    - f11-pypi-binary-wheels-cp312
+    - f11-ubuntu-noble-debs
+    - f12-tuning-nasa-ivl-photos-medium
+    - f12-tuning-nasa-ivl-photos-small
+    - f13-tuning-bbb-video-medium
+    - f13-tuning-kodak-image-codecs-small
+    - f13-tuning-librivox-audiobook-medium
+    - f13-tuning-musopen-flac-medium
+    - f13-tuning-nasa-ntrs-pdf-small
+    - f13-tuning-prelinger-video-medium
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f14-jenkins-25683-war
+    - f14-legacy-writer-matrix-tuning
+    - f15-tuning-dbprealloc
+    - f15-tuning-vmraw
+    - f16-alpine-3241-minirootfs-ext4-qcow2
+    - f16-alpine-3241-minirootfs-ext4-raw
+    - f16-alpine-3241-minirootfs-ext4-vhdx
+    - f16-alpine-virt-3241-iso
+    - f16-oci-ubuntu-noble-multiarch-index
+    - f18-tuning-sqlite-amalgamation-series
+    - f19-tuning-real-ext4-acl-selinux
+    - f19-tuning-real-ntfs-metadata
+    - f20-tuning-bombs-dense
+    - f20-tuning-gear-extremes
+    - f20-tuning-generated-malicious-structures
+    - f20-tuning-generated-private-vault
+
+metrics:
+  - {name: dedup_stored_fraction, source: stdout_json, key: payload.dedup_stored_fraction, family: size, direction: minimize, unit: ratio}
+  - {name: unique_chunk_bytes, source: stdout_json, key: payload.unique_chunk_bytes, family: size, direction: minimize, unit: B}
+  - {name: modelled_cost_bytes_frozen_constants, source: stdout_json, key: payload.modelled_cost_bytes_frozen_constants, family: size, direction: minimize, unit: B}
+  - {name: mean_chunk_bytes, source: stdout_json, key: payload.mean_chunk_bytes, family: other, direction: none, unit: B}
+  - {name: chunk_count, source: stdout_json, key: payload.chunk_count, family: other, direction: none, unit: count}
+  - {name: unique_chunk_count, source: stdout_json, key: payload.unique_chunk_count, family: other, direction: none, unit: count}
+  - {name: max_file_p99_chunk_bytes, source: stdout_json, key: payload.max_file_p99_chunk_bytes, family: other, direction: none, unit: B}
+  - {name: shift_insert_preserved_boundary_fraction_median, source: stdout_json, key: payload.shift_insert_preserved_boundary_fraction_median, family: other, direction: maximize, unit: fraction}
+  - {name: shift_delete_preserved_boundary_fraction_median, source: stdout_json, key: payload.shift_delete_preserved_boundary_fraction_median, family: other, direction: maximize, unit: fraction}
+  - {name: shift_overwrite_preserved_boundary_fraction_median, source: stdout_json, key: payload.shift_overwrite_preserved_boundary_fraction_median, family: other, direction: maximize, unit: fraction}
+  - {name: shift_insert_changed_bytes_median, source: stdout_json, key: payload.shift_insert_changed_bytes_median, family: other, direction: minimize, unit: B}
+  - {name: shift_delete_changed_bytes_median, source: stdout_json, key: payload.shift_delete_changed_bytes_median, family: other, direction: minimize, unit: B}
+  - {name: shift_overwrite_changed_bytes_median, source: stdout_json, key: payload.shift_overwrite_changed_bytes_median, family: other, direction: minimize, unit: B}
+  - {name: chunk_ra_4k_mean_amplification, source: stdout_json, key: payload.ra_4k_mean_amplification, family: other, direction: minimize, unit: ratio}
+  - {name: algorithm_id, source: stdout_json, key: payload.algorithm_id, family: correctness, kind: string}
+  - {name: deterministic_sha256, source: stdout_json, key: payload.deterministic_sha256, family: correctness, kind: string}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds: {order: 2026091701, bootstrap: 2026091702, command: 2026091703}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/exp-chunk/release/ebr-chunk, python3]
+  timeout_s: 7200
+
+analysis:
+  baseline: gear-norm-v1-balanced
+  pairing: item
+  report_metrics: [dedup_stored_fraction, mean_chunk_bytes, modelled_cost_bytes_frozen_constants, shift_insert_preserved_boundary_fraction_median, chunk_ra_4k_mean_amplification]

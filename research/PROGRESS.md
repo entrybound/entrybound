@@ -236,3 +236,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T12:55Z — Phase C-design remote: 14 experiments (13 NEEDS_TOOLING, 1 BLOCKED), 40/43 section-12 decisions covered, 3 uncovered with routes
 - 2026-09-17T12:57Z — Phase C-design crossfile: 14 experiment designs (3 READY, 10 NEEDS_TOOLING, 1 BLOCKED), 14/14 decisions in 8.3-8.5 addressed
 - 2026-09-17T12:57Z — Phase C-design crypto: 22 experiments (EXP-CRYPTO-001..022), 20 ebr-valid specs; 127/138 section decisions covered, 11 uncovered with routes; 20 NEEDS_TOOLING, 2 BLOCKED.
+- 2026-09-17T12:58Z — Phase C-design chunking: 14 experiments (2 READY, 11 NEEDS_TOOLING, 1 BLOCKED); 14/15 decisions covered, DEC-ECO-026 external.

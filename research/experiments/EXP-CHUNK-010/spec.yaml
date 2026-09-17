@@ -1,0 +1,112 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CHUNK-010
+status: pre-registration-draft; NEEDS_TOOLING (ebr-chunk stream-containment with stream detectors, forced-cut chunking, reconstruction upper-bound probe; ebr-planner region-order); arm A/B census and alignment spec
+question: >
+  How much recognised DEFLATE (gzip, zlib, raw in ZIP/PNG/PDF/OOXML) and JPEG content survives
+  content-oblivious CDC as complete single chunks (reconstruction-eligible), what do
+  stream-aligned chunking alternatives recover in net bytes and cost in dedup, and how
+  often do dedup and cohort choices suppress whole-object reconstruction regions?
+hypothesis: >
+  H1: under the frozen presets less than half of recognised DEFLATE stream bytes in F11/F14
+  land as one complete chunk; member-aligned CDC raises the eligible fraction above 0.9 but
+  its forced cuts raise dedup_stored_fraction on F18 by less than the T-01 band; the upper
+  bound of reconstruction savings from alignment is below the T3 minimum-gain band on
+  artifact_bytes at corpus level. Falsification in protocol.md section 3.
+decision_ids: [DEC-CMP-042, DEC-CMP-039]
+
+candidates:
+  - name: sq-fast
+    params: {sizes: 'frozen:fast', align: 'none'}
+  - name: sq-balanced
+    params: {sizes: 'frozen:balanced', align: 'none'}
+  - name: sq-dense
+    params: {sizes: 'frozen:dense', align: 'none'}
+  - name: sq-extreme
+    params: {sizes: 'frozen:extreme', align: 'none'}
+  - name: member-aligned-balanced
+    params: {sizes: 'frozen:balanced', align: 'member-aligned'}
+  - name: single-chunk-recognised-16m-balanced
+    params: {sizes: 'frozen:balanced', align: 'single-chunk-recognised:16777216'}
+  - name: whole-object-region-model-balanced
+    params: {sizes: 'frozen:balanced', align: 'whole-object-region-model'}
+command: >-
+  /root/eb-research/target/exp-chunk/release/ebr-chunk stream-containment
+  --item-path {item_path} --experiment-id EXP-CHUNK-010 --env-name wsl-ubuntu
+  --algorithm gear-norm-v1 --size-set {sizes} --align {align}
+  --detectors gzip,zlib,raw-deflate-zip,png-idat,pdf-flatedecode,ooxml,jpeg
+  --max-stream-bytes 16777216 --reconstruction-probe true
+  --detail-out /root/eb-research/results/EXP-CHUNK-010/{candidate}/{item_id}.streams.jsonl.gz
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f09-alpine-324-arm64-rootfs-binaries
+    - f09-alpine-324-riscv64-rootfs-binaries
+    - f09-alpine-324-rootfs-binaries
+    - f09-ripgrep-1411-arm64-darwin-multiplatform
+    - f09-silesia-mozilla-ooffice
+    - f09-ubuntu-noble-arm64-usr-binaries
+    - f09-ubuntu-noble-riscv64-usr-binaries
+    - f09-ubuntu-noble-usr-binaries
+    - f11-alpine-324-apks
+    - f11-cosign-v250-signing-assets
+    - f11-pypi-binary-wheels-cp312
+    - f11-ubuntu-noble-debs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f12-tuning-kodak-jpeg-matrix-medium
+    - f12-tuning-nasa-ivl-photos-large
+    - f12-tuning-nasa-ivl-photos-medium
+    - f12-tuning-nasa-ivl-photos-small
+    - f13-tuning-bbb-video-large
+    - f13-tuning-bbb-video-medium
+    - f13-tuning-kodak-image-codecs-small
+    - f13-tuning-librivox-audiobook-medium
+    - f13-tuning-musopen-flac-medium
+    - f13-tuning-nasa-ntrs-pdf-small
+    - f13-tuning-prelinger-video-medium
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f14-jenkins-25683-war
+    - f14-legacy-writer-matrix-tuning
+    - f18-tuning-curl-8-x-release-series
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-ripgrep-commit-snapshots
+    - f18-tuning-sqlite-amalgamation-series
+    - f18-tuning-ubuntu-noble-cloud-images
+    - f18-tuning-zstd-releases-1-5-x
+
+metrics:
+  - {name: recognised_deflate_stream_bytes, source: stdout_json, key: payload.deflate.recognised_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_single_chunk_eligible_fraction, source: stdout_json, key: payload.deflate.single_chunk_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: recognised_jpeg_bytes, source: stdout_json, key: payload.jpeg.recognised_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_single_chunk_fraction, source: stdout_json, key: payload.jpeg.single_chunk_fraction, family: other, direction: none, unit: fraction}
+  - {name: reconstruction_upper_bound_saved_bytes, source: stdout_json, key: payload.reconstruction.upper_bound_saved_bytes, family: size, direction: maximize, unit: B}
+  - {name: reconstruction_attempt_bytes, source: stdout_json, key: payload.reconstruction.bytes_attempted, family: other, direction: minimize, unit: B}
+  - {name: reconstruction_exact_fraction, source: stdout_json, key: payload.reconstruction.exact_roundtrip_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: dedup_stored_fraction, source: stdout_json, key: payload.dedup_stored_fraction, family: size, direction: minimize, unit: ratio}
+  - {name: forced_cut_count, source: stdout_json, key: payload.forced_cut_count, family: other, direction: none, unit: count}
+  - {name: bytes_scanned_by_detectors, source: stdout_json, key: payload.bytes_scanned, family: other, direction: minimize, unit: B}
+  - {name: result_sha256, source: stdout_json, key: payload.result_sha256, family: correctness, kind: string}
+  - {name: detail_sha256, source: path_sha256, path: '/root/eb-research/results/EXP-CHUNK-010/{candidate}/{item_id}.streams.jsonl.gz', family: correctness}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091801, bootstrap: 2026091802, command: 2026091803}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/exp-chunk/release/ebr-chunk]
+  timeout_s: 43200
+
+analysis:
+  baseline: sq-balanced
+  pairing: item
+  report_metrics: [deflate_single_chunk_eligible_fraction, reconstruction_upper_bound_saved_bytes, dedup_stored_fraction, forced_cut_count]

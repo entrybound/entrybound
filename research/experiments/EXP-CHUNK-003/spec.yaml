@@ -1,0 +1,313 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CHUNK-003
+status: pre-registration-draft; NEEDS_TOOLING (ebr-chunk edit-sweep, version pairing manifests)
+question: >
+  How well do CDC constructions and sizes preserve chunk boundaries and limit new
+  unique stored bytes under realistic edits (inserts, deletes and overwrites of 1 B to
+  1 MiB, bursts, block moves, prepend/append) and across real consecutive versions
+  (F17, F18), and does any construction degrade on adversarial periodic content?
+hypothesis: >
+  H1: every CDC candidate bounds new unique bytes per small edit (<= 4096 B) to at most
+  3 x the configured maximum chunk size at p95, while fixed-size does not after
+  insert/delete; spread-mask Gear and FastCDC resynchronize no later than gear-norm-v1;
+  on F18 version pairs no algorithm differs from gear-norm-v1 by more than the T-01 band
+  on pair dedup_stored_fraction at matched means. Falsification in protocol.md section 3.
+decision_ids: [DEC-CMP-001, DEC-CMP-002, DEC-CMP-017]
+
+candidates:
+  - name: gear-norm-v1-t64k
+    params: {algo: gear-norm-v1, min: 16384, target: 65536, max: 262144, norm: 'none', win: 'none', vw: 'none'}
+  - name: gear-norm-v1-t512k
+    params: {algo: gear-norm-v1, min: 131072, target: 524288, max: 2097152, norm: 'none', win: 'none', vw: 'none'}
+  - name: gear-norm-v1-t2m
+    params: {algo: gear-norm-v1, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: 'none', vw: 'none'}
+  - name: gear-spread-nc1-t64k
+    params: {algo: gear-spread, min: 16384, target: 65536, max: 262144, norm: '1', win: 'none', vw: 'none'}
+  - name: gear-spread-nc1-t512k
+    params: {algo: gear-spread, min: 131072, target: 524288, max: 2097152, norm: '1', win: 'none', vw: 'none'}
+  - name: gear-spread-nc1-t2m
+    params: {algo: gear-spread, min: 524288, target: 2097152, max: 8388608, norm: '1', win: 'none', vw: 'none'}
+  - name: gear-spread-nc2-t64k
+    params: {algo: gear-spread, min: 16384, target: 65536, max: 262144, norm: '2', win: 'none', vw: 'none'}
+  - name: gear-spread-nc2-t512k
+    params: {algo: gear-spread, min: 131072, target: 524288, max: 2097152, norm: '2', win: 'none', vw: 'none'}
+  - name: gear-spread-nc2-t2m
+    params: {algo: gear-spread, min: 524288, target: 2097152, max: 8388608, norm: '2', win: 'none', vw: 'none'}
+  - name: gear-spread-nc3-t64k
+    params: {algo: gear-spread, min: 16384, target: 65536, max: 262144, norm: '3', win: 'none', vw: 'none'}
+  - name: gear-spread-nc3-t512k
+    params: {algo: gear-spread, min: 131072, target: 524288, max: 2097152, norm: '3', win: 'none', vw: 'none'}
+  - name: gear-spread-nc3-t2m
+    params: {algo: gear-spread, min: 524288, target: 2097152, max: 8388608, norm: '3', win: 'none', vw: 'none'}
+  - name: fastcdc-2016-nc1-t64k
+    params: {algo: fastcdc-2016, min: 16384, target: 65536, max: 262144, norm: '1', win: 'none', vw: 'none'}
+  - name: fastcdc-2016-nc1-t512k
+    params: {algo: fastcdc-2016, min: 131072, target: 524288, max: 2097152, norm: '1', win: 'none', vw: 'none'}
+  - name: fastcdc-2016-nc1-t2m
+    params: {algo: fastcdc-2016, min: 524288, target: 2097152, max: 8388608, norm: '1', win: 'none', vw: 'none'}
+  - name: fastcdc-2016-nc2-t64k
+    params: {algo: fastcdc-2016, min: 16384, target: 65536, max: 262144, norm: '2', win: 'none', vw: 'none'}
+  - name: fastcdc-2016-nc2-t512k
+    params: {algo: fastcdc-2016, min: 131072, target: 524288, max: 2097152, norm: '2', win: 'none', vw: 'none'}
+  - name: fastcdc-2016-nc2-t2m
+    params: {algo: fastcdc-2016, min: 524288, target: 2097152, max: 8388608, norm: '2', win: 'none', vw: 'none'}
+  - name: fastcdc-2016-nc3-t64k
+    params: {algo: fastcdc-2016, min: 16384, target: 65536, max: 262144, norm: '3', win: 'none', vw: 'none'}
+  - name: fastcdc-2016-nc3-t512k
+    params: {algo: fastcdc-2016, min: 131072, target: 524288, max: 2097152, norm: '3', win: 'none', vw: 'none'}
+  - name: fastcdc-2016-nc3-t2m
+    params: {algo: fastcdc-2016, min: 524288, target: 2097152, max: 8388608, norm: '3', win: 'none', vw: 'none'}
+  - name: rabin-w48-t64k
+    params: {algo: rabin, min: 16384, target: 65536, max: 262144, norm: 'none', win: '48', vw: 'none'}
+  - name: rabin-w48-t512k
+    params: {algo: rabin, min: 131072, target: 524288, max: 2097152, norm: 'none', win: '48', vw: 'none'}
+  - name: rabin-w48-t2m
+    params: {algo: rabin, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: '48', vw: 'none'}
+  - name: rabin-w64-t64k
+    params: {algo: rabin, min: 16384, target: 65536, max: 262144, norm: 'none', win: '64', vw: 'none'}
+  - name: rabin-w64-t512k
+    params: {algo: rabin, min: 131072, target: 524288, max: 2097152, norm: 'none', win: '64', vw: 'none'}
+  - name: rabin-w64-t2m
+    params: {algo: rabin, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: '64', vw: 'none'}
+  - name: buzhash-w48-t64k
+    params: {algo: buzhash, min: 16384, target: 65536, max: 262144, norm: 'none', win: '48', vw: 'none'}
+  - name: buzhash-w48-t512k
+    params: {algo: buzhash, min: 131072, target: 524288, max: 2097152, norm: 'none', win: '48', vw: 'none'}
+  - name: buzhash-w48-t2m
+    params: {algo: buzhash, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: '48', vw: 'none'}
+  - name: buzhash-w64-t64k
+    params: {algo: buzhash, min: 16384, target: 65536, max: 262144, norm: 'none', win: '64', vw: 'none'}
+  - name: buzhash-w64-t512k
+    params: {algo: buzhash, min: 131072, target: 524288, max: 2097152, norm: 'none', win: '64', vw: 'none'}
+  - name: buzhash-w64-t2m
+    params: {algo: buzhash, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: '64', vw: 'none'}
+  - name: buzhash-w4095-t64k
+    params: {algo: buzhash, min: 16384, target: 65536, max: 262144, norm: 'none', win: '4095', vw: 'none'}
+  - name: buzhash-w4095-t512k
+    params: {algo: buzhash, min: 131072, target: 524288, max: 2097152, norm: 'none', win: '4095', vw: 'none'}
+  - name: buzhash-w4095-t2m
+    params: {algo: buzhash, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: '4095', vw: 'none'}
+  - name: ae-w1-t64k
+    params: {algo: ae, min: 16384, target: 65536, max: 262144, norm: 'none', win: 'none', vw: '1'}
+  - name: ae-w1-t512k
+    params: {algo: ae, min: 131072, target: 524288, max: 2097152, norm: 'none', win: 'none', vw: '1'}
+  - name: ae-w1-t2m
+    params: {algo: ae, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: 'none', vw: '1'}
+  - name: ae-w8-t64k
+    params: {algo: ae, min: 16384, target: 65536, max: 262144, norm: 'none', win: 'none', vw: '8'}
+  - name: ae-w8-t512k
+    params: {algo: ae, min: 131072, target: 524288, max: 2097152, norm: 'none', win: 'none', vw: '8'}
+  - name: ae-w8-t2m
+    params: {algo: ae, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: 'none', vw: '8'}
+  - name: ram-t64k
+    params: {algo: ram, min: 16384, target: 65536, max: 262144, norm: 'none', win: 'none', vw: 'none'}
+  - name: ram-t512k
+    params: {algo: ram, min: 131072, target: 524288, max: 2097152, norm: 'none', win: 'none', vw: 'none'}
+  - name: ram-t2m
+    params: {algo: ram, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: 'none', vw: 'none'}
+  - name: tttd-t64k
+    params: {algo: tttd, min: 16384, target: 65536, max: 262144, norm: 'none', win: 'none', vw: 'none'}
+  - name: tttd-t512k
+    params: {algo: tttd, min: 131072, target: 524288, max: 2097152, norm: 'none', win: 'none', vw: 'none'}
+  - name: tttd-t2m
+    params: {algo: tttd, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: 'none', vw: 'none'}
+  - name: seqcdc-t64k
+    params: {algo: seqcdc, min: 16384, target: 65536, max: 262144, norm: 'none', win: 'none', vw: 'none'}
+  - name: seqcdc-t512k
+    params: {algo: seqcdc, min: 131072, target: 524288, max: 2097152, norm: 'none', win: 'none', vw: 'none'}
+  - name: seqcdc-t2m
+    params: {algo: seqcdc, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: 'none', vw: 'none'}
+  - name: vram-scalar-t64k
+    params: {algo: vram-scalar, min: 16384, target: 65536, max: 262144, norm: 'none', win: 'none', vw: 'none'}
+  - name: vram-scalar-t512k
+    params: {algo: vram-scalar, min: 131072, target: 524288, max: 2097152, norm: 'none', win: 'none', vw: 'none'}
+  - name: vram-scalar-t2m
+    params: {algo: vram-scalar, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: 'none', vw: 'none'}
+  - name: chonkers-t64k
+    params: {algo: chonkers, min: 16384, target: 65536, max: 262144, norm: 'none', win: 'none', vw: 'none'}
+  - name: chonkers-t512k
+    params: {algo: chonkers, min: 131072, target: 524288, max: 2097152, norm: 'none', win: 'none', vw: 'none'}
+  - name: chonkers-t2m
+    params: {algo: chonkers, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: 'none', vw: 'none'}
+  - name: fixed-size-t64k
+    params: {algo: fixed-size, min: 16384, target: 65536, max: 262144, norm: 'none', win: 'none', vw: 'none'}
+  - name: fixed-size-t512k
+    params: {algo: fixed-size, min: 131072, target: 524288, max: 2097152, norm: 'none', win: 'none', vw: 'none'}
+  - name: fixed-size-t2m
+    params: {algo: fixed-size, min: 524288, target: 2097152, max: 8388608, norm: 'none', win: 'none', vw: 'none'}
+command: >-
+  /root/eb-research/target/exp-chunk/release/ebr-chunk edit-sweep
+  --item-path {item_path} --experiment-id EXP-CHUNK-003 --env-name wsl-ubuntu
+  --algorithm {algo} --min {min} --target {target} --max {max}
+  --normalization {norm} --window {win} --value-width {vw}
+  --files largest:1:min-bytes:4194304 --prefix-bytes 268435456
+  --edit-kinds insert,delete,overwrite --edit-sizes 1,64,4096,65536,1048576
+  --seeds 20 --seed-base 20260917 --bursts 16 --burst-edit-bytes 64 --moves 8 --move-bytes 1048576
+  --prepend-append-bytes 1048576 --verify-local-rechunk 10
+  --version-pairs /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CHUNK-003/pairing/{item_id}.json
+  --detail-out /root/eb-research/results/EXP-CHUNK-003/{candidate}/{item_id}.detail.jsonl.gz
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-curl-8-19-0-git
+    - f01-tuning-llvm-project-20-1-8-git
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-typescript-5-9-3-git
+    - f01-tuning-zstd-v1-5-7-full-clone
+    - f01-tuning-zstd-v1-5-7-git
+    - f02-tuning-lz4-intree-make-build
+    - f02-tuning-ripgrep-cargo-target
+    - f02-tuning-zstd-cmake-build
+    - f03-tuning-fzf-go-mod-vendor
+    - f03-tuning-pypi-scientific-site-packages
+    - f03-tuning-ripgrep-cargo-vendor
+    - f03-tuning-typescript-npm-node-modules
+    - f05-tuning-enwik8
+    - f05-tuning-gen-logs-a-medium
+    - f05-tuning-gen-logs-a-small
+    - f05-tuning-google-clusterdata-2011-2-task-usage
+    - f05-tuning-gutenberg-books
+    - f05-tuning-loghub-hdfs-v1
+    - f05-tuning-loghub-openstack
+    - f05-tuning-logrotate-from-loghub-hdfs
+    - f06-tuning-census-popest-2023
+    - f06-tuning-gen-structured-a-medium
+    - f06-tuning-gen-structured-a-small
+    - f06-tuning-gharchive-2015-01-01-h15-h16
+    - f06-tuning-gharchive-2024-01-15-h15
+    - f06-tuning-nyc-tlc-yellow-tripdata-2024
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-ann-benchmarks-fashion-mnist-hdf5
+    - f07-tuning-gen-numeric-a-medium
+    - f07-tuning-gen-numeric-a-small
+    - f07-tuning-mnist-npz
+    - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+    - f07-tuning-pythia-160m-safetensors-main
+    - f07-tuning-pythia-160m-safetensors-step100000
+    - f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km
+    - f07-tuning-qwen2-5-1-5b-safetensors-bf16
+    - f07-tuning-sdrbench-hurricane-isabel
+    - f07-tuning-sdss-dr17-frames
+    - f07-tuning-silesia-mr
+    - f07-tuning-silesia-sao
+    - f07-tuning-silesia-xray
+    - f08-tuning-chinook-sqlite
+    - f08-tuning-gen-sqlite-tpch-medium
+    - f08-tuning-gen-sqlite-tpch-small
+    - f08-tuning-postgres17-pgbench-s40
+    - f08-tuning-silesia-osdb
+    - f08-tuning-wikimedia-simplewiki-sql-dump
+    - f09-alpine-324-arm64-rootfs-binaries
+    - f09-alpine-324-riscv64-rootfs-binaries
+    - f09-alpine-324-rootfs-binaries
+    - f09-ripgrep-1411-arm64-darwin-multiplatform
+    - f09-silesia-mozilla-ooffice
+    - f09-ubuntu-noble-arm64-usr-binaries
+    - f09-ubuntu-noble-riscv64-usr-binaries
+    - f09-ubuntu-noble-usr-binaries
+    - f10-gen-redundant-binary-blobs
+    - f10-linux-firmware-20260910-full-tree
+    - f10-linux-firmware-20260910-subset
+    - f10-rust-fd-find-1050-multiprofile
+    - f11-alpine-324-apks
+    - f11-cosign-v250-signing-assets
+    - f11-pypi-binary-wheels-cp312
+    - f11-ubuntu-noble-debs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f12-tuning-kodak-jpeg-matrix-medium
+    - f12-tuning-nasa-ivl-photos-large
+    - f12-tuning-nasa-ivl-photos-medium
+    - f12-tuning-nasa-ivl-photos-small
+    - f13-tuning-bbb-video-large
+    - f13-tuning-bbb-video-medium
+    - f13-tuning-kodak-image-codecs-small
+    - f13-tuning-librivox-audiobook-medium
+    - f13-tuning-musopen-flac-medium
+    - f13-tuning-nasa-ntrs-pdf-small
+    - f13-tuning-prelinger-video-medium
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f14-jenkins-25683-war
+    - f14-legacy-writer-matrix-tuning
+    - f15-tuning-dbprealloc
+    - f15-tuning-real-ubuntu-noble-ova-raw
+    - f15-tuning-vmraw
+    - f16-alpine-3241-minirootfs-ext4-qcow2
+    - f16-alpine-3241-minirootfs-ext4-raw
+    - f16-alpine-3241-minirootfs-ext4-vhdx
+    - f16-alpine-virt-3241-iso
+    - f16-oci-ubuntu-noble-multiarch-index
+    - f16-ubuntu-noble-cloudimg-20260911-raw
+    - f17-tuning-duptree-mixed
+    - f17-tuning-duptree-nested
+    - f17-tuning-real-ubuntu-kernel-headers-2ver
+    - f18-tuning-curl-8-x-release-series
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-ripgrep-commit-snapshots
+    - f18-tuning-sqlite-amalgamation-series
+    - f18-tuning-ubuntu-noble-cloud-images
+    - f18-tuning-zstd-releases-1-5-x
+    - f20-tuning-bombs-dense
+    - f20-tuning-csprng
+    - f20-tuning-gear-extremes
+    - f20-tuning-generated-malicious-structures
+    - f20-tuning-generated-private-vault
+    - f20-tuning-real-libarchive-testsuite
+
+metrics:
+  - {name: insert_64_preserved_boundary_fraction_median, source: stdout_json, key: payload.cells.insert_64.preserved_boundary_fraction_median, family: other, direction: maximize, unit: fraction}
+  - {name: insert_64_new_unique_bytes_p95, source: stdout_json, key: payload.cells.insert_64.new_unique_bytes_p95, family: size, direction: minimize, unit: B}
+  - {name: insert_64_resync_distance_bytes_p95, source: stdout_json, key: payload.cells.insert_64.resync_distance_bytes_p95, family: other, direction: minimize, unit: B}
+  - {name: insert_4096_preserved_boundary_fraction_median, source: stdout_json, key: payload.cells.insert_4096.preserved_boundary_fraction_median, family: other, direction: maximize, unit: fraction}
+  - {name: insert_4096_new_unique_bytes_p95, source: stdout_json, key: payload.cells.insert_4096.new_unique_bytes_p95, family: size, direction: minimize, unit: B}
+  - {name: insert_4096_resync_distance_bytes_p95, source: stdout_json, key: payload.cells.insert_4096.resync_distance_bytes_p95, family: other, direction: minimize, unit: B}
+  - {name: insert_1048576_preserved_boundary_fraction_median, source: stdout_json, key: payload.cells.insert_1048576.preserved_boundary_fraction_median, family: other, direction: maximize, unit: fraction}
+  - {name: insert_1048576_new_unique_bytes_p95, source: stdout_json, key: payload.cells.insert_1048576.new_unique_bytes_p95, family: size, direction: minimize, unit: B}
+  - {name: insert_1048576_resync_distance_bytes_p95, source: stdout_json, key: payload.cells.insert_1048576.resync_distance_bytes_p95, family: other, direction: minimize, unit: B}
+  - {name: delete_64_preserved_boundary_fraction_median, source: stdout_json, key: payload.cells.delete_64.preserved_boundary_fraction_median, family: other, direction: maximize, unit: fraction}
+  - {name: delete_64_new_unique_bytes_p95, source: stdout_json, key: payload.cells.delete_64.new_unique_bytes_p95, family: size, direction: minimize, unit: B}
+  - {name: delete_64_resync_distance_bytes_p95, source: stdout_json, key: payload.cells.delete_64.resync_distance_bytes_p95, family: other, direction: minimize, unit: B}
+  - {name: delete_4096_preserved_boundary_fraction_median, source: stdout_json, key: payload.cells.delete_4096.preserved_boundary_fraction_median, family: other, direction: maximize, unit: fraction}
+  - {name: delete_4096_new_unique_bytes_p95, source: stdout_json, key: payload.cells.delete_4096.new_unique_bytes_p95, family: size, direction: minimize, unit: B}
+  - {name: delete_4096_resync_distance_bytes_p95, source: stdout_json, key: payload.cells.delete_4096.resync_distance_bytes_p95, family: other, direction: minimize, unit: B}
+  - {name: overwrite_64_preserved_boundary_fraction_median, source: stdout_json, key: payload.cells.overwrite_64.preserved_boundary_fraction_median, family: other, direction: maximize, unit: fraction}
+  - {name: overwrite_64_new_unique_bytes_p95, source: stdout_json, key: payload.cells.overwrite_64.new_unique_bytes_p95, family: size, direction: minimize, unit: B}
+  - {name: overwrite_64_resync_distance_bytes_p95, source: stdout_json, key: payload.cells.overwrite_64.resync_distance_bytes_p95, family: other, direction: minimize, unit: B}
+  - {name: overwrite_65536_preserved_boundary_fraction_median, source: stdout_json, key: payload.cells.overwrite_65536.preserved_boundary_fraction_median, family: other, direction: maximize, unit: fraction}
+  - {name: overwrite_65536_new_unique_bytes_p95, source: stdout_json, key: payload.cells.overwrite_65536.new_unique_bytes_p95, family: size, direction: minimize, unit: B}
+  - {name: overwrite_65536_resync_distance_bytes_p95, source: stdout_json, key: payload.cells.overwrite_65536.resync_distance_bytes_p95, family: other, direction: minimize, unit: B}
+  - {name: burst_new_unique_bytes_median, source: stdout_json, key: payload.cells.burst.new_unique_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: move_new_unique_bytes_median, source: stdout_json, key: payload.cells.move.new_unique_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: prepend_new_unique_bytes, source: stdout_json, key: payload.cells.prepend.new_unique_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: append_new_unique_bytes, source: stdout_json, key: payload.cells.append.new_unique_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: version_pairs, source: stdout_json, key: payload.versions.pair_count, family: other, direction: none, unit: count}
+  - {name: version_new_unique_bytes, source: stdout_json, key: payload.versions.new_unique_bytes, family: size, direction: minimize, unit: B}
+  - {name: dedup_stored_fraction, source: stdout_json, key: payload.versions.dedup_stored_fraction, family: size, direction: minimize, unit: ratio}
+  - {name: mean_chunk_bytes, source: stdout_json, key: payload.mean_chunk_bytes, family: other, direction: none, unit: B}
+  - {name: local_rechunk_mismatches, source: stdout_json, key: payload.local_rechunk_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: algorithm_id, source: stdout_json, key: payload.algorithm_id, family: correctness, kind: string}
+  - {name: result_sha256, source: stdout_json, key: payload.result_sha256, family: correctness, kind: string}
+  - {name: detail_sha256, source: path_sha256, path: '/root/eb-research/results/EXP-CHUNK-003/{candidate}/{item_id}.detail.jsonl.gz', family: correctness}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091721, bootstrap: 2026091722, command: 2026091723}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/exp-chunk/release/ebr-chunk]
+  timeout_s: 14400
+
+analysis:
+  baseline: gear-norm-v1-t512k
+  pairing: item
+  report_metrics: [insert_64_preserved_boundary_fraction_median, insert_4096_new_unique_bytes_p95, version_new_unique_bytes, dedup_stored_fraction]
