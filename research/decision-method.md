@@ -16,10 +16,10 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119.
 
 ### 0.1 State of evidence at this revision (2026-09-16)
 
-- **Repository.** HEAD before the revision commit: `8a04436d49ca7ef80fcb917d6150e3ef9237f7ac`. Every input in the table below is unchanged relative to that HEAD (`git diff --quiet HEAD -- <inputs>`). Other sessions have uncommitted corpus work under `research/corpus/`; it is not an input to this document.
+- **Repository.** The round-1 revision began at HEAD `8a04436d49ca7ef80fcb917d6150e3ef9237f7ac`. A host storage incident interrupted it, and the unfinished revision was checkpointed in commit `3fda8011b9a23ed4b479a2ad908ef79db510d055` ("research: checkpoint interrupted method revision (WIP)"). That WIP commit is **not** the pre-registration record, although its files already carried the pre-registered labels (Appendix A.1); no decision-relevant result existed at it either. A resumed session completed and verified the revision, and the revision commit descends from `3fda801`. Between `8a04436` and the revision commit, other sessions committed only corpus, PROGRESS and orchestration files. Every input in the table below has the listed SHA-256 at the revision commit, re-verified by hash immediately before it. Other sessions have uncommitted corpus work under `research/corpus/`; it is not an input to this document.
 - **Results.** `research/raw/` and `research/normalized/` contain only `EXP-SMOKE-000`, a pipeline smoke test (gzip levels on one generated 1 MiB file, `decision_ids: []`) whose `thresholds_override` values are declared meaningless and were not used. No experiment with non-empty `decision_ids` has run. **No decision-relevant experiment result exists.**
 - **Ledger.** 593 rows: 577 `INSUFFICIENT_EVIDENCE`, 16 `EXTERNAL_REVIEW_REQUIRED`, none `DECIDED`. Command: `python -c "import json,collections;print(collections.Counter(json.loads(l)['status'] for l in open('research/decision-ledger.jsonl',encoding='utf-8')))"`.
-- **Held-out.** No held-out content, listing, statistic or path under `/root/eb-research/heldout` has been opened by the reviewer or by this revision. **Identity-exposure disclosure** (event L7, §5.7): (i) the round-1 reviewer's `git status` displayed untracked fingerprint file names, one containing a held-out `item_id` (review front matter); (ii) this revision session's `git status --short` displayed untracked fingerprint file names, four of which are held-out item identifiers in three families. The identifiers are not repeated in any committed file. Neither session designs candidates, experiments or analyses (§5.4).
+- **Held-out.** No held-out content, listing, statistic or path under `/root/eb-research/heldout` has been opened by the reviewer or by this revision. **Identity-exposure disclosure** (event L7, §5.7): (i) the round-1 reviewer's `git status` displayed untracked fingerprint file names, one containing a held-out `item_id` (review front matter); (ii) the first revision session's `git status --short` displayed untracked fingerprint file names, four of which are held-out item identifiers in three families; (iii) the resumed revision session read `research/PROGRESS.md` change-log entries, the review's G02 evidence and `git log --stat` output (fingerprint and pin file names) that name the upstream sources of held-out items in families F04, F12, F13, F15, F16 and F17. No session opened held-out content, a listing, a statistic or a path under the held-out data roots. The identifiers are not repeated in any committed file. None of these sessions designs candidates, experiments or analyses (§5.4).
 - **Not consulted when setting any threshold:** corpus indicator statistics (`research/corpus/statistics.json`), Research III instrumentation measurements, and published incumbent benchmark figures. The method checks of Appendix D use synthetic data and the published group counts per family only.
 - **Inputs read,** with SHA-256:
 
@@ -33,6 +33,7 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119.
 | `research/methods/thresholds.json` (null template, before transcription) | `56c6cbb8c8a0422afe6d0761d372826ae662df511731d3fe9b89c2ea2141fd31` |
 | `research/tools/ebr/stats.py` | `309c92ac511b27bb27515bd76f498b6fb68e72ad81e0fa7d2c5d094009955f25` |
 | `research/tools/ebr/thresholds.py` | `c75733409022c0135c8971a9f00c70734e919e72032ce65590f9de0ab986ce31` |
+| `research/tools/tests/test_spec.py` (§14 item 1) | `144f3540605d34f13e610bca6628e33ddaa898663e6cac1c57457984e8b7ae06` |
 | `research/tools/ebr/guard.py` | `2901c340bb6d7e13af5c75e135276cb2a8bb36165b3f14737c19e05af244bf21` |
 | `research/corpus/heldout-lock.json` (status `draft`, 65 items) | `df7331c1d1f2b486986a7f273dd694aaa2c3c6985ad0c952440b80397dc3beb5` |
 | `research/corpus/manifest.json` | `8c4e4cc61079ba8c34cafd468f549441d9cb296b53f1957b6346363988b5c494` |
@@ -415,7 +416,7 @@ Every key ebr v1 reads is listed below with its value. Each key in the file carr
 | `sensitivity.dirichlet_samples` | `10000` | §6.3 |
 | `sensitivity.dirichlet_concentration` | `4.0` | §6.3 |
 
-- **Extension keys**, read by the decision tooling and ignored by ebr v1 validation (`thresholds.validate` ignores unknown keys): `pre_registration`, `statistics`, `protocol`, `cost_tiers`, `metric_thresholds`, and the remaining keys of `bootstrap`, `quiet_machine_guard` and `sensitivity` (including `grid_factors`, the selection-bootstrap and threshold-perturbation settings).
+- **Extension keys**, read by the decision tooling and ignored by ebr v1 validation (`thresholds.validate` ignores unknown keys): `pre_registration`, `statistics`, `protocol`, `decision_rules`, `cost_tiers`, `metric_thresholds`, and the remaining keys of `bootstrap`, `quiet_machine_guard` and `sensitivity` (including `grid_factors`, the selection-bootstrap and threshold-perturbation settings).
 - **Spec lint.** Decision specs MUST NOT set `analysis.sensitivity.dirichlet_samples` or `dirichlet_concentration` (ebr `normalize` lets a spec override them), MUST NOT carry `thresholds_override`, and MAY set `guard` values only tighter than the file's. A checked-in lint enforces this (§14 item 3).
 
 ---
@@ -699,13 +700,13 @@ Pending DEC-ECO-083:
 
 ### 5.4 Threat model and access before unlock
 
-**Adopted threat model: result-blind, identity-aware.** Held-out item identities, sources, generator inputs and fingerprint file names are committed and readable by every agent; most real items are public upstream artifacts, so identity amounts to access; generated held-out items can be regenerated from committed generator inputs; and at least two sessions have seen held-out identifiers (§0.1). The held-out split therefore protects against result-driven tuning, not against knowledge of which items are held out. Re-sealing every existing held-out item is corpus work outside this document. [review finding G01, option (b), with option (a) as the route that lifts the cap]
+**Adopted threat model: result-blind, identity-aware.** Held-out item identities, sources, generator inputs and fingerprint file names are committed and readable by every agent; most real items are public upstream artifacts, so identity amounts to access; generated held-out items can be regenerated from committed generator inputs; `research/PROGRESS.md` change-log entries name the upstream sources of several held-out items; and at least three sessions have seen held-out identifiers (§0.1). The held-out split therefore protects against result-driven tuning, not against knowledge of which items are held out. Re-sealing every existing held-out item is corpus work outside this document. [review finding G01, option (b), with option (a) as the route that lifts the cap]
 
 **Consequences.**
 
 1. **Cap.** Every R5 pass whose held-out evidence includes items not in a sealed tranche carries the soft cap `identity_aware_heldout` (MEDIUM, §8.4).
 2. **No same-upstream tuning.** A candidate's experiment records declare every public data source used to tune it. Before the first validation look, a held-out-aware session checks those sources against the held-out upstream lineages and records only pass or fail, without revealing which upstreams are held out. A failing candidate cannot be `DECIDED` on held-out evidence from the overlapping families.
-3. **Role separation.** Corpus-construction sessions are held-out-aware and may not design candidates, experiments or analyses. A session with a recorded identity exposure (event L7) may not design candidates or analyses for decisions whose applicable families include the exposed items. The round-1 reviewer and this revision session design neither.
+3. **Role separation.** Corpus-construction sessions are held-out-aware and may not design candidates, experiments or analyses. A session with a recorded identity exposure (event L7) may not design candidates or analyses for decisions whose applicable families include the exposed items. The round-1 reviewer and both round-1 revision sessions (§0.1) design neither.
 4. **Transcript audit.** Before the freeze (gate G-C), a checked-in script scans the transcripts of every design and analysis session of the program on this host for held-out item ids and held-out paths. Every hit is an L7 event, and an opened held-out file is an L1 event.
 
 **Sealing route (lifts the cap).** A **sealed tranche** consists of new independence groups whose sources, selection lists and seeds are withheld: generated families are generated after the freeze from an owner-held seed that is committed only as its SHA-256; real items are held in an encrypted bundle under an owner-held key. Sealed items appear to design and analysis agents only through `manifest.public.json`, with opaque item ids and fingerprint file names. A decision whose held-out evidence comes only from sealed tranches carries no `identity_aware_heldout` cap. Each tranche must meet the §4.9 minimum support for the decisions that use it.
@@ -772,7 +773,7 @@ This is the default pending DEC-ECO-076; REQ-ECO-0188 applies.
   - (e) the transcript audit (§5.4) has run and every hit is recorded;
   - (f) the content-overlap audit (§5.3) passes;
   - (g) the validation look registry agrees with the raw records;
-  - (h) the L7 record lists every exposure, including the two disclosed in §0.1.
+  - (h) the L7 record lists every exposure, including the three disclosed in §0.1.
 - **After unlock:** every held-out raw record cites `unlock_sha` = A, and every held-out item was verified against the frozen lock when provisioned.
 
 ---
@@ -1293,7 +1294,7 @@ No verdict is decision-grade until each item it depends on exists, is tested (un
 
 | # | Item | Gate |
 |---|---|---|
-| 1 | `research/methods/thresholds.json` transcribed per §3.7 and Appendix A (done at this commit), and accepted by the ebr test suite. `research/tools/tests/test_spec.py::test_repo_thresholds_file_is_template` asserts the pre-transcription template state and must be updated to assert `status: pre-registered` and the Appendix A.3 check. | G-B |
+| 1 | `research/methods/thresholds.json` transcribed per §3.7 and Appendix A (done at this commit) and loaded by ebr v1 with the documented values (Appendix A.1). The ebr suite (`research/tools/run_tests.sh`) passes at this commit except `research/tools/tests/test_spec.py::test_repo_thresholds_file_is_template`, which asserts the pre-transcription null template. That test must be updated, outside this commit, to assert `status: pre-registered` and the Appendix A.3 check. | G-B |
 | 2 | Decision-analysis tooling (for example `research/tools/decide/`): metric-level thresholds with floors, profile, tier and stratum handling; exact order-statistic item intervals; Welch-Satterthwaite corpus intervals and pooled family intervals (§4.10); three-way verdicts plus `NON_INFERIOR`; confirmatory-set confidences and MDEs (§4.12); L2-L4 aggregation with cited-mix weights; the family harm guard; R4 including computed tier; log-consistent minimum-gain bands and absolute caps; continuous band-unit utility, R10 tie set, regret and R9 partitions, with the selected candidate passed explicitly; §6 sensitivity (weights, SMAA report, thresholds with the resolvability condition, all §6.5 arms, the selection-stability bootstrap) | G-B |
 | 3 | Runner additions: AC-power check; Windows power-throttling opt-out; SMT sibling verification; inter-sample cooldown; drift canary on the experiment's affinity set; PDH frequency covariate and throttling-onset probe; per-core-class guard accounting; MsMpEng and SearchIndexer covariates; host-side sampler for WSL runs (CPU, MsMpEng, VHDX I/O); invalid-rate balance check; `vm-cold` cache mode; write accounting for scratch claims; environment-block padding for A/A′; in-process and batch timing hooks; clean-worktree and pre-registration-ancestry check for decision specs; spec lint (no `thresholds_override`, no sensitivity-sample overrides, guard values only tighter, `max_loadavg_1m` = 1.0 + threads) | G-B for timing |
 | 4 | Calibration experiments per environment and family: A/A, A/A′, known effect, background load, speedup A/A (§4.7) | G-B for timing and memory |
@@ -1319,10 +1320,10 @@ No verdict is decision-grade until each item it depends on exists, is tested (un
 
 ### A.1 The file
 
-- `research/methods/thresholds.json` is the exact transcription of §3.2, §3.7, §4, §6 and §7 and of Appendix A.2, in schema `ebr.thresholds.v1`, with extension keys (§3.7).
-- `status` is `pre-registered`. A file cannot contain the SHA of the commit that adds it, so `pre_registration.commit` holds the command that resolves it: `git log --format=%H -S'"status": "pre-registered"' -- research/methods/thresholds.json`.
-- Every value group carries a `source`, or a `sources` map with one entry per key, citing the section of this document.
-- Checked against ebr v1: `ebr.thresholds.Thresholds.load` accepts the file; the bands and epsilons of every family except `other` resolve; `other` raises `ThresholdUnset` by design (§3.6); `bootstrap_confidence()` returns 0.99, `bootstrap_resamples()` 20000, and `guard()` returns 9.0 and 3.0.
+- `research/methods/thresholds.json` is the exact transcription of §3.2, §3.7, §4, §5.2-§5.3, §6, §7 and §10.2, of the numeric parameters of Appendix C.1, and of Appendix A.2, in schema `ebr.thresholds.v1`, with extension keys (§3.7).
+- `status` is `pre-registered`. A file cannot contain the SHA of the commit that adds it, so `pre_registration.commit` holds the command that resolves it by commit subject: `git log --format=%H --fixed-strings --grep="research: pre-register decision method and archetypal objective" -- research/methods/thresholds.json`. A pickaxe search for the status label would find the unfinished WIP checkpoint `3fda801`, which already carried the label and is not the pre-registration record (§0.1).
+- Every value group carries a `source`, or a `sources` map with one entry per key, citing the section of this document. Appendix A.3 checks that every cited section exists.
+- Checked against ebr v1 in the WSL research venv: `ebr.thresholds.Thresholds.load` accepts the file; the bands and epsilons of every family except `other` resolve; `other` raises `ThresholdUnset` by design (§3.6); `bootstrap_confidence()` returns 0.99, `bootstrap_resamples()` 20000, and `guard()` returns 9.0 and 3.0.
 - If this appendix and the sections it cites disagree, the sections govern and both the table and the file are corrected.
 
 ### A.2 Canonical metrics, roles and thresholds
@@ -1341,8 +1342,8 @@ Generated from the same registry as `thresholds.json` `metric_thresholds` and ch
 | `side_data_bytes` | T-02 | diagnostic | size | B | minimize | 0.05 | 64 | M05.2 |
 | `refusal_bytes_read` | T-02 | banded | size | B | minimize | 0.05 | 64 | M17.2 |
 | `metadata_bytes_per_entry` | T-02b | banded | size | B/entry | minimize | 0.05 | 0.5 | M05.2 |
-| `encode_wall_s` | T-03 | banded | time_wall | s | minimize | fast 0.05; balanced 0.05; dense 0.1; extreme 0.25 | process 0.005; in_process 0.0001 | M06.1, M19.5, M20.3 |
-| `decode_wall_s` | T-04 | banded | time_wall | s | minimize | 0.05 | process 0.005; in_process 0.0001 | M07.1, M19.5 |
+| `encode_wall_s` | T-03 | banded | time_wall | s | minimize | fast 0.05; balanced 0.05; dense 0.1; extreme 0.25 | process 0.005; in_process 0.0001 | M06.1, M15.3, M19.5, M20.3 |
+| `decode_wall_s` | T-04 | banded | time_wall | s | minimize | 0.05 | process 0.005; in_process 0.0001 | M07.1, M15.3, M19.5 |
 | `verify_wall_s` | T-04 | banded | time_wall | s | minimize | 0.05 | process 0.005; in_process 0.0001 | M07.2 |
 | `stream_unpack_wall_s` | T-04 | banded | time_wall | s | minimize | 0.05 | process 0.005; in_process 0.0001 | M09.3 |
 | `encode_cpu_s` | T-05 | banded | time_cpu | s | minimize | fast 0.05; balanced 0.05; dense 0.1; extreme 0.25 | process 0.005; in_process 0.0001 | M06.2 |
@@ -1467,12 +1468,22 @@ Minimum-gain caps for absolute-only metrics (§7.3): `verify_overhead_pp` 25.0, 
 
 ### A.3 Consistency check
 
-Run from the repository root. It checks that the A.2 table and `thresholds.json` agree on every canonical metric's ID, role, family, direction, r and a; that every objective M-number appears in A.2; and that every family band equals `[1/(1+r), 1+r]` for its epsilon r. Output at this revision:
+Run from the repository root. It checks that:
+
+1. the A.2 table and `thresholds.json` agree on every canonical metric's ID, role, family, unit, direction, r, a and objective M-numbers; every objective M-number appears in A.2; and every family band equals `[1/(1+r), 1+r]` for its epsilon r;
+2. the ebr family given in brackets for each metric bullet of `archetypal-objective.md` §3.2 equals the A.2 families of its canonical metrics;
+3. every key ebr v1 reads has the §3.7 value and carries a source;
+4. every section, rule, appendix item and threshold ID cited by a `source`, `sources` or `decision_method_section` entry exists in this document.
+
+Output at this revision:
 
 ```
 metrics 131 | table rows 131 | mismatches none
 objective M-numbers 105 | missing from A.2 none | unknown in A.2 none
 family band/epsilon inconsistencies none
+objective family brackets 26 bullets | differences from A.2 none
+section 3.7 keys 24 | value mismatches none | without source none
+source pointers 582 | unresolved none
 ```
 
 ```sh
@@ -1494,6 +1505,7 @@ def fmt(v):
     return str(v)
 
 
+# 1. Appendix A.2 table versus metric_thresholds; every objective M-number covered
 sec = dm[dm.index('### A.2'):dm.index('### A.3')]
 rows = {}
 for line in sec.splitlines():
@@ -1516,6 +1528,80 @@ fam_bad = [f for f, v in th['families'].items() if v['pareto_epsilon'].get('kind
 print('metrics', len(mt), '| table rows', len(rows), '| mismatches', bad or 'none')
 print('objective M-numbers', len(mids), '| missing from A.2', sorted(mids - covered) or 'none', '| unknown in A.2', sorted(covered - mids) or 'none')
 print('family band/epsilon inconsistencies', fam_bad or 'none')
+
+# 2. objective ebr-family brackets versus A.2 families, per metric bullet
+FAM = {'time_wall', 'time_cpu', 'memory_peak', 'scratch_peak', 'size', 'throughput', 'io', 'correctness', 'other'}
+m2f = {}
+for e in mt.values():
+    for m in e['od_metrics']:
+        m2f.setdefault(m, set()).add(e['family'])
+odsec = obj[obj.index('### 3.2 Dimension definitions'):obj.index('## 4. Relationship')]
+fam_obj_bad = []
+for bullet in re.findall(r'^- \*\*M\d\d\.\d\*\*.*$', odsec, re.M):
+    ms = re.findall(r'\*\*(M\d\d\.\d)\*\*', bullet)
+    stated = {f for u in re.findall(r'Units?: [^\[]*\[([^\]]+)\]', bullet) for f in re.findall(r'`([a-z_]+)`', u)} & FAM
+    canon = set().union(*(m2f.get(m, set()) for m in ms))
+    if stated != canon:
+        fam_obj_bad.append((ms[0], sorted(stated), sorted(canon)))
+print('objective family brackets', len(re.findall(r'^- \*\*M\d\d\.\d\*\*', odsec, re.M)), 'bullets | differences from A.2', fam_obj_bad or 'none')
+
+# 3. every key ebr v1 reads: value equals the section 3.7 table, and it carries a source
+t37 = dm[dm.index('### 3.7'):dm.index('## 4. Statistical protocol')]
+diffs, nosrc, nkeys = [], [], 0
+for key, val in re.findall(r'^\| `([a-z0-9_.*]+)` \| (.+?) \| [^|]+ \|$', t37, re.M):
+    nkeys += 1
+    parts = key.split('.')
+    if parts[-1] == '*':
+        fam = th['families'][parts[1]]
+        got = [fam['practical_significance_band'], fam['pareto_epsilon']]
+        if any(v is not None for g in got for v in g.values()) or 'source' not in fam:
+            diffs.append((key, got))
+        continue
+    node = th
+    for p in parts:
+        node = node[p]
+    if isinstance(node, dict):
+        want = dict(re.findall(r'(\w+): ([\w.-]+)', val))
+        for k, v in want.items():
+            if str(node[k]) != v and not (k != 'kind' and float(node[k]) == float(v)):
+                diffs.append((key, k, node[k], v))
+        if 'source' not in node:
+            nosrc.append(key)
+    else:
+        v = re.match(r'`([\d.]+)`', val).group(1)
+        if float(node) != float(v):
+            diffs.append((key, node, v))
+        parent = th
+        for p in parts[:-1]:
+            parent = parent[p]
+        if parts[-1] not in parent.get('sources', {}):
+            nosrc.append(key)
+print('section 3.7 keys', nkeys, '| value mismatches', diffs or 'none', '| without source', nosrc or 'none')
+
+# 4. every source pointer resolves to a section of this document
+heads = set(re.findall(r'^#{2,3} (?:Appendix )?([A-Z]?\d*(?:\.\d+)?)[. ]', dm, re.M))
+heads |= set(re.findall(r'^### (R\d+)\.', dm, re.M)) | set(re.findall(r'\*\*(D\.\d)\*\*', dm))
+heads |= set(re.findall(r'^\| (T-\d\d[a-z]?) \|', dm, re.M))
+unresolved, npointers = [], 0
+
+
+def walk(node, path):
+    global npointers
+    if isinstance(node, dict):
+        for k, v in node.items():
+            walk(v, path + [k])
+    elif isinstance(node, str) and (path[-1] in ('source', 'decision_method_section') or (len(path) > 1 and path[-2] == 'sources')):
+        text = re.sub(r'objective [^,;)]*', '', node.split('research/decision-method.md', 1)[-1])
+        toks = re.findall(r'§(\d+(?:\.\d+)?)|\b(R\d+)\b|Appendix ([A-Z](?:\.\d)?)|\b(T-\d\d[a-z]?)\b|(?<![\w.§-])(\d+(?:\.\d+)?)(?![\w.])', text)
+        for t in toks:
+            ref = next(x for x in t if x)
+            npointers += 1
+            if ref not in heads:
+                unresolved.append(('.'.join(path), ref))
+
+
+walk(th, [])
+print('source pointers', npointers, '| unresolved', unresolved or 'none')
 EOF
 ```
 
@@ -1590,7 +1676,7 @@ Equal family weights remain a sensitivity arm (§6.5). Until the file exists, no
 | Path coverage for HC-02 | ≥ 5 exercises per registered path per (profile, layout, encryption) cell | objective MVT-02(e) |
 | Complexity bound | series 2^10-2^20 elements; 3 runs per point; slope 0.99 interval; δ = 0.15 | objective MVT-06(d) |
 | Allocator baseline | R0_max = maximum over 20 runs | objective MVT-06(a) |
-| Bounded-memory claim | growth 1 → 64 GiB ≤ max(4 MiB, 0.10 × R0) | objective M08.3 |
+| Bounded-memory claim | probe sizes 1, 4, 16 and 64 GiB, 3 runs each; growth 1 → 64 GiB ≤ max(4 MiB, 0.10 × R0) | objective M08.3 |
 | Keyed-boundary chance rate | 1,000 distinct-key pairs per item; 0.999 quantile; at most 1 key in 1,000 above it | objective MVT-14(e) |
 | Content overlap across splits | ≤ 0.01 of logical bytes per family per split pair | §5.3 |
 | Validation looks | ≤ 2 per decision; program-wide registry | §5.2 |
@@ -1851,6 +1937,7 @@ if __name__ == "__main__":
 |---|---|---|
 | 2026-09-16 | round 0 (pre-registration draft) | Initial draft written before any decision-relevant experiment result existed. |
 | 2026-09-16 | round-1 revision (pre-registered) | Revision against `research/methods/method-review-round1.md` (85 findings). Main changes: single normative procedure with stated cost entry points (§2.0); constraint crosswalk and `hc_ids` (R1); freeze exception deleted and emission separated from decode support (R1, §7.2, §7.4); gated library-version decode steps (R2); SPEC §5.4 constrained form for profile decisions and a cited family mix (§2.0, §4.9, Appendix B); one primary metric per OD and per-OD weights (R3, §6.3); non-inferiority conditions, confirmatory set and intersection-union multiplicity (R4, §4.11, §4.12); exact order-statistic item intervals and Welch-Satterthwaite corpus intervals verified by simulation (§4.10, Appendix D); held-out replication as non-inferiority plus favourable point estimate, with held-out MDE gate (R5); blocks separated from soft caps, HC verification condition, gate audit (§8); identity-aware held-out threat model with sealing route, single program-wide freeze, look registry, content-overlap audit (§5); A/A′, known-effect and background-load calibration, frequency covariate, tighter guard (§4.2-§4.7); continuous band units with explicit R10 ties, selection bootstrap, extended mix arms (§6); log-consistent minimum gains with caps and computed tiers (§3.1, §7); canonical metric registry with roles, and canonical parameters (Appendices A, C); `thresholds.json` transcribed. No decision-relevant result existed. |
+| 2026-09-16 | round-1 revision, completed (pre-registered) | The round-1 revision was interrupted by a host storage incident and checkpointed unfinished as WIP commit `3fda801` (§0.1); a resumed session completed and verified it. **Verification:** every input SHA-256 of §0.1 re-checked; the Appendix D script re-run with output identical to the recorded block; the objective Appendix A check and the extended Appendix A.3 check re-run with no differences; ebr v1 loads `thresholds.json` with the values stated in Appendix A.1 (WSL research venv); ebr suite status recorded in §14 item 1. **Changes:** §0.1 (repository history including the WIP commit; third identity-exposure disclosure; test file input); §3.7 and Appendix A.1 (`decision_rules` block; pre-registration commit resolved by subject, because the WIP commit already carried the status label); `thresholds.json` extension keys completing the transcription of §4, §5.2-§5.3, §6, §7.3, §8.4, §10.2 and the numeric parameters of Appendix C.1; Appendix A.2 (`encode_wall_s` and `decode_wall_s` also implement objective M15.3); Appendix A.3 extended to the objective's ebr-family brackets, the §3.7 values and every source pointer; Appendix C.1 bounded-memory probe sizes; §5.4 and §5.8 (h) for the third exposure; §14 item 1. In `archetypal-objective.md`: ebr-family brackets aligned with Appendix A.2, absolute-only aggregation under AGG-G, M08.2, M15.3, M16.3 and M19.5 definitions, §4.2 table order, §4.5 count, threat 7. No rule, threshold, confidence level or stability bar changed. No decision-relevant result existed. |
 
 ### Round-1 dispositions
 
@@ -1863,7 +1950,7 @@ Commit: the commit with subject "research: pre-register decision method and arch
 | A03 | BLOCKER | FIXED | R2 (gated library-version-defined steps admitted under conditions, T4, never baseline; default-path use is a defect with R0 item 7 candidate); obj. HC-11 statement and status, MVT-12(c) |
 | A04 | BLOCKER | FIXED | R1 (no freeze exception; in-place change L0-excluded; decode-support removal escalated); §7.2 T4; §7.4 rewritten; obj. HC-16 statement, §1.4, §4.4, §4.5 |
 | A05 | HIGH | FIXED | §2.0 and Appendix B.1 (constrained form, no weights); §4.9 and Appendix B.3 (cited mix base, equal arm); ledger notes on DEC-CMP-035 at §14 item 12 (gate G-A) |
-| A06 | HIGH | FIXED | Appendix C.1 (canonical parameters); Appendix A.2 (M-number, canonical name, threshold ID, family, role), checked by A.3; obj. §1.4 parameters clause, OD-06, OD-12, OD-13, OD-14, MVT-11(a), MVT-13(a) aligned |
+| A06 | HIGH | FIXED | Appendix C.1 (canonical parameters); Appendix A.2 (M-number, canonical name, threshold ID, family, role), checked by A.3, which also checks the objective's ebr-family brackets and every `thresholds.json` source pointer; obj. §1.4 parameters clause, OD-06, OD-12, OD-13, OD-14, MVT-11(a), MVT-13(a) aligned |
 | A07 | HIGH | FIXED | §4.2 hybrid-confound exception; T-14; §4.7 speedup A/A; obj. OD-13 |
 | B01 | BLOCKER | FIXED (rule; artifact gate G-A) | R1 crosswalk classes and screening rule; obj. §2.0 rule 7; obj. Appendix B F-28, F-29; §14 items 10-12 |
 | B02 | HIGH | FIXED | obj. MVT-07(d), HC-07 summary row, M06.5 |
@@ -1915,7 +2002,7 @@ Commit: the commit with subject "research: pre-register decision method and arch
 | F08 | HIGH | FIXED (family-level non-inferiority partly REJECTED: harm guard instead) | §4.12 confirmatory set, Bonferroni/Holm for superiority, intersection-union for the rest, BY listing, rule simulation; R4 conditions 2-3; §4.9 family harm guard |
 | F09 | MEDIUM | FIXED | §3.1 floors and aggregation |
 | F10 | MEDIUM | FIXED | §4.15 calibration criteria and connection model |
-| G01 | BLOCKER | FIXED (option (b) adopted, option (a) as cap-lifting route; execution items gate G-C) | §5.4 threat model, consequences, sealing route, transcript audit, role separation; §5.7 L7; §5.8; §0.1 disclosure; §14 item 15 |
+| G01 | BLOCKER | FIXED (option (b) adopted, option (a) as cap-lifting route; execution items gate G-C) | §5.4 threat model, consequences, sealing route, transcript audit, role separation; §5.7 L7; §5.8; §0.1 disclosures (three sessions); §14 item 15 |
 | G02 | HIGH | FIXED (rule; audit gate G-C) | §5.3 lineage grouping and content-overlap audit (≤ 0.01); §5.7 L6 |
 | G03 | HIGH | FIXED | §5.5 single program-wide freeze and unlock |
 | G04 | HIGH | FIXED | §5.2 second look on new items or labelled tuning; program-wide look registry and cross-decision rule |
@@ -1942,4 +2029,4 @@ Commit: the commit with subject "research: pre-register decision method and arch
 | J07 | MEDIUM | FIXED | §1.2 (34 decisions listed); §4.16; §8.3 |
 | K01 | BLOCKER | FIXED (schema defined; artifact gate G-A) | §14 item 12 (schema v2 fields, reviewed assignment, validator); R3; §8.2 items 13-15 |
 | K02 | MEDIUM | FIXED (named scenarios run; full simulation remains §14 item 9) | Appendix D (F01 coverage, H01 ties, J02 null pass); §14 item 9 |
-| K03 | LOW | FIXED | `thresholds.json` `status` and `pre_registration`; Appendix A.1 |
+| K03 | LOW | FIXED | `thresholds.json` `status` and `pre_registration` (commit resolved by subject; the unfinished WIP checkpoint `3fda801` carried the label early and is disclosed in §0.1); Appendix A.1 |

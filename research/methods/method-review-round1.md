@@ -1123,11 +1123,11 @@ Results:
 | Field | Value |
 |---|---|
 | Date | 2026-09-16 |
-| Revised documents | `research/archetypal-objective.md` and `research/decision-method.md`, round-1 revision, committed with subject "research: pre-register decision method and archetypal objective" |
+| Revised documents | `research/archetypal-objective.md` and `research/decision-method.md`, round-1 revision, committed with subject "research: pre-register decision method and archetypal objective". A host storage incident interrupted the revision; the unfinished state was checkpointed as WIP commit `3fda801`, which is not the pre-registration record (`decision-method.md` §0.1), and a resumed session completed and verified the revision. |
 | Review text | Unchanged above this section. SHA-256 of this file before the section was added: `6af01821bff38136d53e5033446e9aa819ff51d791028c3076f30e32f41a83f7`. |
 | Per-finding table | `decision-method.md`, Revision history, "Round-1 dispositions" (all 85 findings, with sections). `archetypal-objective.md` has the subset whose fix changes it. |
 | Totals | 84 `FIXED` (two of them, F01 and F08, with a part rejected below), 1 `ACCEPTED_RISK` (C03), 0 wholly `REJECTED`. Every BLOCKER and HIGH finding is `FIXED`. |
-| Revision-session disclosure | While checking repository state, the revision session's `git status --short` displayed untracked fingerprint file names, four of which are held-out item identifiers in three families. No held-out content, listing, statistic or path was opened, and the identifiers are not repeated in any committed file. The exposure is recorded as event L7 in `decision-method.md` §0.1 and §5.8. |
+| Revision-session disclosures | (1) While checking repository state, the first revision session's `git status --short` displayed untracked fingerprint file names, four of which are held-out item identifiers in three families. No held-out content, listing, statistic or path was opened, and the identifiers are not repeated in any committed file. (2) The resumed revision session read `research/PROGRESS.md` change-log entries, this review's G02 evidence and `git log --stat` output (fingerprint and pin file names) that name the upstream sources of held-out items in families F04, F12, F13, F15, F16 and F17; it opened no held-out content, listing, statistic or path. Both exposures are recorded as event L7 in `decision-method.md` §0.1 and §5.8, and neither session designs candidates, experiments or analyses. |
 
 This section argues every rejected part and accepted risk, which round 2 re-reviews, and lists the fixes whose required artifact is an execution gate rather than part of the revision commit.
 
@@ -1175,7 +1175,7 @@ For these findings the revision fixes the rule in the documents, and the artifac
 | G07 (MEDIUM) | §5.4 | Materialization change; G-C |
 | K02 (MEDIUM) | Appendix D | The three scenarios the finding names (F01 coverage, H01 ties, J02 null pass) were run before the revision commit and are recorded in Appendix D rather than as separate files under `research/methods/`, because the commit is limited to its four files. The full R0-R10 rule simulation remains §14 item 9, required before the first validation look. |
 
-**Why this meets "fix before the pre-registration commit" for the BLOCKERs B01, K01 and G01.** Each BLOCKER was a rule that was contradictory, could not be executed, or let a decision reach `DECIDED` on invalid grounds. After revision each rule is executable as written, states what it consumes, and blocks `DECIDED` until that input exists. Round 2 should verify that no path to `DECIDED` bypasses these gates.
+**Why this meets "fix before the pre-registration commit" for the BLOCKERs B01, K01 and G01.** Each BLOCKER was a rule that was contradictory, could not be executed, or let a decision reach `DECIDED` on invalid grounds. After revision each rule is executable as written, states what it consumes, and blocks `DECIDED` until that input exists. Round 2 should verify that no path to `DECIDED` bypasses these gates. Because the artifacts land after the revision commit rather than in it, round 2 re-reviews every row of this table as it re-reviews `REJECTED` rows, not by sampling.
 
 ### RD-5. Round-2 acceptance checklist status at the revision commit
 
@@ -1197,3 +1197,4 @@ For these findings the revision fixes the rule in the documents, and the artifac
 |---|---|
 | 2026-09-16 | Round 1 adversarial method review of `archetypal-objective.md` (`f9aea31e…`) and `decision-method.md` (`ca23c8a2…`): 85 findings (10 BLOCKER, 36 HIGH, 33 MEDIUM, 6 LOW), required fixes, round-2 acceptance checklist, reproduction appendix. |
 | 2026-09-16 | Review disposition added by the round-1 revision session: totals, the partial rejections of F01 and F08 with arguments (RD-1, RD-2), the C03 accepted risk (RD-3), fixes whose artifacts are execution gates (RD-4), and round-2 checklist status (RD-5). The review text above the disposition is unchanged. |
+| 2026-09-16 | Review disposition updated by the resumed revision session after the WIP checkpoint `3fda801`: the revised-documents row records the checkpoint; the disclosure row adds the resumed session's identity exposure; RD-4 states that round 2 re-reviews every execution-gate row rather than sampling it. Dispositions, totals and arguments are unchanged. The review text above the disposition is unchanged. |

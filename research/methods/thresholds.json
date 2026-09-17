@@ -4,8 +4,8 @@
   "pre_registration": {
     "governing_document": "research/decision-method.md",
     "governing_document_revision": "round-1 revision (Revision history, 2026-09-16)",
-    "commit": "the commit that set status to pre-registered; resolve with: git log --format=%H -S'\"status\": \"pre-registered\"' -- research/methods/thresholds.json",
-    "note": "A file cannot contain the SHA of the commit that adds it; the commit is resolved by the command above (decision-method.md Appendix A.1)."
+    "commit": "the commit with subject \"research: pre-register decision method and archetypal objective\"; resolve with: git log --format=%H --fixed-strings --grep=\"research: pre-register decision method and archetypal objective\" -- research/methods/thresholds.json",
+    "note": "A file cannot contain the SHA of the commit that adds it; the commit is resolved by the command above (decision-method.md Appendix A.1). The earlier WIP checkpoint 3fda801 already carried status pre-registered but is not the pre-registration record (decision-method.md §0.1)."
   },
   "authority": "research/decision-method.md is authoritative. Every non-null value here is transcribed from it and cites the section in source / decision_method_section. null = unset or intentionally null; ebr refuses verdicts that need an unset value and never substitutes a default.",
   "semantics": {
@@ -125,7 +125,7 @@
       },
       "reference_metric": "fs_read_ops",
       "decision_method_section": "3.2 T-19; 3.7",
-      "role": "secondary-only"
+      "role": "secondary_only"
     },
     "correctness": {
       "description": "Pass/fail checks such as round-trip equality",
@@ -169,6 +169,8 @@
     "heldout_noninferiority_confidence": 0.9,
     "family_harm_guard_confidence": 0.9,
     "selection_bootstrap_resamples": 2000,
+    "noninferiority_confidence": 0.99,
+    "secondary_confidence": 0.99,
     "sources": {
       "confidence": "research/decision-method.md §4.12",
       "resamples": "research/decision-method.md §4.12",
@@ -176,7 +178,9 @@
       "superiority_confidence_rule": "research/decision-method.md §4.12",
       "heldout_noninferiority_confidence": "research/decision-method.md R5, §4.11",
       "family_harm_guard_confidence": "research/decision-method.md R4, §4.9",
-      "selection_bootstrap_resamples": "research/decision-method.md §6.7"
+      "selection_bootstrap_resamples": "research/decision-method.md §6.7",
+      "noninferiority_confidence": "research/decision-method.md §4.12",
+      "secondary_confidence": "research/decision-method.md §4.12"
     }
   },
   "statistics": {
@@ -197,6 +201,30 @@
     },
     "family_guard_max_point_bands": 1.0,
     "source": "research/decision-method.md §4.6, §4.9-§4.12, R4, R5",
+    "coverage_criterion": {
+      "max_shortfall_pp": 1.0,
+      "confidences": [
+        0.9,
+        0.95,
+        0.99,
+        0.998
+      ],
+      "simulations_per_cell": 20000,
+      "models": [
+        "gauss",
+        "hetero",
+        "heavy",
+        "onewild"
+      ],
+      "recheck_if_family_weight_ratio_exceeds": 4
+    },
+    "one_sided_0_95_rule": "unfavourable bound of the two-sided 0.90 interval",
+    "benjamini_yekutieli_q": 0.05,
+    "low_n": {
+      "p90_min_n": 10,
+      "p95_min_n": 20
+    },
+    "percentile_type": 7,
     "sources": {
       "item_interval": "research/decision-method.md §4.10",
       "corpus_interval": "research/decision-method.md §4.10, Appendix D.1",
@@ -206,7 +234,12 @@
       "mde_max_bands": "research/decision-method.md §4.12, R5",
       "mde_power": "research/decision-method.md §4.12",
       "min_support": "research/decision-method.md §4.9",
-      "family_guard_max_point_bands": "research/decision-method.md R4, §4.9"
+      "family_guard_max_point_bands": "research/decision-method.md R4, §4.9",
+      "coverage_criterion": "research/decision-method.md §4.10, Appendix D.1",
+      "one_sided_0_95_rule": "research/decision-method.md §4.11",
+      "benjamini_yekutieli_q": "research/decision-method.md §4.12",
+      "low_n": "research/decision-method.md §4.8",
+      "percentile_type": "research/decision-method.md §4.8, §4.10"
     }
   },
   "quiet_machine_guard": {
@@ -266,6 +299,10 @@
     "max_compromise_regret_per_metric_band_units": 1.0,
     "source": "research/decision-method.md §6.2-§6.7; R9",
     "decision_method_section": "6.2-6.7; 2 R9",
+    "threshold_single_metric_min_fraction_preserving": 0.9,
+    "workload_mix_primary_share": 0.8,
+    "dirichlet_alpha_rule": "c * k * w_base",
+    "selection_bootstrap_deviation_scale": "sqrt(n_f / (n_f - 1))",
     "sources": {
       "min_fraction_preserving_winner": "research/decision-method.md §6.6",
       "medium_fraction_preserving_winner": "research/decision-method.md §6.6",
@@ -283,7 +320,11 @@
       "family_dirichlet_concentration": "research/decision-method.md §6.5",
       "selection_bootstrap_resamples": "research/decision-method.md §6.7",
       "max_compromise_regret_band_units": "research/decision-method.md R9",
-      "max_compromise_regret_per_metric_band_units": "research/decision-method.md R9"
+      "max_compromise_regret_per_metric_band_units": "research/decision-method.md R9",
+      "threshold_single_metric_min_fraction_preserving": "research/decision-method.md §6.4",
+      "workload_mix_primary_share": "research/decision-method.md §6.5; Appendix B.2",
+      "dirichlet_alpha_rule": "research/decision-method.md §6.3",
+      "selection_bootstrap_deviation_scale": "research/decision-method.md §6.7"
     }
   },
   "protocol": {
@@ -333,7 +374,8 @@
     "frequency_covariate": {
       "counter": "\\Processor Information(_Total)\\% Processor Performance",
       "sample_interval_s": 1.0,
-      "min_fraction_of_session_baseline": 0.975
+      "min_fraction_of_session_baseline": 0.975,
+      "unreadable_max_sample_wall_s": 20
     },
     "invalid_sample_max_fraction_cell": 0.1,
     "invalid_rate_max_difference_pp": 5,
@@ -348,7 +390,11 @@
         2.0
       ],
       "known_effect_detect_fraction_at_2r": 0.9,
-      "known_effect_sign_fraction_at_1r": 0.8
+      "known_effect_sign_fraction_at_1r": 0.8,
+      "corpus_confidence": 0.99,
+      "max_median_item_halfwidth_fraction_of_log1p_r": 0.5,
+      "known_effect_max_item_distinguishable_better": 0,
+      "min_scale_tiers": 3
     },
     "validation_looks_per_decision": 2,
     "content_overlap_max_fraction": 0.01,
@@ -365,6 +411,109 @@
     ],
     "source": "research/decision-method.md §4.2-§4.9, §4.13, §4.15, §5.2, §5.3; Appendix C",
     "decision_method_section": "4.2-4.9; 4.13; 4.15; 5.2; 5.3",
+    "throttling_onset": {
+      "threshold_fraction_of_initial": 0.975,
+      "probe_max_s": 300
+    },
+    "min_operations_per_batch": 1000,
+    "simulated_usability_min_sessions": 20,
+    "scale_tiers_max_bytes": {
+      "small": 16777216,
+      "medium": 536870912,
+      "large": 8589934592
+    },
+    "windows_affinity_configurations": {
+      "st-p": [
+        2
+      ],
+      "mt-p-n": {
+        "n": [
+          2,
+          4,
+          7
+        ],
+        "cpus_rule": "first n of [2, 4, 6, 8, 10, 12, 14]"
+      },
+      "mt-psmt-14": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "st-e": [
+        18
+      ],
+      "mt-e-n": {
+        "n": [
+          2,
+          4,
+          8,
+          16
+        ],
+        "cpus_rule": "16 .. 16+n-1"
+      },
+      "os-scheduled": "informational only"
+    },
+    "wsl_affinity_configurations": {
+      "st-v": [
+        2
+      ],
+      "mt-v-n": {
+        "n": [
+          2,
+          4,
+          8
+        ],
+        "cpus_rule": "2 .. n+1"
+      }
+    },
+    "network_profiles": {
+      "NP-LAN": {
+        "rtt_ms": 2,
+        "bandwidth_mbit_s": 1000
+      },
+      "NP-METRO": {
+        "rtt_ms": 20,
+        "bandwidth_mbit_s": 200
+      },
+      "NP-CONT": {
+        "rtt_ms": 80,
+        "bandwidth_mbit_s": 50
+      },
+      "NP-INTER": {
+        "rtt_ms": 200,
+        "bandwidth_mbit_s": 20
+      }
+    },
+    "latency_model": {
+      "mss_bytes": 1460,
+      "initial_window_rule": "min(10*MSS, max(2*MSS, 14600))",
+      "growth": "doubling per RTT without loss"
+    },
+    "scratch_poll_interval_s": 0.05,
+    "scratch_write_tolerance_bytes": 0,
+    "blast_radius_injection": {
+      "single_byte_corruptions_per_stratum_min": 200,
+      "strata": [
+        "payload",
+        "Index",
+        "metadata and manifest",
+        "dictionaries",
+        "integrity records and footer"
+      ],
+      "stratum_weight": 0.2
+    },
+    "relock_replacement_size_tolerance_fraction": 0.5,
     "sources": {
       "deterministic_repetitions": "research/decision-method.md §4.6",
       "determinism_claim": "research/decision-method.md §4.13; objective MVT-13(a)",
@@ -382,7 +531,114 @@
       "validation_looks_per_decision": "research/decision-method.md §5.2",
       "content_overlap_max_fraction": "research/decision-method.md §5.3",
       "network_calibration_tolerance": "research/decision-method.md §4.15",
-      "wsl_decision_grade_threads": "research/decision-method.md §4.3"
+      "wsl_decision_grade_threads": "research/decision-method.md §4.3",
+      "throttling_onset": "research/decision-method.md §4.2",
+      "min_operations_per_batch": "research/decision-method.md §3.2 T-08, §4.6",
+      "simulated_usability_min_sessions": "research/decision-method.md §4.6, §4.16",
+      "scale_tiers_max_bytes": "research/decision-method.md §4.6; Appendix C.1",
+      "windows_affinity_configurations": "research/decision-method.md §4.2; Appendix C.1",
+      "wsl_affinity_configurations": "research/decision-method.md §4.3; Appendix C.1",
+      "network_profiles": "research/decision-method.md §4.15; Appendix C.1",
+      "latency_model": "research/decision-method.md §4.15",
+      "scratch_poll_interval_s": "research/decision-method.md §3.2 T-07, §4.14",
+      "scratch_write_tolerance_bytes": "research/decision-method.md §4.14",
+      "blast_radius_injection": "research/decision-method.md §3.2 T-15; Appendix C.1",
+      "relock_replacement_size_tolerance_fraction": "research/decision-method.md §5.3"
+    }
+  },
+  "decision_rules": {
+    "r10_power": {
+      "max_median_item_halfwidth_band_units": 0.5,
+      "max_corpus_mde_band_units": 1.0
+    },
+    "minimum_gain": {
+      "absolute_cap_max_fraction_of_range": 0.25,
+      "new_baseline_codec": {
+        "tier": "T3",
+        "min_families": 2,
+        "min_groups_per_family": 2
+      },
+      "new_registered_extended_codec": {
+        "tier": "T2"
+      },
+      "new_reversible_transform": {
+        "tier": "T3",
+        "non_target_encode_guard_k": 2
+      },
+      "new_record_or_section_type": {
+        "tier": "T3"
+      },
+      "new_field_enum_reason_code_or_feature_bit": {
+        "tier": "T2"
+      },
+      "new_profile": {
+        "tier": "T2",
+        "min_families": 3,
+        "t1_alternative_max_log_gain_share": 0.5
+      }
+    },
+    "confidence": {
+      "high_min_heldout_groups_per_family": 2,
+      "high_min_independent_evidence_lines": 2,
+      "low_min_distinct_soft_caps": 3,
+      "t3_t4_selection_requires": "HIGH, or an owner acceptance record naming each soft cap"
+    },
+    "confirmation_bias": {
+      "CB-1": {
+        "min_decisions_in_cluster": 6,
+        "min_fraction_r10_under_inconclusive": 0.5
+      },
+      "CB-2": {
+        "min_decisions_in_cluster": 10,
+        "min_fraction_spec_or_status_quo_wins": 0.9,
+        "reanalyses": 3
+      },
+      "CB-4": {
+        "max_bound_distance_from_band_edge_band_units": 0.5
+      },
+      "CB-8": {
+        "min_candidates": 3
+      }
+    },
+    "hc_test_parameters": {
+      "path_coverage_min_exercises": 5,
+      "complexity_bound": {
+        "min_log2_elements": 10,
+        "max_log2_elements": 20,
+        "runs_per_point": 3,
+        "slope_confidence": 0.99,
+        "delta": 0.15
+      },
+      "allocator_baseline_runs": 20,
+      "bounded_memory_claim": {
+        "sizes_gib": [
+          1,
+          4,
+          16,
+          64
+        ],
+        "max_growth_rule": "max(4 MiB, 0.10 * R0)",
+        "max_growth_floor_bytes": 4194304,
+        "max_growth_r0_fraction": 0.1
+      },
+      "keyed_boundary": {
+        "distinct_key_pairs_per_item": 1000,
+        "null_quantile": 0.999,
+        "max_keys_above_quantile_per_1000": 1
+      },
+      "determinism_claim": {
+        "repetitions_per_variation_cell": 3,
+        "stress_repetitions": 20
+      }
+    },
+    "source": "research/decision-method.md R6, R10, §3.1, §7.3, §8.4, §10.2; Appendix C.1",
+    "decision_method_section": "2 R6, R10; 3.1; 7.3; 8.4; 10.2; Appendix C.1",
+    "sources": {
+      "r10_power": "research/decision-method.md R10",
+      "minimum_gain": "research/decision-method.md §3.1, §7.3, R6",
+      "confidence": "research/decision-method.md §8.2, §8.4",
+      "confirmation_bias": "research/decision-method.md §10.2",
+      "hc_test_parameters": "research/decision-method.md Appendix C.1"
     }
   },
   "cost_tiers": {
@@ -559,6 +815,7 @@
       "direction": "minimize",
       "od_metrics": [
         "M06.1",
+        "M15.3",
         "M19.5",
         "M20.3"
       ],
@@ -583,6 +840,7 @@
       "direction": "minimize",
       "od_metrics": [
         "M07.1",
+        "M15.3",
         "M19.5"
       ],
       "relative": 0.05,

@@ -178,3 +178,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T02:09Z — Storage incident RESOLVED: Ubuntu distro at D:\WSL\Ubuntu (sparse), Docker disks at D:\Docker\wsl; C: 375 GB free; disk_guard passes (C>=25, D>=75 GB). Docker Desktop startup BLOCKED by pre-existing AF_UNIX socket error 1920 (also seen 2026-09-05); Docker-dependent steps deferred.
 - 2026-09-17T02:09Z — WIP: interrupted method revision preserved (archetypal-objective.md, decision-method.md, method-review-round1.md, thresholds.json); pre-registration commit still pending.
 - 2026-09-17T02:10Z — Added research/orchestration/disk_alarm.py (C: < 50 GB, D: < 100 GB alarms), armed during workflows.
+- 2026-09-17T02:22Z — Method pre-registration committed: objective and decision method round-1 revision complete (85 findings dispositioned), thresholds.json transcribed; ebr tests pass except the template-state test (decision-method.md section 14 item 1).
