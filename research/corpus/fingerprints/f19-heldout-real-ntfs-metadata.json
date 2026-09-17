@@ -1,0 +1,69 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f19-heldout-real-ntfs-metadata",
+  "family": "F19",
+  "split": "heldout",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-g2-f19-ntfs-heldout",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "6285bb091279e51f7aefb53724d73343cdbfa41ac32629ddaaf367978abd85d2",
+  "materialization_key": "eb3895d081f9f64ec177a7c087de4f9bace162ed753fce965e6196b68b75f8ca",
+  "materialized_utc": "2026-09-17T08:29:33Z",
+  "materialized_relpath": "heldout/f19-heldout-real-ntfs-metadata",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 50333275,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g2-generated/ntfs_metadata_image.py",
+      "script_sha256": "cf4e79fc0147ba09b3a5a879a94ceabb36d9ca0215862d94caa9c6de0c9d6fbd",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 72003,
+      "params": {
+        "variant": "heldout"
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "b548f52ddea04fe6b0fdb4f7e0e1dd21dbf4e8d92042fa2e15727e99716fde7d",
+    "logical_tree_sha256": "faecfb64e3958c607de561a2022f2f09b20646b1868575f438ad9ddc848f8fa8",
+    "content_tree_sha256": "906adee358778bfb869dafe5daf1a670ad187133818cb3b618486b4b60abde06",
+    "extended_tree_sha256": "c7b35e72107fcf79b03c4134cd46a72b0643a12f542ac9083d60b4bd0573a7d6",
+    "bytes": 50333275,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

@@ -1,0 +1,86 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f19-validation-real-ntfs-metadata",
+  "family": "F19",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "generated",
+  "independence_group": "ebrc-g2-f19-ntfs-validation",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "adfb3c14ad2c67024710ecc14cc111d3ef2fa7334ed6867ac25172ca40c42b88",
+  "materialization_key": "abbc77f9ed072e39b96e04498b47f57fff4898d02a7baa92e433863edaa8fdf4",
+  "materialized_utc": "2026-09-17T08:29:13Z",
+  "materialized_relpath": "corpus/validation/f19-validation-real-ntfs-metadata",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 50333012,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g2-generated/ntfs_metadata_image.py",
+      "script_sha256": "cf4e79fc0147ba09b3a5a879a94ceabb36d9ca0215862d94caa9c6de0c9d6fbd",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 72002,
+      "params": {
+        "variant": "validation"
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "d50caf19b72673b3ae569277a1fdbc3a1fc67158580ee2d4426594cfc0b7c59d",
+    "logical_tree_sha256": "1ad5bf7d5552d299198d5244c131fcc47254946d0281929c87f946d1a122d014",
+    "content_tree_sha256": "ae31d8e9ae3c26c10eb0855908ab97a08433cf1e22a5be86b983f736a5ae06a5",
+    "extended_tree_sha256": "1111b45adad4dc6f4723ebd40f928de56d766d1ef20b71a170786fc68f9485d7",
+    "bytes": 50333012,
+    "bytes_all_paths": 50333012,
+    "allocated_bytes": 2633728,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "unique_file_inodes": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 28,
+      "path_length_bytes": {
+        "min": 14,
+        "max": 28,
+        "mean": 21.0,
+        "p50": 14,
+        "p95": 28
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

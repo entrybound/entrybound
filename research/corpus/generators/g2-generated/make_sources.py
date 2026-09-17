@@ -517,6 +517,91 @@ ITEMS += [
          tags=["generated"]),
 ]
 
+# Corpus round-1 critic gap (F19 real cross-platform metadata, BLOCKER): F19 was 6/6 generated,
+# entirely on Linux ext4, with no Windows or macOS metadata transport and no real SELinux/ACL
+# labelling. ntfs_metadata_image.py builds a real NTFS volume (mkntfs + a live ntfs-3g mount:
+# DOS attributes, an ADS, real per-file security descriptors via `-o permissions`, and a reparse
+# point, round-trip-verified across a full unmount/detach/remount cycle of the raw image) and
+# posix_metadata_image.py builds a real POSIX filesystem image per split (ext4/XFS/btrfs -- one
+# real `mkfs.*` implementation each) carrying real POSIX ACLs (`setfacl`/`getfacl`), real SELinux
+# xattr labels, and a real `security.capability` xattr (`setcap`). Every item ships the raw
+# filesystem image itself (not an extracted tree), so no metadata-preserving transport is lost.
+# macOS/APFS real metadata (resource forks, FinderInfo, xattrs, birthtime) is PLATFORM_BLOCKED on
+# this program (no local macOS; hosted runners declined -- already recorded in PROGRESS.md's Known
+# blockers section) and is not attempted or faked here.
+ITEMS += [
+    item("f19-tuning-real-ntfs-metadata", "F19", "tuning", "medium", "build", "generated",
+         {"generator": gen("ntfs_metadata_image.py", 72001, {"variant": "tuning"})},
+         GENERATED_LIC, "ebrc-g2-f19-ntfs-tuning",
+         "Real NTFS filesystem image (mkntfs + a live ntfs-3g mount, -o permissions,windows_names,"
+         "streams_interface=windows): a Zone.Identifier alternate data stream (the mark-of-the-web stream "
+         "Windows writes on internet downloads, ZoneId=3), DOS HIDDEN|SYSTEM|ARCHIVE attributes on desktop.ini, "
+         "a file-level symlink stored by ntfs-3g as a native reparse point, and two files with distinct real "
+         "NTFS security descriptors (from chmod 0600/0755 via -o permissions, readable back via system.ntfs_acl).",
+         notes="Shipped as the raw .img file (not an extracted tree) so ADS/attributes/security descriptors/"
+               "reparse data/100ns timestamps all survive intact; PROVENANCE.txt inside the item records exact "
+               "paths, a round-trip reparse-point verification (full unmount/detach/reattach/remount of the raw "
+               "image), and tool versions.",
+         tags=["generated", "ntfs", "real-tool-metadata"]),
+    item("f19-validation-real-ntfs-metadata", "F19", "validation", "medium", "build", "generated",
+         {"generator": gen("ntfs_metadata_image.py", 72002, {"variant": "validation"})},
+         GENERATED_LIC, "ebrc-g2-f19-ntfs-validation",
+         "Real NTFS filesystem image (distinct configuration from tuning): a READONLY|HIDDEN|SYSTEM "
+         "attribute combination on one file, a directory symlink (junction-style reparse point), a second ADS "
+         "(:BackupStream) on a log file showing multiple named streams on one file, and two more real security "
+         "descriptors (modes 0444/0664).",
+         notes="Same construction (ntfs_metadata_image.py), independent seed and content mix from the tuning "
+               "item per the gap-closure requirement for a different NTFS generator configuration per split.",
+         tags=["generated", "ntfs", "real-tool-metadata"]),
+    item("f19-heldout-real-ntfs-metadata", "F19", "heldout", "medium", "build", "generated",
+         {"generator": gen("ntfs_metadata_image.py", 72003, {"variant": "heldout"})},
+         GENERATED_LIC, "ebrc-g2-f19-ntfs-heldout",
+         "Held-out: a real NTFS filesystem image with a third distinct configuration -- the ARCHIVE|COMPRESSED "
+         "DOS attribute combination, a HIDDEN|SYSTEM file with its own security descriptor and a "
+         "Zone.Identifier ADS using a different zone id (ZoneId=4, 'Untrusted') from the tuning item's ZoneId=3, "
+         "and a deeper-path directory reparse point.",
+         notes="Held-out: distinct independence group from every tuning/validation F19 item; same generator "
+               "script (ntfs_metadata_image.py) with the held-out-only variant branch, per the family's "
+               "existing convention (metadata_tree.py/hardlink_farm.py also use one script with a held-out-only "
+               "profile/model rather than a separate script).",
+         tags=["generated", "ntfs", "real-tool-metadata"]),
+    item("f19-tuning-real-ext4-acl-selinux", "F19", "tuning", "medium", "build", "generated",
+         {"generator": gen("posix_metadata_image.py", 72004, {"variant": "tuning", "fstype": "ext4"})},
+         GENERATED_LIC, "ebrc-g2-f19-ext4-acl-selinux",
+         "Real ext4 filesystem image (mke2fs -t ext4, mounted -o acl,user_xattr): real POSIX ACLs (named-user "
+         "and named-group access entries, plus a default ACL on a directory that new children verifiably "
+         "inherit), real SELinux xattr labels (security.selinux, distro-style etc_t/user_home_t/bin_t "
+         "contexts), a real security.capability xattr (setcap cap_net_bind_service+ep), a setuid file, a "
+         "3-member hardlink group, and trusted.*/user.* xattrs.",
+         notes="Shipped as the raw .img file so ACL/xattr/label fidelity does not depend on this repository's "
+               "own worktree filesystem (documented elsewhere as lacking metadata support on /mnt/d). Every "
+               "ACL/xattr/capability claim is re-verified with getfacl/getcap from the live mount before "
+               "unmount and recorded in PROVENANCE.txt. This WSL2 kernel has no SELinux LSM enforcing; the "
+               "security.selinux xattr writes are real, persisted, on-disk labelling data of the kind a "
+               "labelled distro's restorecon would write, but no policy was ever enforced -- recorded "
+               "explicitly in PROVENANCE.txt rather than implying SELinux was active.",
+         tags=["generated", "ext4", "acl", "selinux", "real-tool-metadata"]),
+    item("f19-validation-real-xfs-acl-selinux", "F19", "validation", "medium", "build", "generated",
+         {"generator": gen("posix_metadata_image.py", 72005, {"variant": "validation", "fstype": "xfs"})},
+         GENERATED_LIC, "ebrc-g2-f19-xfs-acl-selinux",
+         "Real XFS filesystem image (mkfs.xfs; XFS has made ACLs/xattrs unconditional for years, so no acl "
+         "mount option is needed or accepted by this kernel's XFS driver) with the same real-ACL/SELinux-label/"
+         "capability/hardlink construction as the tuning ext4 item, giving F19 a second real Linux-native "
+         "filesystem implementation.",
+         notes="Same construction (posix_metadata_image.py), independent content/context mix from the tuning "
+               "item; a distinct real filesystem implementation (XFS, not ext4) for the same metadata claims.",
+         tags=["generated", "xfs", "acl", "selinux", "real-tool-metadata"]),
+    item("f19-heldout-real-btrfs-acl-selinux", "F19", "heldout", "medium", "build", "generated",
+         {"generator": gen("posix_metadata_image.py", 72006, {"variant": "heldout", "fstype": "btrfs"})},
+         GENERATED_LIC, "ebrc-g2-f19-btrfs-acl-selinux",
+         "Held-out: a real btrfs filesystem image (mkfs.btrfs) with the same real-ACL/SELinux-label/capability/"
+         "hardlink construction, giving F19 a third real Linux-native filesystem implementation and a third "
+         "distinct SELinux context set (including MCS categories, e.g. s0:c0,c1).",
+         notes="Held-out: distinct independence group from every tuning/validation F19 item; same generator "
+               "script (posix_metadata_image.py) with fstype=btrfs and the held-out-only variant branch.",
+         tags=["generated", "btrfs", "acl", "selinux", "real-tool-metadata"]),
+]
+
 # =======================================================================================
 # F20 adversarial/high-entropy inputs
 # =======================================================================================
