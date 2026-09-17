@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-heldout-real-go-archive-testdata",
+  "inputs": {},
+  "output": {
+    "materialization_key": "fba66f3717af5e7e41f8a537af4a5385218af8638ddf8c341e6aeb412f79d9e7",
+    "logical_tree_sha256": "8b6939d43f5fb51cd62bdaf4b778aa7d4a1b0da5579980814036c8d130f89988",
+    "pinned_utc": "2026-09-17T07:56:17Z"
+  },
+  "history": []
+}

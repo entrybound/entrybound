@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-validation-generated-malicious-structures",
+  "inputs": {},
+  "output": {
+    "materialization_key": "4a13f7640445f379417fb3995197d993d76b4307825d0086de71d36fa8293b1a",
+    "logical_tree_sha256": "4004d3616ea78453d15e37bc9eb2eb8e6b676a3cc6fb917d45fa57315d7bbb9a",
+    "pinned_utc": "2026-09-17T07:55:51Z"
+  },
+  "history": []
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-validation-real-cpython-archivetestdata",
+  "inputs": {},
+  "output": {
+    "materialization_key": "39f77d584ce5056b43daab5a8994ea236b5d4a62eec9f8c1645590b089836fb5",
+    "logical_tree_sha256": "6cae97b9c90cee6e794d10190be1bc0538acc5c196924792537b6ea6c8e642cc",
+    "pinned_utc": "2026-09-17T07:56:17Z"
+  },
+  "history": []
+}

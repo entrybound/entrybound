@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-tuning-generated-malicious-structures",
+  "inputs": {},
+  "output": {
+    "materialization_key": "e0b53f262410973e505c182ba3412e7678b24ac83ade5bde6aa45ba6cdd2d61b",
+    "logical_tree_sha256": "54444fb6c2802f9687d47d8511a3526e4eebd3c9c5947587d784802862c0e580",
+    "pinned_utc": "2026-09-17T07:55:51Z"
+  },
+  "history": []
+}

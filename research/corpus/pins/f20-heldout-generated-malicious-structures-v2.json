@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-heldout-generated-malicious-structures-v2",
+  "inputs": {},
+  "output": {
+    "materialization_key": "0752fc6d5ad90fa339ca156ac666b94eea4f00703929852198490744d547f926",
+    "logical_tree_sha256": "8b52eeb8a66829e5faf269bdbc2967ef21593823e18996b19f20ee31bb9695c6",
+    "pinned_utc": "2026-09-17T07:55:51Z"
+  },
+  "history": []
+}

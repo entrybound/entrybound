@@ -1,0 +1,84 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f20-heldout-real-fifield-zipbomb-regen",
+  "family": "F20",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "build",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "fifield-zipbomb",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "919600f814985f3ca22870e0dc8b0e24b185e4c189729105a83f7c88a17c3d17",
+  "materialization_key": "06d3fd7b4fa24662467fe9cefafbdd192e025f439154d81663084a2b6a592140",
+  "materialized_utc": "2026-09-17T07:56:28Z",
+  "materialized_relpath": "heldout/f20-heldout-real-fifield-zipbomb-regen",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "c0ee4ae0c4836cf91ed6059fa7a901beaeef7f86a2a66e09bbf2bfa2e944fa25",
+    "pinned_utc": "2026-09-17T07:56:28Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 96646,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "zipbomb-src",
+        "url": "https://www.bamsoftware.com/hacks/zipbomb/zipbomb-20210121.zip",
+        "final_url": "https://www.bamsoftware.com/hacks/zipbomb/zipbomb-20210121.zip",
+        "sha256": "50243fafe7407d88f08493ca53d61bd56504bf88fc35eabee2e7a391e08330ae",
+        "size": 18130,
+        "retrieved_utc": "2026-09-17T07:56:28Z",
+        "retrieval_date": "2026-09-17",
+        "pin": "declared",
+        "filename": "zipbomb-20210121.zip"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g2-generated/fifield_zipbomb_regen.py",
+      "script_sha256": "9520fd6bfb9264471068cf967e8de0f3dd297968d36bf87698059c9f4d7d2482",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 81011,
+      "params": {
+        "zip_input": "zipbomb-src"
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "107ad0807e45f254b9dc6409dea684270e84e4cc3c009dbc4411f592b989d1ea",
+    "logical_tree_sha256": "c0ee4ae0c4836cf91ed6059fa7a901beaeef7f86a2a66e09bbf2bfa2e944fa25",
+    "content_tree_sha256": "a77c5cad277bd7aa46082b8be278d3d61df5893568f267a2a48c4a60387e09b5",
+    "extended_tree_sha256": "779eb75d168cf7e7fd6f06db5e29627f48d2683bc75cd12e455dbae58c783b42",
+    "bytes": 96646,
+    "counts": {
+      "objects": 5,
+      "files": 4,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

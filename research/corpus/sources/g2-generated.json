@@ -1514,6 +1514,306 @@
       "tags": [
         "generated"
       ]
+    },
+    {
+      "item_id": "f20-tuning-real-libarchive-testsuite",
+      "family": "F20",
+      "split": "tuning",
+      "scale": "small",
+      "kind": "git-archive",
+      "real_or_generated": "real",
+      "recipe": {
+        "git": {
+          "repo": "https://github.com/libarchive/libarchive.git",
+          "commit": "5ddc1d9822a390424ce5bd42f35e58acc9e88df4",
+          "ref": "master",
+          "subpaths": [
+            "libarchive/test",
+            "tar/test",
+            "cpio/test",
+            "unzip/test"
+          ]
+        },
+        "steps": [
+          {
+            "op": "extract",
+            "input": "git-archive",
+            "format": "tar"
+          },
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g2-generated/decode_uu_files.py",
+            "interpreter": "python",
+            "seed": 0,
+            "params": {}
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "BSD-2-Clause per COPYING",
+        "redistributable": true,
+        "attribution": "Tim Kientzle and libarchive contributors",
+        "notes": "GitHub reports NOASSERTION for the repository as a whole; COPYING states the large majority of files (including this test suite) are BSD-2-Clause, but this has not been independently audited file-by-file, so treat per-file license as unconfirmed until audited."
+      },
+      "independence_group": "libarchive",
+      "description": "Real structurally-adversarial archives: libarchive's own conformance/regression test suite (libarchive/test, tar/test, cpio/test, unzip/test) -- hundreds of hand-crafted malformed and edge-case tar/cpio/zip/7z/iso9660/mtree fixtures used to test libarchive's own parsers against truncated, corrupted and adversarially-structured archives. Binary fixtures are stored uuencoded upstream; decoded in place by decode_uu_files.py.",
+      "tags": [
+        "real"
+      ]
+    },
+    {
+      "item_id": "f20-validation-real-cpython-archivetestdata",
+      "family": "F20",
+      "split": "validation",
+      "scale": "small",
+      "kind": "derive",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "from_items": [
+          "f01-validation-cpython-3-13-15-git"
+        ],
+        "steps": [
+          {
+            "op": "copy-item",
+            "from_item": "f01-validation-cpython-3-13-15-git",
+            "src": "Lib/test/archivetestdata"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "PSF-2.0",
+        "redistributable": true,
+        "attribution": "Python Software Foundation and CPython contributors",
+        "notes": "Reused from the already-provisioned F01 validation source-tree item."
+      },
+      "independence_group": "cpython",
+      "description": "Real structurally-adversarial archives: CPython's zipfile/tarfile test fixture directory (recursion bombs, backslash-in-name zips, CP437-header zips, an executable-prepended zip, truncated/xz-compressed tars) -- the same fixtures CPython's own test_zipfile/test_tarfile suites use to test extraction safety and parser robustness, reused from the already-provisioned F01 validation item.",
+      "notes": "Real content, distinct independence group (cpython) from every other F20 item; derives from an already-provisioned F01 item so no new third-party bytes are fetched.",
+      "tags": [
+        "real"
+      ]
+    },
+    {
+      "item_id": "f20-validation-real-commons-compress-testdata",
+      "family": "F20",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "git-archive",
+      "real_or_generated": "real",
+      "recipe": {
+        "git": {
+          "repo": "https://github.com/apache/commons-compress.git",
+          "commit": "852d9c23b94127feafc1649d9c7f13d4df338845",
+          "ref": "rel/commons-compress-1.28.0",
+          "subpaths": [
+            "src/test/resources"
+          ]
+        }
+      },
+      "license": {
+        "spdx_or_name": "Apache-2.0",
+        "redistributable": true,
+        "attribution": "The Apache Software Foundation and Apache Commons Compress contributors",
+        "notes": ""
+      },
+      "independence_group": "apache-commons-compress",
+      "description": "Real structurally-adversarial archives: Apache Commons Compress's test-resource corpus (src/test/resources at release 1.28.0) -- hundreds of zip/tar/7z/ar/cpio/dump/arj fixtures covering Zip64 edge cases, UTF-8/EFS flag variants, bzip2/xz/zstd/brotli/lz4 wrapped archives, and known-malformed inputs collected from real-world interoperability and CVE-class parser bugs.",
+      "tags": [
+        "real"
+      ]
+    },
+    {
+      "item_id": "f20-heldout-real-go-archive-testdata",
+      "family": "F20",
+      "split": "heldout",
+      "scale": "small",
+      "kind": "derive",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "from_items": [
+          "f01-heldout-go-1-25-0-src"
+        ],
+        "steps": [
+          {
+            "op": "copy-item",
+            "from_item": "f01-heldout-go-1-25-0-src",
+            "src": "src/archive/zip/testdata",
+            "dest": "zip-testdata"
+          },
+          {
+            "op": "copy-item",
+            "from_item": "f01-heldout-go-1-25-0-src",
+            "src": "src/archive/tar/testdata",
+            "dest": "tar-testdata"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "BSD-3-Clause",
+        "redistributable": true,
+        "attribution": "The Go Authors",
+        "notes": "Reused from the already-provisioned F01 heldout item."
+      },
+      "independence_group": "golang",
+      "description": "Held-out: real structurally-adversarial archives, the Go standard library's archive/zip and archive/tar test fixture directories (malformed headers, zip64 edge cases, sparse/PAX/GNU tar variants, multi-header and pre-CVE regression fixtures), reused from the already-provisioned F01 heldout item.",
+      "notes": "Held-out: distinct independence group (golang) from every tuning/validation F20 item; derives from a heldout-split source (f01-heldout-go-1-25-0-src).",
+      "tags": [
+        "real"
+      ]
+    },
+    {
+      "item_id": "f20-heldout-real-fastzip-malo",
+      "family": "F20",
+      "split": "heldout",
+      "scale": "small",
+      "kind": "git-archive",
+      "real_or_generated": "real",
+      "recipe": {
+        "git": {
+          "repo": "https://github.com/fastzip/malo.git",
+          "commit": "aeb793c4c164ff8e0a7c50b88ab7a4a05d029d3a",
+          "ref": "main"
+        }
+      },
+      "license": {
+        "spdx_or_name": "BSD-2-Clause",
+        "redistributable": true,
+        "attribution": "fastzip contributors",
+        "notes": ""
+      },
+      "independence_group": "fastzip-malo",
+      "description": "Held-out: real structurally-adversarial archives, the fastzip/malo conformance corpus -- zip/tar/zstd/nar/zar archives sorted by fixture author into accept/iffy/reject/malicious directories per format (zip/malicious/ alone has short_usize, zip64-EOCD-confusion, zip-in-zip, trailing-slash-name/payload and unicode-extra-field-chain fixtures) -- purpose-built to probe exactly the parser-disagreement surface this gap targets.",
+      "notes": "Held-out: distinct independence group (fastzip-malo) from every tuning/validation F20 item.",
+      "tags": [
+        "real"
+      ]
+    },
+    {
+      "item_id": "f20-heldout-real-fifield-zipbomb-regen",
+      "family": "F20",
+      "split": "heldout",
+      "scale": "small",
+      "kind": "build",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "zipbomb-src",
+            "url": "https://www.bamsoftware.com/hacks/zipbomb/zipbomb-20210121.zip",
+            "sha256": "50243fafe7407d88f08493ca53d61bd56504bf88fc35eabee2e7a391e08330ae",
+            "size": 18130,
+            "notes": "public domain (David Fifield); size matches the file as published"
+          }
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g2-generated/fifield_zipbomb_regen.py",
+          "seed": 81011,
+          "params": {
+            "zip_input": "zipbomb-src"
+          }
+        },
+        "output_pin": "TOFU"
+      },
+      "license": {
+        "spdx_or_name": "Public domain",
+        "redistributable": true,
+        "attribution": "David Fifield",
+        "notes": "The generator script itself is public domain; per REQ-ECO-0174 the bomb archives it produces are regenerated fresh by this item's own generator run, never vendored as pre-made files."
+      },
+      "independence_group": "fifield-zipbomb",
+      "description": "Held-out: real overlapping-entry zip bombs regenerated (not vendored) from David Fifield's public-domain zipbomb generator (bamsoftware.com/hacks/zipbomb) -- full_overlap and quoted_overlap constructions where many directory entries' compressed-data ranges overlap in the archive body, the same technique behind well-known bombs such as 42.zip.",
+      "notes": "Held-out: distinct independence group (fifield-zipbomb) from every tuning/validation F20 item and from every generated bomb_variants.py/compressible_bombs.py item (a different construction: overlapping entries, not codec expansion ratio).",
+      "tags": [
+        "real",
+        "regenerated"
+      ]
+    },
+    {
+      "item_id": "f20-tuning-generated-malicious-structures",
+      "family": "F20",
+      "split": "tuning",
+      "scale": "small",
+      "kind": "generate",
+      "real_or_generated": "generated",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g2-generated/malicious_archives.py",
+          "seed": 81012,
+          "params": {
+            "variant": "tuning",
+            "marker": "eb-f20-tuning"
+          }
+        }
+      },
+      "license": {
+        "spdx_or_name": "CC0-1.0 (generated by Entrybound research scripts)",
+        "redistributable": true,
+        "attribution": "Entrybound research corpus generators",
+        "notes": "Synthetic data; statistics reflect the generator's model, not any real system. All names/addresses/keys are invented or seeded pseudorandom; no real personal data or secrets."
+      },
+      "independence_group": "ebrc-g2-f20-malicious-tuning",
+      "description": "Generated structurally-adversarial zip/tar archives: path traversal (../, absolute, backslash-style names), a symlink entry escaping the extraction root followed by an entry that walks through it, duplicate entry names, and a zip whose local file header disagrees with its central directory (a smuggled filename; a lying compression-method byte) -- and tar equivalents (traversal, symlink escape, hardlink escape to an absolute path, duplicate names).",
+      "tags": [
+        "generated"
+      ]
+    },
+    {
+      "item_id": "f20-validation-generated-malicious-structures",
+      "family": "F20",
+      "split": "validation",
+      "scale": "small",
+      "kind": "generate",
+      "real_or_generated": "generated",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g2-generated/malicious_archives.py",
+          "seed": 81013,
+          "params": {
+            "variant": "validation",
+            "marker": "eb-f20-validation"
+          }
+        }
+      },
+      "license": {
+        "spdx_or_name": "CC0-1.0 (generated by Entrybound research scripts)",
+        "redistributable": true,
+        "attribution": "Entrybound research corpus generators",
+        "notes": "Synthetic data; statistics reflect the generator's model, not any real system. All names/addresses/keys are invented or seeded pseudorandom; no real personal data or secrets."
+      },
+      "independence_group": "ebrc-g2-f20-malicious-validation",
+      "description": "Generated structurally-adversarial zip/tar archives (same construction as f20-tuning-generated-malicious-structures, independent marker/seed): path traversal, symlink escape, duplicate names, and zip CD/LFH mismatch, plus tar traversal/symlink-escape/hardlink-escape/duplicate-names.",
+      "tags": [
+        "generated"
+      ]
+    },
+    {
+      "item_id": "f20-heldout-generated-malicious-structures-v2",
+      "family": "F20",
+      "split": "heldout",
+      "scale": "small",
+      "kind": "generate",
+      "real_or_generated": "generated",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g2-generated/malicious_archives_v2.py",
+          "seed": 81014,
+          "params": {
+            "marker": "eb-f20-heldout"
+          }
+        }
+      },
+      "license": {
+        "spdx_or_name": "CC0-1.0 (generated by Entrybound research scripts)",
+        "redistributable": true,
+        "attribution": "Entrybound research corpus generators",
+        "notes": "Synthetic data; statistics reflect the generator's model, not any real system. All names/addresses/keys are invented or seeded pseudorandom; no real personal data or secrets."
+      },
+      "independence_group": "ebrc-g2-f20-malicious-v2-heldout",
+      "description": "Held-out: a structurally distinct generator from malicious_archives.py -- Windows-reserved-device-name and colon-stream zip entry names, a self-referential symlink loop (a->b->a) instead of an outward escape, Zip64-extra-field duplicate names, a PAX tar member whose extended-attribute path escapes the root even though its plain ustar name looks safe, and syntactically-malformed 7z and RAR4 headers (NextHeaderOffset/HEAD_SIZE pointing past end-of-file).",
+      "notes": "Held-out: distinct independence group and distinct generator (malicious_archives_v2.py) from every tuning/validation F20 item, per the family's own gap-closure requirement.",
+      "tags": [
+        "generated"
+      ]
     }
   ]
 }

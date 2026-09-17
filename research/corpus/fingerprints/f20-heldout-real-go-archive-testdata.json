@@ -1,0 +1,81 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f20-heldout-real-go-archive-testdata",
+  "family": "F20",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "derive",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "golang",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "3ebc71e2db1b43d2b9aa3b5f21ed0b5502bbe93763bededa8d43dcfc29da6a12",
+  "materialization_key": "fba66f3717af5e7e41f8a537af4a5385218af8638ddf8c341e6aeb412f79d9e7",
+  "materialized_utc": "2026-09-17T07:56:17Z",
+  "materialized_relpath": "heldout/f20-heldout-real-go-archive-testdata",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "8b6939d43f5fb51cd62bdaf4b778aa7d4a1b0da5579980814036c8d130f89988",
+    "pinned_utc": "2026-09-17T07:56:17Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 157424,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "from_items": [
+      {
+        "item_id": "f01-heldout-go-1-25-0-src",
+        "logical_tree_sha256": "64ed425955dc18e750ce7f2d07203a77a48e523c372fb260224b0ea0072eab85"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy-item",
+        "from_item": "f01-heldout-go-1-25-0-src",
+        "src": "src/archive/zip/testdata",
+        "dest": "zip-testdata"
+      },
+      {
+        "op": "copy-item",
+        "from_item": "f01-heldout-go-1-25-0-src",
+        "src": "src/archive/tar/testdata",
+        "dest": "tar-testdata"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "cp": "cp (GNU coreutils) 9.4",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "6ee5318188a6f4d5df747cfd86fb83ff87a50880a0fbe78f2dfab37c6c98aa59",
+    "logical_tree_sha256": "8b6939d43f5fb51cd62bdaf4b778aa7d4a1b0da5579980814036c8d130f89988",
+    "content_tree_sha256": "167c79e32d02b20fd79da912fd46e0133cc89b14718ead363eadf02f9478eaaa",
+    "extended_tree_sha256": "b0881a129b4bcdb44ecbf46debae637157ad3d5be2c1acceaf8836ecf0a0cdaf",
+    "bytes": 157424,
+    "counts": {
+      "objects": 81,
+      "files": 78,
+      "dirs": 2,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

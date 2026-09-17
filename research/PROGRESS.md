@@ -214,3 +214,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T07:47Z — Ledgers round 2: 1521 requirements, 596 decisions (F-0001/F-0002 addenda: DEC-CON-030, DEC-MOD-049, DEC-MOD-050). Phase B2 DONE with review use constraints.
 - 2026-09-17T07:48Z — Launched B1e corpus closure wf_a924ee34-6e0 (Sonnet); weekly usage 18%.
 - 2026-09-17T07:49Z — Prepared Phase C-design workflow (research/orchestration/workflows/phase-c-design.js); launch after B1e + usage check.
+- 2026-09-17T07:57Z — g2-generated F20 (structurally-adversarial archives, MAJOR): wired WIP block into make_sources.py, provisioned+fingerprinted all 9 items (libarchive testsuite, cpython/go archive testdata derives, commons-compress testdata, fastzip/malo, Fifield zipbomb regen, 2 generated malicious-structure sets); libarchive item relabeled medium->small (fits_smaller_tier). Gap closed.

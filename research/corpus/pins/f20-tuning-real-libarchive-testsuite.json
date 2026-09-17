@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-tuning-real-libarchive-testsuite",
+  "inputs": {},
+  "output": {
+    "materialization_key": "48daf4ba1d23d0b42fae02795d099901efaf2a651bad2f7f7d8dcff87bd7ae3f",
+    "logical_tree_sha256": "68bf390a383ad0b6d52d1807c883110a6b3c4fe9de0e8819046ab6da2e6d951b",
+    "pinned_utc": "2026-09-17T07:56:29Z"
+  },
+  "history": []
+}

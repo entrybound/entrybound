@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f20-heldout-real-fastzip-malo",
+  "family": "F20",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "fastzip-malo",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "21b76d54689966591e82e7e69ff749bb106affd719c6dd24e122e30bb3d50374",
+  "materialization_key": "f91cde774ccf05f481211eb16cc545014188de57d8f3725ecbd023a6231c0f12",
+  "materialized_utc": "2026-09-17T07:56:23Z",
+  "materialized_relpath": "heldout/f20-heldout-real-fastzip-malo",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "6eabd2b20b573b02ac6fd9f308e402cee1121c3bbf290dd2014a7b37379c1dfc",
+    "pinned_utc": "2026-09-17T07:56:23Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 985434,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/fastzip/malo.git",
+      "commit": "aeb793c4c164ff8e0a7c50b88ab7a4a05d029d3a",
+      "ref": "main",
+      "subpaths": null,
+      "archive_sha256": "b7602269ffdfc9ea9d28e4336ef1bb4245e7921b7690631ca705b60df6bb109f",
+      "archive_bytes": 1454080,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "git-archive",
+        "format": "tar"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c6b4fff7856ae773ff4182cbf67fc3ea56049b6bce2c6ce4a05cf6e2e36029e9",
+    "logical_tree_sha256": "6eabd2b20b573b02ac6fd9f308e402cee1121c3bbf290dd2014a7b37379c1dfc",
+    "content_tree_sha256": "62e229380f4b9de34e99522e194fbab09f943b1e65f1f49a4dda31a3b2aad4b6",
+    "extended_tree_sha256": "faec59185176427418a50288e18774775f356d01b7ad16665b8911501ac5d628",
+    "bytes": 985434,
+    "counts": {
+      "objects": 598,
+      "files": 556,
+      "dirs": 41,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

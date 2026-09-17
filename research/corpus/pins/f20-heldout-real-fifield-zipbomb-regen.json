@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-heldout-real-fifield-zipbomb-regen",
+  "inputs": {},
+  "output": {
+    "materialization_key": "06d3fd7b4fa24662467fe9cefafbdd192e025f439154d81663084a2b6a592140",
+    "logical_tree_sha256": "c0ee4ae0c4836cf91ed6059fa7a901beaeef7f86a2a66e09bbf2bfa2e944fa25",
+    "pinned_utc": "2026-09-17T07:56:28Z"
+  },
+  "history": []
+}

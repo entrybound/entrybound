@@ -1,0 +1,118 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f20-tuning-real-libarchive-testsuite",
+  "family": "F20",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "libarchive",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "f68aa016c7f8275f481bf7d452a631466d25a0e1663aeced284a3430247a2f60",
+  "materialization_key": "48daf4ba1d23d0b42fae02795d099901efaf2a651bad2f7f7d8dcff87bd7ae3f",
+  "materialized_utc": "2026-09-17T07:56:29Z",
+  "materialized_relpath": "corpus/tuning/f20-tuning-real-libarchive-testsuite",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "68bf390a383ad0b6d52d1807c883110a6b3c4fe9de0e8819046ab6da2e6d951b",
+    "pinned_utc": "2026-09-17T07:56:29Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 11970502,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/libarchive/libarchive.git",
+      "commit": "5ddc1d9822a390424ce5bd42f35e58acc9e88df4",
+      "ref": "master",
+      "subpaths": [
+        "libarchive/test",
+        "tar/test",
+        "cpio/test",
+        "unzip/test"
+      ],
+      "archive_sha256": "80a6f8381622890bed6cd7d249c2570de0532e00f41d64566e34176946ca5d7b",
+      "archive_bytes": 16056320,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "git-archive",
+        "format": "tar"
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g2-generated/decode_uu_files.py",
+        "interpreter": "python",
+        "seed": 0,
+        "params": {}
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g2-generated/decode_uu_files.py",
+        "script_sha256": "6ff41445b1be8d6a964f4fa91fbd3d8161f914259fdb5d4aad8b34d3bb55cea5",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {}
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "586d449ba176cf426a45c3a994e1feeda9feec6468a8b3d757dbee085eb4bb11",
+    "logical_tree_sha256": "68bf390a383ad0b6d52d1807c883110a6b3c4fe9de0e8819046ab6da2e6d951b",
+    "content_tree_sha256": "3904718f067aea3bc02e29c685f6b34a81ad2813f5cf4ad9a2f1ae1e1ac174ed",
+    "extended_tree_sha256": "47bd07aa6e09a8c1cbefd322760c60b29907ff09035b99d60653af789c3dcfed",
+    "bytes": 11970502,
+    "bytes_all_paths": 11970502,
+    "allocated_bytes": 14688256,
+    "counts": {
+      "objects": 1072,
+      "files": 1063,
+      "unique_file_inodes": 1063,
+      "dirs": 8,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 3,
+      "max_name_length_bytes": 58,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 74,
+        "mean": 45.226,
+        "p50": 47,
+        "p95": 64
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

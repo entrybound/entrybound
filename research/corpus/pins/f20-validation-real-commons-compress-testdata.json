@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-validation-real-commons-compress-testdata",
+  "inputs": {},
+  "output": {
+    "materialization_key": "3dfc5632c84fc04d520f8611f77da6c35c2b3b94e58bf4eabf7e6c8e83837895",
+    "logical_tree_sha256": "7bb28ba7963bf8a31f045126025e6b49fe320885d403dcbd2cf34d313ff75b15",
+    "pinned_utc": "2026-09-17T07:56:30Z"
+  },
+  "history": []
+}

@@ -1,0 +1,98 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f20-validation-real-commons-compress-testdata",
+  "family": "F20",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "apache-commons-compress",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "4ca90e35e2cecd296b14bf0cd6ef6729cb2e4b8c7e7fad884d87b173d07928d5",
+  "materialization_key": "3dfc5632c84fc04d520f8611f77da6c35c2b3b94e58bf4eabf7e6c8e83837895",
+  "materialized_utc": "2026-09-17T07:56:30Z",
+  "materialized_relpath": "corpus/validation/f20-validation-real-commons-compress-testdata",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "7bb28ba7963bf8a31f045126025e6b49fe320885d403dcbd2cf34d313ff75b15",
+    "pinned_utc": "2026-09-17T07:56:30Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 96228477,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/apache/commons-compress.git",
+      "commit": "852d9c23b94127feafc1649d9c7f13d4df338845",
+      "ref": "rel/commons-compress-1.28.0",
+      "subpaths": [
+        "src/test/resources"
+      ],
+      "archive_sha256": "587adba6abef3a16d6d6239219884c82b6350baf900f473bd93d57be3595ffcd",
+      "archive_bytes": 96552960,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "git-archive",
+        "format": "tar"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "cb389d911537c6405c9a956cb695853b90625655551d5cd0780ee42ebc8c74a3",
+    "logical_tree_sha256": "7bb28ba7963bf8a31f045126025e6b49fe320885d403dcbd2cf34d313ff75b15",
+    "content_tree_sha256": "6535615041cefa1d30bbff448b55d317981ca43f4afea5ae3bd57d0ab606968a",
+    "extended_tree_sha256": "e9b1b9412823431cfd329c4c387db70fd146c505fea270d14d855791efd936f3",
+    "bytes": 96228477,
+    "bytes_all_paths": 96228477,
+    "allocated_bytes": 97124352,
+    "counts": {
+      "objects": 484,
+      "files": 353,
+      "unique_file_inodes": 353,
+      "dirs": 130,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 12,
+      "max_name_length_bytes": 64,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 119,
+        "mean": 53.696,
+        "p50": 46,
+        "p95": 97
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

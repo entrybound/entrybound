@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f20-heldout-real-fastzip-malo",
+  "inputs": {},
+  "output": {
+    "materialization_key": "f91cde774ccf05f481211eb16cc545014188de57d8f3725ecbd023a6231c0f12",
+    "logical_tree_sha256": "6eabd2b20b573b02ac6fd9f308e402cee1121c3bbf290dd2014a7b37379c1dfc",
+    "pinned_utc": "2026-09-17T07:56:23Z"
+  },
+  "history": []
+}
