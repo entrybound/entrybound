@@ -1,49 +1,60 @@
-//! The phase-timed pack pipeline: `capture -> chunking -> planning ->
-//! encoding`, over entrybound's public production API, for INDEXED, STREAM,
-//! and encrypted-INDEXED archives.
+//! The phase-timed pack pipeline over entrybound's public production API,
+//! for INDEXED, STREAM, and encrypted-INDEXED archives.
 //!
-//! # Why "chunking" and "planning" overlap
+//! # What is measured, and in what order (harness review round 1, R1-03)
 //!
-//! entrybound's single public directory-to-archive entry point,
-//! `entrybound::archive::plan_directory`, captures the filesystem, chunks
-//! every ContentObject's bytes (`entrybound::chunker::{select_parameters,
-//! chunk_ranges}`), and selects codecs/transforms/dictionaries/groups
-//! (`entrybound::planner`), all as one opaque call -- there is no public
-//! hook to time chunking separately from planning *inside* it. [`pack_once`]
-//! reports both anyway, honestly: `chunking_seconds` is a **separate,
-//! additional** pass that calls the same public chunker directly over each
-//! captured file's bytes, purely so chunking has its own visible timing;
-//! `planning_seconds` is the full `plan_directory` call, which repeats that
-//! chunking work internally. The two are not mutually exclusive components
-//! of one total -- summing every phase double-counts chunking by design,
-//! and this module says so rather than quietly presenting the sum as if it
-//! were a clean breakdown.
+//! The measured region is exactly the production work a caller of
+//! `ebound pack` pays for, and nothing the harness adds:
 //!
-//! `--encrypt` uses entrybound's only public encrypted-pack entry point,
-//! `entrybound::crypto::pack_directory_encrypted`, which likewise bundles
-//! planning and encoding into one opaque call; there [`PhaseSeconds::
-//! planning_seconds`] is `0.0` and the whole call's time is reported as
-//! [`PhaseSeconds::encoding_seconds`] instead, again documented rather than
-//! guessed at.
+//! 1. **planning** -- `entrybound::archive::plan_directory`, which captures
+//!    the filesystem, chunks every ContentObject, and selects codecs,
+//!    transforms, dictionaries, and groups in one opaque call (there is no
+//!    public hook to split its capture, chunking, and planning apart).
+//! 2. **encoding** -- `entrybound::ecf::encode` or `encode_stream`. For
+//!    `--encrypt`, `entrybound::crypto::pack_directory_encrypted` bundles
+//!    planning and encoding into one call, so `planning_seconds` is `0.0`
+//!    and the whole call is reported as `encoding_seconds`.
+//!
+//! A [`MemoryScope`] is opened immediately before step 1 and closed
+//! immediately after step 2, so [`PackOutcome::pack_memory`] is the phase's
+//! own high-water mark on Linux, not the process-lifetime peak.
+//!
+//! Only after that scope closes does the harness do its own work, none of
+//! which is timed as a production phase: open and verify the encoded bytes,
+//! inspect them for counts, walk the input tree's *metadata* for
+//! `input_logical_bytes`/`input_file_count` (`input_scan_seconds`; no file
+//! contents are read), and -- only with `chunking_pass: true` -- run a
+//! separate per-file chunker pass (`chunking_pass_seconds`).
+//!
+//! Earlier revisions read the entire input tree into memory (up to 8 GiB)
+//! *before* planning and reported that read as `capture_seconds`. That was
+//! harness overhead mislabeled as a production phase, it warmed the page
+//! cache for `plan_directory`, and the in-memory copy stayed resident while
+//! the production pack ran, inflating every peak-memory reading. It is gone.
+//!
+//! The per-file chunking pass is not what production does
+//! (`plan_directory` selects chunking parameters over its own view of the
+//! content); it is an opt-in, harness-only approximation kept for visibility
+//! and must not be summed with `planning_seconds`.
 
 use crate::counts::{self, ArchiveCounts};
 use crate::encrypt::{CredentialError, TestCredentials};
+use ebr_common::measure::{MemoryScope, ScopedMemory};
 use ebr_common::timing::Stopwatch;
 use entrybound::archive::{PackOptions, inspect, plan_directory};
-use entrybound::crypto::{EncryptedOpenOptions, EncryptedWriteOptions, Unlock, open_encrypted_authenticated, pack_directory_encrypted};
+use entrybound::crypto::{
+    EncryptedOpenOptions, EncryptedWriteOptions, Unlock, open_encrypted_authenticated,
+    pack_directory_encrypted,
+};
 use entrybound::diagnostics::Diagnostic;
 use entrybound::eam::Layout;
-use entrybound::ecf::{StreamWindow, StreamWriteOptions, WriteOptions, encode, encode_stream, open, open_stream};
+use entrybound::ecf::{
+    StreamWindow, StreamWriteOptions, WriteOptions, encode, encode_stream, open, open_stream,
+};
 use entrybound::planner::CompressionProfile;
 use serde::Serialize;
 use std::fmt;
 use std::path::Path;
-
-/// Generous enough for every tuning/validation-scale corpus item this
-/// harness packs; a validation-scale item that does not fit should be
-/// measured through `entrybound::archive::pack_directory_stream` instead
-/// (out of scope for this crate today -- see `README.md`).
-const CAPTURE_BUDGET_BYTES: u64 = 8 * 1024 * 1024 * 1024;
 
 #[derive(Debug)]
 pub enum PackError {
@@ -92,20 +103,27 @@ pub struct PackRequest {
     pub profile: CompressionProfile,
     pub layout: Layout,
     /// STREAM only: `None` keeps `StreamWindow::default()` (`Ceiling(0)`,
-    /// forbidding cross-object historical Chunk dependencies); `Some(n)`
-    /// requests `StreamWindow::Ceiling(n)`.
-    pub stream_window: Option<u64>,
+    /// forbidding cross-object historical Chunk dependencies), exactly like
+    /// `ebound pack --layout stream` without `--stream-window`.
+    pub stream_window: Option<StreamWindow>,
     pub encrypt: bool,
+    /// Run the opt-in, harness-only per-file chunker pass after the measured
+    /// production pack (see the module docs).
+    pub chunking_pass: bool,
 }
 
-/// Wall-clock seconds for each phase. See the module docs for why
-/// `chunking_seconds` and `planning_seconds` are not mutually exclusive.
+/// Wall-clock seconds for each phase. Only `planning_seconds` and
+/// `encoding_seconds` are production phases; see the module docs.
 #[derive(Debug, Clone, Copy, Serialize)]
 pub struct PhaseSeconds {
-    pub capture_seconds: f64,
-    pub chunking_seconds: f64,
+    /// `plan_directory`: production capture + chunking + planning.
     pub planning_seconds: f64,
+    /// `encode`/`encode_stream`, or the whole `pack_directory_encrypted`.
     pub encoding_seconds: f64,
+    /// Harness-only metadata walk after the measured pack (no contents read).
+    pub input_scan_seconds: f64,
+    /// Harness-only per-file chunker pass, present only when requested.
+    pub chunking_pass_seconds: Option<f64>,
 }
 
 /// One completed pack run's output and measurements. Byte accounting is
@@ -115,6 +133,8 @@ pub struct PhaseSeconds {
 pub struct PackOutcome {
     pub bytes: Vec<u8>,
     pub phases: PhaseSeconds,
+    /// Phase-scoped memory of the production plan + encode only.
+    pub pack_memory: ScopedMemory,
     pub counts: ArchiveCounts,
     pub verified: bool,
     pub credentials: Option<TestCredentials>,
@@ -122,7 +142,8 @@ pub struct PackOutcome {
     pub input_file_count: u64,
 }
 
-/// Runs one full capture/chunk/plan/encode pass over `input_dir`.
+/// Runs one full production pack over `input_dir`, then the harness's own
+/// verification, inspection, and input scan (see the module docs).
 pub fn pack_once(input_dir: &Path, request: &PackRequest) -> Result<PackOutcome, PackError> {
     if request.encrypt && request.layout == Layout::Stream {
         return Err(PackError::Unsupported(
@@ -133,98 +154,111 @@ pub fn pack_once(input_dir: &Path, request: &PackRequest) -> Result<PackOutcome,
         ));
     }
 
-    let capture_sw = Stopwatch::start();
-    let tree = ebr_common::walk::read_tree_in_memory(input_dir, CAPTURE_BUDGET_BYTES)?;
-    let capture_seconds = capture_sw.elapsed_secs_f64();
-    let input_logical_bytes = tree.total_bytes;
-    let input_file_count = tree.files.len() as u64;
-
-    let chunking_sw = Stopwatch::start();
-    for (_relative_path, content) in &tree.files {
-        if content.is_empty() {
-            continue;
-        }
-        let refs: [&[u8]; 1] = [content.as_slice()];
-        let evaluation =
-            entrybound::chunker::select_parameters(&refs, request.profile.chunking_candidates())?;
-        let _ranges = entrybound::chunker::chunk_ranges(content, evaluation.parameters)?;
-    }
-    let chunking_seconds = chunking_sw.elapsed_secs_f64();
-
-    let (bytes, planning_seconds, encoding_seconds, opened, credentials) = if request.encrypt {
-        let creds = TestCredentials::generate()?;
-        let write_options = EncryptedWriteOptions {
-            password: Some(&creds.password),
-            ..EncryptedWriteOptions::default()
-        };
-        let encode_sw = Stopwatch::start();
-        let encrypted = pack_directory_encrypted(
-            input_dir,
-            PackOptions {
-                profile: request.profile,
-                ..PackOptions::default()
-            },
-            write_options,
-        )?;
-        let encoding_seconds = encode_sw.elapsed_secs_f64();
-        let bytes = encrypted.bytes;
-        let open_options = EncryptedOpenOptions::new(Some(Unlock::Password(&creds.password)));
-        let authenticated = open_encrypted_authenticated(&bytes, open_options)?;
-        (bytes, 0.0_f64, encoding_seconds, authenticated.opened, Some(creds))
+    // Credential generation is harness setup, outside the measured scope.
+    let credentials = if request.encrypt {
+        Some(TestCredentials::generate()?)
     } else {
-        let plan_sw = Stopwatch::start();
-        let archive = plan_directory(
-            input_dir,
-            PackOptions {
-                profile: request.profile,
-                ..PackOptions::default()
-            },
-        )?;
-        let planning_seconds = plan_sw.elapsed_secs_f64();
-
-        match request.layout {
-            Layout::Indexed => {
-                let encode_sw = Stopwatch::start();
-                let encoded = encode(&archive, WriteOptions::default())?;
-                let encoding_seconds = encode_sw.elapsed_secs_f64();
-                let bytes = encoded.bytes;
-                let opened = open(&bytes)?;
-                (bytes, planning_seconds, encoding_seconds, opened, None)
-            }
-            Layout::Stream => {
-                let window = request
-                    .stream_window
-                    .map(StreamWindow::Ceiling)
-                    .unwrap_or_default();
-                let encode_sw = Stopwatch::start();
-                let mut buf = Vec::new();
-                let _summary = encode_stream(
-                    &archive,
-                    StreamWriteOptions {
-                        window,
-                        budget_declared: true,
-                    },
-                    &mut buf,
-                )?;
-                let encoding_seconds = encode_sw.elapsed_secs_f64();
-                let sequential = open_stream(std::io::Cursor::new(buf.clone()))?;
-                (buf, planning_seconds, encoding_seconds, sequential.opened, None)
-            }
-        }
+        None
+    };
+    let pack_options = PackOptions {
+        profile: request.profile,
+        ..PackOptions::default()
     };
 
+    let scope = MemoryScope::begin();
+    let (bytes, planning_seconds, encoding_seconds) = match (&credentials, request.layout) {
+        (Some(creds), _) => {
+            let write_options = EncryptedWriteOptions {
+                password: Some(&creds.password),
+                ..EncryptedWriteOptions::default()
+            };
+            let encode_sw = Stopwatch::start();
+            let encrypted = pack_directory_encrypted(input_dir, pack_options, write_options)?;
+            (encrypted.bytes, 0.0_f64, encode_sw.elapsed_secs_f64())
+        }
+        (None, Layout::Indexed) => {
+            let plan_sw = Stopwatch::start();
+            let archive = plan_directory(input_dir, pack_options)?;
+            let planning_seconds = plan_sw.elapsed_secs_f64();
+            let encode_sw = Stopwatch::start();
+            let encoded = encode(&archive, WriteOptions::default())?;
+            (
+                encoded.bytes,
+                planning_seconds,
+                encode_sw.elapsed_secs_f64(),
+            )
+        }
+        (None, Layout::Stream) => {
+            let plan_sw = Stopwatch::start();
+            let archive = plan_directory(input_dir, pack_options)?;
+            let planning_seconds = plan_sw.elapsed_secs_f64();
+            let window = request.stream_window.unwrap_or_default();
+            let encode_sw = Stopwatch::start();
+            let mut buf = Vec::new();
+            let _summary = encode_stream(
+                &archive,
+                StreamWriteOptions {
+                    window,
+                    budget_declared: true,
+                },
+                &mut buf,
+            )?;
+            (buf, planning_seconds, encode_sw.elapsed_secs_f64())
+        }
+    };
+    let pack_memory = scope.end();
+
+    // Harness-only work from here on.
+    let opened = match (&credentials, request.layout) {
+        (Some(creds), _) => {
+            let open_options = EncryptedOpenOptions::new(Some(Unlock::Password(&creds.password)));
+            open_encrypted_authenticated(&bytes, open_options)?.opened
+        }
+        (None, Layout::Indexed) => open(&bytes)?,
+        (None, Layout::Stream) => open_stream(std::io::Cursor::new(bytes.as_slice()))?.opened,
+    };
     let verified = verification_all_true(&opened.report);
     let inspection = inspect(&opened)?;
     let counts = counts::from_inspection(&inspection);
+    drop(opened);
+
+    let scan_sw = Stopwatch::start();
+    let entries = ebr_common::walk::walk_tree(input_dir)?;
+    let input_logical_bytes = ebr_common::walk::total_bytes(&entries);
+    let input_file_count = entries
+        .iter()
+        .filter(|entry| !entry.is_dir && !entry.is_symlink)
+        .count() as u64;
+    let input_scan_seconds = scan_sw.elapsed_secs_f64();
+
+    let chunking_pass_seconds = if request.chunking_pass {
+        let chunking_sw = Stopwatch::start();
+        for entry in entries
+            .iter()
+            .filter(|e| !e.is_dir && !e.is_symlink && e.len > 0)
+        {
+            let content = std::fs::read(input_dir.join(&entry.relative_path))?;
+            let refs: [&[u8]; 1] = [content.as_slice()];
+            let evaluation = entrybound::chunker::select_parameters(
+                &refs,
+                request.profile.chunking_candidates(),
+            )?;
+            let _ranges = entrybound::chunker::chunk_ranges(&content, evaluation.parameters)?;
+        }
+        Some(chunking_sw.elapsed_secs_f64())
+    } else {
+        None
+    };
 
     Ok(PackOutcome {
         bytes,
         phases: PhaseSeconds {
-            capture_seconds,
-            chunking_seconds,
             planning_seconds,
             encoding_seconds,
+            input_scan_seconds,
+            chunking_pass_seconds,
         },
+        pack_memory,
         counts,
         verified,
         credentials,
@@ -306,13 +340,15 @@ mod tests {
     use std::path::PathBuf;
 
     fn scratch_input(label: &str) -> PathBuf {
-        let dir = std::env::temp_dir().join(format!(
-            "ebr-pack-pack-test-{label}-{}",
-            std::process::id()
-        ));
+        let dir =
+            std::env::temp_dir().join(format!("ebr-pack-pack-test-{label}-{}", std::process::id()));
         std::fs::remove_dir_all(&dir).ok();
         std::fs::create_dir_all(dir.join("sub")).unwrap();
-        std::fs::write(dir.join("a.txt"), b"entrybound research harness\n".repeat(64)).unwrap();
+        std::fs::write(
+            dir.join("a.txt"),
+            b"entrybound research harness\n".repeat(64),
+        )
+        .unwrap();
         std::fs::write(dir.join("sub").join("b.txt"), vec![7u8; 4096]).unwrap();
         dir
     }
@@ -325,6 +361,7 @@ mod tests {
             layout: Layout::Indexed,
             stream_window: None,
             encrypt: false,
+            chunking_pass: false,
         };
         let outcome = pack_once(&input, &request).expect("indexed pack should succeed");
 
@@ -332,8 +369,8 @@ mod tests {
         assert!(!outcome.bytes.is_empty());
         assert_eq!(outcome.input_file_count, 2);
         assert!(outcome.input_logical_bytes > 0);
-        assert!(outcome.phases.capture_seconds >= 0.0);
-        assert!(outcome.phases.chunking_seconds >= 0.0);
+        assert!(outcome.phases.input_scan_seconds >= 0.0);
+        assert!(outcome.phases.chunking_pass_seconds.is_none());
         assert!(outcome.phases.planning_seconds >= 0.0);
         assert!(outcome.phases.encoding_seconds >= 0.0);
         assert!(!outcome.counts.planner_id.is_empty());
@@ -350,6 +387,7 @@ mod tests {
             layout: Layout::Stream,
             stream_window: None,
             encrypt: false,
+            chunking_pass: false,
         };
         let outcome = pack_once(&input, &request).expect("stream pack should succeed");
         assert!(outcome.verified);
@@ -366,6 +404,7 @@ mod tests {
             layout: Layout::Indexed,
             stream_window: None,
             encrypt: true,
+            chunking_pass: false,
         };
         let outcome = pack_once(&input, &request).expect("encrypted pack should succeed");
         assert!(outcome.verified);
@@ -383,6 +422,7 @@ mod tests {
             layout: Layout::Stream,
             stream_window: None,
             encrypt: true,
+            chunking_pass: false,
         };
         let result = pack_once(&input, &request);
         assert!(matches!(result, Err(PackError::Unsupported(_))));
@@ -397,6 +437,7 @@ mod tests {
             layout: Layout::Indexed,
             stream_window: None,
             encrypt: false,
+            chunking_pass: false,
         };
         let result = check_determinism(&input, &request, 3).unwrap();
         assert_eq!(result.requested_runs, 3);

@@ -20,6 +20,25 @@
 //! that behavior would be a production semantics change, which is out of
 //! scope for this crate (see `research/PROGRESS.md`'s standing constraints).
 //!
+//! ## How stage memory is measured (harness review round 1, finding R1-05)
+//!
+//! Earlier revisions sampled `getrusage(RUSAGE_SELF).max_rss`, a
+//! process-lifetime high-water mark, and kept the planned `Archive` (every
+//! Chunk's plaintext) alive through every later stage. Every stage after
+//! `pack` therefore reported `pack`'s peak, and `verify`/`unpack` could
+//! never show bounded streaming memory. Now:
+//!
+//! - each stage's `memory` is a [`ScopedMemory`] whose kernel high-water
+//!   mark is reset at the start of the stage (Linux), and `samples` are
+//!   the *current* resident set over time;
+//! - `repack`/`export` (which need the planned archive) run right after
+//!   `pack`, and the archive is dropped before `verify`/`unpack`;
+//! - with `isolate_exe` (`ebr-access --probe-isolate true`), `verify` and
+//!   `unpack` each run in a fresh child process, so allocator memory the
+//!   `pack` stage freed but did not return to the OS cannot hide or inflate
+//!   their footprint. Decision-grade streaming-memory claims must use the
+//!   isolated mode.
+//!
 //! ## What this probe cannot avoid storing
 //!
 //! `plan_directory`/`pack_directory*` take a real directory (`&Path`), not
@@ -80,7 +99,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
 
-use ebr_common::measure::peak_memory;
+use ebr_common::measure::{MemoryScope, ScopedMemory, current_rss_bytes};
 use ebr_common::timing::Stopwatch;
 use entrybound::archive::{
     ExtractionPolicy, IndexPolicy, PackOptions, RepackMode, RepackOptions, plan_directory,
@@ -159,19 +178,18 @@ pub fn write_synthetic_file(path: &Path, total_bytes: u64, seed: u64) -> io::Res
 // Memory sampler
 // ---------------------------------------------------------------------------
 
-/// One memory reading taken during a probe stage, at `elapsed_seconds` since
-/// that stage began.
+/// One resident-memory reading taken during a probe stage, at
+/// `elapsed_seconds` since that stage began. `rss_bytes` is the *current*
+/// resident set (`VmRSS` on Linux), not a high-water mark, so the series
+/// shows how memory evolves within the stage.
 #[derive(Debug, Clone, Copy, Serialize)]
 pub struct MemorySample {
     pub elapsed_seconds: f64,
-    pub bytes: Option<u64>,
-    pub is_true_peak: bool,
+    pub rss_bytes: Option<u64>,
 }
 
-/// Samples [`peak_memory`] on a background thread at a fixed interval until
-/// [`MemorySampler::stop`] is called, so a caller can see how a single
-/// blocking entrybound call's memory footprint evolves over its run instead
-/// of only its value at one instant before or after it.
+/// Samples [`current_rss_bytes`] on a background thread at a fixed interval
+/// until [`MemorySampler::stop`] is called.
 struct MemorySampler {
     stop: Arc<AtomicBool>,
     handle: Option<thread::JoinHandle<Vec<MemorySample>>>,
@@ -185,7 +203,10 @@ impl MemorySampler {
         let handle = thread::spawn(move || {
             let mut samples = Vec::new();
             loop {
-                samples.push(take_sample(&stopwatch));
+                samples.push(MemorySample {
+                    elapsed_seconds: stopwatch.elapsed_secs_f64(),
+                    rss_bytes: current_rss_bytes(),
+                });
                 if stop_flag.load(Ordering::Relaxed) {
                     break;
                 }
@@ -209,18 +230,6 @@ impl MemorySampler {
             .take()
             .and_then(|handle| handle.join().ok())
             .unwrap_or_default()
-    }
-}
-
-fn take_sample(stopwatch: &Stopwatch) -> MemorySample {
-    let (bytes, is_true_peak) = match peak_memory() {
-        Ok(sample) => (Some(sample.bytes), sample.is_true_peak),
-        Err(_) => (None, false),
-    };
-    MemorySample {
-        elapsed_seconds: stopwatch.elapsed_secs_f64(),
-        bytes,
-        is_true_peak,
     }
 }
 
@@ -281,13 +290,18 @@ pub struct ProbeConfig {
     pub seed: u64,
     pub sample_interval: Duration,
     /// `pack` always runs (every other stage needs its output) whether or
-    /// not it appears here; listing it explicitly only affects nothing
-    /// extra, since it is unconditional.
+    /// not it appears here.
     pub stages: Vec<ProbeStage>,
     pub profile: CompressionProfile,
     /// Base directory this probe creates its own scratch subdirectory
     /// under, and removes (best-effort) when the run ends.
     pub scratch_root: PathBuf,
+    /// When set, the `verify` and `unpack` stages each run in a fresh child
+    /// process of this executable (`ebr-access --mode probe-stage ...`), so
+    /// their memory readings cannot inherit anything the `pack` stage left
+    /// resident or retained in the allocator. The `ebr-access` binary sets
+    /// this for `--probe-isolate true`; library tests leave it `None`.
+    pub isolate_exe: Option<PathBuf>,
 }
 
 impl Default for ProbeConfig {
@@ -299,58 +313,73 @@ impl Default for ProbeConfig {
             stages: default_stages(),
             profile: CompressionProfile::Fast,
             scratch_root: std::env::temp_dir(),
+            isolate_exe: None,
         }
     }
 }
 
-/// One stage's wall time and memory-sample series.
+/// One stage's wall time, phase-scoped memory, and resident-memory series.
 #[derive(Debug, Clone, Serialize)]
 pub struct StageMeasurement {
     pub stage: &'static str,
+    /// `true` when this stage ran in its own child process.
+    pub isolated: bool,
     pub wall_seconds: f64,
+    /// High-water mark scoped to this stage (see
+    /// `ebr_common::measure::ScopedMemory`). For an isolated stage this is
+    /// also the child process's whole-lifetime peak.
+    pub memory: ScopedMemory,
+    /// Largest `samples[i].rss_bytes` (current-RSS series; can miss a spike
+    /// shorter than the sampling interval, which `memory.peak_rss_bytes`
+    /// does not).
+    pub peak_sampled_rss_bytes: Option<u64>,
     pub samples: Vec<MemorySample>,
-    /// The largest `samples[i].bytes` observed during this stage (`None`
-    /// only when every sample failed to read memory at all).
-    pub peak_bytes_observed: Option<u64>,
-    /// Whether `peak_bytes_observed` came from at least one true
-    /// OS-reported high-water-mark sample rather than only current-snapshot
-    /// samples (`ebr_common::measure::PeakMemory::is_true_peak`).
-    pub peak_is_true_peak: bool,
+    /// Isolated stages only: the child process's peak since the stage began
+    /// (its kernel high-water mark; see `run_probe_stage_child` in
+    /// `main.rs` for why this is not `getrusage`'s `max_rss`).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub process_lifetime_peak_rss_bytes: Option<u64>,
 }
 
 fn stage_measurement(
     stage: ProbeStage,
     wall_seconds: f64,
+    memory: ScopedMemory,
     samples: Vec<MemorySample>,
 ) -> StageMeasurement {
-    let peak_bytes_observed = samples.iter().filter_map(|s| s.bytes).max();
-    let peak_is_true_peak = samples.iter().any(|s| s.bytes.is_some() && s.is_true_peak);
     StageMeasurement {
         stage: stage.as_str(),
+        isolated: false,
         wall_seconds,
+        memory,
+        peak_sampled_rss_bytes: samples.iter().filter_map(|s| s.rss_bytes).max(),
         samples,
-        peak_bytes_observed,
-        peak_is_true_peak,
+        process_lifetime_peak_rss_bytes: None,
     }
 }
 
-/// Every measurement one [`run_probe`] call produces.
+/// Every measurement one [`run_probe`] call produces. `stages` holds one
+/// serialized [`StageMeasurement`] per stage, in execution order: `pack`,
+/// then the opt-in `repack`/`export` (which need the planned archive), then
+/// `verify`/`unpack` (which run only after the planned archive is dropped).
+/// Stages are JSON values because isolated stages come back from a child
+/// process as JSON.
 #[derive(Debug, Clone, Serialize)]
 pub struct ProbeMeasurement {
     pub requested_total_bytes: u64,
-    /// Exact size of the synthetic scratch input file (equals
-    /// `requested_total_bytes` unless `run_probe` returns before writing it,
-    /// which does not happen once this field is populated).
+    /// Exact size of the synthetic scratch input file.
     pub scratch_input_bytes: u64,
     pub scratch_encoded_bytes: Option<u64>,
     pub scratch_unpacked_logical_bytes: Option<u64>,
-    pub stages: Vec<StageMeasurement>,
+    pub stages: Vec<serde_json::Value>,
 }
 
 #[derive(Debug)]
 pub enum ProbeError {
     Entrybound(Diagnostic),
     Io(io::Error),
+    /// An isolated child stage failed or printed something unparseable.
+    Child(String),
 }
 
 impl std::fmt::Display for ProbeError {
@@ -358,6 +387,7 @@ impl std::fmt::Display for ProbeError {
         match self {
             ProbeError::Entrybound(d) => write!(f, "entrybound: {d}"),
             ProbeError::Io(e) => write!(f, "io: {e}"),
+            ProbeError::Child(message) => write!(f, "isolated probe stage: {message}"),
         }
     }
 }
@@ -373,6 +403,12 @@ impl From<Diagnostic> for ProbeError {
 impl From<io::Error> for ProbeError {
     fn from(e: io::Error) -> Self {
         ProbeError::Io(e)
+    }
+}
+
+impl From<serde_json::Error> for ProbeError {
+    fn from(e: serde_json::Error) -> Self {
+        ProbeError::Child(e.to_string())
     }
 }
 
@@ -419,22 +455,39 @@ pub fn run_probe(config: ProbeConfig) -> Result<ProbeMeasurement, ProbeError> {
 
     let (archive, encoded_path, pack_stage, encoded_bytes) =
         run_pack_stage(&input_dir, &scratch_dir, &config)?;
-    let mut stages = vec![pack_stage];
-    let mut scratch_unpacked_logical_bytes = None;
+    let mut stages = vec![serde_json::to_value(&pack_stage)?];
 
-    if config.stages.contains(&ProbeStage::Verify) {
-        stages.push(run_verify_stage(&encoded_path, &config)?);
-    }
-    if config.stages.contains(&ProbeStage::Unpack) {
-        let (stage, unpacked_bytes) = run_unpack_stage(&encoded_path, &scratch_dir, &config)?;
-        scratch_unpacked_logical_bytes = Some(unpacked_bytes);
-        stages.push(stage);
-    }
     if config.stages.contains(&ProbeStage::Repack) {
-        stages.push(run_repack_stage(&archive, &config)?);
+        stages.push(serde_json::to_value(run_repack_stage(&archive, &config)?)?);
     }
     if config.stages.contains(&ProbeStage::Export) {
-        stages.push(run_export_stage(&archive, &config)?);
+        stages.push(serde_json::to_value(run_export_stage(&archive, &config)?)?);
+    }
+    // Harness review round 1, finding R1-05: the planned Archive holds every
+    // Chunk's plaintext. Earlier revisions kept it alive through verify and
+    // unpack, so those stages' memory readings always included it.
+    drop(archive);
+
+    let mut scratch_unpacked_logical_bytes = None;
+    for stage in [ProbeStage::Verify, ProbeStage::Unpack] {
+        if !config.stages.contains(&stage) {
+            continue;
+        }
+        let value = match &config.isolate_exe {
+            Some(exe) => run_isolated_stage(exe, stage, &encoded_path, &scratch_dir, &config)?,
+            None => serde_json::to_value(run_single_stage(
+                stage,
+                &encoded_path,
+                &scratch_dir,
+                config.sample_interval,
+            )?)?,
+        };
+        if stage == ProbeStage::Unpack {
+            scratch_unpacked_logical_bytes = value
+                .get("unpacked_logical_bytes")
+                .and_then(serde_json::Value::as_u64);
+        }
+        stages.push(value);
     }
 
     Ok(ProbeMeasurement {
@@ -446,6 +499,82 @@ pub fn run_probe(config: ProbeConfig) -> Result<ProbeMeasurement, ProbeError> {
     })
 }
 
+/// Runs one `verify` or `unpack` stage over an existing STREAM file. This is
+/// what an isolated child process (`ebr-access --mode probe-stage`) runs.
+/// The returned measurement carries `unpacked_logical_bytes` for `unpack`
+/// via [`SingleStageMeasurement`].
+pub fn run_single_stage(
+    stage: ProbeStage,
+    encoded_path: &Path,
+    scratch_dir: &Path,
+    sample_interval: Duration,
+) -> Result<SingleStageMeasurement, ProbeError> {
+    match stage {
+        ProbeStage::Verify => Ok(SingleStageMeasurement {
+            measurement: run_verify_stage(encoded_path, sample_interval)?,
+            unpacked_logical_bytes: None,
+        }),
+        ProbeStage::Unpack => {
+            let (measurement, bytes) =
+                run_unpack_stage(encoded_path, scratch_dir, sample_interval)?;
+            Ok(SingleStageMeasurement {
+                measurement,
+                unpacked_logical_bytes: Some(bytes),
+            })
+        }
+        other => Err(ProbeError::Child(format!(
+            "stage {} needs the planned archive and cannot run on its own",
+            other.as_str()
+        ))),
+    }
+}
+
+/// A [`StageMeasurement`] plus the unpack stage's logical byte count.
+#[derive(Debug, Clone, Serialize)]
+pub struct SingleStageMeasurement {
+    #[serde(flatten)]
+    pub measurement: StageMeasurement,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unpacked_logical_bytes: Option<u64>,
+}
+
+fn run_isolated_stage(
+    exe: &Path,
+    stage: ProbeStage,
+    encoded_path: &Path,
+    scratch_dir: &Path,
+    config: &ProbeConfig,
+) -> Result<serde_json::Value, ProbeError> {
+    let interval_ms = config.sample_interval.as_millis().max(1).to_string();
+    let output = std::process::Command::new(exe)
+        .arg("--mode")
+        .arg("probe-stage")
+        .arg("--probe-stage")
+        .arg(stage.as_str())
+        .arg("--probe-encoded-path")
+        .arg(encoded_path)
+        .arg("--probe-stage-scratch")
+        .arg(scratch_dir)
+        .arg("--probe-sample-interval-ms")
+        .arg(interval_ms)
+        .output()?;
+    if !output.status.success() {
+        return Err(ProbeError::Child(format!(
+            "{} stage exited with {}: {}",
+            stage.as_str(),
+            output.status,
+            String::from_utf8_lossy(&output.stderr).trim()
+        )));
+    }
+    let text = String::from_utf8_lossy(&output.stdout);
+    let line = text
+        .lines()
+        .rev()
+        .find(|line| !line.trim().is_empty())
+        .ok_or_else(|| ProbeError::Child(format!("{} stage printed nothing", stage.as_str())))?;
+    Ok(serde_json::from_str(line)?)
+}
+
 fn run_pack_stage(
     input_dir: &Path,
     scratch_dir: &Path,
@@ -453,6 +582,7 @@ fn run_pack_stage(
 ) -> Result<(Archive, PathBuf, StageMeasurement, u64), ProbeError> {
     let encoded_path = scratch_dir.join("encoded.stream");
     let sampler = MemorySampler::start(config.sample_interval);
+    let scope = MemoryScope::begin();
     let sw = Stopwatch::start();
     let archive = plan_directory(
         input_dir,
@@ -466,51 +596,62 @@ fn run_pack_stage(
     let summary = encode_stream(&archive, StreamWriteOptions::default(), &mut writer)?;
     writer.flush()?;
     let wall_seconds = sw.elapsed_secs_f64();
+    let memory = scope.end();
     let samples = sampler.stop();
     Ok((
         archive,
         encoded_path,
-        stage_measurement(ProbeStage::Pack, wall_seconds, samples),
+        stage_measurement(ProbeStage::Pack, wall_seconds, memory, samples),
         summary.total_len,
     ))
 }
 
 fn run_verify_stage(
     encoded_path: &Path,
-    config: &ProbeConfig,
+    sample_interval: Duration,
 ) -> Result<StageMeasurement, ProbeError> {
-    let sampler = MemorySampler::start(config.sample_interval);
+    let sampler = MemorySampler::start(sample_interval);
+    let scope = MemoryScope::begin();
     let sw = Stopwatch::start();
     let reader = BufReader::new(File::open(encoded_path)?);
     let _report = verify_stream_with_limits(reader, bootstrap_sequential_limits())?;
     let wall_seconds = sw.elapsed_secs_f64();
+    let memory = scope.end();
     let samples = sampler.stop();
-    Ok(stage_measurement(ProbeStage::Verify, wall_seconds, samples))
+    Ok(stage_measurement(
+        ProbeStage::Verify,
+        wall_seconds,
+        memory,
+        samples,
+    ))
 }
 
 fn run_unpack_stage(
     encoded_path: &Path,
     scratch_dir: &Path,
-    config: &ProbeConfig,
+    sample_interval: Duration,
 ) -> Result<(StageMeasurement, u64), ProbeError> {
     let destination = scratch_dir.join(format!(
         "unpacked-{}",
         ebr_common::timing::generate_run_id()
     ));
-    let sampler = MemorySampler::start(config.sample_interval);
+    let sampler = MemorySampler::start(sample_interval);
+    let scope = MemoryScope::begin();
     let sw = Stopwatch::start();
     let reader = BufReader::new(File::open(encoded_path)?);
-    let (extraction, _stream_report) = unpack_stream(
+    let result = unpack_stream(
         reader,
         &destination,
         ExtractionPolicy::default(),
         bootstrap_sequential_limits(),
-    )?;
+    );
     let wall_seconds = sw.elapsed_secs_f64();
+    let memory = scope.end();
     let samples = sampler.stop();
     fs::remove_dir_all(&destination).ok();
+    let (extraction, _stream_report) = result?;
     Ok((
-        stage_measurement(ProbeStage::Unpack, wall_seconds, samples),
+        stage_measurement(ProbeStage::Unpack, wall_seconds, memory, samples),
         extraction.logical_bytes_written,
     ))
 }
@@ -520,6 +661,7 @@ fn run_repack_stage(
     config: &ProbeConfig,
 ) -> Result<StageMeasurement, ProbeError> {
     let sampler = MemorySampler::start(config.sample_interval);
+    let scope = MemoryScope::begin();
     let sw = Stopwatch::start();
     let encoded_indexed = encode(archive, WriteOptions::default())?;
     let opened = open(&encoded_indexed.bytes)?;
@@ -533,8 +675,14 @@ fn run_repack_stage(
         },
     )?;
     let wall_seconds = sw.elapsed_secs_f64();
+    let memory = scope.end();
     let samples = sampler.stop();
-    Ok(stage_measurement(ProbeStage::Repack, wall_seconds, samples))
+    Ok(stage_measurement(
+        ProbeStage::Repack,
+        wall_seconds,
+        memory,
+        samples,
+    ))
 }
 
 fn run_export_stage(
@@ -542,6 +690,7 @@ fn run_export_stage(
     config: &ProbeConfig,
 ) -> Result<StageMeasurement, ProbeError> {
     let sampler = MemorySampler::start(config.sample_interval);
+    let scope = MemoryScope::begin();
     let sw = Stopwatch::start();
     let _prepared = prepare_export(
         archive,
@@ -549,8 +698,14 @@ fn run_export_stage(
         ExportSourceSecurity::default(),
     )?;
     let wall_seconds = sw.elapsed_secs_f64();
+    let memory = scope.end();
     let samples = sampler.stop();
-    Ok(stage_measurement(ProbeStage::Export, wall_seconds, samples))
+    Ok(stage_measurement(
+        ProbeStage::Export,
+        wall_seconds,
+        memory,
+        samples,
+    ))
 }
 
 #[cfg(test)]
@@ -618,6 +773,7 @@ mod tests {
             seed: 1,
             sample_interval: Duration::from_millis(5),
             scratch_root: root.clone(),
+            isolate_exe: None,
             ..ProbeConfig::default()
         })
         .unwrap();
@@ -627,15 +783,21 @@ mod tests {
         assert!(measurement.scratch_encoded_bytes.unwrap() > 0);
         assert!(measurement.scratch_unpacked_logical_bytes.unwrap() > 0);
 
-        let stage_names: Vec<&str> = measurement.stages.iter().map(|s| s.stage).collect();
+        let stage_names: Vec<&str> = measurement
+            .stages
+            .iter()
+            .map(|s| s["stage"].as_str().unwrap())
+            .collect();
         assert_eq!(stage_names, vec!["pack", "verify", "unpack"]);
         for stage in &measurement.stages {
-            assert!(stage.wall_seconds >= 0.0);
+            assert!(stage["wall_seconds"].as_f64().unwrap() >= 0.0);
             assert!(
-                !stage.samples.is_empty(),
+                !stage["samples"].as_array().unwrap().is_empty(),
                 "{} stage should have taken at least one memory sample",
-                stage.stage
+                stage["stage"]
             );
+            #[cfg(target_os = "linux")]
+            assert_eq!(stage["memory"]["scoped"], true);
         }
 
         // The probe must not leave its scratch directory behind.
@@ -657,11 +819,16 @@ mod tests {
             sample_interval: Duration::from_millis(5),
             stages: vec![ProbeStage::Repack, ProbeStage::Export],
             scratch_root: root.clone(),
+            isolate_exe: None,
             ..ProbeConfig::default()
         })
         .unwrap();
 
-        let stage_names: Vec<&str> = measurement.stages.iter().map(|s| s.stage).collect();
+        let stage_names: Vec<&str> = measurement
+            .stages
+            .iter()
+            .map(|s| s["stage"].as_str().unwrap())
+            .collect();
         // "pack" always runs first even though it was not listed explicitly.
         assert_eq!(stage_names, vec!["pack", "repack", "export"]);
 
@@ -677,5 +844,54 @@ mod tests {
         .unwrap();
         assert!(measurement.stages.is_empty());
         assert_eq!(measurement.scratch_input_bytes, 0);
+    }
+
+    /// The verify stage must not inherit the pack stage's peak: pack holds
+    /// every Chunk's plaintext, verify streams.
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn verify_stage_memory_does_not_inherit_the_pack_peak() {
+        let root = scratch_root("scoped-stages");
+        let measurement = run_probe(ProbeConfig {
+            total_bytes: 64 * 1024 * 1024,
+            seed: 3,
+            sample_interval: Duration::from_millis(5),
+            stages: default_stages(),
+            scratch_root: root.clone(),
+            isolate_exe: None,
+            ..ProbeConfig::default()
+        })
+        .unwrap();
+        let peak = |name: &str| {
+            measurement
+                .stages
+                .iter()
+                .find(|s| s["stage"] == name)
+                .and_then(|s| s["memory"]["peak_delta_bytes"].as_u64())
+                .unwrap()
+        };
+        assert!(
+            peak("pack") >= 32 * 1024 * 1024,
+            "pack should hold most of the 64 MiB plaintext, delta was {}",
+            peak("pack")
+        );
+        assert!(
+            peak("verify") < peak("pack"),
+            "verify delta {} should be below pack delta {}",
+            peak("verify"),
+            peak("pack")
+        );
+        std::fs::remove_dir_all(&root).ok();
+    }
+
+    #[test]
+    fn single_stage_refuses_stages_that_need_the_planned_archive() {
+        let result = run_single_stage(
+            ProbeStage::Repack,
+            Path::new("unused"),
+            Path::new("unused"),
+            Duration::from_millis(5),
+        );
+        assert!(matches!(result, Err(ProbeError::Child(_))));
     }
 }

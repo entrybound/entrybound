@@ -41,8 +41,12 @@ serde_json = "=1.0.151"
 [dev-dependencies]
 # Dev-only: proves ebr-origin's range/ETag contract against the real,
 # unmodified production HTTP random-access client (see tests/origin_contract.rs).
-# Default features, no `research-internals` -- this never changes production
-# semantics, it only calls entrybound's existing public API from a test.
+# Requested with default features only, but note Cargo feature unification:
+# when this crate is built together with the rest of the harness workspace
+# (`cargo test --workspace`), the other members' `research-internals` request
+# applies to this same entrybound package too. That is harmless because the
+# feature is proven additive-only (research-internals.md), but it means this
+# test is not a feature-free build unless run with `-p ebr-netem` alone.
 entrybound = { path = "../../../../crates/entrybound" }
 
 # `test-util` (for `#[tokio::test(start_paused = true)]` in src/bandwidth.rs

@@ -5,6 +5,7 @@
 //!           --item-path <file> --experiment-id <id> --env-name <name> \
 //!           --algorithm <gear-norm-v1|fixed-size|fastcdc-2016|fastcdc-2020|rabin|buzhash|ae|ram|tttd> \
 //!           [--profile fast|balanced|dense|extreme] [--window N] [--normalization 0-3] \
+//!           [--size-calibration mean|pow2] [--value-width 1|8] \
 //!           [--run-id <id>] [--out <path>] [subcommand-specific flags]
 //! ```
 //!
@@ -14,7 +15,7 @@
 //! chosen subcommand's measurement. See `README.md` for every flag and
 //! example `ebr` spec command templates.
 
-use ebr_chunk::algorithms::Algorithm;
+use ebr_chunk::algorithms::{Algorithm, AlgorithmOptions, SizeCalibration};
 use ebr_common::cli::Args;
 use ebr_common::results::ResultWriter;
 use ebr_common::runenv::{EnvIndex, RunContext};
@@ -56,11 +57,33 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .get("normalization")
         .map(|v| v.parse::<u8>())
         .transpose()?;
+    let size_calibration = args
+        .get("size-calibration")
+        .map(SizeCalibration::parse)
+        .transpose()?;
+    let value_width = args
+        .get("value-width")
+        .map(|v| v.parse::<u8>())
+        .transpose()?;
     let algorithm_name = args.get("algorithm").unwrap_or("gear-norm-v1");
-    let algorithm = Algorithm::from_profile(algorithm_name, profile, window, normalization)?;
+    let algorithm = Algorithm::from_options(
+        algorithm_name,
+        profile,
+        AlgorithmOptions {
+            window,
+            normalization,
+            size_calibration,
+            value_width,
+        },
+    )?;
 
     let repo_root = ebr_common::discover_repo_root(Path::new(env!("CARGO_MANIFEST_DIR")))
         .ok_or("could not locate the entrybound repo root from CARGO_MANIFEST_DIR")?;
+    let mut input_paths = vec![item_path.clone()];
+    if let Some(list) = args.get("versions") {
+        input_paths.extend(list.split(',').filter(|s| !s.is_empty()).map(PathBuf::from));
+    }
+    ebr_common::heldout::assert_inputs_not_heldout(&repo_root, &input_paths)?;
     let env_id = EnvIndex::load(&repo_root)?.resolve(&env_name)?.to_string();
 
     let context = match args.get("run-id") {

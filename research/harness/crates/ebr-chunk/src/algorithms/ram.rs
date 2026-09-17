@@ -1,35 +1,36 @@
-//! RAM (Rapid Asymmetric Maximum) CDC: a bounded-window backward-looking
-//! local-maximum rule, no rolling hash.
+//! RAM (Rapid Asymmetric Maximum) CDC: a fixed-size window followed by a
+//! first-byte-at-least-the-maximum scan, no rolling hash.
 //!
-//! Zhang, Y., Feng, D., Hua, Y., Xia, W., Zhou, J., Zhou, Y., Li, Z., Wan,
-//! Y., Xiao, X., & Zhao, S. (2021). *RAM: A Fast and Space-Efficient
-//! Content-Defined Chunking Algorithm via Rapid Asymmetric Maximum
-//! Sampling.* Frontiers of Computer Science.
+//! Widodo, R. N. S., Lim, H., & Atiquzzaman, M. (2017). *A new
+//! content-defined chunking algorithm for data deduplication in cloud
+//! storage.* Future Generation Computer Systems, 71, 145-156.
 //!
-//! **What this module reproduces, and what it does not.** RAM's own
-//! headline contribution is a *sampling-and-skip* scheme that avoids
-//! examining every byte (jumping ahead once a maximum is confirmed) for
-//! throughput, while keeping [`super::ae`]'s core idea: judge a boundary by
-//! comparing a candidate against a bounded backward window rather than
-//! [`super::ae`]'s unbounded look-back-since-the-last-maximum. This module
-//! implements exactly that boundary *rule* -- position `i` is a cut point
-//! when `data[i]` is the maximum of the trailing `window` bytes ending at
-//! `i` -- using a monotonic-deque sliding-window maximum (the standard
-//! O(n)-amortized technique, not requiring per-byte comparisons against the
-//! whole window) rather than the paper's specific skip-distance
-//! bookkeeping. Since the *rule*, not the skip optimization, is what
-//! determines chunk boundaries (and therefore dedup ratio), this should
-//! match the paper's boundary decisions; it has not been verified against
-//! the paper's own reference implementation or test vectors the way
-//! [`super::fastcdc2016`]/[`super::fastcdc2020`] have been against the
-//! `fastcdc` crate, and should be read as this crate's best-effort
-//! reproduction of the published rule rather than a byte-for-byte port.
+//! **Construction (the paper's rule).** For a chunk starting at `s`, find
+//! the maximum byte value `M` in the fixed-size window `[s, s + window)`.
+//! Then scan forward from `s + window`; the first byte whose value is
+//! `>= M` is the cut point, and it is included in the chunk. RAM needs fewer
+//! comparisons than AE because the maximum is fixed once the window has been
+//! read.
+//!
+//! **Corrections in harness review round 1 (finding R1-11).** Earlier
+//! revisions attributed RAM to a 2021 paper that does not describe it, and
+//! implemented a different rule: "position `i` is a cut when `data[i]` is the
+//! maximum of the trailing `window` bytes ending at `i`" (a sliding window
+//! that forgets the initial window's maximum as it scrolls away). That rule
+//! can cut earlier than RAM and was not the published algorithm. This module
+//! now implements the paper's rule directly.
+//!
+//! **Calibration.** With byte values and a window of more than a few hundred
+//! bytes, `M` is almost always the alphabet maximum on random data, so the
+//! expected chunk size is about `window + 256`; [`Params::from_profile`]
+//! defaults `window` to `target - 256`, matching the right-horizon
+//! calibration the 2024 comparative study (Gregoriadis et al.,
+//! arXiv:2409.06066) uses for AE. `min_size` and `max_size` still clamp.
 //!
 //! Not wired into any production code path.
 
 use super::ChunkRange;
 use entrybound::chunker::ChunkingParameters;
-use std::collections::VecDeque;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Params {
@@ -40,13 +41,10 @@ pub struct Params {
 }
 
 impl Params {
-    /// `window` defaults to `target_size`, the same empirical calibration
-    /// [`super::ae::Params::from_profile`] uses (see that module's docs for
-    /// how it was measured; RAM's bounded-window rule behaves the same way
-    /// here), unless `window` overrides it.
+    /// `window` defaults to `target - 256` (see module docs) unless given.
     #[must_use]
     pub fn from_profile(profile: ChunkingParameters, window: Option<usize>) -> Self {
-        let window = window.unwrap_or(profile.target_size.max(1));
+        let window = window.unwrap_or(profile.target_size.saturating_sub(256).max(1));
         Params {
             min_size: profile.minimum_size,
             target_size: profile.target_size,
@@ -58,7 +56,7 @@ impl Params {
     #[must_use]
     pub fn algorithm_id(&self) -> String {
         format!(
-            "ram-v1/min-{}/target-{}/max-{}/window-{}",
+            "ram-widodo2017-v2/min-{}/target-{}/max-{}/window-{}",
             self.min_size, self.target_size, self.max_size, self.window
         )
     }
@@ -78,32 +76,15 @@ pub fn chunk_ranges(data: &[u8], params: &Params) -> Vec<ChunkRange> {
     let mut start = 0usize;
     while start < data.len() {
         let limit = start.saturating_add(params.max_size).min(data.len());
-        // Indices into `data`, values strictly decreasing: the front is
-        // always the index of the maximum over the current trailing window.
-        let mut deque: VecDeque<usize> = VecDeque::new();
-        let mut end = limit; // forced cut if nothing else fires
-        for i in start..limit {
-            while let Some(&back) = deque.back() {
-                if data[back] <= data[i] {
-                    deque.pop_back();
-                } else {
-                    break;
-                }
-            }
-            deque.push_back(i);
-            while let Some(&front) = deque.front() {
-                if front + params.window <= i {
-                    deque.pop_front();
-                } else {
-                    break;
-                }
-            }
-            let len = i - start + 1;
-            if len >= params.min_size && len >= params.window && deque.front() == Some(&i) {
-                end = i + 1;
-                break;
-            }
-        }
+        let window_end = start.saturating_add(params.window).min(limit);
+        let maximum = data[start..window_end].iter().copied().max().unwrap_or(0);
+        // The scan starts after the fixed window, and never cuts a chunk
+        // shorter than `min_size` (an addition to the paper, which has no
+        // separate minimum; with the default window it never binds).
+        let scan_from = window_end.max(start.saturating_add(params.min_size).saturating_sub(1));
+        let end = (scan_from..limit)
+            .find(|&i| data[i] >= maximum)
+            .map_or(limit, |i| i + 1);
         ranges.push(ChunkRange { start, end });
         start = end;
     }
@@ -151,14 +132,13 @@ mod tests {
         assert_valid_ranges(data.len(), &a, p.min_size, p.max_size);
     }
 
-    /// Mirrors `ae`'s calibration check: with `window == target`, mean
-    /// chunk size over enough uniformly random input lands close to
-    /// `target`.
+    /// Backs the module docs' calibration: `window = target - 256` yields a
+    /// mean chunk size near `target` on uniformly random bytes.
     #[test]
-    fn window_equal_to_target_yields_mean_chunk_size_near_target() {
+    fn default_window_yields_mean_chunk_size_near_target() {
         let data = pseudo_random_bytes(8_000_000, 56);
         let target = 200_000usize;
-        let p = params(1, target, target * 8, target);
+        let p = params(1, target, target * 8, target - 256);
         let ranges = chunk_ranges(&data, &p);
         let mean = ranges.iter().map(|r| r.len() as f64).sum::<f64>() / ranges.len() as f64;
         let relative_error = (mean - target as f64).abs() / target as f64;
@@ -168,18 +148,48 @@ mod tests {
         );
     }
 
+    /// The paper's rule, checked by brute force: the cut is the first byte at
+    /// or after the fixed window whose value is >= the window's maximum.
     #[test]
-    fn constant_byte_input_cuts_at_a_regular_short_interval() {
-        // Every byte ties the running window's maximum, so the strictly
-        // less-or-equal tie-break in the monotonic deque keeps only the
-        // current index -- position `i` is always its own window's max,
-        // and the cut fires as soon as both `min_size` and `window` are
-        // satisfied (here, `min_size` at 64 dominates `window` at 32).
-        // Degenerate input does not defeat RAM's cut rule either.
-        let data = vec![0u8; 10_000];
-        let p = params(64, 512, 1024, 32);
+    fn cuts_at_the_first_byte_reaching_the_fixed_window_maximum() {
+        let data = pseudo_random_bytes(50_000, 11);
+        let p = params(1, 512, 50_000, 300);
         let ranges = chunk_ranges(&data, &p);
+        let mut start = 0;
+        for range in &ranges[..ranges.len() - 1] {
+            assert_eq!(range.start, start);
+            let maximum = *data[start..start + p.window].iter().max().unwrap();
+            let expected = (start + p.window..data.len())
+                .find(|&i| data[i] >= maximum)
+                .map(|i| i + 1)
+                .unwrap();
+            assert_eq!(range.end, expected);
+            start = range.end;
+        }
+    }
+
+    /// A text-like alphabet whose maximum is rare: the earlier trailing-window
+    /// rule cut as soon as the initial window's maximum scrolled out of view,
+    /// while RAM keeps waiting for a byte that reaches it.
+    #[test]
+    fn keeps_the_initial_window_maximum_after_it_scrolls_away() {
+        let mut data = vec![b'a'; 4_000];
+        data[10] = b'z';
+        data[3_000] = b'z';
+        let p = params(1, 512, 4_000, 100);
+        let ranges = chunk_ranges(&data, &p);
+        assert_eq!(ranges[0].end, 3_001);
+    }
+
+    #[test]
+    fn constant_byte_input_cuts_right_after_the_window_or_min_size() {
+        // Every byte ties the window maximum, so the first scanned byte cuts:
+        // at `min_size` when it exceeds the window, else just past the window.
+        let data = vec![0u8; 10_000];
+        let ranges = chunk_ranges(&data, &params(64, 512, 1024, 32));
         assert!(ranges[..ranges.len() - 1].iter().all(|r| r.len() == 64));
+        let ranges = chunk_ranges(&data, &params(16, 512, 1024, 32));
+        assert!(ranges[..ranges.len() - 1].iter().all(|r| r.len() == 33));
     }
 
     #[test]

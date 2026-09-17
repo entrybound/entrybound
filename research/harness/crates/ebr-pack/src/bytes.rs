@@ -25,12 +25,26 @@
 //! codec and transform pipeline its `plan_ref` names (via the archive's own
 //! recorded `TransformPlan`s -- see [`crate::counts::PlanSummary`]).
 //!
-//! [`indexed_byte_accounting`] cross-checks that
-//! `preamble + footer + sum(section header + payload)` equals the exact file
-//! size, and fails loudly (returns [`BytesError::Imbalance`], never a
-//! fabricated number) if not -- which, given every section's extent came
-//! from production's own authenticated walk, would itself indicate a bug in
-//! this module rather than in the archive.
+//! [`indexed_byte_accounting`] checks two sums and fails loudly (returns
+//! [`BytesError::Imbalance`], never a fabricated number) if either is off:
+//! `preamble + footer + sum(section header + payload)` must equal the exact
+//! file size, and -- harness review round 1, finding R1-08 -- so must the
+//! sum of the *named* buckets a consumer actually reads (`descriptor_bytes`,
+//! ..., `chunk_data_section_header_bytes`, `chunk_frame_header_bytes`,
+//! `chunk_payload_bytes`, `other_section_bytes`, `padding_bytes`,
+//! `signature_bytes`). The first sum alone is nearly tautological (the
+//! section extents come from the same authenticated walk that refuses gaps);
+//! the second catches a section kind or header that no named bucket
+//! claims. Earlier revisions left every ChunkData section's own 64-byte
+//! header, and any unrecognized section kind, out of every named bucket.
+//!
+//! [`cross_check_indexed`] is the *independent* check: it compares the
+//! frame walk's `chunk_payload_bytes` and frame count against
+//! `entrybound::archive::inspect`'s per-codec `stored_bytes`/`chunk_count`,
+//! which production derives from the Index and the Chunk table rather than
+//! from walking ChunkData frames. It applies when the archive has no
+//! whole-object ReconstructionRegions (region representations are counted by
+//! inspection but stored outside ChunkData); otherwise it says so.
 //!
 //! # STREAM and encrypted archives: coarser, still exactly cross-checked
 //!
@@ -48,7 +62,7 @@
 //! their lump total against the file's actual size and fail loudly on a
 //! mismatch: the accounting is coarser, never approximate.
 
-use crate::counts::PlanSummary;
+use crate::counts::{ArchiveCounts, PlanSummary};
 use entrybound::crypto::{CryptoPolicy, Unlock, inspect_encrypted};
 use entrybound::diagnostics::Diagnostic;
 use entrybound::ecf::{
@@ -67,7 +81,10 @@ pub enum BytesError {
     /// The accounted total did not equal the file's actual size. Carries
     /// both numbers so a caller can log the exact discrepancy rather than
     /// just "it didn't match".
-    Imbalance { file_size: u64, accounted_bytes: u64 },
+    Imbalance {
+        file_size: u64,
+        accounted_bytes: u64,
+    },
     /// A declared extent ran past the bytes actually available (a Chunk
     /// frame header or payload that does not fit inside its section).
     Truncated(String),
@@ -136,8 +153,18 @@ pub struct ByteAccounting {
     pub chunk_group_bytes: u64,
     /// ReconstructionData and ReconstructionRegions sections combined.
     pub reconstruction_bytes: u64,
+    /// The 64-byte section header of every ChunkData section (the frames
+    /// inside are `chunk_frame_header_bytes` + `chunk_payload_bytes`).
+    pub chunk_data_section_header_bytes: u64,
     pub chunk_frame_header_bytes: u64,
     pub chunk_payload_bytes: u64,
+    /// Number of Chunk frames walked inside ChunkData.
+    pub chunk_frame_count: u64,
+    /// Header + payload of any section whose kind no named bucket above
+    /// claims (always `0` for the ten `SectionKind`s production defines
+    /// today; a new kind lands here instead of silently vanishing).
+    pub other_section_bytes: u64,
+    pub other_section_kinds: Vec<String>,
     pub chunk_payload_bytes_by_codec: BTreeMap<String, u64>,
     pub chunk_payload_bytes_by_transform: BTreeMap<String, u64>,
     /// Always `0` today: production's INDEXED section walk refuses any gap
@@ -151,6 +178,10 @@ pub struct ByteAccounting {
     /// `padding_bytes`).
     pub signature_bytes: u64,
     pub accounted_bytes: u64,
+    /// Sum of every named bucket (`preamble_bytes` through `signature_bytes`,
+    /// excluding the `sections` list and the by-codec/by-transform maps,
+    /// which re-divide `chunk_payload_bytes`). Equals `file_size` on `Ok`.
+    pub named_bucket_total_bytes: u64,
     /// `accounted_bytes == file_size`. Always `true` on `Ok` -- a mismatch
     /// is returned as [`BytesError::Imbalance`], never carried in a `false`
     /// here, so a caller can never silently ignore an imbalance by skipping
@@ -196,8 +227,12 @@ pub fn indexed_byte_accounting(
     let mut dictionary_bytes = 0u64;
     let mut chunk_group_bytes = 0u64;
     let mut reconstruction_bytes = 0u64;
+    let mut chunk_data_section_header_bytes = 0u64;
     let mut chunk_frame_header_bytes = 0u64;
     let mut chunk_payload_bytes = 0u64;
+    let mut chunk_frame_count = 0u64;
+    let mut other_section_bytes = 0u64;
+    let mut other_section_kinds: Vec<String> = Vec::new();
     let mut by_codec: BTreeMap<String, u64> = BTreeMap::new();
     let mut by_transform: BTreeMap<String, u64> = BTreeMap::new();
 
@@ -221,6 +256,7 @@ pub fn indexed_byte_accounting(
             "ChunkGroups" => chunk_group_bytes += section_total,
             "ReconstructionData" | "ReconstructionRegions" => reconstruction_bytes += section_total,
             "ChunkData" => {
+                chunk_data_section_header_bytes += header_bytes;
                 let payload_start = usize::try_from(section.offset + header_bytes)
                     .map_err(|_| BytesError::Truncated("section offset exceeds usize".into()))?;
                 let payload_len = usize::try_from(payload_bytes)
@@ -229,9 +265,7 @@ pub fn indexed_byte_accounting(
                     BytesError::Truncated("ChunkData section extent overflows usize".into())
                 })?;
                 let payload = bytes.get(payload_start..payload_end).ok_or_else(|| {
-                    BytesError::Truncated(
-                        "ChunkData section runs past the end of the file".into(),
-                    )
+                    BytesError::Truncated("ChunkData section runs past the end of the file".into())
                 })?;
 
                 let mut cursor = 0usize;
@@ -242,9 +276,13 @@ pub fn indexed_byte_accounting(
                         .ok_or_else(|| {
                             BytesError::Truncated("Chunk frame header is truncated".into())
                         })?;
-                    let parsed =
-                        parse_chunk_frame_header(&payload[cursor..header_end], extended, whole_object)?;
+                    let parsed = parse_chunk_frame_header(
+                        &payload[cursor..header_end],
+                        extended,
+                        whole_object,
+                    )?;
                     chunk_frame_header_bytes += header_len as u64;
+                    chunk_frame_count += 1;
                     let stored = parsed.stored_len;
                     chunk_payload_bytes += stored;
 
@@ -263,9 +301,12 @@ pub fn indexed_byte_accounting(
                     let stored_usize = usize::try_from(stored).map_err(|_| {
                         BytesError::Truncated("Chunk frame stored_len exceeds usize".into())
                     })?;
-                    cursor = header_end.checked_add(stored_usize).filter(|&end| end <= payload.len()).ok_or_else(|| {
-                        BytesError::Truncated("Chunk frame payload is truncated".into())
-                    })?;
+                    cursor = header_end
+                        .checked_add(stored_usize)
+                        .filter(|&end| end <= payload.len())
+                        .ok_or_else(|| {
+                            BytesError::Truncated("Chunk frame payload is truncated".into())
+                        })?;
                 }
                 if cursor != payload.len() {
                     return Err(BytesError::Truncated(
@@ -274,7 +315,12 @@ pub fn indexed_byte_accounting(
                     ));
                 }
             }
-            _ => {}
+            other => {
+                other_section_bytes += section_total;
+                if !other_section_kinds.iter().any(|kind| kind == other) {
+                    other_section_kinds.push(other.to_owned());
+                }
+            }
         }
     }
 
@@ -292,6 +338,26 @@ pub fn indexed_byte_accounting(
             accounted_bytes,
         });
     }
+    let named_bucket_total_bytes = preamble_bytes
+        + footer_bytes
+        + descriptor_bytes
+        + transform_plan_bytes
+        + manifest_bytes
+        + metadata_bytes
+        + index_bytes
+        + dictionary_bytes
+        + chunk_group_bytes
+        + reconstruction_bytes
+        + chunk_data_section_header_bytes
+        + chunk_frame_header_bytes
+        + chunk_payload_bytes
+        + other_section_bytes;
+    if named_bucket_total_bytes != file_size {
+        return Err(BytesError::Imbalance {
+            file_size,
+            accounted_bytes: named_bucket_total_bytes,
+        });
+    }
 
     Ok(ByteAccounting {
         file_size,
@@ -307,13 +373,18 @@ pub fn indexed_byte_accounting(
         dictionary_bytes,
         chunk_group_bytes,
         reconstruction_bytes,
+        chunk_data_section_header_bytes,
         chunk_frame_header_bytes,
         chunk_payload_bytes,
+        chunk_frame_count,
+        other_section_bytes,
+        other_section_kinds,
         chunk_payload_bytes_by_codec: by_codec,
         chunk_payload_bytes_by_transform: by_transform,
         padding_bytes: 0,
         signature_bytes: 0,
         accounted_bytes,
+        named_bucket_total_bytes,
         balanced: true,
         note: None,
         segment_count: None,
@@ -357,13 +428,18 @@ pub fn stream_byte_accounting(bytes: &[u8]) -> Result<ByteAccounting, BytesError
         dictionary_bytes: 0,
         chunk_group_bytes: 0,
         reconstruction_bytes: 0,
+        chunk_data_section_header_bytes: 0,
         chunk_frame_header_bytes: 0,
         chunk_payload_bytes: 0,
+        chunk_frame_count: 0,
+        other_section_bytes: body_bytes,
+        other_section_kinds: vec!["StreamBody".to_owned()],
         chunk_payload_bytes_by_codec: BTreeMap::new(),
         chunk_payload_bytes_by_transform: BTreeMap::new(),
         padding_bytes: 0,
         signature_bytes: 0,
         accounted_bytes,
+        named_bucket_total_bytes: accounted_bytes,
         balanced: true,
         note: Some(format!(
             "STREAM layout: entrybound exposes no public per-item physical directory (unlike \
@@ -418,13 +494,18 @@ pub fn encrypted_byte_accounting(
         dictionary_bytes: 0,
         chunk_group_bytes: 0,
         reconstruction_bytes: 0,
+        chunk_data_section_header_bytes: 0,
         chunk_frame_header_bytes: 0,
         chunk_payload_bytes: 0,
+        chunk_frame_count: 0,
+        other_section_bytes: body_bytes,
+        other_section_kinds: vec!["EncryptedBody".to_owned()],
         chunk_payload_bytes_by_codec: BTreeMap::new(),
         chunk_payload_bytes_by_transform: BTreeMap::new(),
         padding_bytes: 0,
         signature_bytes: 0,
         accounted_bytes: total,
+        named_bucket_total_bytes: preamble_bytes + body_bytes,
         balanced: true,
         note: Some(format!(
             "encrypted archive: entrybound's encrypted containers are metadata-private by \
@@ -439,6 +520,53 @@ pub fn encrypted_byte_accounting(
         )),
         segment_count: inspection.public.segment_count,
         recipient_count: Some(inspection.public.recipient_count),
+    })
+}
+
+/// The independent INDEXED cross-check described in the module docs.
+#[derive(Debug, Clone, Serialize)]
+pub struct IndexedCrossCheck {
+    /// `false` when the archive has whole-object ReconstructionRegions, whose
+    /// representations `inspect` counts but ChunkData does not hold.
+    pub applicable: bool,
+    pub frame_walk_payload_bytes: u64,
+    pub inspection_stored_bytes: u64,
+    pub frame_walk_frame_count: u64,
+    pub inspection_chunk_count: u64,
+    /// Both pairs equal (`true` whenever `applicable` is `false`).
+    pub matched: bool,
+}
+
+/// Compares a granular INDEXED accounting against `inspect`'s per-codec
+/// totals for the same archive. Returns `Err(BytesError::Imbalance)` when the
+/// check applies and either pair differs.
+pub fn cross_check_indexed(
+    accounting: &ByteAccounting,
+    counts: &ArchiveCounts,
+) -> Result<IndexedCrossCheck, BytesError> {
+    let applicable = accounting.granular && counts.whole_object_region_count == 0;
+    let inspection_stored_bytes: u64 = counts.codec_usage.iter().map(|u| u.stored_bytes).sum();
+    let inspection_chunk_count: u64 = counts.codec_usage.iter().map(|u| u.chunk_count).sum();
+    let matched = !applicable
+        || (inspection_stored_bytes == accounting.chunk_payload_bytes
+            && inspection_chunk_count == accounting.chunk_frame_count);
+    if !matched {
+        return Err(BytesError::Truncated(format!(
+            "independent cross-check failed: frame walk found {} frames / {} payload bytes, \
+             inspection reports {} chunks / {} stored bytes",
+            accounting.chunk_frame_count,
+            accounting.chunk_payload_bytes,
+            inspection_chunk_count,
+            inspection_stored_bytes
+        )));
+    }
+    Ok(IndexedCrossCheck {
+        applicable,
+        frame_walk_payload_bytes: accounting.chunk_payload_bytes,
+        inspection_stored_bytes,
+        frame_walk_frame_count: accounting.chunk_frame_count,
+        inspection_chunk_count,
+        matched,
     })
 }
 
@@ -518,8 +646,14 @@ mod tests {
             .map(|s| s.header_bytes + s.payload_bytes)
             .sum();
         assert_eq!(
-            accounting.chunk_frame_header_bytes + accounting.chunk_payload_bytes + SECTION_HEADER_LEN,
+            accounting.chunk_frame_header_bytes
+                + accounting.chunk_payload_bytes
+                + SECTION_HEADER_LEN,
             chunk_data_total
+        );
+        assert_eq!(
+            accounting.chunk_data_section_header_bytes,
+            SECTION_HEADER_LEN
         );
 
         std::fs::remove_dir_all(&input).ok();
@@ -559,6 +693,64 @@ mod tests {
         let (bytes, plans) = encode_indexed(&input);
         let truncated = &bytes[..bytes.len() - 16];
         assert!(indexed_byte_accounting(truncated, &plans).is_err());
+        std::fs::remove_dir_all(&input).ok();
+    }
+
+    #[test]
+    fn named_buckets_sum_exactly_to_the_file_size() {
+        let input = scratch_input("indexed-named-buckets");
+        let (bytes, plans) = encode_indexed(&input);
+        let accounting = indexed_byte_accounting(&bytes, &plans).unwrap();
+        let named = accounting.preamble_bytes
+            + accounting.footer_bytes
+            + accounting.descriptor_bytes
+            + accounting.transform_plan_bytes
+            + accounting.manifest_bytes
+            + accounting.metadata_bytes
+            + accounting.index_bytes
+            + accounting.dictionary_bytes
+            + accounting.chunk_group_bytes
+            + accounting.reconstruction_bytes
+            + accounting.chunk_data_section_header_bytes
+            + accounting.chunk_frame_header_bytes
+            + accounting.chunk_payload_bytes
+            + accounting.other_section_bytes
+            + accounting.padding_bytes
+            + accounting.signature_bytes;
+        assert_eq!(named, bytes.len() as u64);
+        assert_eq!(accounting.named_bucket_total_bytes, named);
+        assert_eq!(accounting.other_section_bytes, 0);
+        let by_codec: u64 = accounting.chunk_payload_bytes_by_codec.values().sum();
+        assert_eq!(by_codec, accounting.chunk_payload_bytes);
+        std::fs::remove_dir_all(&input).ok();
+    }
+
+    #[test]
+    fn frame_walk_matches_inspection_independently() {
+        let input = scratch_input("indexed-cross-check");
+        let archive = entrybound::archive::plan_directory(
+            &input,
+            entrybound::archive::PackOptions {
+                profile: entrybound::planner::CompressionProfile::Dense,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        let encoded =
+            entrybound::ecf::encode(&archive, entrybound::ecf::WriteOptions::default()).unwrap();
+        let opened = entrybound::ecf::open(&encoded.bytes).unwrap();
+        let counts =
+            crate::counts::from_inspection(&entrybound::archive::inspect(&opened).unwrap());
+        let accounting = indexed_byte_accounting(&encoded.bytes, &counts.plans).unwrap();
+        let check = cross_check_indexed(&accounting, &counts).unwrap();
+        assert!(check.applicable);
+        assert!(check.matched);
+        assert!(check.frame_walk_frame_count > 0);
+
+        // A deliberately wrong inspection total must be caught.
+        let mut tampered = counts.clone();
+        tampered.codec_usage[0].stored_bytes += 1;
+        assert!(cross_check_indexed(&accounting, &tampered).is_err());
         std::fs::remove_dir_all(&input).ok();
     }
 }

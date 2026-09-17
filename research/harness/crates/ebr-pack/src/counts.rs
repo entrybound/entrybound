@@ -87,6 +87,9 @@ pub struct ArchiveCounts {
     pub chunks: ChunkStatistics,
     pub cross_file: CrossFileCounts,
     pub reconstruction: ReconstructionCounts,
+    /// `ArchiveInspection::whole_object.region_count`: ReconstructionRegions
+    /// whose representations live outside ChunkData.
+    pub whole_object_region_count: u64,
 }
 
 /// Copies the fields this crate needs out of a real `ArchiveInspection`.
@@ -143,6 +146,7 @@ pub fn from_inspection(inspection: &ArchiveInspection) -> ArchiveCounts {
             object_bytes: inspection.reconstruction.object_bytes,
             chunk_count: inspection.reconstruction.chunk_count,
         },
+        whole_object_region_count: inspection.whole_object.region_count,
     }
 }
 
@@ -159,10 +163,9 @@ impl fmt::Display for OpenCountsError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             OpenCountsError::Entrybound(d) => write!(f, "entrybound: {d}"),
-            OpenCountsError::MissingPassword => write!(
-                f,
-                "archive is encrypted but no unlock password was given"
-            ),
+            OpenCountsError::MissingPassword => {
+                write!(f, "archive is encrypted but no unlock password was given")
+            }
         }
     }
 }
@@ -249,8 +252,8 @@ mod tests {
             },
         )
         .unwrap();
-        let encoded = entrybound::ecf::encode(&archive, entrybound::ecf::WriteOptions::default())
-            .unwrap();
+        let encoded =
+            entrybound::ecf::encode(&archive, entrybound::ecf::WriteOptions::default()).unwrap();
         let opened = entrybound::ecf::open(&encoded.bytes).unwrap();
         let inspection = entrybound::archive::inspect(&opened).unwrap();
 
@@ -282,8 +285,7 @@ mod tests {
         let encoded =
             entrybound::ecf::encode(&archive, entrybound::ecf::WriteOptions::default()).unwrap();
 
-        let (counts, verified) =
-            from_bytes(&encoded.bytes, Layout::Indexed, false, None).unwrap();
+        let (counts, verified) = from_bytes(&encoded.bytes, Layout::Indexed, false, None).unwrap();
         assert!(verified);
         assert!(counts.entry_count > 0);
         assert!(!counts.plans.is_empty());

@@ -115,7 +115,7 @@ ebr-netem-proxy --upstream <host:port>
                  [--bandwidth-up-mbit <n>] [--bandwidth-down-mbit <n>]
                  [--burst-up-bytes 65536] [--burst-down-bytes 65536]
                  [--setup-rtt-multiple 1.0]
-                 [--loss-p 0.0] [--loss-rto-ms 200] [--seed 42]
+                 [--loss-p 0.0] [--loss-rto-ms 200] [--loss-unit packet|chunk] [--seed 42]
                  [--max-connections 64]
                  [--cache-mode off|cold|warm] [--cache-capacity-bytes 16777216] [--cache-warm-list <path>]
                  [--chunk-size 16384] [--log <path>] [--env-id adhoc]
@@ -142,6 +142,21 @@ paces the client's request body before it is forwarded to the origin;
 `HttpRangeSource` only ever sends `GET`/`HEAD` (empty bodies), `up_bucket`
 is real and wired through end to end but, for that workload, is always
 metering `0` bytes.
+
+**Minimum effective burst (harness review round 1, finding R1-13).** The
+bucket's effective capacity is never below 5 ms of the configured rate
+(`bandwidth::MIN_BURST_SECONDS`), for the same reason Linux `tc tbf`
+requires `burst >= rate / HZ`: `tokio::time::sleep` resolves to whole
+milliseconds and never wakes early, and the bucket can only credit that
+oversleep back up to its capacity. The provisional calibration below
+(`--burst-down-bytes 4096`, 16 KiB chunks) achieved 62 and 107 Mbit/s at a
+configured 100 and 1000 -- the rates whole-millisecond sleeps of 16 KiB
+chunks produce -- because the tiny burst discarded every oversleep credit.
+With the minimum burst, an ignored smoke test
+(`smoke_high_rate_bandwidth_is_not_limited_by_timer_granularity`, run with
+`-- --ignored`) achieved 95.8% of a configured 100 Mbit/s with the same
+4096-byte burst and 16 KiB chunks (non-decision-grade, 2026-09-17).
+`calibration.md` predates this fix and must be regenerated.
 
 **`--chunk-size` matters at high configured rates.** `TokenBucket::consume`
 is called once per chunk, and each call's fixed cost (a mutex lock, an
@@ -171,9 +186,14 @@ sleep, not a real negotiation.
 
 `src/loss.rs`: there is no way to drop bytes at the application layer
 without either corrupting the transfer or reimplementing TCP
-retransmission. Instead, per chunk of the response body, with probability
-`--loss-p` the transfer stalls for `--loss-rto-ms` before continuing --
-bytes are delayed, never dropped or corrupted. **This is an approximation
+retransmission. Instead, before each chunk of the response body is
+forwarded, every simulated TCP segment in it (1448 payload bytes,
+`--loss-unit packet`, the default) is lost with probability `--loss-p`, and
+the transfer stalls `--loss-rto-ms` per lost segment -- bytes are delayed,
+never dropped or corrupted. Earlier revisions rolled once per `--chunk-size`
+chunk, so the same `--loss-p` meant a 64x lower per-byte loss rate after
+raising `--chunk-size` from 16 KiB to 1 MiB as advised above (review finding
+R1-13); `--loss-unit chunk` keeps that legacy behavior for comparison. **This is an approximation
 of packet loss's time cost, not of packet loss itself**: no
 congestion-window reduction, no real retransmission, no reordering.
 
@@ -261,6 +281,19 @@ Everything above is a documented, deliberate simplification relative to
 real network conditions and kernel-level `netem`, in addition to the
 missing-`sch_netem` reason this crate exists at all:
 
+- **No slow start (use constraint).** A fresh real TCP connection needs
+  about `log2(response / (10 * MSS))` extra round trips before a large
+  response reaches full rate; this proxy pays one RTT per request
+  regardless of size. Emulated results therefore favor fewer, larger range
+  requests on new connections. Any decision about range coalescing
+  (`coalesce_gap_bytes`, request counts versus sizes) made on this emulator
+  must include a sensitivity analysis showing the conclusion survives an
+  added `log2`-scaled per-request RTT penalty, or be confirmed on a real
+  path.
+- **Low-RTT bias.** The provisional calibration shows about +3 ms at a
+  configured 20 ms and noisy results at 1 ms (timer rounding plus loopback
+  proxying). Use the achieved `elapsed_ms` from `--log`, not the configured
+  RTT, and do not draw conclusions from configured RTTs below 20 ms.
 - **No real congestion control.** Real TCP's throughput under loss and
   latency is shaped by its congestion-control algorithm (slow start,
   congestion avoidance, cwnd reduction on loss) interacting with the

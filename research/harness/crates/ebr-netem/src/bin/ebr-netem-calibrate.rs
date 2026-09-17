@@ -148,6 +148,9 @@ async fn spawn_proxy(
         setup_rtt_multiple: 0.0,
         loss_p: 0.0,
         loss_rto: Duration::ZERO,
+        loss_unit: ebr_netem::loss::LossUnit::Packet {
+            mss_bytes: ebr_netem::loss::DEFAULT_MSS_BYTES,
+        },
         seed: 42,
         max_connections: 64,
         cache_mode: CacheMode::Off,

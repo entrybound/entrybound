@@ -16,7 +16,7 @@
 
 use std::collections::BTreeMap;
 
-use ebr_common::timing::Stopwatch;
+use ebr_common::measure::{ScopedMemory, measure_scoped};
 use entrybound::diagnostics::Diagnostic;
 use entrybound::research::{codec, jpeg_reconstruction, reconstruction, transform};
 use serde::Serialize;
@@ -31,6 +31,23 @@ pub struct RoundtripResult {
     pub encode_seconds: f64,
     /// Non-decision-grade smoke timing; see the module docs.
     pub decode_seconds: f64,
+    /// The configuration's match window (Zstandard `ZSTD_WINDOW_BYTES`,
+    /// the LZMA2 dictionary, LZ4's 64 KiB match distance; `0` for STORE),
+    /// comparable with `external::ExternalCodecResult::window_bytes`.
+    pub window_bytes: Option<u64>,
+    /// Always `1`: production codecs are single-threaded.
+    pub threads: u32,
+    /// Phase-scoped memory; see `external`'s module docs for caveats.
+    pub encode_memory: ScopedMemory,
+    pub decode_memory: ScopedMemory,
+}
+
+/// Runs `f` in a memory scope and a monotonic stopwatch.
+fn timed<T>(
+    f: impl FnOnce() -> Result<T, Diagnostic>,
+) -> Result<(T, f64, ScopedMemory), Diagnostic> {
+    let (value, memory, seconds) = measure_scoped(f);
+    value.map(|value| (value, seconds, memory))
 }
 
 /// Plans, encodes, and decodes `plaintext` through production's `zstd` path
@@ -39,12 +56,10 @@ pub struct RoundtripResult {
 pub fn roundtrip_zstd(level: i32, plaintext: &[u8]) -> Result<RoundtripResult, Diagnostic> {
     let plan = codec::zstd_plan(level)?;
     codec::validate_plan(&plan)?;
-    let encode_clock = Stopwatch::start();
-    let encoded = codec::encode_payload(&plan, plaintext)?;
-    let encode_seconds = encode_clock.elapsed_secs_f64();
-    let decode_clock = Stopwatch::start();
-    let decoded = codec::decode_payload(&plan, &encoded, plaintext.len() as u64)?;
-    let decode_seconds = decode_clock.elapsed_secs_f64();
+    let (encoded, encode_seconds, encode_memory) =
+        timed(|| codec::encode_payload(&plan, plaintext))?;
+    let (decoded, decode_seconds, decode_memory) =
+        timed(|| codec::decode_payload(&plan, &encoded, plaintext.len() as u64))?;
     Ok(RoundtripResult {
         codec_id: format!(
             "{} (production, level {level})",
@@ -55,6 +70,10 @@ pub fn roundtrip_zstd(level: i32, plaintext: &[u8]) -> Result<RoundtripResult, D
         roundtrip_ok: decoded == plaintext,
         encode_seconds,
         decode_seconds,
+        window_bytes: Some(codec::ZSTD_WINDOW_BYTES),
+        threads: 1,
+        encode_memory,
+        decode_memory,
     })
 }
 
@@ -63,12 +82,10 @@ pub fn roundtrip_zstd(level: i32, plaintext: &[u8]) -> Result<RoundtripResult, D
 pub fn roundtrip_store(plaintext: &[u8]) -> Result<RoundtripResult, Diagnostic> {
     let plan = codec::store_plan();
     codec::validate_plan(&plan)?;
-    let encode_clock = Stopwatch::start();
-    let encoded = codec::encode_payload(&plan, plaintext)?;
-    let encode_seconds = encode_clock.elapsed_secs_f64();
-    let decode_clock = Stopwatch::start();
-    let decoded = codec::decode_payload(&plan, &encoded, plaintext.len() as u64)?;
-    let decode_seconds = decode_clock.elapsed_secs_f64();
+    let (encoded, encode_seconds, encode_memory) =
+        timed(|| codec::encode_payload(&plan, plaintext))?;
+    let (decoded, decode_seconds, decode_memory) =
+        timed(|| codec::decode_payload(&plan, &encoded, plaintext.len() as u64))?;
     Ok(RoundtripResult {
         codec_id: "store (production)".to_owned(),
         input_bytes: plaintext.len() as u64,
@@ -76,6 +93,10 @@ pub fn roundtrip_store(plaintext: &[u8]) -> Result<RoundtripResult, Diagnostic> 
         roundtrip_ok: decoded == plaintext,
         encode_seconds,
         decode_seconds,
+        window_bytes: Some(0),
+        threads: 1,
+        encode_memory,
+        decode_memory,
     })
 }
 
@@ -88,12 +109,10 @@ pub fn roundtrip_lzma2(
 ) -> Result<RoundtripResult, Diagnostic> {
     let plan = codec::lzma2_plan(preset, dictionary_bytes, Box::new([]))?;
     codec::validate_plan(&plan)?;
-    let encode_clock = Stopwatch::start();
-    let encoded = codec::encode_payload(&plan, plaintext)?;
-    let encode_seconds = encode_clock.elapsed_secs_f64();
-    let decode_clock = Stopwatch::start();
-    let decoded = codec::decode_payload(&plan, &encoded, plaintext.len() as u64)?;
-    let decode_seconds = decode_clock.elapsed_secs_f64();
+    let (encoded, encode_seconds, encode_memory) =
+        timed(|| codec::encode_payload(&plan, plaintext))?;
+    let (decoded, decode_seconds, decode_memory) =
+        timed(|| codec::decode_payload(&plan, &encoded, plaintext.len() as u64))?;
     Ok(RoundtripResult {
         codec_id: format!(
             "{} (production, preset {preset}, dict {dictionary_bytes})",
@@ -104,6 +123,10 @@ pub fn roundtrip_lzma2(
         roundtrip_ok: decoded == plaintext,
         encode_seconds,
         decode_seconds,
+        window_bytes: Some(u64::from(dictionary_bytes)),
+        threads: 1,
+        encode_memory,
+        decode_memory,
     })
 }
 
@@ -111,12 +134,10 @@ pub fn roundtrip_lzma2(
 pub fn roundtrip_lz4(plaintext: &[u8]) -> Result<RoundtripResult, Diagnostic> {
     let plan = codec::lz4_plan(Box::new([]))?;
     codec::validate_plan(&plan)?;
-    let encode_clock = Stopwatch::start();
-    let encoded = codec::encode_payload(&plan, plaintext)?;
-    let encode_seconds = encode_clock.elapsed_secs_f64();
-    let decode_clock = Stopwatch::start();
-    let decoded = codec::decode_payload(&plan, &encoded, plaintext.len() as u64)?;
-    let decode_seconds = decode_clock.elapsed_secs_f64();
+    let (encoded, encode_seconds, encode_memory) =
+        timed(|| codec::encode_payload(&plan, plaintext))?;
+    let (decoded, decode_seconds, decode_memory) =
+        timed(|| codec::decode_payload(&plan, &encoded, plaintext.len() as u64))?;
     Ok(RoundtripResult {
         codec_id: format!("{} (production)", codec::LZ4_CODEC_IDENTIFIER),
         input_bytes: plaintext.len() as u64,
@@ -124,6 +145,10 @@ pub fn roundtrip_lz4(plaintext: &[u8]) -> Result<RoundtripResult, Diagnostic> {
         roundtrip_ok: decoded == plaintext,
         encode_seconds,
         decode_seconds,
+        window_bytes: Some(65_536),
+        threads: 1,
+        encode_memory,
+        decode_memory,
     })
 }
 
@@ -147,17 +172,11 @@ pub fn roundtrip_zstd_dictionary(
     };
     let plan = codec::zstd_dictionary_plan(level, dictionary.dictionary_id)?;
     codec::validate_plan(&plan)?;
-    let encode_clock = Stopwatch::start();
-    let encoded = codec::encode_payload_with_dictionary(&plan, plaintext, &dictionary)?;
-    let encode_seconds = encode_clock.elapsed_secs_f64();
-    let decode_clock = Stopwatch::start();
-    let decoded = codec::decode_payload_with_dictionary(
-        &plan,
-        &encoded,
-        plaintext.len() as u64,
-        &dictionary,
-    )?;
-    let decode_seconds = decode_clock.elapsed_secs_f64();
+    let (encoded, encode_seconds, encode_memory) =
+        timed(|| codec::encode_payload_with_dictionary(&plan, plaintext, &dictionary))?;
+    let (decoded, decode_seconds, decode_memory) = timed(|| {
+        codec::decode_payload_with_dictionary(&plan, &encoded, plaintext.len() as u64, &dictionary)
+    })?;
     Ok(RoundtripResult {
         codec_id: format!(
             "{} (production, dictionary mode, level {level})",
@@ -168,6 +187,10 @@ pub fn roundtrip_zstd_dictionary(
         roundtrip_ok: decoded == plaintext,
         encode_seconds,
         decode_seconds,
+        window_bytes: Some(codec::ZSTD_WINDOW_BYTES),
+        threads: 1,
+        encode_memory,
+        decode_memory,
     })
 }
 
@@ -183,13 +206,11 @@ pub fn roundtrip_zstd_prefix(
 ) -> Result<RoundtripResult, Diagnostic> {
     let plan = codec::zstd_prefix_plan(level, lookback)?;
     codec::validate_plan(&plan)?;
-    let encode_clock = Stopwatch::start();
-    let encoded = codec::encode_payload_with_prefix(&plan, plaintext, prefix)?;
-    let encode_seconds = encode_clock.elapsed_secs_f64();
-    let decode_clock = Stopwatch::start();
-    let decoded =
-        codec::decode_payload_with_prefix(&plan, &encoded, plaintext.len() as u64, prefix)?;
-    let decode_seconds = decode_clock.elapsed_secs_f64();
+    let (encoded, encode_seconds, encode_memory) =
+        timed(|| codec::encode_payload_with_prefix(&plan, plaintext, prefix))?;
+    let (decoded, decode_seconds, decode_memory) = timed(|| {
+        codec::decode_payload_with_prefix(&plan, &encoded, plaintext.len() as u64, prefix)
+    })?;
     Ok(RoundtripResult {
         codec_id: format!(
             "{} (production, prefix mode, level {level}, lookback {lookback})",
@@ -200,6 +221,10 @@ pub fn roundtrip_zstd_prefix(
         roundtrip_ok: decoded == plaintext,
         encode_seconds,
         decode_seconds,
+        window_bytes: Some(codec::ZSTD_WINDOW_BYTES),
+        threads: 1,
+        encode_memory,
+        decode_memory,
     })
 }
 
@@ -210,12 +235,10 @@ pub fn roundtrip_zstd_prefix(
 pub fn roundtrip_zstd_delta8(level: i32, plaintext: &[u8]) -> Result<RoundtripResult, Diagnostic> {
     let plan = codec::zstd_transformed_plan(level, vec![transform::delta8_step()].into())?;
     codec::validate_plan(&plan)?;
-    let encode_clock = Stopwatch::start();
-    let encoded = codec::encode_payload(&plan, plaintext)?;
-    let encode_seconds = encode_clock.elapsed_secs_f64();
-    let decode_clock = Stopwatch::start();
-    let decoded = codec::decode_payload(&plan, &encoded, plaintext.len() as u64)?;
-    let decode_seconds = decode_clock.elapsed_secs_f64();
+    let (encoded, encode_seconds, encode_memory) =
+        timed(|| codec::encode_payload(&plan, plaintext))?;
+    let (decoded, decode_seconds, decode_memory) =
+        timed(|| codec::decode_payload(&plan, &encoded, plaintext.len() as u64))?;
     Ok(RoundtripResult {
         codec_id: format!(
             "{} (production, delta8, level {level})",
@@ -226,6 +249,10 @@ pub fn roundtrip_zstd_delta8(level: i32, plaintext: &[u8]) -> Result<RoundtripRe
         roundtrip_ok: decoded == plaintext,
         encode_seconds,
         decode_seconds,
+        window_bytes: Some(codec::ZSTD_WINDOW_BYTES),
+        threads: 1,
+        encode_memory,
+        decode_memory,
     })
 }
 
@@ -242,12 +269,10 @@ pub fn roundtrip_zstd_byte_shuffle(
     let plan =
         codec::zstd_transformed_plan(level, vec![transform::byte_shuffle_step(width)?].into())?;
     codec::validate_plan(&plan)?;
-    let encode_clock = Stopwatch::start();
-    let encoded = codec::encode_payload(&plan, plaintext)?;
-    let encode_seconds = encode_clock.elapsed_secs_f64();
-    let decode_clock = Stopwatch::start();
-    let decoded = codec::decode_payload(&plan, &encoded, plaintext.len() as u64)?;
-    let decode_seconds = decode_clock.elapsed_secs_f64();
+    let (encoded, encode_seconds, encode_memory) =
+        timed(|| codec::encode_payload(&plan, plaintext))?;
+    let (decoded, decode_seconds, decode_memory) =
+        timed(|| codec::decode_payload(&plan, &encoded, plaintext.len() as u64))?;
     Ok(RoundtripResult {
         codec_id: format!(
             "{} (production, byte-shuffle-{width}, level {level})",
@@ -258,6 +283,10 @@ pub fn roundtrip_zstd_byte_shuffle(
         roundtrip_ok: decoded == plaintext,
         encode_seconds,
         decode_seconds,
+        window_bytes: Some(codec::ZSTD_WINDOW_BYTES),
+        threads: 1,
+        encode_memory,
+        decode_memory,
     })
 }
 
@@ -282,17 +311,16 @@ pub fn roundtrip_deflate_reconstruct(
     let plan = codec::zstd_transformed_plan(level, vec![step].into())?;
     codec::validate_plan(&plan)?;
     let reconstruction_data = BTreeMap::from([(candidate.data.reconstruction_id, candidate.data)]);
-    let encode_clock = Stopwatch::start();
-    let encoded = codec::encode_payload_with_reconstruction(&plan, original, &reconstruction_data)?;
-    let encode_seconds = encode_clock.elapsed_secs_f64();
-    let decode_clock = Stopwatch::start();
-    let decoded = codec::decode_payload_with_reconstruction(
-        &plan,
-        &encoded,
-        original.len() as u64,
-        &reconstruction_data,
-    )?;
-    let decode_seconds = decode_clock.elapsed_secs_f64();
+    let (encoded, encode_seconds, encode_memory) =
+        timed(|| codec::encode_payload_with_reconstruction(&plan, original, &reconstruction_data))?;
+    let (decoded, decode_seconds, decode_memory) = timed(|| {
+        codec::decode_payload_with_reconstruction(
+            &plan,
+            &encoded,
+            original.len() as u64,
+            &reconstruction_data,
+        )
+    })?;
     Ok(Some(RoundtripResult {
         codec_id: format!(
             "{} (production, deflate-reconstruct, level {level}, max_chain {max_chain_length})",
@@ -303,6 +331,10 @@ pub fn roundtrip_deflate_reconstruct(
         roundtrip_ok: decoded == original,
         encode_seconds,
         decode_seconds,
+        window_bytes: Some(codec::ZSTD_WINDOW_BYTES),
+        threads: 1,
+        encode_memory,
+        decode_memory,
     }))
 }
 
@@ -326,12 +358,10 @@ pub fn roundtrip_jpeg_reconstruct(
     let plan =
         codec::zstd_transformed_plan(level, vec![transform::jpeg_reconstruct_step()?].into())?;
     codec::validate_plan(&plan)?;
-    let encode_clock = Stopwatch::start();
-    let encoded = codec::encode_payload(&plan, original)?;
-    let encode_seconds = encode_clock.elapsed_secs_f64();
-    let decode_clock = Stopwatch::start();
-    let decoded = codec::decode_payload(&plan, &encoded, original.len() as u64)?;
-    let decode_seconds = decode_clock.elapsed_secs_f64();
+    let (encoded, encode_seconds, encode_memory) =
+        timed(|| codec::encode_payload(&plan, original))?;
+    let (decoded, decode_seconds, decode_memory) =
+        timed(|| codec::decode_payload(&plan, &encoded, original.len() as u64))?;
     Ok(Some(RoundtripResult {
         codec_id: format!(
             "{} (production, jpeg-jxl-reconstruct, level {level}, {}x{})",
@@ -344,6 +374,10 @@ pub fn roundtrip_jpeg_reconstruct(
         roundtrip_ok: decoded == original,
         encode_seconds,
         decode_seconds,
+        window_bytes: Some(codec::ZSTD_WINDOW_BYTES),
+        threads: 1,
+        encode_memory,
+        decode_memory,
     }))
 }
 

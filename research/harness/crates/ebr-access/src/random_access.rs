@@ -26,11 +26,23 @@
 //! Reads in steps 2 and 3 can revisit an entry steps 1 or 2 already read;
 //! `entrybound::random_access::RangeSession` caches fetched ranges for the
 //! lifetime of one `RandomAccessArchive`, so a revisit is a warm-cache hit
-//! (near-zero `bytes_fetched_from_source`). That is disclosed here, not
+//! (zero `bytes_fetched_from_source`). That is disclosed here, not
 //! hidden: a caller that needs a strictly cold eager pass sets
 //! `sample_size: 0`, and every `RandomReadMeasurement` carries its own
 //! `bytes_fetched_from_source`/`range_request_count` so warm and cold reads
 //! are always distinguishable after the fact.
+//!
+//! **Per-read byte accounting (harness review round 1, finding R1-02).**
+//! `RandomAccessVerificationReport::{bytes_fetched, range_request_count}`
+//! are the *session's cumulative* counters (`RangeSession::bytes_fetched`),
+//! not per-call figures. Earlier revisions reported them as each read's own
+//! cost and summed them into `eager_total_bytes_fetched`, which counted the
+//! metadata open and every earlier read again on every later read. Each
+//! read's `bytes_fetched_from_source`/`range_request_count` is now the
+//! difference from the session counters before that read;
+//! `metadata_open_bytes_fetched` is the open's own cost; and
+//! `session_total_bytes_fetched` equals the metadata open plus the sum of
+//! every read's delta (a unit test enforces this).
 //!
 //! **Random byte-range reads within large entries**: every time a read in
 //! any of the three steps above returns a plaintext at or above
@@ -50,7 +62,7 @@
 //! (`entrybound::ecf::RandomAccessVerificationReport`) are carried through
 //! verbatim in [`VerificationFlags`], including `dependency_chunk_count`.
 
-use ebr_common::measure::peak_memory;
+use ebr_common::measure::{MemoryScope, ScopedMemory};
 use ebr_common::timing::Stopwatch;
 use entrybound::diagnostics::Diagnostic;
 use entrybound::eam::LogicalPath;
@@ -84,6 +96,8 @@ pub struct VerificationFlags {
     pub pcr: String,
     pub pci: String,
     pub whole_archive_verified: bool,
+    /// Session-cumulative trace length (like `bytes_fetched` and
+    /// `range_request_count` above, which are also session-cumulative).
     pub access_trace_entries: u64,
 }
 
@@ -120,8 +134,12 @@ pub struct RandomReadMeasurement {
     pub path: String,
     pub read_seconds: f64,
     pub bytes_returned: u64,
+    /// Bytes this read fetched from the source (session delta).
     pub bytes_fetched_from_source: u64,
+    /// Range requests this read issued (session delta).
     pub range_request_count: u64,
+    /// Session-cumulative bytes fetched after this read.
+    pub session_bytes_fetched_after: u64,
     pub dependency_chunk_count: u64,
     pub verification: VerificationFlags,
 }
@@ -169,6 +187,9 @@ impl Default for RandomAccessConfig {
 #[derive(Debug, Clone, Serialize)]
 pub struct RandomAccessMeasurement {
     pub open_seconds: f64,
+    /// Bytes and range requests the metadata-first open itself fetched.
+    pub metadata_open_bytes_fetched: u64,
+    pub metadata_open_range_requests: u64,
     /// Cost of metadata-first opening alone, before any entry's payload was
     /// touched (`RandomAccessArchive::metadata_report`).
     pub metadata_open: VerificationFlags,
@@ -180,9 +201,14 @@ pub struct RandomAccessMeasurement {
     pub byte_range_reads: Vec<ByteRangeReadMeasurement>,
     pub eager_reads: Vec<RandomReadMeasurement>,
     pub eager_total_seconds: f64,
+    /// Sum of the eager pass's per-read deltas.
     pub eager_total_bytes_fetched: u64,
-    pub peak_memory_bytes: Option<u64>,
-    pub peak_memory_is_true_peak: bool,
+    /// Session-cumulative bytes fetched at the end (open + every read).
+    pub session_total_bytes_fetched: u64,
+    pub session_total_range_requests: u64,
+    /// Memory scoped to open + every read (not the process-lifetime peak,
+    /// which includes planning and encoding the archive being read).
+    pub access_memory: ScopedMemory,
 }
 
 /// Opens `source` (Complete INDEXED bytes behind any `RandomReadSource`) for
@@ -198,17 +224,22 @@ pub fn measure_random_access<S>(
 where
     S: RandomReadSource + 'static,
 {
+    let scope = MemoryScope::begin();
     let open_sw = Stopwatch::start();
     let mut archive = open_indexed_random(source, config.policy.clone())?;
     let open_seconds = open_sw.elapsed_secs_f64();
 
-    let metadata_open = VerificationFlags::from(&archive.metadata_report()?);
+    let metadata_report = archive.metadata_report()?;
+    let metadata_open_bytes_fetched = metadata_report.bytes_fetched;
+    let metadata_open_range_requests = metadata_report.range_request_count;
+    let mut session = (metadata_open_bytes_fetched, metadata_open_range_requests);
+    let metadata_open = VerificationFlags::from(&metadata_report);
     let mut range_rng = SplitMix64::new(config.seed ^ 0xA5A5_A5A5_A5A5_A5A5);
     let mut byte_range_reads = Vec::new();
 
     let first_entry_read = match entries.first() {
         Some(path) => {
-            let (measurement, bytes) = read_one(&mut archive, path)?;
+            let (measurement, bytes) = read_one(&mut archive, path, &mut session)?;
             collect_byte_ranges(path, &bytes, &config, &mut range_rng, &mut byte_range_reads);
             Some(measurement)
         }
@@ -219,7 +250,7 @@ where
     let mut sampled_entry_reads = Vec::with_capacity(sample.len());
     for &index in &sample {
         let path = &entries[index];
-        let (measurement, bytes) = read_one(&mut archive, path)?;
+        let (measurement, bytes) = read_one(&mut archive, path, &mut session)?;
         collect_byte_ranges(path, &bytes, &config, &mut range_rng, &mut byte_range_reads);
         sampled_entry_reads.push(measurement);
     }
@@ -227,7 +258,7 @@ where
     let mut eager_reads = Vec::with_capacity(entries.len());
     let eager_sw = Stopwatch::start();
     for path in entries {
-        let (measurement, bytes) = read_one(&mut archive, path)?;
+        let (measurement, bytes) = read_one(&mut archive, path, &mut session)?;
         collect_byte_ranges(path, &bytes, &config, &mut range_rng, &mut byte_range_reads);
         eager_reads.push(measurement);
     }
@@ -237,13 +268,12 @@ where
         .map(|r| r.bytes_fetched_from_source)
         .sum();
 
-    let (peak_memory_bytes, peak_memory_is_true_peak) = match peak_memory() {
-        Ok(sample) => (Some(sample.bytes), sample.is_true_peak),
-        Err(_) => (None, false),
-    };
+    let access_memory = scope.end();
 
     Ok(RandomAccessMeasurement {
         open_seconds,
+        metadata_open_bytes_fetched,
+        metadata_open_range_requests,
         metadata_open,
         entry_count: entries.len(),
         first_entry_read,
@@ -253,24 +283,30 @@ where
         eager_reads,
         eager_total_seconds,
         eager_total_bytes_fetched,
-        peak_memory_bytes,
-        peak_memory_is_true_peak,
+        session_total_bytes_fetched: session.0,
+        session_total_range_requests: session.1,
+        access_memory,
     })
 }
 
 fn read_one(
     archive: &mut RandomAccessArchive,
     path: &LogicalPath,
+    session: &mut (u64, u64),
 ) -> Result<(RandomReadMeasurement, Box<[u8]>), Diagnostic> {
     let read_sw = Stopwatch::start();
     let read = archive.read_entry(path)?;
     let read_seconds = read_sw.elapsed_secs_f64();
+    let bytes_delta = read.report.bytes_fetched.saturating_sub(session.0);
+    let requests_delta = read.report.range_request_count.saturating_sub(session.1);
+    *session = (read.report.bytes_fetched, read.report.range_request_count);
     let measurement = RandomReadMeasurement {
         path: path.to_string(),
         read_seconds,
         bytes_returned: read.bytes.len() as u64,
-        bytes_fetched_from_source: read.report.bytes_fetched,
-        range_request_count: read.report.range_request_count,
+        bytes_fetched_from_source: bytes_delta,
+        range_request_count: requests_delta,
+        session_bytes_fetched_after: read.report.bytes_fetched,
         dependency_chunk_count: read.report.dependency_chunk_count,
         verification: VerificationFlags::from(&read.report),
     };
@@ -376,7 +412,13 @@ mod tests {
         assert!(measurement.first_entry_read.is_some());
         assert_eq!(measurement.eager_reads.len(), 2);
         assert_eq!(measurement.sampled_entry_reads.len(), 1);
-        assert!(measurement.eager_total_bytes_fetched > 0);
+        // The first-entry read and the one-entry sample may already have
+        // fetched both entries, in which case the eager pass is entirely
+        // warm and its per-read deltas are zero; an earlier revision asserted
+        // `eager_total_bytes_fetched > 0`, which held only because it summed
+        // session-cumulative counters (review finding R1-02).
+        assert!(measurement.session_total_bytes_fetched > 0);
+        assert!(measurement.eager_total_bytes_fetched <= measurement.session_total_bytes_fetched);
         assert!(!measurement.byte_range_reads.is_empty());
         for range in &measurement.byte_range_reads {
             assert!(range.range_len <= range.entry_len);
@@ -451,6 +493,46 @@ mod tests {
         assert!(measurement.eager_reads.is_empty());
         assert!(measurement.sampled_entry_reads.is_empty());
 
+        std::fs::remove_dir_all(&input).ok();
+    }
+
+    /// Harness review round 1, finding R1-02: per-read byte counts must be
+    /// deltas, so open + reads sum to the session total, and a revisit of an
+    /// already-fetched entry costs nothing.
+    #[test]
+    fn per_read_bytes_are_deltas_that_sum_to_the_session_total() {
+        let (input, encoded, paths) = encode_scratch("deltas");
+        let source_len = encoded.len() as u64;
+        let measurement = measure_random_access(
+            MemoryRandomReadSource::new(encoded),
+            &paths,
+            RandomAccessConfig {
+                sample_size: paths.len(),
+                ..RandomAccessConfig::default()
+            },
+        )
+        .unwrap();
+
+        let mut sum = measurement.metadata_open_bytes_fetched;
+        for read in measurement
+            .first_entry_read
+            .iter()
+            .chain(&measurement.sampled_entry_reads)
+            .chain(&measurement.eager_reads)
+        {
+            sum += read.bytes_fetched_from_source;
+        }
+        assert_eq!(sum, measurement.session_total_bytes_fetched);
+        assert!(measurement.session_total_bytes_fetched <= source_len);
+        // Every entry was already read by the sample pass, so the eager pass
+        // is entirely warm-cache.
+        assert_eq!(measurement.eager_total_bytes_fetched, 0);
+        assert!(
+            measurement
+                .eager_reads
+                .iter()
+                .all(|r| r.range_request_count == 0)
+        );
         std::fs::remove_dir_all(&input).ok();
     }
 }

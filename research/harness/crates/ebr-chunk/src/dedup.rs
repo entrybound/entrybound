@@ -24,6 +24,12 @@ pub struct DedupResult {
     pub unique_chunk_count: u64,
     pub unique_chunk_bytes: u64,
     pub manifest_chunk_references: u64,
+    /// `total_logical_bytes / manifest_chunk_references`: the realized mean
+    /// chunk size. Dedup ratios of different algorithms are only comparable
+    /// at matched realized means (harness review round 1, finding R1-09).
+    pub mean_chunk_bytes: f64,
+    /// `unique_chunk_bytes / unique_chunk_count`.
+    pub mean_unique_chunk_bytes: f64,
     /// `total_logical_bytes / unique_chunk_bytes`; `1.0` when nothing is
     /// shared across (or within) versions, higher is better.
     pub dedup_ratio: f64,
@@ -78,6 +84,16 @@ pub fn measure(versions: &[Vec<u8>], algorithm: &Algorithm) -> Result<DedupResul
         unique_chunk_count,
         unique_chunk_bytes,
         manifest_chunk_references,
+        mean_chunk_bytes: if manifest_chunk_references == 0 {
+            0.0
+        } else {
+            total_logical_bytes as f64 / manifest_chunk_references as f64
+        },
+        mean_unique_chunk_bytes: if unique_chunk_count == 0 {
+            0.0
+        } else {
+            unique_chunk_bytes as f64 / unique_chunk_count as f64
+        },
         dedup_ratio,
         estimated_cost_bytes,
         cost_constants: CostConstants {

@@ -3,6 +3,7 @@
 //! ```text
 //! ebr-codec <subcommand> --item-path <file> --experiment-id <id> --env-name <name> \
 //!           [--level <i32>] [--profile <fast|balanced|dense|extreme>] \
+//!           [--candidate <label-substring>] \
 //!           [--run-id <id>] [--out <path>]
 //! ```
 //!
@@ -79,6 +80,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         None => RunContext::new(experiment_id, env_id),
     };
 
+    ebr_common::heldout::assert_inputs_not_heldout(&repo_root, &[item_path.as_path()])?;
+    let candidate_filter = args.get("candidate");
     let data = std::fs::read(&item_path)?;
     let item_id = item_path.to_string_lossy().into_owned();
 
@@ -94,7 +97,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             writer.write_row(Some(&item_id), serde_json::to_value(&comparison)?)?;
         }
         "object-matrix" => {
-            for outcome in ebr_codec::matrix::candidates(&data) {
+            for outcome in ebr_codec::matrix::candidates_matching(&data, candidate_filter) {
                 writer.write_row(Some(&item_id), serde_json::to_value(&outcome)?)?;
             }
         }
@@ -102,7 +105,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             let profile = parse_profile(args.get("profile").unwrap_or("balanced"))?;
             let parameters = ebr_codec::matrix::chunking_parameters_for_profile(profile);
             let rows =
-                ebr_codec::matrix::chunk_matrix(parameters, &data).map_err(|d| d.to_string())?;
+                ebr_codec::matrix::chunk_matrix_matching(parameters, &data, candidate_filter)
+                    .map_err(|d| d.to_string())?;
             for row in rows {
                 let chunk_item_id = format!("{item_id}#chunk={}", row.chunk_index);
                 for outcome in &row.outcomes {

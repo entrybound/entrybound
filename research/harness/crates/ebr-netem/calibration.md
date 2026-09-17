@@ -1,5 +1,11 @@
 # ebr-netem calibration
 
+> **Superseded (harness review round 1, finding R1-13):** this run predates
+> the token bucket's minimum effective burst and the per-packet loss unit.
+> Its 100/1000 Mbit/s rows show the fixed timer-granularity artifact, not
+> the current emulator. Regenerate with `ebr-netem-calibrate` in a quiet
+> window before citing any row.
+
 **Status: PROVISIONAL.** This machine was not confirmed quiet when these
 numbers were captured (Defender real-time protection and Hyper-V/VBS stay
 on throughout -- see `research/PROGRESS.md`'s execution-environment notes),

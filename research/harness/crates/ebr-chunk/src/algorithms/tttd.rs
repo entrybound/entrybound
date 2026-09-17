@@ -15,10 +15,14 @@
 //!
 //! **Construction.** Scanning forward from `min_size` (`MinThresh`), a
 //! position is a boundary as soon as the rolling fingerprint satisfies the
-//! main divisor's mask (`mask_d`, calibrated to `target_size`). While
-//! scanning, the *first* position that additionally satisfies a looser
-//! backup mask (`mask_d_prime`, calibrated to a smaller target so it is hit
-//! more often -- the "second divisor," `D' < D`) is remembered. If the scan
+//! main divisor (`fp mod D == D - 1`, with `D = target - min` under the
+//! default mean-matched calibration). While scanning, every position that
+//! satisfies the looser backup divisor (`D' = D / 2`) overwrites the
+//! remembered backup breakpoint, so the *last* such position before
+//! `MaxThresh` is used -- exactly the paper's pseudocode
+//! (`if ((p mod D') == D'-1) backupBreak = currP`). Earlier revisions kept
+//! the *first* backup position instead, which cuts systematically earlier
+//! than TTTD does (harness review round 1, finding R1-10). If the scan
 //! reaches `max_size` (`MaxThresh`) without ever satisfying `mask_d`, the
 //! chunk is cut at the remembered backup position instead of forcing a hard
 //! `max_size` cut when one was seen; only if no backup position was seen
@@ -28,7 +32,7 @@
 //!
 //! Not wired into any production code path.
 
-use super::{ChunkRange, pow2_mask_for_target, rabin};
+use super::{ChunkRange, CutRule, SizeCalibration, rabin};
 use entrybound::chunker::ChunkingParameters;
 
 #[derive(Debug, Clone, Copy)]
@@ -37,6 +41,10 @@ pub struct Params {
     pub target_size: usize,
     pub max_size: usize,
     pub window: usize,
+    /// Main divisor rule (`D`).
+    pub cut: CutRule,
+    /// Backup divisor rule (`D'`).
+    pub backup_cut: CutRule,
 }
 
 impl Params {
@@ -44,19 +52,37 @@ impl Params {
     /// this crate's Rabin-fingerprint module) unless overridden.
     #[must_use]
     pub fn from_profile(profile: ChunkingParameters) -> Self {
+        Self::from_profile_calibrated(profile, SizeCalibration::MeanMatched)
+    }
+
+    /// `D` from [`CutRule::for_target`]; `D'` is half of `D` (the paper's
+    /// ratio, 540/270).
+    #[must_use]
+    pub fn from_profile_calibrated(
+        profile: ChunkingParameters,
+        calibration: SizeCalibration,
+    ) -> Self {
+        let cut = CutRule::for_target(profile.minimum_size, profile.target_size, calibration);
         Params {
             min_size: profile.minimum_size,
             target_size: profile.target_size,
             max_size: profile.maximum_size,
             window: rabin::DEFAULT_WINDOW,
+            cut,
+            backup_cut: half_rule(cut),
         }
     }
 
     #[must_use]
     pub fn algorithm_id(&self) -> String {
         format!(
-            "tttd-v1/min-{}/target-{}/max-{}/window-{}",
-            self.min_size, self.target_size, self.max_size, self.window
+            "tttd-v1/min-{}/target-{}/max-{}/window-{}/{}/backup-{}/backup-last",
+            self.min_size,
+            self.target_size,
+            self.max_size,
+            self.window,
+            self.cut.id(),
+            self.backup_cut.id()
         )
     }
 }
@@ -76,8 +102,6 @@ pub fn chunk_ranges(data: &[u8], params: &Params) -> Vec<ChunkRange> {
         return Vec::new();
     }
 
-    let mask_d = pow2_mask_for_target(params.target_size);
-    let mask_d_prime = pow2_mask_for_target(params.target_size / 2);
     let remove_table = rabin::build_remove_table(params.window);
 
     let mut ranges = Vec::new();
@@ -98,12 +122,12 @@ pub fn chunk_ranges(data: &[u8], params: &Params) -> Vec<ChunkRange> {
             if len < params.min_size {
                 continue;
             }
-            if state & mask_d == 0 {
+            if params.backup_cut.fires(state) {
+                backup = Some(i + 1);
+            }
+            if params.cut.fires(state) {
                 cut_at = Some(i + 1);
                 break;
-            }
-            if backup.is_none() && state & mask_d_prime == 0 {
-                backup = Some(i + 1);
             }
         }
         let end = cut_at.or(backup).unwrap_or(limit);
@@ -113,18 +137,56 @@ pub fn chunk_ranges(data: &[u8], params: &Params) -> Vec<ChunkRange> {
     ranges
 }
 
+fn half_rule(rule: CutRule) -> CutRule {
+    match rule {
+        CutRule::Mask(mask) => CutRule::Mask(mask >> 1),
+        CutRule::Modulo(divisor) => CutRule::Modulo((divisor / 2).max(2)),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::algorithms::assert_valid_ranges;
 
     fn params(min: usize, target: usize, max: usize, window: usize) -> Params {
+        let cut = CutRule::for_target(min, target, SizeCalibration::MeanMatched);
         Params {
             min_size: min,
             target_size: target,
             max_size: max,
             window,
+            cut,
+            backup_cut: half_rule(cut),
         }
+    }
+
+    /// Review finding R1-10: when the main divisor never fires before
+    /// `max_size`, the chunk ends at the LAST backup breakpoint, not the first.
+    #[test]
+    fn uses_the_last_backup_breakpoint_like_the_paper() {
+        let data = pseudo_random_bytes(400_000, 5);
+        let mut p = params(64, 4096, 8192, 48);
+        // A main divisor that essentially never fires, and a backup that
+        // fires often, isolate the backup-selection rule.
+        p.cut = CutRule::Modulo(u64::MAX);
+        p.backup_cut = CutRule::Modulo(512);
+        let ranges = chunk_ranges(&data, &p);
+        let remove_table = rabin::build_remove_table(p.window);
+        let first = ranges[0];
+        // Recompute every backup position inside the first chunk's scan span.
+        let mut state = 0u64;
+        let mut last_backup = None;
+        for i in 0..p.max_size.min(data.len()) {
+            state = rabin::step(state, data[i]);
+            if i >= p.window {
+                state ^= remove_table[data[i - p.window] as usize];
+            }
+            if i + 1 >= p.min_size && p.backup_cut.fires(state) {
+                last_backup = Some(i + 1);
+            }
+        }
+        assert_eq!(Some(first.end), last_backup);
     }
 
     fn pseudo_random_bytes(len: usize, seed: u64) -> Vec<u8> {

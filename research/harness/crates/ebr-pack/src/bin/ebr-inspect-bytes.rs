@@ -36,6 +36,8 @@ struct InspectRow<'a> {
     artifact_bytes: u64,
     verified: bool,
     byte_accounting: &'a bytes::ByteAccounting,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    byte_accounting_cross_check: Option<bytes::IndexedCrossCheck>,
     counts: &'a counts::ArchiveCounts,
 }
 
@@ -54,6 +56,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     let repo_root = ebr_common::discover_repo_root(Path::new(env!("CARGO_MANIFEST_DIR")))
         .ok_or("could not locate the entrybound repo root from CARGO_MANIFEST_DIR")?;
+    ebr_common::heldout::assert_inputs_not_heldout(&repo_root, &[archive_path.as_path()])?;
     let env_id = EnvIndex::load(&repo_root)?.resolve(&env_name)?.to_string();
     let context = match args.get("run-id") {
         Some(run_id) => RunContext::with_run_id(experiment_id, run_id.to_string(), env_id),
@@ -65,6 +68,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let (counts, verified) =
         counts::from_bytes(&archive_bytes, layout, encrypted, password.as_deref())?;
 
+    let mut byte_accounting_cross_check = None;
     let byte_accounting = if encrypted {
         let password = password
             .as_deref()
@@ -73,7 +77,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         match layout {
             entrybound::eam::Layout::Indexed => {
-                bytes::indexed_byte_accounting(&archive_bytes, &counts.plans)?
+                let accounting = bytes::indexed_byte_accounting(&archive_bytes, &counts.plans)?;
+                byte_accounting_cross_check =
+                    Some(bytes::cross_check_indexed(&accounting, &counts)?);
+                accounting
             }
             entrybound::eam::Layout::Stream => bytes::stream_byte_accounting(&archive_bytes)?,
         }
@@ -85,6 +92,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         artifact_bytes: archive_bytes.len() as u64,
         verified,
         byte_accounting: &byte_accounting,
+        byte_accounting_cross_check,
         counts: &counts,
     };
     let payload = serde_json::to_value(&row)?;

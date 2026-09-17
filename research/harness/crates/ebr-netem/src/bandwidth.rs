@@ -16,6 +16,21 @@
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
+/// Minimum burst allowance, in seconds of the configured rate.
+///
+/// Harness review round 1, finding R1-13: `tokio::time::sleep` resolves to
+/// whole milliseconds and never wakes early, so every paced chunk oversleeps
+/// by up to about a millisecond. The bucket credits that oversleep back as
+/// tokens only up to its capacity; with a capacity smaller than
+/// `rate * oversleep` the credit is thrown away and the achieved rate falls
+/// short. That is why the provisional calibration achieved 62 Mbit/s at a
+/// configured 100 and 107 Mbit/s at 1000 (with `--burst-down-bytes 4096`,
+/// 16 KiB chunks): the achieved rates match whole-millisecond sleeps of
+/// 16 KiB chunks almost exactly. Linux `tc tbf` has the same constraint
+/// (its burst must be at least `rate / HZ`). The effective capacity is
+/// therefore never below `rate * MIN_BURST_SECONDS`.
+pub const MIN_BURST_SECONDS: f64 = 0.005;
+
 struct State {
     rate_bps: f64,
     capacity: f64,
@@ -43,13 +58,21 @@ impl TokenBucket {
     /// token count and the refill ceiling (how far ahead of the sustained
     /// rate a caller can burst after being idle).
     pub fn new(rate_bps: f64, burst_bytes: u64) -> Self {
-        let capacity = (burst_bytes.max(1)) as f64;
+        let capacity = (burst_bytes.max(1) as f64).max(rate_bps.max(0.0) * MIN_BURST_SECONDS);
         TokenBucket(Arc::new(Mutex::new(State {
             rate_bps: rate_bps.max(0.0),
             capacity,
             tokens: capacity,
             last_refill: Instant::now(),
         })))
+    }
+
+    /// The effective burst capacity in bytes (see [`MIN_BURST_SECONDS`]).
+    pub fn capacity(&self) -> f64 {
+        self.0
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .capacity
     }
 
     /// A bucket that never delays -- `rate_bps` and `burst_bytes` config

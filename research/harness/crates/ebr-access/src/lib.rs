@@ -21,11 +21,10 @@
 //!   pack/verify/unpack (and, opt-in, repack/export), sampling this
 //!   process's own memory at fixed intervals throughout each stage.
 //!
-//! Every measurement here also attaches
-//! [`ebr_common::measure::peak_memory`] where it is a single-shot reading is
-//! useful, so a caller can compare INDEXED random access's metadata-first
-//! footprint against STREAM's necessarily-more-sequential one, and both
-//! against the streaming probe's interval samples.
+//! Every measurement here attaches phase-scoped memory
+//! ([`ebr_common::measure::ScopedMemory`]; harness review round 1, R1-05)
+//! rather than the process-lifetime peak, which in this crate always
+//! includes planning and encoding the archive being measured.
 
 mod probe;
 mod random_access;
@@ -33,8 +32,9 @@ mod rng;
 mod stream;
 
 pub use probe::{
-    MemorySample, ProbeConfig, ProbeError, ProbeMeasurement, ProbeStage, StageMeasurement,
-    SyntheticGenerator, default_stages, run_probe, write_synthetic_file,
+    MemorySample, ProbeConfig, ProbeError, ProbeMeasurement, ProbeStage, SingleStageMeasurement,
+    StageMeasurement, SyntheticGenerator, default_stages, run_probe, run_single_stage,
+    write_synthetic_file,
 };
 pub use random_access::{
     ByteRangeReadMeasurement, RandomAccessConfig, RandomAccessMeasurement, RandomReadMeasurement,

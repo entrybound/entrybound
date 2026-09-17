@@ -14,11 +14,11 @@ production code path.
 | `fixed-size` | byte-count baseline, no content dependence | -- |
 | `fastcdc-2016` | Gear hash, sub-minimum cut-point skipping, two-level normalized chunking | Xia et al., *FastCDC*, USENIX ATC 2016 |
 | `fastcdc-2020` | same rule as `fastcdc-2016`, restructured to process two bytes per iteration for speed (same cut points) | Xia et al., *FastCDC 2.0*, IEEE TPDS 2020 |
-| `rabin` | Rabin-style polynomial rolling hash over a sliding window (GF(2) reduction) | Rabin (1981); Broder (1993); CDC use per Muthitacharoen et al. (LBFS), SOSP 2001 |
-| `buzhash` | cyclic-polynomial (rotate-and-XOR) rolling hash over a sliding window | Broder (1993) |
-| `ae` | Asymmetric Extremum: cut after `window` bytes pass without a new running-maximum, no hashing | Zhang et al., *AE*, IEEE INFOCOM 2015 |
-| `ram` | bounded-window backward-looking local-maximum rule (monotonic-deque sliding-window max), no hashing | Zhang et al., *RAM*, 2021 (see `src/algorithms/ram.rs` for exactly what is and is not reproduced) |
-| `tttd` | Two Thresholds, Two Divisors: a Rabin-fingerprint rolling hash with a backup checkpoint so pathological runs don't all pile up at `max_size` | Eshghi & Tang, HP Labs HPL-2005-30 (2005) |
+| `rabin` | Rabin-style polynomial rolling hash over a sliding window (GF(2) reduction); cut `fp mod D == D-1` with `D = target - min` by default | Rabin (1981); Broder (1993); CDC use per Muthitacharoen et al. (LBFS), SOSP 2001 |
+| `buzhash` | cyclic-polynomial (rotate-and-XOR) rolling hash over a sliding window; same default cut rule as `rabin` | Broder (1993) |
+| `ae` | Asymmetric Extremum: cut after `window` positions pass without a new running maximum, no hashing; `--value-width 1` (bytes, default) or `8` (8-byte big-endian values, as in the authors' destor code) | Zhang et al., *AE*, IEEE INFOCOM 2015 |
+| `ram` | Rapid Asymmetric Maximum: maximum byte `M` of a fixed window at the chunk start, then cut at the first later byte `>= M`, no hashing | Widodo, Lim & Atiquzzaman, *A new content-defined chunking algorithm for data deduplication in cloud storage*, FGCS 71 (2017) |
+| `tttd` | Two Thresholds, Two Divisors: a Rabin-fingerprint rolling hash with a backup divisor `D' = D/2`; at `max_size` the chunk ends at the *last* backup breakpoint, as in the paper's pseudocode | Eshghi & Tang, HP Labs HPL-2005-30 (2005) |
 
 Every algorithm's module doc comment (`src/algorithms/<name>.rs`) cites its
 paper in full and documents its exact construction, including where this
@@ -29,10 +29,25 @@ reproduction of a published rule (`ae`/`ram`/`tttd`), and any place a
 constant is calibrated empirically rather than taken from the paper (`ae`/
 `ram`'s `window` default -- see `src/algorithms/ae.rs`).
 
+**Harness review round 1 corrections** (`research/harness/harness-review-round1.md`,
+findings R1-09 to R1-11): `rabin`/`buzhash`/`tttd` previously cut on a
+power-of-two mask equal to `target`, whose realized mean at the production
+presets (`min = target/4`, `max = 4*target`) is about 1.2x `target`, while
+FastCDC and `gear-norm-v1` land near `target` -- dedup comparisons were at
+different realized chunk sizes. The default (`--size-calibration mean`) now
+uses a modulo divisor `D = target - min` whose expected size is within 1%
+of `target`; `--size-calibration pow2` reproduces the old rule. `tttd` now
+uses the last backup breakpoint (the paper's rule) instead of the first.
+`ram` previously carried a wrong citation and a sliding trailing-window rule
+that is not RAM; it now implements Widodo et al.'s fixed-window rule. `ae`
+gains the 8-byte value width. Every calibration is unit-tested on random
+input, and `dedup` rows now report `mean_chunk_bytes`: algorithms must be
+compared at matched *realized* mean chunk sizes, whatever the calibration.
+
 Every algorithm produces a stable, self-describing algorithm id embedding
 its parameters, mirroring production's `chunker_id` convention, e.g.
 `fastcdc-2016/min-131072/avg-524288/max-2097152/nc-2` or
-`rabin-cdc-v1/min-131072/target-524288/max-2097152/window-48`.
+`rabin-cdc-v1/min-131072/target-524288/max-2097152/window-48/cut-mod-393216`.
 
 ## Shared parameters
 
@@ -43,9 +58,12 @@ runs across algorithms at the same profile are directly comparable. Two
 optional flags override an algorithm's own extra parameter:
 
 - `--window <bytes>` -- `rabin` (default 48), `buzhash` (default 64), `ae`
-  and `ram` (default equal to the profile's target size; see
-  `src/algorithms/ae.rs` for how that default was calibrated).
+  (default `target - 256` for `--value-width 1`, `target / (e - 1)` for
+  `--value-width 8`) and `ram` (default `target - 256`); see
+  `src/algorithms/ae.rs` and `ram.rs` for the calibrations.
 - `--normalization <0-3>` -- `fastcdc-2016`/`fastcdc-2020` (default 2).
+- `--size-calibration mean|pow2` -- `rabin`/`buzhash`/`tttd` cut rule (default `mean`).
+- `--value-width 1|8` -- `ae` compared value width (default 1).
 
 `fixed-size` ignores both and uses the profile's target size as its exact
 chunk size. `tttd` always uses `rabin`'s default 48-byte window internally
@@ -59,6 +77,7 @@ ebr-chunk <boundaries|dedup|shift-stability|random-access> \
           --item-path <file> --experiment-id <id> --env-name <name> \
           --algorithm <name> [--profile fast|balanced|dense|extreme] \
           [--window N] [--normalization 0-3] \
+          [--size-calibration mean|pow2] [--value-width 1|8] \
           [--run-id <id>] [--out <path>] [subcommand-specific flags]
 ```
 

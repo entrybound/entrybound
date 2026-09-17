@@ -8,16 +8,17 @@
 //! ```text
 //! ebr-pack --item-path <dir> --experiment-id <id> --env-name <name>
 //!          [--profile fast|balanced|dense|extreme] [--layout indexed|stream]
-//!          [--stream-window <u64>] [--encrypt true|false]
+//!          [--stream-window auto|<u64>] [--encrypt true|false] [--chunking-pass true|false]
 //!          [--deterministic-check <N>] [--archive-out <path>]
 //!          [--run-id <id>] [--out <path>]
 //! ```
 
 use ebr_common::cli::Args;
 use ebr_common::hash::sha256_hex;
+use ebr_common::measure::ScopedMemory;
 use ebr_common::results::ResultWriter;
 use ebr_common::runenv::{EnvIndex, RunContext};
-use ebr_pack::bytes::ByteAccounting;
+use ebr_pack::bytes::{ByteAccounting, IndexedCrossCheck};
 use ebr_pack::counts::ArchiveCounts;
 use ebr_pack::encrypt::CredentialSummary;
 use ebr_pack::pack::{DeterminismCheck, PackRequest, PhaseSeconds};
@@ -49,10 +50,23 @@ struct PackRow<'a> {
     phases: PhaseSeconds,
     writing_seconds: f64,
     byte_accounting: &'a ByteAccounting,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    byte_accounting_cross_check: Option<IndexedCrossCheck>,
     counts: &'a ArchiveCounts,
-    peak_rss_bytes: u64,
-    peak_rss_is_true_peak: bool,
-    peak_rss_method: &'static str,
+    /// Memory of the production plan + encode phase only (see
+    /// `ebr_pack::pack`'s module docs). Use this, not the lifetime peak.
+    pack_memory: ScopedMemory,
+    /// Whole-process lifetime high-water mark at the end of the run,
+    /// including harness verification, accounting, and determinism
+    /// repeats. Diagnostic only.
+    process_lifetime_peak_rss_bytes: u64,
+    process_lifetime_peak_rss_is_true_peak: bool,
+    process_lifetime_peak_rss_method: &'static str,
+    /// This binary links entrybound with the default-off
+    /// `research-internals` feature and the harness workspace's own
+    /// Cargo.lock (see `research/harness/lock_parity.py`); timings are
+    /// not a substitute for the production CLI build.
+    build_note: &'static str,
     #[serde(skip_serializing_if = "Option::is_none")]
     credentials: Option<CredentialSummary>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -68,12 +82,17 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let env_name = args.require("env-name")?.to_string();
     let profile = parse_profile(args.get("profile").unwrap_or("balanced"))?;
     let layout = parse_layout(args.get("layout").unwrap_or("indexed"))?;
-    let stream_window = args
-        .get("stream-window")
-        .map(|v| v.parse::<u64>())
-        .transpose()
-        .map_err(|e| format!("--stream-window must be a u64: {e}"))?;
+    let stream_window = match args.get("stream-window") {
+        None => None,
+        Some("auto") => Some(entrybound::ecf::StreamWindow::Auto),
+        Some(value) => Some(entrybound::ecf::StreamWindow::Ceiling(
+            value
+                .parse::<u64>()
+                .map_err(|e| format!("--stream-window must be auto or a u64: {e}"))?,
+        )),
+    };
     let encrypt = parse_bool_flag(args.get("encrypt"), false)?;
+    let chunking_pass = parse_bool_flag(args.get("chunking-pass"), false)?;
     let deterministic_check = args
         .get("deterministic-check")
         .map(|v| v.parse::<u32>())
@@ -82,6 +101,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     let repo_root = ebr_common::discover_repo_root(Path::new(env!("CARGO_MANIFEST_DIR")))
         .ok_or("could not locate the entrybound repo root from CARGO_MANIFEST_DIR")?;
+    ebr_common::heldout::assert_inputs_not_heldout(&repo_root, &[item_path.as_path()])?;
     let env_id = EnvIndex::load(&repo_root)?.resolve(&env_name)?.to_string();
     let context = match args.get("run-id") {
         Some(run_id) => RunContext::with_run_id(experiment_id, run_id.to_string(), env_id),
@@ -93,6 +113,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         layout,
         stream_window,
         encrypt,
+        chunking_pass,
     };
 
     let outcome = ebr_pack::pack::pack_once(&item_path, &request)?;
@@ -144,12 +165,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     if let Some(creds) = &outcome.credentials {
         match creds.persist_password(&archive_path) {
             Ok(sidecar) => credentials_password_file = Some(sidecar.to_string_lossy().into_owned()),
-            Err(e) => eprintln!(
-                "ebr-pack: warning: could not persist test password sidecar: {e}"
-            ),
+            Err(e) => eprintln!("ebr-pack: warning: could not persist test password sidecar: {e}"),
         }
     }
 
+    let mut byte_accounting_cross_check = None;
     let byte_accounting = if encrypt {
         let password = outcome
             .credentials
@@ -161,14 +181,18 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         match layout {
             entrybound::eam::Layout::Indexed => {
-                bytes::indexed_byte_accounting(&outcome.bytes, &outcome.counts.plans)?
+                let accounting =
+                    bytes::indexed_byte_accounting(&outcome.bytes, &outcome.counts.plans)?;
+                byte_accounting_cross_check =
+                    Some(bytes::cross_check_indexed(&accounting, &outcome.counts)?);
+                accounting
             }
             entrybound::eam::Layout::Stream => bytes::stream_byte_accounting(&outcome.bytes)?,
         }
     };
 
-    let peak_rss = ebr_common::measure::peak_memory()
-        .map_err(|e| format!("measuring peak memory: {e}"))?;
+    let peak_rss =
+        ebr_common::measure::peak_memory().map_err(|e| format!("measuring peak memory: {e}"))?;
 
     let row = PackRow {
         profile: profile.as_str(),
@@ -182,10 +206,13 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         phases: outcome.phases,
         writing_seconds,
         byte_accounting: &byte_accounting,
+        byte_accounting_cross_check,
         counts: &outcome.counts,
-        peak_rss_bytes: peak_rss.bytes,
-        peak_rss_is_true_peak: peak_rss.is_true_peak,
-        peak_rss_method: peak_rss.method,
+        pack_memory: outcome.pack_memory,
+        process_lifetime_peak_rss_bytes: peak_rss.bytes,
+        process_lifetime_peak_rss_is_true_peak: peak_rss.is_true_peak,
+        process_lifetime_peak_rss_method: peak_rss.method,
+        build_note: ebr_pack::BUILD_NOTE,
         credentials: outcome.credentials.as_ref().map(|c| c.summary()),
         credentials_password_file,
         determinism,

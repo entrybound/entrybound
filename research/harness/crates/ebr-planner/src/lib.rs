@@ -22,13 +22,14 @@
 pub mod exhaustive;
 pub mod strategies;
 
+use entrybound::chunker::ChunkingParameters;
 use entrybound::diagnostics::Diagnostic;
 use entrybound::eam::{
     Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, DecodeRequirements, Digest,
     DigestAlgorithm, Entry, EntryData, EntryIdentity, EntrySet, FeatureSet, FidelityReport,
     IdentityProfile, Index, Layout, LogicalPath, MetadataSet, ResourceBudget,
 };
-use entrybound::identity::build_content;
+use entrybound::identity::{build_content, build_content_from_ranges};
 use entrybound::planner::{CompressionProfile, UNPLANNED_PLAN_ID};
 use entrybound::research::codec;
 use entrybound::research::planner::{ArchiveTrace, ChunkTrace, PlannerVersion, trace_archive};
@@ -51,14 +52,65 @@ pub struct NamedInput {
 /// returning); this is deliberately the *pre-planning* state
 /// `PlannerVersion::plan`/`trace_archive` both expect.
 pub fn archive_for(inputs: &[NamedInput]) -> Result<Archive, Diagnostic> {
+    let mut built = Vec::with_capacity(inputs.len());
+    for input in inputs {
+        built.push((
+            input.name,
+            build_content(&input.bytes, input.chunk_size, UNPLANNED_PLAN_ID)?,
+        ));
+    }
+    assemble_unplanned(built)
+}
+
+/// The Chunk ranges production's own content-defined chunker assigns to one
+/// object's bytes under `profile`: `chunker::select_parameters` over the
+/// profile's `chunking_candidates()`, then `chunker::chunk_ranges` -- the
+/// same two calls `entrybound::archive::plan_directory` makes for a
+/// single-object item.
+pub fn production_chunk_ranges(
+    bytes: &[u8],
+    profile: CompressionProfile,
+) -> Result<(ChunkingParameters, Vec<std::ops::Range<usize>>), Diagnostic> {
+    if bytes.is_empty() {
+        return Ok((profile.chunking_candidates()[0], Vec::new()));
+    }
+    let refs: [&[u8]; 1] = [bytes];
+    let evaluation = entrybound::chunker::select_parameters(&refs, profile.chunking_candidates())?;
+    let ranges = entrybound::chunker::chunk_ranges(bytes, evaluation.parameters)?
+        .iter()
+        .map(|range| range.start..range.end)
+        .collect();
+    Ok((evaluation.parameters, ranges))
+}
+
+/// [`archive_for`] for one object split at explicit Chunk ranges (typically
+/// [`production_chunk_ranges`]), so planner research sees the Chunks
+/// production would plan rather than one whole-file Chunk.
+pub fn archive_for_ranges(
+    name: &'static str,
+    bytes: &[u8],
+    ranges: &[std::ops::Range<usize>],
+) -> Result<Archive, Diagnostic> {
+    let built = vec![(
+        name,
+        build_content_from_ranges(bytes, ranges, UNPLANNED_PLAN_ID)?,
+    )];
+    assemble_unplanned(built)
+}
+
+type BuiltContent = (
+    entrybound::eam::ContentObject,
+    BTreeMap<Digest, entrybound::eam::Chunk>,
+);
+
+fn assemble_unplanned(built: Vec<(&'static str, BuiltContent)>) -> Result<Archive, Diagnostic> {
     let mut objects = BTreeMap::new();
     let mut chunks = BTreeMap::new();
     let mut entries = Vec::new();
-    for input in inputs {
-        let (object, object_chunks) =
-            build_content(&input.bytes, input.chunk_size, UNPLANNED_PLAN_ID)?;
+    for (name, (object, object_chunks)) in built {
+        let input_name = name;
         entries.push(Entry::new(
-            LogicalPath::from_utf8([input.name])?,
+            LogicalPath::from_utf8([input_name])?,
             EntryData::File {
                 content: ContentRef::Internal(object.logical_digest),
             },

@@ -32,6 +32,36 @@ Codec/transform/reconstruction research. Evaluates, over the same input:
 | `matrix` | `candidates(plaintext)` -- every production and external codec at a representative parameter set, over one buffer. `chunk_matrix(parameters, plaintext)` -- splits into chunks with production's real `chunk_ranges` and runs `candidates` per chunk. `transform_false_positive_analysis(plaintext)` -- applies every structural transform (production's `byte-shuffle` plus this crate's own), compresses with zstd level 3 before and after, and flags a transform as a false positive when it does not reduce the compressed size. |
 | `lib.rs` | `compare_zstd_level` -- the original, narrower production-vs-external zstd comparison this crate started from; kept for the `compare` subcommand and its own test. |
 
+## Fairness and resource reporting (harness review round 1, R1-12)
+
+Every `RoundtripResult`/`ExternalCodecResult` and matrix row now also
+carries `window_bytes` (match window / dictionary / block / PPMd model size
+-- for zstd parsed from the encoded frame header itself, which is the
+content size for a single-segment frame), `threads` (always 1: no codec
+here is built or configured multi-threaded), `container` (what framing the
+encoded size includes; production payloads have none), and phase-scoped
+`encode_memory`/`decode_memory` (`ebr_common::measure::ScopedMemory`; each
+includes the phase's output buffer). Earlier revisions reported sizes and
+times only, so a candidate's gain could not be separated from a larger
+window or decoder memory. Configurations were also corrected:
+
+- PPMd ran only at order 6 with a 1 MiB model (a configuration no PPMd tool
+  ships, forcing model restarts on all but tiny inputs). It now runs at
+  7-Zip levels 5/7/9 (order 6/16/32, 16/64/256 MiB) including 7-Zip's
+  model-size reduction for small inputs (`external::ppmd_7zip_parameters`).
+- `zstd-window(external,level=19,window_log=24,ldm=off)` is the
+  window-matched control for the LDM candidate, so an LDM gain is not
+  confused with a window 16x larger than production's 1 MiB.
+- brotli quality 11 also runs at the command-line default `lgwin` 24.
+- lz4 uses the `lz4` command line's 4 MiB blocks without block checksums.
+- `deflate`/`zlib` are labeled with their backend (`miniz_oxide`, the same
+  one a production CLI release build links; not zlib/zlib-ng/libdeflate).
+
+`object-matrix`/`chunk-matrix` accept `--candidate <label-substring>`; the
+filter is applied before a candidate runs, so an experiment can run one
+candidate per process for a clean memory figure (in-process scoped memory
+can be understated by allocator reuse). Every row has a stable `label`.
+
 Every `RoundtripResult`/`ExternalCodecResult` carries `encode_seconds`/
 `decode_seconds`: a single in-process wall-clock sample
 (`ebr_common::timing::Stopwatch`, so a monotonic clock) around that one
@@ -90,7 +120,7 @@ entirely, not to support a timing claim.
 ```text
 ebr-codec <subcommand> --item-path <file> --experiment-id <id> --env-name <name> \
           [--level <i32>] [--profile <fast|balanced|dense|extreme>] \
-          [--run-id <id>] [--out <path>]
+          [--candidate <label-substring>] [--run-id <id>] [--out <path>]
 ```
 
 The subcommand is the first positional argument. `compare` is assumed when

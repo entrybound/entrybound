@@ -45,6 +45,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     let repo_root = ebr_common::discover_repo_root(Path::new(env!("CARGO_MANIFEST_DIR")))
         .ok_or("could not locate the entrybound repo root from CARGO_MANIFEST_DIR")?;
+    ebr_common::heldout::assert_inputs_not_heldout(&repo_root, &[archive_path.as_path()])?;
     let env_id = EnvIndex::load(&repo_root)?.resolve(&env_name)?.to_string();
     let context = match args.get("run-id") {
         Some(run_id) => RunContext::with_run_id(experiment_id, run_id.to_string(), env_id),
@@ -60,12 +61,16 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         layout,
         encrypted,
         password,
+        staging_limits: None,
     };
     let measurement = unpack_measure(&archive_path, &scratch_dir, &request)?;
 
     let mut payload = serde_json::to_value(&measurement)?;
     if let serde_json::Value::Object(map) = &mut payload {
-        map.insert("layout".to_owned(), serde_json::Value::String(layout_str(layout).to_owned()));
+        map.insert(
+            "layout".to_owned(),
+            serde_json::Value::String(layout_str(layout).to_owned()),
+        );
         map.insert("encrypted".to_owned(), serde_json::Value::Bool(encrypted));
         map.insert(
             "scratch_dir".to_owned(),

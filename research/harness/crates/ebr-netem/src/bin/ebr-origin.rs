@@ -31,6 +31,20 @@ async fn main() -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
+    // Harness review round 1, finding R1-01: the origin reads every file
+    // under --root, so --root must not be (or be inside) a held-out root.
+    let Some(repo_root) =
+        ebr_common::discover_repo_root(std::path::Path::new(env!("CARGO_MANIFEST_DIR")))
+    else {
+        eprintln!("ebr-origin: could not locate the entrybound repo root");
+        return ExitCode::FAILURE;
+    };
+    if let Err(error) =
+        ebr_common::heldout::assert_inputs_not_heldout(&repo_root, &[config.root.as_path()])
+    {
+        eprintln!("ebr-origin: {error}");
+        return ExitCode::FAILURE;
+    }
     let listen = config.listen;
     let listener = match tokio::net::TcpListener::bind(listen).await {
         Ok(listener) => listener,

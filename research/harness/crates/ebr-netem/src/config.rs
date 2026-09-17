@@ -226,6 +226,8 @@ pub struct ProxyConfig {
     pub setup_rtt_multiple: f64,
     pub loss_p: f64,
     pub loss_rto: Duration,
+    /// `--loss-unit packet|chunk` (default `packet`); see `loss.rs`.
+    pub loss_unit: crate::loss::LossUnit,
     pub seed: u64,
     pub max_connections: usize,
     pub cache_mode: CacheMode,
@@ -301,6 +303,16 @@ impl ProxyConfig {
             setup_rtt_multiple: parse_flag(args, "setup-rtt-multiple", 1.0f64)?,
             loss_p: parse_flag(args, "loss-p", 0.0f64)?,
             loss_rto: parse_millis_flag(args, "loss-rto-ms", 200)?,
+            loss_unit: match args.get("loss-unit") {
+                None => crate::loss::LossUnit::Packet {
+                    mss_bytes: crate::loss::DEFAULT_MSS_BYTES,
+                },
+                Some(value) => crate::loss::LossUnit::parse(value).ok_or_else(|| {
+                    ConfigError(format!(
+                        "--loss-unit: expected packet or chunk, got {value:?}"
+                    ))
+                })?,
+            },
             seed: parse_flag(args, "seed", 42u64)?,
             max_connections: parse_flag(args, "max-connections", 64usize)?,
             cache_mode,

@@ -126,10 +126,10 @@ but never fed back into production:
 
 ## Non-goals (for now)
 
-- `archive_for` only builds single-chunk-per-input, fixed-chunk-size
-  archives (one `Entry::File` per named input, `chunk_size` equal to the
-  whole input). It does not yet drive multi-chunk objects or JPEG region
-  candidates (`entrybound::research::planner::trace_jpeg_object`) -- both
+- `archive_for` builds fixed-chunk-size archives for tests, and
+  `archive_for_ranges` + `production_chunk_ranges` build the
+  production-chunked single-object archive the binary uses. Neither drives
+  multi-object items or JPEG region candidates (`entrybound::research::planner::trace_jpeg_object`) -- both
   reachable through the same `entrybound::research::planner` surface, just
   not wired up here yet.
 - `search_cohort`/`select_group_lookback` are library-level: they take an
@@ -148,27 +148,37 @@ but never fed back into production:
 ```text
 ebr-planner --item-path <file> --experiment-id <id> --env-name <name> \
             [--profile fast|balanced|dense|extreme] [--run-id <id>] [--out <path>] \
-            [--patience <n>] [--csv-out <path>]
+            [--patience <n>] [--csv-out <path>] [--max-chunks <n>]
 ```
 
-Reads `--item-path` fully into memory as a single-object, single-chunk
-archive input and appends `ebr.harness.raw.v1` JSONL rows (to `--out`, or
-stdout if omitted). Every row's `payload.kind` says which of these it is:
+Reads `--item-path` fully into memory and splits it into the Chunks
+production's own chunker assigns under `--profile`
+(`production_chunk_ranges`: `chunker::select_parameters` over the profile's
+`chunking_candidates()`, then `chunker::chunk_ranges`). **Harness review
+round 1, finding R1-07:** earlier revisions planned the whole file as one
+Chunk, which production never does for anything larger than one maximum
+Chunk, so their regret rows did not describe production decisions; the
+per-generation regret rows also mixed cost bases (`selected_complete_cost`
+in the generation's own basis next to a v5-basis `optimal_cost`), and a
+reconstructive selection silently produced negative regret. Rows now
+(`payload.kind`):
 
 | `kind` | Count per invocation | What it carries |
 |---|---|---|
-| (none -- a `DriftReport`) | 6 (one per `PlannerVersion`) | unchanged original behavior: `PlannedAssignment::differences` against the real planner |
-| `exhaustive_search` | 1 | the full `ChunkExhaustiveSearch` (every candidate `SearchCaps::full()` describes, `caps`, `optimal`, `truncated`) |
-| `exhaustive_regret` | 6 (one per `PlannerVersion`) | that generation's real selected candidate's stage and cost, the exhaustive optimum, and `regret` |
-| `greedy` | 1 | `select_greedy`'s chosen candidate, how many shapes it evaluated, and `patience` |
-| `tree` | 1 | `select_by_tree`'s choice, its cost, and the exhaustive optimum |
+| (none -- a `DriftReport`) | 6 | `PlannedAssignment::differences` against the real planner, over the production-chunked archive |
+| `chunking` | 1 | chunker id, Chunk count, `--max-chunks` cap and whether it truncated the per-chunk rows, and the stage scope |
+| `exhaustive_search` | 1 per searched Chunk | the full `ChunkExhaustiveSearch` |
+| `exhaustive_regret` | 6 per searched Chunk | `selected_trace_cost` with its `trace_cost_basis`, `selected_recosted_cost` in the search's own basis, `optimal_cost`, `in_scope` (no reconstructive step), and `regret` (`None` when out of scope) |
+| `greedy`, `tree` | 1 each per searched Chunk | the alternative strategies against that Chunk's optimum |
+| `archive_regret` | 6 | `ArchiveRegretBounds`: the archive-level Chunk-stage cost with each distinct TransformPlan record charged once, and exact lower/upper bounds on the true archive-level regret |
 
-That is 15 JSONL rows for one invocation -- **this binary was already
-multi-row-per-invocation before this crate added the last 8**, so
-`research/harness/README.md`'s "`--out` left unset -> exactly one JSON line"
-note does not apply to `ebr-planner`; drive it with `--out` to a per-run file
-(or per-`{rep}`/`{seed}` file) rather than relying on `stdout_json`
-extraction.
+`--max-chunks <n>` caps how many Chunks (in order) are searched; it is
+recorded in the `chunking` row and flagged `truncated`. The exhaustive
+universe's "strict superset" claim is enforced by
+`every_production_chunk_candidate_is_in_the_exhaustive_universe` (all
+profiles and generations), not only asserted in prose. Regret rows cover the
+Chunk stage; cohort and JPEG-region overrides are covered by the drift rows
+and by `search_cohort` at library level.
 
 `--patience` (default `3`) is `select_greedy`'s pruning patience.
 `--csv-out <path>`, if given, appends one candidate-regret CSV row per

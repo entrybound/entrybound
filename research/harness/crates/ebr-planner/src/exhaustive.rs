@@ -556,6 +556,138 @@ pub fn cohort_regret(
     i128::from(cohort_selected_cost(trace)) - i128::from(search.optimal_cost)
 }
 
+// ---------------------------------------------------------------------
+// Archive-level (chunk-stage) regret with plan records charged once.
+// ---------------------------------------------------------------------
+
+/// One chunk's production selection, costed for archive-level aggregation.
+#[derive(Clone, Debug)]
+pub struct ChunkSelection<'a> {
+    pub plan: &'a TransformPlan,
+    /// The selected candidate's codec output length.
+    pub payload_bytes: u64,
+    /// Reconstruction side data the selected candidate carries (v5 DEFLATE).
+    pub side_data_bytes: u64,
+}
+
+/// Archive-level chunk-stage cost bounds for one planner generation.
+///
+/// Harness review round 1, finding R1-07: per-chunk regret charges every
+/// candidate's TransformPlan record once *per chunk*, but an archive stores
+/// each distinct plan record once. Summing per-chunk regret over an item's
+/// chunks therefore does not measure the complete archive cost. The true
+/// archive-level optimum (payloads plus the records of the distinct plans
+/// used) is a set-cover-like problem, so this reports exact bounds instead:
+///
+/// - `selected_cost`: Σ selected payload + Σ side data + Σ record of each
+///   distinct selected plan.
+/// - `optimum_upper_bound`: the cheaper of two feasible assignments (per-chunk
+///   argmin of `payload + record`, and per-chunk argmin of `payload`), each
+///   charged its distinct records once. The true optimum is `<=` this.
+/// - `optimum_lower_bound`: Σ per-chunk minimum payload + the smallest record
+///   of any candidate (at least one record must be stored). The true
+///   optimum is `>=` this.
+/// - `regret_lower_bound = selected - upper_bound` and
+///   `regret_upper_bound = selected - lower_bound` bracket the true regret.
+///
+/// This covers the Chunk stage only: cohort (dictionary/lookback) and JPEG
+/// region stages can later override a chunk's plan, and are measured by
+/// [`search_cohort`] and the drift reports instead.
+#[derive(Clone, Debug, Serialize)]
+pub struct ArchiveRegretBounds {
+    pub chunk_count: usize,
+    pub selected_cost: u64,
+    pub selected_distinct_plans: usize,
+    pub optimum_upper_bound: u64,
+    pub optimum_lower_bound: u64,
+    pub regret_lower_bound: i128,
+    pub regret_upper_bound: i128,
+}
+
+fn plan_key(codec: CodecChoice, transform: TransformKind) -> String {
+    format!("{codec:?}/{transform:?}")
+}
+
+/// Computes [`ArchiveRegretBounds`] from each chunk's exhaustive search and
+/// production selection (same order, same length).
+pub fn archive_regret_bounds(
+    searches: &[&ChunkExhaustiveSearch],
+    selections: &[ChunkSelection<'_>],
+) -> Result<ArchiveRegretBounds, Diagnostic> {
+    assert_eq!(
+        searches.len(),
+        selections.len(),
+        "one selection per searched chunk"
+    );
+    let mut selected_cost = 0u64;
+    let mut selected_records: BTreeMap<u64, u64> = BTreeMap::new();
+    for selection in selections {
+        selected_cost = selected_cost
+            .saturating_add(selection.payload_bytes)
+            .saturating_add(selection.side_data_bytes);
+        selected_records
+            .entry(selection.plan.plan_id)
+            .or_insert(encoded_transform_plan_v2_len(selection.plan)?);
+    }
+    let selected_distinct_plans = selected_records.len();
+    selected_cost = selected_records
+        .values()
+        .fold(selected_cost, |sum, record| sum.saturating_add(*record));
+
+    let assignment_cost = |pick: &dyn Fn(&ExhaustiveCandidate) -> u64| -> u64 {
+        let mut payload = 0u64;
+        let mut records: BTreeMap<String, u64> = BTreeMap::new();
+        for search in searches {
+            if let Some(best) = search.candidates.iter().min_by_key(|c| pick(c)) {
+                payload = payload.saturating_add(best.payload_bytes);
+                records
+                    .entry(plan_key(best.codec, best.transform))
+                    .or_insert(best.plan_record_bytes);
+            }
+        }
+        records
+            .values()
+            .fold(payload, |sum, r| sum.saturating_add(*r))
+    };
+    let optimum_upper_bound =
+        assignment_cost(&|c| c.complete_cost).min(assignment_cost(&|c| c.payload_bytes));
+
+    let mut optimum_lower_bound = 0u64;
+    let mut min_record = u64::MAX;
+    for search in searches {
+        if let Some(min_payload) = search.candidates.iter().map(|c| c.payload_bytes).min() {
+            optimum_lower_bound = optimum_lower_bound.saturating_add(min_payload);
+        }
+        if let Some(record) = search.candidates.iter().map(|c| c.plan_record_bytes).min() {
+            min_record = min_record.min(record);
+        }
+    }
+    if !searches.is_empty() && min_record != u64::MAX {
+        optimum_lower_bound = optimum_lower_bound.saturating_add(min_record);
+    }
+
+    Ok(ArchiveRegretBounds {
+        chunk_count: searches.len(),
+        selected_cost,
+        selected_distinct_plans,
+        optimum_upper_bound,
+        optimum_lower_bound,
+        regret_lower_bound: i128::from(selected_cost) - i128::from(optimum_upper_bound),
+        regret_upper_bound: i128::from(selected_cost) - i128::from(optimum_lower_bound),
+    })
+}
+
+/// Whether a selected plan is inside the chunk-level search's scope (no
+/// reconstructive transform step; see the module docs' "Scope").
+pub fn plan_in_chunk_search_scope(plan: &TransformPlan) -> Result<bool, Diagnostic> {
+    for step in plan.transforms.iter() {
+        if entrybound::research::transform::is_reconstructive(step)? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
 /// Builds a `Digest` label for research constructs (DP segments, ad hoc
 /// cohorts) that need *a* stable, deterministic identity but are not
 /// production cohorts with their own similarity-derived `cohort_id`.
@@ -664,5 +796,92 @@ mod tests {
             search.candidates[search.optimal].codec,
             CodecChoice::Store
         ));
+    }
+
+    /// Harness review round 1, finding R1-07: the "strict superset" claim is
+    /// checked mechanically, not asserted in prose. Every non-reconstructive
+    /// plan any profile/generation's Chunk stage evaluates must be a member of
+    /// the exhaustive universe.
+    #[test]
+    fn every_production_chunk_candidate_is_in_the_exhaustive_universe() {
+        let caps = SearchCaps::full();
+        let universe: Vec<TransformPlan> = candidate_shapes(&caps)
+            .into_iter()
+            .map(|(codec, transform)| codec.plan(transform.step().unwrap()).unwrap())
+            .collect();
+        let numeric: Vec<u8> = (0_u32..4_096).flat_map(u32::to_le_bytes).collect();
+        let text: Vec<u8> = b"superset check; entrybound planner candidates; "
+            .iter()
+            .cycle()
+            .take(16 * 1024)
+            .copied()
+            .collect();
+        for bytes in [numeric, text] {
+            for profile in [
+                CompressionProfile::Fast,
+                CompressionProfile::Balanced,
+                CompressionProfile::Dense,
+                CompressionProfile::Extreme,
+            ] {
+                for version in entrybound::research::planner::PlannerVersion::ALL {
+                    let trace =
+                        entrybound::research::planner::trace_chunk(profile, version, &bytes)
+                            .unwrap();
+                    for candidate in &trace.candidates {
+                        if !plan_in_chunk_search_scope(&candidate.plan).unwrap() {
+                            continue;
+                        }
+                        assert!(
+                            universe.contains(&candidate.plan),
+                            "{profile:?}/{version:?}: production candidate {} is outside the \
+                             exhaustive universe",
+                            candidate.plan.identifier
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn archive_regret_bounds_charge_shared_plan_records_once() {
+        let a: Vec<u8> = b"alpha alpha alpha; "
+            .iter()
+            .cycle()
+            .take(8192)
+            .copied()
+            .collect();
+        let b: Vec<u8> = b"beta beta beta beta; "
+            .iter()
+            .cycle()
+            .take(8192)
+            .copied()
+            .collect();
+        let caps = SearchCaps::full();
+        let search_a = search_chunk(&a, &caps).unwrap();
+        let search_b = search_chunk(&b, &caps).unwrap();
+        let plan = zstd_plan(3).unwrap();
+        let selections = [
+            ChunkSelection {
+                plan: &plan,
+                payload_bytes: encode_payload(&plan, &a).unwrap().len() as u64,
+                side_data_bytes: 0,
+            },
+            ChunkSelection {
+                plan: &plan,
+                payload_bytes: encode_payload(&plan, &b).unwrap().len() as u64,
+                side_data_bytes: 0,
+            },
+        ];
+        let bounds = archive_regret_bounds(&[&search_a, &search_b], &selections).unwrap();
+        let record = encoded_transform_plan_v2_len(&plan).unwrap();
+        assert_eq!(bounds.selected_distinct_plans, 1);
+        assert_eq!(
+            bounds.selected_cost,
+            selections[0].payload_bytes + selections[1].payload_bytes + record
+        );
+        assert!(bounds.optimum_lower_bound <= bounds.optimum_upper_bound);
+        assert!(bounds.regret_lower_bound <= bounds.regret_upper_bound);
+        assert!(bounds.regret_upper_bound >= 0);
     }
 }

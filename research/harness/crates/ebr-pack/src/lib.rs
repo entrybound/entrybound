@@ -9,9 +9,9 @@
 //!
 //! # Module map
 //!
-//! - [`pack`]: `capture`/`chunking`/`planning`/`encoding` phase-timed
-//!   pack pipeline (INDEXED, STREAM, and encrypted-INDEXED), plus a
-//!   deterministic-repeat check.
+//! - [`pack`]: the production `planning`/`encoding` pack pipeline
+//!   (INDEXED, STREAM, and encrypted-INDEXED) with phase-scoped memory,
+//!   plus a deterministic-repeat check.
 //! - [`bytes`]: the exact section-level byte-accounting walk. Granular
 //!   (down to individual Chunk frame headers/payloads, attributed by codec
 //!   and transform) for plaintext INDEXED archives; a coarser, still
@@ -43,6 +43,10 @@ pub mod unpack;
 pub mod verify;
 
 use entrybound::eam::Layout;
+
+/// Carried in every measurement row this crate's binaries write.
+pub const BUILD_NOTE: &str = "research harness build: entrybound with research-internals \
+    and research/harness/Cargo.lock; timing is not a production-CLI timing";
 use entrybound::planner::CompressionProfile;
 
 /// Parses `--profile fast|balanced|dense|extreme` (default `balanced`).

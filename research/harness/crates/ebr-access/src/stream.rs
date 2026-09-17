@@ -32,7 +32,7 @@
 
 use std::path::PathBuf;
 
-use ebr_common::measure::peak_memory;
+use ebr_common::measure::{ScopedMemory, measure_scoped};
 use ebr_common::timing::Stopwatch;
 use entrybound::archive::{ExtractionPolicy, ExtractionReport, ListedEntry, list, unpack_stream};
 use entrybound::diagnostics::Diagnostic;
@@ -107,8 +107,12 @@ pub struct StreamMeasurement {
     pub unpacked_logical_bytes: u64,
     pub unpack_pass: StreamPassStats,
 
-    pub peak_memory_bytes: Option<u64>,
-    pub peak_memory_is_true_peak: bool,
+    /// Per-pass memory scoped to that pass alone (harness review round 1,
+    /// R1-05; the encoded archive stays in memory throughout, as input).
+    pub encode_memory: ScopedMemory,
+    pub open_memory: ScopedMemory,
+    pub verify_memory: ScopedMemory,
+    pub unpack_memory: ScopedMemory,
 }
 
 #[derive(Debug)]
@@ -147,20 +151,19 @@ impl From<std::io::Error> for StreamMeasureError {
 /// the STREAM layout itself; a caller does not need to re-plan for it.
 pub fn measure_stream(archive: &Archive) -> Result<StreamMeasurement, StreamMeasureError> {
     let mut encoded = Vec::new();
-    let encode_sw = Stopwatch::start();
-    let summary = encode_stream(archive, StreamWriteOptions::default(), &mut encoded)?;
-    let encode_seconds = encode_sw.elapsed_secs_f64();
+    let (summary, encode_memory, encode_seconds) =
+        measure_scoped(|| encode_stream(archive, StreamWriteOptions::default(), &mut encoded));
+    let summary = summary?;
     let encoded_bytes = summary.total_len;
 
-    let open_sw = Stopwatch::start();
-    let opened = open_stream(encoded.as_slice())?;
-    let open_seconds = open_sw.elapsed_secs_f64();
+    let (opened, open_memory, open_seconds) = measure_scoped(|| open_stream(encoded.as_slice()));
+    let opened = opened?;
     let verified_by_open = verification_report_all_true(&opened.opened.report);
     let open_pass = StreamPassStats::from(&opened.stream);
 
-    let verify_sw = Stopwatch::start();
-    let verify_report = verify_stream(encoded.as_slice())?;
-    let verify_seconds = verify_sw.elapsed_secs_f64();
+    let (verify_report, verify_memory, verify_seconds) =
+        measure_scoped(|| verify_stream(encoded.as_slice()));
+    let verify_report = verify_report?;
     let verified_by_verify_stream = verification_report_all_true(&verify_report);
 
     let list_sw = Stopwatch::start();
@@ -174,21 +177,17 @@ pub fn measure_stream(archive: &Archive) -> Result<StreamMeasurement, StreamMeas
         std::process::id(),
         ebr_common::timing::generate_run_id()
     ));
-    let unpack_sw = Stopwatch::start();
-    let (extraction, unpack_stream_report): (ExtractionReport, StreamReport) = unpack_stream(
-        encoded.as_slice(),
-        &scratch,
-        ExtractionPolicy::default(),
-        bootstrap_sequential_limits(),
-    )?;
-    let unpack_seconds = unpack_sw.elapsed_secs_f64();
+    let (unpacked, unpack_memory, unpack_seconds) = measure_scoped(|| {
+        unpack_stream(
+            encoded.as_slice(),
+            &scratch,
+            ExtractionPolicy::default(),
+            bootstrap_sequential_limits(),
+        )
+    });
+    let (extraction, unpack_stream_report): (ExtractionReport, StreamReport) = unpacked?;
     std::fs::remove_dir_all(&scratch).ok();
     let unpack_pass = StreamPassStats::from(&unpack_stream_report);
-
-    let (peak_memory_bytes, peak_memory_is_true_peak) = match peak_memory() {
-        Ok(sample) => (Some(sample.bytes), sample.is_true_peak),
-        Err(_) => (None, false),
-    };
 
     Ok(StreamMeasurement {
         encode_seconds,
@@ -205,8 +204,10 @@ pub fn measure_stream(archive: &Archive) -> Result<StreamMeasurement, StreamMeas
         unpacked_entries_created: extraction.entries_created,
         unpacked_logical_bytes: extraction.logical_bytes_written,
         unpack_pass,
-        peak_memory_bytes,
-        peak_memory_is_true_peak,
+        encode_memory,
+        open_memory,
+        verify_memory,
+        unpack_memory,
     })
 }
 

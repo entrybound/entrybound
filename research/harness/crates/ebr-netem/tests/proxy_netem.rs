@@ -73,6 +73,9 @@ fn base_proxy_config(listen: SocketAddr, upstream: SocketAddr) -> ProxyConfig {
         setup_rtt_multiple: 0.0,
         loss_p: 0.0,
         loss_rto: Duration::ZERO,
+        loss_unit: ebr_netem::loss::LossUnit::Packet {
+            mss_bytes: ebr_netem::loss::DEFAULT_MSS_BYTES,
+        },
         seed: 42,
         max_connections: 64,
         cache_mode: CacheMode::Off,
@@ -192,6 +195,7 @@ async fn certain_loss_adds_a_stall_per_chunk() {
     let mut config = base_proxy_config("127.0.0.1:0".parse().unwrap(), origin_addr);
     config.chunk_size = 1_024;
     config.loss_p = 1.0; // every chunk stalls
+    config.loss_unit = ebr_netem::loss::LossUnit::Chunk;
     config.loss_rto = Duration::from_millis(40);
     let (_state, proxy_addr) = start_proxy(config).await;
 
@@ -299,4 +303,34 @@ async fn a_low_max_connections_still_serves_every_request_correctly() {
         assert_eq!(status, hyper::StatusCode::PARTIAL_CONTENT);
         assert_eq!(body.as_ref(), b"0123");
     }
+}
+
+/// Review finding R1-13 smoke check (non-decision-grade, wall-clock): at a
+/// configured 100 Mbit/s with a burst smaller than one chunk, the achieved
+/// rate must no longer collapse to whole-millisecond sleep granularity.
+/// Ignored by default because it is timing-sensitive on a shared machine;
+/// run with `cargo test -p ebr-netem --release -- --ignored`.
+#[tokio::test(flavor = "multi_thread")]
+#[ignore]
+async fn smoke_high_rate_bandwidth_is_not_limited_by_timer_granularity() {
+    let rate_bps = 12_500_000.0; // 100 Mbit/s
+    let payload = vec![0x5Au8; 12_500_000]; // about 1 s at the configured rate
+    let origin_addr = start_origin(scratch_dir("high-rate", &payload)).await;
+    let mut config = base_proxy_config("127.0.0.1:0".parse().unwrap(), origin_addr);
+    config.bandwidth_down_bps = Some(rate_bps);
+    config.burst_down_bytes = 4_096;
+    config.chunk_size = 16_384;
+    let (_state, proxy_addr) = start_proxy(config).await;
+    let http = client();
+    let (status, body, elapsed) = get_range(&http, proxy_addr, None).await;
+    assert_eq!(status, hyper::StatusCode::OK);
+    let achieved = body.len() as f64 / elapsed.as_secs_f64();
+    eprintln!(
+        "SMOKE (non-decision-grade): configured {rate_bps} B/s, achieved {achieved:.0} B/s ({:.1}%)",
+        100.0 * achieved / rate_bps
+    );
+    assert!(
+        achieved >= 0.8 * rate_bps,
+        "achieved {achieved:.0} B/s is below 80% of the configured {rate_bps} B/s"
+    );
 }

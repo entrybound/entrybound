@@ -24,62 +24,76 @@ the same experiment) already knows those facts.
 ## What `ebr-pack` measures
 
 Over one input directory (a corpus item's materialized path, or any other
-directory), `--profile`/`--layout`/`--stream-window`/`--encrypt` selected:
+directory), `--profile`/`--layout`/`--stream-window`/`--encrypt` selected.
+Harness review round 1 (`research/harness/harness-review-round1.md`,
+findings R1-03 and R1-08) reworked what is timed and how bytes are checked;
+the measured region now contains production work only:
 
-1. **capture** -- `ebr_common::walk::read_tree_in_memory` reads every regular
-   file's bytes (bounded at 8 GiB; a larger item needs a streaming approach
-   this crate does not implement -- see "Scope" below).
-2. **chunking** -- a *separate, additional* pass over each captured file's
-   bytes through the same public chunker production uses
-   (`entrybound::chunker::{select_parameters, chunk_ranges}`), timed on its
-   own. This exists purely so chunking has its own visible timing figure;
-   entrybound's single public directory-to-archive entry point
-   (`entrybound::archive::plan_directory`) chunks internally too, and there
-   is no public hook to time that internal chunking separately from
-   planning. **`chunking_seconds` and `planning_seconds` are not two
-   components of one total** -- summing every phase double-counts chunking
-   by design; see `src/pack.rs`'s module docs for the full reasoning.
-3. **planning** -- `entrybound::archive::plan_directory` (captures the
-   filesystem again, chunks, and selects codecs/transforms/dictionaries/
-   groups, all in one call).
-4. **encoding** -- `entrybound::ecf::encode` (INDEXED) or `encode_stream`
-   (STREAM), or `entrybound::crypto::pack_directory_encrypted`
-   (`--encrypt true`, INDEXED only -- see "Scope").
-5. **writing** -- `std::fs::write` of the encoded bytes to `--archive-out`
-   (or a generated path under the OS temp directory, reported as
-   `archive_path` in the row).
+1. **planning** -- `entrybound::archive::plan_directory` (captures the
+   filesystem, chunks, and selects codecs/transforms/dictionaries/groups,
+   all in one call, exactly as `ebound pack` does).
+2. **encoding** -- `entrybound::ecf::encode` (INDEXED) or `encode_stream`
+   (STREAM), or the whole `entrybound::crypto::pack_directory_encrypted`
+   call (`--encrypt true`, INDEXED only; `planning_seconds` is then `0.0`).
+3. **`pack_memory`** -- a phase-scoped memory reading
+   (`ebr_common::measure::ScopedMemory`): on Linux the kernel high-water
+   mark is reset immediately before planning and read immediately after
+   encoding, so it is the pack's own peak, not the process-lifetime peak.
+   On Windows it is a current-resident snapshot, labeled `scoped: false`.
+4. **writing** -- `std::fs::write` of the encoded bytes to `--archive-out`
+   (`writing_seconds`).
 
-Then the encoded bytes are opened and verified
-(`entrybound::ecf::open`/`open_stream`/
-`entrybound::crypto::open_encrypted_authenticated`), and:
+Earlier revisions first read the whole input tree into memory (up to 8 GiB)
+and reported that read as a "capture" phase, kept that copy resident while
+production packed, and measured peak memory once at the very end (after
+verification, byte accounting, and any determinism repeats). None of those
+harness costs are in the production figures any more.
+
+After the measured region, and never timed as a production phase:
+
+- the encoded bytes are opened and verified
+  (`entrybound::ecf::open`/`open_stream`/
+  `entrybound::crypto::open_encrypted_authenticated`) and inspected for
+  counts;
+- the input tree's **metadata** is walked for `input_logical_bytes`/
+  `input_file_count` (`input_scan_seconds`; no file contents are read);
+- with `--chunking-pass true` only, a harness-only per-file chunker pass runs
+  (`chunking_pass_seconds`). It approximates, and must not be summed with,
+  the chunking `plan_directory` already did.
+
+Then:
 
 - **Exact section-level byte accounting** (`ebr_pack::bytes`): for a
   plaintext INDEXED archive, this walks `entrybound::ecf::
-  open_indexed_random`'s own authenticated section directory
-  (`RandomAccessMetadata::section_directory`) for every top-level section's
-  exact on-disk extent (preamble, Descriptor, TransformPlans, Dictionaries,
-  ChunkGroups, ReconstructionData, ReconstructionRegions, ManifestRecords,
-  Fidelity -- this crate's "metadata records" -- Index, footer), and
-  additionally walks *inside* the ChunkData section frame by frame
-  (`entrybound::research::ecf::{chunk_frame_header_len,
-  parse_chunk_frame_header}`, the one `research-internals` item this crate
-  uses) to split every Chunk frame into its header and its stored payload,
-  attributing each payload's bytes to the codec and transform pipeline its
-  plan names. The accounted total is cross-checked against the file's exact
-  size and **fails loudly** (a hard `Err`, never a silently wrong number) on
-  any mismatch. STREAM and encrypted archives get a coarser, single-lump
-  accounting instead -- production exposes no equivalent public per-item/
-  per-segment directory for those -- still exactly cross-checked against the
-  file size; see `src/bytes.rs`'s module docs for exactly why.
+  open_indexed_random`'s own authenticated section directory for every
+  top-level section's exact on-disk extent, and additionally walks *inside*
+  the ChunkData section frame by frame (`entrybound::research::ecf::
+  {chunk_frame_header_len, parse_chunk_frame_header}`) to split every Chunk
+  frame into its header and its stored payload, attributed to codec and
+  transform. Two sums must equal the file size exactly or the run fails:
+  the section extents, and the **named buckets** a consumer reads
+  (`descriptor_bytes` ... `chunk_data_section_header_bytes`,
+  `chunk_frame_header_bytes`, `chunk_payload_bytes`, `other_section_bytes`).
+  An **independent cross-check** (`byte_accounting_cross_check`) then
+  compares the frame walk's payload bytes and frame count against
+  `entrybound::archive::inspect`'s per-codec `stored_bytes`/`chunk_count`,
+  which production derives from the Index and Chunk table rather than from
+  ChunkData; a mismatch fails the run. It is marked `applicable: false` for
+  archives with whole-object ReconstructionRegions, whose representations
+  live outside ChunkData. STREAM and encrypted archives get a coarser,
+  single-lump accounting -- production exposes no public per-item/
+  per-segment directory for those -- still exactly checked against the file
+  size.
 - **Logical/codec counts** (`ebr_pack::counts`): entry count, total logical
   bytes, planner id, chunker id, per-codec stored/logical bytes and Chunk
   count, unique-Chunk/logical-Chunk-reference/dedup statistics, dictionary
-  and ChunkGroup counts, reconstruction-transform counts -- a `Serialize`
-  mirror of `entrybound::archive::inspect`'s `ArchiveInspection` (which does
-  not itself derive `Serialize`).
-- **Peak memory** -- `ebr_common::measure::peak_memory` (true OS-reported
-  peak on Linux; current resident memory on Windows, labeled as such -- see
-  that module's docs), sampled once after the whole pipeline completes.
+  and ChunkGroup counts, reconstruction-transform counts, and the
+  whole-object region count.
+- **`process_lifetime_peak_rss_bytes`** -- the whole process's peak at the
+  end of the run, kept only as a diagnostic.
+- **`build_note`** -- every row says it came from a harness build
+  (entrybound with `research-internals`, `research/harness/Cargo.lock`);
+  timing from this binary is not a substitute for the production CLI build.
 
 `--deterministic-check N` (`N >= 2`) repeats the whole capture-through-
 encode pipeline `N` times over the same input/profile/layout and SHA-256-
@@ -125,7 +139,7 @@ container.
 ```text
 ebr-pack --item-path <dir> --experiment-id <id> --env-name <name>
          [--profile fast|balanced|dense|extreme] [--layout indexed|stream]
-         [--stream-window <u64>] [--encrypt true|false]
+         [--stream-window auto|<u64>] [--encrypt true|false] [--chunking-pass true|false]
          [--deterministic-check <N>] [--archive-out <path>]
          [--run-id <id>] [--out <path>]
 ```
@@ -133,8 +147,10 @@ ebr-pack --item-path <dir> --experiment-id <id> --env-name <name>
 - `--item-path`: a directory to pack.
 - `--profile`: default `balanced`.
 - `--layout`: default `indexed`.
-- `--stream-window`: STREAM only; `StreamWindow::Ceiling(n)` (default
-  `Ceiling(0)`, forbidding cross-object historical Chunk dependencies).
+- `--stream-window`: STREAM only; `auto` (`StreamWindow::Auto`) or a number
+  (`StreamWindow::Ceiling(n)`). Default `Ceiling(0)`, forbidding cross-object
+  historical Chunk dependencies, like `ebound pack --layout stream`.
+- `--chunking-pass`: default `false`; see above.
 - `--encrypt`: default `false`. See above.
 - `--deterministic-check`: omit for a single pack; `N >= 2` repeats and
   hash-compares (see above).
@@ -161,6 +177,18 @@ ebr-unpack --archive-path <file> --experiment-id <id> --env-name <name>
 - `--scratch-dir`: default a generated path under the OS temp directory.
 - `--keep-scratch`: default `false` (the scratch directory is removed after
   measuring; set `true` to inspect the extracted tree afterward).
+
+`ebr-unpack` times the production entry point only (`unpack_seconds`:
+reading the archive plus `archive::unpack`, `archive::unpack_stream`, or
+`open_encrypted_authenticated` + `unpack_opened`) with a scoped
+`unpack_memory`, while `src/scratch.rs` samples the destination directory
+**and** production's STREAM staging spill files
+(`entrybound-stage-<pid>-*.tmp` in the OS temp directory) --
+`scratch.peak_total_bytes` is the per-sample sum. For STREAM,
+`stream_staging` carries production's own `StreamReport` staging counters
+next to the sampled peak. A separate verification pass runs afterwards for
+`verified` (`verify_pass_seconds`, not additive with `unpack_seconds`).
+Every binary refuses an input path under a held-out root before reading it.
 
 ### `ebr-verify`
 
@@ -257,10 +285,12 @@ command: >-
 
 ## Scope (first cut, honestly bounded)
 
-- **Input size**: `capture` reads the whole input tree into memory, bounded
-  at 8 GiB. A validation-scale item too large for that needs a streaming
-  capture path (`entrybound::archive::pack_directory_stream` is public and
-  suited to it) this crate does not implement yet.
+- **Input size**: the harness no longer reads the input into memory, but
+  production `plan_directory` itself holds every Chunk's plaintext in the
+  planned `Archive`, and the encoded archive is held in memory before it is
+  written; very large items need the STREAM layout's streaming sink
+  (`entrybound::archive::pack_directory_stream`), which this crate does not
+  drive yet.
 - **`--encrypt` + `--layout stream`**: refused (see above).
 - **STREAM and encrypted byte accounting**: coarser than INDEXED's (a single
   lump body/segment figure, not a per-section/per-Chunk-frame breakdown) --
@@ -284,4 +314,7 @@ WSL Ubuntu (`/root/.cargo/bin/cargo +1.98.1`, `CARGO_TARGET_DIR=/root/eb-
 research/target/b2-pack`) and the Windows host
 (`%USERPROFILE%\.cargo\bin\cargo.exe +1.98.1`,
 `CARGO_TARGET_DIR=D:/eb-research/target/b2-pack-win`): 29 tests pass on
-both, `cargo clippy --all-targets` is clean on both.
+both, `cargo clippy --all-targets` is clean on both. After harness review
+round 1 the crate has 33 tests (named-bucket balance, independent
+cross-check with a tampered inspection, and a forced STREAM staging spill
+that the scratch sampler must observe).

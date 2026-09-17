@@ -32,10 +32,20 @@ function. Over one opened archive, in order:
    `seed`), reproducible across runs.
 3. **eager full consumption** -- every requested entry, once, in order.
 
-Every read carries its full `RandomAccessVerificationReport` accounting
-(`bytes_fetched`, `range_request_count`, `dependency_chunk_count`, every
-verification flag -- `VerificationFlags`) and its own timing
-(`RandomReadMeasurement`). **Random byte-range reads within large entries**:
+Every read carries its own timing and byte accounting
+(`RandomReadMeasurement`) plus its full `RandomAccessVerificationReport`
+flags (`VerificationFlags`). **Byte counts are per-read deltas** (harness
+review round 1, finding R1-02): the report's `bytes_fetched` and
+`range_request_count` are *session-cumulative* counters, so each read's
+`bytes_fetched_from_source`/`range_request_count` is the difference from the
+session counters before that read, `metadata_open_bytes_fetched` is the
+metadata-first open's own cost, and `session_total_bytes_fetched` equals the
+open plus every read's delta (unit-tested). Earlier revisions reported the
+cumulative counters as per-read costs and summed them, overstating
+`eager_total_bytes_fetched` roughly quadratically in the number of reads;
+`VerificationFlags` still carries the raw cumulative values, labeled as
+such. `--source-kind local-file` reads a file this process wrote moments
+earlier, so its page cache is hot (`source_page_cache` says so in the row). **Random byte-range reads within large entries**:
 whenever a read returns a plaintext at or above
 `large_entry_threshold_bytes`, `byte_ranges_per_large_entry` seeded random
 `(offset, len)` slices are additionally cut from it and timed
@@ -67,8 +77,9 @@ memory/scratch fields (`peak_retained_chunks`,
 `run_probe` drives a synthetic, seed-derived, generated-on-the-fly input
 (`SyntheticGenerator`, bounded-memory regardless of size) through
 `pack -> verify -> unpack` (and, opt-in, `repack`/`export`), sampling this
-process's own memory (`ebr_common::measure::peak_memory`) on a background
-thread at a fixed interval throughout each stage. **What it already found**:
+process's current resident memory on a background thread at a fixed
+interval throughout each stage, with a phase-scoped high-water mark per
+stage (`memory`, `ebr_common::measure::ScopedMemory`). **What it already found**:
 `entrybound::archive::plan_directory` holds every Chunk's plaintext in
 memory for as long as the returned `Archive` is alive
 (`entrybound::eam::Chunk::plaintext`), regardless of which layout is
@@ -77,11 +88,21 @@ process memory today, streaming sink or not. `probe.rs`'s module doc
 explains this (and the "cannot avoid storing the synthetic input on scratch
 disk first" constraint, and why `repack`/`export` are opt-in) in full.
 
-Both `measure_random_access` and `measure_stream` also attach
-[`ebr_common::measure::peak_memory`] as a single-shot reading, so a caller
-can compare INDEXED random access's metadata-first footprint against
-STREAM's necessarily-more-sequential one, and both against the probe's
-interval samples.
+**Stage memory (harness review round 1, finding R1-05).** Earlier revisions
+sampled `getrusage`'s process-lifetime peak and kept the planned `Archive`
+(every Chunk's plaintext) alive through `verify` and `unpack`, so every stage
+reported `pack`'s peak and bounded streaming memory could never be observed.
+Now each stage resets the Linux high-water mark at its start, `repack`/
+`export` run right after `pack` and the archive is dropped before `verify`/
+`unpack`, and with `--probe-isolate true` (the binary's default) `verify`
+and `unpack` each run in a fresh child process (`--mode probe-stage`), whose
+lifetime peak is also reported. Streaming-memory claims must come from
+isolated runs.
+
+Both `measure_random_access` and `measure_stream` attach phase-scoped
+memory (`access_memory`; `encode_memory`/`open_memory`/`verify_memory`/
+`unpack_memory`) rather than the process-lifetime peak, which in `roundtrip`
+mode always includes planning and encoding the archive being read.
 
 ## Non-goals (for now)
 
@@ -122,7 +143,7 @@ ebr-access --mode probe --experiment-id <id> --env-name <name> \
            [--probe-total-bytes <n>] [--probe-seed <n>] \
            [--probe-sample-interval-ms <n>] \
            [--probe-stages pack,verify,unpack,repack,export] \
-           [--probe-scratch-root <dir>] \
+           [--probe-scratch-root <dir>] [--probe-isolate true|false] \
            [--run-id <id>] [--out <path>]
 ```
 

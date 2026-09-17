@@ -13,6 +13,7 @@
 //! does not fit a single-input matrix row (see `production.rs`'s own tests
 //! for those two instead).
 
+use ebr_common::measure::ScopedMemory;
 use entrybound::chunker::{self, ChunkingParameters};
 use entrybound::diagnostics::Diagnostic;
 use entrybound::planner::CompressionProfile;
@@ -30,12 +31,14 @@ pub enum Family {
 /// One candidate's outcome over one buffer. `stored_bytes`/`roundtrip_ok`/
 /// `encode_seconds`/`decode_seconds` are `None` only when `ineligible` is
 /// true (a reconstruction candidate production itself would decline) or
-/// `error` is `Some` (the call itself failed -- a validation error, not a
-/// codec failure, since every candidate here is only ever invoked with
-/// parameters it accepts).
+/// `error` is `Some` (the call itself failed).
 #[derive(Debug, Clone, Serialize)]
 pub struct CandidateOutcome {
     pub family: Family,
+    /// Stable matrix label (`zstd(production,level=3)`, ...): the value
+    /// `--candidate` filters on, identical for success and failure rows.
+    pub label: String,
+    /// The codec's own descriptive id on success, or `label` otherwise.
     pub candidate: String,
     pub input_bytes: u64,
     pub stored_bytes: Option<u64>,
@@ -44,6 +47,12 @@ pub struct CandidateOutcome {
     pub encode_seconds: Option<f64>,
     /// Non-decision-grade smoke timing; see `production`'s module docs.
     pub decode_seconds: Option<f64>,
+    /// Match window / dictionary / block / model size (see `external`).
+    pub window_bytes: Option<u64>,
+    pub threads: Option<u32>,
+    pub container: Option<&'static str>,
+    pub encode_memory: Option<ScopedMemory>,
+    pub decode_memory: Option<ScopedMemory>,
     pub error: Option<String>,
     /// True for a reconstruction candidate (`deflate-reconstruct`,
     /// `jpeg-jxl-reconstruct`) production itself would not attempt over this
@@ -51,58 +60,43 @@ pub struct CandidateOutcome {
     pub ineligible: bool,
 }
 
-fn ok_outcome(
-    family: Family,
-    candidate: String,
-    input_bytes: u64,
-    stored_bytes: u64,
-    roundtrip_ok: bool,
-    encode_seconds: f64,
-    decode_seconds: f64,
-) -> CandidateOutcome {
+fn empty_outcome(family: Family, label: &str, input_bytes: u64) -> CandidateOutcome {
     CandidateOutcome {
         family,
-        candidate,
-        input_bytes,
-        stored_bytes: Some(stored_bytes),
-        roundtrip_ok: Some(roundtrip_ok),
-        encode_seconds: Some(encode_seconds),
-        decode_seconds: Some(decode_seconds),
-        error: None,
-        ineligible: false,
-    }
-}
-
-fn error_outcome(
-    family: Family,
-    candidate: String,
-    input_bytes: u64,
-    error: String,
-) -> CandidateOutcome {
-    CandidateOutcome {
-        family,
-        candidate,
+        label: label.to_owned(),
+        candidate: label.to_owned(),
         input_bytes,
         stored_bytes: None,
         roundtrip_ok: None,
         encode_seconds: None,
         decode_seconds: None,
-        error: Some(error),
+        window_bytes: None,
+        threads: None,
+        container: None,
+        encode_memory: None,
+        decode_memory: None,
+        error: None,
         ineligible: false,
     }
 }
 
-fn ineligible_outcome(family: Family, candidate: String, input_bytes: u64) -> CandidateOutcome {
+fn from_production_result(
+    label: &str,
+    input_bytes: u64,
+    r: production::RoundtripResult,
+) -> CandidateOutcome {
     CandidateOutcome {
-        family,
-        candidate,
-        input_bytes,
-        stored_bytes: None,
-        roundtrip_ok: None,
-        encode_seconds: None,
-        decode_seconds: None,
-        error: None,
-        ineligible: true,
+        candidate: r.codec_id,
+        stored_bytes: Some(r.encoded_bytes),
+        roundtrip_ok: Some(r.roundtrip_ok),
+        encode_seconds: Some(r.encode_seconds),
+        decode_seconds: Some(r.decode_seconds),
+        window_bytes: r.window_bytes,
+        threads: Some(r.threads),
+        container: Some("production payload (no container)"),
+        encode_memory: Some(r.encode_memory),
+        decode_memory: Some(r.decode_memory),
+        ..empty_outcome(Family::Production, label, input_bytes)
     }
 }
 
@@ -112,21 +106,11 @@ fn from_production(
     outcome: Result<production::RoundtripResult, Diagnostic>,
 ) -> CandidateOutcome {
     match outcome {
-        Ok(r) => ok_outcome(
-            Family::Production,
-            r.codec_id,
-            input_bytes,
-            r.encoded_bytes,
-            r.roundtrip_ok,
-            r.encode_seconds,
-            r.decode_seconds,
-        ),
-        Err(e) => error_outcome(
-            Family::Production,
-            label.to_owned(),
-            input_bytes,
-            e.to_string(),
-        ),
+        Ok(r) => from_production_result(label, input_bytes, r),
+        Err(e) => CandidateOutcome {
+            error: Some(e.to_string()),
+            ..empty_outcome(Family::Production, label, input_bytes)
+        },
     }
 }
 
@@ -136,22 +120,15 @@ fn from_optional_production(
     outcome: Result<Option<production::RoundtripResult>, Diagnostic>,
 ) -> CandidateOutcome {
     match outcome {
-        Ok(Some(r)) => ok_outcome(
-            Family::Production,
-            r.codec_id,
-            input_bytes,
-            r.encoded_bytes,
-            r.roundtrip_ok,
-            r.encode_seconds,
-            r.decode_seconds,
-        ),
-        Ok(None) => ineligible_outcome(Family::Production, label.to_owned(), input_bytes),
-        Err(e) => error_outcome(
-            Family::Production,
-            label.to_owned(),
-            input_bytes,
-            e.to_string(),
-        ),
+        Ok(Some(r)) => from_production_result(label, input_bytes, r),
+        Ok(None) => CandidateOutcome {
+            ineligible: true,
+            ..empty_outcome(Family::Production, label, input_bytes)
+        },
+        Err(e) => CandidateOutcome {
+            error: Some(e.to_string()),
+            ..empty_outcome(Family::Production, label, input_bytes)
+        },
     }
 }
 
@@ -161,21 +138,23 @@ fn from_external(
     outcome: std::io::Result<external::ExternalCodecResult>,
 ) -> CandidateOutcome {
     match outcome {
-        Ok(r) => ok_outcome(
-            Family::External,
-            r.codec_id,
-            input_bytes,
-            r.encoded_bytes,
-            r.roundtrip_ok,
-            r.encode_seconds,
-            r.decode_seconds,
-        ),
-        Err(e) => error_outcome(
-            Family::External,
-            label.to_owned(),
-            input_bytes,
-            e.to_string(),
-        ),
+        Ok(r) => CandidateOutcome {
+            candidate: r.codec_id,
+            stored_bytes: Some(r.encoded_bytes),
+            roundtrip_ok: Some(r.roundtrip_ok),
+            encode_seconds: Some(r.encode_seconds),
+            decode_seconds: Some(r.decode_seconds),
+            window_bytes: r.window_bytes,
+            threads: Some(r.threads),
+            container: Some(r.container),
+            encode_memory: Some(r.encode_memory),
+            decode_memory: Some(r.decode_memory),
+            ..empty_outcome(Family::External, label, input_bytes)
+        },
+        Err(e) => CandidateOutcome {
+            error: Some(e.to_string()),
+            ..empty_outcome(Family::External, label, input_bytes)
+        },
     }
 }
 
@@ -190,127 +169,160 @@ const MATRIX_BROTLI_QUALITIES: [u32; 3] = [1, 6, 11];
 const MATRIX_LEVELS_1_6_9: [u32; 3] = [1, 6, 9];
 const MATRIX_LZ4_HC_LEVELS: [u32; 3] = [0, 3, 12];
 const MATRIX_DEFLATE_RECONSTRUCT_MAX_CHAIN: u32 = 512;
-const MATRIX_PPMD_ORDER: u32 = 6;
-const MATRIX_PPMD_MEM_SIZE: u32 = 1 << 20;
+/// 7-Zip PPMd levels 5 (order 6, 16 MiB), 7 (order 16, 64 MiB), and 9
+/// (order 32, 256 MiB), each reduced for small inputs exactly as 7-Zip does
+/// (`external::ppmd_7zip_parameters`).
+const MATRIX_PPMD_7ZIP_LEVELS: [u32; 3] = [5, 7, 9];
 
 /// Runs every production and external candidate over one buffer. See the
 /// module docs for the parameter-list rationale and for what is
 /// deliberately excluded (dictionary/prefix modes).
 pub fn candidates(plaintext: &[u8]) -> Vec<CandidateOutcome> {
+    candidates_matching(plaintext, None)
+}
+
+/// [`candidates`], restricted to labels containing `filter` when given, so a
+/// runner can execute one candidate per process for a clean memory reading.
+/// A filter is evaluated before the candidate runs, never after.
+pub fn candidates_matching(plaintext: &[u8], filter: Option<&str>) -> Vec<CandidateOutcome> {
     let input_bytes = plaintext.len() as u64;
+    let wanted = |label: &str| filter.is_none_or(|needle| label.contains(needle));
     let mut out = Vec::new();
 
-    out.push(from_production(
-        "store",
-        input_bytes,
-        production::roundtrip_store(plaintext),
-    ));
+    macro_rules! run {
+        ($label:expr, $convert:ident, $call:expr) => {{
+            let label: String = $label;
+            if wanted(&label) {
+                out.push($convert(&label, input_bytes, $call));
+            }
+        }};
+    }
+
+    run!(
+        "store(production)".to_owned(),
+        from_production,
+        production::roundtrip_store(plaintext)
+    );
     for level in MATRIX_ZSTD_LEVELS {
-        out.push(from_production(
-            &format!("zstd(production,level={level})"),
-            input_bytes,
-            production::roundtrip_zstd(level, plaintext),
-        ));
-        out.push(from_production(
-            &format!("zstd+delta8(production,level={level})"),
-            input_bytes,
-            production::roundtrip_zstd_delta8(level, plaintext),
-        ));
+        run!(
+            format!("zstd(production,level={level})"),
+            from_production,
+            production::roundtrip_zstd(level, plaintext)
+        );
+        run!(
+            format!("zstd+delta8(production,level={level})"),
+            from_production,
+            production::roundtrip_zstd_delta8(level, plaintext)
+        );
         for width in MATRIX_BYTE_SHUFFLE_WIDTHS {
-            out.push(from_production(
-                &format!("zstd+byte-shuffle-{width}(production,level={level})"),
-                input_bytes,
-                production::roundtrip_zstd_byte_shuffle(level, width, plaintext),
-            ));
+            run!(
+                format!("zstd+byte-shuffle-{width}(production,level={level})"),
+                from_production,
+                production::roundtrip_zstd_byte_shuffle(level, width, plaintext)
+            );
         }
     }
-    out.push(from_production(
-        "lz4(production)",
-        input_bytes,
-        production::roundtrip_lz4(plaintext),
-    ));
+    run!(
+        "lz4(production)".to_owned(),
+        from_production,
+        production::roundtrip_lz4(plaintext)
+    );
     for (preset, dictionary_bytes) in MATRIX_LZMA2_CONFIGURATIONS {
-        out.push(from_production(
-            &format!("lzma2(production,preset={preset},dict={dictionary_bytes})"),
-            input_bytes,
-            production::roundtrip_lzma2(preset, dictionary_bytes, plaintext),
-        ));
+        run!(
+            format!("lzma2(production,preset={preset},dict={dictionary_bytes})"),
+            from_production,
+            production::roundtrip_lzma2(preset, dictionary_bytes, plaintext)
+        );
     }
-    out.push(from_optional_production(
-        "deflate-reconstruct(production)",
-        input_bytes,
+    run!(
+        "deflate-reconstruct(production)".to_owned(),
+        from_optional_production,
         production::roundtrip_deflate_reconstruct(
             3,
             MATRIX_DEFLATE_RECONSTRUCT_MAX_CHAIN,
-            plaintext,
-        ),
-    ));
-    out.push(from_optional_production(
-        "jpeg-jxl-reconstruct(production)",
-        input_bytes,
-        production::roundtrip_jpeg_reconstruct(3, plaintext),
-    ));
+            plaintext
+        )
+    );
+    run!(
+        "jpeg-jxl-reconstruct(production)".to_owned(),
+        from_optional_production,
+        production::roundtrip_jpeg_reconstruct(3, plaintext)
+    );
 
     for level in MATRIX_ZSTD_LEVELS {
-        out.push(from_external(
-            &format!("zstd(external,level={level})"),
-            input_bytes,
-            external::roundtrip_zstd_crate(level, plaintext),
-        ));
+        run!(
+            format!("zstd(external,level={level})"),
+            from_external,
+            external::roundtrip_zstd_crate(level, plaintext)
+        );
     }
-    out.push(from_external(
-        "zstd-ldm(external,level=19,window_log=24)",
-        input_bytes,
-        external::roundtrip_zstd_ldm(19, 24, plaintext),
-    ));
+    // Window-matched control first, then LDM at the same window, so a gain
+    // can be attributed to LDM rather than to the larger window.
+    run!(
+        "zstd-window(external,level=19,window_log=24,ldm=off)".to_owned(),
+        from_external,
+        external::roundtrip_zstd_window(19, 24, plaintext)
+    );
+    run!(
+        "zstd-ldm(external,level=19,window_log=24)".to_owned(),
+        from_external,
+        external::roundtrip_zstd_ldm(19, 24, plaintext)
+    );
     for quality in MATRIX_BROTLI_QUALITIES {
-        out.push(from_external(
-            &format!("brotli(external,quality={quality})"),
-            input_bytes,
-            external::roundtrip_brotli(quality, 22, plaintext),
-        ));
+        run!(
+            format!("brotli(external,quality={quality},lgwin=22)"),
+            from_external,
+            external::roundtrip_brotli(quality, 22, plaintext)
+        );
     }
+    run!(
+        "brotli(external,quality=11,lgwin=24)".to_owned(),
+        from_external,
+        external::roundtrip_brotli(11, 24, plaintext)
+    );
     for level in MATRIX_LEVELS_1_6_9 {
-        out.push(from_external(
-            &format!("bzip2(external,level={level})"),
-            input_bytes,
-            external::roundtrip_bzip2(level, plaintext),
-        ));
-        out.push(from_external(
-            &format!("deflate(external,level={level})"),
-            input_bytes,
-            external::roundtrip_deflate(level, plaintext),
-        ));
-        out.push(from_external(
-            &format!("zlib(external,level={level})"),
-            input_bytes,
-            external::roundtrip_zlib(level, plaintext),
-        ));
+        run!(
+            format!("bzip2(external,level={level})"),
+            from_external,
+            external::roundtrip_bzip2(level, plaintext)
+        );
+        run!(
+            format!("deflate(external,level={level})"),
+            from_external,
+            external::roundtrip_deflate(level, plaintext)
+        );
+        run!(
+            format!("zlib(external,level={level})"),
+            from_external,
+            external::roundtrip_zlib(level, plaintext)
+        );
         for filter in [
             external::XzBcjFilter::None,
             external::XzBcjFilter::X86,
             external::XzBcjFilter::Arm64,
         ] {
-            out.push(from_external(
-                &format!("xz(external,preset={level},filter={})", filter.label()),
-                input_bytes,
-                external::roundtrip_xz(level, filter, plaintext),
-            ));
+            run!(
+                format!("xz(external,preset={level},filter={})", filter.label()),
+                from_external,
+                external::roundtrip_xz(level, filter, plaintext)
+            );
         }
     }
     for level in MATRIX_LZ4_HC_LEVELS {
-        out.push(from_external(
-            &format!("lz4-hc(external,level={level})"),
-            input_bytes,
-            external::roundtrip_lz4_hc(level, plaintext),
-        ));
+        run!(
+            format!("lz4-hc(external,level={level})"),
+            from_external,
+            external::roundtrip_lz4_hc(level, plaintext)
+        );
     }
-    out.push(from_external(
-        &format!("ppmd7(external,order={MATRIX_PPMD_ORDER},mem_size={MATRIX_PPMD_MEM_SIZE})"),
-        input_bytes,
-        external::roundtrip_ppmd(MATRIX_PPMD_ORDER, MATRIX_PPMD_MEM_SIZE, plaintext)
-            .map_err(std::io::Error::other),
-    ));
+    for level in MATRIX_PPMD_7ZIP_LEVELS {
+        let (order, mem_size) = external::ppmd_7zip_parameters(level, input_bytes);
+        run!(
+            format!("ppmd7(external,7zip-level={level},order={order},mem_size={mem_size})"),
+            from_external,
+            external::roundtrip_ppmd(order, mem_size, plaintext)
+        );
+    }
 
     out
 }
@@ -346,6 +358,15 @@ pub fn chunk_matrix(
     parameters: ChunkingParameters,
     plaintext: &[u8],
 ) -> Result<Vec<ChunkMatrixRow>, Diagnostic> {
+    chunk_matrix_matching(parameters, plaintext, None)
+}
+
+/// [`chunk_matrix`] restricted like [`candidates_matching`].
+pub fn chunk_matrix_matching(
+    parameters: ChunkingParameters,
+    plaintext: &[u8],
+    filter: Option<&str>,
+) -> Result<Vec<ChunkMatrixRow>, Diagnostic> {
     let ranges = chunker::chunk_ranges(plaintext, parameters)?;
     Ok(ranges
         .iter()
@@ -354,7 +375,7 @@ pub fn chunk_matrix(
             chunk_index,
             chunk_start: range.start as u64,
             chunk_len: range.len() as u64,
-            outcomes: candidates(&plaintext[range.start..range.end]),
+            outcomes: candidates_matching(&plaintext[range.start..range.end], filter),
         })
         .collect())
 }
@@ -522,5 +543,23 @@ mod tests {
             !dod4.false_positive,
             "expected second-order delta to help compress a linear ramp"
         );
+    }
+
+    #[test]
+    fn candidate_filter_runs_only_matching_labels_and_reports_resources() {
+        let data = repeating_text(100_000);
+        let outcomes = candidates_matching(&data, Some("ppmd7"));
+        assert_eq!(outcomes.len(), 3);
+        for outcome in &outcomes {
+            assert!(outcome.label.starts_with("ppmd7(external,7zip-level="));
+            assert_eq!(outcome.roundtrip_ok, Some(true), "{}", outcome.label);
+            assert_eq!(outcome.threads, Some(1));
+            assert!(outcome.window_bytes.is_some());
+            assert!(outcome.encode_memory.is_some());
+        }
+        let control = candidates_matching(&data, Some("zstd-window"));
+        assert_eq!(control.len(), 1);
+        // Single-segment frame: the window is the (smaller) content size.
+        assert_eq!(control[0].window_bytes, Some(data.len() as u64));
     }
 }

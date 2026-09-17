@@ -213,10 +213,11 @@ fn shaped_body_stream(
             if offset >= bytes.len() {
                 return None;
             }
-            if loss.roll(&rng) {
-                tokio::time::sleep(loss.rto).await;
-            }
             let end = (offset + chunk_size).min(bytes.len());
+            let stall = loss.stall_for_chunk(end - offset, &rng);
+            if !stall.is_zero() {
+                tokio::time::sleep(stall).await;
+            }
             let chunk = bytes.slice(offset..end);
             bucket.consume(chunk.len() as u64).await;
             Some((
@@ -392,7 +393,7 @@ pub async fn build(config: ProxyConfig) -> std::io::Result<Arc<ProxyState>> {
         Some(bps) => TokenBucket::new(bps, config.burst_down_bytes),
         None => TokenBucket::unlimited(),
     };
-    let loss = LossModel::new(config.loss_p, config.loss_rto);
+    let loss = LossModel::with_unit(config.loss_p, config.loss_rto, config.loss_unit);
     let rng = SeededRng::new(config.seed);
     let cache = CdnCache::new(
         config.cache_capacity_bytes,

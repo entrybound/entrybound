@@ -212,6 +212,11 @@ mod tests {
             target_size: 8192,
             max_size: 32_768,
             window: 64,
+            cut: crate::algorithms::CutRule::for_target(
+                1024,
+                8192,
+                crate::algorithms::SizeCalibration::MeanMatched,
+            ),
         });
         let result = measure(&data, &algorithm, 11, 32, 32, 32).unwrap();
         for edit in &result.edits {

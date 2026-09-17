@@ -57,6 +57,90 @@ impl ChunkRange {
     }
 }
 
+/// How a single-divisor rolling-hash rule ([`rabin`], [`buzhash`], [`tttd`])
+/// is sized against a production preset's min/target/max.
+///
+/// Harness review round 1, finding R1-09: with a power-of-two mask equal to
+/// `target` (the only rule earlier revisions had), the expected chunk size is
+/// `min + target * (1 - e^(-(max - min) / target))`, about 1.2x `target` for
+/// the production presets (`min = target / 4`, `max = 4 * target`), while
+/// FastCDC's normalized chunking and production `gear-norm-v1` land near
+/// `target`. Comparing dedup ratios at "matching size targets" was therefore
+/// comparing different realized chunk sizes. `MeanMatched` (the default) uses
+/// an LBFS/TTTD-style modulo divisor `D = target - min`, whose expected size
+/// `min + D * (1 - e^(-(max - min) / D))` is within 1% of `target` for every
+/// production preset; `Pow2Mask` keeps the old rule for reproduction. Every
+/// dedup/boundary row also reports the realized mean chunk size, and
+/// comparisons must still be made at matched *realized* means.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SizeCalibration {
+    MeanMatched,
+    Pow2Mask,
+}
+
+impl SizeCalibration {
+    pub fn parse(value: &str) -> Result<Self, String> {
+        match value {
+            "mean" => Ok(Self::MeanMatched),
+            "pow2" => Ok(Self::Pow2Mask),
+            other => Err(format!(
+                "unknown --size-calibration {other:?} (expected mean or pow2)"
+            )),
+        }
+    }
+}
+
+/// A single-divisor cut decision over a rolling hash value.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CutRule {
+    /// Cut when `hash & mask == 0`.
+    Mask(u64),
+    /// Cut when `hash % divisor == divisor - 1` (the LBFS/TTTD formulation).
+    Modulo(u64),
+}
+
+impl CutRule {
+    /// The rule whose expected spacing is `target - min` (`MeanMatched`) or
+    /// the next-lower power of two of `target` (`Pow2Mask`).
+    #[must_use]
+    pub fn for_target(min_size: usize, target_size: usize, calibration: SizeCalibration) -> Self {
+        match calibration {
+            SizeCalibration::MeanMatched => {
+                Self::Modulo(target_size.saturating_sub(min_size).max(2) as u64)
+            }
+            SizeCalibration::Pow2Mask => Self::Mask(pow2_mask_for_target(target_size)),
+        }
+    }
+
+    #[inline]
+    #[must_use]
+    pub fn fires(self, hash: u64) -> bool {
+        match self {
+            Self::Mask(mask) => hash & mask == 0,
+            Self::Modulo(divisor) => hash % divisor == divisor - 1,
+        }
+    }
+
+    #[must_use]
+    pub fn id(self) -> String {
+        match self {
+            Self::Mask(mask) => format!("cut-mask-{}", mask.count_ones()),
+            Self::Modulo(divisor) => format!("cut-mod-{divisor}"),
+        }
+    }
+}
+
+/// Every optional algorithm knob `ebr-chunk` accepts, in one place.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct AlgorithmOptions {
+    pub window: Option<usize>,
+    pub normalization: Option<u8>,
+    /// `None` means [`SizeCalibration::MeanMatched`].
+    pub size_calibration: Option<SizeCalibration>,
+    /// AE only: compared value width in bytes (1 or 8).
+    pub value_width: Option<u8>,
+}
+
 /// The next-lower power of two, minus one: a cut mask giving an average
 /// chunk size at that power of two under a uniform-hash assumption. Shared
 /// by every single-mask rolling-hash algorithm in this module ([`rabin`],
@@ -121,6 +205,28 @@ impl Algorithm {
         window: Option<usize>,
         normalization: Option<u8>,
     ) -> Result<Self, String> {
+        Self::from_options(
+            name,
+            profile,
+            AlgorithmOptions {
+                window,
+                normalization,
+                ..AlgorithmOptions::default()
+            },
+        )
+    }
+
+    /// [`from_profile`](Self::from_profile) with every optional knob.
+    pub fn from_options(
+        name: &str,
+        profile: ChunkingParameters,
+        options: AlgorithmOptions,
+    ) -> Result<Self, String> {
+        let window = options.window;
+        let normalization = options.normalization;
+        let calibration = options
+            .size_calibration
+            .unwrap_or(SizeCalibration::MeanMatched);
         match name {
             "gear-norm-v1" => Ok(Algorithm::GearNormV1(profile)),
             "fixed-size" => Ok(Algorithm::FixedSize(fixed_size::Params {
@@ -134,17 +240,28 @@ impl Algorithm {
                 profile,
                 normalization,
             )?)),
-            "rabin" => Ok(Algorithm::Rabin(rabin::Params::from_profile(
+            "rabin" => Ok(Algorithm::Rabin(rabin::Params::from_profile_calibrated(
                 profile,
                 window.unwrap_or(rabin::DEFAULT_WINDOW),
+                calibration,
             ))),
-            "buzhash" => Ok(Algorithm::Buzhash(buzhash::Params::from_profile(
+            "buzhash" => Ok(Algorithm::Buzhash(
+                buzhash::Params::from_profile_calibrated(
+                    profile,
+                    window.unwrap_or(buzhash::DEFAULT_WINDOW),
+                    calibration,
+                ),
+            )),
+            "ae" => Ok(Algorithm::Ae(ae::Params::from_profile_with_width(
                 profile,
-                window.unwrap_or(buzhash::DEFAULT_WINDOW),
-            ))),
-            "ae" => Ok(Algorithm::Ae(ae::Params::from_profile(profile, window))),
+                window,
+                options.value_width.unwrap_or(1),
+            )?)),
             "ram" => Ok(Algorithm::Ram(ram::Params::from_profile(profile, window))),
-            "tttd" => Ok(Algorithm::Tttd(tttd::Params::from_profile(profile))),
+            "tttd" => Ok(Algorithm::Tttd(tttd::Params::from_profile_calibrated(
+                profile,
+                calibration,
+            ))),
             other => Err(format!(
                 "unknown --algorithm {other:?} (expected one of: {})",
                 Algorithm::NAMES.join(", ")
@@ -247,6 +364,22 @@ pub(crate) fn assert_valid_ranges(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn cut_rules_fire_as_documented() {
+        assert!(CutRule::Mask(0xff).fires(0x100));
+        assert!(!CutRule::Mask(0xff).fires(0x101));
+        assert!(CutRule::Modulo(10).fires(19));
+        assert!(!CutRule::Modulo(10).fires(20));
+        assert_eq!(
+            CutRule::for_target(128, 512, SizeCalibration::MeanMatched),
+            CutRule::Modulo(384)
+        );
+        assert_eq!(
+            CutRule::for_target(128, 512, SizeCalibration::Pow2Mask),
+            CutRule::Mask(511)
+        );
+    }
 
     #[test]
     fn pow2_mask_matches_expected_bit_widths() {

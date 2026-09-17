@@ -19,7 +19,7 @@
 //!            [--probe-total-bytes <n>] [--probe-seed <n>] \
 //!            [--probe-sample-interval-ms <n>] \
 //!            [--probe-stages pack,verify,unpack,repack,export] \
-//!            [--probe-scratch-root <dir>] \
+//!            [--probe-scratch-root <dir>] [--probe-isolate true|false] \
 //!            [--run-id <id>] [--out <path>]
 //! ```
 //!
@@ -32,10 +32,16 @@
 //! `ebr_access::ProbeConfig`'s module docs for what it measures and why
 //! `repack`/`export` are opt-in). Either way, one `ebr.harness.raw.v1` JSONL
 //! row is appended carrying the result.
+//!
+//! `--probe-isolate` (default `true`) runs the probe's `verify` and `unpack`
+//! stages in fresh child processes of this binary (`--mode probe-stage`, an
+//! internal mode that prints one raw JSON stage measurement), so their memory
+//! cannot inherit the `pack` stage's resident or allocator-retained memory
+//! (harness review round 1, finding R1-05).
 
 use ebr_access::{
     ProbeConfig, ProbeStage, RandomAccessConfig, default_stages, measure_random_access,
-    measure_stream, run_probe,
+    measure_stream, run_probe, run_single_stage,
 };
 use ebr_common::cli::Args;
 use ebr_common::results::ResultWriter;
@@ -66,6 +72,9 @@ fn main() -> ExitCode {
 
 fn run() -> Result<(), BoxError> {
     let args = Args::parse(std::env::args().skip(1))?;
+    if args.get("mode") == Some("probe-stage") {
+        return run_probe_stage_child(&args);
+    }
     let experiment_id = args.require("experiment-id")?.to_string();
     let env_name = args.require("env-name")?.to_string();
     let mode = args.get("mode").unwrap_or("roundtrip").to_string();
@@ -79,7 +88,11 @@ fn run() -> Result<(), BoxError> {
     };
 
     let (item_id, payload) = match mode.as_str() {
-        "roundtrip" => run_roundtrip(&args)?,
+        "roundtrip" => {
+            let item_path = PathBuf::from(args.require("item-path")?);
+            ebr_common::heldout::assert_inputs_not_heldout(&repo_root, &[item_path.as_path()])?;
+            run_roundtrip(&args)?
+        }
         "probe" => run_probe_mode(&args)?,
         other => {
             return Err(format!("unknown --mode {other:?} (expected roundtrip or probe)").into());
@@ -172,10 +185,16 @@ fn run_roundtrip(args: &Args) -> Result<(String, Value), BoxError> {
     };
 
     let stream = measure_stream(&planned)?;
+    let source_page_cache = match source_kind.as_str() {
+        "memory" => "not applicable: archive bytes held in process memory",
+        "local-file" => "hot: archive file written by this process immediately before measurement",
+        _ => "unknown: remote source",
+    };
     let payload = json!({
         "mode": "roundtrip",
         "profile": profile.as_str(),
         "source_kind": source_kind,
+        "source_page_cache": source_page_cache,
         "entry_count": paths.len(),
         "random_access": random_access,
         "stream": stream,
@@ -202,6 +221,18 @@ fn run_probe_mode(args: &Args) -> Result<(String, Value), BoxError> {
         None => default_stages(),
     };
 
+    let isolate = match args.get("probe-isolate") {
+        None | Some("true") => true,
+        Some("false") => false,
+        Some(other) => {
+            return Err(format!("--probe-isolate expects true or false, got {other:?}").into());
+        }
+    };
+    let isolate_exe = if isolate {
+        Some(std::env::current_exe()?)
+    } else {
+        None
+    };
     let measurement = run_probe(ProbeConfig {
         total_bytes,
         seed,
@@ -209,6 +240,7 @@ fn run_probe_mode(args: &Args) -> Result<(String, Value), BoxError> {
         stages,
         profile,
         scratch_root,
+        isolate_exe,
     })?;
 
     let item_id = args
@@ -218,9 +250,35 @@ fn run_probe_mode(args: &Args) -> Result<(String, Value), BoxError> {
     let payload = json!({
         "mode": "probe",
         "profile": profile.as_str(),
+        "isolated_verify_unpack": isolate,
         "probe": measurement,
     });
     Ok((item_id, payload))
+}
+
+/// Internal child mode for `--probe-isolate`: runs one `verify` or `unpack`
+/// stage in this fresh process and prints its measurement as one JSON line.
+fn run_probe_stage_child(args: &Args) -> Result<(), BoxError> {
+    let stage = ProbeStage::parse(args.require("probe-stage")?)?;
+    let encoded_path = PathBuf::from(args.require("probe-encoded-path")?);
+    let scratch_dir = PathBuf::from(args.require("probe-stage-scratch")?);
+    let interval_ms: u64 = parse_or(args, "probe-sample-interval-ms", 50)?;
+    let mut measurement = run_single_stage(
+        stage,
+        &encoded_path,
+        &scratch_dir,
+        Duration::from_millis(interval_ms),
+    )?;
+    measurement.measurement.isolated = true;
+    // Not getrusage(RUSAGE_SELF).max_rss: a child started with
+    // posix_spawn/vfork (as std::process::Command does on Linux) inherits its
+    // parent's high-water mark into that counter at exec (review round 1,
+    // R1-05). The stage's own kernel high-water mark, reset when the stage
+    // began in this fresh process, is the child's real peak.
+    measurement.measurement.process_lifetime_peak_rss_bytes =
+        Some(measurement.measurement.memory.peak_rss_bytes);
+    println!("{}", serde_json::to_string(&measurement)?);
+    Ok(())
 }
 
 fn build_random_access_policy(args: &Args) -> Result<RandomAccessPolicy, BoxError> {

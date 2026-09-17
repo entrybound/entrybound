@@ -81,7 +81,10 @@ impl TestCredentials {
     /// separately invoked `ebr-verify`/`ebr-unpack` process can unlock the
     /// same archive. Best-effort: a failure here does not invalidate the
     /// measurement already taken, so callers should log, not fail, on error.
-    pub fn persist_password(&self, archive_path: &std::path::Path) -> std::io::Result<std::path::PathBuf> {
+    pub fn persist_password(
+        &self,
+        archive_path: &std::path::Path,
+    ) -> std::io::Result<std::path::PathBuf> {
         let mut sidecar = archive_path.as_os_str().to_owned();
         sidecar.push(".testpassword");
         let sidecar = std::path::PathBuf::from(sidecar);
@@ -156,10 +159,8 @@ mod tests {
 
     #[test]
     fn persists_and_removes_the_password_sidecar() {
-        let dir = std::env::temp_dir().join(format!(
-            "ebr-pack-encrypt-test-{}",
-            std::process::id()
-        ));
+        let dir =
+            std::env::temp_dir().join(format!("ebr-pack-encrypt-test-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let archive_path = dir.join("archive.ecf");
         std::fs::write(&archive_path, b"placeholder").unwrap();

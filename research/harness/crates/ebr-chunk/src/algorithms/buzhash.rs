@@ -22,7 +22,7 @@
 //! *under rotation*, Gear hash needs values that mix well under
 //! shift-and-add). Not wired into any production code path.
 
-use super::{ChunkRange, pow2_mask_for_target};
+use super::{ChunkRange, CutRule, SizeCalibration};
 use entrybound::chunker::ChunkingParameters;
 
 /// Default window width in bytes (64, per this crate's brief -- the widest a
@@ -63,24 +63,41 @@ pub struct Params {
     /// Sliding window width in bytes. Must be in `1..=64` (see
     /// [`chunk_ranges`]).
     pub window: usize,
+    /// Cut decision; see [`super::SizeCalibration`].
+    pub cut: CutRule,
 }
 
 impl Params {
+    /// Mean-matched calibration (see [`super::SizeCalibration`]).
     #[must_use]
     pub fn from_profile(profile: ChunkingParameters, window: usize) -> Self {
+        Self::from_profile_calibrated(profile, window, SizeCalibration::MeanMatched)
+    }
+
+    #[must_use]
+    pub fn from_profile_calibrated(
+        profile: ChunkingParameters,
+        window: usize,
+        calibration: SizeCalibration,
+    ) -> Self {
         Params {
             min_size: profile.minimum_size,
             target_size: profile.target_size,
             max_size: profile.maximum_size,
             window,
+            cut: CutRule::for_target(profile.minimum_size, profile.target_size, calibration),
         }
     }
 
     #[must_use]
     pub fn algorithm_id(&self) -> String {
         format!(
-            "buzhash-cdc-v1/min-{}/target-{}/max-{}/window-{}",
-            self.min_size, self.target_size, self.max_size, self.window
+            "buzhash-cdc-v1/min-{}/target-{}/max-{}/window-{}/{}",
+            self.min_size,
+            self.target_size,
+            self.max_size,
+            self.window,
+            self.cut.id()
         )
     }
 }
@@ -102,7 +119,6 @@ pub fn chunk_ranges(data: &[u8], params: &Params) -> Vec<ChunkRange> {
         return Vec::new();
     }
 
-    let mask = pow2_mask_for_target(params.target_size);
     let mut ranges = Vec::new();
     let mut start = 0usize;
     let mut hash: u64 = 0;
@@ -115,7 +131,7 @@ pub fn chunk_ranges(data: &[u8], params: &Params) -> Vec<ChunkRange> {
             hash ^= TABLE[out_byte as usize].rotate_left(params.window as u32);
         }
         let len = i - start + 1;
-        if len >= params.min_size && (hash & mask == 0 || len >= params.max_size) {
+        if len >= params.min_size && (params.cut.fires(hash) || len >= params.max_size) {
             ranges.push(ChunkRange { start, end: i + 1 });
             start = i + 1;
             hash = 0;
@@ -135,13 +151,45 @@ mod tests {
     use super::*;
     use crate::algorithms::assert_valid_ranges;
 
+    const WINDOW_FOR_TEST: usize = 64;
+
     fn params(min: usize, target: usize, max: usize, window: usize) -> Params {
         Params {
             min_size: min,
             target_size: target,
             max_size: max,
             window,
+            cut: CutRule::for_target(min, target, SizeCalibration::MeanMatched),
         }
+    }
+
+    fn mean_chunk(data: &[u8], p: &Params) -> f64 {
+        let ranges = chunk_ranges(data, p);
+        ranges.iter().map(|r| r.len() as f64).sum::<f64>() / ranges.len() as f64
+    }
+
+    /// Review finding R1-09: the default calibration lands the realized mean
+    /// near `target` at production-shaped min/max ratios, while the legacy
+    /// power-of-two mask overshoots by about 20%.
+    #[test]
+    fn mean_matched_calibration_hits_target_and_pow2_overshoots() {
+        let data = pseudo_random_bytes(12_000_000, 77);
+        let target = 16_384usize;
+        let matched = params(target / 4, target, target * 4, WINDOW_FOR_TEST);
+        let mean = mean_chunk(&data, &matched);
+        assert!(
+            (mean / target as f64 - 1.0).abs() < 0.08,
+            "mean-matched realized mean {mean} not within 8% of {target}"
+        );
+        let pow2 = Params {
+            cut: CutRule::for_target(target / 4, target, SizeCalibration::Pow2Mask),
+            ..matched
+        };
+        let pow2_mean = mean_chunk(&data, &pow2);
+        assert!(
+            pow2_mean / target as f64 > 1.12,
+            "pow2 realized mean {pow2_mean} expected well above {target}"
+        );
     }
 
     fn pseudo_random_bytes(len: usize, seed: u64) -> Vec<u8> {

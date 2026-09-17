@@ -19,6 +19,8 @@ research/harness/
   build.ps1               Windows equivalent
   README.md               this file
   research-internals.md   the entrybound research-internals feature (Internals agent)
+  harness-review-round1.md  adversarial measurement-validity review, findings and dispositions
+  lock_parity.py          checks this workspace resolves entrybound's dependencies like production
   internals-identity-check.{sh,ps1,md}, internals_identity_tools.py
                           byte-identity proof for that feature (Internals agent)
   crates/
@@ -196,13 +198,37 @@ enabled:
 entrybound = { path = "../../../../crates/entrybound", features = ["research-internals"] }
 ```
 
-`ebr-common` and `ebr-netem` do not depend on `entrybound` at all.
+`ebr-common` does not depend on `entrybound`; `ebr-netem` uses it only as a
+dev-dependency for its origin contract test.
 `ebr-pack`/`ebr-chunk`/`ebr-access` only call entrybound's *public* API
 today even though the feature is enabled (so future measurement code in
 those crates can reach `entrybound::research` without a `Cargo.toml`
 change); `ebr-codec`/`ebr-planner` already use
 `entrybound::research::{codec,planner}` directly. See each crate's own
 README for specifics.
+
+### Two ways a harness build differs from the shipped CLI (review R1-06)
+
+1. **Its own `Cargo.lock`.** This workspace resolves entrybound's
+   transitive dependencies independently of the production workspace. At
+   review round 1 it had drifted on 28 crates, including `zstd-sys`,
+   `zstd-safe`, and `cc` (which builds libzstd), so harness "production"
+   measurements did not run the dependency build `ebound` ships, and the
+   research-internals identity proof (run in the production workspace) did
+   not cover it. The lock was realigned, and
+   `python research/harness/lock_parity.py` must report `RESULT PASS`
+   before any measurement run and after any `Cargo.lock` change in either
+   workspace (`--commands` prints the `cargo update --precise` fixes).
+   Production's `cargo test` resolve also enables `flate2`'s `zlib-rs`
+   backend through a dev-dependency; release builds of `ebound` and this
+   harness both use `miniz_oxide`.
+2. **`research-internals` is enabled.** The feature is proven additive for
+   archive bytes, but exposing private functions through public wrappers
+   can change code generation (inlining) of the functions production calls.
+   Every `ebr-pack` row carries a `build_note` saying so. **Decision-grade
+   timing comparisons against incumbents must use `ebound` built from the
+   production workspace without the feature**, or first show timing parity
+   between the two builds on the same inputs.
 
 ## Third-party dependency pins
 
@@ -288,20 +314,28 @@ tested clean end to end on both hosts):
     done'
   ```
 
+## Harness review round 1 (2026-09-17)
+
+`harness-review-round1.md` records an adversarial measurement-validity
+review of this workspace: 14 HIGH/MEDIUM harness defects fixed (held-out
+guard never called by any binary; cumulative random-access byte counters
+reported per read; pack/probe/codec memory and timing dominated by harness
+work; STREAM staging spill missing from peak scratch; a drifted
+`Cargo.lock`; single-chunk planner regret with mixed cost units; byte
+accounting without an independent cross-check; mis-calibrated or
+unfaithful CDC baselines; unfair or unmeasured codec configurations;
+netem loss and bandwidth artifacts), plus the use constraints that remain.
+Read its "Use constraints" section before designing a C-exec experiment.
+
+Every binary refuses any input path under a held-out root before reading
+it (`ebr_common::heldout::assert_inputs_not_heldout`), independently of the
+`ebr` runner's own spec-level guard.
+
 ## Known limitations
 
-- **`ebr-pack --stream-window` has no `Auto`.** Unlike the production CLI's
-  `pack --stream-window auto` (`entrybound::ecf::StreamWindow::Auto`),
-  `ebr-pack`'s STREAM path only exposes a fixed `Ceiling(n)`
-  (`research/harness/crates/ebr-pack/src/pack.rs`'s `PackRequest::
-  stream_window`). Packing a tree that needs more than the default
-  `Ceiling(0)` (any tree with cross-object dedup) requires the caller to
-  supply an explicit, sufficiently large `--stream-window`; there is no way
-  to ask this binary for the minimum automatically. `EXP-DET-SMOKE` worked
-  around this with a generously large fixed ceiling (`100000`); the internal
-  minimum for that fixed tree ranges from 33 (`fast`) to 46+ (other
-  profiles). A future fix would thread `StreamWindow::Auto` through as an
-  `--stream-window auto` option, matching the production CLI.
+- **`ebr-pack --stream-window auto`** is supported since review round 1
+  (earlier revisions only accepted a fixed `Ceiling(n)`; `EXP-DET-SMOKE` used
+  `100000` as a workaround).
 - **`ebr-origin`/`ebr-netem-proxy` serve forever; they are not one-shot `ebr`
   spec commands on their own.** Every other harness binary prints one JSON
   row and exits, which is what an `ebr` spec's `command` expects. The two
