@@ -1,0 +1,390 @@
+{
+  "format": "ebrc-stats-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f20-validation-real-commons-compress-testdata",
+  "family": "F20",
+  "split": "validation",
+  "scale": "medium",
+  "logical_tree_sha256": "7bb28ba7963bf8a31f045126025e6b49fe320885d403dcbd2cf34d313ff75b15",
+  "tool": {
+    "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "file_version": "file-5.45",
+    "magic_mgc": {
+      "path": "/usr/lib/file/magic.mgc",
+      "sha256": "72a25195a2623fe160e926bf20952b6b74b29d6c91e0174a5fa062f02beee1aa"
+    },
+    "zstd_version": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+    "xz_version": "xz (XZ Utils) 5.4.5",
+    "numpy_version": "2.5.3",
+    "python": "3.12.3"
+  },
+  "params": {
+    "block_bytes": 4096,
+    "compress_max_bytes": 1073741824,
+    "zstd": "-3 -T1",
+    "xz": "-6 -T1",
+    "mime": "file --mime-type -b -N"
+  },
+  "totals": {
+    "unique_file_inodes": 353,
+    "bytes": 96228477,
+    "empty_files": 0,
+    "objects": 484
+  },
+  "content_types": {
+    "distinct": 29,
+    "by_count": {
+      "application/x-tar": 75,
+      "application/zip": 69,
+      "application/x-7z-compressed": 35,
+      "application/octet-stream": 22,
+      "application/gzip": 20,
+      "application/vnd.android.package-archive": 18,
+      "application/x-archive": 16,
+      "application/java-archive": 15,
+      "application/x-cpio": 13,
+      "application/x-java-pack200": 13,
+      "text/plain": 13,
+      "application/x-bzip2": 8,
+      "application/x-lz4": 5,
+      "image/vnd.microsoft.icon": 5,
+      "text/xml": 4,
+      "application/x-snappy-framed": 3,
+      "application/x-arj": 2,
+      "application/x-compress": 2,
+      "application/x-lzma": 2,
+      "application/x-ustar": 2,
+      "application/x-xz": 2,
+      "text/x-java": 2,
+      "application/msword": 1,
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": 1,
+      "application/x-gtar": 1,
+      "application/zlib": 1,
+      "audio/x-aiff": 1,
+      "image/x-os2-graphics": 1,
+      "text/x-shellscript": 1
+    },
+    "by_bytes": {
+      "application/vnd.android.package-archive": 35224888,
+      "application/x-tar": 17253071,
+      "application/gzip": 17166986,
+      "application/x-bzip2": 10208690,
+      "application/x-7z-compressed": 6590310,
+      "application/zip": 5677167,
+      "application/octet-stream": 1516259,
+      "application/java-archive": 1229041,
+      "text/plain": 928127,
+      "image/vnd.microsoft.icon": 224920,
+      "application/x-snappy-framed": 59693,
+      "text/x-java": 51843,
+      "application/msword": 23552,
+      "application/x-cpio": 23069,
+      "application/x-gtar": 10240,
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": 8942,
+      "application/x-ustar": 8717,
+      "application/x-archive": 6398,
+      "application/x-java-pack200": 5305,
+      "audio/x-aiff": 3894,
+      "application/x-lz4": 2517,
+      "image/x-os2-graphics": 888,
+      "application/x-compress": 780,
+      "text/xml": 654,
+      "application/x-xz": 648,
+      "application/x-arj": 509,
+      "application/x-lzma": 500,
+      "application/zlib": 468,
+      "text/x-shellscript": 401
+    }
+  },
+  "extensions": {
+    "distinct": 40,
+    "by_count": {
+      "tar": 80,
+      "zip": 53,
+      "7z": 34,
+      "apk": 25,
+      "jar": 20,
+      "gz": 18,
+      "ar": 16,
+      "cpio": 13,
+      "pack": 13,
+      "bz2": 8,
+      "(none)": 7,
+      "dump": 7,
+      "txt": 7,
+      "ico": 6,
+      "lz4": 5,
+      "xml": 4,
+      "arj": 3,
+      "sz": 3,
+      "z01": 3,
+      "z02": 3,
+      "(long)": 2,
+      "001": 2,
+      "md": 2,
+      "uncompressed": 2,
+      "xz": 2,
+      "002": 1,
+      "aif": 1,
+      "block_lz4": 1,
+      "br": 1,
+      "compressed": 1,
+      "deflate": 1,
+      "deflatez": 1,
+      "doc": 1,
+      "iwa": 1,
+      "lzma": 1,
+      "numbers": 1,
+      "sh": 1,
+      "tgz": 1,
+      "xlsx": 1,
+      "z": 1
+    },
+    "by_bytes": {
+      "apk": 35710564,
+      "tar": 17279709,
+      "gz": 17165725,
+      "bz2": 10208690,
+      "7z": 6589798,
+      "zip": 2940412,
+      "jar": 2431579,
+      "txt": 925644,
+      "z01": 786432,
+      "z02": 786432,
+      "dump": 458125,
+      "ico": 225808,
+      "uncompressed": 219541,
+      "numbers": 179147,
+      "001": 66048,
+      "(none)": 65318,
+      "sz": 59693,
+      "iwa": 36288,
+      "doc": 23552,
+      "cpio": 23069,
+      "xlsx": 18348,
+      "ar": 6398,
+      "pack": 5305,
+      "aif": 3894,
+      "arj": 3651,
+      "lz4": 2517,
+      "md": 1263,
+      "z": 776,
+      "xml": 654,
+      "xz": 648,
+      "block_lz4": 604,
+      "lzma": 481,
+      "tgz": 480,
+      "deflatez": 468,
+      "deflate": 462,
+      "br": 401,
+      "sh": 401,
+      "(long)": 133,
+      "compressed": 12,
+      "002": 7
+    }
+  },
+  "exact_duplicates": {
+    "nonempty_files": 353,
+    "nonempty_bytes": 96228477,
+    "distinct_contents": 351,
+    "duplicate_files": 2,
+    "duplicate_bytes": 12288,
+    "duplicate_file_ratio": 0.005666,
+    "duplicate_byte_ratio": 0.000128,
+    "note": "unique inodes (hardlinks counted once); empty files excluded"
+  },
+  "block_duplicates": {
+    "block_bytes": 4096,
+    "blocks": 23712,
+    "bytes": 96228477,
+    "duplicate_blocks": 2240,
+    "duplicate_bytes": 9078784,
+    "duplicate_block_ratio": 0.094467,
+    "duplicate_byte_ratio": 0.094346,
+    "full_blocks": 23377,
+    "zero_full_blocks": 108,
+    "zero_full_block_ratio": 0.00462,
+    "unique_block_keys": 21472,
+    "method": "per-file fixed 4 KiB blocks from offset 0; tail block keyed with its length; BLAKE2b-128"
+  },
+  "entropy": {
+    "stream_order0_bits_per_byte": 7.141348,
+    "mean_full_block_entropy_bits_per_byte": 5.723275,
+    "byte_weighted_mean_file_entropy_bits_per_byte": 6.097973,
+    "file_entropy_histogram": {
+      "bins_bits_per_byte": [
+        "[0,1)",
+        "[1,2)",
+        "[2,3)",
+        "[3,4)",
+        "[4,5)",
+        "[5,6)",
+        "[6,7)",
+        "[7,8]"
+      ],
+      "files": [
+        49,
+        29,
+        22,
+        33,
+        54,
+        46,
+        19,
+        101
+      ],
+      "bytes": [
+        17533002,
+        405878,
+        143951,
+        48680,
+        1946176,
+        3780055,
+        13987999,
+        58382736
+      ]
+    },
+    "block_entropy_histogram": {
+      "block_bytes": 4096,
+      "note": "full 4 KiB blocks only",
+      "bins_bits_per_byte": [
+        "[0,0.5)",
+        "[0.5,1)",
+        "[1,1.5)",
+        "[1.5,2)",
+        "[2,2.5)",
+        "[2.5,3)",
+        "[3,3.5)",
+        "[3.5,4)",
+        "[4,4.5)",
+        "[4.5,5)",
+        "[5,5.5)",
+        "[5.5,6)",
+        "[6,6.5)",
+        "[6.5,7)",
+        "[7,7.5)",
+        "[7.5,8]"
+      ],
+      "blocks": [
+        4237,
+        80,
+        214,
+        70,
+        157,
+        330,
+        166,
+        153,
+        336,
+        1036,
+        633,
+        656,
+        1154,
+        1289,
+        415,
+        12451
+      ]
+    }
+  },
+  "compressibility": {
+    "zstd -3": {
+      "input_bytes": 96228477,
+      "output_bytes": 57229968,
+      "ratio": 0.59473
+    },
+    "xz -6": {
+      "input_bytes": 96228477,
+      "output_bytes": 53027556,
+      "ratio": 0.551059
+    },
+    "sampled": false,
+    "note": "single-shot ratios over concatenated unique file contents in path order; indicator only, not a benchmark"
+  },
+  "metadata": {
+    "object_types": {
+      "dir": 131,
+      "file": 353
+    },
+    "symlinks": {
+      "total": 0,
+      "absolute_target": 0,
+      "relative_escaping_root": 0,
+      "dangling_relative": 0,
+      "non_utf8_target": 0
+    },
+    "hardlinks": {
+      "groups": 0,
+      "extra_paths": 0,
+      "max_group_size": 0,
+      "files_with_links_outside_item": 0
+    },
+    "xattrs": {
+      "objects_with_xattrs": 0,
+      "names_by_namespace": {},
+      "total_value_bytes": 0,
+      "max_names_per_object": 0,
+      "acl_access_objects": 0,
+      "acl_default_dirs": 0
+    },
+    "sparse": {
+      "sparse_files": 0,
+      "apparent_bytes": 0,
+      "allocated_bytes": 0,
+      "data_extent_bytes": 0,
+      "hole_bytes": 0,
+      "all_hole_files": 0
+    },
+    "modes": {
+      "distinct": 2,
+      "top": {
+        "file:0644": 353,
+        "dir:0755": 131
+      },
+      "setuid": 0,
+      "setgid": 0,
+      "sticky": 0,
+      "world_writable_non_symlink": 0,
+      "executable_files": 0
+    },
+    "ownership": {
+      "distinct_uids": 1,
+      "distinct_gids": 1,
+      "top_uids": {
+        "0": 484
+      },
+      "top_gids": {
+        "0": 484
+      }
+    },
+    "names": {
+      "non_utf8": 0,
+      "control_chars": 0,
+      "newline": 0,
+      "windows_hostile": 0,
+      "case_insensitive_collisions": 0,
+      "max_name_bytes": 64
+    },
+    "mtimes": {
+      "min_s": 1753562618,
+      "max_s": 1753562618,
+      "distinct": 1,
+      "subsecond_nonzero": 0,
+      "before_1970": 0,
+      "after_2038_01_19": 0
+    },
+    "directories": {
+      "max_entries": 164,
+      "mean_entries": 3.687023
+    }
+  },
+  "structure": {
+    "max_depth": 12,
+    "max_name_length_bytes": 64,
+    "path_length_bytes": {
+      "min": 3,
+      "max": 119,
+      "mean": 53.696,
+      "p50": 46,
+      "p95": 97
+    }
+  }
+}

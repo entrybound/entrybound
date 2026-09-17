@@ -1,0 +1,396 @@
+{
+  "format": "ebrc-stats-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f10-linux-firmware-20260910-full-tree",
+  "family": "F10",
+  "split": "tuning",
+  "scale": "large",
+  "logical_tree_sha256": "79c31e9e62dfd3572debba8d3a05b99c6de4b66d9651214eb64971ef2445590d",
+  "tool": {
+    "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "file_version": "file-5.45",
+    "magic_mgc": {
+      "path": "/usr/lib/file/magic.mgc",
+      "sha256": "72a25195a2623fe160e926bf20952b6b74b29d6c91e0174a5fa062f02beee1aa"
+    },
+    "zstd_version": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+    "xz_version": "xz (XZ Utils) 5.4.5",
+    "numpy_version": "2.5.3",
+    "python": "3.12.3"
+  },
+  "params": {
+    "block_bytes": 4096,
+    "compress_max_bytes": 1073741824,
+    "zstd": "-3 -T1",
+    "xz": "-6 -T1",
+    "mime": "file --mime-type -b -N"
+  },
+  "totals": {
+    "unique_file_inodes": 4889,
+    "bytes": 2015065171,
+    "empty_files": 0,
+    "objects": 5323
+  },
+  "content_types": {
+    "distinct": 28,
+    "by_count": {
+      "application/octet-stream": 4030,
+      "text/plain": 289,
+      "application/x-executable": 197,
+      "application/json": 97,
+      "text/x-c": 83,
+      "application/x-compress-ttcomp": 55,
+      "application/x-object": 40,
+      "application/x-adobe-aco": 31,
+      "image/x-atari-degas": 9,
+      "text/x-asm": 9,
+      "application/pgp-signature": 6,
+      "text/x-makefile": 6,
+      "image/x-tga": 5,
+      "application/x-executable, no program header": 4,
+      "text/x-shellscript": 4,
+      "application/x-dosexec": 3,
+      "application/x-ms-dat": 3,
+      "application/x-tar": 3,
+      "text/x-script.python": 3,
+      "application/SIMH-tape-data": 2,
+      "application/x-dbase-index": 2,
+      "application/zip": 2,
+      "application/x-commodore-basic": 1,
+      "application/x-dc42-floppy-image": 1,
+      "application/x-pie-executable": 1,
+      "application/x-xz": 1,
+      "image/x-sony-tim": 1,
+      "text/x-diff": 1
+    },
+    "by_bytes": {
+      "application/octet-stream": 1055562450,
+      "application/x-executable": 620972089,
+      "application/x-object": 280756160,
+      "application/x-executable, no program header": 20113296,
+      "application/x-compress-ttcomp": 12785408,
+      "application/x-xz": 5589248,
+      "text/plain": 4874301,
+      "application/x-adobe-aco": 4035336,
+      "image/x-atari-degas": 2246792,
+      "application/x-dosexec": 2188172,
+      "application/SIMH-tape-data": 1387008,
+      "application/x-pie-executable": 1358672,
+      "application/zip": 840456,
+      "text/x-c": 659598,
+      "application/x-tar": 532848,
+      "application/x-dc42-floppy-image": 386816,
+      "image/x-tga": 340913,
+      "application/x-ms-dat": 262204,
+      "text/x-asm": 67960,
+      "application/json": 51772,
+      "text/x-script.python": 23546,
+      "application/x-commodore-basic": 9376,
+      "text/x-shellscript": 7131,
+      "text/x-makefile": 4321,
+      "application/x-dbase-index": 4096,
+      "application/pgp-signature": 2900,
+      "text/x-diff": 1790,
+      "image/x-sony-tim": 512
+    }
+  },
+  "extensions": {
+    "distinct": 238,
+    "by_count": {
+      "bin": 3301,
+      "fw": 202,
+      "ucode": 190,
+      "mbn": 139,
+      "jsn": 97,
+      "txt": 79,
+      "mfa2": 72,
+      "h": 42,
+      "sfi": 41,
+      "nffw": 40,
+      "c": 36,
+      "ddc": 34,
+      "(none)": 32,
+      "wmfw": 32,
+      "cis": 29,
+      "elf": 22,
+      "dfu": 21,
+      "itb": 15,
+      "tlv": 15,
+      "img": 12,
+      "out": 12,
+      "pst": 11,
+      "bseq": 9,
+      "clm_blob": 9,
+      "pnvm": 9,
+      "s": 9,
+      "dat": 8,
+      "inp": 8,
+      "(long)": 7,
+      "sys": 7,
+      "asc": 6,
+      "b00": 6,
+      "b01": 6,
+      "b02": 6,
+      "flist": 6,
+      "mdt": 6,
+      "sbin": 6,
+      "asm": 5,
+      "cmake": 5,
+      "csp": 5,
+      "(other)": 292
+    },
+    "by_bytes": {
+      "bin": 698498648,
+      "mbn": 556763708,
+      "ucode": 299842932,
+      "nffw": 146943176,
+      "mfa2": 111511576,
+      "img": 90623932,
+      "sfi": 27955416,
+      "itb": 15432744,
+      "fw": 10945727,
+      "b03": 6366672,
+      "pkg": 5590544,
+      "xz": 5589248,
+      "elf": 5399802,
+      "dat": 3699992,
+      "txt": 3195184,
+      "melf": 2809992,
+      "tlv": 2511566,
+      "b09": 2340619,
+      "b04": 1473796,
+      "rps": 1295220,
+      "wmfw": 1075604,
+      "b08": 1068252,
+      "se": 933412,
+      "b02": 901680,
+      "pnvm": 868360,
+      "ncf": 840456,
+      "inp": 655396,
+      "sbin": 625920,
+      "(none)": 584298,
+      "b05": 474904,
+      "out": 438592,
+      "64": 429680,
+      "65": 429680,
+      "sys": 384444,
+      "166": 376768,
+      "63": 376768,
+      "dfu": 363458,
+      "ri": 342532,
+      "cyacd": 332693,
+      "z77": 326682,
+      "(other)": 4445098
+    }
+  },
+  "exact_duplicates": {
+    "nonempty_files": 4889,
+    "nonempty_bytes": 2015065171,
+    "distinct_contents": 4154,
+    "duplicate_files": 735,
+    "duplicate_bytes": 67115334,
+    "duplicate_file_ratio": 0.150337,
+    "duplicate_byte_ratio": 0.033307,
+    "note": "unique inodes (hardlinks counted once); empty files excluded"
+  },
+  "block_duplicates": {
+    "block_bytes": 4096,
+    "blocks": 494623,
+    "bytes": 2015065171,
+    "duplicate_blocks": 111250,
+    "duplicate_bytes": 453212630,
+    "duplicate_block_ratio": 0.224919,
+    "duplicate_byte_ratio": 0.224912,
+    "full_blocks": 489854,
+    "zero_full_blocks": 65045,
+    "zero_full_block_ratio": 0.132784,
+    "unique_block_keys": 383373,
+    "method": "per-file fixed 4 KiB blocks from offset 0; tail block keyed with its length; BLAKE2b-128"
+  },
+  "entropy": {
+    "stream_order0_bits_per_byte": 6.345744,
+    "mean_full_block_entropy_bits_per_byte": 5.061493,
+    "byte_weighted_mean_file_entropy_bits_per_byte": 5.837976,
+    "file_entropy_histogram": {
+      "bins_bits_per_byte": [
+        "[0,1)",
+        "[1,2)",
+        "[2,3)",
+        "[3,4)",
+        "[4,5)",
+        "[5,6)",
+        "[6,7)",
+        "[7,8]"
+      ],
+      "files": [
+        62,
+        138,
+        548,
+        444,
+        945,
+        1684,
+        677,
+        391
+      ],
+      "bytes": [
+        24196448,
+        16961232,
+        112268050,
+        112210798,
+        180370517,
+        543473538,
+        553977337,
+        471607251
+      ]
+    },
+    "block_entropy_histogram": {
+      "block_bytes": 4096,
+      "note": "full 4 KiB blocks only",
+      "bins_bits_per_byte": [
+        "[0,0.5)",
+        "[0.5,1)",
+        "[1,1.5)",
+        "[1.5,2)",
+        "[2,2.5)",
+        "[2.5,3)",
+        "[3,3.5)",
+        "[3.5,4)",
+        "[4,4.5)",
+        "[4.5,5)",
+        "[5,5.5)",
+        "[5.5,6)",
+        "[6,6.5)",
+        "[6.5,7)",
+        "[7,7.5)",
+        "[7.5,8]"
+      ],
+      "blocks": [
+        83174,
+        5875,
+        5214,
+        6529,
+        9736,
+        7440,
+        7239,
+        7766,
+        10872,
+        16555,
+        28953,
+        30451,
+        43538,
+        122178,
+        18754,
+        85580
+      ]
+    }
+  },
+  "compressibility": {
+    "zstd -3": {
+      "input_bytes": 1073741824,
+      "output_bytes": 462354082,
+      "ratio": 0.430601
+    },
+    "xz -6": {
+      "input_bytes": 1073741824,
+      "output_bytes": 352326568,
+      "ratio": 0.32813
+    },
+    "sampled": true,
+    "method": "evenly spaced windows",
+    "window_bytes": 1048576,
+    "windows": 1024,
+    "stream_bytes": 2015065171,
+    "note": "single-shot ratios over concatenated unique file contents in path order; indicator only, not a benchmark"
+  },
+  "metadata": {
+    "object_types": {
+      "dir": 434,
+      "file": 4889
+    },
+    "symlinks": {
+      "total": 0,
+      "absolute_target": 0,
+      "relative_escaping_root": 0,
+      "dangling_relative": 0,
+      "non_utf8_target": 0
+    },
+    "hardlinks": {
+      "groups": 0,
+      "extra_paths": 0,
+      "max_group_size": 0,
+      "files_with_links_outside_item": 0
+    },
+    "xattrs": {
+      "objects_with_xattrs": 0,
+      "names_by_namespace": {},
+      "total_value_bytes": 0,
+      "max_names_per_object": 0,
+      "acl_access_objects": 0,
+      "acl_default_dirs": 0
+    },
+    "sparse": {
+      "sparse_files": 0,
+      "apparent_bytes": 0,
+      "allocated_bytes": 0,
+      "data_extent_bytes": 0,
+      "hole_bytes": 0,
+      "all_hole_files": 0
+    },
+    "modes": {
+      "distinct": 4,
+      "top": {
+        "file:0664": 4882,
+        "dir:0775": 433,
+        "file:0775": 7,
+        "dir:0755": 1
+      },
+      "setuid": 0,
+      "setgid": 0,
+      "sticky": 0,
+      "world_writable_non_symlink": 0,
+      "executable_files": 7
+    },
+    "ownership": {
+      "distinct_uids": 1,
+      "distinct_gids": 1,
+      "top_uids": {
+        "0": 5323
+      },
+      "top_gids": {
+        "0": 5323
+      }
+    },
+    "names": {
+      "non_utf8": 0,
+      "control_chars": 0,
+      "newline": 0,
+      "windows_hostile": 0,
+      "case_insensitive_collisions": 66,
+      "max_name_bytes": 62
+    },
+    "mtimes": {
+      "min_s": 1789038896,
+      "max_s": 1789038896,
+      "distinct": 1,
+      "subsecond_nonzero": 0,
+      "before_1970": 0,
+      "after_2038_01_19": 0
+    },
+    "directories": {
+      "max_entries": 754,
+      "mean_entries": 12.262673
+    }
+  },
+  "structure": {
+    "max_depth": 5,
+    "max_name_length_bytes": 62,
+    "path_length_bytes": {
+      "min": 2,
+      "max": 81,
+      "mean": 29.505,
+      "p50": 27,
+      "p95": 52
+    }
+  }
+}

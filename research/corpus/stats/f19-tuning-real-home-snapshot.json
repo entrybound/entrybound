@@ -1,0 +1,330 @@
+{
+  "format": "ebrc-stats-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f19-tuning-real-home-snapshot",
+  "family": "F19",
+  "split": "tuning",
+  "scale": "medium",
+  "logical_tree_sha256": "cad58df109320158d60d214fe033da2dc4674a09355ddbe1c4dcfaf9433c40d4",
+  "tool": {
+    "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "file_version": "file-5.45",
+    "magic_mgc": {
+      "path": "/usr/lib/file/magic.mgc",
+      "sha256": "72a25195a2623fe160e926bf20952b6b74b29d6c91e0174a5fa062f02beee1aa"
+    },
+    "zstd_version": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+    "xz_version": "xz (XZ Utils) 5.4.5",
+    "numpy_version": "2.5.3",
+    "python": "3.12.3"
+  },
+  "params": {
+    "block_bytes": 4096,
+    "compress_max_bytes": 1073741824,
+    "zstd": "-3 -T1",
+    "xz": "-6 -T1",
+    "mime": "file --mime-type -b -N"
+  },
+  "totals": {
+    "unique_file_inodes": 128,
+    "bytes": 18304654,
+    "empty_files": 5,
+    "objects": 343
+  },
+  "content_types": {
+    "distinct": 12,
+    "by_count": {
+      "text/plain": 45,
+      "text/x-shellscript": 23,
+      "application/javascript": 20,
+      "application/pdf": 13,
+      "application/json": 9,
+      "application/octet-stream": 6,
+      "inode/x-empty": 5,
+      "image/jpeg": 2,
+      "text/xml": 2,
+      "application/vnd.sqlite3": 1,
+      "application/x-git": 1,
+      "text/x-perl": 1
+    },
+    "by_bytes": {
+      "application/pdf": 17460807,
+      "application/x-git": 396015,
+      "application/json": 159293,
+      "text/plain": 84134,
+      "text/x-shellscript": 84061,
+      "application/javascript": 45944,
+      "application/octet-stream": 42078,
+      "text/xml": 11200,
+      "image/jpeg": 8204,
+      "application/vnd.sqlite3": 8192,
+      "text/x-perl": 4726,
+      "inode/x-empty": 0
+    }
+  },
+  "extensions": {
+    "distinct": 24,
+    "by_count": {
+      "(none)": 41,
+      "ts": 16,
+      "sample": 14,
+      "pdf": 13,
+      "json": 8,
+      "txt": 6,
+      "sh": 5,
+      "yml": 5,
+      "jpg": 2,
+      "js": 2,
+      "md": 2,
+      "vim": 2,
+      "cjs": 1,
+      "conf": 1,
+      "dat": 1,
+      "idx": 1,
+      "itermcolors": 1,
+      "markdown": 1,
+      "mp3": 1,
+      "pack": 1,
+      "rev": 1,
+      "sublime-settings": 1,
+      "terminal": 1,
+      "trashinfo": 1
+    },
+    "by_bytes": {
+      "pdf": 17460807,
+      "pack": 396015,
+      "json": 158455,
+      "(none)": 104139,
+      "vim": 46855,
+      "ts": 29989,
+      "sample": 25821,
+      "idx": 22184,
+      "markdown": 8629,
+      "jpg": 8204,
+      "md": 5852,
+      "itermcolors": 5706,
+      "terminal": 5494,
+      "yml": 4598,
+      "sh": 3998,
+      "js": 3846,
+      "txt": 3813,
+      "cjs": 3480,
+      "rev": 3068,
+      "mp3": 2054,
+      "sublime-settings": 838,
+      "dat": 512,
+      "conf": 206,
+      "trashinfo": 91
+    }
+  },
+  "exact_duplicates": {
+    "nonempty_files": 123,
+    "nonempty_bytes": 18304654,
+    "distinct_contents": 121,
+    "duplicate_files": 2,
+    "duplicate_bytes": 2089019,
+    "duplicate_file_ratio": 0.01626,
+    "duplicate_byte_ratio": 0.114125,
+    "note": "unique inodes (hardlinks counted once); empty files excluded"
+  },
+  "block_duplicates": {
+    "block_bytes": 4096,
+    "blocks": 4553,
+    "bytes": 18304654,
+    "duplicate_blocks": 512,
+    "duplicate_bytes": 2089019,
+    "duplicate_block_ratio": 0.112453,
+    "duplicate_byte_ratio": 0.114125,
+    "full_blocks": 4431,
+    "zero_full_blocks": 0,
+    "zero_full_block_ratio": 0.0,
+    "unique_block_keys": 4041,
+    "method": "per-file fixed 4 KiB blocks from offset 0; tail block keyed with its length; BLAKE2b-128"
+  },
+  "entropy": {
+    "stream_order0_bits_per_byte": 7.964426,
+    "mean_full_block_entropy_bits_per_byte": 7.748145,
+    "byte_weighted_mean_file_entropy_bits_per_byte": 7.883009,
+    "file_entropy_histogram": {
+      "bins_bits_per_byte": [
+        "[0,1)",
+        "[1,2)",
+        "[2,3)",
+        "[3,4)",
+        "[4,5)",
+        "[5,6)",
+        "[6,7)",
+        "[7,8]"
+      ],
+      "files": [
+        1,
+        0,
+        1,
+        5,
+        72,
+        23,
+        2,
+        19
+      ],
+      "bytes": [
+        8192,
+        0,
+        9,
+        3197,
+        183253,
+        205967,
+        14260,
+        17889776
+      ]
+    },
+    "block_entropy_histogram": {
+      "block_bytes": 4096,
+      "note": "full 4 KiB blocks only",
+      "bins_bits_per_byte": [
+        "[0,0.5)",
+        "[0.5,1)",
+        "[1,1.5)",
+        "[1.5,2)",
+        "[2,2.5)",
+        "[2.5,3)",
+        "[3,3.5)",
+        "[3.5,4)",
+        "[4,4.5)",
+        "[4.5,5)",
+        "[5,5.5)",
+        "[5.5,6)",
+        "[6,6.5)",
+        "[6.5,7)",
+        "[7,7.5)",
+        "[7.5,8]"
+      ],
+      "blocks": [
+        2,
+        0,
+        0,
+        0,
+        2,
+        3,
+        16,
+        4,
+        23,
+        28,
+        46,
+        7,
+        35,
+        38,
+        134,
+        4093
+      ]
+    }
+  },
+  "compressibility": {
+    "zstd -3": {
+      "input_bytes": 18304654,
+      "output_bytes": 17019678,
+      "ratio": 0.929801
+    },
+    "xz -6": {
+      "input_bytes": 18304654,
+      "output_bytes": 16649476,
+      "ratio": 0.909576
+    },
+    "sampled": false,
+    "note": "single-shot ratios over concatenated unique file contents in path order; indicator only, not a benchmark"
+  },
+  "metadata": {
+    "object_types": {
+      "dir": 95,
+      "file": 246,
+      "symlink": 2
+    },
+    "symlinks": {
+      "total": 2,
+      "absolute_target": 2,
+      "relative_escaping_root": 0,
+      "dangling_relative": 0,
+      "non_utf8_target": 0
+    },
+    "hardlinks": {
+      "groups": 118,
+      "extra_paths": 118,
+      "max_group_size": 2,
+      "files_with_links_outside_item": 0
+    },
+    "xattrs": {
+      "objects_with_xattrs": 0,
+      "names_by_namespace": {},
+      "total_value_bytes": 0,
+      "max_names_per_object": 0,
+      "acl_access_objects": 0,
+      "acl_default_dirs": 0
+    },
+    "sparse": {
+      "sparse_files": 0,
+      "apparent_bytes": 0,
+      "allocated_bytes": 0,
+      "data_extent_bytes": 0,
+      "hole_bytes": 0,
+      "all_hole_files": 0
+    },
+    "modes": {
+      "distinct": 7,
+      "top": {
+        "file:0644": 141,
+        "dir:0755": 87,
+        "file:0664": 63,
+        "file:0755": 28,
+        "dir:0775": 8,
+        "file:0444": 8,
+        "file:0775": 6
+      },
+      "setuid": 0,
+      "setgid": 0,
+      "sticky": 0,
+      "world_writable_non_symlink": 0,
+      "executable_files": 34
+    },
+    "ownership": {
+      "distinct_uids": 1,
+      "distinct_gids": 1,
+      "top_uids": {
+        "0": 343
+      },
+      "top_gids": {
+        "0": 343
+      }
+    },
+    "names": {
+      "non_utf8": 0,
+      "control_chars": 0,
+      "newline": 0,
+      "windows_hostile": 0,
+      "case_insensitive_collisions": 0,
+      "max_name_bytes": 50
+    },
+    "mtimes": {
+      "min_s": 1767225600,
+      "max_s": 1789634861,
+      "distinct": 3,
+      "subsecond_nonzero": 2,
+      "before_1970": 0,
+      "after_2038_01_19": 0
+    },
+    "directories": {
+      "max_entries": 37,
+      "mean_entries": 4.120482
+    }
+  },
+  "structure": {
+    "max_depth": 8,
+    "max_name_length_bytes": 50,
+    "path_length_bytes": {
+      "min": 13,
+      "max": 107,
+      "mean": 48.564,
+      "p50": 51,
+      "p95": 75
+    }
+  }
+}

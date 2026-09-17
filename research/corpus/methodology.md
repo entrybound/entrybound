@@ -1,7 +1,9 @@
 # Entrybound research corpus methodology
 
-Corpus version: `ebrc-2026.09-v1`. Status: **assembled (round 0)** — all 20 families are defined,
-materialized and fingerprinted across the tuning/validation/heldout splits. Item counts, byte
+Corpus version: `ebrc-2026.09-v1`. Status: **assembled (round 1)** — all 20 families are defined,
+materialized and fingerprinted across the tuning/validation/heldout splits, and the round-1
+completeness critique's gaps (`research/corpus/critique-round1.md`) have been closed by the family
+groups. Item counts, byte
 totals, per-family/split/scale coverage, real-vs-generated and independence-group breakdowns, and
 license/attribution figures are none of them repeated here by hand: read `manifest.json`
 (`complete`, `items_by_real_or_generated`, `coverage`), `coverage.md`, `statistics.json` and
@@ -129,7 +131,7 @@ Unknown keys are errors.
 
 | Key | Type | Meaning |
 |---|---|---|
-| `inputs` | list | downloads: `{ "name": "^[a-z0-9][a-z0-9_-]{0,63}$", "url": "https://...", "sha256": "<64 lowercase hex>" \| "TOFU", "size": int (optional), "filename": safe basename (optional), "notes": optional }`. The names `git-archive` and `docker-rootfs` are reserved. |
+| `inputs` | list | downloads: `{ "name": "^[a-z0-9][a-z0-9_-]{0,63}$", "url": "https://...", "sha256": "<64 lowercase hex>" \| "TOFU", "size": int (optional), "filename": safe basename (optional), "notes": optional, "upstream_digest": optional (see below) }`. The names `git-archive` and `docker-rootfs` are reserved. |
 | `git` | object | `{ "repo": "https://...", "commit": "<40 hex>", "ref": optional branch/tag used if fetch-by-SHA fails, "subpaths": [optional relative paths] }` |
 | `docker` | object | `{ "image": "name[:tag]@sha256:<64 hex>", "platform": "linux/amd64" (default) \| "linux/arm64" \| "linux/arm/v7" \| "linux/386" }`. Non-x86 platforms are recorded as `emulated: true`. |
 | `from_items` | list | item ids this item derives from (same split; no cycles) |
@@ -137,6 +139,8 @@ Unknown keys are errors.
 | `steps` | list | ordered post-acquisition operations (5.3) |
 | `output_pin` | null \| `"TOFU"` \| 64 hex | pin on the materialized `logical_tree_sha256`. Defaults: `TOFU` for download/generate/derive/git-archive; `null` (record only) for build/docker-export |
 | `notes` | any | optional; excluded from the materialization key |
+
+`inputs[].upstream_digest` (optional): `{ "format": "wikimedia-dumpstatus" \| "checksum-file", "manifest_url": "https://...", "algo": "sha1" \| "md5" \| "sha256", "file": optional filename override }`. Cross-checks the cached/downloaded blob against a digest the source host publishes independently of our own download (a dump directory's `dumpstatus.json`, or a coreutils-style `*sum` / BSD-style checksums file), on every acquisition, cache hit or not. See section 6 for why this exists.
 
 Kind requirements:
 
@@ -227,6 +231,16 @@ Materialization steps:
    - `TOFU`: the first retrieval's SHA-256, size, UTC time and local date are written to
      `research/corpus/pins/<item_id>.json`. After that the pin is enforced. A later mismatch fails
      with `HASH MISMATCH` and exit status 1.
+   - **Cache-corruption defenses.** The cache's own bookkeeping names a blob after its content's
+     SHA-256, so a blob that was corrupted (e.g. by a flaky upstream host or proxy returning
+     all-zero bytes with a 200 status and a plausible size) before that hash was ever taken will
+     "self-verify" forever after: nothing about the content-addressed key can catch content it
+     never compared against anything external. Two independent checks close that gap: (1) a
+     magic-byte sanity check for common container extensions (`.gz`/`.bz2`/`.xz`/`.zip`/`.7z`/`.zst`
+     and related), run on every read including the fast "trust the `.verified.json` marker" path,
+     not only during a full `--reverify-cache` re-hash; (2) `upstream_digest` (5.2), which
+     cross-checks the blob against a digest the source host itself publishes, run on every
+     acquisition whether the blob is freshly downloaded or served from cache.
    - Git: shallow fetch of the exact commit into a bare cache repository, then
      `git -c tar.umask=0022 archive`.
    - Docker: `docker pull`, `create`, `export` of the digest-pinned image. The container is always
@@ -449,7 +463,14 @@ an unchanged corpus.
   - tar/zip extraction normalizes owners to numeric ids.
   - WSL ext4 has no SELinux/`security.*` labels.
   - `st_blocks` and extent granularity are ext4-specific.
-  - Record-level identity uses `logical_tree_sha256` for this reason.
+  - Record-level identity uses `logical_tree_sha256` for this reason, but even that digest's
+    `d` (data-extent) field is not always immediately settled on this ext4/WSL2 host: a file
+    can still be a few seconds into delayed allocation when a generator process exits, so the
+    very first fingerprint taken right after materialization can differ from one taken moments
+    later against unchanged bytes (`content_tree_sha256` is unaffected either way, since it
+    excludes the extent map). Confirmed for sparse VM-image outputs and for a generated
+    systemd-journal file; if `provision --verify` reports a mismatch with an unchanged
+    `content_tree_sha256`, re-fingerprint a few times before assuming corruption.
 - **Scale representativeness.** Tiers cap the size at 8 GiB, so multi-terabyte behaviour
   (index size, memory) must be extrapolated or tested separately.
 - **Indicator statistics.**
