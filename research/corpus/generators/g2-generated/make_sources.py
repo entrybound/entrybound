@@ -737,6 +737,86 @@ ITEMS += [
          tags=["generated"]),
 ]
 
+# Corpus round-1 critic gap (F20 encrypted private archives, BLOCKER): F20 previously had only
+# ciphertext-like high-entropy inputs (ChaCha20/AES-CTR keystreams); there was no secret-bearing
+# private-document tree for evaluating compress-then-encrypt leakage, and no *existing* encrypted
+# archives to import or refuse. private_vault.py (tuning/validation) and the structurally distinct
+# private_vault_v2.py (held-out: RSA SSH key used directly as an age recipient instead of a
+# dedicated GPG keypair, a multi-volume encrypted 7z, and a LUKS2 block-image container) each build
+# a fake personal document tree (PDF/DOCX/XLSX or PDF/XLSX/CSV/diary, OpenSSH+age(+GPG) keys, .env/
+# config, a browser-profile-shaped SQLite) and then wrap it with real tools: zip -P (ZipCrypto), 7z
+# -tzip -mem=AES256 / -t7z -mhe=on (AES-256, encrypted headers), gpg --symmetric and --encrypt, age
+# -p and -r, a KeePass KDBX4 database (pykeepass), and (held-out only) a loop-backed LUKS2 image.
+# Every password/passphrase is a fixed, seeded test value with no real value; tuning/validation
+# record them below (copied from each item's own materialized PROVENANCE.txt after provisioning),
+# and held-out keeps its passwords out of this committed file (derived by the same documented
+# seeded formula in private_vault_v2.py, recorded only inside the materialized, uncommitted
+# held-out item) per the held-out-descriptions-stay-provenance-only rule.
+ITEMS += [
+    item("f20-tuning-generated-private-vault", "F20", "tuning", "small", "build", "generated",
+         {"generator": gen("private_vault.py", 82001, {"variant": "tuning"})},
+         GENERATED_LIC, "ebrc-g2-f20-private-vault-tuning",
+         "Generated encrypted-private-archive workload: a fake personal document tree (bank-statement-style "
+         "PDF, resume DOCX, budget XLSX with real SUM formulas, a passphrase-protected OpenSSH ed25519 keypair, "
+         "an age identity, a throwaway OpenPGP keypair, .env/config.yaml with fake tokens, a Chrome-Login-Data-"
+         "shaped SQLite of fake saved passwords) plus 8 real-tool-encrypted containers of that same tree: "
+         "ZipCrypto (`zip -P`), WinZip AES-256 (`7z -tzip -mem=AES256`), 7z AES-256 with encrypted headers "
+         "(`7z -t7z -mhe=on`), OpenPGP symmetric and public-key (`gpg --symmetric` / `--encrypt`), age passphrase "
+         "and recipient (`age -p` / `-r`), and a KeePass KDBX4 database (pykeepass) describing every password.",
+         notes="Every key is generated fresh by its real tool's own CSPRNG at build time (ssh-keygen/age-keygen/"
+               "gpg have no reproducible-seed mode), so this item's bytes are not identical on every rebuild; "
+               "kind=build with the default (unset) output_pin=None, the same disposition already used for "
+               "shrink_real_disk_image.py and real_kernel_headers.py outputs in this file. Test passwords/"
+               "passphrases from the materialized item's own PROVENANCE.txt (persona 'Elena Oduya', seed 82001), "
+               "recorded here per the gap-closure requirement that known test passwords/keys be recorded in the "
+               "item's recipe/notes: db_password=eb-vault-tuning-db-CeJSHPSEecMjxvWK, mail_password=eb-vault-"
+               "tuning-mail-MNsbCZ*wLkDAJyVg, s3_secret=eb-vault-tuning-s3-QRb7kRDYFhqvL#kEjf4nhxV%E%a8N4oJ, "
+               "ssh_passphrase=eb-vault-tuning-ssh-%6pCDScdcBwuvGtD, gpg_symmetric_passphrase=eb-vault-tuning-"
+               "gpgsym-jV9wGH*2uK#dLgMm, age_passphrase=eb-vault-tuning-age-BHMP_8QHW*_-Cz!K, zipcrypto_password="
+               "eb-vault-tuning-zc-fDsnwhDHzHR-P6nr, aes256_zip_password=eb-vault-tuning-aeszip-wvhBLauMFhJctKVH, "
+               "sevenz_password=eb-vault-tuning-7z-!yK4cj83MmuruLiw, kdbx_password=eb-vault-tuning-kdbx-"
+               "_!bW*qfo59-NuhnA, age recipient public key=age174r6ulep2j5evzcpzh4eg4lqkqfh6ppwm2gqweplmn5dk97"
+               "v74csyg2mxp, gpg throwaway key fingerprint=25EB73D6215D3F0CC98D538AE98B3460F79CDAA5.",
+         tags=["generated", "encrypted"]),
+    item("f20-validation-generated-private-vault", "F20", "validation", "small", "build", "generated",
+         {"generator": gen("private_vault.py", 82002, {"variant": "validation"})},
+         GENERATED_LIC, "ebrc-g2-f20-private-vault-validation",
+         "Generated encrypted-private-archive workload (same construction as f20-tuning-generated-private-vault, "
+         "independent persona/seed): a fake personal document tree plus the same 8 real-tool-encrypted containers "
+         "(ZipCrypto, WinZip AES-256, 7z encrypted-header AES-256, OpenPGP symmetric+public-key, age passphrase+"
+         "recipient, KeePass KDBX4).",
+         notes="Independent seed (82002) and persona ('Aisha Kowalski') from the tuning item; every password/"
+               "passphrase is a fixed seeded test value with no real value, from the materialized item's own "
+               "PROVENANCE.txt: db_password=eb-vault-validation-db-*jW7o8jfsAwsBE%!, mail_password=eb-vault-"
+               "validation-mail-F3j_d7aoQH%CVPHV, s3_secret=eb-vault-validation-s3-5irfEaJ#Dpzm-Ac-*Z*SzRHybQ64qpz*, "
+               "ssh_passphrase=eb-vault-validation-ssh-Lj-cW9UF55WV3VMS, gpg_symmetric_passphrase=eb-vault-"
+               "validation-gpgsym-aj6sWb!N%6AvdD5E, age_passphrase=eb-vault-validation-age-dyg%mW*ozYBcAJ2z, "
+               "zipcrypto_password=eb-vault-validation-zc-_JVLi_4zYeERdCTo, aes256_zip_password=eb-vault-"
+               "validation-aeszip-miYUq%jB_sUZJAMw, sevenz_password=eb-vault-validation-7z-WEH!Hdrgdzk#ikWj, "
+               "kdbx_password=eb-vault-validation-kdbx-E_pF8tpehb-4YVMe, age recipient public key="
+               "age1yfk5xvzdj6xz04ys6nz3k6hga6dcz9flk348qeaphprku0vkwv6qtagn4g, gpg throwaway key fingerprint="
+               "120FD2729D0393E4FB90114F1F874E926E0FC467. Same kind=build / unset output_pin=None disposition as "
+               "the tuning item (key material is not bit-reproducible across rebuilds).",
+         tags=["generated", "encrypted"]),
+    item("f20-heldout-generated-private-vault-v2", "F20", "heldout", "medium", "build", "generated",
+         {"generator": gen("private_vault_v2.py", 82003, {"marker": "eb-f20-heldout-vault"})},
+         GENERATED_LIC, "ebrc-g2-f20-private-vault-v2-heldout",
+         "Held-out: a structurally distinct encrypted-private-archive workload -- a different fake personal "
+         "document tree (earnings-statement PDF, quarterly-budget XLSX, a free-text diary.txt with secrets "
+         "embedded in prose, a passwords_export.csv password-manager-leak shape, an RSA-3072 OpenSSH keypair used "
+         "directly as an age recipient instead of a dedicated GPG keypair) wrapped with ZipCrypto, a "
+         "multi-volume 7z with encrypted headers, OpenPGP symmetric, age passphrase and SSH-key-recipient modes, "
+         "a KeePass KDBX4 database, and (unique to held-out) a loop-backed LUKS2 block-image container "
+         "(cryptsetup, ext4 inside) -- closing the 'LUKS2 image if feasible without Docker' request.",
+         notes="Held-out: distinct independence group and distinct generator (private_vault_v2.py) from every "
+               "tuning/validation F20 item, per the family's own gap-closure requirement. Test passwords are "
+               "seeded deterministically by the same documented fake_password(rng, label) formula as the tuning/"
+               "validation item but are NOT recorded here (held-out descriptions stay provenance-only); they are "
+               "written in full, in the clear, into the materialized item's own PROVENANCE.txt, which is never "
+               "committed and never read by any provisioning agent.",
+         tags=["generated", "encrypted"]),
+]
+
 DOC_NOTES = (
     "g2-generated corpus group: F04 many-small-file trees, F15 sparse files, F17 duplicate trees, F19 "
     "metadata-heavy filesystem trees, F20 adversarial/high-entropy inputs. Generated by "
