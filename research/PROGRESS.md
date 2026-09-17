@@ -179,3 +179,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T02:09Z — WIP: interrupted method revision preserved (archetypal-objective.md, decision-method.md, method-review-round1.md, thresholds.json); pre-registration commit still pending.
 - 2026-09-17T02:10Z — Added research/orchestration/disk_alarm.py (C: < 50 GB, D: < 100 GB alarms), armed during workflows.
 - 2026-09-17T02:22Z — Method pre-registration committed: objective and decision method round-1 revision complete (85 findings dispositioned), thresholds.json transcribed; ebr tests pass except the template-state test (decision-method.md section 14 item 1).
+- 2026-09-17T02:24Z — Phase A DONE: pre-registration commit 14b977c (85 review findings dispositioned: 84 fixed, 1 accepted risk; RD-4 gates pending). Ledgers: 1518 requirements, 593 decisions (f56dd3d). ebr thresholds test updated (83 passed).

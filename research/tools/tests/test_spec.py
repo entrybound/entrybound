@@ -97,17 +97,23 @@ def test_threshold_override_merges(layout):
         Thresholds.load(layout.thresholds_path, {"bootstrap": {"confidence": 0.9}}, decision_ids=["D"])
 
 
-def test_repo_thresholds_file_is_template():
+def test_repo_thresholds_file_is_pre_registered():
     from pathlib import Path
 
     p = Path(__file__).resolve().parents[2] / "methods" / "thresholds.json"
-    data = json.loads(p.read_text())
-    assert data["status"] == "template"
+    data = json.loads(p.read_text(encoding="utf-8"))
+    assert data["status"] == "pre-registered"
     assert "decision-method.md" in data["authority"]
-    for fam in data["families"].values():
-        assert fam["practical_significance_band"] == {"kind": None, "lower": None, "upper": None}
-        assert fam["pareto_epsilon"] == {"kind": None, "value": None}
     assert set(data["families"]) == set(template()["families"])
+    for name, fam in data["families"].items():
+        band, epsilon = fam["practical_significance_band"], fam["pareto_epsilon"]
+        if name == "other":
+            # decision-method.md §3.6 deliberately leaves the catch-all family unset.
+            assert band["kind"] is None and epsilon["kind"] is None
+            continue
+        assert band["kind"] is not None and band["lower"] is not None and band["upper"] is not None
+        assert epsilon["kind"] is not None and epsilon["value"] is not None
+        assert "decision-method.md" in band["source"] and "decision-method.md" in epsilon["source"]
 
 
 # ---- held-out guard -----------------------------------------------------------------
