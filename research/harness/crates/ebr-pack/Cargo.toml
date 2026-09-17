@@ -1,6 +1,6 @@
 [package]
 name = "ebr-pack"
-description = "End-to-end archive measurements (plan/encode/open/verify/unpack/random-read) over entrybound's public production API, with complete byte accounting."
+description = "End-to-end archive measurements (pack/unpack/verify/inspect-bytes) over entrybound's public production API, with exact section-level byte accounting."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -15,12 +15,17 @@ serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
 
 # Same crate the Internals agent proved byte-identical with and without this
-# feature (research/harness/research-internals.md, commit c9a2d3a). ebr-pack
-# only calls the *public* production API today (see src/lib.rs); the feature
-# is enabled here so later measurement code in this crate can also reach
-# entrybound::research without a Cargo.toml change.
+# feature (research/harness/research-internals.md, commit c9a2d3a). Every
+# crate item beyond `entrybound::research::ecf::{chunk_frame_header_len,
+# parse_chunk_frame_header}` (the byte-accounting walk's Chunk frame header
+# parser, `src/bytes.rs`) is public production API; that one pair is this
+# crate's only use of `research-internals`.
 entrybound = { path = "../../../../crates/entrybound", features = ["research-internals"] }
 
+# `ebr-pack` keeps its explicit [[bin]] (it predates the other three, added
+# alongside src/bin/ebr-unpack.rs, src/bin/ebr-verify.rs and
+# src/bin/ebr-inspect-bytes.rs, which Cargo auto-discovers from `src/bin/`
+# without needing their own [[bin]] tables).
 [[bin]]
 name = "ebr-pack"
 path = "src/main.rs"
