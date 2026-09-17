@@ -4,7 +4,9 @@
 //! ([`external`]), compared on the same input. See `README.md`.
 
 pub mod external;
+pub mod matrix;
 pub mod production;
+pub mod transform;
 
 use serde::Serialize;
 

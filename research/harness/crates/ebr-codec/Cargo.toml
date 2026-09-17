@@ -19,6 +19,27 @@ entrybound = { path = "../../../../crates/entrybound", features = ["research-int
 # matching, explicit window log, ...) that entrybound::codec::TransformPlan
 # does not expose. See src/external.rs.
 zstd = { version = "=0.13.3", default-features = false, features = ["zdict_builder"] }
+# Every other pin below is a *candidate* external codec/transform, evaluated
+# for research only -- none of these change what production links or does.
+# Where a crate is also a production dependency, the version is pinned
+# identically to crates/entrybound/Cargo.toml so a size comparison is not
+# confounded by a different codec build.
+bzip2 = "=0.6.1"
+flate2 = "=1.1.9"
+# lzma-rust2's "xz" feature builds full .xz containers (used for the
+# xz+BCJ candidate); its `filter` module (BcjReader/BcjWriter, standalone,
+# no container) is unconditional and backs the harness's own BCJ structural
+# transform candidates. Same feature set entrybound itself enables.
+lzma-rust2 = { version = "=0.20.0", default-features = false, features = ["std", "encoder", "xz"] }
+# Pure-Rust brotli (not a production dependency): default features only.
+brotli = { version = "=9.0.0", default-features = false, features = ["std"] }
+# `lz4_flex` (already a production dependency) has no high-compression mode;
+# `lz4` binds liblz4 and exposes HC levels 1-12 via EncoderBuilder::level().
+lz4 = "=1.28.1"
+# PPMd7 (PPMdH), matching the variant 7-Zip's .7z PPMd uses. Not a production
+# dependency; chosen because it is actively maintained (see README) and its
+# public API needs no `unsafe` at the call site.
+ppmd-rust = "=1.5.0"
 
 [[bin]]
 name = "ebr-codec"
