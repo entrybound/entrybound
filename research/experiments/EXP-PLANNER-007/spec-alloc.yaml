@@ -1,0 +1,71 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-007
+status: design
+question: >
+  Untimed counting-allocator decode peak (alloc_peak_bytes, T-06, exact
+  in-process oracle) of every pre-packed status-quo and fitted configuration on
+  its applicable TS-1 inputs.
+hypothesis: >
+  alloc_peak_bytes is identical across repetitions (single-threaded decode) and
+  never exceeds the archive's declared decode memory (HC-06).
+decision_ids: [DEC-CMP-036, DEC-CMP-035]
+
+candidates:
+  - name: alloc-sq-fast
+    params: {kind: sq, profile: fast}
+    command: "python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable fast --item-kind-from-manifest --item-id {item_id} --require-archive /root/eb-research/derived/planner/ts1-archives/sq-fast/{item_id}.eb -- /root/eb-research/target/planner-harness/release/ebr-unpack --archive-path /root/eb-research/derived/planner/ts1-archives/sq-fast/{item_id}.eb --layout indexed --alloc-peak true --scratch-dir {scratch}/x --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu"
+  - name: alloc-fit-fast
+    params: {kind: fit, profile: fast}
+    command: "python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable fast --item-kind-from-manifest --item-id {item_id} --require-archive /root/eb-research/derived/planner/ts1-archives/fit-fast/{item_id}.eb -- /root/eb-research/target/planner-harness/release/ebr-unpack --archive-path /root/eb-research/derived/planner/ts1-archives/fit-fast/{item_id}.eb --layout indexed --alloc-peak true --scratch-dir {scratch}/x --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu"
+  - name: alloc-sq-balanced
+    params: {kind: sq, profile: balanced}
+    command: "python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable balanced --item-kind-from-manifest --item-id {item_id} --require-archive /root/eb-research/derived/planner/ts1-archives/sq-balanced/{item_id}.eb -- /root/eb-research/target/planner-harness/release/ebr-unpack --archive-path /root/eb-research/derived/planner/ts1-archives/sq-balanced/{item_id}.eb --layout indexed --alloc-peak true --scratch-dir {scratch}/x --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu"
+  - name: alloc-fit-balanced
+    params: {kind: fit, profile: balanced}
+    command: "python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable balanced --item-kind-from-manifest --item-id {item_id} --require-archive /root/eb-research/derived/planner/ts1-archives/fit-balanced/{item_id}.eb -- /root/eb-research/target/planner-harness/release/ebr-unpack --archive-path /root/eb-research/derived/planner/ts1-archives/fit-balanced/{item_id}.eb --layout indexed --alloc-peak true --scratch-dir {scratch}/x --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu"
+  - name: alloc-sq-dense
+    params: {kind: sq, profile: dense}
+    command: "python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable dense --item-kind-from-manifest --item-id {item_id} --require-archive /root/eb-research/derived/planner/ts1-archives/sq-dense/{item_id}.eb -- /root/eb-research/target/planner-harness/release/ebr-unpack --archive-path /root/eb-research/derived/planner/ts1-archives/sq-dense/{item_id}.eb --layout indexed --alloc-peak true --scratch-dir {scratch}/x --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu"
+  - name: alloc-fit-dense
+    params: {kind: fit, profile: dense}
+    command: "python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable dense --item-kind-from-manifest --item-id {item_id} --require-archive /root/eb-research/derived/planner/ts1-archives/fit-dense/{item_id}.eb -- /root/eb-research/target/planner-harness/release/ebr-unpack --archive-path /root/eb-research/derived/planner/ts1-archives/fit-dense/{item_id}.eb --layout indexed --alloc-peak true --scratch-dir {scratch}/x --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu"
+  - name: alloc-sq-extreme
+    params: {kind: sq, profile: extreme}
+    command: "python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable extreme --item-kind-from-manifest --item-id {item_id} --require-archive /root/eb-research/derived/planner/ts1-archives/sq-extreme/{item_id}.eb -- /root/eb-research/target/planner-harness/release/ebr-unpack --archive-path /root/eb-research/derived/planner/ts1-archives/sq-extreme/{item_id}.eb --layout indexed --alloc-peak true --scratch-dir {scratch}/x --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu"
+  - name: alloc-fit-extreme
+    params: {kind: fit, profile: extreme}
+    command: "python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable extreme --item-kind-from-manifest --item-id {item_id} --require-archive /root/eb-research/derived/planner/ts1-archives/fit-extreme/{item_id}.eb -- /root/eb-research/target/planner-harness/release/ebr-unpack --archive-path /root/eb-research/derived/planner/ts1-archives/fit-extreme/{item_id}.eb --layout indexed --alloc-peak true --scratch-dir {scratch}/x --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu"
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/ts1-timing-union.json
+  splits: [tuning]
+
+metrics:
+  - {name: alloc_peak_bytes, source: stdout_json, key: alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: declared_decode_memory_bytes, source: stdout_json, key: declared_decode_memory_bytes, family: other, direction: none, unit: B}
+  - {name: declared_tightness_ratio, source: derived, op: ratio, args: [declared_decode_memory_bytes, alloc_peak_bytes], family: other, direction: minimize}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917071, bootstrap: 260917072, command: 260917073}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/planner-harness/release/ebr-unpack]
+  timeout_s: 86400
+
+analysis:
+  baseline: alloc-sq-balanced
+  pairing: item
+  report_metrics: [alloc_peak_bytes, declared_tightness_ratio]
+
+notes: >
+  NEEDS_TOOLING: TP-08 counting allocator and ebr-unpack --alloc-peak; runs after
+  spec-prepack.yaml.

@@ -1,0 +1,67 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-010
+status: design
+question: >
+  Explain fidelity (DEC-ACC-012, DEC-CMP-029): for status-quo archives of each
+  profile, does ebound explain report every plan, codec, dictionary and group
+  fact in agreement with the EXP-PLANNER-002 trace ground truth, label rankings
+  NOT_RECORDED, and compute the v6 baseline as the trace does; and what are its
+  (informational) wall time and peak RSS relative to pack?
+hypothesis: >
+  100% agreement on recorded fact classes, zero honesty violations, at least one
+  v6 baseline mismatch (protocol.md H1.5, H1.6).
+decision_ids: [DEC-ACC-012, DEC-CMP-029]
+
+candidates:
+  - name: explain-fast
+    params: {profile: fast}
+  - name: explain-balanced
+    params: {profile: balanced}
+  - name: explain-dense
+    params: {profile: dense}
+  - name: explain-extreme
+    params: {profile: extreme}
+command: >-
+  /root/eb-research/target/planner-cli/release/ebound pack {item_path} {scratch}/archive.eb --layout indexed --profile {profile} >/dev/null &&
+  python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/explain_fidelity.py sample
+  --ebound /root/eb-research/target/planner-cli/release/ebound --archive {scratch}/archive.eb --item-id {item_id} --profile {profile}
+  --traces /root/eb-research/raw-side/EXP-PLANNER-002/traces
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/g1-psub-64.json
+  splits: [tuning]
+
+metrics:
+  - {name: explain_facts_total, source: stdout_json, key: facts_total, family: other, direction: none, unit: count}
+  - {name: explain_facts_agree, source: stdout_json, key: facts_agree, family: other, direction: none, unit: count}
+  - {name: diag_explain_agreement_fraction, source: derived, op: ratio, args: [explain_facts_agree, explain_facts_total], family: other, direction: maximize}
+  - {name: honesty_violations, source: stdout_json, key: not_recorded_honesty_violations, family: correctness, direction: minimize, unit: count}
+  - {name: v6_baseline_mismatches, source: stdout_json, key: v6_baseline_mismatches, family: other, direction: none, unit: count}
+  - {name: explain_wall_s, source: stdout_json, key: explain_wall_s_informational, family: time_wall, direction: minimize, unit: s}
+  - {name: explain_max_rss_bytes, source: stdout_json, key: explain_max_rss_bytes_informational, family: memory_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917101, bootstrap: 260917102, command: 260917103}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/planner-harness/release/ebr-planner, /root/eb-research/target/planner-cli/release/ebound]
+  timeout_s: 86400
+
+analysis:
+  baseline: explain-balanced
+  pairing: item
+  report_metrics: [diag_explain_agreement_fraction, honesty_violations, v6_baseline_mismatches]
+
+notes: >
+  NEEDS_TOOLING: TP-13 explain_fidelity.py (runs ebound explain on every entry,
+  parses evidence classes, joins with PSUB-256 traces restricted to the G1-PSUB-64
+  sub-item's Chunks by digest). Timing fields are informational (timing: false).

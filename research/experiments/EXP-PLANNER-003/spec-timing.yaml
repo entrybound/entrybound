@@ -1,0 +1,270 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-003
+status: design
+question: >
+  Look-1 timing arm: in-process encode wall and CPU time (selection plus encode)
+  of each frozen W and S strategy per profile, paired with sq-table of the same
+  profile, on the TS-1-V validation timing subset (dense/extreme on PSUB-64
+  sub-items), WSL st-v.
+hypothesis: >
+  encode_wall_s of every S member is reported against the profile's T-03 band;
+  guards per decision-method.md Appendix B.1. Template: the record replaces the
+  candidate list with W and S per profile via
+  research/planner/tools/make_timing_spec.py before planner look 1.
+decision_ids: [DEC-CMP-032, DEC-CMP-033]
+
+candidates:
+  - name: sq-table--fast
+    params: {strategy: sq-table, profile: fast}
+  - name: sq-table--balanced
+    params: {strategy: sq-table, profile: balanced}
+  - name: sq-table--dense
+    params: {strategy: sq-table, profile: dense}
+  - name: sq-table--extreme
+    params: {strategy: sq-table, profile: extreme}
+  - name: fixed-ladder--fast
+    params: {strategy: fixed-ladder, profile: fast}
+  - name: fixed-ladder--balanced
+    params: {strategy: fixed-ladder, profile: balanced}
+  - name: fixed-ladder--dense
+    params: {strategy: fixed-ladder, profile: dense}
+  - name: fixed-ladder--extreme
+    params: {strategy: fixed-ladder, profile: extreme}
+  - name: oracle-bounded--fast
+    params: {strategy: oracle-bounded, profile: fast}
+  - name: oracle-bounded--balanced
+    params: {strategy: oracle-bounded, profile: balanced}
+  - name: oracle-bounded--dense
+    params: {strategy: oracle-bounded, profile: dense}
+  - name: oracle-bounded--extreme
+    params: {strategy: oracle-bounded, profile: extreme}
+  - name: sh-k1--fast
+    params: {strategy: sh-k1, profile: fast}
+  - name: sh-k1--balanced
+    params: {strategy: sh-k1, profile: balanced}
+  - name: sh-k1--dense
+    params: {strategy: sh-k1, profile: dense}
+  - name: sh-k1--extreme
+    params: {strategy: sh-k1, profile: extreme}
+  - name: sh-k2--fast
+    params: {strategy: sh-k2, profile: fast}
+  - name: sh-k2--balanced
+    params: {strategy: sh-k2, profile: balanced}
+  - name: sh-k2--dense
+    params: {strategy: sh-k2, profile: dense}
+  - name: sh-k2--extreme
+    params: {strategy: sh-k2, profile: extreme}
+  - name: sh-k3--fast
+    params: {strategy: sh-k3, profile: fast}
+  - name: sh-k3--balanced
+    params: {strategy: sh-k3, profile: balanced}
+  - name: sh-k3--dense
+    params: {strategy: sh-k3, profile: dense}
+  - name: sh-k3--extreme
+    params: {strategy: sh-k3, profile: extreme}
+  - name: dp-plan-sharing--fast
+    params: {strategy: dp-plan-sharing, profile: fast}
+  - name: dp-plan-sharing--balanced
+    params: {strategy: dp-plan-sharing, profile: balanced}
+  - name: dp-plan-sharing--dense
+    params: {strategy: dp-plan-sharing, profile: dense}
+  - name: dp-plan-sharing--extreme
+    params: {strategy: dp-plan-sharing, profile: extreme}
+  - name: bb-prune--fast
+    params: {strategy: bb-prune, profile: fast}
+  - name: bb-prune--balanced
+    params: {strategy: bb-prune, profile: balanced}
+  - name: bb-prune--dense
+    params: {strategy: bb-prune, profile: dense}
+  - name: bb-prune--extreme
+    params: {strategy: bb-prune, profile: extreme}
+  - name: tree-d6--fast
+    params: {strategy: tree-d6, profile: fast}
+  - name: tree-d6--balanced
+    params: {strategy: tree-d6, profile: balanced}
+  - name: tree-d6--dense
+    params: {strategy: tree-d6, profile: dense}
+  - name: tree-d6--extreme
+    params: {strategy: tree-d6, profile: extreme}
+  - name: lut-cat-probe--fast
+    params: {strategy: lut-cat-probe, profile: fast}
+  - name: lut-cat-probe--balanced
+    params: {strategy: lut-cat-probe, profile: balanced}
+  - name: lut-cat-probe--dense
+    params: {strategy: lut-cat-probe, profile: dense}
+  - name: lut-cat-probe--extreme
+    params: {strategy: lut-cat-probe, profile: extreme}
+  - name: greedy-p1--fast
+    params: {strategy: greedy-p1, profile: fast}
+  - name: greedy-p1--balanced
+    params: {strategy: greedy-p1, profile: balanced}
+  - name: greedy-p1--dense
+    params: {strategy: greedy-p1, profile: dense}
+  - name: greedy-p1--extreme
+    params: {strategy: greedy-p1, profile: extreme}
+  - name: greedy-p2--fast
+    params: {strategy: greedy-p2, profile: fast}
+  - name: greedy-p2--balanced
+    params: {strategy: greedy-p2, profile: balanced}
+  - name: greedy-p2--dense
+    params: {strategy: greedy-p2, profile: dense}
+  - name: greedy-p2--extreme
+    params: {strategy: greedy-p2, profile: extreme}
+  - name: greedy-p3--fast
+    params: {strategy: greedy-p3, profile: fast}
+  - name: greedy-p3--balanced
+    params: {strategy: greedy-p3, profile: balanced}
+  - name: greedy-p3--dense
+    params: {strategy: greedy-p3, profile: dense}
+  - name: greedy-p3--extreme
+    params: {strategy: greedy-p3, profile: extreme}
+  - name: greedy-p5--fast
+    params: {strategy: greedy-p5, profile: fast}
+  - name: greedy-p5--balanced
+    params: {strategy: greedy-p5, profile: balanced}
+  - name: greedy-p5--dense
+    params: {strategy: greedy-p5, profile: dense}
+  - name: greedy-p5--extreme
+    params: {strategy: greedy-p5, profile: extreme}
+  - name: evalbudget-c1--fast
+    params: {strategy: evalbudget-c1, profile: fast}
+  - name: evalbudget-c1--balanced
+    params: {strategy: evalbudget-c1, profile: balanced}
+  - name: evalbudget-c1--dense
+    params: {strategy: evalbudget-c1, profile: dense}
+  - name: evalbudget-c1--extreme
+    params: {strategy: evalbudget-c1, profile: extreme}
+  - name: evalbudget-c2--fast
+    params: {strategy: evalbudget-c2, profile: fast}
+  - name: evalbudget-c2--balanced
+    params: {strategy: evalbudget-c2, profile: balanced}
+  - name: evalbudget-c2--dense
+    params: {strategy: evalbudget-c2, profile: dense}
+  - name: evalbudget-c2--extreme
+    params: {strategy: evalbudget-c2, profile: extreme}
+  - name: evalbudget-c4--fast
+    params: {strategy: evalbudget-c4, profile: fast}
+  - name: evalbudget-c4--balanced
+    params: {strategy: evalbudget-c4, profile: balanced}
+  - name: evalbudget-c4--dense
+    params: {strategy: evalbudget-c4, profile: dense}
+  - name: evalbudget-c4--extreme
+    params: {strategy: evalbudget-c4, profile: extreme}
+  - name: evalbudget-c8--fast
+    params: {strategy: evalbudget-c8, profile: fast}
+  - name: evalbudget-c8--balanced
+    params: {strategy: evalbudget-c8, profile: balanced}
+  - name: evalbudget-c8--dense
+    params: {strategy: evalbudget-c8, profile: dense}
+  - name: evalbudget-c8--extreme
+    params: {strategy: evalbudget-c8, profile: extreme}
+  - name: evalbudget-c16--fast
+    params: {strategy: evalbudget-c16, profile: fast}
+  - name: evalbudget-c16--balanced
+    params: {strategy: evalbudget-c16, profile: balanced}
+  - name: evalbudget-c16--dense
+    params: {strategy: evalbudget-c16, profile: dense}
+  - name: evalbudget-c16--extreme
+    params: {strategy: evalbudget-c16, profile: extreme}
+  - name: bytesbudget-m1--fast
+    params: {strategy: bytesbudget-m1, profile: fast}
+  - name: bytesbudget-m1--balanced
+    params: {strategy: bytesbudget-m1, profile: balanced}
+  - name: bytesbudget-m1--dense
+    params: {strategy: bytesbudget-m1, profile: dense}
+  - name: bytesbudget-m1--extreme
+    params: {strategy: bytesbudget-m1, profile: extreme}
+  - name: bytesbudget-m2--fast
+    params: {strategy: bytesbudget-m2, profile: fast}
+  - name: bytesbudget-m2--balanced
+    params: {strategy: bytesbudget-m2, profile: balanced}
+  - name: bytesbudget-m2--dense
+    params: {strategy: bytesbudget-m2, profile: dense}
+  - name: bytesbudget-m2--extreme
+    params: {strategy: bytesbudget-m2, profile: extreme}
+  - name: bytesbudget-m4--fast
+    params: {strategy: bytesbudget-m4, profile: fast}
+  - name: bytesbudget-m4--balanced
+    params: {strategy: bytesbudget-m4, profile: balanced}
+  - name: bytesbudget-m4--dense
+    params: {strategy: bytesbudget-m4, profile: dense}
+  - name: bytesbudget-m4--extreme
+    params: {strategy: bytesbudget-m4, profile: extreme}
+  - name: bytesbudget-m8--fast
+    params: {strategy: bytesbudget-m8, profile: fast}
+  - name: bytesbudget-m8--balanced
+    params: {strategy: bytesbudget-m8, profile: balanced}
+  - name: bytesbudget-m8--dense
+    params: {strategy: bytesbudget-m8, profile: dense}
+  - name: bytesbudget-m8--extreme
+    params: {strategy: bytesbudget-m8, profile: extreme}
+  - name: bytesbudget-m16--fast
+    params: {strategy: bytesbudget-m16, profile: fast}
+  - name: bytesbudget-m16--balanced
+    params: {strategy: bytesbudget-m16, profile: balanced}
+  - name: bytesbudget-m16--dense
+    params: {strategy: bytesbudget-m16, profile: dense}
+  - name: bytesbudget-m16--extreme
+    params: {strategy: bytesbudget-m16, profile: extreme}
+  - name: sampled-bal-full-dense--fast
+    params: {strategy: sampled-bal-full-dense, profile: fast}
+  - name: sampled-bal-full-dense--balanced
+    params: {strategy: sampled-bal-full-dense, profile: balanced}
+  - name: sampled-bal-full-dense--dense
+    params: {strategy: sampled-bal-full-dense, profile: dense}
+  - name: sampled-bal-full-dense--extreme
+    params: {strategy: sampled-bal-full-dense, profile: extreme}
+command: >-
+  /root/eb-research/target/planner-harness/release/ebr-planner time-select
+  --item-path {item_path} --profile {profile} --strategy {strategy}
+  --strategy-config /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-003/replay/strategy-configs.json
+  --experiment-id EXP-PLANNER-003 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/ts1-validation.json
+  splits: [validation]
+
+metrics:
+  - {name: encode_wall_s, source: stdout_json, key: encode_wall_s, family: time_wall, direction: minimize, unit: s}
+  - {name: encode_cpu_s, source: stdout_json, key: encode_cpu_s, family: time_cpu, direction: minimize, unit: s}
+  - {name: work_candidate_evaluations, source: stdout_json, key: work.candidate_evaluations, family: other, direction: none, unit: count}
+  - {name: output_sha256, source: stdout_json, key: output_sha256, family: correctness, kind: string}
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 10
+warmups: 2
+seeds: {order: 260917031, bootstrap: 260917032, command: 260917033}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+record_warmups: true
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 4
+  cpu_affinity: [2]
+  scratch_root: /root/eb-research/scratch/ebr
+  requires: [/root/eb-research/target/planner-harness/release/ebr-planner]
+  timeout_s: 86400
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+analysis:
+  baseline: sq-table--balanced
+  pairing: item_repetition
+  report_metrics: [encode_wall_s, encode_cpu_s]
+
+notes: >
+  Timing template (NEEDS_TOOLING: TP-07, runner additions of decision-method.md
+  section 14 item 3, calibration section 4.7). repetitions is the tier minimum;
+  the adaptive step/cap of section 4.6 is applied by the runner additions.
+  Windows arm: spec-timing-windows.yaml generated by make_timing_spec.py with
+  platform os [windows], affinity st-p {2}.

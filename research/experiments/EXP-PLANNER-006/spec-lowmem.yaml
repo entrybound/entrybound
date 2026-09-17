@@ -1,0 +1,97 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-006
+status: design
+question: >
+  Low-memory arm (DEC-CMP-016, HC-06): when an archive packed by production
+  ebound under each profile is decoded inside a cgroup v2 memory.max ceiling,
+  does decoding either succeed or refuse with a typed diagnostic before
+  exceeding the ceiling, is declared decode memory never below the measured
+  counting-allocator peak (declared_tightness_ratio >= 1), and is no archive
+  whose declaration fits the ceiling OOM-killed?
+hypothesis: >
+  declared_tightness_ratio >= 1 on every archive; zero OOM kills at ceilings at
+  or above the declared requirement; typed POLICY_REFUSED outcomes below it.
+  A single counterexample is an HC-06 violation artifact.
+decision_ids: [DEC-CMP-016]
+
+candidates:
+  - name: lowmem-fast-64m
+    params: {profile: fast, memory_max: 67108864}
+  - name: lowmem-fast-128m
+    params: {profile: fast, memory_max: 134217728}
+  - name: lowmem-fast-256m
+    params: {profile: fast, memory_max: 268435456}
+  - name: lowmem-fast-512m
+    params: {profile: fast, memory_max: 536870912}
+  - name: lowmem-balanced-64m
+    params: {profile: balanced, memory_max: 67108864}
+  - name: lowmem-balanced-128m
+    params: {profile: balanced, memory_max: 134217728}
+  - name: lowmem-balanced-256m
+    params: {profile: balanced, memory_max: 268435456}
+  - name: lowmem-balanced-512m
+    params: {profile: balanced, memory_max: 536870912}
+  - name: lowmem-dense-64m
+    params: {profile: dense, memory_max: 67108864}
+  - name: lowmem-dense-128m
+    params: {profile: dense, memory_max: 134217728}
+  - name: lowmem-dense-256m
+    params: {profile: dense, memory_max: 268435456}
+  - name: lowmem-dense-512m
+    params: {profile: dense, memory_max: 536870912}
+  - name: lowmem-extreme-64m
+    params: {profile: extreme, memory_max: 67108864}
+  - name: lowmem-extreme-128m
+    params: {profile: extreme, memory_max: 134217728}
+  - name: lowmem-extreme-256m
+    params: {profile: extreme, memory_max: 268435456}
+  - name: lowmem-extreme-512m
+    params: {profile: extreme, memory_max: 536870912}
+command: >-
+  /root/eb-research/target/planner-cli/release/ebound pack {item_path} {scratch}/archive.eb --layout indexed --profile {profile} >/dev/null &&
+  bash /mnt/d/Projects/entrybound/entrybound/research/planner/tools/cgroup_decode.sh --memory-max {memory_max} --
+  /root/eb-research/target/planner-harness/release/ebr-unpack --archive-path {scratch}/archive.eb --layout indexed
+  --alloc-peak true --scratch-dir {scratch}/x --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/g1-psub-64.json
+  splits: [tuning]
+
+metrics:
+  - {name: alloc_peak_bytes, source: stdout_json, key: alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: declared_decode_memory_bytes, source: stdout_json, key: declared_decode_memory_bytes, family: other, direction: none, unit: B}
+  - {name: declared_tightness_ratio, source: derived, op: ratio, args: [declared_decode_memory_bytes, alloc_peak_bytes], family: other, direction: minimize}
+  - {name: outcome_class, source: stdout_json, key: outcome_class, family: correctness, kind: string}
+  - {name: oom_killed, source: stdout_json, key: oom_killed, family: correctness, direction: minimize}
+  - {name: cgroup_memory_max, source: stdout_json, key: memory_max, family: other, direction: none, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 260917061, bootstrap: 260917062, command: 260917063}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 1
+  scratch_root: /root/eb-research/scratch/ebr
+  requires:
+    - /root/eb-research/target/planner-cli/release/ebound
+    - /root/eb-research/target/planner-harness/release/ebr-unpack
+  timeout_s: 14400
+
+analysis:
+  baseline: lowmem-balanced-512m
+  pairing: item
+  report_metrics: [alloc_peak_bytes, declared_tightness_ratio, oom_killed]
+
+notes: >
+  NEEDS_TOOLING (TP-08 counting allocator and ebr-unpack --alloc-peak, TP-18
+  research/planner/tools/cgroup_decode.sh). Requires root inside WSL to create a
+  cgroup v2 subtree; no host settings change. OOM kill at or above the declared
+  requirement is committed as a violation artifact without rerun.

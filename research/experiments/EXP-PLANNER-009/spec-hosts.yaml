@@ -1,0 +1,112 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-009
+status: design
+question: >
+  Host-class identity of the pinned build's planner output (DEC-CMP-019,
+  DEC-CMP-031; HC-13 MVT-13(a), HC-11): are PCI (within Linux x86-64 classes),
+  PCR, plan table and Chunk payload bytes identical between native WSL x86-64,
+  qemu-x86_64 CPU models Nehalem/Haswell/max, emulated aarch64, cgroup memory
+  ceilings, and a different locale and time zone?
+hypothesis: >
+  Byte identity in every cell (protocol.md H1.2 and H1.4); any difference is an
+  HC-13/HC-11 violation artifact committed without rerun.
+decision_ids: [DEC-CMP-019, DEC-CMP-031, DEC-CMP-029]
+
+candidates:
+  - name: host-native--fast
+    params: {host_class: native, profile: fast}
+  - name: host-native--balanced
+    params: {host_class: native, profile: balanced}
+  - name: host-native--dense
+    params: {host_class: native, profile: dense}
+  - name: host-qemu-x86-nehalem--fast
+    params: {host_class: qemu-x86-nehalem, profile: fast}
+  - name: host-qemu-x86-nehalem--balanced
+    params: {host_class: qemu-x86-nehalem, profile: balanced}
+  - name: host-qemu-x86-nehalem--dense
+    params: {host_class: qemu-x86-nehalem, profile: dense}
+  - name: host-qemu-x86-haswell--fast
+    params: {host_class: qemu-x86-haswell, profile: fast}
+  - name: host-qemu-x86-haswell--balanced
+    params: {host_class: qemu-x86-haswell, profile: balanced}
+  - name: host-qemu-x86-haswell--dense
+    params: {host_class: qemu-x86-haswell, profile: dense}
+  - name: host-qemu-x86-max--fast
+    params: {host_class: qemu-x86-max, profile: fast}
+  - name: host-qemu-x86-max--balanced
+    params: {host_class: qemu-x86-max, profile: balanced}
+  - name: host-qemu-x86-max--dense
+    params: {host_class: qemu-x86-max, profile: dense}
+  - name: host-qemu-aarch64--fast
+    params: {host_class: qemu-aarch64, profile: fast}
+  - name: host-qemu-aarch64--balanced
+    params: {host_class: qemu-aarch64, profile: balanced}
+  - name: host-qemu-aarch64--dense
+    params: {host_class: qemu-aarch64, profile: dense}
+  - name: host-cgroup-2g--fast
+    params: {host_class: cgroup-2g, profile: fast}
+  - name: host-cgroup-2g--balanced
+    params: {host_class: cgroup-2g, profile: balanced}
+  - name: host-cgroup-2g--dense
+    params: {host_class: cgroup-2g, profile: dense}
+  - name: host-cgroup-8g--fast
+    params: {host_class: cgroup-8g, profile: fast}
+  - name: host-cgroup-8g--balanced
+    params: {host_class: cgroup-8g, profile: balanced}
+  - name: host-cgroup-8g--dense
+    params: {host_class: cgroup-8g, profile: dense}
+  - name: host-locale-tz--fast
+    params: {host_class: locale-tz, profile: fast}
+  - name: host-locale-tz--balanced
+    params: {host_class: locale-tz, profile: balanced}
+  - name: host-locale-tz--dense
+    params: {host_class: locale-tz, profile: dense}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/planner/tools/encoder-drift/host_pack.sh --host-class {host_class} --profile {profile}
+  --item-path {item_path} --scratch {scratch}
+  --native-bin /root/eb-research/target/planner-harness/release/ebr-planner
+  --aarch64-bin /root/eb-research/target/planner-harness-aarch64/aarch64-unknown-linux-gnu/release/ebr-planner
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/g1-psub-64-small.json
+  splits: [tuning]
+
+metrics:
+  - {name: identity_pci, source: stdout_json, key: pci, family: correctness, kind: string}
+  - {name: identity_pcr, source: stdout_json, key: pcr, family: correctness, kind: string}
+  - {name: identity_lai, source: stdout_json, key: lai, family: correctness, kind: string}
+  - {name: plan_table_sha256, source: stdout_json, key: plan_table_sha256, family: correctness, kind: string}
+  - {name: chunk_payload_sha256, source: stdout_json, key: chunk_payload_sha256, family: correctness, kind: string}
+  - {name: audit_records_sha256, source: stdout_json, key: audit_records_sha256, family: correctness, kind: string}
+  - {name: roundtrip_mismatches, source: stdout_json, key: roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 260917091, bootstrap: 260917092, command: 260917093}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [qemu-x86_64, qemu-aarch64, /root/eb-research/target/planner-harness/release/ebr-planner]
+  timeout_s: 86400
+
+analysis:
+  baseline: host-native--balanced
+  pairing: item
+  report_metrics: [roundtrip_mismatches]
+
+notes: >
+  NEEDS_TOOLING: TP-10 host_pack.sh, TP-11 (qemu-user-static, aarch64 cross build),
+  TP-18 cgroup wrapper, TP-15 g1-psub-64-small manifest (G1-PSUB-64 sub-items whose
+  parent is small tier). 3 repetitions per variation cell (MVT-13(a)); the native
+  20-repetition stress cell with seeded background load is run by host_pack.sh
+  --stress 20 as a separate invocation recorded under the same experiment. Emulated
+  cells carry the EMULATED qualifier (correctness only). extreme is run only for
+  native, cgroup and locale classes via make_timing_spec.py-style candidate
+  expansion in the record.

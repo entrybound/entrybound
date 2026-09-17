@@ -1,0 +1,88 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-011
+status: blocked
+question: >
+  PLATFORM_BLOCKED replication (native ARM64 Linux or Apple-silicon macOS):
+  in-process decode throughput of every frozen v4-v6 codec, transform and
+  reconstruction configuration on the EXP-PLANNER-008 validation decode
+  bundles, to test whether the x86-64 reference-machine decode-cost table ranks
+  configurations the same way on a different architecture (DEC-CMP-015), with
+  the same metric and batch contract as EXP-PLANNER-008.
+hypothesis: >
+  Kendall tau-b between the frozen reference table (windows-host st-p, tuning)
+  and native ARM64 measured seconds per byte is >= 0.8, and floors selected on
+  x86 are honoured (declared_tightness_ratio >= 1) on this platform. See
+  research/experiments/EXP-PLANNER-011/protocol.md.
+decision_ids: [DEC-CMP-015, DEC-CMP-036, DEC-CMP-031, DEC-CMP-016, DEC-CMP-019]
+
+candidates:
+  - name: cfg-store
+    params: {config: store}
+  - name: cfg-lz4
+    params: {config: lz4}
+  - name: cfg-zstd-1
+    params: {config: zstd-1}
+  - name: cfg-zstd-3
+    params: {config: zstd-3}
+  - name: cfg-zstd-9
+    params: {config: zstd-9}
+  - name: cfg-zstd-19
+    params: {config: zstd-19}
+  - name: cfg-lzma2-6-4m
+    params: {config: lzma2-6-4m}
+  - name: cfg-lzma2-9-8m
+    params: {config: lzma2-9-8m}
+  - name: cfg-bshuf4-then-zstd-9
+    params: {config: "bshuf4+zstd-9"}
+  - name: cfg-deflate-reconstruct
+    params: {config: deflate-reconstruct}
+  - name: cfg-jpeg-reconstruct
+    params: {config: jpeg-reconstruct}
+command: >-
+  ./target/planner-harness/release/ebr-codec decode-matrix --bundle {item_path} --config {config}
+  --min-batch-ops 1000 --min-batch-ms 50 --experiment-id EXP-PLANNER-011 --env-name native-arm64
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/decode-bundles.json
+  splits: [validation]
+
+metrics:
+  - {name: decode_throughput_bps, source: stdout_json, key: decode_throughput_bps, family: throughput, direction: maximize, unit: B/s}
+  - {name: decode_wall_s, source: stdout_json, key: decode_wall_s_per_op, family: time_wall, direction: minimize, unit: s}
+  - {name: decoded_sha256, source: stdout_json, key: decoded_sha256, family: correctness, kind: string}
+  - {name: applicable, source: stdout_json, key: applicable, family: correctness, direction: none}
+
+repetitions: 10
+warmups: 2
+seeds: {order: 260917111, bootstrap: 260917112, command: 260917113}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+record_warmups: true
+
+platform:
+  os: [linux, darwin]
+  arch: [aarch64, arm64]
+  emulated: false
+  min_cpus: 4
+  timeout_s: 86400
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+analysis:
+  baseline: cfg-zstd-3
+  pairing: item_repetition
+  report_metrics: [decode_throughput_bps, decode_wall_s]
+
+notes: >
+  BLOCKED (PLATFORM_BLOCKED): no native ARM64 host. Configuration list is the
+  subset of EXP-PLANNER-008's whose W/S survive planner look 1; the record replaces
+  it with the exact frozen list before any run. Affinity sets for the new host are
+  pre-registered in its record after the environment capture. Arms B-E (profile
+  timing, native identity, constrained device, APFS) reuse the EXP-PLANNER-007,
+  -009 and -006 specs with a native platform section.

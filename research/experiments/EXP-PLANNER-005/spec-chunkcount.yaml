@@ -1,0 +1,81 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-005
+status: design
+question: >
+  Chunk-count headroom arm: on every full tuning item (no sub-item sampling),
+  how many archive Chunk references and unique Chunks does each chunking policy
+  of the EXP-PLANNER-005 universe produce, against the 4,000,000 chunk_count
+  limit (archive.rs:41, HC-06 declared bound; R2 screen)?
+hypothesis: >
+  C-FASTCDC-SMALL (2K/8K/64K) exceeds 4,000,000 logical Chunk references on at
+  least one large tuning item; every frozen policy stays below the limit on
+  every tuning item.
+decision_ids: [DEC-CMP-002, DEC-CMP-003, DEC-CMP-004]
+
+candidates:
+  - name: FAST_V2
+    params: {chunking: "FAST_V2"}
+  - name: BALANCED_V2
+    params: {chunking: "BALANCED_V2"}
+  - name: DENSE_V2
+    params: {chunking: "DENSE_V2"}
+  - name: EXTREME_V2
+    params: {chunking: "EXTREME_V2"}
+  - name: C-FASTCDC-SMALL
+    params: {chunking: "custom:2048/8192/65536"}
+  - name: C-CASYNC-64K
+    params: {chunking: "custom:16384/65536/262144"}
+  - name: C-BACKUP-1M
+    params: {chunking: "custom:524288/1048576/8388608"}
+  - name: C-LARGE-4M
+    params: {chunking: "custom:1048576/4194304/16777216"}
+  - name: V-MIN8-MAX2
+    params: {chunking: "custom:65536/524288/1048576"}
+  - name: V-MIN8-MAX8
+    params: {chunking: "custom:65536/524288/4194304"}
+  - name: V-MIN2-MAX2
+    params: {chunking: "custom:262144/524288/1048576"}
+  - name: V-MIN2-MAX8
+    params: {chunking: "custom:262144/524288/4194304"}
+  - name: W-FAST-1M
+    params: {chunking: "custom:262144/1048576/1048576"}
+command: >-
+  /root/eb-research/target/planner-harness/release/ebr-planner chunking-matrix --count-only
+  --item-path {item_path} --chunking {chunking}
+  --experiment-id EXP-PLANNER-005 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+
+metrics:
+  - {name: diag_logical_chunk_references, source: stdout_json, key: logical_chunk_references, family: other, direction: none, unit: count}
+  - {name: diag_unique_chunk_count, source: stdout_json, key: unique_chunk_count, family: other, direction: none, unit: count}
+  - {name: chunk_limit_ok, source: stdout_json, key: within_chunk_count_limit, family: correctness, direction: maximize}
+  - {name: boundaries_sha256, source: stdout_json, key: boundaries_sha256, family: correctness, kind: string}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917051, bootstrap: 260917052, command: 260917053}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 1
+  scratch_root: /root/eb-research/scratch/ebr
+  requires: [/root/eb-research/target/planner-harness/release/ebr-planner]
+  timeout_s: 86400
+
+analysis:
+  baseline: BALANCED_V2
+  pairing: item
+  report_metrics: [diag_logical_chunk_references, chunk_limit_ok]
+
+notes: >
+  NEEDS_TOOLING (TP-04 --count-only). Deterministic; CDC boundaries only, no planning.

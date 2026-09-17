@@ -1,0 +1,310 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-006
+status: design
+question: >
+  How does materialized artifact_bytes (with access granularity, declared
+  decode requirements, section bytes and work units) respond to each SPEC
+  section 6.0a profile parameter and to the arm parameters (window log,
+  cross-file scope, ordering, planning window, adaptive planning, decoder
+  ceilings, eligibility mirroring) one at a time around each profile's status
+  quo, and how do the fitted thirteen-parameter, reduced, weighted and
+  lexicographic profile definitions compare with the frozen tables?
+hypothesis: >
+  See research/experiments/EXP-PLANNER-006/protocol.md section 2 (H1.1-H1.10).
+decision_ids: [DEC-CMP-035, DEC-CMP-045, DEC-CMP-016, DEC-CMP-006, DEC-CMP-013, DEC-CMP-019, DEC-CRY-028, DEC-ACC-003, DEC-ACC-029]
+
+candidates:
+  - name: sq--fast
+    params: {point: sq, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: sq--balanced
+    params: {point: sq, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: codecs-zstd-only--fast
+    params: {point: codecs-zstd-only, kind: R, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/codecs-zstd-only/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: codecs-zstd-only--balanced
+    params: {point: codecs-zstd-only, kind: R, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/codecs-zstd-only/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: eval-sampled--fast
+    params: {point: eval-sampled, kind: R, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/eval-sampled/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: eval-sampled--balanced
+    params: {point: eval-sampled, kind: R, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/eval-sampled/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: budget-tnb--fast
+    params: {point: budget-tnb, kind: R, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/budget-tnb/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: budget-tnb--balanced
+    params: {point: budget-tnb, kind: R, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/budget-tnb/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: transforms-none--fast
+    params: {point: transforms-none, kind: R, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/transforms-none/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: transforms-none--balanced
+    params: {point: transforms-none, kind: R, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/transforms-none/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: transforms-structural--fast
+    params: {point: transforms-structural, kind: R, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/transforms-structural/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: transforms-structural--balanced
+    params: {point: transforms-structural, kind: R, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/transforms-structural/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: transforms-all--fast
+    params: {point: transforms-all, kind: R, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/transforms-all/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: transforms-all--balanced
+    params: {point: transforms-all, kind: R, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/transforms-all/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: zwin-22--fast
+    params: {point: zwin-22, kind: M, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/zwin-22/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb --modelled-only-ok true"
+  - name: zwin-22--balanced
+    params: {point: zwin-22, kind: M, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/zwin-22/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb --modelled-only-ok true"
+  - name: zwin-25--fast
+    params: {point: zwin-25, kind: M, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/zwin-25/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb --modelled-only-ok true"
+  - name: zwin-25--balanced
+    params: {point: zwin-25, kind: M, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/zwin-25/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb --modelled-only-ok true"
+  - name: zwin-27--fast
+    params: {point: zwin-27, kind: M, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/zwin-27/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb --modelled-only-ok true"
+  - name: zwin-27--balanced
+    params: {point: zwin-27, kind: M, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/zwin-27/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb --modelled-only-ok true"
+  - name: zwin-long--fast
+    params: {point: zwin-long, kind: M, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/zwin-long/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb --modelled-only-ok true"
+  - name: zwin-long--balanced
+    params: {point: zwin-long, kind: M, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/zwin-long/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb --modelled-only-ok true"
+  - name: decrate-t1--fast
+    params: {point: decrate-t1, kind: R, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/decrate-t1/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: decrate-t1--balanced
+    params: {point: decrate-t1, kind: R, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/decrate-t1/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: decrate-t2--fast
+    params: {point: decrate-t2, kind: R, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/decrate-t2/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: decrate-t2--balanced
+    params: {point: decrate-t2, kind: R, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/decrate-t2/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: decrate-t3--fast
+    params: {point: decrate-t3, kind: R, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile fast --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/decrate-t3/fast/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: decrate-t3--balanced
+    params: {point: decrate-t3, kind: R, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile balanced --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-006/assignments/decrate-t3/balanced/{item_id}.jsonl --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dict-none--balanced
+    params: {point: dict-none, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set dictionary_policy=none --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dict-supplied--balanced
+    params: {point: dict-supplied, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set dictionary_policy=supplied --set supplied_dictionary=/root/eb-research/derived/planner/supplied-dicts/{family}.dict --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: lookback-1--balanced
+    params: {point: lookback-1, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_lookback=1 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: lookback-2--balanced
+    params: {point: lookback-2, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_lookback=2 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: lookback-4--balanced
+    params: {point: lookback-4, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_lookback=4 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: lookback-8--balanced
+    params: {point: lookback-8, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_lookback=8 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gran-256k--fast
+    params: {point: gran-256k, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set max_access_granularity=262144 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gran-256k--balanced
+    params: {point: gran-256k, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_access_granularity=262144 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gran-1m--fast
+    params: {point: gran-1m, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set max_access_granularity=1048576 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gran-1m--balanced
+    params: {point: gran-1m, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_access_granularity=1048576 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gran-4m--fast
+    params: {point: gran-4m, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set max_access_granularity=4194304 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gran-4m--balanced
+    params: {point: gran-4m, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_access_granularity=4194304 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gran-16m--fast
+    params: {point: gran-16m, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set max_access_granularity=16777216 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gran-16m--balanced
+    params: {point: gran-16m, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_access_granularity=16777216 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: cluster-none--fast
+    params: {point: cluster-none, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set clustering_mode=none --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: cluster-none--balanced
+    params: {point: cluster-none, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set clustering_mode=none --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: cluster-cheap--fast
+    params: {point: cluster-cheap, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set clustering_mode=cheap-ordering --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: cluster-cheap--balanced
+    params: {point: cluster-cheap, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set clustering_mode=cheap-ordering --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: cluster-full--fast
+    params: {point: cluster-full, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set clustering_mode=full-similarity --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: cluster-full--balanced
+    params: {point: cluster-full, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set clustering_mode=full-similarity --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: order-path--fast
+    params: {point: order-path, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set ordering=path --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: order-path--balanced
+    params: {point: order-path, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set ordering=path --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: order-type-path--fast
+    params: {point: order-type-path, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set ordering=type-path --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: order-type-path--balanced
+    params: {point: order-type-path, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set ordering=type-path --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: xfile-none--balanced
+    params: {point: xfile-none, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set cross_file_scope=none --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: xfile-owner--balanced
+    params: {point: xfile-owner, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set cross_file_scope=owner --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: no-store--fast
+    params: {point: no-store, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set forbid_store=true --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: no-store--balanced
+    params: {point: no-store, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set forbid_store=true --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: pwin-16m--fast
+    params: {point: pwin-16m, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set planning_window_bytes=16777216 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: pwin-16m--balanced
+    params: {point: pwin-16m, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set planning_window_bytes=16777216 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: pwin-64m--fast
+    params: {point: pwin-64m, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set planning_window_bytes=67108864 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: pwin-64m--balanced
+    params: {point: pwin-64m, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set planning_window_bytes=67108864 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: adaptive-host--fast
+    params: {point: adaptive-host, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set adaptive=host --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: adaptive-host--balanced
+    params: {point: adaptive-host, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set adaptive=host --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: ceil-16m--fast
+    params: {point: ceil-16m, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set max_decode_memory=16777216 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: ceil-16m--balanced
+    params: {point: ceil-16m, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_decode_memory=16777216 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: ceil-64m--fast
+    params: {point: ceil-64m, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set max_decode_memory=67108864 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: ceil-64m--balanced
+    params: {point: ceil-64m, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_decode_memory=67108864 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: ceil-128m--fast
+    params: {point: ceil-128m, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set max_decode_memory=134217728 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: ceil-128m--balanced
+    params: {point: ceil-128m, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_decode_memory=134217728 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: ceil-256m--fast
+    params: {point: ceil-256m, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set max_decode_memory=268435456 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: ceil-256m--balanced
+    params: {point: ceil-256m, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_decode_memory=268435456 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: ceil-1g--fast
+    params: {point: ceil-1g, kind: P, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set max_decode_memory=1073741824 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: ceil-1g--balanced
+    params: {point: ceil-1g, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set max_decode_memory=1073741824 --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: mirror-validation--balanced
+    params: {point: mirror-validation, kind: P, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set eligibility=mirror-validation --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: fitted-spec13--fast
+    params: {point: fitted-spec13, kind: F, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set profile_definition=spec-thirteen-parameters --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: fitted-spec13--balanced
+    params: {point: fitted-spec13, kind: F, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set profile_definition=spec-thirteen-parameters --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: fitted-reduced--fast
+    params: {point: fitted-reduced, kind: F, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set profile_definition=reduced-parameter-set --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: fitted-reduced--balanced
+    params: {point: fitted-reduced, kind: F, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set profile_definition=reduced-parameter-set --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: fitted-weighted--fast
+    params: {point: fitted-weighted, kind: F, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set profile_definition=weighted-objective --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: fitted-weighted--balanced
+    params: {point: fitted-weighted, kind: F, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set profile_definition=weighted-objective --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: fitted-lexicographic--fast
+    params: {point: fitted-lexicographic, kind: F, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --set profile_definition=lexicographic-constraints --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: fitted-lexicographic--balanced
+    params: {point: fitted-lexicographic, kind: F, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --set profile_definition=lexicographic-constraints --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-006 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/psub-256.json
+  splits: [tuning]
+
+metrics:
+  - {name: artifact_bytes, source: stdout_json, key: artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: modelled_only, source: stdout_json, key: modelled_only, family: correctness, direction: none}
+  - {name: access_granularity_bytes, source: stdout_json, key: access_granularity_bytes, family: size, direction: minimize, unit: B}
+  - {name: declared_decode_memory_bytes, source: stdout_json, key: declared_decode_memory_bytes, family: other, direction: none, unit: B}
+  - {name: declared_window_bytes, source: stdout_json, key: declared_window_bytes, family: other, direction: none, unit: B}
+  - {name: dictionary_bytes, source: stdout_json, key: byte_accounting.dictionary_bytes, family: size, direction: minimize, unit: B}
+  - {name: index_bytes, source: stdout_json, key: byte_accounting.index_bytes, family: size, direction: minimize, unit: B}
+  - {name: diag_chunk_payload_bytes, source: stdout_json, key: byte_accounting.chunk_payload_bytes, family: size, direction: none, unit: B}
+  - {name: metadata_bytes, source: derived, op: difference, args: [artifact_bytes, diag_chunk_payload_bytes], family: size, direction: minimize, unit: B}
+  - {name: pack_outcome_ok, source: stdout_json, key: pack_outcome_ok, family: correctness, direction: maximize}
+  - {name: unsupported_parameter_count, source: stdout_json, key: unsupported_parameter_count, family: correctness, direction: minimize, unit: count}
+  - {name: work_candidate_evaluations, source: stdout_json, key: work.candidate_evaluations, family: other, direction: none, unit: count}
+  - {name: work_bytes_examined, source: stdout_json, key: work.bytes_examined, family: other, direction: none, unit: B}
+  - {name: artifact_sha256, source: path_sha256, path: "{scratch}/archive.eb", family: correctness}
+  - {name: roundtrip_mismatches, source: stdout_json, key: roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917061, bootstrap: 260917062, command: 260917063}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 1
+  scratch_root: /root/eb-research/scratch/ebr
+  requires: [/root/eb-research/target/planner-harness/release/ebr-planner]
+  timeout_s: 172800
+
+analysis:
+  baseline: sq--balanced
+  pairing: item
+  report_metrics: [artifact_bytes, access_granularity_bytes, declared_decode_memory_bytes, work_candidate_evaluations]
+
+notes: >
+  NEEDS_TOOLING (TP-02, TP-03 params and fit-tnb, TP-06 param-plan, TP-15). fast and balanced on
+  PSUB-256 tuning sub-items; kind R = replay then materialize, M = modelled-only (ebr-codec
+  payload substitution), P = re-plan, F = fitted definition read from fitted-profiles.json
+  (committed before F cells run). Comparisons pair each point with sq of the same profile.
+  81 candidates.

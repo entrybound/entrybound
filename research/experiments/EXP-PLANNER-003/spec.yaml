@@ -1,0 +1,270 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-003
+status: design
+question: >
+  Within each profile's declared bounds, which deterministic Chunk-stage search
+  strategy and which deterministic work budget attains the smallest
+  artifact_bytes (materialized) with encode, decode, decode-memory and
+  access-granularity guards intact, and what regret against the exhaustive
+  oracle does each strategy leave?
+hypothesis: >
+  See research/experiments/EXP-PLANNER-003/protocol.md section 2 (successive
+  halving k=2 non-inferior in dense/extreme at <=50% evaluations; no strategy
+  distinguishably better in fast/balanced; learned integer selector within 1
+  band unit of the bounded oracle at <=25% evaluations; a finite
+  non-inferior evaluation budget exists per profile). This deterministic arm
+  materializes every (strategy, profile) cell on PSUB-256 tuning sub-items.
+decision_ids: [DEC-CMP-032, DEC-CMP-033]
+
+candidates:
+  - name: sq-table--fast
+    params: {strategy: sq-table, profile: fast}
+  - name: sq-table--balanced
+    params: {strategy: sq-table, profile: balanced}
+  - name: sq-table--dense
+    params: {strategy: sq-table, profile: dense}
+  - name: sq-table--extreme
+    params: {strategy: sq-table, profile: extreme}
+  - name: fixed-ladder--fast
+    params: {strategy: fixed-ladder, profile: fast}
+  - name: fixed-ladder--balanced
+    params: {strategy: fixed-ladder, profile: balanced}
+  - name: fixed-ladder--dense
+    params: {strategy: fixed-ladder, profile: dense}
+  - name: fixed-ladder--extreme
+    params: {strategy: fixed-ladder, profile: extreme}
+  - name: oracle-bounded--fast
+    params: {strategy: oracle-bounded, profile: fast}
+  - name: oracle-bounded--balanced
+    params: {strategy: oracle-bounded, profile: balanced}
+  - name: oracle-bounded--dense
+    params: {strategy: oracle-bounded, profile: dense}
+  - name: oracle-bounded--extreme
+    params: {strategy: oracle-bounded, profile: extreme}
+  - name: sh-k1--fast
+    params: {strategy: sh-k1, profile: fast}
+  - name: sh-k1--balanced
+    params: {strategy: sh-k1, profile: balanced}
+  - name: sh-k1--dense
+    params: {strategy: sh-k1, profile: dense}
+  - name: sh-k1--extreme
+    params: {strategy: sh-k1, profile: extreme}
+  - name: sh-k2--fast
+    params: {strategy: sh-k2, profile: fast}
+  - name: sh-k2--balanced
+    params: {strategy: sh-k2, profile: balanced}
+  - name: sh-k2--dense
+    params: {strategy: sh-k2, profile: dense}
+  - name: sh-k2--extreme
+    params: {strategy: sh-k2, profile: extreme}
+  - name: sh-k3--fast
+    params: {strategy: sh-k3, profile: fast}
+  - name: sh-k3--balanced
+    params: {strategy: sh-k3, profile: balanced}
+  - name: sh-k3--dense
+    params: {strategy: sh-k3, profile: dense}
+  - name: sh-k3--extreme
+    params: {strategy: sh-k3, profile: extreme}
+  - name: dp-plan-sharing--fast
+    params: {strategy: dp-plan-sharing, profile: fast}
+  - name: dp-plan-sharing--balanced
+    params: {strategy: dp-plan-sharing, profile: balanced}
+  - name: dp-plan-sharing--dense
+    params: {strategy: dp-plan-sharing, profile: dense}
+  - name: dp-plan-sharing--extreme
+    params: {strategy: dp-plan-sharing, profile: extreme}
+  - name: bb-prune--fast
+    params: {strategy: bb-prune, profile: fast}
+  - name: bb-prune--balanced
+    params: {strategy: bb-prune, profile: balanced}
+  - name: bb-prune--dense
+    params: {strategy: bb-prune, profile: dense}
+  - name: bb-prune--extreme
+    params: {strategy: bb-prune, profile: extreme}
+  - name: tree-d6--fast
+    params: {strategy: tree-d6, profile: fast}
+  - name: tree-d6--balanced
+    params: {strategy: tree-d6, profile: balanced}
+  - name: tree-d6--dense
+    params: {strategy: tree-d6, profile: dense}
+  - name: tree-d6--extreme
+    params: {strategy: tree-d6, profile: extreme}
+  - name: lut-cat-probe--fast
+    params: {strategy: lut-cat-probe, profile: fast}
+  - name: lut-cat-probe--balanced
+    params: {strategy: lut-cat-probe, profile: balanced}
+  - name: lut-cat-probe--dense
+    params: {strategy: lut-cat-probe, profile: dense}
+  - name: lut-cat-probe--extreme
+    params: {strategy: lut-cat-probe, profile: extreme}
+  - name: greedy-p1--fast
+    params: {strategy: greedy-p1, profile: fast}
+  - name: greedy-p1--balanced
+    params: {strategy: greedy-p1, profile: balanced}
+  - name: greedy-p1--dense
+    params: {strategy: greedy-p1, profile: dense}
+  - name: greedy-p1--extreme
+    params: {strategy: greedy-p1, profile: extreme}
+  - name: greedy-p2--fast
+    params: {strategy: greedy-p2, profile: fast}
+  - name: greedy-p2--balanced
+    params: {strategy: greedy-p2, profile: balanced}
+  - name: greedy-p2--dense
+    params: {strategy: greedy-p2, profile: dense}
+  - name: greedy-p2--extreme
+    params: {strategy: greedy-p2, profile: extreme}
+  - name: greedy-p3--fast
+    params: {strategy: greedy-p3, profile: fast}
+  - name: greedy-p3--balanced
+    params: {strategy: greedy-p3, profile: balanced}
+  - name: greedy-p3--dense
+    params: {strategy: greedy-p3, profile: dense}
+  - name: greedy-p3--extreme
+    params: {strategy: greedy-p3, profile: extreme}
+  - name: greedy-p5--fast
+    params: {strategy: greedy-p5, profile: fast}
+  - name: greedy-p5--balanced
+    params: {strategy: greedy-p5, profile: balanced}
+  - name: greedy-p5--dense
+    params: {strategy: greedy-p5, profile: dense}
+  - name: greedy-p5--extreme
+    params: {strategy: greedy-p5, profile: extreme}
+  - name: evalbudget-c1--fast
+    params: {strategy: evalbudget-c1, profile: fast}
+  - name: evalbudget-c1--balanced
+    params: {strategy: evalbudget-c1, profile: balanced}
+  - name: evalbudget-c1--dense
+    params: {strategy: evalbudget-c1, profile: dense}
+  - name: evalbudget-c1--extreme
+    params: {strategy: evalbudget-c1, profile: extreme}
+  - name: evalbudget-c2--fast
+    params: {strategy: evalbudget-c2, profile: fast}
+  - name: evalbudget-c2--balanced
+    params: {strategy: evalbudget-c2, profile: balanced}
+  - name: evalbudget-c2--dense
+    params: {strategy: evalbudget-c2, profile: dense}
+  - name: evalbudget-c2--extreme
+    params: {strategy: evalbudget-c2, profile: extreme}
+  - name: evalbudget-c4--fast
+    params: {strategy: evalbudget-c4, profile: fast}
+  - name: evalbudget-c4--balanced
+    params: {strategy: evalbudget-c4, profile: balanced}
+  - name: evalbudget-c4--dense
+    params: {strategy: evalbudget-c4, profile: dense}
+  - name: evalbudget-c4--extreme
+    params: {strategy: evalbudget-c4, profile: extreme}
+  - name: evalbudget-c8--fast
+    params: {strategy: evalbudget-c8, profile: fast}
+  - name: evalbudget-c8--balanced
+    params: {strategy: evalbudget-c8, profile: balanced}
+  - name: evalbudget-c8--dense
+    params: {strategy: evalbudget-c8, profile: dense}
+  - name: evalbudget-c8--extreme
+    params: {strategy: evalbudget-c8, profile: extreme}
+  - name: evalbudget-c16--fast
+    params: {strategy: evalbudget-c16, profile: fast}
+  - name: evalbudget-c16--balanced
+    params: {strategy: evalbudget-c16, profile: balanced}
+  - name: evalbudget-c16--dense
+    params: {strategy: evalbudget-c16, profile: dense}
+  - name: evalbudget-c16--extreme
+    params: {strategy: evalbudget-c16, profile: extreme}
+  - name: bytesbudget-m1--fast
+    params: {strategy: bytesbudget-m1, profile: fast}
+  - name: bytesbudget-m1--balanced
+    params: {strategy: bytesbudget-m1, profile: balanced}
+  - name: bytesbudget-m1--dense
+    params: {strategy: bytesbudget-m1, profile: dense}
+  - name: bytesbudget-m1--extreme
+    params: {strategy: bytesbudget-m1, profile: extreme}
+  - name: bytesbudget-m2--fast
+    params: {strategy: bytesbudget-m2, profile: fast}
+  - name: bytesbudget-m2--balanced
+    params: {strategy: bytesbudget-m2, profile: balanced}
+  - name: bytesbudget-m2--dense
+    params: {strategy: bytesbudget-m2, profile: dense}
+  - name: bytesbudget-m2--extreme
+    params: {strategy: bytesbudget-m2, profile: extreme}
+  - name: bytesbudget-m4--fast
+    params: {strategy: bytesbudget-m4, profile: fast}
+  - name: bytesbudget-m4--balanced
+    params: {strategy: bytesbudget-m4, profile: balanced}
+  - name: bytesbudget-m4--dense
+    params: {strategy: bytesbudget-m4, profile: dense}
+  - name: bytesbudget-m4--extreme
+    params: {strategy: bytesbudget-m4, profile: extreme}
+  - name: bytesbudget-m8--fast
+    params: {strategy: bytesbudget-m8, profile: fast}
+  - name: bytesbudget-m8--balanced
+    params: {strategy: bytesbudget-m8, profile: balanced}
+  - name: bytesbudget-m8--dense
+    params: {strategy: bytesbudget-m8, profile: dense}
+  - name: bytesbudget-m8--extreme
+    params: {strategy: bytesbudget-m8, profile: extreme}
+  - name: bytesbudget-m16--fast
+    params: {strategy: bytesbudget-m16, profile: fast}
+  - name: bytesbudget-m16--balanced
+    params: {strategy: bytesbudget-m16, profile: balanced}
+  - name: bytesbudget-m16--dense
+    params: {strategy: bytesbudget-m16, profile: dense}
+  - name: bytesbudget-m16--extreme
+    params: {strategy: bytesbudget-m16, profile: extreme}
+  - name: sampled-bal-full-dense--fast
+    params: {strategy: sampled-bal-full-dense, profile: fast}
+  - name: sampled-bal-full-dense--balanced
+    params: {strategy: sampled-bal-full-dense, profile: balanced}
+  - name: sampled-bal-full-dense--dense
+    params: {strategy: sampled-bal-full-dense, profile: dense}
+  - name: sampled-bal-full-dense--extreme
+    params: {strategy: sampled-bal-full-dense, profile: extreme}
+command: >-
+  /root/eb-research/target/planner-harness/release/ebr-planner materialize
+  --item-path {item_path} --profile {profile} --layout indexed
+  --assignment /root/eb-research/raw-side/EXP-PLANNER-003/assignments/{strategy}/{profile}/{item_id}.jsonl
+  --experiment-id EXP-PLANNER-003 --env-name wsl-ubuntu
+  --archive-out {scratch}/archive.eb
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/psub-256.json
+  splits: [tuning]
+
+metrics:
+  - {name: artifact_bytes, source: stdout_json, key: artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: modelled_artifact_bytes, source: stdout_json, key: modelled_artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: reconciliation_delta_bytes, source: stdout_json, key: reconciliation_delta_bytes, family: correctness, direction: minimize, unit: B}
+  - {name: access_granularity_bytes, source: stdout_json, key: access_granularity_bytes, family: size, direction: minimize, unit: B}
+  - {name: declared_decode_memory_bytes, source: stdout_json, key: declared_decode_memory_bytes, family: other, direction: none, unit: B}
+  - {name: work_candidate_evaluations, source: stdout_json, key: work.candidate_evaluations, family: other, direction: none, unit: count}
+  - {name: work_bytes_examined, source: stdout_json, key: work.bytes_examined, family: other, direction: none, unit: B}
+  - {name: artifact_sha256, source: path_sha256, path: "{scratch}/archive.eb", family: correctness}
+  - {name: roundtrip_mismatches, source: stdout_json, key: roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: verified, source: stdout_json, key: verified, family: correctness, direction: maximize}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917031, bootstrap: 260917032, command: 260917033}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 1
+  scratch_root: /root/eb-research/scratch/ebr
+  requires: [/root/eb-research/target/planner-harness/release/ebr-planner]
+  timeout_s: 86400
+
+analysis:
+  baseline: sq-table--balanced
+  pairing: item
+  report_metrics: [artifact_bytes, reconciliation_delta_bytes, work_candidate_evaluations, access_granularity_bytes]
+
+notes: >
+  NEEDS_TOOLING (TP-02 materialize, TP-03 replay strategies/budgets, TP-15 PSUB-256).
+  Deterministic arm; the decision analysis pairs each candidate with sq-table of the
+  same profile (per-profile scopes, decision-method.md Appendix B.1), not with the
+  spec-level baseline, which only satisfies the ebr schema.

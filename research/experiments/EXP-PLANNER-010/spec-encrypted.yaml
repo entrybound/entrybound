@@ -1,0 +1,97 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-010
+status: design
+question: >
+  Encrypted planner-ID mapping (DEC-CMP-022): when an archive planned by
+  generation v2-v6 under each profile is encrypted by production (repack or
+  pack with generated test recipients), which planner ID does the unlocked
+  encrypted archive record, and do distinct frozen generations collide on one
+  recorded ID or pass through unmapped?
+hypothesis: >
+  The status-quo <profile>-enc-v1 mapping records the same planner ID for at
+  least two distinct frozen generations of one profile (identifier reuse
+  counterexample, HC-16).
+decision_ids: [DEC-CMP-022]
+
+candidates:
+  - name: enc-v2-fast
+    params: {generation: v2, profile: fast}
+  - name: enc-v2-balanced
+    params: {generation: v2, profile: balanced}
+  - name: enc-v2-dense
+    params: {generation: v2, profile: dense}
+  - name: enc-v2-extreme
+    params: {generation: v2, profile: extreme}
+  - name: enc-v3-fast
+    params: {generation: v3, profile: fast}
+  - name: enc-v3-balanced
+    params: {generation: v3, profile: balanced}
+  - name: enc-v3-dense
+    params: {generation: v3, profile: dense}
+  - name: enc-v3-extreme
+    params: {generation: v3, profile: extreme}
+  - name: enc-v4-fast
+    params: {generation: v4, profile: fast}
+  - name: enc-v4-balanced
+    params: {generation: v4, profile: balanced}
+  - name: enc-v4-dense
+    params: {generation: v4, profile: dense}
+  - name: enc-v4-extreme
+    params: {generation: v4, profile: extreme}
+  - name: enc-v5-fast
+    params: {generation: v5, profile: fast}
+  - name: enc-v5-balanced
+    params: {generation: v5, profile: balanced}
+  - name: enc-v5-dense
+    params: {generation: v5, profile: dense}
+  - name: enc-v5-extreme
+    params: {generation: v5, profile: extreme}
+  - name: enc-v6-fast
+    params: {generation: v6, profile: fast}
+  - name: enc-v6-balanced
+    params: {generation: v6, profile: balanced}
+  - name: enc-v6-dense
+    params: {generation: v6, profile: dense}
+  - name: enc-v6-extreme
+    params: {generation: v6, profile: extreme}
+command: >-
+  /root/eb-research/target/planner-harness/release/ebr-planner replan --item-path {item_path} --generation {generation} --profile {profile}
+  --policy current --encrypt true --ebound /root/eb-research/target/planner-cli/release/ebound --scratch {scratch} --report-planner-ids-only true
+  --experiment-id EXP-PLANNER-010 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/g1-psub-64-small.json
+  splits: [tuning]
+
+metrics:
+  - {name: source_planner_id, source: stdout_json, key: source_planner_id, family: correctness, kind: string}
+  - {name: encrypted_recorded_planner_id, source: stdout_json, key: encrypted_recorded_planner_id, family: correctness, kind: string}
+  - {name: unlocked_lai_equal_source, source: stdout_json, key: lai_equal, family: correctness, direction: maximize}
+  - {name: inspect_fields_reported, source: stdout_json, key: inspect_encrypted_field_count, family: other, direction: none, unit: count}
+  - {name: explain_status, source: stdout_json, key: explain_encrypted_outcome, family: correctness, kind: string}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917101, bootstrap: 260917102, command: 260917103}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/planner-harness/release/ebr-planner, /root/eb-research/target/planner-cli/release/ebound]
+  timeout_s: 86400
+
+analysis:
+  baseline: enc-v6-balanced
+  pairing: item
+  report_metrics: [unlocked_lai_equal_source]
+
+notes: >
+  NEEDS_TOOLING: TP-12 --encrypt true (generated X-Wing test recipient and
+  password sidecar, never printed), TP-15 small G1-PSUB-64 manifest. Ciphertext
+  differs by design; identity checks use unlocked LAI and recorded IDs.

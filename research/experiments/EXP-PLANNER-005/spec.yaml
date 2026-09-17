@@ -1,0 +1,199 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-005
+status: design
+question: >
+  Under each profile's v6 codec stage, what real artifact_bytes, section bytes,
+  access granularity and chunk counts does each chunking policy (frozen
+  FAST/BALANCED/DENSE/EXTREME_V2, DEC-CMP-002 reference classes, min/max ratio
+  and window-matched variants) and each granularity (archive-wide, per
+  category, per size class, per object, global single, DwarFS-style) produce,
+  so that chunking selection rules (DEC-CMP-004), granularity (DEC-CMP-003),
+  per-profile lists (DEC-CMP-002) and uniform-vs-per-category binding
+  (DEC-MOD-039) can be analysed offline without further packing?
+hypothesis: >
+  See research/experiments/EXP-PLANNER-005/protocol.md section 2 (proxy agrees
+  with end-to-end selection on >=80% of sub-items in dense/extreme; corrected
+  constants non-inferior; multi-chunker granularities fail the T4 minimum gain;
+  2K/8K/64K class breaches the chunk-count limit or loses; single global policy
+  costs >1 band unit in dense/extreme).
+decision_ids: [DEC-CMP-004, DEC-CMP-003, DEC-CMP-002, DEC-MOD-039]
+
+candidates:
+  - name: FAST_V2--fast
+    params: {chunking: "FAST_V2", stage: fast, granularity: archive}
+  - name: FAST_V2--balanced
+    params: {chunking: "FAST_V2", stage: balanced, granularity: archive}
+  - name: FAST_V2--dense
+    params: {chunking: "FAST_V2", stage: dense, granularity: archive}
+  - name: FAST_V2--extreme
+    params: {chunking: "FAST_V2", stage: extreme, granularity: archive}
+  - name: BALANCED_V2--fast
+    params: {chunking: "BALANCED_V2", stage: fast, granularity: archive}
+  - name: BALANCED_V2--balanced
+    params: {chunking: "BALANCED_V2", stage: balanced, granularity: archive}
+  - name: BALANCED_V2--dense
+    params: {chunking: "BALANCED_V2", stage: dense, granularity: archive}
+  - name: BALANCED_V2--extreme
+    params: {chunking: "BALANCED_V2", stage: extreme, granularity: archive}
+  - name: DENSE_V2--fast
+    params: {chunking: "DENSE_V2", stage: fast, granularity: archive}
+  - name: DENSE_V2--balanced
+    params: {chunking: "DENSE_V2", stage: balanced, granularity: archive}
+  - name: DENSE_V2--dense
+    params: {chunking: "DENSE_V2", stage: dense, granularity: archive}
+  - name: DENSE_V2--extreme
+    params: {chunking: "DENSE_V2", stage: extreme, granularity: archive}
+  - name: EXTREME_V2--fast
+    params: {chunking: "EXTREME_V2", stage: fast, granularity: archive}
+  - name: EXTREME_V2--balanced
+    params: {chunking: "EXTREME_V2", stage: balanced, granularity: archive}
+  - name: EXTREME_V2--dense
+    params: {chunking: "EXTREME_V2", stage: dense, granularity: archive}
+  - name: EXTREME_V2--extreme
+    params: {chunking: "EXTREME_V2", stage: extreme, granularity: archive}
+  - name: C-FASTCDC-SMALL--fast
+    params: {chunking: "custom:2048/8192/65536", stage: fast, granularity: archive}
+  - name: C-FASTCDC-SMALL--balanced
+    params: {chunking: "custom:2048/8192/65536", stage: balanced, granularity: archive}
+  - name: C-FASTCDC-SMALL--dense
+    params: {chunking: "custom:2048/8192/65536", stage: dense, granularity: archive}
+  - name: C-FASTCDC-SMALL--extreme
+    params: {chunking: "custom:2048/8192/65536", stage: extreme, granularity: archive}
+  - name: C-CASYNC-64K--fast
+    params: {chunking: "custom:16384/65536/262144", stage: fast, granularity: archive}
+  - name: C-CASYNC-64K--balanced
+    params: {chunking: "custom:16384/65536/262144", stage: balanced, granularity: archive}
+  - name: C-CASYNC-64K--dense
+    params: {chunking: "custom:16384/65536/262144", stage: dense, granularity: archive}
+  - name: C-CASYNC-64K--extreme
+    params: {chunking: "custom:16384/65536/262144", stage: extreme, granularity: archive}
+  - name: C-BACKUP-1M--fast
+    params: {chunking: "custom:524288/1048576/8388608", stage: fast, granularity: archive}
+  - name: C-BACKUP-1M--balanced
+    params: {chunking: "custom:524288/1048576/8388608", stage: balanced, granularity: archive}
+  - name: C-BACKUP-1M--dense
+    params: {chunking: "custom:524288/1048576/8388608", stage: dense, granularity: archive}
+  - name: C-BACKUP-1M--extreme
+    params: {chunking: "custom:524288/1048576/8388608", stage: extreme, granularity: archive}
+  - name: C-LARGE-4M--fast
+    params: {chunking: "custom:1048576/4194304/16777216", stage: fast, granularity: archive}
+  - name: C-LARGE-4M--balanced
+    params: {chunking: "custom:1048576/4194304/16777216", stage: balanced, granularity: archive}
+  - name: C-LARGE-4M--dense
+    params: {chunking: "custom:1048576/4194304/16777216", stage: dense, granularity: archive}
+  - name: C-LARGE-4M--extreme
+    params: {chunking: "custom:1048576/4194304/16777216", stage: extreme, granularity: archive}
+  - name: V-MIN8-MAX2--balanced
+    params: {chunking: "custom:65536/524288/1048576", stage: balanced, granularity: archive}
+  - name: V-MIN8-MAX2--extreme
+    params: {chunking: "custom:65536/524288/1048576", stage: extreme, granularity: archive}
+  - name: V-MIN8-MAX8--balanced
+    params: {chunking: "custom:65536/524288/4194304", stage: balanced, granularity: archive}
+  - name: V-MIN8-MAX8--extreme
+    params: {chunking: "custom:65536/524288/4194304", stage: extreme, granularity: archive}
+  - name: V-MIN2-MAX2--balanced
+    params: {chunking: "custom:262144/524288/1048576", stage: balanced, granularity: archive}
+  - name: V-MIN2-MAX2--extreme
+    params: {chunking: "custom:262144/524288/1048576", stage: extreme, granularity: archive}
+  - name: V-MIN2-MAX8--balanced
+    params: {chunking: "custom:262144/524288/4194304", stage: balanced, granularity: archive}
+  - name: V-MIN2-MAX8--extreme
+    params: {chunking: "custom:262144/524288/4194304", stage: extreme, granularity: archive}
+  - name: W-FAST-1M--balanced
+    params: {chunking: "custom:262144/1048576/1048576", stage: balanced, granularity: archive}
+  - name: W-FAST-1M--extreme
+    params: {chunking: "custom:262144/1048576/1048576", stage: extreme, granularity: archive}
+  - name: gran-per-category--fast
+    params: {chunking: profile-list, stage: fast, granularity: per-category}
+  - name: gran-per-category--balanced
+    params: {chunking: profile-list, stage: balanced, granularity: per-category}
+  - name: gran-per-category--dense
+    params: {chunking: profile-list, stage: dense, granularity: per-category}
+  - name: gran-per-category--extreme
+    params: {chunking: profile-list, stage: extreme, granularity: per-category}
+  - name: gran-per-size-class--fast
+    params: {chunking: profile-list, stage: fast, granularity: per-size-class}
+  - name: gran-per-size-class--balanced
+    params: {chunking: profile-list, stage: balanced, granularity: per-size-class}
+  - name: gran-per-size-class--dense
+    params: {chunking: profile-list, stage: dense, granularity: per-size-class}
+  - name: gran-per-size-class--extreme
+    params: {chunking: profile-list, stage: extreme, granularity: per-size-class}
+  - name: gran-per-object--fast
+    params: {chunking: profile-list, stage: fast, granularity: per-object}
+  - name: gran-per-object--balanced
+    params: {chunking: profile-list, stage: balanced, granularity: per-object}
+  - name: gran-per-object--dense
+    params: {chunking: profile-list, stage: dense, granularity: per-object}
+  - name: gran-per-object--extreme
+    params: {chunking: profile-list, stage: extreme, granularity: per-object}
+  - name: gran-global-single--fast
+    params: {chunking: profile-list, stage: fast, granularity: global-single}
+  - name: gran-global-single--balanced
+    params: {chunking: profile-list, stage: balanced, granularity: global-single}
+  - name: gran-global-single--dense
+    params: {chunking: profile-list, stage: dense, granularity: global-single}
+  - name: gran-global-single--extreme
+    params: {chunking: profile-list, stage: extreme, granularity: global-single}
+  - name: gran-dwarfs-style--fast
+    params: {chunking: profile-list, stage: fast, granularity: dwarfs-style}
+  - name: gran-dwarfs-style--balanced
+    params: {chunking: profile-list, stage: balanced, granularity: dwarfs-style}
+  - name: gran-dwarfs-style--dense
+    params: {chunking: profile-list, stage: dense, granularity: dwarfs-style}
+  - name: gran-dwarfs-style--extreme
+    params: {chunking: profile-list, stage: extreme, granularity: dwarfs-style}
+command: >-
+  /root/eb-research/target/planner-harness/release/ebr-planner chunking-matrix --item-path {item_path} --chunking {chunking} --codec-stage {stage} --granularity {granularity} --categoriser signature-v0 --granularity-map /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-005/replay/granularity-maps.json --layout indexed --experiment-id EXP-PLANNER-005 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/psub-256.json
+  splits: [tuning]
+
+metrics:
+  - {name: artifact_bytes, source: stdout_json, key: artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: modelled_declaration_bytes, source: stdout_json, key: modelled_declaration_bytes, family: size, direction: minimize, unit: B}
+  - {name: research_only_multi_chunker, source: stdout_json, key: research_only_multi_chunker, family: correctness, direction: none}
+  - {name: proxy_cost_status_quo, source: stdout_json, key: proxy_cost_status_quo, family: size, direction: none, unit: B}
+  - {name: proxy_cost_sampled, source: stdout_json, key: proxy_cost_sampled, family: size, direction: none, unit: B}
+  - {name: index_bytes, source: stdout_json, key: byte_accounting.index_bytes, family: size, direction: minimize, unit: B}
+  - {name: diag_chunk_payload_bytes, source: stdout_json, key: byte_accounting.chunk_payload_bytes, family: size, direction: none, unit: B}
+  - {name: metadata_bytes, source: derived, op: difference, args: [artifact_bytes, diag_chunk_payload_bytes], family: size, direction: minimize, unit: B}
+  - {name: access_granularity_bytes, source: stdout_json, key: access_granularity_bytes, family: size, direction: minimize, unit: B}
+  - {name: dedup_stored_fraction, source: stdout_json, key: dedup_stored_fraction, family: size, direction: minimize, unit: ratio}
+  - {name: diag_unique_chunk_count, source: stdout_json, key: unique_chunk_count, family: other, direction: none, unit: count}
+  - {name: diag_logical_chunk_references, source: stdout_json, key: logical_chunk_references, family: other, direction: none, unit: count}
+  - {name: diag_cross_category_duplicate_bytes, source: stdout_json, key: cross_category_duplicate_bytes, family: size, direction: none, unit: B}
+  - {name: work_bytes_examined, source: stdout_json, key: work.bytes_examined, family: other, direction: none, unit: B}
+  - {name: identity_pcr, source: stdout_json, key: pcr, family: correctness, kind: string}
+  - {name: artifact_sha256, source: path_sha256, path: "{scratch}/archive.eb", family: correctness}
+  - {name: roundtrip_mismatches, source: stdout_json, key: roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917051, bootstrap: 260917052, command: 260917053}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 1
+  scratch_root: /root/eb-research/scratch/ebr
+  requires: [/root/eb-research/target/planner-harness/release/ebr-planner]
+  timeout_s: 86400
+
+analysis:
+  baseline: BALANCED_V2--balanced
+  pairing: item
+  report_metrics: [artifact_bytes, metadata_bytes, access_granularity_bytes, dedup_stored_fraction]
+
+notes: >
+  NEEDS_TOOLING (TP-04 chunking-matrix, TP-05 categoriser, TP-15 PSUB-256; the
+  granularity maps are fitted on tuning by research/planner/tools/replay.py before
+  the gran-* cells run). CD-n chunking-domain frontier policies are added as
+  logged additions before planner look 1. 62 candidates.

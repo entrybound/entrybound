@@ -1,0 +1,91 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-007
+status: design
+question: >
+  WSL st-v timing on TS-1 PSUB-64 tuning sub-items: encode wall/CPU of dense and
+  extreme (production ebound, fitted DEC-CMP-035 profile, harness parity arm) and
+  decode wall/CPU of their pre-packed archives.
+hypothesis: >
+  See research/experiments/EXP-PLANNER-007/protocol.md section 2. Candidate
+  prefix enc- maps resource wall_s/cpu_s to encode_wall_s/encode_cpu_s and dec-
+  to decode_wall_s/decode_cpu_s in the decision tooling; par- is the
+  harness-against-ebound timing parity arm.
+decision_ids: [DEC-CMP-036, DEC-CMP-035]
+
+candidates:
+  - name: enc-sq-dense
+    params: {kind: sq, profile: dense, op: encode}
+    command: "/root/eb-research/target/planner-cli/release/ebound pack {item_path} {scratch}/archive.eb --layout indexed --profile dense >/dev/null"
+  - name: enc-fit-dense
+    params: {kind: fit, profile: dense, op: encode}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile dense --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --no-verify true --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb >/dev/null"
+  - name: enc-par-dense
+    params: {kind: par, profile: dense, op: encode}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile dense --layout indexed --no-verify true --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb >/dev/null"
+  - name: dec-sq-dense
+    params: {kind: sq, profile: dense, op: decode}
+    command: "/root/eb-research/target/planner-cli/release/ebound unpack /root/eb-research/derived/planner/ts1-archives/sq-dense/{item_id}.eb {scratch}/x >/dev/null"
+  - name: dec-fit-dense
+    params: {kind: fit, profile: dense, op: decode}
+    command: "/root/eb-research/target/planner-cli/release/ebound unpack /root/eb-research/derived/planner/ts1-archives/fit-dense/{item_id}.eb {scratch}/x >/dev/null"
+  - name: enc-sq-extreme
+    params: {kind: sq, profile: extreme, op: encode}
+    command: "/root/eb-research/target/planner-cli/release/ebound pack {item_path} {scratch}/archive.eb --layout indexed --profile extreme >/dev/null"
+  - name: enc-fit-extreme
+    params: {kind: fit, profile: extreme, op: encode}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile extreme --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --no-verify true --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb >/dev/null"
+  - name: enc-par-extreme
+    params: {kind: par, profile: extreme, op: encode}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile extreme --layout indexed --no-verify true --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb >/dev/null"
+  - name: dec-sq-extreme
+    params: {kind: sq, profile: extreme, op: decode}
+    command: "/root/eb-research/target/planner-cli/release/ebound unpack /root/eb-research/derived/planner/ts1-archives/sq-extreme/{item_id}.eb {scratch}/x >/dev/null"
+  - name: dec-fit-extreme
+    params: {kind: fit, profile: extreme, op: decode}
+    command: "/root/eb-research/target/planner-cli/release/ebound unpack /root/eb-research/derived/planner/ts1-archives/fit-extreme/{item_id}.eb {scratch}/x >/dev/null"
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/ts1-psub-64.json
+  splits: [tuning]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 10
+warmups: 2
+seeds: {order: 260917071, bootstrap: 260917072, command: 260917073}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+record_warmups: true
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 4
+  cpu_affinity: [2]
+  timeout_s: 172800
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+analysis:
+  baseline: enc-sq-dense
+  pairing: item_repetition
+  report_metrics: [wall_s, cpu_s, max_rss_bytes]
+
+notes: >
+  NEEDS_TOOLING: decision-method.md section 14 item 3 runner additions (cooldown,
+  canary, covariates, per-core-class guard, adaptive rounds), section 4.7 calibration,
+  TP-06/TP-16/TP-19. repetitions is the tier minimum; adaptive step and cap per
+  section 4.6 via the runner additions. Look-1 variants generated by
+  research/planner/tools/make_timing_spec.py with splits [validation].

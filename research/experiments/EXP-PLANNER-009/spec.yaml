@@ -1,0 +1,81 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-009
+status: design
+question: >
+  Encoder-version drift matrix (WSL native): for each encoder crate version set
+  (pinned production versions and up to three other releases per crate), are
+  per-(Chunk, frozen configuration) encoder outputs and reconstruction inverse
+  outputs byte-identical to the pinned build on the EXP-PLANNER-008 Chunk
+  bundles?
+hypothesis: >
+  See research/experiments/EXP-PLANNER-009/protocol.md section 2 (at least one
+  libzstd release changes payload bytes at some frozen level; reconstruction
+  inverses are stable or the version pin is load-bearing).
+decision_ids: [DEC-CMP-031, DEC-CMP-040]
+
+candidates:
+  - name: build-pinned
+    params: {build: pinned}
+  - name: build-zstd-1.5.5
+    params: {build: zstd-1.5.5}
+  - name: build-zstd-1.5.6
+    params: {build: zstd-1.5.6}
+  - name: build-zstd-latest
+    params: {build: zstd-latest}
+  - name: build-lz4flex-prev
+    params: {build: lz4flex-prev}
+  - name: build-lz4flex-latest
+    params: {build: lz4flex-latest}
+  - name: build-lzma2-prev
+    params: {build: lzma2-prev}
+  - name: build-lzma2-latest
+    params: {build: lzma2-latest}
+  - name: build-preflate-prev
+    params: {build: preflate-prev}
+  - name: build-preflate-latest
+    params: {build: preflate-latest}
+  - name: build-jixel-prev
+    params: {build: jixel-prev}
+  - name: build-jixel-latest
+    params: {build: jixel-latest}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/planner/tools/encoder-drift/run_drift.sh --build-root /root/eb-research/build/encoder-drift --build {build}
+  --bundle {item_path} --configs frozen-v1-v6 --reference-build pinned
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/decode-bundles.json
+  splits: [tuning]
+
+metrics:
+  - {name: outputs_digest, source: stdout_json, key: outputs_digest, family: correctness, kind: string}
+  - {name: diag_changed_outputs, source: stdout_json, key: changed_outputs_vs_reference, family: other, direction: none, unit: count}
+  - {name: diag_total_outputs, source: stdout_json, key: total_outputs, family: other, direction: none, unit: count}
+  - {name: diag_encoder_drift_fraction, source: derived, op: ratio, args: [diag_changed_outputs, diag_total_outputs], family: other, direction: none}
+  - {name: inverse_mismatches, source: stdout_json, key: reconstruction_inverse_mismatches_vs_reference, family: correctness, direction: minimize, unit: count}
+  - {name: roundtrip_mismatches, source: stdout_json, key: roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917091, bootstrap: 260917092, command: 260917093}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [bash, /root/eb-research/build/encoder-drift]
+  timeout_s: 86400
+
+analysis:
+  baseline: build-pinned
+  pairing: item
+  report_metrics: [diag_encoder_drift_fraction, inverse_mismatches]
+
+notes: >
+  NEEDS_TOOLING: TP-10 (make_projects.py, build_all.sh, run_drift.sh, driver
+  encoder-drift). Deterministic; the version list is committed as
+  research/experiments/EXP-PLANNER-009/versions.json in the record before execution.

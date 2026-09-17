@@ -1,0 +1,226 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-010
+status: design
+question: >
+  Replan matrix: for source archives packed with planner generation v2-v6 under
+  each profile, what do repack policies current (ebound repack, status quo),
+  pinned, source and current-report produce: LAI/PCR/AUX change pattern per
+  SPEC section 8.1, PCI and PCR reproduction of the source, artifact_bytes delta,
+  and replan work units?
+hypothesis: >
+  See research/experiments/EXP-PLANNER-010/protocol.md section 2 (H1.1, H1.2):
+  current changes PCI for v2-v5 sources and preserves LAI everywhere; pinned
+  reproduces source PCI exactly on the same build.
+decision_ids: [DEC-CMP-040, DEC-INT-046]
+
+candidates:
+  - name: replan-v2-fast-current
+    params: {generation: v2, profile: fast, policy: current}
+  - name: replan-v2-fast-pinned
+    params: {generation: v2, profile: fast, policy: pinned}
+  - name: replan-v2-fast-source
+    params: {generation: v2, profile: fast, policy: source}
+  - name: replan-v2-fast-current-report
+    params: {generation: v2, profile: fast, policy: current-report}
+  - name: replan-v2-balanced-current
+    params: {generation: v2, profile: balanced, policy: current}
+  - name: replan-v2-balanced-pinned
+    params: {generation: v2, profile: balanced, policy: pinned}
+  - name: replan-v2-balanced-source
+    params: {generation: v2, profile: balanced, policy: source}
+  - name: replan-v2-balanced-current-report
+    params: {generation: v2, profile: balanced, policy: current-report}
+  - name: replan-v2-dense-current
+    params: {generation: v2, profile: dense, policy: current}
+  - name: replan-v2-dense-pinned
+    params: {generation: v2, profile: dense, policy: pinned}
+  - name: replan-v2-dense-source
+    params: {generation: v2, profile: dense, policy: source}
+  - name: replan-v2-dense-current-report
+    params: {generation: v2, profile: dense, policy: current-report}
+  - name: replan-v2-extreme-current
+    params: {generation: v2, profile: extreme, policy: current}
+  - name: replan-v2-extreme-pinned
+    params: {generation: v2, profile: extreme, policy: pinned}
+  - name: replan-v2-extreme-source
+    params: {generation: v2, profile: extreme, policy: source}
+  - name: replan-v2-extreme-current-report
+    params: {generation: v2, profile: extreme, policy: current-report}
+  - name: replan-v3-fast-current
+    params: {generation: v3, profile: fast, policy: current}
+  - name: replan-v3-fast-pinned
+    params: {generation: v3, profile: fast, policy: pinned}
+  - name: replan-v3-fast-source
+    params: {generation: v3, profile: fast, policy: source}
+  - name: replan-v3-fast-current-report
+    params: {generation: v3, profile: fast, policy: current-report}
+  - name: replan-v3-balanced-current
+    params: {generation: v3, profile: balanced, policy: current}
+  - name: replan-v3-balanced-pinned
+    params: {generation: v3, profile: balanced, policy: pinned}
+  - name: replan-v3-balanced-source
+    params: {generation: v3, profile: balanced, policy: source}
+  - name: replan-v3-balanced-current-report
+    params: {generation: v3, profile: balanced, policy: current-report}
+  - name: replan-v3-dense-current
+    params: {generation: v3, profile: dense, policy: current}
+  - name: replan-v3-dense-pinned
+    params: {generation: v3, profile: dense, policy: pinned}
+  - name: replan-v3-dense-source
+    params: {generation: v3, profile: dense, policy: source}
+  - name: replan-v3-dense-current-report
+    params: {generation: v3, profile: dense, policy: current-report}
+  - name: replan-v3-extreme-current
+    params: {generation: v3, profile: extreme, policy: current}
+  - name: replan-v3-extreme-pinned
+    params: {generation: v3, profile: extreme, policy: pinned}
+  - name: replan-v3-extreme-source
+    params: {generation: v3, profile: extreme, policy: source}
+  - name: replan-v3-extreme-current-report
+    params: {generation: v3, profile: extreme, policy: current-report}
+  - name: replan-v4-fast-current
+    params: {generation: v4, profile: fast, policy: current}
+  - name: replan-v4-fast-pinned
+    params: {generation: v4, profile: fast, policy: pinned}
+  - name: replan-v4-fast-source
+    params: {generation: v4, profile: fast, policy: source}
+  - name: replan-v4-fast-current-report
+    params: {generation: v4, profile: fast, policy: current-report}
+  - name: replan-v4-balanced-current
+    params: {generation: v4, profile: balanced, policy: current}
+  - name: replan-v4-balanced-pinned
+    params: {generation: v4, profile: balanced, policy: pinned}
+  - name: replan-v4-balanced-source
+    params: {generation: v4, profile: balanced, policy: source}
+  - name: replan-v4-balanced-current-report
+    params: {generation: v4, profile: balanced, policy: current-report}
+  - name: replan-v4-dense-current
+    params: {generation: v4, profile: dense, policy: current}
+  - name: replan-v4-dense-pinned
+    params: {generation: v4, profile: dense, policy: pinned}
+  - name: replan-v4-dense-source
+    params: {generation: v4, profile: dense, policy: source}
+  - name: replan-v4-dense-current-report
+    params: {generation: v4, profile: dense, policy: current-report}
+  - name: replan-v4-extreme-current
+    params: {generation: v4, profile: extreme, policy: current}
+  - name: replan-v4-extreme-pinned
+    params: {generation: v4, profile: extreme, policy: pinned}
+  - name: replan-v4-extreme-source
+    params: {generation: v4, profile: extreme, policy: source}
+  - name: replan-v4-extreme-current-report
+    params: {generation: v4, profile: extreme, policy: current-report}
+  - name: replan-v5-fast-current
+    params: {generation: v5, profile: fast, policy: current}
+  - name: replan-v5-fast-pinned
+    params: {generation: v5, profile: fast, policy: pinned}
+  - name: replan-v5-fast-source
+    params: {generation: v5, profile: fast, policy: source}
+  - name: replan-v5-fast-current-report
+    params: {generation: v5, profile: fast, policy: current-report}
+  - name: replan-v5-balanced-current
+    params: {generation: v5, profile: balanced, policy: current}
+  - name: replan-v5-balanced-pinned
+    params: {generation: v5, profile: balanced, policy: pinned}
+  - name: replan-v5-balanced-source
+    params: {generation: v5, profile: balanced, policy: source}
+  - name: replan-v5-balanced-current-report
+    params: {generation: v5, profile: balanced, policy: current-report}
+  - name: replan-v5-dense-current
+    params: {generation: v5, profile: dense, policy: current}
+  - name: replan-v5-dense-pinned
+    params: {generation: v5, profile: dense, policy: pinned}
+  - name: replan-v5-dense-source
+    params: {generation: v5, profile: dense, policy: source}
+  - name: replan-v5-dense-current-report
+    params: {generation: v5, profile: dense, policy: current-report}
+  - name: replan-v5-extreme-current
+    params: {generation: v5, profile: extreme, policy: current}
+  - name: replan-v5-extreme-pinned
+    params: {generation: v5, profile: extreme, policy: pinned}
+  - name: replan-v5-extreme-source
+    params: {generation: v5, profile: extreme, policy: source}
+  - name: replan-v5-extreme-current-report
+    params: {generation: v5, profile: extreme, policy: current-report}
+  - name: replan-v6-fast-current
+    params: {generation: v6, profile: fast, policy: current}
+  - name: replan-v6-fast-pinned
+    params: {generation: v6, profile: fast, policy: pinned}
+  - name: replan-v6-fast-source
+    params: {generation: v6, profile: fast, policy: source}
+  - name: replan-v6-fast-current-report
+    params: {generation: v6, profile: fast, policy: current-report}
+  - name: replan-v6-balanced-current
+    params: {generation: v6, profile: balanced, policy: current}
+  - name: replan-v6-balanced-pinned
+    params: {generation: v6, profile: balanced, policy: pinned}
+  - name: replan-v6-balanced-source
+    params: {generation: v6, profile: balanced, policy: source}
+  - name: replan-v6-balanced-current-report
+    params: {generation: v6, profile: balanced, policy: current-report}
+  - name: replan-v6-dense-current
+    params: {generation: v6, profile: dense, policy: current}
+  - name: replan-v6-dense-pinned
+    params: {generation: v6, profile: dense, policy: pinned}
+  - name: replan-v6-dense-source
+    params: {generation: v6, profile: dense, policy: source}
+  - name: replan-v6-dense-current-report
+    params: {generation: v6, profile: dense, policy: current-report}
+  - name: replan-v6-extreme-current
+    params: {generation: v6, profile: extreme, policy: current}
+  - name: replan-v6-extreme-pinned
+    params: {generation: v6, profile: extreme, policy: pinned}
+  - name: replan-v6-extreme-source
+    params: {generation: v6, profile: extreme, policy: source}
+  - name: replan-v6-extreme-current-report
+    params: {generation: v6, profile: extreme, policy: current-report}
+command: >-
+  /root/eb-research/target/planner-harness/release/ebr-planner replan --item-path {item_path} --generation {generation} --profile {profile}
+  --policy {policy} --ebound /root/eb-research/target/planner-cli/release/ebound --scratch {scratch}
+  --experiment-id EXP-PLANNER-010 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/g1-psub-64.json
+  splits: [tuning]
+
+metrics:
+  - {name: source_artifact_bytes, source: stdout_json, key: source.artifact_bytes, family: size, direction: none, unit: B}
+  - {name: artifact_bytes, source: stdout_json, key: result.artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: lai_preserved, source: stdout_json, key: lai_equal, family: correctness, direction: maximize}
+  - {name: pcr_equal, source: stdout_json, key: pcr_equal, family: correctness, direction: none}
+  - {name: pci_equal, source: stdout_json, key: pci_equal, family: correctness, direction: none}
+  - {name: identity_pattern_conforms, source: stdout_json, key: identity_pattern_conforms_spec_8_1, family: correctness, direction: maximize}
+  - {name: result_pci, source: stdout_json, key: result.pci, family: correctness, kind: string}
+  - {name: source_planner_id, source: stdout_json, key: source_planner_id, family: correctness, kind: string}
+  - {name: result_planner_id, source: stdout_json, key: result_planner_id, family: correctness, kind: string}
+  - {name: report_correct, source: stdout_json, key: report_matches_actual_change, family: correctness, direction: maximize}
+  - {name: work_bytes_examined, source: stdout_json, key: work.bytes_examined, family: other, direction: none, unit: B}
+  - {name: roundtrip_mismatches, source: stdout_json, key: roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917101, bootstrap: 260917102, command: 260917103}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/planner-harness/release/ebr-planner, /root/eb-research/target/planner-cli/release/ebound]
+  timeout_s: 86400
+
+analysis:
+  baseline: replan-v6-balanced-current
+  pairing: item
+  report_metrics: [artifact_bytes, lai_preserved, pci_equal]
+
+notes: >
+  NEEDS_TOOLING: TP-12 ebr-planner pack-generation/replan (source archive via
+  PlannerVersion::plan of the generation, then the policy's replan: current =
+  production ebound repack --profile; pinned/source = PlannerVersion::plan with
+  the recorded generation; current-report = current plus a report of planner and
+  PCR change), TP-15 G1-PSUB-64. LAI change is an HC-10 violation artifact.

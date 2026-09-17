@@ -1,0 +1,384 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-004
+status: design
+question: >
+  Holding the search strategy at the status quo, which candidate table (arm A),
+  transform gate (B), gain-margin rule (C), dictionary acceptance rule (D) and
+  region/cohort conflict rule (E) yields the smallest materialized
+  artifact_bytes per profile within the Appendix B.1 guards? Arm F (external
+  codec modelled screen) is an offline replay over EXP-PLANNER-002 traces and
+  has no runner cells here.
+hypothesis: >
+  See research/experiments/EXP-PLANNER-004/protocol.md section 2 (A1-F1).
+  Arm E variants must be byte-identical to the status quo on sub-items without
+  JPEG objects (isolation check).
+decision_ids: [DEC-CMP-034, DEC-CMP-012, DEC-CMP-030, DEC-CMP-020, DEC-CMP-039, DEC-CMP-009]
+
+candidates:
+  - name: tables--status-quo-v6-tables--fast
+    params: {arm: tables, variant: status-quo-v6-tables, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--status-quo-v6-tables--balanced
+    params: {arm: tables, variant: status-quo-v6-tables, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--status-quo-v6-tables--dense
+    params: {arm: tables, variant: status-quo-v6-tables, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--status-quo-v6-tables--extreme
+    params: {arm: tables, variant: status-quo-v6-tables, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--pruned-tables--fast
+    params: {arm: tables, variant: pruned-tables, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--pruned-tables--balanced
+    params: {arm: tables, variant: pruned-tables, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--pruned-tables--dense
+    params: {arm: tables, variant: pruned-tables, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--pruned-tables--extreme
+    params: {arm: tables, variant: pruned-tables, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--spec-literal--fast
+    params: {arm: tables, variant: spec-literal, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--spec-literal--balanced
+    params: {arm: tables, variant: spec-literal, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--spec-literal--dense
+    params: {arm: tables, variant: spec-literal, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--spec-literal--extreme
+    params: {arm: tables, variant: spec-literal, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--zstd-only-levels--fast
+    params: {arm: tables, variant: zstd-only-levels, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--zstd-only-levels--balanced
+    params: {arm: tables, variant: zstd-only-levels, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--zstd-only-levels--dense
+    params: {arm: tables, variant: zstd-only-levels, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--zstd-only-levels--extreme
+    params: {arm: tables, variant: zstd-only-levels, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--lz4-fast-lzma2-extreme-only--fast
+    params: {arm: tables, variant: lz4-fast-lzma2-extreme-only, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--lz4-fast-lzma2-extreme-only--balanced
+    params: {arm: tables, variant: lz4-fast-lzma2-extreme-only, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--lz4-fast-lzma2-extreme-only--dense
+    params: {arm: tables, variant: lz4-fast-lzma2-extreme-only, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--lz4-fast-lzma2-extreme-only--extreme
+    params: {arm: tables, variant: lz4-fast-lzma2-extreme-only, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--corpus-fitted-tables--fast
+    params: {arm: tables, variant: corpus-fitted-tables, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--corpus-fitted-tables--balanced
+    params: {arm: tables, variant: corpus-fitted-tables, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--corpus-fitted-tables--dense
+    params: {arm: tables, variant: corpus-fitted-tables, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: tables--corpus-fitted-tables--extreme
+    params: {arm: tables, variant: corpus-fitted-tables, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--status-quo-sampling-probe--balanced
+    params: {arm: gating, variant: status-quo-sampling-probe, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--status-quo-sampling-probe--dense
+    params: {arm: gating, variant: status-quo-sampling-probe, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--status-quo-sampling-probe--extreme
+    params: {arm: gating, variant: status-quo-sampling-probe, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--retuned-probe--balanced
+    params: {arm: gating, variant: retuned-probe, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--retuned-probe--dense
+    params: {arm: gating, variant: retuned-probe, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--retuned-probe--extreme
+    params: {arm: gating, variant: retuned-probe, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--signature-categoriser--balanced
+    params: {arm: gating, variant: signature-categoriser, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--signature-categoriser--dense
+    params: {arm: gating, variant: signature-categoriser, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--signature-categoriser--extreme
+    params: {arm: gating, variant: signature-categoriser, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--entropy-estimate-gate--balanced
+    params: {arm: gating, variant: entropy-estimate-gate, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--entropy-estimate-gate--dense
+    params: {arm: gating, variant: entropy-estimate-gate, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--entropy-estimate-gate--extreme
+    params: {arm: gating, variant: entropy-estimate-gate, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--always-try--balanced
+    params: {arm: gating, variant: always-try, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--always-try--dense
+    params: {arm: gating, variant: always-try, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--always-try--extreme
+    params: {arm: gating, variant: always-try, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--per-category-scope--balanced
+    params: {arm: gating, variant: per-category-scope, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--per-category-scope--dense
+    params: {arm: gating, variant: per-category-scope, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: gating--per-category-scope--extreme
+    params: {arm: gating, variant: per-category-scope, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--status-quo-margins--fast
+    params: {arm: margins, variant: status-quo-margins, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--status-quo-margins--balanced
+    params: {arm: margins, variant: status-quo-margins, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--status-quo-margins--dense
+    params: {arm: margins, variant: status-quo-margins, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--status-quo-margins--extreme
+    params: {arm: margins, variant: status-quo-margins, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--amortized-plan-cost--fast
+    params: {arm: margins, variant: amortized-plan-cost, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--amortized-plan-cost--balanced
+    params: {arm: margins, variant: amortized-plan-cost, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--amortized-plan-cost--dense
+    params: {arm: margins, variant: amortized-plan-cost, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--amortized-plan-cost--extreme
+    params: {arm: margins, variant: amortized-plan-cost, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--decode-cost-weighted-margin--fast
+    params: {arm: margins, variant: decode-cost-weighted-margin, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--decode-cost-weighted-margin--balanced
+    params: {arm: margins, variant: decode-cost-weighted-margin, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--decode-cost-weighted-margin--dense
+    params: {arm: margins, variant: decode-cost-weighted-margin, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--decode-cost-weighted-margin--extreme
+    params: {arm: margins, variant: decode-cost-weighted-margin, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--zero-margin-smallest-wins--fast
+    params: {arm: margins, variant: zero-margin-smallest-wins, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--zero-margin-smallest-wins--balanced
+    params: {arm: margins, variant: zero-margin-smallest-wins, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--zero-margin-smallest-wins--dense
+    params: {arm: margins, variant: zero-margin-smallest-wins, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--zero-margin-smallest-wins--extreme
+    params: {arm: margins, variant: zero-margin-smallest-wins, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--corpus-fitted-margins--fast
+    params: {arm: margins, variant: corpus-fitted-margins, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--corpus-fitted-margins--balanced
+    params: {arm: margins, variant: corpus-fitted-margins, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--corpus-fitted-margins--dense
+    params: {arm: margins, variant: corpus-fitted-margins, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--corpus-fitted-margins--extreme
+    params: {arm: margins, variant: corpus-fitted-margins, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--order-independent-region-costing--fast
+    params: {arm: margins, variant: order-independent-region-costing, profile: fast}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--order-independent-region-costing--balanced
+    params: {arm: margins, variant: order-independent-region-costing, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--order-independent-region-costing--dense
+    params: {arm: margins, variant: order-independent-region-costing, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: margins--order-independent-region-costing--extreme
+    params: {arm: margins, variant: order-independent-region-costing, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--status-quo-absolute-128--balanced
+    params: {arm: dictionary-rule, variant: status-quo-absolute-128, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--status-quo-absolute-128--dense
+    params: {arm: dictionary-rule, variant: status-quo-absolute-128, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--status-quo-absolute-128--extreme
+    params: {arm: dictionary-rule, variant: status-quo-absolute-128, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--relative-plus-absolute-margin-1--balanced
+    params: {arm: dictionary-rule, variant: relative-plus-absolute-margin-1, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--relative-plus-absolute-margin-1--dense
+    params: {arm: dictionary-rule, variant: relative-plus-absolute-margin-1, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--relative-plus-absolute-margin-1--extreme
+    params: {arm: dictionary-rule, variant: relative-plus-absolute-margin-1, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--relative-plus-absolute-margin-2--balanced
+    params: {arm: dictionary-rule, variant: relative-plus-absolute-margin-2, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--relative-plus-absolute-margin-2--dense
+    params: {arm: dictionary-rule, variant: relative-plus-absolute-margin-2, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--relative-plus-absolute-margin-2--extreme
+    params: {arm: dictionary-rule, variant: relative-plus-absolute-margin-2, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--decoder-and-access-cost-charged--balanced
+    params: {arm: dictionary-rule, variant: decoder-and-access-cost-charged, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--decoder-and-access-cost-charged--dense
+    params: {arm: dictionary-rule, variant: decoder-and-access-cost-charged, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--decoder-and-access-cost-charged--extreme
+    params: {arm: dictionary-rule, variant: decoder-and-access-cost-charged, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--minimum-reuse-count-4--balanced
+    params: {arm: dictionary-rule, variant: minimum-reuse-count-4, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--minimum-reuse-count-4--dense
+    params: {arm: dictionary-rule, variant: minimum-reuse-count-4, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--minimum-reuse-count-4--extreme
+    params: {arm: dictionary-rule, variant: minimum-reuse-count-4, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--minimum-reuse-count-8--balanced
+    params: {arm: dictionary-rule, variant: minimum-reuse-count-8, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--minimum-reuse-count-8--dense
+    params: {arm: dictionary-rule, variant: minimum-reuse-count-8, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--minimum-reuse-count-8--extreme
+    params: {arm: dictionary-rule, variant: minimum-reuse-count-8, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--minimum-reuse-count-16--balanced
+    params: {arm: dictionary-rule, variant: minimum-reuse-count-16, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--minimum-reuse-count-16--dense
+    params: {arm: dictionary-rule, variant: minimum-reuse-count-16, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--minimum-reuse-count-16--extreme
+    params: {arm: dictionary-rule, variant: minimum-reuse-count-16, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--no-dictionaries--balanced
+    params: {arm: dictionary-rule, variant: no-dictionaries, profile: balanced}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--no-dictionaries--dense
+    params: {arm: dictionary-rule, variant: no-dictionaries, profile: dense}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: dictionary-rule--no-dictionaries--extreme
+    params: {arm: dictionary-rule, variant: no-dictionaries, profile: extreme}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner materialize --item-path {item_path} --profile {profile} --layout indexed --assignment /root/eb-research/raw-side/EXP-PLANNER-004/assignments/{arm}/{variant}/{profile}/{item_id}.jsonl --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--status-quo-cohorts-first-conservative--fast
+    params: {arm: conflicts, variant: status-quo-cohorts-first-conservative, profile: fast, stage_order: cohorts-first}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--status-quo-cohorts-first-conservative--balanced
+    params: {arm: conflicts, variant: status-quo-cohorts-first-conservative, profile: balanced, stage_order: cohorts-first}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--status-quo-cohorts-first-conservative--dense
+    params: {arm: conflicts, variant: status-quo-cohorts-first-conservative, profile: dense, stage_order: cohorts-first}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--status-quo-cohorts-first-conservative--extreme
+    params: {arm: conflicts, variant: status-quo-cohorts-first-conservative, profile: extreme, stage_order: cohorts-first}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--region-first--fast
+    params: {arm: conflicts, variant: region-first, profile: fast, stage_order: region-first}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--region-first--balanced
+    params: {arm: conflicts, variant: region-first, profile: balanced, stage_order: region-first}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--region-first--dense
+    params: {arm: conflicts, variant: region-first, profile: dense, stage_order: region-first}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--region-first--extreme
+    params: {arm: conflicts, variant: region-first, profile: extreme, stage_order: region-first}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--joint-complete-cost--fast
+    params: {arm: conflicts, variant: joint-complete-cost, profile: fast, stage_order: joint}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--joint-complete-cost--balanced
+    params: {arm: conflicts, variant: joint-complete-cost, profile: balanced, stage_order: joint}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--joint-complete-cost--dense
+    params: {arm: conflicts, variant: joint-complete-cost, profile: dense, stage_order: joint}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--joint-complete-cost--extreme
+    params: {arm: conflicts, variant: joint-complete-cost, profile: extreme, stage_order: joint}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--split-audit-reasons--fast
+    params: {arm: conflicts, variant: split-audit-reasons, profile: fast, stage_order: cohorts-first-split-audit}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--split-audit-reasons--balanced
+    params: {arm: conflicts, variant: split-audit-reasons, profile: balanced, stage_order: cohorts-first-split-audit}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--split-audit-reasons--dense
+    params: {arm: conflicts, variant: split-audit-reasons, profile: dense, stage_order: cohorts-first-split-audit}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+  - name: conflicts--split-audit-reasons--extreme
+    params: {arm: conflicts, variant: split-audit-reasons, profile: extreme, stage_order: cohorts-first-split-audit}
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile {profile} --set stage_order={stage_order} --layout indexed --experiment-id EXP-PLANNER-004 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb"
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/psub-256.json
+  splits: [tuning]
+
+metrics:
+  - {name: artifact_bytes, source: stdout_json, key: artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: reconciliation_delta_bytes, source: stdout_json, key: reconciliation_delta_bytes, family: correctness, direction: minimize, unit: B}
+  - {name: dictionary_bytes, source: stdout_json, key: byte_accounting.dictionary_bytes, family: size, direction: minimize, unit: B}
+  - {name: index_bytes, source: stdout_json, key: byte_accounting.index_bytes, family: size, direction: minimize, unit: B}
+  - {name: diag_chunk_group_bytes, source: stdout_json, key: byte_accounting.chunk_group_bytes, family: size, direction: none, unit: B}
+  - {name: diag_reconstruction_bytes, source: stdout_json, key: byte_accounting.reconstruction_bytes, family: size, direction: none, unit: B}
+  - {name: side_data_bytes, source: derived, op: sum, args: [diag_chunk_group_bytes, diag_reconstruction_bytes], family: size, direction: minimize, unit: B}
+  - {name: access_granularity_bytes, source: stdout_json, key: access_granularity_bytes, family: size, direction: minimize, unit: B}
+  - {name: declared_decode_memory_bytes, source: stdout_json, key: declared_decode_memory_bytes, family: other, direction: none, unit: B}
+  - {name: work_candidate_evaluations, source: stdout_json, key: work.candidate_evaluations, family: other, direction: none, unit: count}
+  - {name: work_bytes_examined, source: stdout_json, key: work.bytes_examined, family: other, direction: none, unit: B}
+  - {name: artifact_sha256, source: path_sha256, path: "{scratch}/archive.eb", family: correctness}
+  - {name: roundtrip_mismatches, source: stdout_json, key: roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: verified, source: stdout_json, key: verified, family: correctness, direction: maximize}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917041, bootstrap: 260917042, command: 260917043}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 1
+  scratch_root: /root/eb-research/scratch/ebr
+  requires: [/root/eb-research/target/planner-harness/release/ebr-planner]
+  timeout_s: 86400
+
+analysis:
+  baseline: tables--status-quo-v6-tables--balanced
+  pairing: item
+  report_metrics: [artifact_bytes, reconciliation_delta_bytes, dictionary_bytes, side_data_bytes, work_candidate_evaluations]
+
+notes: >
+  NEEDS_TOOLING (TP-02 materialize, TP-03 replay arms, TP-05, TP-06 stage_order, TP-15).
+  Every variant is compared with its own arm's status-quo candidate of the same profile
+  (per-profile scopes, decision-method.md Appendix B.1); the spec-level baseline only
+  satisfies the ebr schema. 106 candidates.

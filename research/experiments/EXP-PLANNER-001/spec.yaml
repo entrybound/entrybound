@@ -1,0 +1,119 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-001
+status: design
+question: >
+  For each current public profile (fast, balanced, dense, extreme; planner v6
+  IDs) and layout (INDEXED, STREAM with an auto window), what artifact bytes,
+  exact section byte composition, codec/transform/cross-file/reconstruction
+  usage, descriptor feature bits and LAI/AUX/PCR/PCI identities does production
+  produce on every tuning item, is the output deterministic, does it round-trip,
+  and does the pre-registration build reproduce the research-baseline (9e44608)
+  archives byte for byte?
+hypothesis: >
+  H1 (descriptive anchors, research/experiments/EXP-PLANNER-001/protocol.md):
+  every cell round-trips and repeats byte-identically; the 9e44608 identity arm
+  is identical on every INDEXED cell; corpus-level artifact_bytes is strictly
+  ordered fast > balanced > dense >= extreme with the dense/extreme gap inside
+  one T-01 band on most families; feature-bit sets differ across profiles only
+  where a technique emits bytes; PCR differs between profiles whenever the
+  selected chunking policy differs. Falsified by any repeat-hash mismatch,
+  round-trip mismatch or baseline-identity mismatch (HC violations, experiment
+  stops), or by the ordering/gap statements failing at corpus level.
+decision_ids: [DEC-CMP-036, DEC-CMP-034, DEC-CMP-035, DEC-CON-010, DEC-MOD-039]
+
+candidates:
+  - name: fast-indexed
+    params: {profile: fast, layout: indexed}
+  - name: balanced-indexed
+    params: {profile: balanced, layout: indexed}
+  - name: dense-indexed
+    params: {profile: dense, layout: indexed}
+  - name: extreme-indexed
+    params: {profile: extreme, layout: indexed}
+  - name: fast-stream
+    params: {profile: fast, layout: stream}
+  - name: balanced-stream
+    params: {profile: balanced, layout: stream}
+  - name: dense-stream
+    params: {profile: dense, layout: stream}
+  - name: extreme-stream
+    params: {profile: extreme, layout: stream}
+command: >-
+  python3 /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLANNER-001/census_sample.py
+  --item-path {item_path} --item-id {item_id} --scratch {scratch}
+  --profile {profile} --layout {layout}
+  --harness-bin /root/eb-research/target/planner-harness/release
+  --ebound /root/eb-research/target/planner-cli/release/ebound
+  --baseline-ebound /root/eb-research/target/baseline/release/ebound
+  --manifest /mnt/d/Projects/entrybound/entrybound/research/corpus/manifest.json
+  --experiment-id EXP-PLANNER-001 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+
+metrics:
+  - {name: artifact_bytes, source: stdout_json, key: artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: metadata_bytes, source: stdout_json, key: metadata_bytes, family: size, direction: minimize, unit: B}
+  - {name: metadata_bytes_per_entry, source: stdout_json, key: metadata_bytes_per_entry, family: size, direction: minimize, unit: B/entry}
+  - {name: index_bytes, source: stdout_json, key: index_bytes, family: size, direction: minimize, unit: B}
+  - {name: dictionary_bytes, source: stdout_json, key: dictionary_bytes, family: size, direction: minimize, unit: B}
+  - {name: side_data_bytes, source: stdout_json, key: side_data_bytes, family: size, direction: minimize, unit: B}
+  - {name: dedup_stored_fraction, source: stdout_json, key: dedup_stored_fraction, family: size, direction: minimize, unit: ratio}
+  - {name: diag_chunk_payload_bytes, source: stdout_json, key: chunk_payload_bytes, family: size, direction: none, unit: B}
+  - {name: diag_transform_plan_bytes, source: stdout_json, key: transform_plan_bytes, family: size, direction: none, unit: B}
+  - {name: diag_unique_chunk_count, source: stdout_json, key: unique_chunk_count, family: other, direction: none, unit: count}
+  - {name: diag_logical_chunk_references, source: stdout_json, key: logical_chunk_references, family: other, direction: none, unit: count}
+  - {name: diag_plan_count, source: stdout_json, key: plan_count, family: other, direction: none, unit: count}
+  - {name: diag_dictionary_count, source: stdout_json, key: dictionary_count, family: other, direction: none, unit: count}
+  - {name: diag_chunk_group_count, source: stdout_json, key: chunk_group_count, family: other, direction: none, unit: count}
+  - {name: diag_reconstruction_object_count, source: stdout_json, key: reconstruction_object_count, family: other, direction: none, unit: count}
+  - {name: diag_whole_object_region_count, source: stdout_json, key: whole_object_region_count, family: other, direction: none, unit: count}
+  - {name: diag_features_incompat, source: stdout_json, key: features.incompat, family: other, direction: none, unit: bitmask}
+  - {name: diag_features_read_only_compat, source: stdout_json, key: features.read_only_compat, family: other, direction: none, unit: bitmask}
+  - {name: diag_features_compat, source: stdout_json, key: features.compat, family: other, direction: none, unit: bitmask}
+  - {name: planner_id, source: stdout_json, key: planner_id, family: correctness, kind: string}
+  - {name: chunker_id, source: stdout_json, key: chunker_id, family: correctness, kind: string}
+  - {name: identity_pcr, source: stdout_json, key: identities.pcr, family: correctness, kind: string}
+  - {name: identity_pci, source: stdout_json, key: identities.pci, family: correctness, kind: string}
+  - {name: identity_lai, source: stdout_json, key: identities.lai, family: correctness, kind: string}
+  - {name: identity_aux, source: stdout_json, key: identities.aux, family: correctness, kind: string}
+  - {name: artifact_sha256, source: stdout_json, key: artifact_sha256, family: correctness, kind: string}
+  - {name: roundtrip_mismatches, source: stdout_json, key: roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: roundtrip_ok, source: check, command: "test -f {scratch}/roundtrip.ok", family: correctness, direction: maximize}
+  - {name: baseline_9e44608_identical, source: stdout_json, key: baseline_9e44608_identical, family: correctness, direction: maximize}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: input_files, source: input, family: other, direction: none, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917011, bootstrap: 260917012, command: 260917013}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 1
+  scratch_root: /root/eb-research/scratch/ebr
+  requires:
+    - python3
+    - /root/eb-research/target/planner-harness/release/ebr-pack
+    - /root/eb-research/target/planner-harness/release/ebr-unpack
+    - /root/eb-research/target/planner-cli/release/ebound
+    - /root/eb-research/target/baseline/release/ebound
+  timeout_s: 172800
+
+analysis:
+  baseline: balanced-indexed
+  pairing: item
+  report_metrics: [artifact_bytes, metadata_bytes, index_bytes, dictionary_bytes, side_data_bytes, dedup_stored_fraction]
+
+notes: >
+  Deterministic-metric experiment (decision-method.md §4.6, §4.13): 2 repetitions
+  in different rounds and processes. Validation split runs only inside planner
+  look 1 (research/planner/README.md §5) with splits: [validation]. Throughput:
+  shard with TP-17 when available; sequential execution is valid.

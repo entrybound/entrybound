@@ -1,0 +1,74 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-007
+status: design
+question: >
+  Untimed deterministic pre-pack of the decode inputs for the timing specs: every
+  status-quo and fitted configuration packed once per applicable TS-1 input
+  (fast/balanced on whole items and PSUB-64 sub-items; dense/extreme on PSUB-64
+  sub-items only), with repeat-hash verification.
+hypothesis: >
+  Every pre-packed archive is byte-identical across the two repetitions and its
+  artifact_bytes equals the EXP-PLANNER-001 / EXP-PLANNER-006 value for the same
+  configuration and input.
+decision_ids: [DEC-CMP-036, DEC-CMP-035]
+
+candidates:
+  - name: prepack-sq-fast
+    params: {kind: sq, profile: fast}
+    command: "mkdir -p /root/eb-research/derived/planner/ts1-archives/sq-fast && python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable fast --item-kind-from-manifest --item-id {item_id} -- /root/eb-research/target/planner-cli/release/ebound pack {item_path} /root/eb-research/derived/planner/ts1-archives/sq-fast/{item_id}.eb --layout indexed --profile fast"
+  - name: prepack-fit-fast
+    params: {kind: fit, profile: fast}
+    command: "mkdir -p /root/eb-research/derived/planner/ts1-archives/fit-fast && python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable fast --item-kind-from-manifest --item-id {item_id} -- /root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile fast --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out /root/eb-research/derived/planner/ts1-archives/fit-fast/{item_id}.eb"
+  - name: prepack-sq-balanced
+    params: {kind: sq, profile: balanced}
+    command: "mkdir -p /root/eb-research/derived/planner/ts1-archives/sq-balanced && python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable balanced --item-kind-from-manifest --item-id {item_id} -- /root/eb-research/target/planner-cli/release/ebound pack {item_path} /root/eb-research/derived/planner/ts1-archives/sq-balanced/{item_id}.eb --layout indexed --profile balanced"
+  - name: prepack-fit-balanced
+    params: {kind: fit, profile: balanced}
+    command: "mkdir -p /root/eb-research/derived/planner/ts1-archives/fit-balanced && python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable balanced --item-kind-from-manifest --item-id {item_id} -- /root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile balanced --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out /root/eb-research/derived/planner/ts1-archives/fit-balanced/{item_id}.eb"
+  - name: prepack-sq-dense
+    params: {kind: sq, profile: dense}
+    command: "mkdir -p /root/eb-research/derived/planner/ts1-archives/sq-dense && python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable dense --item-kind-from-manifest --item-id {item_id} -- /root/eb-research/target/planner-cli/release/ebound pack {item_path} /root/eb-research/derived/planner/ts1-archives/sq-dense/{item_id}.eb --layout indexed --profile dense"
+  - name: prepack-fit-dense
+    params: {kind: fit, profile: dense}
+    command: "mkdir -p /root/eb-research/derived/planner/ts1-archives/fit-dense && python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable dense --item-kind-from-manifest --item-id {item_id} -- /root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile dense --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out /root/eb-research/derived/planner/ts1-archives/fit-dense/{item_id}.eb"
+  - name: prepack-sq-extreme
+    params: {kind: sq, profile: extreme}
+    command: "mkdir -p /root/eb-research/derived/planner/ts1-archives/sq-extreme && python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable extreme --item-kind-from-manifest --item-id {item_id} -- /root/eb-research/target/planner-cli/release/ebound pack {item_path} /root/eb-research/derived/planner/ts1-archives/sq-extreme/{item_id}.eb --layout indexed --profile extreme"
+  - name: prepack-fit-extreme
+    params: {kind: fit, profile: extreme}
+    command: "mkdir -p /root/eb-research/derived/planner/ts1-archives/fit-extreme && python3 /mnt/d/Projects/entrybound/entrybound/research/planner/tools/prepack.py --applicable extreme --item-kind-from-manifest --item-id {item_id} -- /root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile extreme --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out /root/eb-research/derived/planner/ts1-archives/fit-extreme/{item_id}.eb"
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/ts1-timing-union.json
+  splits: [tuning]
+
+metrics:
+  - {name: prepack_json_artifact_bytes, source: stdout_json, key: artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: prepack_artifact_sha256, source: stdout_json, key: artifact_sha256, family: correctness, kind: string}
+  - {name: prepack_applicable, source: stdout_json, key: applicable, family: correctness, direction: none}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 260917071, bootstrap: 260917072, command: 260917073}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/planner-cli/release/ebound, /root/eb-research/target/planner-harness/release/ebr-planner]
+  timeout_s: 172800
+
+analysis:
+  baseline: prepack-sq-balanced
+  pairing: item
+  report_metrics: [prepack_json_artifact_bytes]
+
+notes: >
+  NEEDS_TOOLING: research/planner/tools/prepack.py (applicability filter by manifest
+  item kind, writes the archive and prints artifact_bytes/artifact_sha256; the
+  second repetition writes to a temporary path and compares), TP-06, TP-16.

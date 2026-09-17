@@ -1,0 +1,114 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-008
+status: design
+question: >
+  WSL st-v: in-process decode throughput (batches of >=1,000 operations or
+  >=50 ms) of every frozen v4-v6 codec/transform/reconstruction configuration
+  on Chunk bundles stratified by family and content category, used to fit and
+  evaluate deterministic decode-cost models for min_decode_rate (DEC-CMP-015).
+hypothesis: >
+  See research/experiments/EXP-PLANNER-008/protocol.md section 2
+  (measured-table rank correlation >=0.9 across core classes; class tiers
+  >=0.8; floors honoured on st-p and st-v; static table size non-inferior).
+decision_ids: [DEC-CMP-015]
+
+candidates:
+  - name: cfg-store
+    params: {config: "store"}
+  - name: cfg-lz4
+    params: {config: "lz4"}
+  - name: cfg-zstd-1
+    params: {config: "zstd-1"}
+  - name: cfg-zstd-3
+    params: {config: "zstd-3"}
+  - name: cfg-zstd-5
+    params: {config: "zstd-5"}
+  - name: cfg-zstd-9
+    params: {config: "zstd-9"}
+  - name: cfg-zstd-15
+    params: {config: "zstd-15"}
+  - name: cfg-zstd-19
+    params: {config: "zstd-19"}
+  - name: cfg-zstd-22
+    params: {config: "zstd-22"}
+  - name: cfg-lzma2-4-1m
+    params: {config: "lzma2-4-1m"}
+  - name: cfg-lzma2-6-4m
+    params: {config: "lzma2-6-4m"}
+  - name: cfg-lzma2-9-8m
+    params: {config: "lzma2-9-8m"}
+  - name: cfg-delta8-then-zstd-3
+    params: {config: "delta8+zstd-3"}
+  - name: cfg-delta8-then-zstd-9
+    params: {config: "delta8+zstd-9"}
+  - name: cfg-delta8-then-zstd-15
+    params: {config: "delta8+zstd-15"}
+  - name: cfg-bshuf2-then-zstd-9
+    params: {config: "bshuf2+zstd-9"}
+  - name: cfg-bshuf4-then-zstd-9
+    params: {config: "bshuf4+zstd-9"}
+  - name: cfg-bshuf8-then-zstd-9
+    params: {config: "bshuf8+zstd-9"}
+  - name: cfg-delta8-then-lzma2-6-4m
+    params: {config: "delta8+lzma2-6-4m"}
+  - name: cfg-bshuf4-then-lzma2-6-4m
+    params: {config: "bshuf4+lzma2-6-4m"}
+  - name: cfg-delta8-then-lzma2-9-8m
+    params: {config: "delta8+lzma2-9-8m"}
+  - name: cfg-bshuf4-then-lzma2-9-8m
+    params: {config: "bshuf4+lzma2-9-8m"}
+  - name: cfg-deflate-reconstruct
+    params: {config: "deflate-reconstruct"}
+  - name: cfg-jpeg-reconstruct
+    params: {config: "jpeg-reconstruct"}
+command: >-
+  /root/eb-research/target/planner-harness/release/ebr-codec decode-matrix --bundle {item_path} --config {config}
+  --min-batch-ops 1000 --min-batch-ms 50 --experiment-id EXP-PLANNER-008 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/planner/derived/decode-bundles.json
+  splits: [tuning]
+
+metrics:
+  - {name: decode_throughput_bps, source: stdout_json, key: decode_throughput_bps, family: throughput, direction: maximize, unit: B/s}
+  - {name: decode_wall_s, source: stdout_json, key: decode_wall_s_per_op, family: time_wall, direction: minimize, unit: s}
+  - {name: decoded_bytes, source: stdout_json, key: decoded_bytes, family: size, direction: none, unit: B}
+  - {name: batch_ops, source: stdout_json, key: batch_ops, family: other, direction: none, unit: count}
+  - {name: applicable, source: stdout_json, key: applicable, family: correctness, direction: none}
+  - {name: decoded_sha256, source: stdout_json, key: decoded_sha256, family: correctness, kind: string}
+
+repetitions: 10
+warmups: 2
+seeds: {order: 260917081, bootstrap: 260917082, command: 260917083}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+record_warmups: true
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 4
+  cpu_affinity: [2]
+  timeout_s: 86400
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+analysis:
+  baseline: cfg-zstd-3
+  pairing: item_repetition
+  report_metrics: [decode_throughput_bps, decode_wall_s]
+
+notes: >
+  NEEDS_TOOLING: TP-09 ebr-codec decode-matrix (untimed setup encodes each bundle
+  once per configuration; decoded_sha256 must equal the bundle plaintext digest),
+  research/planner/tools/make_decode_bundles.py, decision-method.md section 14 item 3
+  runner additions and section 4.7 calibration for this core class. repetitions is
+  the small-tier minimum; adaptive rounds per section 4.6. Inapplicable
+  (configuration, category) pairs print applicable=false and are excluded.

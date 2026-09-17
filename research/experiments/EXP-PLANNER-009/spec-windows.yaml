@@ -1,0 +1,55 @@
+schema: ebr.spec.v1
+experiment_id: EXP-PLANNER-009
+status: design
+question: >
+  Windows native (MSVC-built pinned harness) against WSL native (GCC-built):
+  are plan-table and Chunk payload bytes and PCR identical for fast and balanced
+  on G1-PSUB-64 small sub-items staged to local NTFS (PCI and LAI differ by
+  design per findings F-0001/F-0002)?
+hypothesis: >
+  plan_table_sha256, chunk_payload_sha256 and PCR equal the WSL native cell for
+  every sub-item and profile.
+decision_ids: [DEC-CMP-019, DEC-CMP-031, DEC-CMP-029]
+
+candidates:
+  - name: win-native--fast
+    params: {profile: fast}
+  - name: win-native--balanced
+    params: {profile: balanced}
+command: >-
+  & 'D:/eb-research/target/planner-harness-win/release/ebr-planner.exe' param-plan --item-path {item_path}
+  --base-profile {profile} --layout indexed --identity-summary true --experiment-id EXP-PLANNER-009
+  --env-name windows-host --archive-out {scratch}/archive.eb
+shell: pwsh
+
+corpus:
+  manifest: research/planner/derived/g1-psub-64-small-windows.json
+  splits: [tuning]
+
+metrics:
+  - {name: identity_pcr, source: stdout_json, key: pcr, family: correctness, kind: string}
+  - {name: plan_table_sha256, source: stdout_json, key: plan_table_sha256, family: correctness, kind: string}
+  - {name: chunk_payload_sha256, source: stdout_json, key: chunk_payload_sha256, family: correctness, kind: string}
+  - {name: audit_records_sha256, source: stdout_json, key: audit_records_sha256, family: correctness, kind: string}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 260917091, bootstrap: 260917092, command: 260917093}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [windows]
+  arch: [x86_64]
+  emulated: false
+  timeout_s: 86400
+
+analysis:
+  baseline: win-native--balanced
+  pairing: item
+  report_metrics: [input_bytes]
+
+notes: >
+  NEEDS_TOOLING: Windows build of TP-06 with --identity-summary, TP-19 staging.
