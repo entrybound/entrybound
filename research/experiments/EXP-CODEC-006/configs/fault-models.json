@@ -1,0 +1,25 @@
+{
+  "schema": "ebr.codec.fault-models.v1",
+  "experiment_id": "EXP-CODEC-006",
+  "note": "Seeded fault models (protocol section 5). Injection seed = 20260917 + injection index; each injection targets one distinct chunk chosen by seeded uniform draw over eligible chunks of the (item, profile) plan; faults are applied to a copy so the no-fault archive is also produced and must equal production bytes. Expected detection per scope is FORMALLY_DERIVED in protocol H1a and checked by check_detection.py.",
+  "models": [
+    {"id": "FM1", "stage": "encoder output (stored payload) after encode, before framing", "eligible": "every non-STORE chunk", "variants": [
+      {"kind": "bit_flip", "offset": "seeded uniform in [0, stored_len)"},
+      {"kind": "truncate_tail", "bytes": "seeded uniform in [1, min(64, stored_len-1)]"},
+      {"kind": "zero_tail", "bytes": "seeded uniform in [1, min(4096, stored_len)]"},
+      {"kind": "swap_payload_same_length_class", "note": "payload of another chunk with the same plan and stored length within +-5%, padded or trimmed to exact length"}]},
+    {"id": "FM2", "stage": "structural transform forward pipeline", "eligible": "chunks whose selected plan has a structural step", "variants": [
+      {"kind": "byte_shuffle_lane_order_swap"},
+      {"kind": "delta8_seed_one"},
+      {"kind": "tail_bytes_permuted"}]},
+    {"id": "FM3", "stage": "plan/parameter mismatch", "eligible": "LZMA2 and zstd chunks", "variants": [
+      {"kind": "lzma2_encode_with_other_registered_dictionary", "note": "payload encoded at a different registered (preset, dict) pair than the plan records"},
+      {"kind": "zstd_encode_with_window_log_21", "note": "plan records window log 20"}]},
+    {"id": "FM4", "stage": "plaintext before chunk digest (negative control)", "eligible": "every chunk", "variants": [
+      {"kind": "plaintext_bit_flip_before_digest"}]},
+    {"id": "FM5", "stage": "dictionary/prefix context at encode", "eligible": "chunks with dictionary or prefix plans", "variants": [
+      {"kind": "encode_with_neighbour_cohort_dictionary"},
+      {"kind": "encode_with_prefix_shifted_by_one_member"}]}
+  ],
+  "outcome_classes": ["detected-at-write", "detected-at-verify", "undetected-verified-wrong", "not-applicable"]
+}

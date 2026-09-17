@@ -1,0 +1,25 @@
+{
+  "schema": "ebr.codec.plan-record-model.v1",
+  "experiment_id": "EXP-CODEC-001",
+  "note": "Modelled TransformPlan record inputs for configurations production cannot express (protocol Appendix C, CC-6). The record length is computed by entrybound::research::ecf::encoded_transform_plan_len on a synthetic TransformPlan whose codec identifier is 'codec_identifier' and whose parameter record has 'parameter_bytes' bytes. The fields follow the existing registry style (identifier string '<name>/v1', 4-byte parameter magic plus fixed-width parameters). Production-expressible configurations use their real plans. This file is committed before any result; changes after results are deviations.",
+  "defaults": {"frame_header_constant_within_archive": true, "decode_requirements_record": "archive-wide aggregate; unchanged unless the configuration raises window or working set (then the aggregate is recomputed with the declared values from EXP-CODEC-003)"},
+  "models": [
+    {"label_prefix": "zstd-window(external", "codec_identifier": "zstandard/v1", "parameter_bytes": 12, "note": "same ZP01 layout; window_log recorded in a hypothetical ZP02 field: +1 byte", "parameter_bytes_if_window_not_20": 13},
+    {"label_prefix": "zstd-ldm(external", "codec_identifier": "zstandard/v1", "parameter_bytes": 14},
+    {"label_prefix": "lz4-hc(external", "codec_identifier": "lz4/v1", "parameter_bytes_same_as_production": true, "note": "encoder-only; decoded format identical"},
+    {"label_prefix": "lzma2(external-raw", "codec_identifier": "lzma2/v1", "parameter_bytes": 12, "note": "LM21 plus lc/lp/pb byte"},
+    {"label_prefix": "deflate(external", "codec_identifier": "deflate/v1", "parameter_bytes": 5},
+    {"label_prefix": "libdeflate(external", "codec_identifier": "deflate/v1", "parameter_bytes": 5},
+    {"label_prefix": "zopfli(external", "codec_identifier": "deflate/v1", "parameter_bytes": 5},
+    {"label_prefix": "brotli(external", "codec_identifier": "brotli/v1", "parameter_bytes": 6},
+    {"label_prefix": "brotli-large-window(external", "codec_identifier": "brotli-large-window/v1", "parameter_bytes": 6},
+    {"label_prefix": "bzip2(external", "codec_identifier": "bzip2/v1", "parameter_bytes": 5},
+    {"label_prefix": "ppmd7(external", "codec_identifier": "ppmd-h/v1", "parameter_bytes": 9},
+    {"label_prefix": "bsc(external", "codec_identifier": "bsc/v1", "parameter_bytes": 8},
+    {"label_prefix": "cm-", "codec_identifier": "cm/v1", "parameter_bytes": 8},
+    {"label_prefix": "flac(external", "codec_identifier": "flac/v1", "parameter_bytes": 12},
+    {"label_prefix": "pcodec(external", "codec_identifier": "pcodec/v1", "parameter_bytes": 12},
+    {"label_prefix": "fpzip(external", "codec_identifier": "fpzip/v1", "parameter_bytes": 12},
+    {"label_prefix": "openzl(external", "codec_identifier": "openzl/v1", "parameter_bytes": 8}
+  ]
+}

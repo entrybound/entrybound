@@ -1,0 +1,44 @@
+{
+  "schema": "ebr.codec.transform-universe.v1",
+  "experiment_id": "EXP-CODEC-004",
+  "note": "Stage A transform configurations (protocol 4.1). Each runs ahead of the reference codecs of the chunking profile: balanced zstd(production,level=3); dense zstd(production,level=9) and lzma2(production,preset=6,dict=4194304); extreme zstd(production,level=15) and lzma2(production,preset=9,dict=8388608). Stage A uses zstd-3/zstd-15 and lzma2-6 only (cost cap); Stage B uses the full profile tables. 'status_quo' marks production-expressible transforms (exact TransformPlan); others use research/experiments/EXP-CODEC-001/configs/plan-record-model.json rules with the transform step records listed here.",
+  "reference_codecs": {
+    "stage_a": ["zstd(production,level=3)", "zstd(production,level=15)", "lzma2(production,preset=6,dict=4194304)"],
+    "stage_b": {"balanced": ["zstd(production,level=3)"], "dense": ["zstd(production,level=9)", "lzma2(production,preset=6,dict=4194304)"], "extreme": ["zstd(production,level=15)", "lzma2(production,preset=6,dict=4194304)", "lzma2(production,preset=9,dict=8388608)"]}
+  },
+  "transforms": [
+    {"label": "none", "candidate": "drop-structural", "status_quo": true},
+    {"label": "delta8/v1", "candidate": "status-quo-delta8-shuffle", "status_quo": true, "step_record_bytes": "production"},
+    {"label": "byte-shuffle/v1(w=2)", "candidate": "status-quo-delta8-shuffle", "status_quo": true, "step_record_bytes": "production"},
+    {"label": "byte-shuffle/v1(w=4)", "candidate": "status-quo-delta8-shuffle", "status_quo": true, "step_record_bytes": "production"},
+    {"label": "byte-shuffle/v1(w=8)", "candidate": "status-quo-delta8-shuffle", "status_quo": true, "step_record_bytes": "production"},
+
+    {"label": "bcj(x86)", "candidate": "add-bcj-family", "backend": "lzma-rust2 =0.20.0 filter::bcj", "step_record_bytes": 5},
+    {"label": "bcj(arm32)", "candidate": "add-bcj-family", "backend": "lzma-rust2 =0.20.0 filter::bcj", "step_record_bytes": 5},
+    {"label": "bcj(arm-thumb)", "candidate": "add-bcj-family", "backend": "lzma-rust2 =0.20.0 filter::bcj", "step_record_bytes": 5},
+    {"label": "bcj(arm64)", "candidate": "add-bcj-family", "backend": "lzma-rust2 =0.20.0 filter::bcj", "step_record_bytes": 5},
+    {"label": "bcj(powerpc)", "candidate": "add-bcj-family", "backend": "lzma-rust2 =0.20.0 filter::bcj", "step_record_bytes": 5},
+    {"label": "bcj(sparc)", "candidate": "add-bcj-family", "backend": "lzma-rust2 =0.20.0 filter::bcj", "step_record_bytes": 5},
+    {"label": "bcj(ia64)", "candidate": "add-bcj-family", "backend": "lzma-rust2 =0.20.0 filter::bcj", "step_record_bytes": 5},
+    {"label": "bcj(riscv)", "candidate": "add-bcj-family", "backend": "lzma-rust2 =0.20.0 filter::bcj", "step_record_bytes": 5},
+
+    {"label": "delta-distance(d)", "candidate": "add-delta-distance", "expands_to_d": [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 64, 128, 256], "note": "d=1 must equal delta8/v1 byte for byte (control)", "step_record_bytes": 6},
+
+    {"label": "float-split(fp16)", "candidate": "add-float-split", "step_record_bytes": 5},
+    {"label": "float-split(bf16)", "candidate": "add-float-split", "step_record_bytes": 5},
+    {"label": "float-split(fp32)", "candidate": "add-float-split", "step_record_bytes": 5},
+    {"label": "float-split(fp64)", "candidate": "add-float-split", "step_record_bytes": 5},
+
+    {"label": "byte-plane-split(w)", "candidate": "add-stream-split", "expands_to_w": [3, 5, 6, 7, 12, 16, 24, 32], "note": "w in {2,4,8} must equal byte-shuffle/v1 byte for byte (control, already tested in ebr-codec)", "step_record_bytes": 6},
+    {"label": "delta-of-delta(w)", "candidate": "add-stream-split", "expands_to_w": [1, 2, 4, 8], "step_record_bytes": 5},
+
+    {"label": "pipeline[delta-distance(2),byte-plane-split(2)]", "candidate": "multi-step-combinations", "step_record_bytes": 11},
+    {"label": "pipeline[delta-distance(4),byte-plane-split(4)]", "candidate": "multi-step-combinations", "step_record_bytes": 11},
+    {"label": "pipeline[delta-distance(8),byte-plane-split(8)]", "candidate": "multi-step-combinations", "step_record_bytes": 11},
+    {"label": "pipeline[byte-plane-split(4),per-lane-delta8]", "candidate": "multi-step-combinations", "step_record_bytes": 11},
+    {"label": "pipeline[byte-plane-split(8),per-lane-delta8]", "candidate": "multi-step-combinations", "step_record_bytes": 11},
+    {"label": "pipeline[float-split(fp16),exponent-delta8]", "candidate": "multi-step-combinations", "step_record_bytes": 10},
+    {"label": "pipeline[float-split(bf16),exponent-delta8]", "candidate": "multi-step-combinations", "step_record_bytes": 10},
+    {"label": "pipeline[float-split(fp32),exponent-delta8]", "candidate": "multi-step-combinations", "step_record_bytes": 10}
+  ]
+}

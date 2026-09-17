@@ -1,0 +1,27 @@
+{
+  "schema": "ebr.codec.applicability.v1",
+  "experiment_id": "EXP-CODEC-004",
+  "note": "Applicability rules that are part of each DEC-CMP-043 transform candidate's definition (protocol 4.1). Rules see chunk bytes and the owning ContentObject's leading bytes only; never names, paths, extensions, MIME guesses or environment (SPEC 5.2, HC-08). These are not DEC-CMP-012 gate candidates (planner domain, EXP-PLANNER-004 arm B). 'always-try' and 'none' are sensitivity arms bounding the rule's value.",
+  "rules": {
+    "frozen-probe": {"source": "entrybound::research::planner::trace_chunk probe (planner.rs analyze, PROBE_BYTES 4096)", "applies_to": ["status-quo-delta8-shuffle", "add-delta-distance", "add-stream-split"], "params": {"distinct_symbols_max": 192, "top_symbol_ppm_min": 12000, "adjacent_repeat_ppm_min": 20000}},
+    "architecture-signature": {"applies_to": ["add-bcj-family"], "object_header_bytes": 4096, "map": [
+      {"match": "ELF e_machine EM_X86_64 or EM_386; PE Machine AMD64 or I386", "try": ["bcj(x86)"]},
+      {"match": "ELF EM_AARCH64; PE ARM64; Mach-O CPU_TYPE_ARM64 (including fat slice ranges)", "try": ["bcj(arm64)"]},
+      {"match": "ELF EM_ARM", "try": ["bcj(arm32)", "bcj(arm-thumb)"]},
+      {"match": "ELF EM_RISCV", "try": ["bcj(riscv)"]},
+      {"match": "ELF EM_PPC or EM_PPC64", "try": ["bcj(powerpc)"]},
+      {"match": "ELF EM_SPARC or EM_SPARCV9", "try": ["bcj(sparc)"]},
+      {"match": "ELF EM_IA_64", "try": ["bcj(ia64)"]},
+      {"match": "no executable signature", "try": []}]},
+    "dtype-signature": {"applies_to": ["add-float-split", "add-delta-distance", "add-stream-split"], "object_header_bytes": 1048576, "parsers": ["safetensors header JSON", "GGUF tensor info", "npy header (including npz members)", "FITS BITPIX", "HDF5 superblock + dataset datatype (bounded parse)"], "map": [
+      {"match": "F16", "try": ["float-split(fp16)", "byte-plane-split(2)"]},
+      {"match": "BF16", "try": ["float-split(bf16)", "byte-plane-split(2)"]},
+      {"match": "F32", "try": ["float-split(fp32)", "byte-plane-split(4)", "delta-of-delta(4)"]},
+      {"match": "F64", "try": ["float-split(fp64)", "byte-plane-split(8)"]},
+      {"match": "integer width w", "try": ["byte-plane-split(w)", "delta-distance(w)"]},
+      {"match": "no typed header", "fallback": "frozen-probe"}]},
+    "always-try": {"arm": "sensitivity (size oracle)"},
+    "none": {"arm": "sensitivity (every chunk transformed)"}
+  },
+  "excluded": [{"rule": "extension-based", "reason": "L0: filename/extension heuristics forbidden (SPEC 5.2; docs/planner-v1.md Determinism L23-24)"}]
+}

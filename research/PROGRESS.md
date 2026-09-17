@@ -238,3 +238,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T12:57Z — Phase C-design crypto: 22 experiments (EXP-CRYPTO-001..022), 20 ebr-valid specs; 127/138 section decisions covered, 11 uncovered with routes; 20 NEEDS_TOOLING, 2 BLOCKED.
 - 2026-09-17T12:58Z — Phase C-design chunking: 14 experiments (2 READY, 11 NEEDS_TOOLING, 1 BLOCKED); 14/15 decisions covered, DEC-ECO-026 external.
 - 2026-09-17T12:58Z — C-design conformance: EXP-CONF-001..014 designed (12 NEEDS_TOOLING, 2 BLOCKED), 138/174 decisions informed, 36 uncovered with routes; L7 exposure disclosed
+- 2026-09-17T12:59Z — Codecs-domain C-design: 9 experiments (8 NEEDS_TOOLING, 1 BLOCKED), 11 decisions covered, 9 routed to other domains.

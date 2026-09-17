@@ -1,0 +1,211 @@
+{
+  "schema": "ebr.codec.portfolios.v1",
+  "experiment_id": "EXP-CODEC-001",
+  "note": "Portfolio definitions (decision candidates) for protocol.md section 5.2. Per-profile table variants (DEC-CMP-034) are the planner domain's (EXP-PLANNER-004). A portfolio lists configuration labels per profile. 'ZSTD_LEVELS' etc. expand to the frozen v4 lists (crates/entrybound/src/planner.rs v4_candidates at the research baseline). Items marked OPERATIONALIZATION await the R0 completeness critic (protocol Appendix C, CC-13).",
+  "macros": {
+    "ZSTD_LEVELS": {
+      "fast": [
+        1
+      ],
+      "balanced": [
+        1,
+        3,
+        5
+      ],
+      "dense": [
+        5,
+        9,
+        15
+      ],
+      "extreme": [
+        9,
+        15,
+        19,
+        22
+      ]
+    },
+    "LZMA2_PAIRS": {
+      "fast": [],
+      "balanced": [],
+      "dense": [
+        "4/1048576",
+        "6/4194304"
+      ],
+      "extreme": [
+        "4/1048576",
+        "6/4194304",
+        "9/8388608"
+      ]
+    },
+    "LZ4_PROFILES": [
+      "fast",
+      "balanced",
+      "extreme"
+    ]
+  },
+  "portfolios": {
+    "B_SQ": {
+      "decision": "DEC-CMP-008",
+      "candidate_id": "status-quo-all-registered-mandatory",
+      "reference": true,
+      "per_profile": {
+        "fast": [
+          "store(production)",
+          "lz4(production)",
+          "zstd(production,level=1)"
+        ],
+        "balanced": [
+          "store(production)",
+          "lz4(production)",
+          "zstd(production,level=1)",
+          "zstd(production,level=3)",
+          "zstd(production,level=5)"
+        ],
+        "dense": [
+          "store(production)",
+          "zstd(production,level=5)",
+          "zstd(production,level=9)",
+          "zstd(production,level=15)",
+          "lzma2(production,preset=4,dict=1048576)",
+          "lzma2(production,preset=6,dict=4194304)"
+        ],
+        "extreme": [
+          "store(production)",
+          "lz4(production)",
+          "zstd(production,level=9)",
+          "zstd(production,level=15)",
+          "zstd(production,level=19)",
+          "zstd(production,level=22)",
+          "lzma2(production,preset=4,dict=1048576)",
+          "lzma2(production,preset=6,dict=4194304)",
+          "lzma2(production,preset=9,dict=8388608)"
+        ]
+      }
+    },
+    "B_STORE": {
+      "decision": "DEC-CMP-008",
+      "candidate_id": "store-only-baseline",
+      "all_profiles": [
+        "store(production)"
+      ]
+    },
+    "B_ZSTD": {
+      "decision": "DEC-CMP-008",
+      "candidate_id": "store-zstd",
+      "rule": "store + ZSTD_LEVELS[profile]"
+    },
+    "B_ZSTD_LZ4": {
+      "decision": "DEC-CMP-008",
+      "candidate_id": "store-zstd-lz4",
+      "rule": "B_ZSTD + lz4(production) at every profile"
+    },
+    "B_ZSTD_LZMA2": {
+      "decision": "DEC-CMP-008",
+      "candidate_id": "store-zstd-lzma2",
+      "rule": "B_ZSTD + LZMA2_PAIRS[profile]"
+    },
+    "B_DEFLATE_ZSTD": {
+      "decision": "DEC-CMP-008",
+      "candidate_id": "store-deflate-zstd",
+      "rule": "B_ZSTD + DEFLATE encoder per profile",
+      "operationalization": {
+        "fast": "deflate(external,level=6)",
+        "balanced": "deflate(external,level=6)",
+        "dense": "libdeflate(external,level=12)",
+        "extreme": "zopfli(external,iterations=15)"
+      },
+      "OPERATIONALIZATION": true
+    },
+    "B_DEFLATE": {
+      "decision": "DEC-CMP-008",
+      "candidate_id": "store-deflate",
+      "rule": "store + DEFLATE encoder per profile as B_DEFLATE_ZSTD",
+      "OPERATIONALIZATION": true
+    },
+    "E_REF": {
+      "decision": "DEC-CMP-009",
+      "candidate_id": "status-quo-lzma2-only",
+      "reference": true,
+      "same_as": "B_ZSTD_LZMA2"
+    },
+    "E_NONE": {
+      "decision": "DEC-CMP-009",
+      "candidate_id": "none",
+      "same_as": "B_ZSTD",
+      "note": "dictionary/long-window component in EXP-CROSSFILE-003/004"
+    },
+    "E_LZMA2_XZ": {
+      "decision": "DEC-CMP-009",
+      "candidate_id": "lzma2-xz",
+      "rule": "B_ZSTD + LZMA2_PAIRS + lzma2(external-raw,preset=9,extreme=true,dict=8388608) at dense/extreme"
+    },
+    "E_BROTLI": {
+      "decision": "DEC-CMP-009",
+      "candidate_id": "brotli",
+      "rule": "E_REF + Stage-B-surviving brotli configurations at dense/extreme"
+    },
+    "E_BZIP2": {
+      "decision": "DEC-CMP-009",
+      "candidate_id": "bzip2",
+      "rule": "E_REF + surviving bzip2 configurations at dense/extreme"
+    },
+    "E_PPMD": {
+      "decision": "DEC-CMP-009",
+      "candidate_id": "ppmd",
+      "rule": "E_REF + surviving ppmd7 configurations at dense/extreme"
+    },
+    "E_BSC": {
+      "decision": "DEC-CMP-009",
+      "candidate_id": "bsc-bwt",
+      "rule": "E_REF + surviving bsc configurations at dense/extreme"
+    },
+    "E_CM": {
+      "decision": "DEC-CMP-009",
+      "candidate_id": "context-mixing",
+      "rule": "E_REF + cm configurations at extreme, small tier only"
+    },
+    "E_FLAC": {
+      "decision": "DEC-CMP-009",
+      "candidate_id": "domain-flac-audio",
+      "rule": "E_REF + flac on derived PCM objects at dense/extreme"
+    },
+    "E_SCI": {
+      "decision": "DEC-CMP-009",
+      "candidate_id": "domain-scientific",
+      "rule": "E_REF + pcodec/fpzip on typed-layout objects at dense/extreme"
+    },
+    "E_OPENZL": {
+      "decision": "DEC-CMP-009",
+      "candidate_id": "openzl-format-aware",
+      "rule": "E_REF + openzl whole-object at dense/extreme on applicable objects"
+    },
+    "W_SQ": {
+      "decision": "DEC-CMP-045",
+      "candidate_id": "status-quo-log20",
+      "reference": true,
+      "rule": "B_SQ"
+    },
+    "W_PER_PROFILE": {
+      "decision": "DEC-CMP-045",
+      "candidate_id": "per-profile-windows",
+      "OPERATIONALIZATION": true,
+      "rule": "B_SQ with zstd replaced by zstd-window(external) at window_log fast 23, balanced 21, dense 20, extreme 20"
+    },
+    "W_LDM": {
+      "decision": "DEC-CMP-045",
+      "candidate_id": "long-mode-dense-extreme",
+      "rule": "B_SQ + zstd-ldm(external,level=19,window_log=24) at dense and zstd-ldm(external,level=22,window_log=27) at extreme; controls zstd-window(...,ldm=off) reported alongside"
+    },
+    "W_CHUNK": {
+      "decision": "DEC-CMP-045",
+      "candidate_id": "window-sized-to-chunk",
+      "rule": "B_SQ with zstd window_log fast 23, balanced 21, dense 20, extreme 19"
+    },
+    "W_DICT": {
+      "decision": "DEC-CMP-045",
+      "candidate_id": "rely-on-cross-file-dictionaries",
+      "same_as": "B_SQ",
+      "note": "cohort-stage component in EXP-CROSSFILE-003/004"
+    }
+  }
+}

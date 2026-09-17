@@ -1,0 +1,68 @@
+{
+  "schema": "ebr.codec.universe.v1",
+  "experiment_id": "EXP-CODEC-001",
+  "stage": "A",
+  "note": "Measurement configurations, not decision candidates. Labels follow ebr-codec's label convention. 'pin' is exact where the pin already exists in research/harness; 'RESOLVE_AT_TOOLING' pins are fixed by the tooling session and recorded here BEFORE any Stage A result (append-only edit with a dated note). scope=chunk runs per unique production chunk; scope=whole-object runs per ContentObject. applicability=all unless listed. fast_eligible marks configurations the fast profile may use (SPEC 6.1 single cheap codec). Stage A tiers default to all; context-mixing is small-tier only.",
+  "configurations": [
+    {"label": "store(production)", "backend": "entrybound::research::codec", "pin": "workspace", "scope": "chunk", "fast_eligible": true, "family": "production"},
+    {"label": "zstd(production,level=1)", "backend": "entrybound::research::codec (zstd-sys/libzstd 1.5.7)", "pin": "workspace", "scope": "chunk", "fast_eligible": true, "family": "production"},
+    {"label": "zstd(production,level=3)", "backend": "entrybound::research::codec", "pin": "workspace", "scope": "chunk", "family": "production"},
+    {"label": "zstd(production,level=5)", "backend": "entrybound::research::codec", "pin": "workspace", "scope": "chunk", "family": "production"},
+    {"label": "zstd(production,level=9)", "backend": "entrybound::research::codec", "pin": "workspace", "scope": "chunk", "family": "production"},
+    {"label": "zstd(production,level=15)", "backend": "entrybound::research::codec", "pin": "workspace", "scope": "chunk", "family": "production"},
+    {"label": "zstd(production,level=19)", "backend": "entrybound::research::codec", "pin": "workspace", "scope": "chunk", "family": "production"},
+    {"label": "zstd(production,level=22)", "backend": "entrybound::research::codec", "pin": "workspace", "scope": "chunk", "family": "production"},
+    {"label": "lz4(production)", "backend": "entrybound::research::codec (lz4_flex 0.14.0 block)", "pin": "workspace", "scope": "chunk", "fast_eligible": true, "family": "production"},
+    {"label": "lzma2(production,preset=4,dict=1048576)", "backend": "entrybound::research::codec (lzma-rust2 0.20.0)", "pin": "workspace", "scope": "chunk", "family": "production"},
+    {"label": "lzma2(production,preset=6,dict=4194304)", "backend": "entrybound::research::codec", "pin": "workspace", "scope": "chunk", "family": "production"},
+    {"label": "lzma2(production,preset=9,dict=8388608)", "backend": "entrybound::research::codec", "pin": "workspace", "scope": "chunk", "family": "production"},
+
+    {"label": "zstd-window(external,level={1,3,5},window_log=20,ldm=off)", "expands_to_levels": [1, 3, 5], "backend": "zstd crate", "pin": "zstd =0.13.3", "scope": "chunk", "role": "reconciliation control vs production window 20", "family": "external"},
+    {"label": "zstd-window(external,level={9,15,19,22},window_log=20,ldm=off)", "expands_to_levels": [9, 15, 19, 22], "backend": "zstd crate", "pin": "zstd =0.13.3", "scope": "chunk", "role": "reconciliation control", "family": "external"},
+    {"label": "zstd-window(external,level=L,window_log=W,ldm=off)", "expands_to_levels": [1, 3, 5, 9, 15, 19, 22], "expands_to_window_logs": [17, 19, 21, 23], "backend": "zstd crate", "pin": "zstd =0.13.3", "scope": "chunk", "role": "DEC-CMP-045 window series", "family": "external"},
+    {"label": "zstd-window(external,level=19,window_log=24,ldm=off)", "backend": "zstd crate", "pin": "zstd =0.13.3", "scope": "chunk", "role": "window-matched LDM control (harness review R1-12)", "family": "external"},
+    {"label": "zstd-ldm(external,level=19,window_log=24)", "backend": "zstd crate", "pin": "zstd =0.13.3", "scope": "chunk", "family": "external"},
+    {"label": "zstd-window(external,level=22,window_log=27,ldm=off)", "backend": "zstd crate", "pin": "zstd =0.13.3", "scope": "chunk", "family": "external"},
+    {"label": "zstd-ldm(external,level=22,window_log=27)", "backend": "zstd crate", "pin": "zstd =0.13.3", "scope": "chunk", "family": "external"},
+    {"label": "zstd-window(external,level=-1,window_log=20,ldm=off)", "backend": "zstd crate", "pin": "zstd =0.13.3", "scope": "chunk", "fast_eligible": true, "family": "external"},
+    {"label": "zstd-window(external,level=-5,window_log=20,ldm=off)", "backend": "zstd crate", "pin": "zstd =0.13.3", "scope": "chunk", "fast_eligible": true, "family": "external"},
+
+    {"label": "lz4-hc(external,level=3)", "backend": "lz4 crate (liblz4) block API; output is standard LZ4 block format decodable by lz4/v1", "pin": "lz4 =1.28.1", "scope": "chunk", "fast_eligible": true, "family": "external-encoder-only"},
+    {"label": "lz4-hc(external,level=9)", "backend": "lz4 crate", "pin": "lz4 =1.28.1", "scope": "chunk", "family": "external-encoder-only"},
+    {"label": "lz4-hc(external,level=12)", "backend": "lz4 crate", "pin": "lz4 =1.28.1", "scope": "chunk", "family": "external-encoder-only"},
+
+    {"label": "lzma2(external-raw,preset=9,extreme=true,dict=8388608)", "backend": "lzma-rust2", "pin": "lzma-rust2 =0.20.0", "scope": "chunk", "family": "external"},
+    {"label": "lzma2(external-raw,preset=6,dict=4194304,lc=0,lp=2,pb=2)", "backend": "lzma-rust2", "pin": "lzma-rust2 =0.20.0", "scope": "chunk", "family": "external"},
+
+    {"label": "deflate(external,level=6)", "backend": "flate2/miniz_oxide", "pin": "flate2 =1.1.9", "scope": "chunk", "fast_eligible": true, "family": "external"},
+    {"label": "deflate(external,level=9)", "backend": "flate2/miniz_oxide", "pin": "flate2 =1.1.9", "scope": "chunk", "family": "external"},
+    {"label": "libdeflate(external,level=6)", "backend": "libdeflater", "pin": "RESOLVE_AT_TOOLING", "scope": "chunk", "family": "external-encoder-only"},
+    {"label": "libdeflate(external,level=12)", "backend": "libdeflater", "pin": "RESOLVE_AT_TOOLING", "scope": "chunk", "family": "external-encoder-only"},
+    {"label": "zopfli(external,iterations=15)", "backend": "zopfli crate", "pin": "RESOLVE_AT_TOOLING", "scope": "chunk", "family": "external-encoder-only"},
+
+    {"label": "brotli(external,quality=1,lgwin=22)", "backend": "brotli (pure Rust)", "pin": "brotli =9.0.0", "scope": "chunk", "fast_eligible": true, "family": "external"},
+    {"label": "brotli(external,quality=5,lgwin=22)", "backend": "brotli", "pin": "brotli =9.0.0", "scope": "chunk", "family": "external"},
+    {"label": "brotli(external,quality=9,lgwin=22)", "backend": "brotli", "pin": "brotli =9.0.0", "scope": "chunk", "family": "external"},
+    {"label": "brotli(external,quality=11,lgwin=22)", "backend": "brotli", "pin": "brotli =9.0.0", "scope": "chunk", "family": "external"},
+    {"label": "brotli(external,quality=11,lgwin=24)", "backend": "brotli", "pin": "brotli =9.0.0", "scope": "chunk", "family": "external"},
+    {"label": "brotli-large-window(external,quality=11,lgwin=30)", "backend": "brotli", "pin": "brotli =9.0.0", "scope": "chunk", "note": "large-window extension is not RFC 7932; specification availability audited in EXP-CODEC-006", "family": "external"},
+
+    {"label": "bzip2(external,level=1)", "backend": "bzip2 crate", "pin": "bzip2 =0.6.1", "scope": "chunk", "family": "external"},
+    {"label": "bzip2(external,level=9)", "backend": "bzip2 crate", "pin": "bzip2 =0.6.1", "scope": "chunk", "family": "external"},
+
+    {"label": "ppmd7(external,7zip-level=5)", "backend": "ppmd-rust (PPMd var.H, 7-Zip model-size reduction)", "pin": "ppmd-rust =1.5.0", "scope": "chunk", "family": "external"},
+    {"label": "ppmd7(external,7zip-level=7)", "backend": "ppmd-rust", "pin": "ppmd-rust =1.5.0", "scope": "chunk", "family": "external"},
+    {"label": "ppmd7(external,7zip-level=9)", "backend": "ppmd-rust", "pin": "ppmd-rust =1.5.0", "scope": "chunk", "family": "external"},
+
+    {"label": "bsc(external,bwt,qlfc-static)", "backend": "libbsc 3.3.x via research/harness/shims/bsc", "pin": "RESOLVE_AT_TOOLING (release tag + source SHA-256)", "scope": "chunk", "family": "external"},
+    {"label": "bsc(external,bwt,qlfc-adaptive)", "backend": "libbsc shim", "pin": "RESOLVE_AT_TOOLING", "scope": "chunk", "family": "external"},
+
+    {"label": "cm-paq8px(external,-8)", "backend": "paq8px CLI via research/tools/codecs/whole_object_cli.py", "pin": "RESOLVE_AT_TOOLING (release tag)", "scope": "whole-object", "stage_a_tiers": ["small"], "family": "external-cm"},
+    {"label": "cm-zpaq(external,-m5)", "backend": "zpaq 7.15 (research/baselines/tool-versions.json)", "pin": "apt zpaq", "scope": "whole-object", "stage_a_tiers": ["small"], "family": "external-cm"},
+
+    {"label": "flac(external,-8,pcm-derived)", "backend": "flac CLI", "pin": "apt flac (version recorded)", "scope": "whole-object", "applicability": ["F13-derived-pcm"], "family": "external-domain"},
+    {"label": "pcodec(external,level=8,typed)", "backend": "pco crate", "pin": "RESOLVE_AT_TOOLING", "scope": "whole-object", "applicability": ["F07-typed-layout"], "family": "external-domain"},
+    {"label": "fpzip(external,lossless,typed)", "backend": "fpzip CLI", "pin": "RESOLVE_AT_TOOLING (release tag)", "scope": "whole-object", "applicability": ["F07-typed-layout-float"], "family": "external-domain"},
+    {"label": "openzl(external,profile=auto)", "backend": "OpenZL zli CLI", "pin": "RESOLVE_AT_TOOLING (release tag)", "scope": "whole-object", "applicability": ["F06", "F07"], "family": "external-format-aware"}
+  ]
+}
