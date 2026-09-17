@@ -84,6 +84,11 @@ def main():
     parser.add_argument("--subject", required=True)
     parser.add_argument("--body", default="")
     parser.add_argument("--note", default="", help="one-line PROGRESS.md change-log entry")
+    parser.add_argument(
+        "--co-author",
+        default=TRAILER,
+        help="full Co-Authored-By trailer line for the model that produced the change",
+    )
     parser.add_argument("--no-push", action="store_true")
     parser.add_argument("--allow-outside", action="store_true")
     parser.add_argument("--allow-empty-skip", action="store_true", help="exit 0 if nothing is staged")
@@ -94,10 +99,16 @@ def main():
     if len(args.subject) > 72:
         sys.stderr.write("subject longer than 72 characters\n")
         sys.exit(2)
+    if not args.co_author.strip().startswith("Co-Authored-By: "):
+        sys.stderr.write("--co-author must be a full 'Co-Authored-By: Name <email>' line\n")
+        sys.exit(2)
     for raw in args.paths:
-        rel = pathlib.PurePosixPath(pathlib.Path(raw).as_posix())
-        if rel.is_absolute() or ".." in rel.parts:
-            resolved = pathlib.Path(raw).resolve()
+        native = pathlib.Path(raw)
+        rel = pathlib.PurePosixPath(native.as_posix())
+        # Check absoluteness with native semantics: "D:/repo/x" is absolute on Windows
+        # but not as a PurePosixPath.
+        if native.is_absolute() or rel.is_absolute() or ".." in rel.parts:
+            resolved = native.resolve()
             try:
                 rel = pathlib.PurePosixPath(resolved.relative_to(REPO).as_posix())
             except ValueError:
@@ -127,7 +138,7 @@ def main():
         message = args.subject.strip() + "\n\n"
         if args.body.strip():
             message += args.body.strip() + "\n\n"
-        message += TRAILER + "\n"
+        message += args.co_author.strip() + "\n"
         commit = subprocess.run(
             ["git", "-C", str(REPO), "commit", "-q", "-F", "-"],
             input=message,
