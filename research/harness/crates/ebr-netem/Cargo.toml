@@ -1,6 +1,6 @@
 [package]
 name = "ebr-netem"
-description = "Network emulation proxy and range origin for remote-access research. Skeleton only: built out by a separate agent (see README.md)."
+description = "Application-level network emulation (RTT, bandwidth, jitter, loss-as-stall, CDN cache) plus a range-serving HTTP origin, for remote-access research against entrybound::random_access::HttpRangeSource. Built because sch_netem is unavailable in WSL2 and Docker on this host (see PROGRESS.md and README.md)."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -11,3 +11,55 @@ workspace = true
 
 [dependencies]
 ebr-common = { path = "../ebr-common" }
+
+# Pinned to the exact versions already resolved into this workspace's
+# Cargo.lock by entrybound's own reqwest dependency (research/harness's
+# ebr-pack depends on entrybound with the research-internals feature, which
+# pulls hyper/tokio/rand transitively). Pinning ebr-netem's direct
+# dependencies to those same versions means adding this crate does not move
+# anything else in Cargo.lock.
+tokio = { version = "=1.53.1", features = ["rt-multi-thread", "net", "time", "sync", "macros", "io-util"] }
+hyper = { version = "=1.11.1", features = ["client", "server", "http1", "http2"] }
+hyper-util = { version = "=0.1.20", features = ["client-legacy", "server-auto", "http1", "http2", "tokio"] }
+http-body-util = "=0.1.5"
+
+# Only ebr-netem-proxy's response-body pacing (src/bandwidth.rs, src/proxy.rs)
+# needs a hand-rolled `Stream`; futures-util is already in the lock file as a
+# hyper-util(client-legacy) dependency.
+futures-util = { version = "=0.3.34", default-features = false, features = ["std"] }
+
+# Seeded, reproducible-sequence PRNG for jitter and the loss-as-stall model
+# (src/rng.rs). rand_pcg depends on nothing but rand_core, unlike the `rand`
+# crate's default build (which pulls in chacha20 for OsRng) -- this keeps the
+# dependency tree the same shape it already has via reqwest/rustls without
+# adding a new heavy transitive dependency.
+rand_core = "=0.10.1"
+rand_pcg = "=0.10.2"
+
+serde_json = "=1.0.151"
+
+[dev-dependencies]
+# Dev-only: proves ebr-origin's range/ETag contract against the real,
+# unmodified production HTTP random-access client (see tests/origin_contract.rs).
+# Default features, no `research-internals` -- this never changes production
+# semantics, it only calls entrybound's existing public API from a test.
+entrybound = { path = "../../../../crates/entrybound" }
+
+# `test-util` (for `#[tokio::test(start_paused = true)]` in src/bandwidth.rs
+# and src/loss.rs's unit tests) only needs to apply to test builds of this
+# crate's own library, never to the three release binaries -- a
+# dev-dependency's extra features on an already-normal-dependency do not leak
+# into non-test builds under cargo's resolver.
+tokio = { version = "=1.53.1", features = ["test-util"] }
+
+[[bin]]
+name = "ebr-origin"
+path = "src/bin/ebr-origin.rs"
+
+[[bin]]
+name = "ebr-netem-proxy"
+path = "src/bin/ebr-netem-proxy.rs"
+
+[[bin]]
+name = "ebr-netem-calibrate"
+path = "src/bin/ebr-netem-calibrate.rs"
