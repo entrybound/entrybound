@@ -1,0 +1,15 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f19-tuning-real-home-snapshot",
+  "inputs": {
+    "dotfiles-src": {
+      "url": "https://github.com/mathiasbynens/dotfiles/archive/b7c7894e7bb2de5d60bfb9a2f5e46d01a61300ea.tar.gz",
+      "sha256": "0d75ff0714e4a0cb17e4c5906936fd4eec14992b7cc045871fe821a76a3fdbff",
+      "size": 43341,
+      "retrieved_utc": "2026-09-17T08:44:54Z",
+      "retrieval_date": "2026-09-17"
+    }
+  },
+  "output": null,
+  "history": []
+}

@@ -1,0 +1,15 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f19-validation-real-home-snapshot",
+  "inputs": {
+    "dotfiles-src": {
+      "url": "https://github.com/holman/dotfiles/archive/9a90082b61fa5659789b9d41544c19098825a3ca.tar.gz",
+      "sha256": "bdf511181986cea6e5f622a4ff5348359ac76a1bfc1a6c9bca6f1bbda0402c61",
+      "size": 22819,
+      "retrieved_utc": "2026-09-17T08:48:31Z",
+      "retrieval_date": "2026-09-17"
+    }
+  },
+  "output": null,
+  "history": []
+}

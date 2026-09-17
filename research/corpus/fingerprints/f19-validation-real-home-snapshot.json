@@ -1,0 +1,152 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f19-validation-real-home-snapshot",
+  "family": "F19",
+  "split": "validation",
+  "scale": "small",
+  "kind": "git-archive",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "chalk-ansistyles-home-snapshot",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "b4f3d01dfb10ab7ec1c66e466f0787adbedec6d5af9e208b38257732d04a405f",
+  "materialization_key": "7cb592670db6dd6f94fbee8b56f67c03fd7e31877b1e4a1bd57577155656062f",
+  "materialized_utc": "2026-09-17T08:48:32Z",
+  "materialized_relpath": "corpus/validation/f19-validation-real-home-snapshot",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 16656596,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "dotfiles-src",
+        "url": "https://github.com/holman/dotfiles/archive/9a90082b61fa5659789b9d41544c19098825a3ca.tar.gz",
+        "final_url": "https://codeload.github.com/holman/dotfiles/tar.gz/9a90082b61fa5659789b9d41544c19098825a3ca",
+        "sha256": "bdf511181986cea6e5f622a4ff5348359ac76a1bfc1a6c9bca6f1bbda0402c61",
+        "size": 22819,
+        "retrieved_utc": "2026-09-17T08:48:31Z",
+        "retrieval_date": "2026-09-17",
+        "pin": "tofu-first-retrieval",
+        "filename": "9a90082b61fa5659789b9d41544c19098825a3ca.tar.gz"
+      }
+    ],
+    "git": {
+      "repo": "https://github.com/chalk/ansi-styles.git",
+      "commit": "c1c3dd4e017a2938807aaff0d361f46d086aeab7",
+      "ref": "main",
+      "history": "full",
+      "mirror_bundle_sha256": "afb356fd703b28755b4589a020082bd2aee269f79db438e71e39d6681f5823d7",
+      "mirror_bundle_bytes": 610360,
+      "git_version": "git version 2.43.0",
+      "notes": "materialized tree is a full working clone (with .git: refs, packed objects, reflog) checked out at the pinned commit; cloned from a cached `git bundle create --all` of a full-history bare mirror of the repository, not from a shallow archive"
+    },
+    "from_items": [
+      {
+        "item_id": "f13-validation-federal-register-pdf-small",
+        "logical_tree_sha256": "141e4a79534c98d7eac31bc3ba52fab6eda5cfeaddbeba53d1e14459f5599eb7"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "dotfiles-src",
+        "format": "tar",
+        "dest": "raw-inputs/dotfiles",
+        "strip_components": 1
+      },
+      {
+        "op": "copy-item",
+        "from_item": "f13-validation-federal-register-pdf-small",
+        "dest": "raw-inputs/documents"
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g2-generated/home_snapshot.py",
+        "interpreter": "python",
+        "seed": 73002,
+        "params": {
+          "variant": "validation",
+          "project_repo": "ansi-styles",
+          "project_license": "MIT",
+          "dotfiles_repo": "holman/dotfiles",
+          "dotfiles_license": "MIT",
+          "document_source_item": "f13-validation-federal-register-pdf-small"
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g2-generated/home_snapshot.py",
+        "script_sha256": "19584b01a5c2d6d8095eef44cb91a4a35570cff0d5f0f7741d462d76a069557c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 73002,
+        "params": {
+          "variant": "validation",
+          "project_repo": "ansi-styles",
+          "project_license": "MIT",
+          "dotfiles_repo": "holman/dotfiles",
+          "dotfiles_license": "MIT",
+          "document_source_item": "f13-validation-federal-register-pdf-small"
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "cp": "cp (GNU coreutils) 9.4",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "e1a3418a8285b713b9b4f3a0f266c572cc0e01c9e762d6bc36d35a0eaece88b3",
+    "logical_tree_sha256": "3532a0bbf75274e35217773f9bd21ce1d7e51c66e8c032f172d9795ff23731b8",
+    "content_tree_sha256": "68b8eb21916a507fb53da84f058310a5e3646cb9411735fe1f87713b3da999c1",
+    "extended_tree_sha256": "0f3139599a6de2b5c2beaffad750e8d553444b0681d97dfb6d1bc4995242e634",
+    "bytes": 16656596,
+    "bytes_all_paths": 33300430,
+    "allocated_bytes": 17190912,
+    "counts": {
+      "objects": 497,
+      "files": 368,
+      "unique_file_inodes": 188,
+      "dirs": 128,
+      "symlinks": 0,
+      "hardlink_groups": 180,
+      "hardlink_extra_paths": 180,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 8,
+      "max_name_length_bytes": 50,
+      "path_length_bytes": {
+        "min": 13,
+        "max": 107,
+        "mean": 46.522,
+        "p50": 47,
+        "p95": 71
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

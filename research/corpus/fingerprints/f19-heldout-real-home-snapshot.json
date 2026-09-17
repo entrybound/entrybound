@@ -1,0 +1,135 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f19-heldout-real-home-snapshot",
+  "family": "F19",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "git-archive",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "jonschlinkert-isnumber-home-snapshot",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "4373b8e0d7a8347d80d6625b114a031b7e38077cdfb7fb8ed4142a7611e28762",
+  "materialization_key": "1ea79a469e762909f646d1656279c5946073a076c58f08e756dfcfe65f42674f",
+  "materialized_utc": "2026-09-17T08:49:21Z",
+  "materialized_relpath": "heldout/f19-heldout-real-home-snapshot",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 16718848,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "dotfiles-src",
+        "url": "https://github.com/necolas/dotfiles/archive/60563f43fdb1db9c5e498a8745a75900574b69b7.tar.gz",
+        "final_url": "https://codeload.github.com/necolas/dotfiles/tar.gz/60563f43fdb1db9c5e498a8745a75900574b69b7",
+        "sha256": "3d7a145df9354f5804be02f90fc3e38e5b47a975cf01af092e9bcc3d568f4db4",
+        "size": 21587,
+        "retrieved_utc": "2026-09-17T08:49:20Z",
+        "retrieval_date": "2026-09-17",
+        "pin": "tofu-first-retrieval",
+        "filename": "60563f43fdb1db9c5e498a8745a75900574b69b7.tar.gz"
+      }
+    ],
+    "git": {
+      "repo": "https://github.com/jonschlinkert/is-number.git",
+      "commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "ref": "master",
+      "history": "full",
+      "mirror_bundle_sha256": "4d95c43604ef2762d26ffa7cf09f5d63d53c7d97ea92d6fb816979ec58c4373c",
+      "mirror_bundle_bytes": 86623,
+      "git_version": "git version 2.43.0",
+      "notes": "materialized tree is a full working clone (with .git: refs, packed objects, reflog) checked out at the pinned commit; cloned from a cached `git bundle create --all` of a full-history bare mirror of the repository, not from a shallow archive"
+    },
+    "from_items": [
+      {
+        "item_id": "f13-heldout-usgs-pdf-small",
+        "logical_tree_sha256": "d4b1555f3f929cbe5b46e642851e52744939aad0258454b474a518746e3a282a"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "dotfiles-src",
+        "format": "tar",
+        "dest": "raw-inputs/dotfiles",
+        "strip_components": 1
+      },
+      {
+        "op": "copy-item",
+        "from_item": "f13-heldout-usgs-pdf-small",
+        "dest": "raw-inputs/documents"
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g2-generated/home_snapshot.py",
+        "interpreter": "python",
+        "seed": 73003,
+        "params": {
+          "variant": "heldout",
+          "project_repo": "is-number",
+          "project_license": "MIT",
+          "dotfiles_repo": "necolas/dotfiles",
+          "dotfiles_license": "MIT",
+          "document_source_item": "f13-heldout-usgs-pdf-small"
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g2-generated/home_snapshot.py",
+        "script_sha256": "19584b01a5c2d6d8095eef44cb91a4a35570cff0d5f0f7741d462d76a069557c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 73003,
+        "params": {
+          "variant": "heldout",
+          "project_repo": "is-number",
+          "project_license": "MIT",
+          "dotfiles_repo": "necolas/dotfiles",
+          "dotfiles_license": "MIT",
+          "document_source_item": "f13-heldout-usgs-pdf-small"
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "cp": "cp (GNU coreutils) 9.4",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "d0e129259e3d182d3a5c3810503cd7bcf191c7ba901cfa7a53e5d0f62109efd4",
+    "logical_tree_sha256": "b8addfffd537c870b3284cb4e170add0265472051a8a94cca6b36445e7a42442",
+    "content_tree_sha256": "dd1eb3545e331e88c2d24cd3f9c7fc77ea6042c814982c0e97c2b650fb5d8b88",
+    "extended_tree_sha256": "ee6a49762ef71d81ab291c2581659c78d007156fd88eeeda86696c5ad4e8a5ed",
+    "bytes": 16718848,
+    "counts": {
+      "objects": 293,
+      "files": 192,
+      "dirs": 100,
+      "symlinks": 0,
+      "hardlink_groups": 92
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

@@ -1,0 +1,152 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f19-tuning-real-home-snapshot",
+  "family": "F19",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "git-archive",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "nodejs-mkdirp-home-snapshot",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "93a2dafba16c9ff22491739a8d171c21bf16ea0e5089f87f4cf8eb7ef92a19e0",
+  "materialization_key": "73b682f81bb82e775f4be975b0ec297931e38e363088ae8a44859fcd35da0e73",
+  "materialized_utc": "2026-09-17T08:47:41Z",
+  "materialized_relpath": "corpus/tuning/f19-tuning-real-home-snapshot",
+  "output_pin": {
+    "policy": null,
+    "status": "unpinned"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 18304654,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "dotfiles-src",
+        "url": "https://github.com/mathiasbynens/dotfiles/archive/b7c7894e7bb2de5d60bfb9a2f5e46d01a61300ea.tar.gz",
+        "final_url": "https://codeload.github.com/mathiasbynens/dotfiles/tar.gz/b7c7894e7bb2de5d60bfb9a2f5e46d01a61300ea",
+        "sha256": "0d75ff0714e4a0cb17e4c5906936fd4eec14992b7cc045871fe821a76a3fdbff",
+        "size": 43341,
+        "retrieved_utc": "2026-09-17T08:44:54Z",
+        "retrieval_date": "2026-09-17",
+        "pin": "tofu-first-retrieval",
+        "filename": "b7c7894e7bb2de5d60bfb9a2f5e46d01a61300ea.tar.gz"
+      }
+    ],
+    "git": {
+      "repo": "https://github.com/isaacs/node-mkdirp.git",
+      "commit": "fdf6005432c2506ce31f8cae237039dda2f8479d",
+      "ref": "main",
+      "history": "full",
+      "mirror_bundle_sha256": "dac3df39f92a2c7f03ee966851530f8d1682e8b108d47c9820d6d23eb58a27aa",
+      "mirror_bundle_bytes": 425383,
+      "git_version": "git version 2.43.0",
+      "notes": "materialized tree is a full working clone (with .git: refs, packed objects, reflog) checked out at the pinned commit; cloned from a cached `git bundle create --all` of a full-history bare mirror of the repository, not from a shallow archive"
+    },
+    "from_items": [
+      {
+        "item_id": "f13-tuning-nasa-ntrs-pdf-small",
+        "logical_tree_sha256": "00ac9e6490cb2f0b2c86c775e27a502a39889327e570f5f74aa5a5da5c784522"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "dotfiles-src",
+        "format": "tar",
+        "dest": "raw-inputs/dotfiles",
+        "strip_components": 1
+      },
+      {
+        "op": "copy-item",
+        "from_item": "f13-tuning-nasa-ntrs-pdf-small",
+        "dest": "raw-inputs/documents"
+      },
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g2-generated/home_snapshot.py",
+        "interpreter": "python",
+        "seed": 73001,
+        "params": {
+          "variant": "tuning",
+          "project_repo": "node-mkdirp",
+          "project_license": "MIT",
+          "dotfiles_repo": "mathiasbynens/dotfiles",
+          "dotfiles_license": "MIT",
+          "document_source_item": "f13-tuning-nasa-ntrs-pdf-small"
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g2-generated/home_snapshot.py",
+        "script_sha256": "19584b01a5c2d6d8095eef44cb91a4a35570cff0d5f0f7741d462d76a069557c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 73001,
+        "params": {
+          "variant": "tuning",
+          "project_repo": "node-mkdirp",
+          "project_license": "MIT",
+          "dotfiles_repo": "mathiasbynens/dotfiles",
+          "dotfiles_license": "MIT",
+          "document_source_item": "f13-tuning-nasa-ntrs-pdf-small"
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "cp": "cp (GNU coreutils) 9.4",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "108617637c9990969a131c64a992b3ed44a05def5fc6f8912f11d6b1a6e3bf6f",
+    "logical_tree_sha256": "cad58df109320158d60d214fe033da2dc4674a09355ddbe1c4dcfaf9433c40d4",
+    "content_tree_sha256": "b829f48349e331988ea79371e981acc3bae03ab25185b8d53c3459b79e9f2bff",
+    "extended_tree_sha256": "f74e0b6fa034bfc0e3f9485b07e94f6f8d3a878f81490128a5f4cc5d40619970",
+    "bytes": 18304654,
+    "bytes_all_paths": 36600441,
+    "allocated_bytes": 18649088,
+    "counts": {
+      "objects": 343,
+      "files": 246,
+      "unique_file_inodes": 128,
+      "dirs": 94,
+      "symlinks": 2,
+      "hardlink_groups": 118,
+      "hardlink_extra_paths": 118,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 8,
+      "max_name_length_bytes": 50,
+      "path_length_bytes": {
+        "min": 13,
+        "max": 107,
+        "mean": 48.564,
+        "p50": 51,
+        "p95": 75
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}
