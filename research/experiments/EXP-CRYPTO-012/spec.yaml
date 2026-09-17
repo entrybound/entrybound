@@ -1,0 +1,44 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-012
+status: designed
+question: >
+  What throughput, proof size and buffering do candidate digests, tree constructions and AEADs have on x86-64 with and without hardware acceleration?
+hypothesis: >
+  SHA-256 with SHA-NI is non-inferior to BLAKE3 single-thread; external RFC6962 tree proof size is acceptable at realistic chunk counts.
+decision_ids: [DEC-MOD-016, DEC-MOD-034, DEC-CRY-011, DEC-CRY-059]
+notes: >
+  NEEDS_TOOLING: ebr-crypto bench/tree; requires calibration. Selection is external.
+candidates:
+  - name: sha-256
+    params: {prim: 'sha-256', accel: 'on'}
+  - name: blake3
+    params: {prim: 'blake3', accel: 'on'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto bench --item-path {item_path} --experiment-id EXP-CRYPTO-012 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --accel {accel} --prim {prim}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F05, F07, F09, F16]
+metrics:
+  - {name: verify_throughput_bps, source: stdout_json, family: throughput, direction: maximize, unit: Bps, key: payload.verify_throughput_bps}
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 10
+warmups: 2
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: true
+order: randomized_blocks
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+guard: {max_loadavg_1m: 3.0, max_other_cpu_percent: 3.0, sample_interval_s: 1.0, max_wait_s: 300}
+analysis:
+  baseline: sha-256
+  pairing: item_repetition
+  report_metrics: [verify_throughput_bps, wall_s, max_rss_bytes, input_bytes]

@@ -1,0 +1,39 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-022
+status: designed
+question: >
+  What are the mechanically checkable complexity and message properties of the crypto CLI surfaces, and what qualitative first-use failure modes appear?
+hypothesis: >
+  Some status-quo surfaces have unsafe defaults above zero; simulated users misread 'cryptographically valid' as 'trusted' (heuristic, routed to human review).
+decision_ids: [DEC-CRY-090, DEC-INT-021, DEC-CRY-082, DEC-CRY-009, DEC-CRY-046, DEC-CRY-058, DEC-CRY-061, DEC-CRY-004, DEC-CRY-063, DEC-CRY-095, DEC-CRY-108, DEC-ECO-064, DEC-ECO-063, DEC-CRY-101, DEC-CRY-094]
+notes: >
+  HUMAN-FACING: mechanical parts EMPIRICAL; simulated sessions heuristic only, capped; human claims external.
+candidates:
+  - name: status-quo
+    params: {variant: 'status-quo'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto clicensus --item-path {item_path} --experiment-id EXP-CRYPTO-022 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --variant {variant}
+shell: bash
+corpus:
+  generated:
+    - {item_id: tiny-random, family: F20, generator: random-v1, bytes: 65536, seed: 20260917}
+metrics:
+  - {name: flags_per_task, source: stdout_json, family: other, direction: minimize, key: payload.flags_per_task}
+  - {name: unsafe_defaults, source: stdout_json, family: correctness, direction: none, key: payload.unsafe_defaults}
+  - {name: error_actionability_fraction, source: stdout_json, family: other, direction: maximize, key: payload.error_actionability_fraction}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: status-quo
+  pairing: item
+  report_metrics: [flags_per_task, unsafe_defaults, error_actionability_fraction]

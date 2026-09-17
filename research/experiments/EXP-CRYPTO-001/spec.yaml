@@ -1,0 +1,42 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-001
+status: designed
+question: >
+  Do the program's CDC-attack implementations reproduce published key-recovery and fingerprinting against faithful targets, validating the OD-16 attack suite and observer model?
+hypothesis: >
+  Each published attack succeeds against its faithful target within budget; no attack breaks PHTE-AES128 or beats the length-only reference on it.
+decision_ids: []
+notes: >
+  NEEDS_TOOLING: research/tools/crypto/cdc_attacks and ebr-crypto attack subcommand.
+candidates:
+  - name: a2-apz-kpa-buzhash
+    params: {target: 'ref-buzhash-secret-32', attack: 'A2-apz-kpa-buzhash-v1'}
+  - name: a0-length-only-phte
+    params: {target: 'eb-phte-aes128-v1', attack: 'A0-length-only-v1'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto attack --item-path {item_path} --experiment-id EXP-CRYPTO-001 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --attack {attack} --target {target}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F05, F07, F09, F11, F12, F13]
+metrics:
+  - {name: kr_success_fraction, source: stdout_json, family: other, direction: maximize, key: payload.kr_success_fraction}
+  - {name: presence_advantage, source: stdout_json, family: other, direction: minimize, key: payload.presence_advantage}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto, /usr/bin/borg, /usr/bin/restic]
+  timeout_s: 3600
+analysis:
+  baseline: a2-apz-kpa-buzhash
+  pairing: item
+  report_metrics: [kr_success_fraction, presence_advantage, input_bytes]

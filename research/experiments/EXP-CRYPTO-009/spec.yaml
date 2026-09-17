@@ -1,0 +1,43 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-009
+status: designed
+question: >
+  Do encrypted creation/open/verify/range sessions run in payload-bounded memory across scale, and are the crypto-v1 structural limits justified?
+hypothesis: >
+  Status-quo whole-buffer write is not payload-bounded; streamed writer and plaintext-discarding open are; million-entry EBCS exceeds a 2 GiB CI bound.
+decision_ids: [DEC-ACC-011, DEC-CON-009, DEC-CRY-013, DEC-CRY-015, DEC-ACC-009, DEC-CRY-027]
+notes: >
+  NEEDS_TOOLING: counting allocator (method §14 item 17), ebr-crypto mem, streaming generators.
+candidates:
+  - name: status-quo-in-memory
+    params: {writer: 'in-memory'}
+  - name: streamed-segment-writer
+    params: {writer: 'streamed'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto mem --item-path {item_path} --experiment-id EXP-CRYPTO-009 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --writer {writer}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F04, F07, F08, F16]
+metrics:
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+  - {name: bounded_ok, source: stdout_json, family: correctness, direction: none, key: payload.bounded_ok}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: status-quo-in-memory
+  pairing: item
+  report_metrics: [max_rss_bytes, scratch_peak_bytes, bounded_ok, input_bytes]

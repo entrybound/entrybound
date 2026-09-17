@@ -1,0 +1,43 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-010
+status: designed
+question: >
+  Under injected faults, does any encrypted read path return tampered data as verified, what blast radius results per layout, and what does salvage recover?
+hypothesis: >
+  No false-verified byte on any path; blast radius is lowest for one-object-per-segment; authenticated-record recovery never splices.
+decision_ids: [DEC-INT-010, DEC-INT-021, DEC-INT-033, DEC-CRY-105]
+notes: >
+  NEEDS_TOOLING: fault_inject.py, blast_radius.py, byte-verification log (F-24).
+candidates:
+  - name: layout-one-object
+    params: {layout: 'one-object'}
+  - name: layout-fixed-segments
+    params: {layout: 'fixed-segments'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto fault --item-path {item_path} --experiment-id EXP-CRYPTO-010 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --layout {layout}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F04, F07, F09, F11, F18]
+metrics:
+  - {name: undetected_tampers, source: stdout_json, family: correctness, direction: none, key: payload.undetected_tampers}
+  - {name: blast_logical_bytes_p95, source: stdout_json, family: other, direction: minimize, unit: B, key: payload.blast_logical_bytes_p95}
+  - {name: truncation_salvage_fraction, source: stdout_json, family: other, direction: maximize, key: payload.truncation_salvage_fraction}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: layout-one-object
+  pairing: item
+  report_metrics: [undetected_tampers, blast_logical_bytes_p95, truncation_salvage_fraction, input_bytes]

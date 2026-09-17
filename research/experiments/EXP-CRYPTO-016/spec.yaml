@@ -1,0 +1,43 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-016
+status: designed
+question: >
+  Do all encrypted reader paths accept the same byte set, does the range reader enforce structural rules, and are unknown versions/compat/stanzas handled correctly?
+hypothesis: >
+  Differential fuzzing finds a byte set accepted by the range reader but not the full reader; a shared validator removes it; retired identifiers still decode.
+decision_ids: [DEC-CON-025, DEC-CRY-065, DEC-CRY-079, DEC-CON-012, DEC-CON-011, DEC-CON-008, DEC-CRY-071, DEC-CRY-104, DEC-CRY-032]
+notes: >
+  NEEDS_TOOLING: ebr-crypto readers + differential fuzz target + crafter.
+candidates:
+  - name: status-quo-divergent
+    params: {readers: 'status-quo'}
+  - name: shared-validator
+    params: {readers: 'shared'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto readers --item-path {item_path} --experiment-id EXP-CRYPTO-016 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --readers {readers}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F04, F20]
+metrics:
+  - {name: reader_disagreements, source: stdout_json, family: correctness, direction: none, key: payload.reader_disagreements}
+  - {name: version_gate_correct_fraction, source: stdout_json, family: other, direction: maximize, key: payload.version_gate_correct_fraction}
+  - {name: unresolved_fuzz_findings, source: stdout_json, family: correctness, direction: none, key: payload.unresolved_fuzz_findings}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: status-quo-divergent
+  pairing: item
+  report_metrics: [reader_disagreements, version_gate_correct_fraction, unresolved_fuzz_findings, input_bytes]

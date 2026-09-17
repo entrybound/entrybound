@@ -1,0 +1,43 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-015
+status: designed
+question: >
+  For every operation combination, are outcomes, identity roots and binding statuses consistent and tested, and does every mutation on attacker-controlled input keep (key,nonce) unique?
+hypothesis: >
+  The status-quo SPEC 8.1 table is inconsistent for --add; the reuse/regenerate mutation contract keeps nonces unique; boundary-preserving rotation leaks to removed recipients.
+decision_ids: [DEC-CRY-010, DEC-MOD-029, DEC-CRY-054, DEC-CRY-050, DEC-CRY-069, DEC-CRY-031, DEC-CRY-045, DEC-ACC-049, DEC-CON-016, DEC-LEG-040, DEC-CRY-057]
+notes: >
+  NEEDS_TOOLING: ebr-crypto compose + nonce logger (F-24) + kill injector; some cells NEEDS_TOOLING.
+candidates:
+  - name: status-quo
+    params: {contract: 'status-quo'}
+  - name: full-reencryption
+    params: {contract: 'full-reencryption'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto compose --item-path {item_path} --experiment-id EXP-CRYPTO-015 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --contract {contract}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F04, F17]
+metrics:
+  - {name: repeated_key_nonce, source: stdout_json, family: correctness, direction: none, key: payload.repeated_key_nonce}
+  - {name: root_conformance_fraction, source: stdout_json, family: other, direction: maximize, key: payload.root_conformance_fraction}
+  - {name: binding_status_correct_fraction, source: stdout_json, family: other, direction: maximize, key: payload.binding_status_correct_fraction}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: status-quo
+  pairing: item
+  report_metrics: [repeated_key_nonce, root_conformance_fraction, binding_status_correct_fraction, input_bytes]

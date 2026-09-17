@@ -1,0 +1,47 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-003
+status: designed
+question: >
+  What do keyed-boundary constructions cost in chunking throughput, encrypted pack time, dedup and stability on x86-64, and do they pass the HC-14 keyed-boundary test?
+hypothesis: >
+  PHTE chunking is distinguishably slower than secret Gear; both match unkeyed dedup/stability at matched means; neither produces identical boundaries under distinct keys.
+decision_ids: [DEC-CRY-023, DEC-CRY-005, DEC-CMP-001, DEC-MOD-039]
+notes: >
+  NEEDS_TOOLING: ebr-chunk --key-seed, ebr-crypto chunk; requires EXP-CAL-* calibration and runner additions.
+candidates:
+  - name: gear-norm-v1
+    params: {chunker: 'gear-norm-v1'}
+  - name: secret-gear
+    params: {chunker: 'secret-gear'}
+  - name: phte-aes128
+    params: {chunker: 'phte-aes128'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto chunk-cost --item-path {item_path} --experiment-id EXP-CRYPTO-003 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --chunker {chunker}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F03, F05, F07, F09, F11, F16, F17, F18]
+metrics:
+  - {name: encode_throughput_bps, source: stdout_json, family: throughput, direction: maximize, unit: Bps, key: payload.encode_throughput_bps}
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 10
+warmups: 2
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: true
+order: randomized_blocks
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+guard: {max_loadavg_1m: 3.0, max_other_cpu_percent: 3.0, sample_interval_s: 1.0, max_wait_s: 300}
+analysis:
+  baseline: gear-norm-v1
+  pairing: item_repetition
+  report_metrics: [encode_throughput_bps, wall_s, cpu_s, max_rss_bytes, input_bytes]

@@ -1,0 +1,39 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-011
+status: designed
+question: >
+  Does the implementation pass the complete external primitive and construction vector sets and independent cross-checks required before production?
+hypothesis: >
+  Every applicable KAT passes, negatives are rejected, and independent implementations agree.
+decision_ids: [DEC-CRY-014, DEC-CRY-021, DEC-CRY-051, DEC-CRY-048, DEC-CRY-106]
+notes: >
+  NEEDS_TOOLING: vector files + ebr-crypto vectors + xcheck drivers. FORMAL decision type.
+candidates:
+  - name: full-suite
+    params: {set: 'all'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto vectors --item-path {item_path} --experiment-id EXP-CRYPTO-011 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --set {set}
+shell: bash
+corpus:
+  generated:
+    - {item_id: tiny-random, family: F20, generator: random-v1, bytes: 65536, seed: 20260917}
+metrics:
+  - {name: kat_pass, source: stdout_json, family: correctness, direction: none, key: payload.kat_pass}
+  - {name: negatives_rejected, source: stdout_json, family: correctness, direction: none, key: payload.negatives_rejected}
+  - {name: xcheck_agree, source: stdout_json, family: correctness, direction: none, key: payload.xcheck_agree}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: full-suite
+  pairing: item
+  report_metrics: [kat_pass, negatives_rejected, xcheck_agree]

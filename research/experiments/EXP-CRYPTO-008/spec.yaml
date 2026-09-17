@@ -1,0 +1,44 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-008
+status: designed
+question: >
+  How many requests/bytes and what modelled latency does encrypted remote access cost, is open sublinear in segment count, and how much does the origin learn from the request pattern?
+hypothesis: >
+  Coalesced header prefetch removes open linearity without a wire change; access-pattern classification is reducible by batched prefetch at bounded byte cost.
+decision_ids: [DEC-ACC-010, DEC-CRY-072, DEC-CRY-073, DEC-INT-010]
+notes: >
+  NEEDS_TOOLING: latency_model.py, access_pattern_eval.py; emulated latency needs EXP-NETEM-CAL.
+candidates:
+  - name: status-quo-header-walk
+    params: {open: 'header-walk'}
+  - name: coalesced-prefetch
+    params: {open: 'coalesced'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto remote --item-path {item_path} --experiment-id EXP-CRYPTO-008 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --open {open}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F04, F07, F09, F11, F16, F18]
+metrics:
+  - {name: http_requests, source: stdout_json, family: other, direction: minimize, key: payload.http_requests}
+  - {name: http_bytes, source: stdout_json, family: size, direction: minimize, unit: B, key: payload.http_bytes}
+  - {name: remote_random_entry_latency_s, source: stdout_json, family: time_wall, direction: minimize, unit: s, key: payload.remote_latency_s_modelled}
+  - {name: range_length_signatures, source: stdout_json, family: other, direction: minimize, key: payload.range_length_signatures}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto, /root/eb-research/target/harness/release/ebr-origin]
+  timeout_s: 3600
+analysis:
+  baseline: status-quo-header-walk
+  pairing: item
+  report_metrics: [http_requests, http_bytes, remote_random_entry_latency_s, range_length_signatures, input_bytes]

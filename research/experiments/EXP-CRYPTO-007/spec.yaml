@@ -1,0 +1,42 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-007
+status: designed
+question: >
+  Which bytes of an encrypted archive are public, do any expose plaintext digests, and how accurately can an observer infer entry/chunk counts and total size?
+hypothesis: >
+  Content-derived public fields match the documented set; no plaintext digest appears; entry count is inferable within a factor of two, so 'entry count hidden' is quantised not hidden.
+decision_ids: [DEC-CRY-030, DEC-CRY-026, DEC-CRY-064, DEC-CRY-008, DEC-CRY-019, DEC-CMP-022]
+notes: >
+  NEEDS_TOOLING: clean-room public_inventory.py, bytescan.py, count_inference.py.
+candidates:
+  - name: status-quo
+    params: {variant: 'status-quo'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto inventory --item-path {item_path} --experiment-id EXP-CRYPTO-007 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --variant {variant}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F04, F05, F09, F11, F13, F17, F18, F19]
+metrics:
+  - {name: leak_min_entropy_bits, source: stdout_json, family: other, direction: minimize, key: payload.leak_min_entropy_bits}
+  - {name: anonymity_set_median, source: stdout_json, family: other, direction: maximize, key: payload.anonymity_set_median}
+  - {name: bytescan_hits, source: stdout_json, family: correctness, direction: minimize, key: payload.bytescan_hits}
+  - {name: unattributed_public_bytes, source: stdout_json, family: correctness, direction: minimize, key: payload.unattributed_public_bytes}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: status-quo
+  pairing: item
+  report_metrics: [leak_min_entropy_bits, anonymity_set_median, bytescan_hits, unattributed_public_bytes, input_bytes]

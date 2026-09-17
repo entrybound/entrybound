@@ -1,0 +1,42 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-019
+status: designed
+question: >
+  Should encrypted legacy inputs be refused/decrypted/preserved, must plaintext downgrade be explicit and recorded, and can receipts be verified/signed?
+hypothesis: >
+  ZipCrypto cannot be authenticated so it must be typed as declared loss; a scripted export can miss the status-quo downgrade warning; signed receipts detect forgery.
+decision_ids: [DEC-LEG-012, DEC-LEG-089, DEC-CRY-061, DEC-LEG-009, DEC-CRY-093, DEC-CRY-091, DEC-CRY-027, DEC-LEG-011]
+notes: >
+  NEEDS_TOOLING: ebr-crypto legacy + receipt_verify.py; decrypt-path soundness is external review.
+candidates:
+  - name: status-quo-refuse
+    params: {mode: 'refuse'}
+  - name: decrypt-aes-only
+    params: {mode: 'decrypt-aes'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto legacy --item-path {item_path} --experiment-id EXP-CRYPTO-019 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --mode {mode}
+shell: bash
+corpus:
+  generated:
+    - {item_id: tiny-random, family: F20, generator: random-v1, bytes: 65536, seed: 20260917}
+metrics:
+  - {name: import_acceptance_fraction, source: stdout_json, family: other, direction: maximize, key: payload.import_acceptance_fraction}
+  - {name: receipt_completeness_fraction, source: stdout_json, family: other, direction: maximize, key: payload.receipt_completeness_fraction}
+  - {name: silent_downgrade_count, source: stdout_json, family: correctness, direction: none, key: payload.silent_downgrade_count}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto, /usr/bin/7z, /usr/bin/gpg, /usr/bin/age]
+  timeout_s: 3600
+analysis:
+  baseline: status-quo-refuse
+  pairing: item
+  report_metrics: [import_acceptance_fraction, receipt_completeness_fraction, silent_downgrade_count, input_bytes]

@@ -1,0 +1,42 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-013
+status: designed
+question: >
+  Which RFC 3161 verifier profile rejects substitution/malformed tokens while accepting real TSA tokens, and what dependency surface does each parser carry?
+hypothesis: >
+  Status-quo minimal checks accept a substitution token; the constrained profile rejects it and accepts real tokens; the minimal parser has less untrusted-input surface.
+decision_ids: [DEC-CRY-076, DEC-CRY-098, DEC-CRY-006, DEC-CRY-099, DEC-CRY-083]
+notes: >
+  NEEDS_TOOLING: ebr-crypto tsverify + real TSA token corpus (owner-fetched) + negative generator + cargo-fuzz targets.
+candidates:
+  - name: status-quo-minimal
+    params: {profile: 'minimal'}
+  - name: constrained-profile
+    params: {profile: 'constrained'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto tsverify --item-path {item_path} --experiment-id EXP-CRYPTO-013 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --profile {profile}
+shell: bash
+corpus:
+  generated:
+    - {item_id: tiny-random, family: F20, generator: random-v1, bytes: 65536, seed: 20260917}
+metrics:
+  - {name: import_acceptance_fraction, source: stdout_json, family: other, direction: maximize, key: payload.import_acceptance_fraction}
+  - {name: benign_false_refusal_fraction, source: stdout_json, family: other, direction: minimize, key: payload.benign_false_refusal_fraction}
+  - {name: negatives_rejected_fraction, source: stdout_json, family: other, direction: maximize, key: payload.negatives_rejected_fraction}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: status-quo-minimal
+  pairing: item
+  report_metrics: [import_acceptance_fraction, benign_false_refusal_fraction, negatives_rejected_fraction, input_bytes]

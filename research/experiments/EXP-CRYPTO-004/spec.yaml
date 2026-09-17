@@ -1,0 +1,44 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-004
+status: designed
+question: >
+  On native ARM64 and constrained hosts, what do keyed boundaries, primitives and Argon2id unlock cost, and does any frozen default fail outright?
+hypothesis: >
+  PHTE overhead tracks x86-64 with ARMv8 crypto extensions and exceeds it without; status-quo Argon2id runs on 1 GiB SBCs but the wire ceiling fails in 512 MiB caps.
+decision_ids: [DEC-CRY-023, DEC-CRY-002, DEC-CRY-013, DEC-MOD-016]
+notes: >
+  BLOCKED: native ARM64/macOS/mobile/32-bit hardware unavailable; QEMU never used for timing. Design-only spec.
+candidates:
+  - name: secret-gear
+    params: {chunker: 'secret-gear'}
+  - name: phte-aes128
+    params: {chunker: 'phte-aes128'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto chunk-cost --item-path {item_path} --experiment-id EXP-CRYPTO-004 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --chunker {chunker}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F05, F07, F09, F11]
+metrics:
+  - {name: encode_throughput_bps, source: stdout_json, family: throughput, direction: maximize, unit: Bps, key: payload.encode_throughput_bps}
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 10
+warmups: 2
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: true
+order: randomized_blocks
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [aarch64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+guard: {max_loadavg_1m: 3.0, max_other_cpu_percent: 3.0, sample_interval_s: 1.0, max_wait_s: 300}
+analysis:
+  baseline: secret-gear
+  pairing: item_repetition
+  report_metrics: [encode_throughput_bps, wall_s, max_rss_bytes, input_bytes]

@@ -1,0 +1,43 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-014
+status: designed
+question: >
+  Do signature verdicts stay honest and distinguishable across read paths and mutations, and do candidate trust policies behave as specified?
+hypothesis: >
+  No candidate reports a state stronger than the oracle; any-key policy accepts an attacker-signed detached signature; allowed-key policies refuse it.
+decision_ids: [DEC-CRY-052, DEC-CRY-082, DEC-CRY-090, DEC-CRY-009, DEC-CRY-103, DEC-CRY-104, DEC-CRY-092, DEC-CRY-060, DEC-CRY-074, DEC-CRY-087, DEC-CRY-004, DEC-CRY-089, DEC-CRY-096, DEC-CRY-018, DEC-CRY-019, DEC-CRY-102, DEC-MOD-037, DEC-INT-038, DEC-MOD-027, DEC-MOD-029, DEC-ECO-063, DEC-INT-032, DEC-CRY-007, DEC-CRY-075, DEC-CRY-094]
+notes: >
+  NEEDS_TOOLING: ebr-crypto sigmatrix + oracle.csv + policy prototypes.
+candidates:
+  - name: any-key
+    params: {policy: 'any-key'}
+  - name: allowed-keys
+    params: {policy: 'allowed-keys'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto sigmatrix --item-path {item_path} --experiment-id EXP-CRYPTO-014 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --policy {policy}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F19]
+metrics:
+  - {name: verdict_honesty_ok, source: stdout_json, family: correctness, direction: none, key: payload.verdict_honesty_ok}
+  - {name: reason_code_specificity_fraction, source: stdout_json, family: other, direction: maximize, key: payload.reason_code_specificity_fraction}
+  - {name: authorization_correct_fraction, source: stdout_json, family: other, direction: maximize, key: payload.authorization_correct_fraction}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: any-key
+  pairing: item
+  report_metrics: [verdict_honesty_ok, reason_code_specificity_fraction, authorization_correct_fraction, input_bytes]

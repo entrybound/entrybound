@@ -1,0 +1,39 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-018
+status: designed
+question: >
+  Do secret-bearing types satisfy the hygiene rules, are residual secret copies zeroized, and are key files with lax permissions handled on Unix and Windows?
+hypothesis: >
+  EncryptedBoundaryKey fails the audit (derives Clone without Zeroize); one status-quo path leaves a secret un-zeroized; Windows key-file protection is absent.
+decision_ids: [DEC-CRY-005, DEC-CRY-078, DEC-CRY-095, DEC-CRY-108, DEC-CRY-041]
+notes: >
+  NEEDS_TOOLING: trybuild audit, ebr-crypto residue, keyperm runner.
+candidates:
+  - name: status-quo
+    params: {variant: 'status-quo'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto hygiene --item-path {item_path} --experiment-id EXP-CRYPTO-018 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --variant {variant}
+shell: bash
+corpus:
+  generated:
+    - {item_id: tiny-random, family: F20, generator: random-v1, bytes: 65536, seed: 20260917}
+metrics:
+  - {name: hygiene_audit_pass, source: stdout_json, family: correctness, direction: none, key: payload.hygiene_audit_pass}
+  - {name: nonzero_secret_after_drop, source: stdout_json, family: correctness, direction: none, key: payload.nonzero_secret_after_drop}
+  - {name: keyperm_correct_fraction, source: stdout_json, family: other, direction: maximize, key: payload.keyperm_correct_fraction}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: status-quo
+  pairing: item
+  report_metrics: [hygiene_audit_pass, nonzero_secret_after_drop, keyperm_correct_fraction]

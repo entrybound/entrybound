@@ -1,0 +1,46 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-006
+status: designed
+question: >
+  What storage/fetch overhead and length leakage does each padding schedule impose, per boundary mode and family, and what does encrypted creation cost per dedup/object policy?
+hypothesis: >
+  Quarter-octave bucketed beats power-of-two on overhead and matches Padme; anonymity ordering is MAX>pow2>Padme~bucketed>none; bucketed still leaks on distinctive families.
+decision_ids: [DEC-CRY-055, DEC-CMP-017, DEC-CRY-025, DEC-CRY-026, DEC-CRY-064]
+notes: >
+  NEEDS_TOOLING: padding_model.py + ebr-crypto observe --emit-private-lengths.
+candidates:
+  - name: bucketed
+    params: {padding: 'bucketed'}
+  - name: power-of-two
+    params: {padding: 'pow2'}
+  - name: padme
+    params: {padding: 'padme'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto padding --item-path {item_path} --experiment-id EXP-CRYPTO-006 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --padding {padding}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F04, F05, F07, F11, F13, F18]
+metrics:
+  - {name: padding_overhead_pp, source: stdout_json, family: other, direction: minimize, unit: pp, key: payload.padding_overhead_pp}
+  - {name: artifact_bytes, source: stdout_json, family: size, direction: minimize, unit: B, key: payload.artifact_bytes}
+  - {name: fixed_overhead_bytes, source: stdout_json, family: size, direction: minimize, unit: B, key: payload.fixed_overhead_bytes}
+  - {name: presence_advantage, source: stdout_json, family: other, direction: minimize, key: payload.presence_advantage}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: bucketed
+  pairing: item
+  report_metrics: [padding_overhead_pp, artifact_bytes, fixed_overhead_bytes, presence_advantage, input_bytes]

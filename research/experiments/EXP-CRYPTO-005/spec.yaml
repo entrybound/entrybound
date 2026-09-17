@@ -1,0 +1,43 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-005
+status: designed
+question: >
+  Can a chosen-plaintext co-packer recover secret bytes of a co-packed victim from public padded lengths when cross-file compression context is used under encryption, and what ratio does each restriction cost?
+hypothesis: >
+  Status-quo cross-file context leaks under NONE padding; disabling it removes the leak but costs artifact bytes on redundant families.
+decision_ids: [DEC-CRY-028, DEC-CMP-029]
+notes: >
+  NEEDS_TOOLING: research-internals planner switches + copack_attack.py oracle.
+candidates:
+  - name: status-quo
+    params: {planner: 'status-quo', padding: 'none'}
+  - name: no-cross-file
+    params: {planner: 'no-cross-file', padding: 'none'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto copack --item-path {item_path} --experiment-id EXP-CRYPTO-005 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --padding {padding} --planner {planner}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F04, F06, F19]
+metrics:
+  - {name: presence_advantage, source: stdout_json, family: other, direction: minimize, key: payload.presence_advantage}
+  - {name: leak_shannon_bits, source: stdout_json, family: other, direction: minimize, key: payload.leak_shannon_bits}
+  - {name: artifact_bytes, source: stdout_json, family: size, direction: minimize, unit: B, key: payload.artifact_bytes}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: status-quo
+  pairing: item
+  report_metrics: [presence_advantage, leak_shannon_bits, artifact_bytes, input_bytes]

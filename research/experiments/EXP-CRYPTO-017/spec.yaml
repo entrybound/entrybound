@@ -1,0 +1,43 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-017
+status: designed
+question: >
+  What unlock latency/memory and envelope cost do KDF parameters, recipient counts and attempt budgets impose, and are secret-dependent failures indistinguishable?
+hypothesis: >
+  The wire-ceiling KDF exceeds 512 MiB caps and is a DoS vector; constant-work unlock removes the position-timing signal at a latency cost.
+decision_ids: [DEC-CRY-002, DEC-CRY-013, DEC-CRY-015, DEC-CRY-058, DEC-CRY-068, DEC-CRY-077, DEC-CRY-046]
+notes: >
+  NEEDS_TOOLING: ebr-crypto unlock + dudect test; requires calibration; ARM cost is EXP-CRYPTO-004.
+candidates:
+  - name: creation-default
+    params: {kdf: 'm256-t3-p4'}
+  - name: wire-ceiling
+    params: {kdf: 'm1024-t10-p16'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto unlock --item-path {item_path} --experiment-id EXP-CRYPTO-017 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --kdf {kdf}
+shell: bash
+corpus:
+  generated:
+    - {item_id: tiny-random, family: F20, generator: random-v1, bytes: 65536, seed: 20260917}
+metrics:
+  - {name: open_latency_s, source: stdout_json, family: time_wall, direction: minimize, unit: s, key: payload.open_latency_s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: fixed_overhead_bytes, source: stdout_json, family: size, direction: minimize, unit: B, key: payload.fixed_overhead_bytes}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 10
+warmups: 2
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: true
+order: randomized_blocks
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+guard: {max_loadavg_1m: 3.0, max_other_cpu_percent: 3.0, sample_interval_s: 1.0, max_wait_s: 300}
+analysis:
+  baseline: creation-default
+  pairing: item_repetition
+  report_metrics: [open_latency_s, max_rss_bytes, fixed_overhead_bytes, input_bytes]

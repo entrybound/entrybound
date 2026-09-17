@@ -1,0 +1,42 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CRYPTO-002
+status: designed
+question: >
+  How much does each encrypted chunk-boundary construction leak about known-file presence, by padding mode, layout and compression, under the committed observer model?
+hypothesis: >
+  Secret Gear leaks more than PHTE under NONE padding and known-plaintext/adaptive observers; bucketed padding halves the gap; key holders see keyed and unkeyed as equivalent.
+decision_ids: [DEC-CRY-023, DEC-CRY-081, DEC-CRY-022]
+notes: >
+  NEEDS_TOOLING: ebr-crypto observe + research-internals private-length accessor.
+candidates:
+  - name: secret-gear
+    params: {boundary: 'secret-gear', padding: 'bucketed'}
+  - name: phte-aes128
+    params: {boundary: 'phte-aes128', padding: 'bucketed'}
+command: >-
+  /root/eb-research/target/harness/release/ebr-crypto boundary-leak --item-path {item_path} --experiment-id EXP-CRYPTO-002 --env-name wsl-ubuntu --candidate {candidate} --seed {seed} --boundary {boundary} --padding {padding}
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F05, F07, F09, F11, F12, F13, F18]
+metrics:
+  - {name: presence_advantage, source: stdout_json, family: other, direction: minimize, key: payload.presence_advantage}
+  - {name: leak_min_entropy_bits, source: stdout_json, family: other, direction: minimize, key: payload.leak_min_entropy_bits}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917, command: 20260917}
+timing: false
+order: sequential
+record_warmups: true
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-crypto]
+  timeout_s: 3600
+analysis:
+  baseline: secret-gear
+  pairing: item
+  report_metrics: [presence_advantage, leak_min_entropy_bits, input_bytes]
