@@ -1,0 +1,71 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-008-LONG
+status: designed
+question: >
+  Long-run arm: how do coverage, reason-code reach and injected-defect detection evolve up to the 72 CPU-hour ceiling for T02, T13 and T20 in verify-on mode, so that plateau windows of 4 and 8 CPU-hours and budgets of 16 and 72 CPU-hours can be evaluated?
+hypothesis: >
+  H1: for digest-gated targets, bypass mode detects injected defects behind digest or CRC checks that verify-on mode
+  misses within the same budget. H2: at least one criterion defined for every calibration target stops within a factor
+  of 2 of its median stop time on all seeds. H3 (negative-result hypothesis): wrong-class defects without a crash are not
+  detected by single-reader crash fuzzing.
+decision_ids: [DEC-ECO-028, DEC-ECO-029, DEC-CRY-017]
+notes: >
+  Design pre-registration (Phase C-design); runs after gate G-A; results are descriptive (protocol section 9 metric gap).
+  The generated item is an anchor only: campaign inputs are the pre-registered seed corpora of protocol section 6.
+  Repetition k uses libFuzzer seed 2809171001 + k (k = 0, 1, 2). Targets without a digest or CRC gate run in mode 'on'
+  only. CPU-saturating: never concurrent with timing windows. Conventions: research/experiments/_index/conformance-conventions.md.
+  Long-run arm: one repetition (seed 2809171001) per candidate.
+candidates:
+  - {name: T02-on-defect-libfuzzer-72h, params: {target: T02, mode: on, build: defect, engine: libfuzzer, budget_cpu_h: 72}}
+  - {name: T13-on-defect-libfuzzer-72h, params: {target: T13, mode: on, build: defect, engine: libfuzzer, budget_cpu_h: 72}}
+  - {name: T20-on-defect-libfuzzer-72h, params: {target: T20, mode: on, build: defect, engine: libfuzzer, budget_cpu_h: 72}}
+command: >-
+  /usr/bin/python3 research/harness/fuzz/tools/campaign.py
+  --target {target} --mode {mode} --build {build} --engine {engine} --budget-cpu-h {budget_cpu_h}
+  --seed-base 2809171001 --rep {rep} --fork 4 --rss-limit-mb 2048 --timeout-s 10
+  --checkpoints-cpu-h 4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72
+  --source /root/eb-research/src/conf-fuzz-head --seed-corpora research/harness/fuzz/seed-corpora-v1.json
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-008-LONG/{candidate}/rep{rep}
+  --experiment-id EXP-CONF-008-LONG --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  generated:
+    - {item_id: conf008-long-anchor, family: synthetic-anchor, generator: zeros-v1, bytes: 1, seed: 2809171001}
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: none, unit: s}
+  - {name: execs_total, source: stdout_json, key: payload.execs_total, family: other, direction: none, unit: count}
+  - {name: edges_final, source: stdout_json, key: payload.edges_final, family: other, direction: none, unit: count}
+  - {name: regions_covered_final, source: stdout_json, key: payload.regions_covered_final, family: other, direction: none, unit: count}
+  - {name: lines_covered_final, source: stdout_json, key: payload.lines_covered_final, family: other, direction: none, unit: count}
+  - {name: decided_codes_reached, source: stdout_json, key: payload.decided_codes_reached, family: other, direction: none, unit: count}
+  - {name: decided_codes_attributed, source: stdout_json, key: payload.decided_codes_attributed, family: other, direction: none, unit: count}
+  - {name: defects_injected, source: stdout_json, key: payload.defects_injected, family: other, direction: none, unit: count}
+  - {name: defects_detected, source: stdout_json, key: payload.defects_detected, family: other, direction: none, unit: count}
+  - {name: clean_build_findings, source: stdout_json, key: payload.clean_build_findings, family: correctness, direction: minimize, unit: count}
+  - {name: trace_sha256, source: stdout_json, key: payload.trace_sha256, family: correctness, kind: string}
+  - {name: build_identity_sha256, source: stdout_json, key: payload.build_identity_sha256, family: correctness, kind: string}
+
+repetitions: 1
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809171001}
+timing: false
+order: sequential
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 32
+  requires:
+    - /root/.cargo/bin/cargo-fuzz
+    - research/harness/fuzz/seed-corpora-v1.json
+  timeout_s: 345600
+
+analysis:
+  baseline: T02-on-defect-libfuzzer-72h
+  pairing: item
+  report_metrics: [defects_detected, decided_codes_reached, regions_covered_final, clean_build_findings]

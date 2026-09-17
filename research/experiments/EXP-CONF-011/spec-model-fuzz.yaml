@@ -1,0 +1,68 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-011-MF
+status: designed
+question: >
+  Do the frozen ZIP compatibility profiles generalise to structure-aware ZIP variants the way the modelled runtimes (exact
+  frozen versions on the Windows host) behave, and how do GNU tar 1.35 and bsdtar 3.7.2 treat tar authority variants?
+hypothesis: >
+  H5: for each frozen ZIP profile, projection agrees with the modelled runtime or refuses with a documented
+  safety-override code on every variant; falsified per profile by one disagreement (agreement fraction and unmatched
+  conflict patterns reported). The tar arm is descriptive (no frozen tar profile exists).
+decision_ids: [DEC-LEG-001, DEC-LEG-081, DEC-LEG-082, DEC-LEG-063, DEC-ECO-047]
+notes: >
+  Design pre-registration (Phase C-design); runs after gate G-A. The generated item is an anchor; variants are produced
+  by research/conformance/adapters/zipvariants.py and tarvariants.py from the tuning instantiation of the generated
+  adapter cases with seed 2809170011 (20,000 ZIP variants; 5,000 tar variants). Windows-host runtimes are invoked in
+  batches of 500 through WSL interop (correctness only; never timing). Every disagreement is re-observed twice.
+
+candidates:
+  - {name: zip-python-zipfile-3.13.5, params: {fmt: zip, profile: zip/python-zipfile@3.13.5, runtime: python-zipfile-3.13.5-win}}
+  - {name: zip-java-zipfile-21.0.12.1, params: {fmt: zip, profile: zip/java-zipfile@21.0.12.1, runtime: java-zipfile-21.0.12.1-win}}
+  - {name: zip-java-zipinputstream-21.0.12.1, params: {fmt: zip, profile: zip/java-zipinputstream@21.0.12.1, runtime: java-zipinputstream-21.0.12.1-win}}
+  - {name: zip-libarchive-bsdtar-3.8.8, params: {fmt: zip, profile: zip/libarchive-bsdtar@3.8.8, runtime: libarchive-3.8.8-win}}
+  - {name: tar-gnu-tar-1.35, params: {fmt: tar, profile: none, runtime: gnu-tar-1.35-linux}}
+  - {name: tar-bsdtar-3.7.2, params: {fmt: tar, profile: none, runtime: libarchive-3.7.2-linux}}
+command: >-
+  /usr/bin/python3 research/conformance/adapters/model_fuzz.py
+  --format {fmt} --profile {profile} --runtime {runtime}
+  --runtime-lock research/experiments/_legacy/runtime-lock.json
+  --variants-seed 2809170011 --zip-variants 20000 --tar-variants 5000 --batch 500
+  --ebound /root/eb-research/target/conf-head/release/ebound
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-011-MF/{candidate}/rep{rep}
+  --experiment-id EXP-CONF-011-MF --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  generated:
+    - {item_id: conf011-mf-anchor, family: synthetic-anchor, generator: zeros-v1, bytes: 1, seed: 2809170011}
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: variants_total, source: stdout_json, key: payload.variants_total, family: other, direction: none, unit: count}
+  - {name: variants_agree, source: stdout_json, key: payload.variants_agree, family: other, direction: none, unit: count}
+  - {name: variants_safety_override, source: stdout_json, key: payload.variants_safety_override, family: other, direction: none, unit: count}
+  - {name: variants_disagree, source: stdout_json, key: payload.variants_disagree, family: correctness, direction: minimize, unit: count}
+  - {name: unmatched_conflict_patterns, source: stdout_json, key: payload.unmatched_conflict_patterns, family: other, direction: none, unit: count}
+  - {name: runtime_nondeterministic, source: stdout_json, key: payload.runtime_nondeterministic, family: other, direction: none, unit: count}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+
+repetitions: 1
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809170011}
+timing: false
+order: sequential
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/conf-head/release/ebound
+    - research/experiments/_legacy/runtime-lock.json
+  timeout_s: 172800
+
+analysis:
+  baseline: zip-python-zipfile-3.13.5
+  pairing: item
+  report_metrics: [variants_agree, variants_safety_override, variants_disagree, unmatched_conflict_patterns]

@@ -1,0 +1,90 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-004
+status: designed
+question: >
+  For every normative rule and frozen bound of the native format, what outcome (class, reason code, detail,
+  verification qualifier, EAM and identity digests) does each production reader path and CLI command return on a
+  minimal generated conformance case, does it match the expectation derived from the written rule, and do the paths
+  agree?
+hypothesis: >
+  H1: every REQUIRED/FORBIDDEN native case yields its expected class (and documented code) on every applicable path;
+  falsified by one mismatch. H2: all applicable paths agree on the comparison key; falsified by one disagreement.
+  H3: no native case is UNRESOLVED. H4: repeated runs give identical tuples. H5: valid cases re-encode byte-identically.
+decision_ids: [DEC-ECO-013, DEC-ECO-042, DEC-ECO-012, DEC-MOD-041, DEC-INT-040, DEC-INT-020, DEC-INT-006, DEC-INT-008,
+  DEC-INT-042, DEC-CON-003, DEC-CON-004, DEC-CON-009, DEC-CON-011, DEC-CON-012, DEC-CON-014, DEC-CON-023, DEC-CON-024,
+  DEC-CON-025, DEC-CRY-012, DEC-CRY-020, DEC-CRY-029, DEC-CRY-065, DEC-CRY-071, DEC-CRY-076, DEC-CRY-077, DEC-CRY-085,
+  DEC-CRY-103, DEC-ACC-021, DEC-ACC-036, DEC-MOD-003, DEC-MOD-008, DEC-MOD-014, DEC-MOD-029, DEC-MOD-032, DEC-MOD-040,
+  DEC-MOD-047, DEC-MOD-048, DEC-PLT-012, DEC-PLT-019, DEC-PLT-023, DEC-PLT-036, DEC-PLT-038, DEC-PLT-050,
+  DEC-PLT-053, DEC-CMP-005, DEC-CMP-010]
+notes: >
+  Design pre-registration (Phase C-design). Runs only after gate G-A; results NOT_DECISION_GRADE until G-B.
+  Conventions: research/experiments/_index/conformance-conventions.md. Items are case-family bundles of the generated
+  conformance corpus ebcc-v1 (split name 'conformance', not a corpus split). Deterministic metrics: 2 repetitions plus
+  repeat-hash on payload.artifact_sha256.
+
+candidates:
+  - name: ebound-head
+    params:
+      build: head
+      ebound_bin: /root/eb-research/target/conf-head/release/ebound
+  - name: ebound-baseline
+    params:
+      build: baseline
+      ebound_bin: /root/eb-research/target/conf-baseline/release/ebound
+command: >-
+  /root/eb-research/target/harness/release/ebcc-census
+  --bundle {item_path} --build {build} --ebound {ebound_bin} --paths all
+  --manifest research/conformance/corpus/ebcc-v1/manifest.json
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-004/{candidate}/{item_id}/rep{rep}
+  --experiment-id EXP-CONF-004 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/conformance/corpus/ebcc-v1/ebr-manifest.jsonl
+  splits: [conformance]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: path_results_total, source: stdout_json, key: payload.path_results_total, family: other, direction: none, unit: count}
+  - {name: class_mismatches, source: stdout_json, key: payload.class_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: documented_code_mismatches, source: stdout_json, key: payload.documented_code_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: undocumented_expected_codes, source: stdout_json, key: payload.undocumented_expected_codes, family: other, direction: none, unit: count}
+  - {name: unresolved_native_cases, source: stdout_json, key: payload.unresolved_native_cases, family: correctness, direction: minimize, unit: count}
+  - {name: reader_disagreements, source: stdout_json, key: payload.reader_disagreements, family: correctness, direction: minimize, unit: count}
+  - {name: mvt_violations_total, source: stdout_json, key: payload.mvt_violations_total, family: correctness, direction: minimize, unit: count}
+  - {name: canonical_reencode_mismatches, source: stdout_json, key: payload.canonical_reencode_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: adversarial_refused, source: stdout_json, key: payload.adversarial_refused, family: other, direction: none, unit: count}
+  - {name: adversarial_total, source: stdout_json, key: payload.adversarial_total, family: other, direction: none, unit: count}
+  - {name: specific_codes, source: stdout_json, key: payload.specific_codes, family: other, direction: none, unit: count}
+  - {name: negative_documented_cases, source: stdout_json, key: payload.negative_documented_cases, family: other, direction: none, unit: count}
+  - {name: equivalence_assertions_passed, source: stdout_json, key: payload.equivalence_assertions_passed, family: other, direction: none, unit: count}
+  - {name: equivalence_assertions_total, source: stdout_json, key: payload.equivalence_assertions_total, family: other, direction: none, unit: count}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+  - {name: build_identity_sha256, source: stdout_json, key: payload.build_identity_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809170401}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 8
+  requires:
+    - /root/eb-research/target/harness/release/ebcc-census
+    - /root/eb-research/target/conf-head/release/ebound
+    - /root/eb-research/target/conf-baseline/release/ebound
+    - research/conformance/corpus/ebcc-v1/manifest.json
+  timeout_s: 86400
+
+analysis:
+  baseline: ebound-baseline
+  pairing: item
+  report_metrics: [class_mismatches, documented_code_mismatches, reader_disagreements, mvt_violations_total,
+    canonical_reencode_mismatches, unresolved_native_cases, undocumented_expected_codes]

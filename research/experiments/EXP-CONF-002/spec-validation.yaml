@@ -1,0 +1,74 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-002-VAL
+status: designed-validation-look
+question: >
+  Validation look of EXP-CONF-002: after ebir v2 is frozen, do production and ebir v2 still agree (after triage) on
+  the conformance corpus and on deterministic ebound-head packs of the named small validation items, including the
+  M1-M3 mutation classes?
+hypothesis: >
+  Same hypotheses H1-H3 as EXP-CONF-002 spec.yaml, evaluated once on validation-derived bases as a registered
+  regression check; falsified by one disagreement not attributed to ebir.
+decision_ids: [DEC-ECO-032, DEC-ECO-060, DEC-CON-025, DEC-CON-030, DEC-ECO-038, DEC-INT-040, DEC-MOD-041]
+notes: >
+  Single registered validation look (protocol section 12). Register in research/decisions/validation-looks.jsonl
+  before running. Frozen EBIR-V2 only; no reader, mutation class or comparison-key change is allowed after this look.
+  Items come from items-manifest-validation.jsonl produced by research/conformance/tools/pack_bases.py from the named
+  validation items (f01-validation-redis-7-2-16-git, f06-validation-osm-monaco-20250101-xml,
+  f07-validation-gen-numeric-b-small, f08-validation-sakila-sqlite, f19-validation-deep,
+  f20-validation-generated-malicious-structures, f20-validation-real-cpython-archivetestdata,
+  f15-validation-edgecases). Raw output lives under its own experiment id so it never mixes with tuning runs.
+
+candidates:
+  - name: corpus-pass-ebir-v2
+    params: {mode: corpus-pass, other_bin: /root/eb-research/independent-reader/ebir-v2/ebir, other_id: EBIR-V2, classes: none}
+  - name: mutation-ebir-v2
+    params: {mode: mutation, other_bin: /root/eb-research/independent-reader/ebir-v2/ebir, other_id: EBIR-V2, classes: "M1,M2,M3"}
+  - name: fragmentation-ebir-v2
+    params: {mode: fragmentation, other_bin: /root/eb-research/independent-reader/ebir-v2/ebir, other_id: EBIR-V2, classes: none}
+command: >-
+  /root/eb-research/target/harness/release/ebcc-diff
+  --mode {mode} --input {item_path} --item-id {item_id}
+  --prod /root/eb-research/target/harness/release/ebcc-readtuple --prod-ebound-build head
+  --other {other_bin} --other-id {other_id} --classes {classes} --mutation-seed 2809170001 --jobs 28
+  --expectations research/conformance/corpus/ebcc-v1/manifest.json
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-002-VAL/{candidate}/{item_id}/rep{rep}
+  --experiment-id EXP-CONF-002-VAL --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/experiments/EXP-CONF-002/items-manifest-validation.jsonl
+  splits: [validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: inputs_total, source: stdout_json, key: payload.inputs_total, family: other, direction: none, unit: count}
+  - {name: reader_disagreements, source: stdout_json, key: payload.disagreements_total, family: correctness, direction: minimize, unit: count}
+  - {name: disagreement_clusters, source: stdout_json, key: payload.disagreement_clusters, family: other, direction: none, unit: count}
+  - {name: unsupported_feature_bits, source: stdout_json, key: payload.unsupported_feature_bits, family: other, direction: none, unit: count}
+  - {name: prod_nondeterministic_inputs, source: stdout_json, key: payload.prod_nondeterministic_inputs, family: correctness, direction: minimize, unit: count}
+  - {name: other_nondeterministic_inputs, source: stdout_json, key: payload.other_nondeterministic_inputs, family: correctness, direction: minimize, unit: count}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+  - {name: build_identity_sha256, source: stdout_json, key: payload.build_identity_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809170001}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 32
+  requires:
+    - /root/eb-research/target/harness/release/ebcc-diff
+    - /root/eb-research/target/harness/release/ebcc-readtuple
+    - /root/eb-research/independent-reader/ebir-v2/ebir
+  timeout_s: 172800
+
+analysis:
+  baseline: corpus-pass-ebir-v2
+  pairing: item
+  report_metrics: [reader_disagreements, disagreement_clusters, unsupported_feature_bits]

@@ -1,0 +1,64 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-014-DOCKER
+status: blocked
+question: >
+  Arm B1 (BLOCKED: Docker Desktop unavailable): inside a digest-pinned linux/amd64 container, is ebcc-gen regeneration
+  byte-identical to the committed manifest, and do the production and independent reader census tuples equal the WSL
+  tuples for every conformance case?
+hypothesis: >
+  Zero regenerated-case SHA-256 mismatches and zero census tuple mismatches versus the WSL reference; falsified by one
+  mismatch.
+decision_ids: [DEC-ECO-042, DEC-ECO-014]
+notes: >
+  Design pre-registration (Phase C-design). BLOCKED until Docker Desktop starts cleanly on this host (see protocol
+  section 9). Image digests come from research/conformance/containers/images-v1.json. The runner executes on WSL and
+  invokes docker run; only correctness and determinism are measured (no timing). Items are ebcc-v1 family bundles.
+
+candidates:
+  - name: docker-amd64-regen
+    params: {task: regen, image_key: ebcc-ubuntu-24.04-amd64}
+  - name: docker-amd64-census-head
+    params: {task: census-head, image_key: ebcc-ubuntu-24.04-amd64}
+  - name: docker-amd64-census-ebir
+    params: {task: census-ebir, image_key: ebcc-ubuntu-24.04-amd64}
+command: >-
+  /usr/bin/python3 research/conformance/containers/run_in_container.py
+  --images research/conformance/containers/images-v1.json --image-key {image_key} --task {task}
+  --bundle {item_path} --item-id {item_id}
+  --reference-artifacts /root/eb-research/raw-artifacts/EXP-CONF-004
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-014-DOCKER/{candidate}/{item_id}/rep{rep}
+  --experiment-id EXP-CONF-014-DOCKER --env-name docker-ubuntu-24.04
+shell: bash
+
+corpus:
+  manifest: research/conformance/corpus/ebcc-v1/ebr-manifest.jsonl
+  splits: [conformance]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: regen_sha256_mismatches, source: stdout_json, key: payload.regen_sha256_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: census_tuple_mismatches, source: stdout_json, key: payload.census_tuple_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: image_digest, source: stdout_json, key: payload.image_digest, family: correctness, kind: string}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809170401}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /usr/bin/docker
+    - research/conformance/containers/images-v1.json
+  timeout_s: 86400
+
+analysis:
+  baseline: docker-amd64-census-head
+  pairing: item
+  report_metrics: [regen_sha256_mismatches, census_tuple_mismatches]

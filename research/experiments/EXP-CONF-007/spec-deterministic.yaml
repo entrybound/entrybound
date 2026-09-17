@@ -1,0 +1,94 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-007-DET
+status: designed
+question: >
+  Deterministic arm: under each candidate default caller policy, are adversarial and frozen-bound conformance cases
+  refused within the exact allocator ceilings (R0_max + H before budget checks, R0_max + B_memory after acceptance,
+  zero KDF invocations above ceiling), are all adversarial cases refused, how tight are declared requirements, and how
+  often are benign tuning packs refused?
+hypothesis: >
+  H1: no pre-check allocation from an untrusted field and no exceedance of R0_max + H. H2: accepted cases stay within
+  R0_max + B_memory and B_scratch. H3: zero Argon2id invocations above the policy ceiling. H4: adversarial_true_refusal_fraction
+  = 1 per policy. H5: declared_tightness_ratio >= 1 on every valid archive. Each falsified by one counterexample.
+decision_ids: [DEC-CON-001, DEC-CON-004, DEC-CON-005, DEC-CON-006, DEC-CON-009, DEC-CRY-013, DEC-CRY-015, DEC-CRY-029,
+  DEC-CRY-067, DEC-ACC-036, DEC-ACC-057, DEC-MOD-036, DEC-PLT-002, DEC-PLT-045, DEC-PLT-060, DEC-CMP-016]
+notes: >
+  Design pre-registration (Phase C-design); runs after gate G-A; allocator records need section 14 item 17 (counting
+  allocator) and the MVT-16(c) identity proof for ebound-research. Items: items-manifest.jsonl lists the ebcc-v1 family
+  bundles (split conformance) and ebound-head deterministic packs of small- and medium-tier tuning items (split tuning;
+  balanced and extreme profiles x indexed and stream, unencrypted). The benign-set validation look is a copy of this
+  spec with the validation packs, registered in research/decisions/validation-looks.jsonl before it runs.
+
+candidates:
+  - {name: POL-SQ, params: {preset: status-quo}}
+  - {name: BUD-go-extract-conservative, params: {preset: budget.go-extract-style-conservative}}
+  - {name: BUD-corpus-percentile, params: {preset: budget.corpus-percentile-derived}}
+  - {name: BUD-context-untrusted-download, params: {preset: budget.context-presets.untrusted-download}}
+  - {name: BUD-context-ci-build, params: {preset: budget.context-presets.ci-build}}
+  - {name: BUD-context-backup-restore, params: {preset: budget.context-presets.backup-restore}}
+  - {name: BUD-host-derived-16g, params: {preset: budget.host-resource-derived.16g}}
+  - {name: BUD-declared-hard-ceiling, params: {preset: budget.declared-with-hard-ceiling}}
+  - {name: BUD-archive-raises-limits, params: {preset: budget.archive-declaration-raises-limits}}
+  - {name: DEC-zstd-cli-128mib, params: {preset: decoder.zstd-cli-128mib}}
+  - {name: DEC-low-memory-opt-in, params: {preset: decoder.low-memory-default-with-opt-in}}
+  - {name: DEC-per-feature-ceilings, params: {preset: decoder.per-feature-ceilings}}
+  - {name: DEC-host-derived-16g, params: {preset: decoder.host-derived.16g}}
+  - {name: DEC-trust-declared, params: {preset: decoder.trust-declared-without-ceiling}}
+  - {name: CRY-creation-default, params: {preset: crypto.default-equals-creation-default}}
+  - {name: CRY-hardware-probed, params: {preset: crypto.hardware-probed-default}}
+  - {name: CRY-lower-recipient-cap, params: {preset: crypto.lower-recipient-cap}}
+  - {name: CRY-measured-defaults, params: {preset: crypto.measured-defaults-same-caps}}
+  - {name: CRY-tiered-profiles, params: {preset: crypto.tiered-policy-profiles}}
+command: >-
+  /root/eb-research/target/harness-research/release/ebcc-resource
+  --mode deterministic --bundle {item_path} --item-id {item_id}
+  --presets research/conformance/resource/presets-v1.json --preset {preset}
+  --h-table research/conformance/resource/h-v1.json --r0-runs 20
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-007-DET/{candidate}/{item_id}/rep{rep}
+  --experiment-id EXP-CONF-007-DET --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/experiments/EXP-CONF-007/items-manifest.jsonl
+  splits: [conformance, tuning]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: precheck_untrusted_allocations, source: stdout_json, key: payload.precheck_untrusted_allocations, family: correctness, direction: minimize, unit: count}
+  - {name: precheck_bound_exceedances, source: stdout_json, key: payload.precheck_bound_exceedances, family: correctness, direction: minimize, unit: count}
+  - {name: accepted_bound_exceedances, source: stdout_json, key: payload.accepted_bound_exceedances, family: correctness, direction: minimize, unit: count}
+  - {name: kdf_invocations_above_ceiling, source: stdout_json, key: payload.kdf_invocations_above_ceiling, family: correctness, direction: minimize, unit: count}
+  - {name: adversarial_refused, source: stdout_json, key: payload.adversarial_refused, family: other, direction: none, unit: count}
+  - {name: adversarial_total, source: stdout_json, key: payload.adversarial_total, family: other, direction: none, unit: count}
+  - {name: benign_refused, source: stdout_json, key: payload.benign_refused, family: other, direction: none, unit: count}
+  - {name: benign_total, source: stdout_json, key: payload.benign_total, family: other, direction: none, unit: count}
+  - {name: refusal_bytes_read_sum, source: stdout_json, key: payload.refusal_bytes_read_sum, family: size, direction: minimize, unit: B}
+  - {name: tightness_below_one, source: stdout_json, key: payload.tightness_below_one, family: correctness, direction: minimize, unit: count}
+  - {name: tightness_geomean, source: stdout_json, key: payload.tightness_geomean, family: other, direction: minimize, unit: ratio}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+  - {name: build_identity_sha256, source: stdout_json, key: payload.build_identity_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809170701}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness-research/release/ebcc-resource
+    - research/conformance/resource/presets-v1.json
+    - research/conformance/resource/h-v1.json
+  timeout_s: 21600
+
+analysis:
+  baseline: POL-SQ
+  pairing: item
+  report_metrics: [precheck_untrusted_allocations, precheck_bound_exceedances, accepted_bound_exceedances,
+    kdf_invocations_above_ceiling, adversarial_refused, adversarial_total, benign_refused, benign_total,
+    tightness_below_one, tightness_geomean]

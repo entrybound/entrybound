@@ -1,0 +1,75 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-005-ADAPT
+status: designed
+question: >
+  Arm D: can the candidate verifier interfaces (subprocess adapter protocol, JUnit+JSON CI binary, report JSON schema
+  with scope) run the conformance corpus against production, the independent reader and two incumbent legacy readers
+  and express outcome class, reason code, verification scope and profile-bound verdicts for each?
+hypothesis: >
+  H5: for every implementation and case, the subprocess adapter protocol carries every required report field and the
+  report validates against ebcc.report.v1; falsified by one required field that cannot be expressed or one invalid
+  report.
+decision_ids: [DEC-ECO-014, DEC-ECO-046]
+notes: >
+  Design pre-registration (Phase C-design); runs after gate G-A. Items: ebcc-v1 family bundles plus the 100-case
+  legacy slice exported by EXP-CONF-011 (tuning instantiation), both listed in adapters-manifest.jsonl. Per-case
+  overhead is informational (NOT_DECISION_GRADE). Incumbent adapters run only on the legacy slice; ebcc-verify skips
+  inapplicable (implementation, case) pairs and counts them.
+
+candidates:
+  - name: iface-subprocess-ebound
+    params: {iface: subprocess, impl: ebound, adapter: research/conformance/verifier/adapters/ebound_adapter.py}
+  - name: iface-subprocess-ebir
+    params: {iface: subprocess, impl: ebir, adapter: research/conformance/verifier/adapters/ebir_adapter.sh}
+  - name: iface-subprocess-bsdtar
+    params: {iface: subprocess, impl: bsdtar-3.7.2, adapter: research/conformance/verifier/adapters/bsdtar_adapter.py}
+  - name: iface-subprocess-pystdlib
+    params: {iface: subprocess, impl: python-3.12.3-zipfile-tarfile, adapter: research/conformance/verifier/adapters/pystdlib_adapter.py}
+  - name: iface-junit-ebound
+    params: {iface: junit-json, impl: ebound, adapter: research/conformance/verifier/adapters/ebound_adapter.py}
+  - name: iface-rust-trait-ebound
+    params: {iface: rust-trait, impl: ebound, adapter: builtin}
+command: >-
+  /root/eb-research/target/harness/release/ebcc-verify
+  --interface {iface} --implementation {impl} --adapter {adapter}
+  --cases {item_path} --report-schema research/conformance/verifier/ebcc.report.v1.schema.json
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-005-ADAPT/{candidate}/{item_id}/rep{rep}
+  --experiment-id EXP-CONF-005-ADAPT --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/experiments/EXP-CONF-005/adapters-manifest.jsonl
+  splits: [conformance, conformance-legacy]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: cases_run, source: stdout_json, key: payload.cases_run, family: other, direction: none, unit: count}
+  - {name: cases_not_applicable, source: stdout_json, key: payload.cases_not_applicable, family: other, direction: none, unit: count}
+  - {name: required_fields_unexpressible, source: stdout_json, key: payload.required_fields_unexpressible, family: correctness, direction: minimize, unit: count}
+  - {name: reports_invalid, source: stdout_json, key: payload.reports_invalid, family: correctness, direction: minimize, unit: count}
+  - {name: scope_expressible, source: stdout_json, key: payload.scope_expressible, family: other, direction: maximize, unit: binary}
+  - {name: profile_verdict_expressible, source: stdout_json, key: payload.profile_verdict_expressible, family: other, direction: maximize, unit: binary}
+  - {name: adapter_loc, source: stdout_json, key: payload.adapter_loc, family: other, direction: none, unit: LoC}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebcc-verify
+    - /usr/bin/bsdtar
+    - /usr/bin/python3
+  timeout_s: 43200
+
+analysis:
+  baseline: iface-subprocess-ebound
+  pairing: item
+  report_metrics: [required_fields_unexpressible, reports_invalid, scope_expressible, profile_verdict_expressible, adapter_loc]

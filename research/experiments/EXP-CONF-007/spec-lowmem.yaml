@@ -1,0 +1,75 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-007-LM
+status: designed
+question: >
+  Memory-limited host arm: under address-space limits (prlimit --as) of 512 MiB, 1 GiB and 2 GiB, which benign archives
+  and KDF cases complete, are refused (with which class and code), or abort on allocation failure under the status-quo,
+  low-memory, 128 MiB decoder and creation-default crypto policies?
+hypothesis: >
+  Descriptive (EMULATED memory scarcity). A policy under which a benign archive aborts on allocation failure instead of
+  being refused with POLICY_REFUSED before allocation is recorded as an HC-06 observation (declared requirement not
+  checked against available memory is a policy property, not a format violation) and reported per limit.
+decision_ids: [DEC-CON-005, DEC-CON-006, DEC-CRY-013]
+notes: >
+  Design pre-registration (Phase C-design); runs after gate G-A. Candidate names encode (policy, memory limit). The
+  driver runs each open under prlimit --as=<limit> and first verifies enforcement with a probe allocating twice the
+  limit (systemd scope memory limits were found unenforced on this WSL2 cgroup configuration at design time).
+  Items: items-manifest-lowmem.jsonl lists ebound-head packs of small- and medium-tier tuning items and the ebcc-v1
+  F-CRYPTO bundle. EMULATED qualifier; no timing.
+
+candidates:
+  - {name: POL-SQ-512m, params: {preset: status-quo, mem_limit: 512M}}
+  - {name: POL-SQ-1g, params: {preset: status-quo, mem_limit: 1G}}
+  - {name: POL-SQ-2g, params: {preset: status-quo, mem_limit: 2G}}
+  - {name: DEC-low-memory-opt-in-512m, params: {preset: decoder.low-memory-default-with-opt-in, mem_limit: 512M}}
+  - {name: DEC-low-memory-opt-in-1g, params: {preset: decoder.low-memory-default-with-opt-in, mem_limit: 1G}}
+  - {name: DEC-low-memory-opt-in-2g, params: {preset: decoder.low-memory-default-with-opt-in, mem_limit: 2G}}
+  - {name: DEC-zstd-cli-128mib-512m, params: {preset: decoder.zstd-cli-128mib, mem_limit: 512M}}
+  - {name: DEC-zstd-cli-128mib-1g, params: {preset: decoder.zstd-cli-128mib, mem_limit: 1G}}
+  - {name: DEC-zstd-cli-128mib-2g, params: {preset: decoder.zstd-cli-128mib, mem_limit: 2G}}
+  - {name: CRY-creation-default-512m, params: {preset: crypto.default-equals-creation-default, mem_limit: 512M}}
+  - {name: CRY-creation-default-1g, params: {preset: crypto.default-equals-creation-default, mem_limit: 1G}}
+  - {name: CRY-creation-default-2g, params: {preset: crypto.default-equals-creation-default, mem_limit: 2G}}
+command: >-
+  /root/eb-research/target/harness-research/release/ebcc-resource
+  --mode memlimit --mem-limit {mem_limit} --bundle {item_path} --item-id {item_id}
+  --presets research/conformance/resource/presets-v1.json --preset {preset}
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-007-LM/{candidate}/{item_id}/rep{rep}
+  --experiment-id EXP-CONF-007-LM --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/experiments/EXP-CONF-007/items-manifest-lowmem.jsonl
+  splits: [conformance, tuning]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: inputs_total, source: stdout_json, key: payload.inputs_total, family: other, direction: none, unit: count}
+  - {name: completed, source: stdout_json, key: payload.completed, family: other, direction: none, unit: count}
+  - {name: refused_policy, source: stdout_json, key: payload.refused_policy, family: other, direction: none, unit: count}
+  - {name: refused_other, source: stdout_json, key: payload.refused_other, family: other, direction: none, unit: count}
+  - {name: allocation_failure_aborts, source: stdout_json, key: payload.allocation_failure_aborts, family: correctness, direction: minimize, unit: count}
+  - {name: enforcement_probe_failed, source: stdout_json, key: payload.enforcement_probe_failed, family: correctness, direction: minimize, unit: binary}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809170701}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: true
+  requires:
+    - /usr/bin/prlimit
+    - /root/eb-research/target/harness-research/release/ebcc-resource
+    - research/conformance/resource/presets-v1.json
+  timeout_s: 21600
+
+analysis:
+  baseline: POL-SQ-2g
+  pairing: item
+  report_metrics: [completed, refused_policy, refused_other, allocation_failure_aborts, enforcement_probe_failed]

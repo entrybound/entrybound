@@ -1,0 +1,94 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-007
+status: designed
+question: >
+  Timing arm: what CPU time and allocator peak do refusals of adversarial and frozen-bound conformance cases cost under
+  each candidate default caller policy (resource budget, decoder ceilings, crypto open policy), measured in process on
+  a pinned vCPU?
+hypothesis: >
+  Descriptive per case family (diagnostic; conformance families do not meet decision-method section 4.9 minimum
+  support). The binary hypotheses H1-H5 of the protocol are evaluated in spec-deterministic.yaml.
+decision_ids: [DEC-CON-001, DEC-CON-005, DEC-CON-006, DEC-CRY-013, DEC-CRY-015, DEC-CRY-067, DEC-ACC-057, DEC-CMP-016]
+notes: >
+  Design pre-registration (Phase C-design); runs after gates G-A and G-B for timing (runner additions section 14 item 3;
+  calibration EXP-CAL-*-wsl-ubuntu for time_cpu and memory_peak). Exclusive quiet window; affinity st-v {2};
+  VIRTUALIZED. Preset values come from research/conformance/resource/presets-v1.json, committed before the record.
+  Each sample opens every case of one family bundle in process; per-case values (exact order-statistic analysis) live
+  in the raw-artifact directory whose SHA-256 is recorded. Minimum 10 rounds, step 10, cap 30 with the section 4.6
+  precision rule applied by the runner additions. Warmups 2 (small tier).
+
+candidates:
+  - {name: POL-SQ, params: {preset: status-quo}}
+  - {name: BUD-go-extract-conservative, params: {preset: budget.go-extract-style-conservative}}
+  - {name: BUD-corpus-percentile, params: {preset: budget.corpus-percentile-derived}}
+  - {name: BUD-context-untrusted-download, params: {preset: budget.context-presets.untrusted-download}}
+  - {name: BUD-context-ci-build, params: {preset: budget.context-presets.ci-build}}
+  - {name: BUD-context-backup-restore, params: {preset: budget.context-presets.backup-restore}}
+  - {name: BUD-host-derived-16g, params: {preset: budget.host-resource-derived.16g}}
+  - {name: BUD-declared-hard-ceiling, params: {preset: budget.declared-with-hard-ceiling}}
+  - {name: BUD-archive-raises-limits, params: {preset: budget.archive-declaration-raises-limits}}
+  - {name: DEC-zstd-cli-128mib, params: {preset: decoder.zstd-cli-128mib}}
+  - {name: DEC-low-memory-opt-in, params: {preset: decoder.low-memory-default-with-opt-in}}
+  - {name: DEC-per-feature-ceilings, params: {preset: decoder.per-feature-ceilings}}
+  - {name: DEC-host-derived-16g, params: {preset: decoder.host-derived.16g}}
+  - {name: DEC-trust-declared, params: {preset: decoder.trust-declared-without-ceiling}}
+  - {name: CRY-creation-default, params: {preset: crypto.default-equals-creation-default}}
+  - {name: CRY-hardware-probed, params: {preset: crypto.hardware-probed-default}}
+  - {name: CRY-lower-recipient-cap, params: {preset: crypto.lower-recipient-cap}}
+  - {name: CRY-measured-defaults, params: {preset: crypto.measured-defaults-same-caps}}
+  - {name: CRY-tiered-profiles, params: {preset: crypto.tiered-policy-profiles}}
+command: >-
+  /root/eb-research/target/harness-research/release/ebcc-resource
+  --mode timing --bundle {item_path} --item-id {item_id}
+  --presets research/conformance/resource/presets-v1.json --preset {preset}
+  --h-table research/conformance/resource/h-v1.json --batch-min-ops 1000 --order-seed 2809170701
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-007/{candidate}/{item_id}/rep{rep}
+  --experiment-id EXP-CONF-007 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/conformance/corpus/ebcc-v1/ebr-manifest.jsonl
+  splits: [conformance]
+  item_ids: [ebcc-v1-f-res, ebcc-v1-f-bound, ebcc-v1-f-codec, ebcc-v1-f-crypto, ebcc-v1-f-desc]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: none, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: none, unit: B}
+  - {name: refusal_cpu_s_sum, source: stdout_json, key: payload.refusal_cpu_s_sum, family: time_cpu, direction: minimize, unit: s}
+  - {name: refusal_alloc_peak_bytes_max, source: stdout_json, key: payload.refusal_alloc_peak_bytes_max, family: memory_peak, direction: minimize, unit: B}
+  - {name: refusal_alloc_peak_bytes_sum, source: stdout_json, key: payload.refusal_alloc_peak_bytes_sum, family: memory_peak, direction: minimize, unit: B}
+  - {name: accepted_alloc_peak_bytes_max, source: stdout_json, key: payload.accepted_alloc_peak_bytes_max, family: memory_peak, direction: minimize, unit: B}
+  - {name: cases_measured, source: stdout_json, key: payload.cases_measured, family: other, direction: none, unit: count}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+  - {name: build_identity_sha256, source: stdout_json, key: payload.build_identity_sha256, family: correctness, kind: string}
+
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809170701}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  cpu_affinity: [2]
+  requires:
+    - /root/eb-research/target/harness-research/release/ebcc-resource
+    - research/conformance/resource/presets-v1.json
+    - research/conformance/resource/h-v1.json
+  timeout_s: 7200
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+analysis:
+  baseline: POL-SQ
+  pairing: item_repetition
+  report_metrics: [refusal_cpu_s_sum, refusal_alloc_peak_bytes_max, refusal_alloc_peak_bytes_sum, accepted_alloc_peak_bytes_max]

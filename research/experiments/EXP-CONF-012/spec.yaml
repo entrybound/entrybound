@@ -1,0 +1,81 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-012
+status: designed
+question: >
+  Can clean-room sessions reproduce every permanent vector and every identity, Merkle, boundary, segment-assignment and
+  canonical-JSON byte string from the written documents, and do independent implementations of the pinned primitives
+  agree with production on full standard and adversarial vector sets?
+hypothesis: >
+  H1-H8 of the protocol: every vector line, identity root, Merkle root, boundary set, segment layout and receipt byte
+  string reproduces; production passes every pinned KAT; production's Ed25519 decisions match its written rule; X-Wing
+  implementations interoperate. Each is falsified by one mismatch not attributed to the reproducer by triage.
+decision_ids: [DEC-CRY-014, DEC-CRY-016, DEC-CRY-017, DEC-CRY-020, DEC-CRY-021, DEC-CRY-051, DEC-CRY-079, DEC-CRY-106,
+  DEC-INT-024, DEC-MOD-027, DEC-MOD-034, DEC-CMP-005, DEC-LEG-018, DEC-LEG-048, DEC-ECO-010, DEC-PLT-050]
+notes: >
+  Design pre-registration (Phase C-design); runs after gate G-A. Each candidate is one arm of the protocol; the arm driver
+  reads its own pinned inputs (research/conformance/vectors/pins-v1.json) and, for V3, the named tuning items through the
+  corpus manifest. The generated item is an anchor. Clean-room reproducers are frozen (commit recorded) before this spec
+  runs. Crypto construction correctness remains EXTERNAL_REVIEW_REQUIRED.
+
+candidates:
+  - {name: V1-vector-files, params: {arm: V1}}
+  - {name: V2-identity-merkle, params: {arm: V2}}
+  - {name: V3-boundaries, params: {arm: V3}}
+  - {name: V4-crypto-wire-and-kats, params: {arm: V4}}
+  - {name: V5-ed25519-profile-matrix, params: {arm: V5}}
+  - {name: V6-xwing-interop, params: {arm: V6}}
+  - {name: V7-segment-assignment, params: {arm: V7}}
+  - {name: V8-canonical-json, params: {arm: V8}}
+  - {name: V9-mixed-encoding-order, params: {arm: V9}}
+  - {name: V10-timestamps, params: {arm: V10}}
+command: >-
+  /usr/bin/python3 research/conformance/vectors/run_arm.py
+  --arm {arm} --pins research/conformance/vectors/pins-v1.json
+  --corpus-manifest research/corpus/manifest.json
+  --tuning-items f20-tuning-gear-extremes,f20-tuning-csprng,f01-tuning-zstd-v1-5-7-git
+  --ebcc-manifest research/conformance/corpus/ebcc-v1/manifest.json
+  --ebound-head /root/eb-research/target/conf-head/release/ebound
+  --ebound-baseline /root/eb-research/target/conf-baseline/release/ebound
+  --historical-bins /root/eb-research/conformance/historical/bin
+  --seeds 2809171201,2809171202,2809171203,2809171204
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-012/{candidate}/rep{rep}
+  --experiment-id EXP-CONF-012 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  generated:
+    - {item_id: conf012-anchor, family: synthetic-anchor, generator: zeros-v1, bytes: 1, seed: 2809171201}
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: checks_total, source: stdout_json, key: payload.checks_total, family: other, direction: none, unit: count}
+  - {name: checks_passed, source: stdout_json, key: payload.checks_passed, family: other, direction: none, unit: count}
+  - {name: mismatches, source: stdout_json, key: payload.mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: mismatch_clusters, source: stdout_json, key: payload.mismatch_clusters, family: other, direction: none, unit: count}
+  - {name: baseline_scope_checks, source: stdout_json, key: payload.baseline_scope_checks, family: other, direction: none, unit: count}
+  - {name: baseline_scope_passed, source: stdout_json, key: payload.baseline_scope_passed, family: other, direction: none, unit: count}
+  - {name: production_kat_failures, source: stdout_json, key: payload.production_kat_failures, family: correctness, direction: minimize, unit: count}
+  - {name: implementation_disagreements, source: stdout_json, key: payload.implementation_disagreements, family: other, direction: none, unit: count}
+  - {name: result_table_sha256, source: stdout_json, key: payload.result_table_sha256, family: correctness, kind: string}
+  - {name: pins_sha256, source: stdout_json, key: payload.pins_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809171201}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - research/conformance/vectors/pins-v1.json
+    - /root/eb-research/target/conf-head/release/ebound
+  timeout_s: 43200
+
+analysis:
+  baseline: V1-vector-files
+  pairing: item
+  report_metrics: [checks_passed, checks_total, mismatches, production_kat_failures, implementation_disagreements]

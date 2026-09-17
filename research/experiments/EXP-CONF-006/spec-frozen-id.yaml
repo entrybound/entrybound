@@ -1,0 +1,66 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-006-FID
+status: designed
+question: >
+  For every frozen planner id (v1, v3, v4, v5, v6) and chunker id gear-norm-v1, do ebound-baseline (9e44608) and
+  ebound-head produce byte-identical plans, chunk boundaries and containers on every small- and medium-tier tuning item
+  (objective MVT-16(d))?
+hypothesis: >
+  H3: zero plan, boundary or container byte differences between the two builds for every frozen id and item; falsified
+  by one difference.
+decision_ids: [DEC-CON-013, DEC-CMP-025]
+notes: >
+  Design pre-registration (Phase C-design); runs after gate G-A. The driver skips large-tier items (recorded as
+  skipped_large) because the protocol limits H3 to small and medium tiers. Validation items run in one registered look
+  from a copy of this spec with splits [validation]. Merge rule (conventions CC10): if a planner or chunking domain
+  experiment already records MVT-16(d) for the same builds and items, that record is reused by SHA-256.
+
+candidates:
+  - {name: frozen-planner-v1, params: {frozen_id: planner-v1}}
+  - {name: frozen-planner-v3, params: {frozen_id: planner-v3}}
+  - {name: frozen-planner-v4, params: {frozen_id: planner-v4}}
+  - {name: frozen-planner-v5, params: {frozen_id: planner-v5}}
+  - {name: frozen-planner-v6, params: {frozen_id: planner-v6}}
+  - {name: frozen-chunker-gear-norm-v1, params: {frozen_id: chunker-gear-norm-v1}}
+command: >-
+  /usr/bin/python3 research/conformance/historical/frozen_id_diff.py
+  --frozen-id {frozen_id} --baseline /root/eb-research/target/conf-baseline/release/ebound
+  --head /root/eb-research/target/conf-head/release/ebound
+  --item {item_path} --item-id {item_id} --skip-scale large --manifest research/corpus/manifest.json
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-006-FID/{candidate}/{item_id}/rep{rep}
+  --experiment-id EXP-CONF-006-FID --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: skipped_large, source: stdout_json, key: payload.skipped_large, family: other, direction: none, unit: binary}
+  - {name: plan_differences, source: stdout_json, key: payload.plan_differences, family: correctness, direction: minimize, unit: count}
+  - {name: boundary_differences, source: stdout_json, key: payload.boundary_differences, family: correctness, direction: minimize, unit: count}
+  - {name: container_byte_differences, source: stdout_json, key: payload.container_byte_differences, family: correctness, direction: minimize, unit: count}
+  - {name: head_container_sha256, source: stdout_json, key: payload.head_container_sha256, family: correctness, kind: string}
+  - {name: baseline_container_sha256, source: stdout_json, key: payload.baseline_container_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/conf-baseline/release/ebound
+    - /root/eb-research/target/conf-head/release/ebound
+  timeout_s: 21600
+
+analysis:
+  baseline: frozen-planner-v1
+  pairing: item
+  report_metrics: [plan_differences, boundary_differences, container_byte_differences, skipped_large]

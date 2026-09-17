@@ -1,0 +1,81 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-011-VAL
+status: designed-validation-look
+question: >
+  Registered validation look: with frozen expectations and drivers, do the same outcomes hold on the validation instantiation of the adapter cases and on the named real validation items?
+hypothesis: >
+  H1: Entrybound returns the expected class (and documented code) on every REQUIRED/FORBIDDEN adapter case. H2: strict
+  import refuses or declares every instantiated ambiguity class (ambiguity_refusal_fraction = 1). H3: no compatibility
+  profile admits a path, extent, collision, special-file or resource hazard. H4: every bomb and over-policy case is
+  refused (adversarial_true_refusal_fraction = 1). Each is falsified by one counterexample.
+decision_ids: [DEC-ECO-013, DEC-ECO-021, DEC-ECO-046, DEC-ECO-047, DEC-CON-023, DEC-LEG-007, DEC-LEG-020, DEC-LEG-021,
+  DEC-LEG-022, DEC-LEG-026, DEC-LEG-031, DEC-LEG-050, DEC-LEG-059, DEC-LEG-061, DEC-LEG-062, DEC-LEG-063, DEC-LEG-064,
+  DEC-LEG-066, DEC-LEG-072, DEC-LEG-082, DEC-LEG-083, DEC-LEG-084, DEC-LEG-087, DEC-LEG-090, DEC-LEG-095, DEC-LEG-102,
+  DEC-LEG-103, DEC-LEG-105, DEC-LEG-107, DEC-PLT-010, DEC-PLT-034]
+notes: >
+  Design pre-registration (Phase C-design); runs after gate G-A. Conventions: research/experiments/_index/conformance-conventions.md
+  and research/experiments/_legacy/conventions.md (C4-C12 reused). Items: items-manifest-validation.jsonl lists ebcc-adapters-v1 bundles of the validation instantiation (split conformance-legacy-validation) and the named real validation items (split validation; f20-validation-real-commons-compress-testdata, f20-validation-real-cpython-archivetestdata, f14-legacy-writer-matrix-validation, f14-gen-office-documents, f14-pyspark-420-sdist, f20-validation-generated-malicious-structures, f20-validation-bombs-compressed). Runtime observations are reused
+  by SHA-256 from EXP-LEGACY-* raw data when present, else produced by the legacy drivers before this replay. Single registered validation look: register in research/decisions/validation-looks.jsonl before running; no expectation or driver change afterwards.
+
+candidates:
+  - {name: eb-head-strict, params: {build: head, mode: strict, profile: none}}
+  - {name: eb-head-zip-python-zipfile-3.13.5, params: {build: head, mode: compat, profile: zip/python-zipfile@3.13.5}}
+  - {name: eb-head-zip-java-zipfile-21.0.12.1, params: {build: head, mode: compat, profile: zip/java-zipfile@21.0.12.1}}
+  - {name: eb-head-zip-java-zipinputstream-21.0.12.1, params: {build: head, mode: compat, profile: zip/java-zipinputstream@21.0.12.1}}
+  - {name: eb-head-zip-libarchive-bsdtar-3.8.8, params: {build: head, mode: compat, profile: zip/libarchive-bsdtar@3.8.8}}
+  - {name: eb-baseline-strict, params: {build: baseline, mode: strict, profile: none}}
+command: >-
+  /usr/bin/python3 research/conformance/adapters/replay.py
+  --build {build} --mode {mode} --profile {profile}
+  --ebound-head /root/eb-research/target/conf-head/release/ebound
+  --ebound-baseline /root/eb-research/target/conf-baseline/release/ebound
+  --bundle {item_path} --item-id {item_id}
+  --expectations research/conformance/corpus/ebcc-adapters-v1/manifest.json
+  --sandbox /root/eb-research/scratch/legacy-sandbox/EXP-CONF-011-VAL
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-011-VAL/{candidate}/{item_id}/rep{rep}
+  --experiment-id EXP-CONF-011-VAL --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/experiments/EXP-CONF-011/items-manifest-validation.jsonl
+  splits: [conformance-legacy-validation, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: none, unit: B}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: class_mismatches, source: stdout_json, key: payload.class_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: documented_code_mismatches, source: stdout_json, key: payload.documented_code_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: ambiguity_cases_refused_or_declared, source: stdout_json, key: payload.ambiguity_cases_refused_or_declared, family: other, direction: none, unit: count}
+  - {name: ambiguity_cases_total, source: stdout_json, key: payload.ambiguity_cases_total, family: other, direction: none, unit: count}
+  - {name: safety_bypasses, source: stdout_json, key: payload.safety_bypasses, family: correctness, direction: minimize, unit: count}
+  - {name: bombs_refused, source: stdout_json, key: payload.bombs_refused, family: other, direction: none, unit: count}
+  - {name: bombs_total, source: stdout_json, key: payload.bombs_total, family: other, direction: none, unit: count}
+  - {name: accepted_cases, source: stdout_json, key: payload.accepted_cases, family: other, direction: none, unit: count}
+  - {name: unresolved_cases, source: stdout_json, key: payload.unresolved_cases, family: other, direction: none, unit: count}
+  - {name: real_items_refused, source: stdout_json, key: payload.real_items_refused, family: other, direction: none, unit: count}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+  - {name: build_identity_sha256, source: stdout_json, key: payload.build_identity_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809170012}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/conf-head/release/ebound
+    - /root/eb-research/target/conf-baseline/release/ebound
+    - research/conformance/corpus/ebcc-adapters-v1/manifest.json
+  timeout_s: 86400
+
+analysis:
+  baseline: eb-baseline-strict
+  pairing: item
+  report_metrics: [class_mismatches, documented_code_mismatches, safety_bypasses, bombs_refused, bombs_total,
+    ambiguity_cases_refused_or_declared, ambiguity_cases_total, unresolved_cases, real_items_refused]

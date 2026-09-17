@@ -1,0 +1,116 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-009
+status: designed
+question: >
+  When every attacker-facing parsing boundary is fuzzed to the objective's 72 CPU-hour ceiling (plus bypass and
+  memory-ceiling arms), how many distinct reproducible crash, panic, OOM and timeout defects remain unresolved at each
+  candidate adequacy criterion's stop point, and is every finding minimized, triaged and promoted?
+hypothesis: >
+  H1: unresolved_fuzz_findings_at_coverage_target = 0 for every target at the objective's stop rule; falsified by one
+  deduplicated reproducible finding without a fix. H2: every finding has a regression entry, triage record and, where it
+  exposes a format rule, a conformance case. H3: no finding is first detected after a candidate criterion's stop point.
+decision_ids: [DEC-ECO-029, DEC-ECO-028, DEC-CRY-006, DEC-CRY-016, DEC-CRY-017, DEC-CMP-005, DEC-CMP-010, DEC-CMP-016,
+  DEC-CMP-037, DEC-CON-018, DEC-INT-008, DEC-ACC-057, DEC-CRY-029, DEC-CRY-067, DEC-LEG-059, DEC-LEG-064, DEC-LEG-095,
+  DEC-MOD-006, DEC-MOD-038, DEC-PLT-054]
+notes: >
+  Design pre-registration (Phase C-design); runs after gate G-A. One persistent campaign per candidate (repetitions 1;
+  persistence is the design; seed variability is measured in EXP-CONF-008). The generated item is an anchor only; seed
+  corpora are research/harness/fuzz/seed-corpora-v1.json (tuning items and generated cases; conventions CC7). Resumable:
+  campaign.py resumes from the last hourly corpus checkpoint in the artifact directory. rss_limit_mb
+  'status-quo-decoder-ceiling' resolves to 384 MiB plus the process baseline measured at campaign start. Findings are
+  handled under conventions CC8 (private store for security-relevant bytes). CPU-saturating: never concurrent with timing.
+
+candidates:
+  - {name: T01-on-72h, params: {target: T01, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T02-on-72h, params: {target: T02, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T03-on-72h, params: {target: T03, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T04-on-72h, params: {target: T04, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T05-on-72h, params: {target: T05, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T06-on-72h, params: {target: T06, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T07-on-72h, params: {target: T07, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T08-on-72h, params: {target: T08, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T09-on-72h, params: {target: T09, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T10-on-72h, params: {target: T10, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T11-on-72h, params: {target: T11, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T12-on-72h, params: {target: T12, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T13-on-72h, params: {target: T13, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T14-on-72h, params: {target: T14, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T15-on-72h, params: {target: T15, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T16-on-72h, params: {target: T16, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T17-on-72h, params: {target: T17, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T18-on-72h, params: {target: T18, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T19-on-72h, params: {target: T19, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T20-on-72h, params: {target: T20, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T21-on-72h, params: {target: T21, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T22-on-72h, params: {target: T22, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T23-on-72h, params: {target: T23, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T24-on-72h, params: {target: T24, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T25-on-72h, params: {target: T25, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T26-on-72h, params: {target: T26, mode: on, budget_cpu_h: 72, rss_limit_mb: 2048}}
+  - {name: T01-bypass-24h, params: {target: T01, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T02-bypass-24h, params: {target: T02, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T03-bypass-24h, params: {target: T03, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T04-bypass-24h, params: {target: T04, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T05-bypass-24h, params: {target: T05, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T06-bypass-24h, params: {target: T06, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T09-bypass-24h, params: {target: T09, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T10-bypass-24h, params: {target: T10, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T13-bypass-24h, params: {target: T13, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T14-bypass-24h, params: {target: T14, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T15-bypass-24h, params: {target: T15, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T20-bypass-24h, params: {target: T20, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T21-bypass-24h, params: {target: T21, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T23-bypass-24h, params: {target: T23, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T24-bypass-24h, params: {target: T24, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T26-bypass-24h, params: {target: T26, mode: bypass, budget_cpu_h: 24, rss_limit_mb: 2048}}
+  - {name: T13-on-24h-memceiling, params: {target: T13, mode: on, budget_cpu_h: 24, rss_limit_mb: status-quo-decoder-ceiling}}
+  - {name: T14-on-24h-memceiling, params: {target: T14, mode: on, budget_cpu_h: 24, rss_limit_mb: status-quo-decoder-ceiling}}
+  - {name: T15-on-24h-memceiling, params: {target: T15, mode: on, budget_cpu_h: 24, rss_limit_mb: status-quo-decoder-ceiling}}
+command: >-
+  /usr/bin/python3 research/harness/fuzz/tools/campaign.py
+  --target {target} --mode {mode} --build clean --engine libfuzzer --budget-cpu-h {budget_cpu_h}
+  --seed-base 2809171001 --rep 0 --fork 4 --rss-limit-mb {rss_limit_mb} --timeout-s 10 --checkpoints-cpu-h every-4
+  --resume --source /root/eb-research/src/conf-fuzz-head --seed-corpora research/harness/fuzz/seed-corpora-v1.json
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-009/{candidate}
+  --experiment-id EXP-CONF-009 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  generated:
+    - {item_id: conf009-anchor, family: synthetic-anchor, generator: zeros-v1, bytes: 1, seed: 2809171001}
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: none, unit: s}
+  - {name: execs_total, source: stdout_json, key: payload.execs_total, family: other, direction: none, unit: count}
+  - {name: regions_covered_final, source: stdout_json, key: payload.regions_covered_final, family: other, direction: none, unit: count}
+  - {name: decided_codes_reached, source: stdout_json, key: payload.decided_codes_reached, family: other, direction: none, unit: count}
+  - {name: decided_codes_attributed, source: stdout_json, key: payload.decided_codes_attributed, family: other, direction: none, unit: count}
+  - {name: raw_findings, source: stdout_json, key: payload.raw_findings, family: other, direction: none, unit: count}
+  - {name: dedup_findings, source: stdout_json, key: payload.dedup_findings, family: correctness, direction: minimize, unit: count}
+  - {name: reproducible_findings, source: stdout_json, key: payload.reproducible_findings, family: correctness, direction: minimize, unit: count}
+  - {name: corpus_entries_final, source: stdout_json, key: payload.corpus_entries_final, family: other, direction: none, unit: count}
+  - {name: trace_sha256, source: stdout_json, key: payload.trace_sha256, family: correctness, kind: string}
+  - {name: build_identity_sha256, source: stdout_json, key: payload.build_identity_sha256, family: correctness, kind: string}
+
+repetitions: 1
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809171001}
+timing: false
+order: sequential
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 32
+  requires:
+    - /root/.cargo/bin/cargo-fuzz
+    - research/harness/fuzz/seed-corpora-v1.json
+  timeout_s: 345600
+
+analysis:
+  baseline: T01-on-72h
+  pairing: item
+  report_metrics: [dedup_findings, reproducible_findings, decided_codes_reached, regions_covered_final]

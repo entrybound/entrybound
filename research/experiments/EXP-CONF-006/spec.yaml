@@ -1,0 +1,91 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-006
+status: designed
+question: >
+  Do archives written by past Entrybound generation commits still open under the current build with unchanged outcome,
+  EAM, identities and extracted bytes; what identity changes does repack cause on them; and which historical chunker
+  identifiers do pack and replan emit?
+hypothesis: >
+  H1: every stored historical archive decodes under ebound-head identically to its creating binary. H2: extraction
+  equals the source fingerprint. H4: representation-only repack preserves LAI/AUX/PCR and replanning preserves LAI/AUX.
+  H5: pack and replan record the same chunker_id and PCR at head. Each is falsified by one counterexample.
+decision_ids: [DEC-CON-013, DEC-CMP-025, DEC-MOD-008, DEC-CON-012, DEC-ECO-042]
+notes: >
+  Design pre-registration (Phase C-design); runs after gate G-A. Candidates are the generation commits found at design
+  time by git log of the defining documents; research/conformance/historical/generation-commits-v1.json (produced by
+  find_generation_commits.py before any build) is authoritative, and any difference from this list is applied to this
+  spec as a logged deviation before the first run. The metadata tree of internals_identity_tools.py is packed by the
+  driver in addition to each item. Conventions: research/experiments/_index/conformance-conventions.md.
+
+candidates:
+  - {name: gen-06451ec, params: {commit: 06451ec}}
+  - {name: gen-a5a1fff, params: {commit: a5a1fff}}
+  - {name: gen-932f69d, params: {commit: 932f69d}}
+  - {name: gen-a908507, params: {commit: a908507}}
+  - {name: gen-e2dc5bc, params: {commit: e2dc5bc}}
+  - {name: gen-3a5bd34, params: {commit: 3a5bd34}}
+  - {name: gen-289a160, params: {commit: 289a160}}
+  - {name: gen-cf6b7e6, params: {commit: cf6b7e6}}
+  - {name: gen-09a5765, params: {commit: 09a5765}}
+  - {name: gen-3be3689, params: {commit: 3be3689}}
+  - {name: gen-e35241b, params: {commit: e35241b}}
+  - {name: gen-2a07828, params: {commit: 2a07828}}
+  - {name: gen-136d018, params: {commit: 136d018}}
+  - {name: gen-9e44608, params: {commit: 9e44608}}
+  - {name: gen-head, params: {commit: head}}
+command: >-
+  /usr/bin/python3 research/conformance/historical/pack_and_check.py
+  --creator /root/eb-research/conformance/historical/bin/{commit}/ebound --commit {commit}
+  --current /root/eb-research/target/conf-head/release/ebound
+  --item {item_path} --item-id {item_id} --with-metadata-tree research/harness/internals_identity_tools.py
+  --options-from /root/eb-research/conformance/historical/options/{commit}.json
+  --store /root/eb-research/conformance/historical/stored/{commit}/{item_id}/rep{rep}
+  --experiment-id EXP-CONF-006 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids: [f01-tuning-ripgrep-14-1-1-git, f06-tuning-census-popest-2023, f08-tuning-chinook-sqlite,
+    f12-tuning-kodak-jpeg-edge-cases-small, f14-gen-nested-archives-py]
+  generated:
+    - {item_id: hist-text-64k, family: synthetic-text, generator: text-v1, bytes: 65536, seed: 2809170601}
+    - {item_id: hist-random-4m, family: synthetic-random, generator: random-v1, bytes: 4194304, seed: 2809170602}
+    - {item_id: hist-zeros-1m, family: synthetic-zeros, generator: zeros-v1, bytes: 1048576, seed: 2809170603}
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: archives_stored, source: stdout_json, key: payload.archives_stored, family: other, direction: none, unit: count}
+  - {name: stored_bytes, source: stdout_json, key: payload.stored_bytes, family: size, direction: none, unit: B}
+  - {name: options_refused_by_creator, source: stdout_json, key: payload.options_refused_by_creator, family: other, direction: none, unit: count}
+  - {name: mvt16a_differences, source: stdout_json, key: payload.mvt16a_differences, family: correctness, direction: minimize, unit: count}
+  - {name: roundtrip_mismatches, source: stdout_json, key: payload.roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: repack_identity_conforming, source: stdout_json, key: payload.repack_identity_conforming, family: other, direction: none, unit: count}
+  - {name: repack_identity_total, source: stdout_json, key: payload.repack_identity_total, family: other, direction: none, unit: count}
+  - {name: replan_chunker_id_differs, source: stdout_json, key: payload.replan_chunker_id_differs, family: correctness, direction: minimize, unit: count}
+  - {name: deprecated_diagnostics, source: stdout_json, key: payload.deprecated_diagnostics, family: other, direction: none, unit: count}
+  - {name: head_version_gate_refusals, source: stdout_json, key: payload.head_version_gate_refusals, family: other, direction: none, unit: count}
+  - {name: stored_digest_set_sha256, source: stdout_json, key: payload.stored_digest_set_sha256, family: correctness, kind: string}
+  - {name: build_identity_sha256, source: stdout_json, key: payload.build_identity_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809170601}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/conf-head/release/ebound
+    - research/conformance/historical/generation-commits-v1.json
+  timeout_s: 21600
+
+analysis:
+  baseline: gen-9e44608
+  pairing: item
+  report_metrics: [mvt16a_differences, roundtrip_mismatches, repack_identity_conforming, repack_identity_total,
+    replan_chunker_id_differs, deprecated_diagnostics, head_version_gate_refusals, stored_bytes]

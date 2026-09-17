@@ -1,0 +1,77 @@
+schema: ebr.spec.v1
+experiment_id: EXP-CONF-010
+status: designed
+question: >
+  Under coverage-guided generation and mutation, do readers that claim identical semantics (INDEXED vs STREAM, full vs
+  range encrypted readers, memory vs file vs HTTP-range sources, random vs full readers, libzstd vs ruzstd, production vs
+  the clean-room reader) ever disagree; does any accepted input fail canonical re-encode; can a mutation be accepted with
+  a different interpretation; and do mutation operations on hostile encrypted inputs repeat a (key, nonce) pair?
+hypothesis: >
+  Each oracle DF1-DF9 of the protocol is a binary hypothesis falsified by one committed, reproduced counterexample
+  (reader_disagreements = 0; equivalence_assertion_pass_fraction = 1; zero canonical re-encode violations; zero
+  reinterpretations; zero repeated key/nonce pairs).
+decision_ids: [DEC-ECO-029, DEC-ECO-032, DEC-CON-014, DEC-CON-018, DEC-CON-025, DEC-CRY-054, DEC-CRY-065, DEC-CMP-007,
+  DEC-ECO-041, DEC-INT-019, DEC-INT-040, DEC-MOD-006]
+notes: >
+  Design pre-registration (Phase C-design); runs after gate G-A. One persistent campaign per oracle (repetitions 1). The
+  generated item is an anchor only; seeds come from research/harness/fuzz/seed-corpora-v1.json (tuning and generated
+  inputs). DF9 uses the ebound-research build with the key/nonce logging hook (MVT-16(c) identity proof first). Findings
+  follow conventions CC6 (triage) and CC8 (security-relevant bytes). CPU-saturating: never concurrent with timing.
+
+candidates:
+  - {name: DF1-indexed-vs-stream, params: {oracle: DF1, budget_cpu_h: 24, other: none}}
+  - {name: DF2-enc-full-vs-range, params: {oracle: DF2, budget_cpu_h: 24, other: none}}
+  - {name: DF3-source-variants, params: {oracle: DF3, budget_cpu_h: 24, other: none}}
+  - {name: DF4-random-vs-full, params: {oracle: DF4, budget_cpu_h: 24, other: none}}
+  - {name: DF5-codec-backends, params: {oracle: DF5, budget_cpu_h: 24, other: none}}
+  - {name: DF6-canonical-reencode, params: {oracle: DF6, budget_cpu_h: 24, other: none}}
+  - {name: DF7-reinterpretation, params: {oracle: DF7, budget_cpu_h: 24, other: none}}
+  - {name: DF8-prod-vs-ebir, params: {oracle: DF8, budget_cpu_h: 72, other: /root/eb-research/independent-reader/ebir-v2/ebir}}
+  - {name: DF9-mutation-nonce-uniqueness, params: {oracle: DF9, budget_cpu_h: 24, other: none}}
+command: >-
+  /usr/bin/python3 research/harness/fuzz/tools/campaign.py
+  --differential {oracle} --other {other} --build clean --engine libfuzzer --budget-cpu-h {budget_cpu_h}
+  --seed-base 2809171001 --rep 0 --fork 4 --rss-limit-mb 2048 --timeout-s 10 --checkpoints-cpu-h every-4 --resume
+  --source /root/eb-research/src/conf-fuzz-head --seed-corpora research/harness/fuzz/seed-corpora-v1.json
+  --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-010/{candidate}
+  --experiment-id EXP-CONF-010 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  generated:
+    - {item_id: conf010-anchor, family: synthetic-anchor, generator: zeros-v1, bytes: 1, seed: 2809171001}
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: none, unit: s}
+  - {name: execs_total, source: stdout_json, key: payload.execs_total, family: other, direction: none, unit: count}
+  - {name: oracle_violations_raw, source: stdout_json, key: payload.oracle_violations_raw, family: other, direction: none, unit: count}
+  - {name: oracle_violation_clusters, source: stdout_json, key: payload.oracle_violation_clusters, family: correctness, direction: minimize, unit: count}
+  - {name: reproducible_violations, source: stdout_json, key: payload.reproducible_violations, family: correctness, direction: minimize, unit: count}
+  - {name: generated_eams, source: stdout_json, key: payload.generated_eams, family: other, direction: none, unit: count}
+  - {name: equivalence_failures, source: stdout_json, key: payload.equivalence_failures, family: correctness, direction: minimize, unit: count}
+  - {name: incidental_crashes, source: stdout_json, key: payload.incidental_crashes, family: correctness, direction: minimize, unit: count}
+  - {name: trace_sha256, source: stdout_json, key: payload.trace_sha256, family: correctness, kind: string}
+  - {name: build_identity_sha256, source: stdout_json, key: payload.build_identity_sha256, family: correctness, kind: string}
+
+repetitions: 1
+warmups: 0
+seeds: {order: 2026091728, bootstrap: 2026091729, command: 2809171001}
+timing: false
+order: sequential
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 32
+  requires:
+    - /root/.cargo/bin/cargo-fuzz
+    - research/harness/fuzz/seed-corpora-v1.json
+  timeout_s: 345600
+
+analysis:
+  baseline: DF1-indexed-vs-stream
+  pairing: item
+  report_metrics: [oracle_violation_clusters, reproducible_violations, equivalence_failures, incidental_crashes]
