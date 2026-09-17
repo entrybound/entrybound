@@ -53,10 +53,10 @@
   "fingerprint": {
     "format": "ebrc-fp-v1",
     "root_type": "dir",
-    "tree_sha256": "357101b455000686fa12aa38e9b73ecbe63348d0933356e43b3af7ce42150e5c",
-    "logical_tree_sha256": "f191c83f9677f5e3071baa86b60152d61f72e382fbc025a0b4ff0fa9f97eb277",
+    "tree_sha256": "cc5b2896c654b25a7e0478dacaee25daeae4fb67a3e02187e2b0523c55aea4bd",
+    "logical_tree_sha256": "71dfa7747e1166adcff994b9a279be409517179ce53f5f4d5117fff2319c5796",
     "content_tree_sha256": "a529cafeacd2b608da898188a1b05f358a03ca7d1ba878c3cf01799b94046849",
-    "extended_tree_sha256": "1bc410024f1317f65d4953475f362aecde423555c0ee295a1db2eee8c903afaa",
+    "extended_tree_sha256": "9d59e3276388038f6d4245563e0e237862e953c05c21d1e176982fa3402e18dc",
     "bytes": 33556505,
     "bytes_all_paths": 33556505,
     "allocated_bytes": 4407296,

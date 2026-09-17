@@ -4,12 +4,12 @@
   "item_id": "f20-validation-bombs-compressed",
   "family": "F20",
   "split": "validation",
-  "scale": "large",
+  "scale": "small",
   "kind": "generate",
   "real_or_generated": "generated",
   "independence_group": "ebrc-g2-f20-bombs-compressed",
   "source_file": "research/corpus/sources/g2-generated.json",
-  "item_def_sha256": "81d15902b46dce356e2f7c594629f9fe673af1d3b71dd9f7eb2dcbafdad8dc81",
+  "item_def_sha256": "b51dba958fe726716cd96f9610bfc6d078aebc179a8080510f382e08f753471f",
   "materialization_key": "cfdc06c90f9b3a9785cbc7d834050d9a42a2cc649968c9fc7cfd69015bd41c91",
   "materialized_utc": "2026-09-16T21:39:42Z",
   "materialized_relpath": "corpus/validation/f20-validation-bombs-compressed",
@@ -20,11 +20,11 @@
     "pinned_utc": "2026-09-16T21:39:42Z"
   },
   "scale_check": {
-    "tier": "large",
-    "tier_limit_bytes": 8589934592,
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
     "bytes": 1969137,
     "ok": true,
-    "fits_smaller_tier": true
+    "fits_smaller_tier": false
   },
   "provenance": {
     "steps": [],

@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-nasa-ntrs-pdf",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "8ad3a9a6cb41390e76ef720cb245cf481558343abeeb61078c3659e3847b676c",
+  "item_def_sha256": "ead30349b4fb8637ef6af13b692bd66bdced60035111ef3be13a96d28986f052",
   "materialization_key": "857a955a58608544d67e13005bd77d36eacbdd88f7655bf997fa57cf84bf2461",
   "materialized_utc": "2026-09-13T02:29:55Z",
   "materialized_relpath": "corpus/tuning/f13-tuning-nasa-ntrs-pdf-small",

@@ -16,7 +16,7 @@
   "output_pin": {
     "policy": "TOFU",
     "status": "matched-tofu",
-    "logical_tree_sha256": "65bcc17d5553bd76e93d6b71755c1acecc24a97bb9c321d5a005cf95eca87d94",
+    "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
     "pinned_utc": "2026-09-16T21:27:59Z"
   },
   "scale_check": {
@@ -71,10 +71,10 @@
   "fingerprint": {
     "format": "ebrc-fp-v1",
     "root_type": "dir",
-    "tree_sha256": "6d24f63138a3dd733cc6dfabbf1512f2e9d98fdf3614e82efc1ae8278acc6a84",
-    "logical_tree_sha256": "65bcc17d5553bd76e93d6b71755c1acecc24a97bb9c321d5a005cf95eca87d94",
+    "tree_sha256": "ffb741dbe0b40a718e90050360fe3f1d1264d2c781c3acab304026948f019c95",
+    "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
     "content_tree_sha256": "ee4ba3e20205a3d4e8e43cb50b1c2373ae672c904132dd8ead5ca0475a39a1aa",
-    "extended_tree_sha256": "4e0d367c9c2260e3e7c2d508b57f5ca3633cfd0530d85695ea9fa9e8bb39c595",
+    "extended_tree_sha256": "f56311c1a59a225fad716342dbce2f2e2b43975b1520239bc5dfaced0ed43e21",
     "bytes": 268435687,
     "bytes_all_paths": 268435687,
     "allocated_bytes": 42360832,

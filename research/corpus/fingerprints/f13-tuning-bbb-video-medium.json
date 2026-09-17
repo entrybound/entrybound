@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-blender-bbb",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "81bcc14829e9ca32c947c097645ebdafedb823860c7173f740a8871b22073b45",
+  "item_def_sha256": "98782e7fad2fc58fbb01769bbe6f0d78e6d049fff057d622eee4e1af5535bf34",
   "materialization_key": "62e95741118a690be1edf834ee2dbe71c7279990c115cacc07c9e746066cbfff",
   "materialized_utc": "2026-09-13T02:29:54Z",
   "materialized_relpath": "corpus/tuning/f13-tuning-bbb-video-medium",

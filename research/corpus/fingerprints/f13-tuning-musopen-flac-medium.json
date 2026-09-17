@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-musopen-kickstarter-flac",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "fb0638c0cc9ed34b26b84f4bd73061094287dbbe997d9f16f879b4b13189086e",
+  "item_def_sha256": "56c0e8bf2ae8c67bbab07cad8ee5e00cd14290c4f9a9d6ed435415d37656dba1",
   "materialization_key": "3cde9d337a331add1b364f8f73883e197f698ccc932246b4fa22e5d3e26a59b3",
   "materialized_utc": "2026-09-13T02:29:55Z",
   "materialized_relpath": "corpus/tuning/f13-tuning-musopen-flac-medium",

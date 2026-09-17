@@ -9,15 +9,15 @@
   "real_or_generated": "real",
   "independence_group": "mnist",
   "source_file": "research/corpus/sources/g3-data.json",
-  "item_def_sha256": "504bc190846768ed74ab2900df7b66bbc7e9ae8895d47171ea69fa1ac1f6ec88",
-  "materialization_key": "28c1a48c40d29215ecfdc1a656b5838d558360fb98a6067f5fee7952e435d02e",
-  "materialized_utc": "2026-09-16T23:29:42Z",
+  "item_def_sha256": "f4812f80ec5f554417a34d48c7e1fac580df99c7b901c31a639d2cd2bba41d33",
+  "materialization_key": "8ba076188839e285d7bc0d560d1c1393b742a319dc96d04bdc0d9d2f1efa9503",
+  "materialized_utc": "2026-09-17T10:36:24Z",
   "materialized_relpath": "corpus/tuning/f07-tuning-mnist-npz",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
     "logical_tree_sha256": "dd3d7b52ae6f10c3a376710561ebe55ff6341d33de6ecbc6012ab33ba6063d62",
-    "pinned_utc": "2026-09-16T23:29:42Z"
+    "pinned_utc": "2026-09-17T10:36:24Z"
   },
   "scale_check": {
     "tier": "small",
@@ -36,7 +36,7 @@
         "size": 11490434,
         "retrieved_utc": "2026-09-16T23:29:42Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "mnist.npz"
       }
     ],
@@ -52,9 +52,9 @@
     "python_executable": "/root/eb-research/venv/bin/python",
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -65,7 +65,7 @@
     "tree_sha256": "984a729e0462275bff6bd9c278bc6466d6981910c1e023bab66ed6f908735f32",
     "logical_tree_sha256": "dd3d7b52ae6f10c3a376710561ebe55ff6341d33de6ecbc6012ab33ba6063d62",
     "content_tree_sha256": "5c0cabfd86f14966e2d8e7639b44504c1b9d4031a21a0cf03a80d65a2061a396",
-    "extended_tree_sha256": "036bb22797cbf3c5fa3e7083687fdce4ac82f57a895b3d092f4c060f8d790604",
+    "extended_tree_sha256": "900966511a4f9eb20e5a2156bb13e9afc766a1e379ad80c7aad2e2fe1d063c1c",
     "bytes": 11490434,
     "bytes_all_paths": 11490434,
     "allocated_bytes": 11493376,

@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "mozilla-pdfjs",
   "source_file": "research/corpus/sources/g1-code.json",
-  "item_def_sha256": "9e3139434e88959c21845d47589f7293438f21652e0af146da46df09c5bbd6d4",
+  "item_def_sha256": "82a4a21d476ae0b2a994cfb481b9a1adaf7846ae39bdce6f48cae888e223a260",
   "materialization_key": "6a9d54e9640bad8620b9faef72e2076cdb5c628a291cf89008091d36cdc66cfd",
   "materialized_utc": "2026-09-13T02:09:22Z",
   "materialized_relpath": "heldout/f03-heldout-pdfjs-npm-node-modules",

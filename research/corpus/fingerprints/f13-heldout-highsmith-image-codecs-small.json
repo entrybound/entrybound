@@ -9,7 +9,7 @@
   "real_or_generated": "derived-from-real",
   "independence_group": "g5-loc-highsmith",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "a00fb0137a284a393e44019e6c1050d3ab05d0e8e4394248e96783354136c5db",
+  "item_def_sha256": "597bed799ed29c92dc4541b85faf2e3a55bfe8c823e105bf063ce626b4f49a25",
   "materialization_key": "367e7b818055ed507d8a1beaeeb10ad3494c4233e4055ea119a91438d97701cd",
   "materialized_utc": "2026-09-13T02:29:49Z",
   "materialized_relpath": "heldout/f13-heldout-highsmith-image-codecs-small",

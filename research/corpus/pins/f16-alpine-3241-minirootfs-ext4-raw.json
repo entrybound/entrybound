@@ -4,8 +4,9 @@
   "inputs": {},
   "output": {
     "materialization_key": "9858f5d81346ad43a896afc1a7bc934c22538a8e25a7c70890f997c8934f4be2",
-    "logical_tree_sha256": "65bcc17d5553bd76e93d6b71755c1acecc24a97bb9c321d5a005cf95eca87d94",
-    "pinned_utc": "2026-09-16T21:27:59Z"
+    "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
+    "pinned_utc": "2026-09-16T21:27:59Z",
+    "note": "task_bb8ca4e8 follow-up (2026-09-17): the alternation in history below between 65bcc17d.. and 90bab670.. across 2026-09-13/09-16 was never a real content change (content_tree_sha256 was ee4ba3e2.. throughout) -- it was a warm/cold page-cache artifact in SEEK_DATA/SEEK_HOLE on this ext4/WSL2 host, now fixed in fingerprint.py (data_extents() forces a cold read via posix_fadvise DONTNEED). 90bab670.. is the true, now-deterministic value, confirmed stable across repeated cold and warm reads with the fixed tool."
   },
   "history": [
     {

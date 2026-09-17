@@ -193,9 +193,18 @@
     }
   },
   "output": {
-    "materialization_key": "3d822b611c40bef67a46d952e05f5a8ecf91f4436d8276dc08cd72b7e245aa15",
+    "materialization_key": "62bce6a19472a450ebad61354112612fc62ac1864cf03ff567e6e7b7f3cd9183",
     "logical_tree_sha256": "becbb66b2eaed392aa4fb2029793e2245848e318eceb4323920e2df136c2b085",
-    "pinned_utc": "2026-09-16T23:31:05Z"
+    "pinned_utc": "2026-09-17T10:36:34Z"
   },
-  "history": []
+  "history": [
+    {
+      "replaced_utc": "2026-09-17T10:36:34Z",
+      "output": {
+        "materialization_key": "3d822b611c40bef67a46d952e05f5a8ecf91f4436d8276dc08cd72b7e245aa15",
+        "logical_tree_sha256": "becbb66b2eaed392aa4fb2029793e2245848e318eceb4323920e2df136c2b085",
+        "pinned_utc": "2026-09-16T23:31:05Z"
+      }
+    }
+  ]
 }

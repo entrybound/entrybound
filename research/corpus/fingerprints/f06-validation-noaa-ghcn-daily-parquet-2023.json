@@ -9,15 +9,15 @@
   "real_or_generated": "real",
   "independence_group": "noaa-ghcn-daily",
   "source_file": "research/corpus/sources/g3-data.json",
-  "item_def_sha256": "0041d7eaecd9205e8fe222ae7c8d7666e63c38f5b0f1e7895c249acd801eefeb",
-  "materialization_key": "9684445a2d5da133db6c0dd94c7756ad0ef14b2765669f84300b9c5e09be4351",
-  "materialized_utc": "2026-09-16T23:31:23Z",
+  "item_def_sha256": "027184dc1a9693830e206f1ece305ecf3b4e933db074b8f904d00ca22c1a9e3d",
+  "materialization_key": "5eb9eb0af5098886a9406376f615e490b2e8a07786fabbe029a21fa0061117bc",
+  "materialized_utc": "2026-09-17T10:35:37Z",
   "materialized_relpath": "corpus/validation/f06-validation-noaa-ghcn-daily-parquet-2023",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
     "logical_tree_sha256": "fb4854e6301f988e30cb154237604ae3175b78e3f1b1f0715c6feac28b9bf839",
-    "pinned_utc": "2026-09-16T23:31:23Z"
+    "pinned_utc": "2026-09-17T10:35:37Z"
   },
   "scale_check": {
     "tier": "small",
@@ -36,7 +36,7 @@
         "size": 1681770,
         "retrieved_utc": "2026-09-16T23:31:14Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "TMAX.snappy.parquet"
       },
       {
@@ -47,7 +47,7 @@
         "size": 1685806,
         "retrieved_utc": "2026-09-16T23:31:15Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "TMIN.snappy.parquet"
       },
       {
@@ -58,7 +58,7 @@
         "size": 1862505,
         "retrieved_utc": "2026-09-16T23:31:16Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "PRCP.snappy.parquet"
       },
       {
@@ -69,7 +69,7 @@
         "size": 1508213,
         "retrieved_utc": "2026-09-16T23:31:16Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "SNOW.snappy.parquet"
       },
       {
@@ -80,7 +80,7 @@
         "size": 1628447,
         "retrieved_utc": "2026-09-16T23:31:22Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "SNWD.snappy.parquet"
       },
       {
@@ -91,7 +91,7 @@
         "size": 847808,
         "retrieved_utc": "2026-09-16T23:31:23Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "AWND.snappy.parquet"
       },
       {
@@ -102,7 +102,7 @@
         "size": 1499747,
         "retrieved_utc": "2026-09-16T23:31:23Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "TAVG.snappy.parquet"
       },
       {
@@ -113,7 +113,7 @@
         "size": 267107,
         "retrieved_utc": "2026-09-16T23:31:23Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "WT01.snappy.parquet"
       }
     ],
@@ -157,9 +157,9 @@
     "python_executable": "/root/eb-research/venv/bin/python",
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -170,7 +170,7 @@
     "tree_sha256": "b5574d826ad15e8f423ce9b25c762b22cd88d2df659e82bd190b767c58961f37",
     "logical_tree_sha256": "fb4854e6301f988e30cb154237604ae3175b78e3f1b1f0715c6feac28b9bf839",
     "content_tree_sha256": "b457cac557714aa4fce5d92416339ec72bb115a6e9d01c309e6ea418f81373f5",
-    "extended_tree_sha256": "765a0917f2a87714cd210c27340cae240d7d7e9833bae1d573ddfacd0c6ba79d",
+    "extended_tree_sha256": "ff9671a3db2b014750770e91cea1aa2ab92bf5e0d71759875180022dc7ee844f",
     "bytes": 10981403,
     "bytes_all_paths": 10981403,
     "allocated_bytes": 10997760,

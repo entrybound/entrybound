@@ -9,15 +9,15 @@
   "real_or_generated": "real",
   "independence_group": "wikimedia-pageviews",
   "source_file": "research/corpus/sources/g3-data.json",
-  "item_def_sha256": "29ca0c024b410da7e10f1d7eeea85e11db3f3dd86e9cbb92d2b7807218820f1a",
-  "materialization_key": "5506bf66cc1a5874c90fce08c9b689ffdc915b2dc40468950e29a82ab40fa09a",
-  "materialized_utc": "2026-09-17T02:20:56Z",
+  "item_def_sha256": "69ba9eb63781aaa8834865b3bbfc2739ea01e90767f7e7bb352cfcbbbe03ce06",
+  "materialization_key": "286965c6e784768f0d4af82cae1c0229722a654e1fea88ff0d7189c942ff3be3",
+  "materialized_utc": "2026-09-17T10:36:03Z",
   "materialized_relpath": "corpus/validation/f05-validation-wikimedia-pageviews-20260801",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
     "logical_tree_sha256": "c2930cf681413e228b649234b4192bbbd6f3f6b634afb012e80e94f623d54b53",
-    "pinned_utc": "2026-09-17T02:20:56Z"
+    "pinned_utc": "2026-09-17T10:36:03Z"
   },
   "scale_check": {
     "tier": "large",
@@ -36,7 +36,7 @@
         "size": 49655864,
         "retrieved_utc": "2026-09-16T23:32:18Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-000000.gz"
       },
       {
@@ -47,7 +47,7 @@
         "size": 47305306,
         "retrieved_utc": "2026-09-16T23:32:26Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-010000.gz"
       },
       {
@@ -58,7 +58,7 @@
         "size": 45710200,
         "retrieved_utc": "2026-09-16T23:32:39Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-020000.gz"
       },
       {
@@ -69,7 +69,7 @@
         "size": 45803746,
         "retrieved_utc": "2026-09-16T23:32:47Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-030000.gz"
       },
       {
@@ -80,7 +80,7 @@
         "size": 45571078,
         "retrieved_utc": "2026-09-16T23:32:56Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-040000.gz"
       },
       {
@@ -91,7 +91,7 @@
         "size": 51149755,
         "retrieved_utc": "2026-09-16T23:33:09Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-050000.gz"
       },
       {
@@ -102,7 +102,7 @@
         "size": 48830279,
         "retrieved_utc": "2026-09-16T23:33:18Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-060000.gz"
       },
       {
@@ -113,7 +113,7 @@
         "size": 53759289,
         "retrieved_utc": "2026-09-16T23:33:29Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-070000.gz"
       },
       {
@@ -124,7 +124,7 @@
         "size": 53096181,
         "retrieved_utc": "2026-09-16T23:33:43Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-080000.gz"
       },
       {
@@ -135,7 +135,7 @@
         "size": 54584040,
         "retrieved_utc": "2026-09-16T23:33:54Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-090000.gz"
       },
       {
@@ -146,7 +146,7 @@
         "size": 55900456,
         "retrieved_utc": "2026-09-16T23:34:04Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-100000.gz"
       },
       {
@@ -157,7 +157,7 @@
         "size": 55958877,
         "retrieved_utc": "2026-09-16T23:34:14Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-110000.gz"
       },
       {
@@ -168,7 +168,7 @@
         "size": 58896417,
         "retrieved_utc": "2026-09-16T23:34:28Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-120000.gz"
       },
       {
@@ -179,7 +179,7 @@
         "size": 60028443,
         "retrieved_utc": "2026-09-16T23:34:39Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-130000.gz"
       },
       {
@@ -190,7 +190,7 @@
         "size": 61770978,
         "retrieved_utc": "2026-09-16T23:34:53Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-140000.gz"
       },
       {
@@ -201,7 +201,7 @@
         "size": 62408833,
         "retrieved_utc": "2026-09-16T23:35:04Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-150000.gz"
       },
       {
@@ -212,7 +212,7 @@
         "size": 62678191,
         "retrieved_utc": "2026-09-16T23:35:15Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-160000.gz"
       },
       {
@@ -223,7 +223,7 @@
         "size": 61075447,
         "retrieved_utc": "2026-09-16T23:35:28Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-170000.gz"
       },
       {
@@ -234,7 +234,7 @@
         "size": 60400902,
         "retrieved_utc": "2026-09-16T23:35:40Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-180000.gz"
       },
       {
@@ -245,7 +245,7 @@
         "size": 59959064,
         "retrieved_utc": "2026-09-16T23:35:50Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-190000.gz"
       },
       {
@@ -256,7 +256,7 @@
         "size": 60868544,
         "retrieved_utc": "2026-09-16T23:36:03Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-200000.gz"
       },
       {
@@ -267,7 +267,7 @@
         "size": 60105953,
         "retrieved_utc": "2026-09-16T23:36:14Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-210000.gz"
       },
       {
@@ -278,7 +278,7 @@
         "size": 57663677,
         "retrieved_utc": "2026-09-16T23:36:24Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-220000.gz"
       },
       {
@@ -289,7 +289,7 @@
         "size": 53810334,
         "retrieved_utc": "2026-09-17T02:20:00Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "pageviews-20260801-230000.gz"
       }
     ],
@@ -446,9 +446,9 @@
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "gzip": "gzip 1.12",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -456,13 +456,13 @@
   "fingerprint": {
     "format": "ebrc-fp-v1",
     "root_type": "dir",
-    "tree_sha256": "33e8cb5326f8718ba34610bb18799cf9ee8a01f657eb05b4696b3e4cdd9f0cfd",
+    "tree_sha256": "2cd2473f77a60311e271a8d6fa067540370d44082cfe4b7fa9390aae65da8594",
     "logical_tree_sha256": "c2930cf681413e228b649234b4192bbbd6f3f6b634afb012e80e94f623d54b53",
     "content_tree_sha256": "cd80cb7aa95932531f9856eea77611e6ad5b829fedcc4641a9617bedf57b1330",
-    "extended_tree_sha256": "5e49eb68892cd6e580ad4de3cd0576da4670de26a1cffef72ad0481aef43596d",
+    "extended_tree_sha256": "c6b5451b7239d15cccb0304019f9c472c1928a7d5c0e9e0871dad896eb4fd6ac",
     "bytes": 4738688282,
     "bytes_all_paths": 4738688282,
-    "allocated_bytes": 4738797568,
+    "allocated_bytes": 4738740224,
     "counts": {
       "objects": 25,
       "files": 24,

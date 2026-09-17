@@ -550,9 +550,18 @@
     }
   },
   "output": {
-    "materialization_key": "21e5761857837cabe70b86127f693155ab795b2f1026939f710b2f18a77b245d",
+    "materialization_key": "7f0c57263858fe87f72f929205e40fbe6ce6677fcf54c4f670bbddfff50cbbce",
     "logical_tree_sha256": "92cf946ed1aacc5b926dcd8d4ac0c461e563d5cc8f800c7d63dc49b4b3206287",
-    "pinned_utc": "2026-09-16T23:29:04Z"
+    "pinned_utc": "2026-09-17T10:36:41Z"
   },
-  "history": []
+  "history": [
+    {
+      "replaced_utc": "2026-09-17T10:36:41Z",
+      "output": {
+        "materialization_key": "21e5761857837cabe70b86127f693155ab795b2f1026939f710b2f18a77b245d",
+        "logical_tree_sha256": "92cf946ed1aacc5b926dcd8d4ac0c461e563d5cc8f800c7d63dc49b4b3206287",
+        "pinned_utc": "2026-09-16T23:29:04Z"
+      }
+    }
+  ]
 }

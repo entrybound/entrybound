@@ -9,15 +9,15 @@
   "real_or_generated": "derived-from-real",
   "independence_group": "igsr-1000genomes",
   "source_file": "research/corpus/sources/g3-data.json",
-  "item_def_sha256": "45f4e990480bfdeccc56a7b4ba063baaf89a17bca63b9406e1f78aa536ab7f19",
-  "materialization_key": "77afc212d9da44c091ed72737087a1491b6f30ff9c1d384fffd7a47f05ef8eac",
-  "materialized_utc": "2026-09-16T23:31:09Z",
+  "item_def_sha256": "26bdce8d1991d3bec14a4a5eed4cb0548d8c7824be2ae9bebca904f5be70da32",
+  "materialization_key": "aa8547aaf9fbff1fbd57186743a545bf4a6c37d39c96e9ae9c585309832e135f",
+  "materialized_utc": "2026-09-17T10:36:05Z",
   "materialized_relpath": "heldout/f07-heldout-1000genomes-chr22-vcf-region-subset",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
     "logical_tree_sha256": "8816752031e7d604e7cbdeab015aad2cbcda296a4b3d62cbbe6c82b0abbecae8",
-    "pinned_utc": "2026-09-16T23:31:09Z"
+    "pinned_utc": "2026-09-17T10:36:05Z"
   },
   "scale_check": {
     "tier": "large",
@@ -36,7 +36,7 @@
         "size": 205612353,
         "retrieved_utc": "2026-09-16T23:30:39Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"
       }
     ],
@@ -71,9 +71,9 @@
     "python_executable": "/root/eb-research/venv/bin/python",
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -84,7 +84,7 @@
     "tree_sha256": "6a9a66f197a1998b909eb1551f7e05cae43d83ed68f120944588151c7f5ead96",
     "logical_tree_sha256": "8816752031e7d604e7cbdeab015aad2cbcda296a4b3d62cbbe6c82b0abbecae8",
     "content_tree_sha256": "7751b6048203acb763015277cbd1256fd4df47b6ed8ef2a77c1de8f4c254bf06",
-    "extended_tree_sha256": "8ab3071fef15b79e769a45ddf2d6c3439e814a147df9d652dc56cc0618ff712a",
+    "extended_tree_sha256": "1bff667bf5e7e55d3997f98e59935efbb557f317862595c927bd9b5867f909e0",
     "bytes": 4000001537,
     "counts": {
       "objects": 3,

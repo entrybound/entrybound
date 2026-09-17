@@ -5,10 +5,10 @@
   "family": "F19",
   "split": "validation",
   "scale": "medium",
-  "logical_tree_sha256": "8f37c314f48083dc542b99a7dc575240c39b1470cd018f2ba03b78707e3bc74f",
+  "logical_tree_sha256": "54619e5c208e273137a597dc1625e8dd23b96cfd216afda09b603374f1c14b25",
   "tool": {
     "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
-    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "fingerprint_sha256": "d7ddade80dd5bad954f94ed7e9c7565b26c820c62749af688fbe610a3c30eac2",
     "file_version": "file-5.45",
     "magic_mgc": {
       "path": "/usr/lib/file/magic.mgc",
@@ -199,8 +199,8 @@
       "sparse_files": 1,
       "apparent_bytes": 335544320,
       "allocated_bytes": 67575808,
-      "data_extent_bytes": 67571712,
-      "hole_bytes": 267972608,
+      "data_extent_bytes": 2564096,
+      "hole_bytes": 332980224,
       "all_hole_files": 0
     },
     "modes": {

@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-federal-register-pdf",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "4f2c988ebc8e49e4a5f54b386654a2311444dd74675cb14a47742ab39df4e25a",
+  "item_def_sha256": "e1e699cd84aeb77940fd993ada621caadd4c2cb510db757f6832a63ac217914b",
   "materialization_key": "730331f0438693ced857a4c6663a3e04465ede8fd31e880a913541b08491112a",
   "materialized_utc": "2026-09-13T02:29:55Z",
   "materialized_relpath": "corpus/validation/f13-validation-federal-register-pdf-small",

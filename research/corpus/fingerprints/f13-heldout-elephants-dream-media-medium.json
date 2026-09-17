@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-blender-elephants-dream",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "f6d23715cefc6952fda658938b84568aa28338f0a533a24799c23e87882f8f02",
+  "item_def_sha256": "94892e224794c515b5d34e4f44dfbf3ce4936ef6d1b1a30beebc1f6d3bf0bf5f",
   "materialization_key": "233cec6faf1c70b9937f1eb4c82509e414bd59622ced9965b95d6640572a7db8",
   "materialized_utc": "2026-09-13T02:29:39Z",
   "materialized_relpath": "heldout/f13-heldout-elephants-dream-media-medium",

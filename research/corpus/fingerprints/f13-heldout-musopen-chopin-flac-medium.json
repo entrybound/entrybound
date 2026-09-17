@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-musopen-chopin-flac",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "25802d3fcb10e1f8b533b4c967ebd4d8f023ca69e13be1d1e682cd6fede7a821",
+  "item_def_sha256": "074d4a495228353e2198f6ae1fda813f9f6798a7f6d704754e98f1185cef8633",
   "materialization_key": "406963c4c2ec38ec4e4f330a7e2d1268aebefb92ead0a6b33fb8035e03f1c31d",
   "materialized_utc": "2026-09-13T02:29:50Z",
   "materialized_relpath": "heldout/f13-heldout-musopen-chopin-flac-medium",

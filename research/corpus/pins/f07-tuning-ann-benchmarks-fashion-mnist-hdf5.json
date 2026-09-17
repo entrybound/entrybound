@@ -11,9 +11,18 @@
     }
   },
   "output": {
-    "materialization_key": "13e255f1dd3bc01ed099019c7a6d4f2c60a2144a41a188e624e7dc8dfd3f60f9",
+    "materialization_key": "025d84b2129d3b338eab559bf3e3d057459ea43285851924ba32416c02dba56b",
     "logical_tree_sha256": "bbbb1dc141e822babfd75567b5ef85ab0feae04775b51f8d3d03fdd0dfcf898f",
-    "pinned_utc": "2026-09-16T23:29:40Z"
+    "pinned_utc": "2026-09-17T10:36:23Z"
   },
-  "history": []
+  "history": [
+    {
+      "replaced_utc": "2026-09-17T10:36:23Z",
+      "output": {
+        "materialization_key": "13e255f1dd3bc01ed099019c7a6d4f2c60a2144a41a188e624e7dc8dfd3f60f9",
+        "logical_tree_sha256": "bbbb1dc141e822babfd75567b5ef85ab0feae04775b51f8d3d03fdd0dfcf898f",
+        "pinned_utc": "2026-09-16T23:29:40Z"
+      }
+    }
+  ]
 }

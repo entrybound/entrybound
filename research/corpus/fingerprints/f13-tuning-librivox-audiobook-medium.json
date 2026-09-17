@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-librivox-1900-last-president",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "4264b9b0d239ae9fc99495256acbdcb5c2e9568d7677130e7efd3d519806869c",
+  "item_def_sha256": "0ee7458ba77db09eb68a0fe7576a50bdbfdc1bb34ea8274aa7089fc6b1752eb1",
   "materialization_key": "f3abc65ef44863ed49c8f20a4fdd37233a1efd7d23c04bb4f19ae21adb5e2979",
   "materialized_utc": "2026-09-13T02:29:55Z",
   "materialized_relpath": "corpus/tuning/f13-tuning-librivox-audiobook-medium",

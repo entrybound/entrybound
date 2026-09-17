@@ -9,7 +9,7 @@
   "real_or_generated": "generated",
   "independence_group": "ebrc-g2-f20-private-vault-validation",
   "source_file": "research/corpus/sources/g2-generated.json",
-  "item_def_sha256": "64dc2ae26b91c2a3dd843c5b170f6b5ae08e374a97e4f426876133fb351de220",
+  "item_def_sha256": "e0a38ac45a82b28294c8cfd369179bf179de14d6cd67887c51ee4720575c4939",
   "materialization_key": "c49823f42a54c939e8f2fd41f9e3cf0bdae734313cf464d648e00f90d7e58d38",
   "materialized_utc": "2026-09-17T08:16:21Z",
   "materialized_relpath": "corpus/validation/f20-validation-generated-private-vault",

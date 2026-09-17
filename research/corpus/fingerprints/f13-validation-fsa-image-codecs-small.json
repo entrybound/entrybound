@@ -9,7 +9,7 @@
   "real_or_generated": "derived-from-real",
   "independence_group": "g5-loc-fsa-owi-color",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "e6f5d0d92fe275cb329fc706a6d866583e77930d6b389897fd5c5d56deeb8568",
+  "item_def_sha256": "b76b8968779cbf1528e90358f90f87163f1445549f9aa66fbe0552143a6f63a9",
   "materialization_key": "327091dea144ceaaa011e10e8cc46243e5cb38dc20b39b943f0e28a501402c25",
   "materialized_utc": "2026-09-13T02:30:28Z",
   "materialized_relpath": "corpus/validation/f13-validation-fsa-image-codecs-small",

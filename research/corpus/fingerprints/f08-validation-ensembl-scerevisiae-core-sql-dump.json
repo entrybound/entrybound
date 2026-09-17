@@ -9,15 +9,15 @@
   "real_or_generated": "real",
   "independence_group": "ensembl",
   "source_file": "research/corpus/sources/g3-data.json",
-  "item_def_sha256": "6537ac6a42741f62d8321166d64a70e1fba09619d44d511cf6445fdeceb8969c",
-  "materialization_key": "21e5761857837cabe70b86127f693155ab795b2f1026939f710b2f18a77b245d",
-  "materialized_utc": "2026-09-16T23:29:04Z",
+  "item_def_sha256": "bc1a041b38ce232be90f43b1ed6be5f33e7efdfaeea7efdf94c252cab1e6d1cd",
+  "materialization_key": "7f0c57263858fe87f72f929205e40fbe6ce6677fcf54c4f670bbddfff50cbbce",
+  "materialized_utc": "2026-09-17T10:36:41Z",
   "materialized_relpath": "corpus/validation/f08-validation-ensembl-scerevisiae-core-sql-dump",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
     "logical_tree_sha256": "92cf946ed1aacc5b926dcd8d4ac0c461e563d5cc8f800c7d63dc49b4b3206287",
-    "pinned_utc": "2026-09-16T23:29:04Z"
+    "pinned_utc": "2026-09-17T10:36:41Z"
   },
   "scale_check": {
     "tier": "medium",
@@ -36,7 +36,7 @@
         "size": 165,
         "retrieved_utc": "2026-09-16T23:28:06Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "alt_allele.txt.gz"
       },
       {
@@ -47,7 +47,7 @@
         "size": 172,
         "retrieved_utc": "2026-09-16T23:28:06Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "alt_allele_attrib.txt.gz"
       },
       {
@@ -58,7 +58,7 @@
         "size": 171,
         "retrieved_utc": "2026-09-16T23:28:07Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "alt_allele_group.txt.gz"
       },
       {
@@ -69,7 +69,7 @@
         "size": 1958,
         "retrieved_utc": "2026-09-16T23:28:07Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "analysis.txt.gz"
       },
       {
@@ -80,7 +80,7 @@
         "size": 2925,
         "retrieved_utc": "2026-09-16T23:28:07Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "analysis_description.txt.gz"
       },
       {
@@ -91,7 +91,7 @@
         "size": 5896,
         "retrieved_utc": "2026-09-16T23:28:08Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "assembly.txt.gz"
       },
       {
@@ -102,7 +102,7 @@
         "size": 173,
         "retrieved_utc": "2026-09-16T23:28:08Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "assembly_exception.txt.gz"
       },
       {
@@ -113,7 +113,7 @@
         "size": 258,
         "retrieved_utc": "2026-09-16T23:28:08Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "associated_group.txt.gz"
       },
       {
@@ -124,7 +124,7 @@
         "size": 558,
         "retrieved_utc": "2026-09-16T23:28:09Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "associated_xref.txt.gz"
       },
       {
@@ -135,7 +135,7 @@
         "size": 12891,
         "retrieved_utc": "2026-09-16T23:28:09Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "attrib_type.txt.gz"
       },
       {
@@ -146,7 +146,7 @@
         "size": 4059,
         "retrieved_utc": "2026-09-16T23:28:09Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "biotype.txt.gz"
       },
       {
@@ -157,7 +157,7 @@
         "size": 264,
         "retrieved_utc": "2026-09-16T23:28:10Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "coord_system.txt.gz"
       },
       {
@@ -168,7 +168,7 @@
         "size": 164,
         "retrieved_utc": "2026-09-16T23:28:10Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "data_file.txt.gz"
       },
       {
@@ -179,7 +179,7 @@
         "size": 140541,
         "retrieved_utc": "2026-09-16T23:28:11Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "density_feature.txt.gz"
       },
       {
@@ -190,7 +190,7 @@
         "size": 238,
         "retrieved_utc": "2026-09-16T23:28:11Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "density_type.txt.gz"
       },
       {
@@ -201,7 +201,7 @@
         "size": 1098962,
         "retrieved_utc": "2026-09-16T23:28:13Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "dependent_xref.txt.gz"
       },
       {
@@ -212,7 +212,7 @@
         "size": 160,
         "retrieved_utc": "2026-09-16T23:28:13Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "ditag.txt.gz"
       },
       {
@@ -223,7 +223,7 @@
         "size": 168,
         "retrieved_utc": "2026-09-16T23:28:13Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "ditag_feature.txt.gz"
       },
       {
@@ -234,7 +234,7 @@
         "size": 3516762,
         "retrieved_utc": "2026-09-16T23:28:25Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "dna.txt.gz"
       },
       {
@@ -245,7 +245,7 @@
         "size": 9685,
         "retrieved_utc": "2026-09-16T23:28:28Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "dna_align_feature.txt.gz"
       },
       {
@@ -256,7 +256,7 @@
         "size": 14806,
         "retrieved_utc": "2026-09-16T23:28:28Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "dna_align_feature_attrib.txt.gz"
       },
       {
@@ -267,7 +267,7 @@
         "size": 128756,
         "retrieved_utc": "2026-09-16T23:28:29Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "exon.txt.gz"
       },
       {
@@ -278,7 +278,7 @@
         "size": 35179,
         "retrieved_utc": "2026-09-16T23:28:29Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "exon_transcript.txt.gz"
       },
       {
@@ -289,7 +289,7 @@
         "size": 14260,
         "retrieved_utc": "2026-09-16T23:28:30Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "external_db.txt.gz"
       },
       {
@@ -300,7 +300,7 @@
         "size": 88241,
         "retrieved_utc": "2026-09-16T23:28:31Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "external_synonym.txt.gz"
       },
       {
@@ -311,7 +311,7 @@
         "size": 700972,
         "retrieved_utc": "2026-09-16T23:28:32Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "gene.txt.gz"
       },
       {
@@ -322,7 +322,7 @@
         "size": 167,
         "retrieved_utc": "2026-09-16T23:28:32Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "gene_archive.txt.gz"
       },
       {
@@ -333,7 +333,7 @@
         "size": 36864,
         "retrieved_utc": "2026-09-16T23:28:32Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "gene_attrib.txt.gz"
       },
       {
@@ -344,7 +344,7 @@
         "size": 381,
         "retrieved_utc": "2026-09-16T23:28:34Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "genome_statistics.txt.gz"
       },
       {
@@ -355,7 +355,7 @@
         "size": 168,
         "retrieved_utc": "2026-09-16T23:28:34Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "identity_xref.txt.gz"
       },
       {
@@ -366,7 +366,7 @@
         "size": 63725,
         "retrieved_utc": "2026-09-16T23:28:35Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "interpro.txt.gz"
       },
       {
@@ -377,7 +377,7 @@
         "size": 181,
         "retrieved_utc": "2026-09-16T23:28:35Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "intron_supporting_evidence.txt.gz"
       },
       {
@@ -388,7 +388,7 @@
         "size": 164,
         "retrieved_utc": "2026-09-16T23:28:36Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "karyotype.txt.gz"
       },
       {
@@ -399,7 +399,7 @@
         "size": 158,
         "retrieved_utc": "2026-09-16T23:28:36Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "map.txt.gz"
       },
       {
@@ -410,7 +410,7 @@
         "size": 251,
         "retrieved_utc": "2026-09-16T23:28:36Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "mapping_session.txt.gz"
       },
       {
@@ -421,7 +421,7 @@
         "size": 166,
         "retrieved_utc": "2026-09-16T23:28:37Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "mapping_set.txt.gz"
       },
       {
@@ -432,7 +432,7 @@
         "size": 161,
         "retrieved_utc": "2026-09-16T23:28:37Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "marker.txt.gz"
       },
       {
@@ -443,7 +443,7 @@
         "size": 169,
         "retrieved_utc": "2026-09-16T23:28:37Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "marker_feature.txt.gz"
       },
       {
@@ -454,7 +454,7 @@
         "size": 174,
         "retrieved_utc": "2026-09-16T23:28:38Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "marker_map_location.txt.gz"
       },
       {
@@ -465,7 +465,7 @@
         "size": 169,
         "retrieved_utc": "2026-09-16T23:28:38Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "marker_synonym.txt.gz"
       },
       {
@@ -476,7 +476,7 @@
         "size": 3274,
         "retrieved_utc": "2026-09-16T23:28:38Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "meta.txt.gz"
       },
       {
@@ -487,7 +487,7 @@
         "size": 244,
         "retrieved_utc": "2026-09-16T23:28:38Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "meta_coord.txt.gz"
       },
       {
@@ -498,7 +498,7 @@
         "size": 166,
         "retrieved_utc": "2026-09-16T23:28:39Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "misc_attrib.txt.gz"
       },
       {
@@ -509,7 +509,7 @@
         "size": 167,
         "retrieved_utc": "2026-09-16T23:28:39Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "misc_feature.txt.gz"
       },
       {
@@ -520,7 +520,7 @@
         "size": 176,
         "retrieved_utc": "2026-09-16T23:28:39Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "misc_feature_misc_set.txt.gz"
       },
       {
@@ -531,7 +531,7 @@
         "size": 1992,
         "retrieved_utc": "2026-09-16T23:28:40Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "misc_set.txt.gz"
       },
       {
@@ -542,7 +542,7 @@
         "size": 1833317,
         "retrieved_utc": "2026-09-16T23:28:41Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "object_xref.txt.gz"
       },
       {
@@ -553,7 +553,7 @@
         "size": 598862,
         "retrieved_utc": "2026-09-16T23:28:41Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "ontology_xref.txt.gz"
       },
       {
@@ -564,7 +564,7 @@
         "size": 161,
         "retrieved_utc": "2026-09-16T23:28:42Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "operon.txt.gz"
       },
       {
@@ -575,7 +575,7 @@
         "size": 172,
         "retrieved_utc": "2026-09-16T23:28:42Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "operon_transcript.txt.gz"
       },
       {
@@ -586,7 +586,7 @@
         "size": 177,
         "retrieved_utc": "2026-09-16T23:28:42Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "operon_transcript_gene.txt.gz"
       },
       {
@@ -597,7 +597,7 @@
         "size": 170,
         "retrieved_utc": "2026-09-16T23:28:43Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "peptide_archive.txt.gz"
       },
       {
@@ -608,7 +608,7 @@
         "size": 170,
         "retrieved_utc": "2026-09-16T23:28:43Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "prediction_exon.txt.gz"
       },
       {
@@ -619,7 +619,7 @@
         "size": 176,
         "retrieved_utc": "2026-09-16T23:28:43Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "prediction_transcript.txt.gz"
       },
       {
@@ -630,7 +630,7 @@
         "size": 176,
         "retrieved_utc": "2026-09-16T23:28:44Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "protein_align_feature.txt.gz"
       },
       {
@@ -641,7 +641,7 @@
         "size": 2431644,
         "retrieved_utc": "2026-09-16T23:28:45Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "protein_feature.txt.gz"
       },
       {
@@ -652,7 +652,7 @@
         "size": 21576,
         "retrieved_utc": "2026-09-16T23:28:45Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "repeat_consensus.txt.gz"
       },
       {
@@ -663,7 +663,7 @@
         "size": 185345,
         "retrieved_utc": "2026-09-16T23:28:46Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "repeat_feature.txt.gz"
       },
       {
@@ -674,7 +674,7 @@
         "size": 165,
         "retrieved_utc": "2026-09-16T23:28:46Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "rnaproduct.txt.gz"
       },
       {
@@ -685,7 +685,7 @@
         "size": 172,
         "retrieved_utc": "2026-09-16T23:28:47Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "rnaproduct_attrib.txt.gz"
       },
       {
@@ -696,7 +696,7 @@
         "size": 170,
         "retrieved_utc": "2026-09-16T23:28:47Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "rnaproduct_type.txt.gz"
       },
       {
@@ -707,7 +707,7 @@
         "size": 6968,
         "retrieved_utc": "2026-09-16T23:28:47Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "saccharomyces_cerevisiae_core_114_4.sql.gz"
       },
       {
@@ -718,7 +718,7 @@
         "size": 768,
         "retrieved_utc": "2026-09-16T23:28:48Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "seq_region.txt.gz"
       },
       {
@@ -729,7 +729,7 @@
         "size": 1639,
         "retrieved_utc": "2026-09-16T23:28:48Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "seq_region_attrib.txt.gz"
       },
       {
@@ -740,7 +740,7 @@
         "size": 173,
         "retrieved_utc": "2026-09-16T23:28:49Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "seq_region_mapping.txt.gz"
       },
       {
@@ -751,7 +751,7 @@
         "size": 297,
         "retrieved_utc": "2026-09-16T23:28:49Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "seq_region_synonym.txt.gz"
       },
       {
@@ -762,7 +762,7 @@
         "size": 169,
         "retrieved_utc": "2026-09-16T23:28:49Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "simple_feature.txt.gz"
       },
       {
@@ -773,7 +773,7 @@
         "size": 2061,
         "retrieved_utc": "2026-09-16T23:28:50Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "stable_id_event.txt.gz"
       },
       {
@@ -784,7 +784,7 @@
         "size": 173,
         "retrieved_utc": "2026-09-16T23:28:50Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "supporting_feature.txt.gz"
       },
       {
@@ -795,7 +795,7 @@
         "size": 182562,
         "retrieved_utc": "2026-09-16T23:28:50Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "transcript.txt.gz"
       },
       {
@@ -806,7 +806,7 @@
         "size": 461797,
         "retrieved_utc": "2026-09-16T23:28:51Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "transcript_attrib.txt.gz"
       },
       {
@@ -817,7 +817,7 @@
         "size": 192,
         "retrieved_utc": "2026-09-16T23:28:52Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "transcript_intron_supporting_evidence.txt.gz"
       },
       {
@@ -828,7 +828,7 @@
         "size": 184,
         "retrieved_utc": "2026-09-16T23:28:52Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "transcript_supporting_feature.txt.gz"
       },
       {
@@ -839,7 +839,7 @@
         "size": 107947,
         "retrieved_utc": "2026-09-16T23:28:53Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "translation.txt.gz"
       },
       {
@@ -850,7 +850,7 @@
         "size": 561454,
         "retrieved_utc": "2026-09-16T23:28:58Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "translation_attrib.txt.gz"
       },
       {
@@ -861,7 +861,7 @@
         "size": 142248,
         "retrieved_utc": "2026-09-16T23:28:59Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "unmapped_object.txt.gz"
       },
       {
@@ -872,7 +872,7 @@
         "size": 1327,
         "retrieved_utc": "2026-09-16T23:28:59Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "unmapped_reason.txt.gz"
       },
       {
@@ -883,7 +883,7 @@
         "size": 3071929,
         "retrieved_utc": "2026-09-16T23:29:04Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "xref.txt.gz"
       }
     ],
@@ -1364,9 +1364,9 @@
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "gzip": "gzip 1.12",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -1377,7 +1377,7 @@
     "tree_sha256": "ec5474729e9eed12fb3740cac3d0855a00990266ee2a6bcc90c3106a3ef616b5",
     "logical_tree_sha256": "92cf946ed1aacc5b926dcd8d4ac0c461e563d5cc8f800c7d63dc49b4b3206287",
     "content_tree_sha256": "3476e48fca392b165ae5beab998f56bb59d3cd48c2e7c14a25d61c3ab56f71d7",
-    "extended_tree_sha256": "586dd492a09287eb63c9106003898e4351933802cc036922b072dbd039847427",
+    "extended_tree_sha256": "2403ebab1cd9d0c14a18171b52aebaa93cf528fc6875ab0d32c3062eff651851",
     "bytes": 66379337,
     "bytes_all_paths": 66379337,
     "allocated_bytes": 66490368,

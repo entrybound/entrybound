@@ -9,7 +9,7 @@
   "real_or_generated": "generated",
   "independence_group": "ebrc-g2-f20-private-vault-tuning",
   "source_file": "research/corpus/sources/g2-generated.json",
-  "item_def_sha256": "b5d4f5704f2a4f3c3db213b378cc2e3fba3c6dd6587e5a56f73b026880ecb6f4",
+  "item_def_sha256": "05315550d1584df8066c90a397a87d7e798e31bb15de997ae505df1cf4f26281",
   "materialization_key": "de3a33e7fe818a3bd442d6c05888bdbeae40ed061e868a5b6cda5bef2cc59284",
   "materialized_utc": "2026-09-17T08:16:21Z",
   "materialized_relpath": "corpus/tuning/f20-tuning-generated-private-vault",

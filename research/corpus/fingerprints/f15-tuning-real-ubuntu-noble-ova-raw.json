@@ -10,14 +10,14 @@
   "independence_group": "ubuntu-noble",
   "source_file": "research/corpus/sources/g2-generated.json",
   "item_def_sha256": "9fe6e10ff385200b25b1f6a33f03c9968311617dbab85ecfcd1e410139137516",
-  "materialization_key": "9d3b853edf012fae3d5ce2ac5f93f16cd2e12299963a9e3b861b7ce702fbd123",
-  "materialized_utc": "2026-09-16T23:18:49Z",
+  "materialization_key": "638aeb92c91e3cdeb8274cdc4f48909b4c6e55846aa37a3c5dc6fc60ebddfa35",
+  "materialized_utc": "2026-09-17T10:38:17Z",
   "materialized_relpath": "corpus/tuning/f15-tuning-real-ubuntu-noble-ova-raw",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
     "logical_tree_sha256": "97c4ce53af6beb285dc76ef77e7c8019f6d630f08f725b6202991f3b33bdb837",
-    "pinned_utc": "2026-09-16T23:18:49Z"
+    "pinned_utc": "2026-09-17T10:38:17Z"
   },
   "scale_check": {
     "tier": "large",
@@ -43,7 +43,7 @@
     "steps": [],
     "generator": {
       "script": "research/corpus/generators/g2-generated/shrink_real_disk_image.py",
-      "script_sha256": "73a36c68e34d5fdb6aeae802b191cc56b4f29dc50fa80cb4f59f71d0857e6f44",
+      "script_sha256": "9aaa4b9e516f1ed5442e57e10a253a10fb17dd34ec58421bb4ededd5d062b94e",
       "interpreter": "python",
       "interpreter_path": "/root/eb-research/venv/bin/python",
       "seed": 51007,
@@ -62,9 +62,9 @@
     "python_executable": "/root/eb-research/venv/bin/python",
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -72,13 +72,13 @@
   "fingerprint": {
     "format": "ebrc-fp-v1",
     "root_type": "dir",
-    "tree_sha256": "7afbbb43f44d6ae9b08ba7a02e903d3dc500860b3ac779e43098764bdde68833",
+    "tree_sha256": "c42097f56bf376c97701ed07b2fd3cdd693ce845ddf2a0b59f837ac11bfce3ab",
     "logical_tree_sha256": "97c4ce53af6beb285dc76ef77e7c8019f6d630f08f725b6202991f3b33bdb837",
     "content_tree_sha256": "dfc4275d14d4323f5854491eaf174b0a5d8a57fd157f774385a5cd75a04ea257",
-    "extended_tree_sha256": "608fda32829eb7e7a6659ef43ee40d2eb8484ab1e74d935835b5877134e6a4d3",
+    "extended_tree_sha256": "e72417eb27263078eae368bb60e9acd5ac49114801ed5a26d864f338c18273aa",
     "bytes": 3758097030,
     "bytes_all_paths": 3758097030,
-    "allocated_bytes": 1876434944,
+    "allocated_bytes": 1876447232,
     "counts": {
       "objects": 3,
       "files": 2,

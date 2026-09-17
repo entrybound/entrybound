@@ -10,8 +10,8 @@
   "independence_group": "ebrc-gen-journal",
   "source_file": "research/corpus/sources/g3-data.json",
   "item_def_sha256": "0544d3ddeea5d89ecd221889168eccbe1110c31cadd63b4ae001a7f0c5c11234",
-  "materialization_key": "30c504f836d4d9f0010221c3cd8171f91d67ab124ae8a8f1041e811c33d1a68b",
-  "materialized_utc": "2026-09-17T09:09:42Z",
+  "materialization_key": "1a3629f34377659757b9ee0de6c7ededc504823a15fe6608475031f95e956c6f",
+  "materialized_utc": "2026-09-17T10:35:02Z",
   "materialized_relpath": "corpus/validation/f05-validation-gen-journal-systemd",
   "output_pin": {
     "policy": null,
@@ -28,7 +28,7 @@
     "steps": [],
     "generator": {
       "script": "research/corpus/generators/g3-data/build_journal_export.py",
-      "script_sha256": "dbf2b611c2eb1b72ea8a709c52865935bfb6b0be08db59ee34f58993c8524a04",
+      "script_sha256": "0f8ae9a2223109d9cec26c146ca2a3f6b28d2be0a49291edad2ba6dca430e833",
       "interpreter": "python",
       "interpreter_path": "/root/eb-research/venv/bin/python",
       "seed": 5401,
@@ -44,9 +44,9 @@
     "python_executable": "/root/eb-research/venv/bin/python",
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -54,10 +54,10 @@
   "fingerprint": {
     "format": "ebrc-fp-v1",
     "root_type": "dir",
-    "tree_sha256": "708eca7c4cd8ce6926a12b85dc9e2624a3199d70f0adc52bb472197a4f35e9ff",
-    "logical_tree_sha256": "31d2917bb74d38c3ed2795f5427535f67218f3094141ab1e64538900be1b5cff",
-    "content_tree_sha256": "a8c409173d5497a154d0fdf418f0671f4a83a0ab31bf2ce0c601a205fbd6d534",
-    "extended_tree_sha256": "a3ac8a344080e5cfa550a93eb785a28bfb100813a6c0f84c8d06c2a4d2c4020a",
+    "tree_sha256": "318206e619693dd3059f79d78fe96903e6cb0e6461f8dd37443a4c96f5bed7af",
+    "logical_tree_sha256": "e758ee517a0462ede8acb7977f50cb347071e3bcd03cc7966630080312028562",
+    "content_tree_sha256": "2bf58cc21d09493aa3209309d7196a24ba627be95452701ef3aaa0e52add364e",
+    "extended_tree_sha256": "514c44c495f6cd6471468ee91921b4c386fedd17f4620e35a78064362cecba54",
     "bytes": 41943350,
     "bytes_all_paths": 41943350,
     "allocated_bytes": 35647488,

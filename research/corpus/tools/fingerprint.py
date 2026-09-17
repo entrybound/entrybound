@@ -36,6 +36,7 @@ Also reports bytes, file/dir/symlink/hardlink counts, max depth and path-length 
 from __future__ import annotations
 
 import argparse
+import contextlib
 import errno
 import gzip
 import hashlib
@@ -142,6 +143,24 @@ def scan(root) -> Scan:
 
 
 def data_extents(fd: int, size: int) -> list:
+    """SEEK_DATA/SEEK_HOLE extent map for the open regular file `fd`.
+
+    On this ext4/WSL2 host, SEEK_DATA/SEEK_HOLE can answer *differently* for the exact
+    same on-disk bytes depending on whether the file's page cache is already warm from
+    an earlier sequential read (by this process or any other): a warm cache reports an
+    optimistic, coalesced extent map, while a cold read reports the true, fragmented
+    on-disk layout -- and hash_file() below hashes this same file's full content right
+    after computing its extents, so a second fingerprint of unchanged bytes (by a later
+    process, after the first one warmed the cache) could see a different map purely
+    from that ordering, not from any real change. This produced HASH MISMATCHes against
+    otherwise-identical content_tree_sha256 for several items (task_bb8ca4e8 follow-up;
+    an earlier fix mistook a warm-cache read for "settled" and hardcoded that instead).
+    POSIX_FADV_DONTNEED evicts this file's cached pages first, forcing a genuinely cold,
+    reproducible read of the on-disk extent map every time, independent of prior reads.
+    """
+    if size > 0:
+        with contextlib.suppress(OSError):
+            os.posix_fadvise(fd, 0, 0, os.POSIX_FADV_DONTNEED)
     if size == 0:
         return []
     ext = []

@@ -10,8 +10,8 @@
   "independence_group": "musl",
   "source_file": "research/corpus/sources/g4-binary.json",
   "item_def_sha256": "a6c04d33fc848e0a6474644dc46706a64a95d9c3bf0026ada82b10bd4ceaa3d0",
-  "materialization_key": "4385a555316977c2019e76abff9080e7bacfc3d81172fae914d610bd1127734e",
-  "materialized_utc": "2026-09-17T08:29:53Z",
+  "materialization_key": "2b1d59425b9b1b0bd3f2e160803015733c152c7e978ff993cbd066c367074621",
+  "materialized_utc": "2026-09-17T10:42:32Z",
   "materialized_relpath": "heldout/f14-legacy-writer-matrix-heldout",
   "output_pin": {
     "policy": null,
@@ -20,7 +20,7 @@
   "scale_check": {
     "tier": "medium",
     "tier_limit_bytes": 536870912,
-    "bytes": 128405595,
+    "bytes": 136512612,
     "ok": true,
     "fits_smaller_tier": false
   },
@@ -34,7 +34,7 @@
     "steps": [],
     "generator": {
       "script": "research/corpus/generators/g4-binary/legacy_writer_matrix.py",
-      "script_sha256": "e615e4db72f882781cc2d5e85136801e8268af3e35ef7d107b959ce53a5d31cd",
+      "script_sha256": "4365893ac6fd5838efddcd19f0f19f56019759fb1e876de8c5fdbbe758f2e192",
       "interpreter": "python",
       "interpreter_path": "/root/eb-research/venv/bin/python",
       "seed": 0,
@@ -50,9 +50,9 @@
     "python_executable": "/root/eb-research/venv/bin/python",
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -60,11 +60,11 @@
   "fingerprint": {
     "format": "ebrc-fp-v1",
     "root_type": "dir",
-    "tree_sha256": "3966efead27a91b142aa4305ac93072f0a780da32b91c296027c568595d532fd",
-    "logical_tree_sha256": "5e103828e1af38e56c8a02c041f722083aecb77f988808a9c0add4d2c2f56925",
-    "content_tree_sha256": "f26e6abe40d3d4aea97d980ce276deef4c2b1c8ed80fa7cf45334697cf587d56",
-    "extended_tree_sha256": "415ce9f70de0a6a77e75e7f75d38e0430f4c6a1243d7100e00cb4c0428d13315",
-    "bytes": 128405595,
+    "tree_sha256": "75b38879bc605fe4031d37394563e10c84b592a16ff089ac4652621ffbb08425",
+    "logical_tree_sha256": "4aad16a155c70171ea89489e4a2fbaed2831a5c5decfee30526aabded8a9a272",
+    "content_tree_sha256": "a01b40e9c2cd7e8e787aadc27951203e62acdabb2a459ae5a88de8bf8b00b209",
+    "extended_tree_sha256": "dcaaadac2d87bbc545ae95608559e610e9875a2bb02f18d928002dd47746ea9c",
+    "bytes": 136512612,
     "counts": {
       "objects": 50,
       "files": 41,

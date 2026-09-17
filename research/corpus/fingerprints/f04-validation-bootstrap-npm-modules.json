@@ -9,7 +9,7 @@
   "real_or_generated": "derived-from-real",
   "independence_group": "twbs-bootstrap-node-modules",
   "source_file": "research/corpus/sources/g2-generated.json",
-  "item_def_sha256": "e715267ad8d1ed651169072f2a0e9add7d44582311ad856c2c4f9fe0707d1cd5",
+  "item_def_sha256": "54cb60b9b63b63523ef243fca5364782735d085f6bc9e0fcd5fd4e8a5c86f2d9",
   "materialization_key": "da2f87ba21b286d98bbf606dce02b155c52800f512a431dbef0c3cf2a87e4b28",
   "materialized_utc": "2026-09-16T21:32:53Z",
   "materialized_relpath": "corpus/validation/f04-validation-bootstrap-npm-modules",

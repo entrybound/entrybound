@@ -9,15 +9,15 @@
   "real_or_generated": "real",
   "independence_group": "sdss-dr17",
   "source_file": "research/corpus/sources/g3-data.json",
-  "item_def_sha256": "a20e92230dafeb4acace3bb517471dbc8519e4f07d723f06e4925ec6beeb1e0c",
-  "materialization_key": "635d9bc55d8d14caaa181e060db51c69ca3c9b3cbd4b6d3987f1259280ed9f8d",
-  "materialized_utc": "2026-09-16T23:30:29Z",
+  "item_def_sha256": "b16d2950aaf2268c2533e15e5bb0388b0d023aefffc288364b0e11e046fd2626",
+  "materialization_key": "12653dad111293a941083387a41720a1dd8e9cf52e8986a4a38aeb428426d385",
+  "materialized_utc": "2026-09-17T10:36:32Z",
   "materialized_relpath": "corpus/tuning/f07-tuning-sdss-dr17-frames",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
     "logical_tree_sha256": "e8103bfd98a88d3e8445085aeab39372179a632ae06338428bc7dafcb49b001c",
-    "pinned_utc": "2026-09-16T23:30:29Z"
+    "pinned_utc": "2026-09-17T10:36:32Z"
   },
   "scale_check": {
     "tier": "medium",
@@ -36,7 +36,7 @@
         "size": 3085602,
         "retrieved_utc": "2026-09-16T23:30:20Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "frame-u-000756-1-0206.fits.bz2"
       },
       {
@@ -47,7 +47,7 @@
         "size": 3572185,
         "retrieved_utc": "2026-09-16T23:30:21Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "frame-g-000756-1-0206.fits.bz2"
       },
       {
@@ -58,7 +58,7 @@
         "size": 3281971,
         "retrieved_utc": "2026-09-16T23:30:22Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "frame-r-000756-1-0206.fits.bz2"
       },
       {
@@ -69,7 +69,7 @@
         "size": 3664351,
         "retrieved_utc": "2026-09-16T23:30:22Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "frame-i-000756-1-0206.fits.bz2"
       },
       {
@@ -80,7 +80,7 @@
         "size": 3645602,
         "retrieved_utc": "2026-09-16T23:30:23Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "frame-z-000756-1-0206.fits.bz2"
       },
       {
@@ -91,7 +91,7 @@
         "size": 3218264,
         "retrieved_utc": "2026-09-16T23:30:24Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "frame-g-000756-2-0206.fits.bz2"
       },
       {
@@ -102,7 +102,7 @@
         "size": 3453331,
         "retrieved_utc": "2026-09-16T23:30:24Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "frame-r-000756-2-0206.fits.bz2"
       }
     ],
@@ -156,9 +156,9 @@
     "python_executable": "/root/eb-research/venv/bin/python",
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -169,7 +169,7 @@
     "tree_sha256": "1c13cb9d14ad0da3543bb4ba4ce5071d2b6f9693d90143e94a8a3145b24c2ed0",
     "logical_tree_sha256": "e8103bfd98a88d3e8445085aeab39372179a632ae06338428bc7dafcb49b001c",
     "content_tree_sha256": "902b96df289cb3c5f652725267c636e28fd7d0143c6fd7b0655ff9219b8c8dcd",
-    "extended_tree_sha256": "37baca714d3d4f68540a4e1f6394062b9c1932fe3be5f39c3a6c48b8513dc9f1",
+    "extended_tree_sha256": "560f6a1120e14fa8ab7f741ee950a7c9480118874ea58f5ace35834304734dd6",
     "bytes": 87131520,
     "bytes_all_paths": 87131520,
     "allocated_bytes": 87134208,

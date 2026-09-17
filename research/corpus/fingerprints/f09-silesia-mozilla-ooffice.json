@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "silesia-corpus",
   "source_file": "research/corpus/sources/g4-binary.json",
-  "item_def_sha256": "830635a0ef07e04c48edcb14703a23a1bce2b49c0e6fdd46561bc0eb467ff226",
+  "item_def_sha256": "930bc99e7c79a84c81a37c24602e196d6f8baa3e2a5d6832580dc03e9f9841b0",
   "materialization_key": "0975951fab7f0aee4cfc958d607a0d30ff29daff5b1f5752a7a0ead4aed44008",
   "materialized_utc": "2026-09-13T02:25:30Z",
   "materialized_relpath": "corpus/tuning/f09-silesia-mozilla-ooffice",

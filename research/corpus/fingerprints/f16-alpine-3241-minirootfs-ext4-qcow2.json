@@ -10,14 +10,14 @@
   "independence_group": "alpine-linux",
   "source_file": "research/corpus/sources/g4-binary.json",
   "item_def_sha256": "c7157049e8af40dfc27939ea962bf3ecee541cadae21eab22757bb1844a99c61",
-  "materialization_key": "c82edb1c79a5bd86076bffa2011b4a2319fbf3e4e929cdd48bba06bdb7f5a327",
-  "materialized_utc": "2026-09-16T21:28:07Z",
+  "materialization_key": "980694ad22634589c5bae5846409de46b4a3c26a5651b4c13004de7f344ae24d",
+  "materialized_utc": "2026-09-17T10:52:00Z",
   "materialized_relpath": "corpus/tuning/f16-alpine-3241-minirootfs-ext4-qcow2",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
-    "logical_tree_sha256": "1c03be14ed07658c346cb9e8f1f883ce91bbe030d492df9c659844ffd8c11ead",
-    "pinned_utc": "2026-09-16T21:28:07Z"
+    "logical_tree_sha256": "b0241f5c17345f80b3576e6220585c39ea1b2ee8fa66e2bb079d9d4b2b5f3c8e",
+    "pinned_utc": "2026-09-17T10:52:00Z"
   },
   "scale_check": {
     "tier": "small",
@@ -30,7 +30,7 @@
     "from_items": [
       {
         "item_id": "f16-alpine-3241-minirootfs-ext4-raw",
-        "logical_tree_sha256": "65bcc17d5553bd76e93d6b71755c1acecc24a97bb9c321d5a005cf95eca87d94"
+        "logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337"
       }
     ],
     "steps": [],
@@ -55,20 +55,20 @@
     "python_executable": "/root/eb-research/venv/bin/python",
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "tool_sha256": {
-      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
-      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
+      "fingerprint.py": "d7ddade80dd5bad954f94ed7e9c7565b26c820c62749af688fbe610a3c30eac2",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
-      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
   },
   "fingerprint": {
     "format": "ebrc-fp-v1",
     "root_type": "dir",
-    "tree_sha256": "dcc0cf1886f968e84e2afbb024efc6466ed9559fac7f66e396df0e5709adcf4a",
-    "logical_tree_sha256": "1c03be14ed07658c346cb9e8f1f883ce91bbe030d492df9c659844ffd8c11ead",
+    "tree_sha256": "438bdfe5838e9d9f711a37c39ea82804e107068938befe7ee2272d4e96e79657",
+    "logical_tree_sha256": "b0241f5c17345f80b3576e6220585c39ea1b2ee8fa66e2bb079d9d4b2b5f3c8e",
     "content_tree_sha256": "72b5cb0cd990973b4c0e5ffaa34989818852b64d1b4b5a4a2b823971c7b2183c",
-    "extended_tree_sha256": "5e3d5a0cfd2d8056182545ed4b9a044d9ff885c58b146f3741287abe02c30093",
+    "extended_tree_sha256": "b5ba218323f32a3d121532d78ce72c2006f8dcf23d9ecd5d37696c6f59a74245",
     "bytes": 9896220,
     "bytes_all_paths": 9896220,
     "allocated_bytes": 9601024,

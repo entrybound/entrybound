@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "direnv",
   "source_file": "research/corpus/sources/g1-code.json",
-  "item_def_sha256": "ca0bca4a5ad6dc061ce60aee0612ffc2115649ce0bf4120aa8da0f5c1bba1d4f",
+  "item_def_sha256": "3b82638120bf44c3a4cc74018a558f4e904573833980eb1fd5f65490f9841633",
   "materialization_key": "011bfea3bf6e74db89f6373076235c08e36d9a75ec6924f731c6711d8124cc98",
   "materialized_utc": "2026-09-13T02:19:53Z",
   "materialized_relpath": "heldout/f03-heldout-direnv-go-mod-vendor",

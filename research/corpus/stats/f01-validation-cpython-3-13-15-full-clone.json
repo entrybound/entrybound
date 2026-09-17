@@ -8,7 +8,7 @@
   "logical_tree_sha256": "a9730f75754528cb399f3474e957de77690cc43e8ef834885d12acc3faeb6a76",
   "tool": {
     "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
-    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "fingerprint_sha256": "d7ddade80dd5bad954f94ed7e9c7565b26c820c62749af688fbe610a3c30eac2",
     "file_version": "file-5.45",
     "magic_mgc": {
       "path": "/usr/lib/file/magic.mgc",

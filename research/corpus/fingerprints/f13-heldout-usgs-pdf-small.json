@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-usgs-pubs-pdf",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "514b1af73009debfc0aa7da0c94e871e068dabe7b64e994bcee1e0de9f5284f9",
+  "item_def_sha256": "cf941be4ed9ce5e40dc51004173e42e905e0a562782ff810e6fc1897329eb8be",
   "materialization_key": "bbec8dfbc213602832785e0a238b1739a5b4f39cee87e649a1a4826583bf36e4",
   "materialized_utc": "2026-09-13T02:29:50Z",
   "materialized_relpath": "heldout/f13-heldout-usgs-pdf-small",

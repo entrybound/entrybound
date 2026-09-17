@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-librivox-tenn-sf-stories",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "f1f7616874887940cb0a339456553b94d8b321b6307358852efd889c601f4aea",
+  "item_def_sha256": "b4c37b6b3e60cb5747b16bea06fa8820c66a2bc2507c4edb272dcd6dc00f7fcd",
   "materialization_key": "510713700db7ff7f06d0ac12ebcb7e59bbb2f3efe1bac168394eac20125a8556",
   "materialized_utc": "2026-09-13T02:29:56Z",
   "materialized_relpath": "corpus/validation/f13-validation-librivox-audiobook-medium",

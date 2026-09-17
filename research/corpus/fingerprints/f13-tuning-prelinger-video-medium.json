@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-prelinger-archives",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "59552289428f8885485b09f620e7202d11cfde14b295404bafcb641e1d46590e",
+  "item_def_sha256": "0df79a05278f7bc02f18bf639a89f05d9186c00f3dbe0c1931c15f93a15554d7",
   "materialization_key": "2da127b1750e44b880abcf9e27f844f2f52b5a9a13006ee4241ba4e9c86aeda8",
   "materialized_utc": "2026-09-13T02:29:56Z",
   "materialized_relpath": "corpus/tuning/f13-tuning-prelinger-video-medium",

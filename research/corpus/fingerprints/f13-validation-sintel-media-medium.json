@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-blender-sintel",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "1224a8591d6c39aeb9a1c725c10a5553048017096c065ce8682237c7c97fc874",
+  "item_def_sha256": "76469dd5b1f999f9f611dfe6bbabfc3e3bf64318e2f9f2a5ec486618d4dfb217",
   "materialization_key": "17b65b134b4903964d81445be3217170b5aaea428cb7d097f894081181ee3f26",
   "materialized_utc": "2026-09-13T02:29:57Z",
   "materialized_relpath": "corpus/validation/f13-validation-sintel-media-medium",

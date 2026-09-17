@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-librivox-reynolds-sf-stories",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "111a2676f59b1f6c25aa5946be98d60c7fb9b943b028f6c80f9cc16f34a300ec",
+  "item_def_sha256": "07e2c2629f3e659bdb3f00ac3780226a6170c34ffb9a72578c2c8b5aa23b9aba",
   "materialization_key": "4f7bd0c22f8d9ff53b382d43e5ae10e02e5ae42fc9336d868cc8e7e598b52d15",
   "materialized_utc": "2026-09-13T02:29:49Z",
   "materialized_relpath": "heldout/f13-heldout-librivox-audiobook-medium",

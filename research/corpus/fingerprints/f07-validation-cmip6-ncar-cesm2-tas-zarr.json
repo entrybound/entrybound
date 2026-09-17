@@ -9,15 +9,15 @@
   "real_or_generated": "real",
   "independence_group": "cmip6-ncar-cesm2",
   "source_file": "research/corpus/sources/g3-data.json",
-  "item_def_sha256": "de8db366f993c1210077fb40c1a60593cf4c95d49148d279853f376cc9c519a6",
-  "materialization_key": "3d822b611c40bef67a46d952e05f5a8ecf91f4436d8276dc08cd72b7e245aa15",
-  "materialized_utc": "2026-09-16T23:31:05Z",
+  "item_def_sha256": "51b0f6d82bc576aaf927d16dcf09e2fba1ae77c82e75e58a054b797eeb4aee88",
+  "materialization_key": "62bce6a19472a450ebad61354112612fc62ac1864cf03ff567e6e7b7f3cd9183",
+  "materialized_utc": "2026-09-17T10:36:34Z",
   "materialized_relpath": "corpus/validation/f07-validation-cmip6-ncar-cesm2-tas-zarr",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
     "logical_tree_sha256": "becbb66b2eaed392aa4fb2029793e2245848e318eceb4323920e2df136c2b085",
-    "pinned_utc": "2026-09-16T23:31:05Z"
+    "pinned_utc": "2026-09-17T10:36:34Z"
   },
   "scale_check": {
     "tier": "medium",
@@ -36,7 +36,7 @@
         "size": 3377,
         "retrieved_utc": "2026-09-16T23:30:55Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zattrs"
       },
       {
@@ -47,7 +47,7 @@
         "size": 24,
         "retrieved_utc": "2026-09-16T23:30:55Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zgroup"
       },
       {
@@ -58,7 +58,7 @@
         "size": 10516,
         "retrieved_utc": "2026-09-16T23:30:55Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zmetadata"
       },
       {
@@ -69,7 +69,7 @@
         "size": 387,
         "retrieved_utc": "2026-09-16T23:30:55Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zarray"
       },
       {
@@ -80,7 +80,7 @@
         "size": 723,
         "retrieved_utc": "2026-09-16T23:30:56Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zattrs"
       },
       {
@@ -91,7 +91,7 @@
         "size": 79307487,
         "retrieved_utc": "2026-09-16T23:30:57Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "0.0.0"
       },
       {
@@ -102,7 +102,7 @@
         "size": 79243944,
         "retrieved_utc": "2026-09-16T23:30:58Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "1.0.0"
       },
       {
@@ -113,7 +113,7 @@
         "size": 79181912,
         "retrieved_utc": "2026-09-16T23:30:59Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "2.0.0"
       },
       {
@@ -124,7 +124,7 @@
         "size": 24118124,
         "retrieved_utc": "2026-09-16T23:31:00Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "3.0.0"
       },
       {
@@ -135,7 +135,7 @@
         "size": 317,
         "retrieved_utc": "2026-09-16T23:31:00Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zarray"
       },
       {
@@ -146,7 +146,7 @@
         "size": 250,
         "retrieved_utc": "2026-09-16T23:31:00Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zattrs"
       },
       {
@@ -157,7 +157,7 @@
         "size": 1420,
         "retrieved_utc": "2026-09-16T23:31:00Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "0"
       },
       {
@@ -168,7 +168,7 @@
         "size": 317,
         "retrieved_utc": "2026-09-16T23:31:01Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zarray"
       },
       {
@@ -179,7 +179,7 @@
         "size": 250,
         "retrieved_utc": "2026-09-16T23:31:01Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zattrs"
       },
       {
@@ -190,7 +190,7 @@
         "size": 657,
         "retrieved_utc": "2026-09-16T23:31:01Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "0"
       },
       {
@@ -201,7 +201,7 @@
         "size": 319,
         "retrieved_utc": "2026-09-16T23:31:02Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zarray"
       },
       {
@@ -212,7 +212,7 @@
         "size": 231,
         "retrieved_utc": "2026-09-16T23:31:03Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zattrs"
       },
       {
@@ -223,7 +223,7 @@
         "size": 3391,
         "retrieved_utc": "2026-09-16T23:31:03Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "0"
       },
       {
@@ -234,7 +234,7 @@
         "size": 339,
         "retrieved_utc": "2026-09-16T23:31:03Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zarray"
       },
       {
@@ -245,7 +245,7 @@
         "size": 96,
         "retrieved_utc": "2026-09-16T23:31:03Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zattrs"
       },
       {
@@ -256,7 +256,7 @@
         "size": 1237,
         "retrieved_utc": "2026-09-16T23:31:03Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "0.0"
       },
       {
@@ -267,7 +267,7 @@
         "size": 339,
         "retrieved_utc": "2026-09-16T23:31:03Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zarray"
       },
       {
@@ -278,7 +278,7 @@
         "size": 95,
         "retrieved_utc": "2026-09-16T23:31:04Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zattrs"
       },
       {
@@ -289,7 +289,7 @@
         "size": 739,
         "retrieved_utc": "2026-09-16T23:31:04Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "0.0"
       },
       {
@@ -300,7 +300,7 @@
         "size": 341,
         "retrieved_utc": "2026-09-16T23:31:04Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zarray"
       },
       {
@@ -311,7 +311,7 @@
         "size": 131,
         "retrieved_utc": "2026-09-16T23:31:04Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": ".zattrs"
       },
       {
@@ -322,7 +322,7 @@
         "size": 4391,
         "retrieved_utc": "2026-09-16T23:31:04Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "0.0"
       }
     ],
@@ -469,9 +469,9 @@
     "python_executable": "/root/eb-research/venv/bin/python",
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -482,7 +482,7 @@
     "tree_sha256": "d6eb1ce5889f6147ece00dcb3adf0744ec02c4e4c66e900ac7122418a06c4d27",
     "logical_tree_sha256": "becbb66b2eaed392aa4fb2029793e2245848e318eceb4323920e2df136c2b085",
     "content_tree_sha256": "6e47d2fb61799efc6c8bd7df364a9b124a3e186e37eca91f609f12d51f995dcd",
-    "extended_tree_sha256": "f5e5f783e0754bad0b28cb26eb4bb02dbe3d47463fce1e64d68dddef3395065f",
+    "extended_tree_sha256": "9d97b27ad518faba60625a43f4bb7a60388afdbe9bb3d74d425f78ce9bce4b0a",
     "bytes": 261881354,
     "bytes_all_paths": 261881354,
     "allocated_bytes": 261967872,

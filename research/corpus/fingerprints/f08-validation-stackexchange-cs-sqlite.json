@@ -9,15 +9,15 @@
   "real_or_generated": "derived-from-real",
   "independence_group": "stackexchange-cs",
   "source_file": "research/corpus/sources/g3-data.json",
-  "item_def_sha256": "76b8e658f56e2fb7353cd3514af75d28fc0a1d3af46c69a46e2a43ad80f4e15f",
-  "materialization_key": "8e68aaf2208472ecc2fcbf8f6dea44736ce2aff13e2125de097bb8c8ac28bc95",
-  "materialized_utc": "2026-09-16T23:32:34Z",
+  "item_def_sha256": "fe402a92f5cfbeb323323561813a13198c0b665047716ab515a19c4f17f8e35b",
+  "materialization_key": "00b3c85426f1fed1be1ccea656750d78b7c9355e3427077f9a247916716e21a0",
+  "materialized_utc": "2026-09-17T10:37:15Z",
   "materialized_relpath": "corpus/validation/f08-validation-stackexchange-cs-sqlite",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
     "logical_tree_sha256": "a948cd75e1340c98ec7c05c7f9b2d770462fc5633899a711c2ce73a9814857a8",
-    "pinned_utc": "2026-09-16T23:32:34Z"
+    "pinned_utc": "2026-09-17T10:37:15Z"
   },
   "scale_check": {
     "tier": "large",
@@ -36,7 +36,7 @@
         "size": 130990559,
         "retrieved_utc": "2026-09-16T23:31:47Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
+        "pin": "declared",
         "filename": "cs.stackexchange.com.7z"
       }
     ],
@@ -69,9 +69,9 @@
     "python_executable": "/root/eb-research/venv/bin/python",
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -82,7 +82,7 @@
     "tree_sha256": "26fe7b31326052ea359c94645ca7e87b311cc3b30b49b780c3deebbfda69c53a",
     "logical_tree_sha256": "a948cd75e1340c98ec7c05c7f9b2d770462fc5633899a711c2ce73a9814857a8",
     "content_tree_sha256": "543a120f33fa27be5cbc0657f49b50fcdca7ae3ba1c63a68adf80788e3c93d95",
-    "extended_tree_sha256": "a9e4ccd2179683cbebadbe4d5df776a55e61331ec35fbdae0ead71b4ccc22882",
+    "extended_tree_sha256": "c213cf051d103439c378fb2a5dd53027eb71339f0aeb2ceb5f9b8d721d121bd3",
     "bytes": 606966077,
     "bytes_all_paths": 606966077,
     "allocated_bytes": 606973952,

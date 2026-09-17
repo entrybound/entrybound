@@ -8,7 +8,7 @@
   "logical_tree_sha256": "fb4854e6301f988e30cb154237604ae3175b78e3f1b1f0715c6feac28b9bf839",
   "tool": {
     "stats_sha256": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
-    "fingerprint_sha256": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+    "fingerprint_sha256": "d7ddade80dd5bad954f94ed7e9c7565b26c820c62749af688fbe610a3c30eac2",
     "file_version": "file-5.45",
     "magic_mgc": {
       "path": "/usr/lib/file/magic.mgc",
@@ -230,9 +230,9 @@
       "max_name_bytes": 19
     },
     "mtimes": {
-      "min_s": 1789601483,
-      "max_s": 1789601483,
-      "distinct": 2,
+      "min_s": 1789641337,
+      "max_s": 1789641337,
+      "distinct": 7,
       "subsecond_nonzero": 8,
       "before_1970": 0,
       "after_2038_01_19": 0

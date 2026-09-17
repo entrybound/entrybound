@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "g5-blender-tears-of-steel",
   "source_file": "research/corpus/sources/g5-media.json",
-  "item_def_sha256": "e68b761499366c9b84e081172d51decb88c26e4811dbf1bcb877b865ea279800",
+  "item_def_sha256": "06bf37a512c96636f613c10ba20f330f3783b42c0d7e6ba28acd3ebe1478768c",
   "materialization_key": "dc07d9b1ae2c46b00c227549c14845458c7accc2e808b16f637d4d9fda62e3fd",
   "materialized_utc": "2026-09-13T02:29:53Z",
   "materialized_relpath": "heldout/f13-heldout-tos-media-large",

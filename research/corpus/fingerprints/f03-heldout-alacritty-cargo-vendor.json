@@ -9,7 +9,7 @@
   "real_or_generated": "real",
   "independence_group": "alacritty",
   "source_file": "research/corpus/sources/g1-code.json",
-  "item_def_sha256": "a995b61eef9b51a3b7c97edf7ce7fdc0c4f830d7c145d3d374e7016898d3638f",
+  "item_def_sha256": "fa4370854c0de5334f2649741f3b82b97a1129dfa7c12f9ed59f4eb9af7268c4",
   "materialization_key": "6b03c8863ea6dff7bc87679718df2c7d4c2a3a914c95a739858880f68cf453bd",
   "materialized_utc": "2026-09-13T02:08:26Z",
   "materialized_relpath": "heldout/f03-heldout-alacritty-cargo-vendor",
