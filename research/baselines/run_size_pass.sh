@@ -16,6 +16,8 @@ rm -f "$LOG_DIR/size-pass.done" "$LOG_DIR/size-pass.failed"
 exec >>"$LOG_DIR/size-pass.log" 2>&1
 cd "$REPO"
 export PYTHONPATH=research/tools
+# Pinned DwarFS static release (see README.md); not on the default PATH.
+export PATH=/root/eb-research/tools/dwarfs:$PATH
 
 step() {
   echo "[$(date -u +%FT%TZ)] $*"
