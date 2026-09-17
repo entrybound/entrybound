@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f04-heldout-real-freebsd-ports",
+  "family": "F04",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "git-archive",
+  "real_or_generated": "real",
+  "independence_group": "freebsd-ports",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "ac91ca4593ea5a842aa5f57d3181cfe26930405f320e2922029a8a55bb9caf5c",
+  "materialization_key": "73b3fa956d7608d19322530d5c3e98e18b71e571df810355947dd6d6e2e95fb5",
+  "materialized_utc": "2026-09-16T23:35:22Z",
+  "materialized_relpath": "heldout/f04-heldout-real-freebsd-ports",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "7da33a979cbb169e9bc3e26889825d716e3dcb95639be6c541dde9cb98a62372",
+    "pinned_utc": "2026-09-16T23:35:22Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 585425690,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "git": {
+      "repo": "https://github.com/freebsd/freebsd-ports.git",
+      "commit": "18858862d8ed65ad79acdbe3159a6760fdce0b18",
+      "ref": "main",
+      "subpaths": null,
+      "archive_sha256": "df4ae2ade6c05d232eefcf6530d556aea399cdbcf169484051b3d83fae42714e",
+      "archive_bytes": 750632960,
+      "archive_tar_umask": "0022",
+      "git_version": "git version 2.43.0"
+    },
+    "steps": [
+      {
+        "op": "extract",
+        "input": "git-archive",
+        "format": "tar"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "git": "git version 2.43.0",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c809f7e969fd076217d8a265b24fc6fb4ba44b88224923cefe1dc2de03eb9196",
+    "logical_tree_sha256": "7da33a979cbb169e9bc3e26889825d716e3dcb95639be6c541dde9cb98a62372",
+    "content_tree_sha256": "51d06eb7a1eb743c1a741c4c994949a72612357cfff87aadf35ea2c4c1bb1b55",
+    "extended_tree_sha256": "62e18efc37b0775236b647503f17e64731a8a9e9053753bcd814ae96d7a2b609",
+    "bytes": 585425690,
+    "counts": {
+      "objects": 224977,
+      "files": 177413,
+      "dirs": 47563,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

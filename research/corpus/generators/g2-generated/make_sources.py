@@ -113,7 +113,10 @@ ITEMS += [
          "Real many-small-files tree: `npm install` node_modules of twbs/bootstrap's package.json/package-lock.json "
          "(34.7k files), reused whole from the already-provisioned F03 vendor-tree item.",
          notes="Same underlying bytes as f03-validation-bootstrap-npm-node-modules (F03: dependency/vendor trees); "
-               "here it is the many-small-files object of study rather than the vendoring/dedup one."),
+               "here it is the many-small-files object of study rather than the vendoring/dedup one. Corpus "
+               "round-1 critic (F04 MAJOR): content_tree_sha256 is byte-identical to its F03 source item; tagged "
+               "duplicate-of below so analyses do not count it as an independent F04 sample.",
+         tags=["duplicate-of:f03-validation-bootstrap-npm-node-modules"]),
     item("f04-heldout-linux-docs", "F04", "heldout", "medium", "derive", "derived-from-real",
          derive("f01-heldout-linux-6-6-src", [copy_whole("f01-heldout-linux-6-6-src", src="Documentation")]),
          LINUX_LIC, "linux-kernel-documentation",
@@ -127,7 +130,63 @@ ITEMS += [
          "Real many-small-files tree: pip-installed site-packages of a small web-service dependency stack (12.5k "
          "files), reused whole from the already-provisioned F03 heldout vendor-tree item.",
          notes="Held-out: distinct independence group from every tuning/validation F04 item; derives from a "
-               "heldout-split source (f03-heldout-pypi-web-site-packages)."),
+               "heldout-split source (f03-heldout-pypi-web-site-packages). Corpus round-1 critic (F04 MAJOR): "
+               "content_tree_sha256 is byte-identical to its F03 source item; tagged duplicate-of below so "
+               "analyses do not count it as an independent F04 sample.",
+         tags=["duplicate-of:f03-heldout-pypi-web-site-packages"]),
+]
+
+# Corpus round-1 critic gap (F04 real many-small-file trees, MAJOR): tuning was 100 percent generated;
+# the two items just above are byte-identical to their F03 source items (34.7k/12.5k files -- the
+# largest F04 file counts before this gap fix, still short of the family's 10^5-10^6 intent) and are
+# now tagged duplicate_of so analyses do not double-count them as independent F04 samples. Three real
+# package/ports trees close both gaps at once: each is 10^5+ files, in a fresh independence group not
+# shared with any F01/F03 item or with each other.
+ITEMS += [
+    item("f04-tuning-real-netbsd-pkgsrc", "F04", "tuning", "medium", "download", "real",
+         {"inputs": [{"name": "pkgsrc", "url": "https://cdn.netbsd.org/pub/pkgsrc/pkgsrc-2026Q2/pkgsrc.tar.xz",
+                     "sha256": "f45ad7db5fd3d84887e01208ca24189e583b82765dbfb3354414480f3c563399", "size": 60074916,
+                     "notes": "SHA-512 6516ee39...26996650 published at pkgsrc.tar.xz.SHA512 verified match; "
+                              "NetBSD publishes MD5/SHA1/SHA512 for this file, not SHA-256, so the SHA-256 above "
+                              "was computed locally from the SHA-512-verified download."}],
+          "steps": [{"op": "extract", "input": "pkgsrc"}]},
+         lic("BSD-2-Clause (pkgsrc infrastructure; individual packages' Makefiles/patches under their own terms)",
+             True, "The NetBSD Foundation and pkgsrc contributors",
+             "pkgsrc source tree (Makefiles, package descriptions, patches, PLISTs) only; no distfiles fetched."),
+         "netbsd-pkgsrc",
+         "Real many-small-files tree: the NetBSD pkgsrc-2026Q2 quarterly source tree snapshot, tens of thousands "
+         "of per-package directories (Makefile, DESCR, PLIST, distinfo, patches/) across every pkgsrc category. "
+         "Fills F04's missing 10^5-10^6 file-count tier in tuning (previously 100% generated).",
+         tags=["real"]),
+    item("f04-validation-real-gentoo-repo-20260915", "F04", "validation", "medium", "download", "real",
+         {"inputs": [{"name": "gentoo", "url": "https://distfiles.gentoo.org/snapshots/gentoo-20260915.tar.xz",
+                     "sha256": "d96560a0e30c34d6d3701295c0071b56f87a0a55a0d77645a6eef5fde853ab7e", "size": 49333192,
+                     "notes": "MD5 bbcc9b5c76fb2a6b9801fae72e141585 published at gentoo-20260915.tar.xz.md5sum "
+                              "verified match; SHA-256 above computed locally (Gentoo publishes MD5 + a detached "
+                              "gpg signature for snapshots, not SHA-256). A dated snapshot filename is pinned "
+                              "rather than the rolling 'latest' symlink, so the source stays reproducible."}],
+          "steps": [{"op": "extract", "input": "gentoo"}]},
+         lic("GPL-2.0 (ebuilds/eclasses; Gentoo repository content is GPL-2.0 unless a package's own metadata "
+             "says otherwise)", True, "Gentoo Foundation and Gentoo contributors",
+             "Portage tree (ebuilds, eclasses, Manifest/metadata.xml) only; no source distfiles fetched."),
+         "gentoo-repo",
+         "Real many-small-files tree: a dated Gentoo ::gentoo repository snapshot (2026-09-15), tens of thousands "
+         "of per-package ebuild directories across every category. Fills F04's missing real many-small-files "
+         "item in validation (medium tier, 231 MiB materialized; the held-out freebsd-ports item below is F04's "
+         "large-tier real item).",
+         tags=["real"]),
+    item("f04-heldout-real-freebsd-ports", "F04", "heldout", "large", "git-archive", "real",
+         {"git": {"repo": "https://github.com/freebsd/freebsd-ports.git",
+                 "commit": "18858862d8ed65ad79acdbe3159a6760fdce0b18", "ref": "main"}},
+         lic("BSD-2-Clause (Ports Collection infrastructure; individual ports' Makefiles/patches under their own "
+             "terms)", True, "The FreeBSD Project",
+             "Ports tree (Makefiles, pkg-descr, pkg-plist, patches) only; no distfiles fetched."),
+         "freebsd-ports",
+         "Held-out: real many-small-files tree, a pinned-commit git archive of the FreeBSD Ports Collection "
+         "(freebsd/freebsd-ports @ 1885886, 2026-09-16) -- roughly 225k files across some 30k port directories.",
+         notes="Held-out: distinct independence group (freebsd-ports) from every tuning/validation F04 item and "
+               "from every other family's item.",
+         tags=["real"]),
 ]
 
 # =======================================================================================
@@ -556,6 +615,15 @@ ITEMS += [
                "instead of pure min/max forcing); per gear_straddle.py's own docstring.",
          tags=["generated"]),
 ]
+
+# NOTE: an F20 structurally-adversarial-archives addition (libarchive/CPython/commons-compress/Go/
+# fastzip-malo/Fifield-zipbomb-regen real items + two generated malicious_archives.py/_v2.py sets)
+# was drafted and then held back, unwritten to sources.json, because the WSL2 VM used to run
+# provision.py/make_sources.py became unresponsive before it could be validated/provisioned. The
+# full draft is saved at (session scratchpad) f20-structural-block-pending.py and the new generator
+# scripts it references already exist in this directory (decode_uu_files.py, malicious_archives.py,
+# malicious_archives_v2.py, fifield_zipbomb_regen.py); see PROGRESS.md / the session's final report
+# for how to resume.
 
 DOC_NOTES = (
     "g2-generated corpus group: F04 many-small-file trees, F15 sparse files, F17 duplicate trees, F19 "

@@ -1,0 +1,97 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f04-validation-real-gentoo-repo-20260915",
+  "family": "F04",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "gentoo-repo",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "719c25ddab4c6410525842bc063bc8e2ef8eadba0b3f9741280591e414626018",
+  "materialization_key": "110e4d0f8c676a21c8bc80f11898ef4f7dd60bc839c3f720c6aa60344a402bf3",
+  "materialized_utc": "2026-09-16T23:33:45Z",
+  "materialized_relpath": "corpus/validation/f04-validation-real-gentoo-repo-20260915",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "eaab1a038847fd283a58339b71958c49d0032bf7ce4c0993043b1dce56fde0f5",
+    "pinned_utc": "2026-09-16T23:33:45Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 242209152,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "gentoo",
+        "url": "https://distfiles.gentoo.org/snapshots/gentoo-20260915.tar.xz",
+        "final_url": "https://distfiles.gentoo.org/snapshots/gentoo-20260915.tar.xz",
+        "sha256": "d96560a0e30c34d6d3701295c0071b56f87a0a55a0d77645a6eef5fde853ab7e",
+        "size": 49333192,
+        "retrieved_utc": "2026-09-16T23:28:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "gentoo-20260915.tar.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "gentoo"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c3a045cde96dbc6159e9ab04afcd01c6c6aca488e067dad37b907a2e732f26fd",
+    "logical_tree_sha256": "eaab1a038847fd283a58339b71958c49d0032bf7ce4c0993043b1dce56fde0f5",
+    "content_tree_sha256": "8e2d50b9768a561540d60701349696bff3cb4292b6c7c03b69d9c9f57e721dcd",
+    "extended_tree_sha256": "56114251dcc402d5724c38ccf10b5174d2eaf073e1689b59aa8d4f3d600cd515",
+    "bytes": 242209152,
+    "bytes_all_paths": 242209152,
+    "allocated_bytes": 629747712,
+    "counts": {
+      "objects": 160579,
+      "files": 132706,
+      "unique_file_inodes": 132706,
+      "dirs": 27872,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 13,
+      "max_name_length_bytes": 90,
+      "path_length_bytes": {
+        "min": 15,
+        "max": 157,
+        "mean": 55.181,
+        "p50": 55,
+        "p95": 80
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

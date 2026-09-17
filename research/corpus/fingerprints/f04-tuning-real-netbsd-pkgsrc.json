@@ -1,0 +1,97 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f04-tuning-real-netbsd-pkgsrc",
+  "family": "F04",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "netbsd-pkgsrc",
+  "source_file": "research/corpus/sources/g2-generated.json",
+  "item_def_sha256": "199e7a87fd8f54e14bfac4a09a906d00b8e2b8c32c9f7e466f798f6629c6f29e",
+  "materialization_key": "4b2d4a43fb5c029364d6c4f9984e7e268bc3f76b09955f61634d2607ce590fe5",
+  "materialized_utc": "2026-09-16T23:36:03Z",
+  "materialized_relpath": "corpus/tuning/f04-tuning-real-netbsd-pkgsrc",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "ee5efc817b83ef0dd33073f186930bb7141518ab53c840697cdba049ce678020",
+    "pinned_utc": "2026-09-16T23:36:03Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 435680574,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "pkgsrc",
+        "url": "https://cdn.netbsd.org/pub/pkgsrc/pkgsrc-2026Q2/pkgsrc.tar.xz",
+        "final_url": "https://cdn.netbsd.org/pub/pkgsrc/pkgsrc-2026Q2/pkgsrc.tar.xz",
+        "sha256": "f45ad7db5fd3d84887e01208ca24189e583b82765dbfb3354414480f3c563399",
+        "size": 60074916,
+        "retrieved_utc": "2026-09-16T23:28:41Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "declared",
+        "filename": "pkgsrc.tar.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "pkgsrc"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "80a36f8832f3161acc4fbe6d409ba3d28c49cd83bd1a214d275024ac27f2ccec",
+    "logical_tree_sha256": "ee5efc817b83ef0dd33073f186930bb7141518ab53c840697cdba049ce678020",
+    "content_tree_sha256": "0acc738c500b751bf03cb82002f9d9a0feacaceda3820bfbcdd2e1e324ee33aa",
+    "extended_tree_sha256": "04dd0a2b130dce4c121de45255b24abe64510b84b3ac6a8774beb29403ce477d",
+    "bytes": 435680574,
+    "bytes_all_paths": 435680574,
+    "allocated_bytes": 1292496896,
+    "counts": {
+      "objects": 289914,
+      "files": 234505,
+      "unique_file_inodes": 234505,
+      "dirs": 55408,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 9,
+      "max_name_length_bytes": 167,
+      "path_length_bytes": {
+        "min": 6,
+        "max": 202,
+        "mean": 37.189,
+        "p50": 35,
+        "p95": 58
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

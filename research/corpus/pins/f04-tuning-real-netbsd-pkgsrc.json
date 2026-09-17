@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f04-tuning-real-netbsd-pkgsrc",
+  "inputs": {},
+  "output": {
+    "materialization_key": "4b2d4a43fb5c029364d6c4f9984e7e268bc3f76b09955f61634d2607ce590fe5",
+    "logical_tree_sha256": "ee5efc817b83ef0dd33073f186930bb7141518ab53c840697cdba049ce678020",
+    "pinned_utc": "2026-09-16T23:36:03Z"
+  },
+  "history": []
+}

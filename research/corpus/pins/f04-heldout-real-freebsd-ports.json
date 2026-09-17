@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f04-heldout-real-freebsd-ports",
+  "inputs": {},
+  "output": {
+    "materialization_key": "73b3fa956d7608d19322530d5c3e98e18b71e571df810355947dd6d6e2e95fb5",
+    "logical_tree_sha256": "7da33a979cbb169e9bc3e26889825d716e3dcb95639be6c541dde9cb98a62372",
+    "pinned_utc": "2026-09-16T23:35:22Z"
+  },
+  "history": []
+}
