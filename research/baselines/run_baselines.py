@@ -181,12 +181,13 @@ def load_manifest() -> dict:
         return json.load(f)
 
 
-# f19-tuning-zoo triggers a pre-existing ebr/corpus.py bug: _walk()/compute_fingerprint()
-# reuse a display-safe backslash-to-slash replacement as a real filesystem path, which
-# corrupts any path component containing a literal backslash byte (this item's adversarial
-# "hostile" filename fixtures). Flagged as a follow-up (task_bb8ca4e8); excluded here so a
-# single broken item does not abort ebr's whole-corpus fingerprint prepass for everyone else.
-KNOWN_BROKEN_ITEMS = {"f19-tuning-zoo"}
+# f19-tuning-zoo used to trigger a pre-existing ebr/corpus.py bug: _walk()/compute_fingerprint()
+# reused a display-safe backslash-to-slash replacement as a real filesystem path, which
+# corrupted any path component containing a literal backslash byte (this item's adversarial
+# "hostile" filename fixtures). Fixed (task_bb8ca4e8): _walk() now returns the real relpath
+# unchanged, with a regression test in research/tools/tests/test_corpus.py. Kept as an empty
+# set (rather than deleting the mechanism) so a future broken item can be excluded the same way.
+KNOWN_BROKEN_ITEMS = set()
 
 
 def select_items(scales, splits, medium_sample: int, large_items, seed: int, exclude=None):

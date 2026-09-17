@@ -169,7 +169,22 @@ def sha256_file(path: os.PathLike | str) -> str:
 
 
 def _walk(root: Path) -> List[tuple]:
-    """Sorted (relpath_bytes, lstat) for every entry below root (not following symlinks)."""
+    """Sorted (relpath_bytes, lstat) for every entry below root (not following symlinks).
+
+    ``rel`` is a real, joinable relative path (components joined with this
+    platform's ``os.path.join``, which is ``/`` on the Linux research
+    environment this module targets): callers reuse it directly to open or
+    stat the entry (see :func:`compute_fingerprint`), so it must never be
+    rewritten. A filename can legally contain a literal backslash byte on a
+    POSIX filesystem -- that is ordinary name data, not a path separator --
+    so no substitution is done here. A previous version replaced backslash
+    bytes with ``/`` to make paths easier to read, then reused that
+    display-safe string as the real path, which corrupted any entry whose
+    name contained a literal backslash (``os.path.join``/``open`` would then
+    look for a nonexistent nested component instead of the real, single
+    component). Any future display rendering must derive its own string from
+    ``rel`` and never feed it back in as a real path.
+    """
     entries = []
     stack = [b""]
     root_b = os.fsencode(root)
@@ -180,7 +195,7 @@ def _walk(root: Path) -> List[tuple]:
             for de in it:
                 r = os.path.join(rel, de.name) if rel else de.name
                 st = de.stat(follow_symlinks=False)
-                entries.append((r.replace(b"\\", b"/"), st))
+                entries.append((r, st))
                 if stat.S_ISDIR(st.st_mode):
                     stack.append(r)
     entries.sort(key=lambda e: e[0])

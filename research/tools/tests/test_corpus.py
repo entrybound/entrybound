@@ -51,6 +51,35 @@ def test_tree_fingerprint(tmp_path):
     assert f == {"version": "tree-sha256-v1", "type": "file", "sha256": hashlib.sha256(b"alpha").hexdigest(), "bytes": 5, "files": 1}
 
 
+def test_tree_fingerprint_backslash_in_name(tmp_path):
+    """Regression for task_bb8ca4e8: a literal backslash byte in a filename is
+    ordinary POSIX name data, not a path separator. ``_walk()`` must return the
+    real joinable relpath unchanged so ``compute_fingerprint`` can still open
+    the file, instead of corrupting it into a nonexistent nested path (as a
+    previous version did by reusing a display-safe backslash->slash rewrite as
+    the real path)."""
+    root = tmp_path / "item"
+    (root / "sub").mkdir(parents=True)
+    top_name = "odd\\name.bin"  # single component containing one backslash byte
+    nested_name = "weird\\nested\\file.txt"  # single component, two backslash bytes
+    (root / top_name).write_bytes(b"backslash-payload")
+    (root / "sub" / nested_name).write_bytes(b"nested-backslash-payload")
+    (root / "plain.txt").write_bytes(b"plain")
+
+    # Confirm these really are single path components with literal backslashes,
+    # not accidentally-created subdirectories.
+    assert [p.name for p in root.iterdir()].count(top_name) == 1
+    assert (root / "sub" / nested_name).is_file()
+
+    fp = compute_fingerprint(root)
+    assert fp["type"] == "tree"
+    assert fp["files"] == 3
+    assert fp["bytes"] == len(b"backslash-payload") + len(b"nested-backslash-payload") + len(b"plain")
+    # deterministic and stable across repeated computation (would previously
+    # raise FileNotFoundError while trying to open the corrupted "path")
+    assert compute_fingerprint(root) == fp
+
+
 def test_fingerprint_cache_invalidates(tmp_path):
     item = tmp_path / "f"
     item.write_bytes(b"one")
