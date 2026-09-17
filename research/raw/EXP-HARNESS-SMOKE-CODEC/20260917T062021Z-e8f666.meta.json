@@ -1,0 +1,220 @@
+{
+  "argv": [
+    "python",
+    "-m",
+    "ebr",
+    "run",
+    "--spec",
+    "research/experiments/EXP-HARNESS-SMOKE-CODEC/spec.yaml"
+  ],
+  "cpu_affinity": null,
+  "decision_ids": [],
+  "ebr_version": "0.1.0",
+  "env": {
+    "env_id_without_repo": "14acbf0387996f7597c33df84c62ad8d0a7b72f16e924893d915dd4e234d9395",
+    "env_name": "wsl-ubuntu",
+    "fingerprint_repo_sha": "9e44608e5a3ed44fb8f2c4cc5423a6f69b0d0155",
+    "platform_id": "0232788ff3a67f4d75ebad85f4d87318bb3d73e9fedee229580080e8534e70ab",
+    "probe": {
+      "cpu_model": "Intel(R) Core(TM) i9-14900HX",
+      "kernel": "5.15.167.4-microsoft-standard-WSL2",
+      "kind": "wsl",
+      "logical_cpus": 32,
+      "machine": "x86_64",
+      "mem_total_bytes": 33499709440,
+      "python": "3.12.3",
+      "system": "linux"
+    },
+    "probe_fingerprint": "ddfcf02741d4244c225d3b3f1e9efe9207927e64104037c857721dbb1f03d734",
+    "registered": true,
+    "source": "research/environment/index.json (kind match)",
+    "warnings": [
+      "environment fingerprint captured at repo commit 9e44608e5a3e, current HEAD 4593671e2aec: env_id is stale for this commit; group by env_id_without_repo/platform_id or recapture"
+    ]
+  },
+  "env_id": "8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e",
+  "executed_samples": 1,
+  "experiment_id": "EXP-HARNESS-SMOKE-CODEC",
+  "failed_samples": 0,
+  "finished_utc": "2026-09-17T06:20:25.615345+00:00",
+  "git_dirty": true,
+  "git_sha": "4593671e2aecad82fe4f547d1ba874d1aa3f177f",
+  "heldout": {
+    "selected": false,
+    "unlock_sha": null,
+    "unlocked": false
+  },
+  "invalid_samples": 0,
+  "items": [
+    {
+      "family": "synthetic-text",
+      "fingerprint": {
+        "bytes": 8192,
+        "files": 1,
+        "sha256": "c73d261420673282f0f153c6924fe0843191e0a7cf99eab368974d8b7c7ff08e",
+        "type": "file",
+        "version": "tree-sha256-v1"
+      },
+      "generated": true,
+      "item_id": "tiny-text-codec",
+      "item_key": "generated/tiny-text-codec",
+      "path": "/root/eb-research/generated/EXP-HARNESS-SMOKE-CODEC/tiny-text-codec",
+      "split": "generated"
+    }
+  ],
+  "order": "sequential",
+  "plan": [
+    {
+      "candidate": "compare-level3",
+      "item_key": "generated/tiny-text-codec",
+      "order_index": 0,
+      "phase": "measure",
+      "repetition": 0,
+      "round": 0,
+      "seq": 0
+    }
+  ],
+  "planned_samples": 1,
+  "platform": {
+    "arch": "x86_64",
+    "emulated": false,
+    "os": "linux"
+  },
+  "python": "3.12.3",
+  "raw_bytes": 4549,
+  "raw_compression": "none",
+  "raw_file": "20260917T062021Z-e8f666.jsonl",
+  "raw_sha256": "bd082e5dc4cc0f280221d8b4ef9c0c3afd63ab65c681eb40d7a98b9a86b5a5e5",
+  "recorded_samples": 1,
+  "run_id": "20260917T062021Z-e8f666",
+  "schema": "ebr.run-meta.v1",
+  "seeds": {
+    "bootstrap": 20260917,
+    "command": 20260917,
+    "order": 20260917
+  },
+  "spec": {
+    "analysis": {
+      "baseline": "compare-level3",
+      "pairing": "item",
+      "report_metrics": [
+        "wall_s",
+        "cpu_s",
+        "max_rss_bytes"
+      ]
+    },
+    "candidates": [
+      {
+        "name": "compare-level3",
+        "params": {}
+      }
+    ],
+    "command": "/root/eb-research/target/harness/release/ebr-codec compare --item-path {item_path} --experiment-id EXP-HARNESS-SMOKE-CODEC --env-name wsl-ubuntu --level 3",
+    "corpus": {
+      "generated": [
+        {
+          "bytes": 8192,
+          "family": "synthetic-text",
+          "generator": "text-v1",
+          "item_id": "tiny-text-codec",
+          "seed": 20260917,
+          "sha256": "c73d261420673282f0f153c6924fe0843191e0a7cf99eab368974d8b7c7ff08e"
+        }
+      ]
+    },
+    "decision_ids": [],
+    "experiment_id": "EXP-HARNESS-SMOKE-CODEC",
+    "hypothesis": "ebr-codec's default compare subcommand round-trips the generated item through production zstd at level 3 vs the external zstd crate, exits 0, writes a valid ebr.harness.raw.v1 JSON row to stdout, and normalize/report complete without error.\n",
+    "metrics": [
+      {
+        "direction": "minimize",
+        "family": "time_wall",
+        "name": "wall_s",
+        "source": "resource",
+        "unit": "s"
+      },
+      {
+        "direction": "minimize",
+        "family": "time_cpu",
+        "name": "cpu_s",
+        "source": "resource",
+        "unit": "s"
+      },
+      {
+        "direction": "minimize",
+        "family": "memory_peak",
+        "name": "max_rss_bytes",
+        "source": "resource",
+        "unit": "B"
+      },
+      {
+        "direction": "none",
+        "family": "size",
+        "name": "input_bytes",
+        "source": "input",
+        "unit": "B"
+      },
+      {
+        "family": "correctness",
+        "key": "schema",
+        "kind": "string",
+        "name": "record_schema",
+        "source": "stdout_json"
+      },
+      {
+        "direction": "none",
+        "family": "correctness",
+        "key": "seq",
+        "name": "record_seq",
+        "source": "stdout_json"
+      }
+    ],
+    "order": "sequential",
+    "platform": {
+      "arch": [
+        "x86_64"
+      ],
+      "emulated": false,
+      "os": [
+        "linux"
+      ],
+      "requires": [
+        "/root/eb-research/target/harness/release/ebr-codec"
+      ],
+      "timeout_s": 60
+    },
+    "question": "Does research/harness's ebr-codec binary run end to end through the ebr runner (run -> verify-raw -> normalize -> report) on a tiny generated item?\n",
+    "raw_compression": "none",
+    "repetitions": 1,
+    "schema": "ebr.spec.v1",
+    "seeds": {
+      "bootstrap": 20260917,
+      "order": 20260917
+    },
+    "shell": "bash",
+    "status": "smoke",
+    "timing": false,
+    "warmups": 0
+  },
+  "spec_path": "research/experiments/EXP-HARNESS-SMOKE-CODEC/spec.yaml",
+  "spec_sha256": "2d4c6f5d298e5e6de98e5e6a1d8d82cb747023b598ed79213e3b17f47881420d",
+  "started_utc": "2026-09-17T06:20:25.559481+00:00",
+  "status": "complete",
+  "thresholds_source": "thresholds.json",
+  "timing": {
+    "cli": false,
+    "effective": false,
+    "guard": {
+      "max_loadavg_1m": 9.0,
+      "max_other_cpu_percent": 3.0,
+      "sample_interval_s": 1.0,
+      "scope": "wsl2-vm",
+      "sources": {
+        "max_loadavg_1m": "research/methods/thresholds.json",
+        "max_other_cpu_percent": "research/methods/thresholds.json"
+      }
+    },
+    "guard_initial": null,
+    "spec": false
+  }
+}

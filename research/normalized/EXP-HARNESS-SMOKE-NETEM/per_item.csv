@@ -1,0 +1,11 @@
+# generated-by: python -m ebr normalize --spec research/experiments/EXP-HARNESS-SMOKE-NETEM/spec.yaml
+# tool: ebr 0.1.0 (research/tools/ebr)
+# tool-git-sha: 4593671e2aecad82fe4f547d1ba874d1aa3f177f
+# experiment: EXP-HARNESS-SMOKE-NETEM
+# input: research/raw/EXP-HARNESS-SMOKE-NETEM/20260917T062108Z-5ea57f.jsonl sha256=274d837c4fd1552cf54cda601f6a4ab7cdad4e3231c2764ed0725e1fc88474dd
+# do-not-edit: regenerate with the generated-by command; no number here is hand-entered
+env_id,candidate,item_key,metric,family,unit,decision_grade,n,median,p90,p95,iqr,mad,min,max,mean,geomean
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,origin-roundtrip,generated/tiny-text-netem,wall_s,time_wall,s,False,1,0.11004985,0.11004985,0.11004985,0,0,0.11004985,0.11004985,0.11004985,0.11004985
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,origin-roundtrip,generated/tiny-text-netem,cpu_s,time_cpu,s,False,1,0.048091,0.048091,0.048091,0,0,0.048091,0.048091,0.048091,0.048091
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,origin-roundtrip,generated/tiny-text-netem,input_bytes,size,B,True,1,4096,4096,4096,0,0,4096,4096,4096,4096
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,origin-roundtrip,generated/tiny-text-netem,roundtrip_ok,correctness,,True,1,1,1,1,0,0,1,1,1,1

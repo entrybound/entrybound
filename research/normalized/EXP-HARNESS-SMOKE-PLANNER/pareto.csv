@@ -1,0 +1,7 @@
+# generated-by: python -m ebr normalize --spec research/experiments/EXP-HARNESS-SMOKE-PLANNER/spec.yaml
+# tool: ebr 0.1.0 (research/tools/ebr)
+# tool-git-sha: 4593671e2aecad82fe4f547d1ba874d1aa3f177f
+# experiment: EXP-HARNESS-SMOKE-PLANNER
+# input: research/raw/EXP-HARNESS-SMOKE-PLANNER/20260917T062033Z-16f445.jsonl sha256=06018c5c24010a8fc960ee3d4175276582843844ff414e48599f8cb943f50177
+# do-not-edit: regenerate with the generated-by command; no number here is hand-entered
+env_id,candidate,on_frontier,dominated_by,decision_grade,status,epsilon

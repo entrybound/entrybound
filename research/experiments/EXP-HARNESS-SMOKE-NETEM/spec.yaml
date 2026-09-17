@@ -1,0 +1,61 @@
+schema: ebr.spec.v1
+experiment_id: EXP-HARNESS-SMOKE-NETEM
+status: smoke
+question: >
+  Does research/harness's ebr-netem crate (ebr-origin binary) run end to end
+  through the ebr runner (run -> verify-raw -> normalize -> report) serving a
+  tiny generated item?
+hypothesis: >
+  ebr-origin serves the generated item over a real loopback HTTP GET,
+  byte-identical to the source, exits with the roundtrip verified, and
+  normalize/report complete without error.
+decision_ids: []
+
+candidates:
+  - name: origin-roundtrip
+    params: {}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-HARNESS-SMOKE-NETEM/origin_probe.sh
+  {item_path} {scratch}
+shell: bash
+
+corpus:
+  generated:
+    - item_id: tiny-text-netem
+      family: synthetic-text
+      generator: text-v1
+      bytes: 4096
+      seed: 20260917
+      sha256: 0f7c1c3592dbbec34df9336cf5a0a1bf601d2a3f54492ff14ee56faa5e9a77ac
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: record_schema, source: stdout_json, key: schema, family: correctness, kind: string}
+  - name: roundtrip_ok
+    source: stdout_json
+    key: payload.roundtrip_ok
+    family: correctness
+    direction: maximize
+
+repetitions: 1
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917}
+timing: false
+order: sequential
+raw_compression: none
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-origin
+    - curl
+  timeout_s: 60
+
+analysis:
+  baseline: origin-roundtrip
+  pairing: item
+  report_metrics: [wall_s, cpu_s]

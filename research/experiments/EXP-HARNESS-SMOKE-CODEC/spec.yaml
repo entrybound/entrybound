@@ -1,0 +1,57 @@
+schema: ebr.spec.v1
+experiment_id: EXP-HARNESS-SMOKE-CODEC
+status: smoke
+question: >
+  Does research/harness's ebr-codec binary run end to end through the ebr
+  runner (run -> verify-raw -> normalize -> report) on a tiny generated item?
+hypothesis: >
+  ebr-codec's default compare subcommand round-trips the generated item
+  through production zstd at level 3 vs the external zstd crate, exits 0,
+  writes a valid ebr.harness.raw.v1 JSON row to stdout, and normalize/report
+  complete without error.
+decision_ids: []
+
+candidates:
+  - name: compare-level3
+    params: {}
+command: >-
+  /root/eb-research/target/harness/release/ebr-codec compare
+  --item-path {item_path} --experiment-id EXP-HARNESS-SMOKE-CODEC --env-name wsl-ubuntu
+  --level 3
+shell: bash
+
+corpus:
+  generated:
+    - item_id: tiny-text-codec
+      family: synthetic-text
+      generator: text-v1
+      bytes: 8192
+      seed: 20260917
+      sha256: c73d261420673282f0f153c6924fe0843191e0a7cf99eab368974d8b7c7ff08e
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: record_schema, source: stdout_json, key: schema, family: correctness, kind: string}
+  - {name: record_seq, source: stdout_json, key: seq, family: correctness, direction: none}
+
+repetitions: 1
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917}
+timing: false
+order: sequential
+raw_compression: none
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-codec]
+  timeout_s: 60
+
+analysis:
+  baseline: compare-level3
+  pairing: item
+  report_metrics: [wall_s, cpu_s, max_rss_bytes]

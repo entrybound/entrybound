@@ -1,0 +1,8 @@
+# generated-by: python -m ebr report --spec research/experiments/EXP-HARNESS-SMOKE-ACCESS/spec.yaml
+# tool: ebr 0.1.0 (research/tools/ebr)
+# tool-git-sha: 4593671e2aecad82fe4f547d1ba874d1aa3f177f
+# experiment: EXP-HARNESS-SMOKE-ACCESS
+# input: research/normalized/EXP-HARNESS-SMOKE-ACCESS/samples.csv sha256=f79b9ad05da77760bad185c4d256996745bee074d87a5b406f53700f2006c6f9
+# do-not-edit: regenerate with the generated-by command; no number here is hand-entered
+env_id,metric,candidate,item_key,repetition,value,candidate_median
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,max_rss_bytes,memory-balanced,generated/tiny-text-access,0,7933952,7933952

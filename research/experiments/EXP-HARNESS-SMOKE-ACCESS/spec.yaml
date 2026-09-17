@@ -1,0 +1,59 @@
+schema: ebr.spec.v1
+experiment_id: EXP-HARNESS-SMOKE-ACCESS
+status: smoke
+question: >
+  Does research/harness's ebr-access binary run end to end through the ebr
+  runner (run -> verify-raw -> normalize -> report) on a tiny generated item?
+hypothesis: >
+  ebr-access's roundtrip mode plans/encodes the generated item and measures
+  random access and stream open over it, exits 0, writes a valid
+  ebr.harness.raw.v1 JSON row to stdout, and normalize/report complete
+  without error.
+decision_ids: []
+
+candidates:
+  - name: memory-balanced
+    params: {}
+command: >-
+  mkdir -p {scratch}/tree &&
+  cp {item_path} {scratch}/tree/payload.txt &&
+  /root/eb-research/target/harness/release/ebr-access --mode roundtrip
+  --item-path {scratch}/tree --experiment-id EXP-HARNESS-SMOKE-ACCESS --env-name wsl-ubuntu
+  --profile balanced --source-kind memory
+shell: bash
+
+corpus:
+  generated:
+    - item_id: tiny-text-access
+      family: synthetic-text
+      generator: text-v1
+      bytes: 8192
+      seed: 20260917
+      sha256: c73d261420673282f0f153c6924fe0843191e0a7cf99eab368974d8b7c7ff08e
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: record_schema, source: stdout_json, key: schema, family: correctness, kind: string}
+  - {name: record_seq, source: stdout_json, key: seq, family: correctness, direction: none}
+
+repetitions: 1
+warmups: 0
+seeds: {order: 20260917, bootstrap: 20260917}
+timing: false
+order: sequential
+raw_compression: none
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/harness/release/ebr-access]
+  timeout_s: 60
+
+analysis:
+  baseline: memory-balanced
+  pairing: item
+  report_metrics: [wall_s, cpu_s, max_rss_bytes]

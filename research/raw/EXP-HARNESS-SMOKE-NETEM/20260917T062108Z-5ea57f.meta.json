@@ -1,0 +1,213 @@
+{
+  "argv": [
+    "python",
+    "-m",
+    "ebr",
+    "run",
+    "--spec",
+    "research/experiments/EXP-HARNESS-SMOKE-NETEM/spec.yaml"
+  ],
+  "cpu_affinity": null,
+  "decision_ids": [],
+  "ebr_version": "0.1.0",
+  "env": {
+    "env_id_without_repo": "14acbf0387996f7597c33df84c62ad8d0a7b72f16e924893d915dd4e234d9395",
+    "env_name": "wsl-ubuntu",
+    "fingerprint_repo_sha": "9e44608e5a3ed44fb8f2c4cc5423a6f69b0d0155",
+    "platform_id": "0232788ff3a67f4d75ebad85f4d87318bb3d73e9fedee229580080e8534e70ab",
+    "probe": {
+      "cpu_model": "Intel(R) Core(TM) i9-14900HX",
+      "kernel": "5.15.167.4-microsoft-standard-WSL2",
+      "kind": "wsl",
+      "logical_cpus": 32,
+      "machine": "x86_64",
+      "mem_total_bytes": 33499709440,
+      "python": "3.12.3",
+      "system": "linux"
+    },
+    "probe_fingerprint": "ddfcf02741d4244c225d3b3f1e9efe9207927e64104037c857721dbb1f03d734",
+    "registered": true,
+    "source": "research/environment/index.json (kind match)",
+    "warnings": [
+      "environment fingerprint captured at repo commit 9e44608e5a3e, current HEAD 4593671e2aec: env_id is stale for this commit; group by env_id_without_repo/platform_id or recapture"
+    ]
+  },
+  "env_id": "8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e",
+  "executed_samples": 1,
+  "experiment_id": "EXP-HARNESS-SMOKE-NETEM",
+  "failed_samples": 0,
+  "finished_utc": "2026-09-17T06:21:10.629966+00:00",
+  "git_dirty": true,
+  "git_sha": "4593671e2aecad82fe4f547d1ba874d1aa3f177f",
+  "heldout": {
+    "selected": false,
+    "unlock_sha": null,
+    "unlocked": false
+  },
+  "invalid_samples": 0,
+  "items": [
+    {
+      "family": "synthetic-text",
+      "fingerprint": {
+        "bytes": 4096,
+        "files": 1,
+        "sha256": "0f7c1c3592dbbec34df9336cf5a0a1bf601d2a3f54492ff14ee56faa5e9a77ac",
+        "type": "file",
+        "version": "tree-sha256-v1"
+      },
+      "generated": true,
+      "item_id": "tiny-text-netem",
+      "item_key": "generated/tiny-text-netem",
+      "path": "/root/eb-research/generated/EXP-HARNESS-SMOKE-NETEM/tiny-text-netem",
+      "split": "generated"
+    }
+  ],
+  "order": "sequential",
+  "plan": [
+    {
+      "candidate": "origin-roundtrip",
+      "item_key": "generated/tiny-text-netem",
+      "order_index": 0,
+      "phase": "measure",
+      "repetition": 0,
+      "round": 0,
+      "seq": 0
+    }
+  ],
+  "planned_samples": 1,
+  "platform": {
+    "arch": "x86_64",
+    "emulated": false,
+    "os": "linux"
+  },
+  "python": "3.12.3",
+  "raw_bytes": 4660,
+  "raw_compression": "none",
+  "raw_file": "20260917T062108Z-5ea57f.jsonl",
+  "raw_sha256": "274d837c4fd1552cf54cda601f6a4ab7cdad4e3231c2764ed0725e1fc88474dd",
+  "recorded_samples": 1,
+  "run_id": "20260917T062108Z-5ea57f",
+  "schema": "ebr.run-meta.v1",
+  "seeds": {
+    "bootstrap": 20260917,
+    "command": 20260917,
+    "order": 20260917
+  },
+  "spec": {
+    "analysis": {
+      "baseline": "origin-roundtrip",
+      "pairing": "item",
+      "report_metrics": [
+        "wall_s",
+        "cpu_s"
+      ]
+    },
+    "candidates": [
+      {
+        "name": "origin-roundtrip",
+        "params": {}
+      }
+    ],
+    "command": "bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-HARNESS-SMOKE-NETEM/origin_probe.sh {item_path} {scratch}",
+    "corpus": {
+      "generated": [
+        {
+          "bytes": 4096,
+          "family": "synthetic-text",
+          "generator": "text-v1",
+          "item_id": "tiny-text-netem",
+          "seed": 20260917,
+          "sha256": "0f7c1c3592dbbec34df9336cf5a0a1bf601d2a3f54492ff14ee56faa5e9a77ac"
+        }
+      ]
+    },
+    "decision_ids": [],
+    "experiment_id": "EXP-HARNESS-SMOKE-NETEM",
+    "hypothesis": "ebr-origin serves the generated item over a real loopback HTTP GET, byte-identical to the source, exits with the roundtrip verified, and normalize/report complete without error.\n",
+    "metrics": [
+      {
+        "direction": "minimize",
+        "family": "time_wall",
+        "name": "wall_s",
+        "source": "resource",
+        "unit": "s"
+      },
+      {
+        "direction": "minimize",
+        "family": "time_cpu",
+        "name": "cpu_s",
+        "source": "resource",
+        "unit": "s"
+      },
+      {
+        "direction": "none",
+        "family": "size",
+        "name": "input_bytes",
+        "source": "input",
+        "unit": "B"
+      },
+      {
+        "family": "correctness",
+        "key": "schema",
+        "kind": "string",
+        "name": "record_schema",
+        "source": "stdout_json"
+      },
+      {
+        "direction": "maximize",
+        "family": "correctness",
+        "key": "payload.roundtrip_ok",
+        "name": "roundtrip_ok",
+        "source": "stdout_json"
+      }
+    ],
+    "order": "sequential",
+    "platform": {
+      "arch": [
+        "x86_64"
+      ],
+      "emulated": false,
+      "os": [
+        "linux"
+      ],
+      "requires": [
+        "/root/eb-research/target/harness/release/ebr-origin",
+        "curl"
+      ],
+      "timeout_s": 60
+    },
+    "question": "Does research/harness's ebr-netem crate (ebr-origin binary) run end to end through the ebr runner (run -> verify-raw -> normalize -> report) serving a tiny generated item?\n",
+    "raw_compression": "none",
+    "repetitions": 1,
+    "schema": "ebr.spec.v1",
+    "seeds": {
+      "bootstrap": 20260917,
+      "order": 20260917
+    },
+    "shell": "bash",
+    "status": "smoke",
+    "timing": false,
+    "warmups": 0
+  },
+  "spec_path": "research/experiments/EXP-HARNESS-SMOKE-NETEM/spec.yaml",
+  "spec_sha256": "071018b788db5b79e68a9ebd3cea4a8120600c9fb572ee2cfe173c5157d79d0f",
+  "started_utc": "2026-09-17T06:21:10.489853+00:00",
+  "status": "complete",
+  "thresholds_source": "thresholds.json",
+  "timing": {
+    "cli": false,
+    "effective": false,
+    "guard": {
+      "max_loadavg_1m": 9.0,
+      "max_other_cpu_percent": 3.0,
+      "sample_interval_s": 1.0,
+      "scope": "wsl2-vm",
+      "sources": {
+        "max_loadavg_1m": "research/methods/thresholds.json",
+        "max_other_cpu_percent": "research/methods/thresholds.json"
+      }
+    },
+    "guard_initial": null,
+    "spec": false
+  }
+}

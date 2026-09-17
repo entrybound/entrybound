@@ -1,0 +1,7 @@
+# generated-by: python -m ebr normalize --spec research/experiments/EXP-HARNESS-SMOKE-CHUNK/spec.yaml
+# tool: ebr 0.1.0 (research/tools/ebr)
+# tool-git-sha: 4593671e2aecad82fe4f547d1ba874d1aa3f177f
+# experiment: EXP-HARNESS-SMOKE-CHUNK
+# input: research/raw/EXP-HARNESS-SMOKE-CHUNK/20260917T062008Z-86f8a0.jsonl sha256=6d7ba30f24f0f27e25f173c5c5be28dec23ed3963ec3211bdc386d372992be15
+# do-not-edit: regenerate with the generated-by command; no number here is hand-entered
+env_id,candidate,baseline,metric,family,unit,pairing,decision_grade,n_pairs,median_ratio,geomean_ratio,ci_lower,ci_upper,ci_confidence,band_kind,band_lower,band_upper,verdict

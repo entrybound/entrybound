@@ -1,0 +1,7 @@
+# generated-by: python -m ebr normalize --spec research/experiments/EXP-HARNESS-SMOKE-CODEC/spec.yaml
+# tool: ebr 0.1.0 (research/tools/ebr)
+# tool-git-sha: 4593671e2aecad82fe4f547d1ba874d1aa3f177f
+# experiment: EXP-HARNESS-SMOKE-CODEC
+# input: research/raw/EXP-HARNESS-SMOKE-CODEC/20260917T062021Z-e8f666.jsonl sha256=bd082e5dc4cc0f280221d8b4ef9c0c3afd63ab65c681eb40d7a98b9a86b5a5e5
+# do-not-edit: regenerate with the generated-by command; no number here is hand-entered
+run_id,seq,candidate,item_key,repetition,exit_code,ok,invalid_reasons

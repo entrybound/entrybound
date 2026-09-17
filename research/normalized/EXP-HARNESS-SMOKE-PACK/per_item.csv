@@ -1,0 +1,13 @@
+# generated-by: python -m ebr normalize --spec research/experiments/EXP-HARNESS-SMOKE-PACK/spec.yaml
+# tool: ebr 0.1.0 (research/tools/ebr)
+# tool-git-sha: 4593671e2aecad82fe4f547d1ba874d1aa3f177f
+# experiment: EXP-HARNESS-SMOKE-PACK
+# input: research/raw/EXP-HARNESS-SMOKE-PACK/20260917T061939Z-620491.jsonl sha256=f062a00ee42b0a44a480eabbadc02a1ebe4be9c53ae65c2f5aae34e4595fb9fa
+# do-not-edit: regenerate with the generated-by command; no number here is hand-entered
+env_id,candidate,item_key,metric,family,unit,decision_grade,n,median,p90,p95,iqr,mad,min,max,mean,geomean
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,balanced-indexed,generated/tiny-text-pack,wall_s,time_wall,s,False,1,0.037454776,0.037454776,0.037454776,0,0,0.037454776,0.037454776,0.037454776,0.037454776
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,balanced-indexed,generated/tiny-text-pack,cpu_s,time_cpu,s,False,1,0.009384,0.009384,0.009384,0,0,0.009384,0.009384,0.009384,0.009384
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,balanced-indexed,generated/tiny-text-pack,max_rss_bytes,memory_peak,B,True,1,6426624,6426624,6426624,0,0,6426624,6426624,6426624,6426624
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,balanced-indexed,generated/tiny-text-pack,input_bytes,size,B,True,1,8192,8192,8192,0,0,8192,8192,8192,8192
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,balanced-indexed,generated/tiny-text-pack,output_bytes,size,B,True,1,6287,6287,6287,0,0,6287,6287,6287,6287
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,balanced-indexed,generated/tiny-text-pack,record_seq,correctness,,True,1,0,0,0,0,0,0,0,0,

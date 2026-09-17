@@ -1,0 +1,8 @@
+# generated-by: python -m ebr report --spec research/experiments/EXP-HARNESS-SMOKE-PLANNER/spec.yaml
+# tool: ebr 0.1.0 (research/tools/ebr)
+# tool-git-sha: 4593671e2aecad82fe4f547d1ba874d1aa3f177f
+# experiment: EXP-HARNESS-SMOKE-PLANNER
+# input: research/normalized/EXP-HARNESS-SMOKE-PLANNER/samples.csv sha256=c844e003622bc5b13bd64651e14160f5f3d184e9e2e7da23ecf9a9cf8e0ac317
+# do-not-edit: regenerate with the generated-by command; no number here is hand-entered
+env_id,metric,candidate,item_key,repetition,value,candidate_median
+8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e,max_rss_bytes,balanced,generated/tiny-text-planner,0,35373056,35373056

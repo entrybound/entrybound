@@ -1,0 +1,119 @@
+{
+  "analysis": {
+    "baseline": "memory-balanced",
+    "bootstrap_confidence": 0.99,
+    "bootstrap_resamples": 20000,
+    "bootstrap_seed": 20260917,
+    "pairing": "item",
+    "pareto_epsilon": {}
+  },
+  "counts": {
+    "failed": 0,
+    "invalid": 0,
+    "measured": 1,
+    "rows": 1,
+    "valid": 1,
+    "warmup_rows_excluded": 0
+  },
+  "decision_ids": [],
+  "env_ids": [
+    "8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e"
+  ],
+  "experiment_id": "EXP-HARNESS-SMOKE-ACCESS",
+  "generated_by": "python -m ebr normalize --spec research/experiments/EXP-HARNESS-SMOKE-ACCESS/spec.yaml",
+  "headline": {
+    "8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e": {
+      "memory-balanced": {
+        "cpu_s": {
+          "ci_lower": null,
+          "ci_upper": null,
+          "decision_grade": false,
+          "median": 0.014752999999999999
+        },
+        "input_bytes": {
+          "ci_lower": null,
+          "ci_upper": null,
+          "decision_grade": true,
+          "median": 8192.0
+        },
+        "max_rss_bytes": {
+          "ci_lower": null,
+          "ci_upper": null,
+          "decision_grade": true,
+          "median": 7933952.0
+        },
+        "record_seq": {
+          "ci_lower": null,
+          "ci_upper": null,
+          "decision_grade": true,
+          "median": 0.0
+        },
+        "wall_s": {
+          "ci_lower": null,
+          "ci_upper": null,
+          "decision_grade": false,
+          "median": 0.029182144
+        }
+      }
+    }
+  },
+  "inputs": [
+    {
+      "env_id": "8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e",
+      "git_dirty": true,
+      "git_sha": "4593671e2aecad82fe4f547d1ba874d1aa3f177f",
+      "raw_file": "research/raw/EXP-HARNESS-SMOKE-ACCESS/20260917T062048Z-9c90bc.jsonl",
+      "raw_sha256": "908be538f38023e58684650e5e83fe2917dac32885e0c22c0df5176287a2c034",
+      "rows": 1,
+      "run_id": "20260917T062048Z-9c90bc",
+      "status": "complete",
+      "timing_effective": false
+    }
+  ],
+  "outputs": {
+    "research/normalized/EXP-HARNESS-SMOKE-ACCESS/failures.csv": "5458e670a7100dfbff83c7b1af3708d4e42b265df0ec4c523f80c0890ad3c772",
+    "research/normalized/EXP-HARNESS-SMOKE-ACCESS/paired_ratios.csv": "33e79d1799d87cb826f98e0fe61a87c18a56fa154519883b5f3568f6826f1633",
+    "research/normalized/EXP-HARNESS-SMOKE-ACCESS/pareto.csv": "782ca3e9cc9fabd0b430ac70f15f6d97e7c3329e2157025b7a0dbea28ea3dd3b",
+    "research/normalized/EXP-HARNESS-SMOKE-ACCESS/per_candidate.csv": "60b436933a798328f0526ce1565c50b8a8c85e8ba81d4145747b0dbb297ef052",
+    "research/normalized/EXP-HARNESS-SMOKE-ACCESS/per_item.csv": "ae37ec211d6ed80ce65d0fd8df87fa36b7da1cda1c951c87c67ce328c167b967",
+    "research/normalized/EXP-HARNESS-SMOKE-ACCESS/samples.csv": "f79b9ad05da77760bad185c4d256996745bee074d87a5b406f53700f2006c6f9",
+    "research/normalized/EXP-HARNESS-SMOKE-ACCESS/sensitivity.csv": "c95d8410fcc00ef420ca7d0b7c7cc8ac704e814a53e977a7020badab2d61a32a"
+  },
+  "paired_ratio_verdicts": [],
+  "pareto_frontier": {},
+  "provenance": [
+    "generated-by: python -m ebr normalize --spec research/experiments/EXP-HARNESS-SMOKE-ACCESS/spec.yaml",
+    "tool: ebr 0.1.0 (research/tools/ebr)",
+    "tool-git-sha: 4593671e2aecad82fe4f547d1ba874d1aa3f177f",
+    "experiment: EXP-HARNESS-SMOKE-ACCESS",
+    "input: research/raw/EXP-HARNESS-SMOKE-ACCESS/20260917T062048Z-9c90bc.jsonl sha256=908be538f38023e58684650e5e83fe2917dac32885e0c22c0df5176287a2c034",
+    "do-not-edit: regenerate with the generated-by command; no number here is hand-entered"
+  ],
+  "schema": "ebr.summary.v1",
+  "sensitivity": [],
+  "spec_path": "research/experiments/EXP-HARNESS-SMOKE-ACCESS/spec.yaml",
+  "spec_sha256": "5b9ebd2b75416c24c234d6dc80894b54b648f07ccfd88ab3290c5ced271de8c5",
+  "string_metrics": {
+    "record_schema": {
+      "8576a4a4947ee57863c03ba9ebd455a4b41191d3a41a70fd8e35ae7d79db506e|memory-balanced|generated/tiny-text-access": [
+        "ebr.harness.raw.v1"
+      ]
+    }
+  },
+  "thresholds_source": "thresholds.json",
+  "thresholds_status": "pre-registered",
+  "timing": {
+    "all_decision_grade": false,
+    "any_effective": false,
+    "note": "timing-family numbers without decision_grade are informational only",
+    "timing_families": [
+      "throughput",
+      "time_cpu",
+      "time_wall"
+    ]
+  },
+  "warnings": [
+    "20260917T062048Z-9c90bc: env: environment fingerprint captured at repo commit 9e44608e5a3e, current HEAD 4593671e2aec: env_id is stale for this commit; group by env_id_without_repo/platform_id or recapture",
+    "20260917T062048Z-9c90bc: git worktree had tracked modifications at run time"
+  ]
+}

@@ -8,27 +8,11 @@ See `research/harness/research-internals.md` for what the feature exposes.
 <!-- section:wsl:begin -->
 ## WSL (primary)
 
-- Generated: 2026-09-17T03:02:09Z on Linux 5.15.167.4-microsoft-standard-WSL2 x86_64 (host name redacted)
-- Repository HEAD: `9efbc74d9bddab3b2df3a08dad38acdaabce9314`
+- Generated: 2026-09-17T05:49:00Z on Linux 5.15.167.4-microsoft-standard-WSL2 x86_64 (host name redacted)
+- Repository HEAD: `4593671e2aecad82fe4f547d1ba874d1aa3f177f`
 - Worktree changes under `crates/` and `research/harness/` at run time:
 
-```text
-     M crates/entrybound/Cargo.toml
-     M crates/entrybound/src/codec.rs
-     M crates/entrybound/src/ecf.rs
-     M crates/entrybound/src/jpeg_reconstruction.rs
-     M crates/entrybound/src/lib.rs
-     M crates/entrybound/src/planner.rs
-     M crates/entrybound/src/reconstruction.rs
-     M crates/entrybound/src/similarity.rs
-     M crates/entrybound/src/transform.rs
-    ?? crates/entrybound/tests/research_internals.rs
-    ?? research/harness/internals-identity-check.md
-    ?? research/harness/internals-identity-check.ps1
-    ?? research/harness/internals-identity-check.sh
-    ?? research/harness/internals_identity_tools.py
-    ?? research/harness/research-internals.md
-```
+    (clean: the feature is committed)
 
 - Toolchain: `cargo 1.98.1 (797e8a9bc 2026-08-05)`, `rustc 1.98.1 (48a229cea 2026-09-01)` (LLVM 22.1.8)
 - `CARGO_TARGET_DIR=/root/eb-research/target/b2-internals`, work directory `/root/eb-research/scratch/b2-internals-identity` (both outside the repository)
@@ -56,7 +40,7 @@ PRE-EXISTING: the command also fails without the feature, and its results are id
 
 ```text
 $ python3 -B /mnt/d/Projects/entrybound/entrybound/research/harness/internals_identity_tools.py additive-check /mnt/d/Projects/entrybound/entrybound
-base: HEAD (9efbc74d9bddab3b2df3a08dad38acdaabce9314)
+base: c9a2d3ae20dc6635b3f91bf2b1e62629f054f455^ (c3f229b3551b25e6c5bd1f46d601508d97555e3c)
 PASS crates/entrybound/Cargo.toml: removed 1 gated block(s); remainder identical to base: True
 PASS crates/entrybound/src/lib.rs: removed 1 gated block(s); remainder identical to base: True
 PASS crates/entrybound/src/codec.rs: removed 1 gated block(s); remainder identical to base: True
@@ -195,26 +179,12 @@ Full logs were written to `/root/eb-research/scratch/b2-internals-identity/logs`
 <!-- section:windows:begin -->
 ## Windows
 
-- Generated: 2026-09-17T03:10:08Z on Microsoft Windows NT 10.0.26200.0 (host name redacted)
-- Repository HEAD: `9efbc74d9bddab3b2df3a08dad38acdaabce9314`
+- Generated: 2026-09-17T05:53:31Z on Microsoft Windows NT 10.0.26200.0 (host name redacted)
+- Repository HEAD: `4593671e2aecad82fe4f547d1ba874d1aa3f177f`
 - Worktree changes under `crates/` and `research/harness/` at run time:
 
 ```text
-     M crates/entrybound/Cargo.toml
-     M crates/entrybound/src/codec.rs
-     M crates/entrybound/src/ecf.rs
-     M crates/entrybound/src/jpeg_reconstruction.rs
-     M crates/entrybound/src/lib.rs
-     M crates/entrybound/src/planner.rs
-     M crates/entrybound/src/reconstruction.rs
-     M crates/entrybound/src/similarity.rs
-     M crates/entrybound/src/transform.rs
-    ?? crates/entrybound/tests/research_internals.rs
-    ?? research/harness/internals-identity-check.md
-    ?? research/harness/internals-identity-check.ps1
-    ?? research/harness/internals-identity-check.sh
-    ?? research/harness/internals_identity_tools.py
-    ?? research/harness/research-internals.md
+     M research/harness/internals-identity-check.md
 ```
 
 - Toolchain: `cargo 1.98.1 (797e8a9bc 2026-08-05)`, `rustc 1.98.1 (48a229cea 2026-09-01)` (LLVM 22.1.8)
@@ -243,7 +213,7 @@ PRE-EXISTING: the command also fails without the feature, and its results are id
 
 ```text
 $ C:\Python313\python.exe -B D:\Projects\entrybound\entrybound\research\harness\internals_identity_tools.py additive-check D:\Projects\entrybound\entrybound
-base: HEAD (9efbc74d9bddab3b2df3a08dad38acdaabce9314)
+base: c9a2d3ae20dc6635b3f91bf2b1e62629f054f455^ (c3f229b3551b25e6c5bd1f46d601508d97555e3c)
 PASS crates/entrybound/Cargo.toml: removed 1 gated block(s); remainder identical to base: True
 PASS crates/entrybound/src/lib.rs: removed 1 gated block(s); remainder identical to base: True
 PASS crates/entrybound/src/codec.rs: removed 1 gated block(s); remainder identical to base: True
@@ -259,8 +229,8 @@ RESULT PASS
 
 ### Builds
 
-- `%USERPROFILE%\.cargo\bin\cargo.exe +1.98.1 build --release --locked -p entrybound-cli` -> `ebound-default.exe` SHA-256 `8452d37f11da24cbc0bf1631668a8ef858c307f01df5a46544a0930e084f2976`
-- `%USERPROFILE%\.cargo\bin\cargo.exe +1.98.1 build --release --locked -p entrybound-cli --features entrybound/research-internals` -> `ebound-research.exe` SHA-256 `1d79ad327c69e1ed40b4d519eaf413eb4b1faac9d8592302983dffeea2f4287b`
+- `%USERPROFILE%\.cargo\bin\cargo.exe +1.98.1 build --release --locked -p entrybound-cli` -> `ebound-default.exe` SHA-256 `acf50834c1f17418b70ac351568dae45d0808400d4107940a1d39d11ef91adf2`
+- `%USERPROFILE%\.cargo\bin\cargo.exe +1.98.1 build --release --locked -p entrybound-cli --features entrybound/research-internals` -> `ebound-research.exe` SHA-256 `6416e0c461518a491ead3372a32071d6a0a11c2245683aee9657c59e540ef347`
 - Binary hashes are informational; the gate is the output identity below.
 
 ### Fixed input tree
@@ -275,14 +245,14 @@ Command per cell: `$WORK\bin\ebound-<build>.exe pack $WORK\tree $WORK\out\<build
 
 | Profile | Layout | Bytes | SHA-256 without feature | SHA-256 with research-internals | Identical |
 |---|---|---|---|---|---|
-| fast | indexed | 2198820 | `419a794085e6da2ccc765b54d62cc4c006fb3a08c354f4145dfd4ad786d12995` | `419a794085e6da2ccc765b54d62cc4c006fb3a08c354f4145dfd4ad786d12995` | yes |
-| fast | stream | 2200352 | `69eccbf633d961a56fb054f36599a2f2267992ed87eb7d500369d6e02c8c713b` | `69eccbf633d961a56fb054f36599a2f2267992ed87eb7d500369d6e02c8c713b` | yes |
-| balanced | indexed | 1828441 | `28d8b49fd4b2956ae35a2b22cacf7875e86c429e19563ea07ef505d99b53d03b` | `28d8b49fd4b2956ae35a2b22cacf7875e86c429e19563ea07ef505d99b53d03b` | yes |
-| balanced | stream | 1829957 | `d420fc2d6417e8bc1ea72add269d75eb2db9d70fdc71b1089c7ea0adf6d88790` | `d420fc2d6417e8bc1ea72add269d75eb2db9d70fdc71b1089c7ea0adf6d88790` | yes |
-| dense | indexed | 475317 | `abd23b31312915cb468554d5bd398e0348b957e051c542eb39564b01fd4ae979` | `abd23b31312915cb468554d5bd398e0348b957e051c542eb39564b01fd4ae979` | yes |
-| dense | stream | 476833 | `0e9a6c6489ac5e44a65ad55f24a93076de76b580383d05514d0301de9b9617d3` | `0e9a6c6489ac5e44a65ad55f24a93076de76b580383d05514d0301de9b9617d3` | yes |
-| extreme | indexed | 478004 | `1c089aed56597fe467730fa475f95c916e1c8e1d067bc78a1fcbfe7cb4b95d2c` | `1c089aed56597fe467730fa475f95c916e1c8e1d067bc78a1fcbfe7cb4b95d2c` | yes |
-| extreme | stream | 479184 | `07b6ee00e00b5cbce59d3225b08da5d14159861f8bee4da3c2b95b4d1b9514a8` | `07b6ee00e00b5cbce59d3225b08da5d14159861f8bee4da3c2b95b4d1b9514a8` | yes |
+| fast | indexed | 2198820 | `114916c02e858b9a9735a6a60282eecc004414f56853d5d4f5a021f3abc69010` | `114916c02e858b9a9735a6a60282eecc004414f56853d5d4f5a021f3abc69010` | yes |
+| fast | stream | 2200352 | `e389bee3427ca90da277a6bba979ab19823f8f7fcc9bd18bc92fc33bc262130d` | `e389bee3427ca90da277a6bba979ab19823f8f7fcc9bd18bc92fc33bc262130d` | yes |
+| balanced | indexed | 1828441 | `7f2807d3da778bbf5246b9f47bf651de818d4dc0f574a1361d0157066d3f96aa` | `7f2807d3da778bbf5246b9f47bf651de818d4dc0f574a1361d0157066d3f96aa` | yes |
+| balanced | stream | 1829957 | `8748c34ea90a0fe369c62cd0624579bba8d5f4ca04842c93418ee6d4a9d189dd` | `8748c34ea90a0fe369c62cd0624579bba8d5f4ca04842c93418ee6d4a9d189dd` | yes |
+| dense | indexed | 475317 | `7e02288921fcdb5d43d9207215aef78c43c23a7feadb1a1165ddfdb718d55848` | `7e02288921fcdb5d43d9207215aef78c43c23a7feadb1a1165ddfdb718d55848` | yes |
+| dense | stream | 476833 | `babf6c5b329e92022d40a8755f2a907d381ec0d7acaa878afbf69b8edad9a1c0` | `babf6c5b329e92022d40a8755f2a907d381ec0d7acaa878afbf69b8edad9a1c0` | yes |
+| extreme | indexed | 478004 | `292fccdb6ee14b917d9d458febd64242b53886a3c04c85bfccd63804a1151c85` | `292fccdb6ee14b917d9d458febd64242b53886a3c04c85bfccd63804a1151c85` | yes |
+| extreme | stream | 479184 | `eb9edf9c8776f4a825334e329ab870a315045b26a135a1adb38cce2a4e8731f2` | `eb9edf9c8776f4a825334e329ab870a315045b26a135a1adb38cce2a4e8731f2` | yes |
 
 Coverage of the default build's INDEXED archives (`ebound inspect`, selected lines):
 
