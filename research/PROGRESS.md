@@ -234,3 +234,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T12:45Z — Pre-registered EXP-EVAL-001..013 (1 READY, 10 NEEDS_TOOLING, 2 BLOCKED); 13 uncovered decisions routed.
 - 2026-09-17T12:55Z — Scale-domain experiment designs EXP-SCALE-001..016 (5 READY, 9 NEEDS_TOOLING, 2 BLOCKED; 62/63 decisions covered; DEC-CRY-096 uncovered).
 - 2026-09-17T12:55Z — Phase C-design remote: 14 experiments (13 NEEDS_TOOLING, 1 BLOCKED), 40/43 section-12 decisions covered, 3 uncovered with routes
+- 2026-09-17T12:57Z — Phase C-design crossfile: 14 experiment designs (3 READY, 10 NEEDS_TOOLING, 1 BLOCKED), 14/14 decisions in 8.3-8.5 addressed

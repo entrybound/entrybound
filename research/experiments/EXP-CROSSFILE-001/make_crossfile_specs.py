@@ -1,0 +1,990 @@
+#!/usr/bin/env python3
+"""Generate the ebr specs of every EXP-CROSSFILE-* experiment (Phase C-design, crossfile domain).
+
+Deterministic: reads only research/corpus/manifest.json (its manifest_sha256 is asserted) and the
+constants below, and writes research/experiments/EXP-CROSSFILE-*/spec*.yaml. Re-running must
+produce byte-identical files. Requires PyYAML (the WSL research venv).
+
+usage (repository root): /root/eb-research/venv/bin/python \
+    research/experiments/EXP-CROSSFILE-001/make_crossfile_specs.py
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import random
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parents[3]
+EXP = ROOT / "research" / "experiments"
+MANIFEST_SHA = "ed28b1b47333c186a8c80781d378b4c149eaaceea09a65098182f4c062380392"
+REPO_WSL = "/mnt/d/Projects/entrybound/entrybound"
+HX = "/root/eb-research/target/harness/release"
+XF = f"{HX}/ebr-crossfile"
+PROD_CLI = "/root/eb-research/target/prod-cli/release/ebound"
+MANIFEST_REL = "research/corpus/manifest.json"
+ZERO_BYTE_SHA = hashlib.sha256(b"\x00").hexdigest()
+
+manifest = json.loads((ROOT / MANIFEST_REL).read_text(encoding="utf-8"))
+assert manifest["manifest_sha256"] == MANIFEST_SHA, "manifest changed: re-derive selections"
+ITEMS = {i["item_id"]: i for i in manifest["items"]}
+
+TARGET_FAMILIES = {"F01", "F02", "F03", "F04", "F05", "F06", "F08", "F17", "F18", "F19"}
+F20_SCREEN = ["f20-tuning-bombs-dense", "f20-tuning-csprng", "f20-tuning-gear-extremes"]
+
+
+def target_set():
+    out = []
+    for i in sorted(manifest["items"], key=lambda r: r["item_id"]):
+        if i["split"] != "tuning" or i["scale"] == "large":
+            continue
+        if i["family"] in TARGET_FAMILIES or (i["family"] == "F07" and i["scale"] == "small") or i["item_id"] in F20_SCREEN:
+            out.append(i["item_id"])
+    return out
+
+
+TARGET = target_set()
+assert len(TARGET) == 50, len(TARGET)
+SMALL = [i for i in TARGET if ITEMS[i]["scale"] == "small"]
+assert len(SMALL) == 20, len(SMALL)
+
+
+def timing_medium():
+    picks = []
+    for fam in ["F01", "F03", "F04", "F05", "F06", "F08", "F17", "F18", "F19"]:
+        c = [i for i in manifest["items"] if i["split"] == "tuning" and i["family"] == fam and i["scale"] == "medium"]
+        capped = [i for i in c if i["bytes"] <= 64 * 2**20]
+        pick = sorted(capped, key=lambda r: (-r["file_count"], r["item_id"]))[0] if capped else sorted(c, key=lambda r: (r["bytes"], r["item_id"]))[0]
+        picks.append(pick["item_id"])
+    return picks + ["f20-tuning-gear-extremes"]
+
+
+TIMING = SMALL + timing_medium()
+LONG_GROUPS = [
+    {"item_id": f"xf004-long-group-{n}", "family": "generated-long-group", "generator": "zeros-v1", "bytes": 1,
+     "seed": seed, "sha256": ZERO_BYTE_SHA}
+    for n, seed in ((8, 20260917041), (64, 20260917042), (128, 20260917043))
+]
+
+
+def corpus(items, generated=None, splits=("tuning",)):
+    c = {"splits": list(splits), "item_ids": list(items), "manifest": MANIFEST_REL}
+    if generated:
+        c["generated"] = generated
+    return c
+
+
+def m(name, source, family, direction="none", unit=None, key=None, kind=None, path=None, command=None):
+    d = {"name": name, "source": source, "family": family}
+    if direction != "none":
+        d["direction"] = direction
+    if unit:
+        d["unit"] = unit
+    if key:
+        d["key"] = key
+    if kind:
+        d["kind"] = kind
+    if path:
+        d["path"] = path
+    if command:
+        d["command"] = command
+    return d
+
+
+def pj(name, family, direction="none", unit=None, kind=None, key=None):
+    return m(name, "stdout_json", family, direction, unit, key=key or f"payload.{name}", kind=kind)
+
+
+def deterministic(exp_id, question, hypothesis, decisions, candidates, command, corpus_sel, metrics, seeds,
+                  baseline, report, repetitions=2, timeout=86400, requires=None, notes=None, status="pre-registration-design",
+                  env=None):
+    spec = {
+        "schema": "ebr.spec.v1",
+        "experiment_id": exp_id,
+        "status": status,
+        "question": question,
+        "hypothesis": hypothesis,
+        "decision_ids": decisions,
+        "candidates": candidates,
+    }
+    if command is not None:
+        spec["command"] = command
+    if env:
+        spec["env"] = env
+    spec.update({
+        "shell": "bash",
+        "corpus": corpus_sel,
+        "metrics": metrics,
+        "repetitions": repetitions,
+        "warmups": 0,
+        "seeds": seeds,
+        "timing": False,
+        "order": "randomized_blocks",
+        "raw_compression": "gzip",
+        "record_warmups": True,
+        "platform": {"os": ["linux"], "arch": ["x86_64"], "emulated": False,
+                     "requires": requires or [XF], "timeout_s": timeout},
+        "analysis": {"baseline": baseline, "pairing": "item", "report_metrics": report},
+    })
+    if notes:
+        spec["notes"] = notes
+    return spec
+
+
+def write(exp_id, spec, name="spec.yaml"):
+    path = EXP / exp_id / name
+    header = (f"# {exp_id} ebr spec generated by research/experiments/EXP-CROSSFILE-001/make_crossfile_specs.py\n"
+              f"# Pre-registration design (see protocol.md). Do not edit by hand; regenerate.\n")
+    text = header + yaml.safe_dump(spec, sort_keys=False, width=110, allow_unicode=False)
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
+CORRECTNESS = [
+    pj("roundtrip_ok", "correctness", "maximize"),
+    pj("archive_sha256", "correctness", kind="string"),
+    m("input_bytes", "input", "size", unit="B"),
+]
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-001
+def exp001():
+    cands = []
+
+    def add(name, profile, method, params, gt="exact"):
+        cands.append({"name": name, "params": {"profile": profile, "method": method, "method_params": params, "ground_truth": gt}})
+
+    frozen = {"balanced": (8, 500, 8, 32, 64), "dense": (16, 375, 4, 64, 128), "extreme": (32, 250, 3, 128, 256)}
+    for p in ("balanced", "dense", "extreme"):
+        add(f"sq-bottomk-v1-{p}", p, "bottom-k-shingle-v1", "frozen")
+    for k in (4, 8, 16, 32, 64):
+        for t in (125, 250, 375, 500, 625, 750):
+            if (k, t) != frozen["dense"][:2]:
+                add(f"bk-k{k}-t{t}-dense", "dense", "bottom-k", f"k={k},t={t}")
+    for p in ("balanced", "extreme"):
+        k = frozen[p][0]
+        for t in (125, 250, 375, 500, 625, 750):
+            if t != frozen[p][1]:
+                add(f"bk-k{k}-t{t}-{p}", p, "bottom-k", f"k={k},t={t}")
+    for p in ("dense", "extreme"):
+        _, _, mn, mx, cap = frozen[p]
+        for v in (2, 3, 4, 8):
+            if v != mn:
+                add(f"bk-bounds-min{v}-{p}", p, "bottom-k", f"min={v}")
+        for v in (16, 32, 64, 128, 256):
+            if v != mx:
+                add(f"bk-bounds-max{v}-{p}", p, "bottom-k", f"max={v}")
+        for v in (32, 64, 128, 256, 1024):
+            if v != cap:
+                add(f"bk-bounds-cap{v}-{p}", p, "bottom-k", f"cap={v}")
+    for scan in ("16384", "unbounded"):
+        for stride in (8, 16, 32):
+            add(f"bk-scan{scan}-stride{stride}-dense", "dense", "bottom-k", f"scan={scan},stride={stride}")
+    for perm in (64, 128):
+        for bands in (8, 16, 32):
+            add(f"minhash-oph{perm}-lsh-b{bands}-dense", "dense", "minhash-oph-lsh", f"perm={perm},bands={bands}")
+    add("minhash-khash-64-dense", "dense", "minhash-khash", "k=64")
+    for h in (3, 6, 10):
+        add(f"simhash-64-h{h}-dense", "dense", "simhash", f"bits=64,hamming={h}")
+    for t in (30, 60, 100):
+        add(f"tlsh-t{t}-dense", "dense", "tlsh", f"threshold={t}")
+    add("nilsimsa-dwarfs-dense", "dense", "nilsimsa-dwarfs", "dwarfs=0.15.7")
+    add("sf-finesse-3x4-dense", "dense", "superfeature-finesse", "sf=3,features=4")
+    add("sf-ntransform-3x4-dense", "dense", "superfeature-ntransform", "sf=3,features=4")
+    for mask in (6, 8):
+        for k in (8, 16, 32):
+            add(f"cds-gear-m{mask}-k{k}-dense", "dense", "content-defined-sampling", f"mask_bits={mask},k={k}")
+    for p in ("balanced", "dense"):
+        add(f"cheap-type-path-{p}", p, "cheap-type-path", "none", gt="exact")
+    for p in ("balanced", "dense", "extreme"):
+        add(f"no-clustering-{p}", p, "none", "none")
+    add("oracle-exact-jaccard-dense", "dense", "oracle-exact-jaccard", "reference-ceiling")
+
+    command = (f"{XF} similarity --item-path {{item_path}} --item-id {{item_id}} --experiment-id EXP-CROSSFILE-001 "
+               "--env-name wsl-ubuntu --profile {profile} --method {method} --method-params {method_params} "
+               "--ground-truth {ground_truth} --archive-out {scratch}/out.eb "
+               "--memo-dir /root/eb-research/cache/crossfile/EXP-CROSSFILE-001/rep{rep} --verify-roundtrip true")
+    metrics = [
+        pj("artifact_bytes", "size", "minimize", "B"),
+        pj("dictionary_bytes", "size", "minimize", "B"),
+        pj("side_data_bytes", "size", "minimize", "B"),
+    ]
+    for j in ("250", "375", "500"):
+        metrics.append(pj(f"pair_recall_j{j}", "other", "maximize"))
+        metrics.append(pj(f"pair_precision_j{j}", "other", "maximize"))
+    for e in ("1b", "16b", "256b"):
+        metrics.append(pj(f"sketch_retention_insert_{e}", "other", "maximize"))
+    for n in ("cohort_count", "cohorts_dictionary_selected", "cohorts_lookback_selected", "cohorts_rejected", "rejected_candidate_encodes"):
+        metrics.append(pj(n, "other"))
+    metrics.append(pj("drift_ok", "correctness", "maximize"))
+    metrics += CORRECTNESS
+    spec = deterministic(
+        "EXP-CROSSFILE-001",
+        "Which similarity method and parameters form cross-file cohorts that minimise complete-cost archive bytes versus frozen bottom-k-shingle-v1, and how much do cohort recall and precision explain?",
+        "H1: an alternative (expected content-defined sampling or MinHash-LSH) reduces corpus-level artifact_bytes by >= 1 T-01 band unit on dense in F01/F03/F04/F05/F06/F17/F18; H0: all alternatives EQUIVALENT (status quo kept by R10). Falsified by EQUIVALENT or WORSE confirmatory verdicts on validation.",
+        ["DEC-CMP-041", "DEC-CMP-006"],
+        cands, command, corpus(TARGET),
+        metrics, {"order": 20260917001, "bootstrap": 20260917002, "command": 20260917003},
+        "sq-bottomk-v1-dense", ["artifact_bytes", "dictionary_bytes", "pair_recall_j375", "pair_precision_j375"],
+        notes="Stage A+B screening spec (tuning). Stage C and validation-look specs are generated by rule and committed before they run (protocol.md sections 5 and 13).",
+    )
+    write("EXP-CROSSFILE-001", spec)
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-002
+def exp002():
+    cands = []
+    for order, profiles in (
+        ("sq-digest-cohorts", ("fast", "balanced", "dense", "extreme")),
+        ("spec-clustering-modes", ("fast", "balanced", "dense", "extreme")),
+        ("path-order-base", ("fast", "balanced", "dense", "extreme")),
+        ("type-then-path", ("balanced",)),
+        ("cohort-only-dense-extreme", ("balanced",)),
+        ("size-then-path", ("balanced", "dense", "extreme")),
+    ):
+        for p in profiles:
+            cands.append({"name": f"{order}-{p}", "params": {"profile": p, "order": order}})
+    command = (f"{XF} order --item-path {{item_path}} --item-id {{item_id}} --experiment-id EXP-CROSSFILE-002 "
+               "--env-name wsl-ubuntu --profile {profile} --order {order} --archive-out {scratch}/out.eb "
+               f"--stream-layout true --remote-tasks true --origin-bin {HX}/ebr-origin "
+               "--memo-dir /root/eb-research/cache/crossfile/EXP-CROSSFILE-002/rep{rep} --verify-roundtrip true")
+    metrics = [pj("artifact_bytes", "size", "minimize", "B")]
+    for t in ("t1", "t2", "t3"):
+        metrics.append(pj(f"http_requests_{t}", "other", "minimize", "count"))
+        metrics.append(pj(f"http_bytes_{t}", "size", "minimize", "B"))
+        for prof in ("np_lan", "np_metro", "np_cont", "np_inter"):
+            metrics.append(pj(f"remote_task_latency_s_{t}_{prof}", "time_wall", "minimize", "s"))
+    metrics += [
+        pj("stream_artifact_bytes", "size", "minimize", "B"),
+        pj("stream_window_required_bytes", "size", unit="B"),
+        pj("request_log_sha256", "correctness", kind="string"),
+        pj("drift_ok", "correctness", "maximize"),
+    ] + CORRECTNESS
+    spec = deterministic(
+        "EXP-CROSSFILE-002",
+        "Should profiles use the SPEC clustering modes or keep digest-ordered base physical order with archive-wide cohorts, given bytes, HTTP range requests per remote task and STREAM window needs?",
+        "H1: path-order-base is non-inferior on artifact_bytes and reduces T1 (directory subtree) http_requests by >= 1 T-12 band unit on F01/F03/F04/F18; H0: order changes neither beyond bands.",
+        ["DEC-CMP-006"], cands, command, corpus(TARGET), metrics,
+        {"order": 20260917011, "bootstrap": 20260917012, "command": 20260917013},
+        "sq-digest-cohorts-balanced", ["artifact_bytes", "http_requests_t1", "http_requests_t2", "http_bytes_t1"],
+    )
+    write("EXP-CROSSFILE-002", spec)
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-003
+def exp003():
+    cands = []
+
+    def add(name, profile, rule="sq-abs128", construction="frozen", scope="per-cohort", codec_arm="none"):
+        cands.append({"name": name, "params": {"profile": profile, "rule": rule, "construction": construction,
+                                               "scope": scope, "codec_arm": codec_arm}})
+
+    frozen = {"balanced": (8, 16, 16), "dense": (16, 32, 32), "extreme": (32, 64, 64)}  # dict KiB, samples, sample cap KiB
+    for p in ("balanced", "dense", "extreme"):
+        add(f"sq-abs128-{p}", p)
+        for r in ("margin-max32-1pct", "margin-max256-2pct", "charge-access-k1", "charge-access-k2",
+                  "charge-memcap-8k", "charge-memcap-16k", "charge-memcap-32k", "charge-access-k1-memcap16k",
+                  "min-reuse-2", "min-reuse-4", "min-reuse-8", "min-reuse-16", "min-reuse-32",
+                  "min-reuse-bytes-64k", "min-reuse-bytes-256k", "min-reuse-bytes-1m", "exact-marginal-accounting"):
+            add(f"{r}-{p}", p, rule=r)
+        for c in ("trainer-cover-opt", "trainer-fastcover-opt", "trainer-legacy",
+                  "raw-content-leader-8k", "raw-content-leader-16k", "raw-content-leader-32k"):
+            add(f"{c}-{p}", p, construction=c)
+        for s in ("per-archive-16k", "per-archive-32k", "per-archive-64k", "per-archive-112k", "per-category",
+                  "supplied-family", "supplied-mismatched"):
+            add(f"{s}-{p}", p, scope=s)
+        add(f"no-dictionaries-{p}", p, rule="no-dictionaries")
+        d, s, cap = frozen[p]
+        for v in (4, 8, 16, 32, 64, 112):
+            if v != d:
+                add(f"size-{v}k-{p}", p, construction=f"train-buffer:dict={v}k,samples={s},cap={cap}k")
+        for v in (8, 16, 32, 64, 128, 256):
+            if v != s:
+                add(f"samples-{v}-{p}", p, construction=f"train-buffer:dict={d}k,samples={v},cap={cap}k")
+        for v in (4, 16, 64):
+            if v != cap:
+                add(f"samplecap-{v}k-{p}", p, construction=f"train-buffer:dict={d}k,samples={s},cap={v}k")
+    rng = random.Random(20260917031)
+    sizes, samples, caps = [4, 8, 16, 32, 64, 112], [8, 16, 32, 64, 128, 256], [4, 16, 64]
+    n = 24
+    perm_s = rng.sample(range(n), n)
+    perm_n = rng.sample(range(n), n)
+    perm_c = rng.sample(range(n), n)
+    for i in range(n):
+        dv = sizes[perm_s[i] * len(sizes) // n]
+        sv = samples[perm_n[i] * len(samples) // n]
+        cv = caps[perm_c[i] * len(caps) // n]
+        add(f"lhs{i:02d}-dict{dv}k-s{sv}-cap{cv}k-dense", "dense", construction=f"train-buffer:dict={dv}k,samples={sv},cap={cv}k")
+    for arm in ("lzma2-preset-dict", "lz4-block-dict", "delta8-then-zstd-dict", "shuffle-then-zstd-dict"):
+        add(f"{arm}-dense", "dense", codec_arm=arm)
+    names = [c["name"] for c in cands]
+    assert len(names) == len(set(names))
+    command = (f"{XF} dict-sweep --item-path {{item_path}} --item-id {{item_id}} --experiment-id EXP-CROSSFILE-003 "
+               "--env-name wsl-ubuntu --profile {profile} --rule {rule} --construction {construction} --scope {scope} "
+               "--supplied-from auto-family-pair --codec-arm {codec_arm} --archive-out {scratch}/out.eb "
+               "--memo-dir /root/eb-research/cache/crossfile/EXP-CROSSFILE-003/rep{rep} --cold-reads t2 "
+               f"--origin-bin {HX}/ebr-origin --alloc-isolate true --verify-roundtrip true")
+    metrics = [
+        pj("artifact_bytes", "size", "minimize", "B"),
+        m("http_bytes", "stdout_json", "size", "minimize", "B", key="payload.http_bytes_cold_member_read"),
+        m("http_requests", "stdout_json", "other", "minimize", "count", key="payload.http_requests_cold_member_read"),
+        m("alloc_peak_bytes", "stdout_json", "memory_peak", "minimize", "B", key="payload.alloc_peak_bytes_member_read"),
+        m("declared_tightness_ratio", "stdout_json", "other", "minimize", key="payload.declared_tightness_ratio_working_set"),
+        pj("declared_cost_accuracy", "correctness", "minimize"),
+        pj("dictionary_bytes", "size", "minimize", "B"),
+        pj("dictionaries_accepted", "other"),
+        pj("dictionary_chunks", "other"),
+        pj("net_savings_bytes", "size", "maximize", "B"),
+        pj("accept_flips_margin_x0_5", "other"),
+        pj("accept_flips_margin_x2", "other"),
+        pj("encodable_by_production", "correctness"),
+        pj("dictionary_set_sha256", "correctness", kind="string"),
+    ] + CORRECTNESS
+    spec = deterministic(
+        "EXP-CROSSFILE-003",
+        "What dictionary policy and minimum-benefit rule should v1 use, and must acceptance charge decoder memory and random/remote fetch cost in addition to record bytes under the 128-byte margin? (plus post-v1 LZMA2/LZ4/transform-before-dictionary arms)",
+        "H1a: charge-access-k1 costs < 1 T-01 band unit of artifact_bytes and cuts cold dictionary-member http_bytes by >= 1 T-11 band unit on F04/F05; H1b: the production working set (sum of all Dictionaries) is loose beyond T-23 on archives with >= 4 Dictionaries; H1c: COVER/fastCOVER or 2x dictionaries gain >= 1 band unit on F04/F06; H1d: no LZMA2/LZ4/transform arm clears the k=3 minimum gain; H0: all EQUIVALENT to sq-abs128.",
+        ["DEC-CMP-020", "DEC-CMP-014", "DEC-CMP-013", "DEC-CON-004"],
+        cands, command, corpus(TARGET), metrics,
+        {"order": 20260917031, "bootstrap": 20260917032, "command": 20260917033},
+        "sq-abs128-balanced", ["artifact_bytes", "http_bytes", "alloc_peak_bytes", "declared_tightness_ratio", "dictionary_bytes"],
+        notes="The adversarial supplied-dictionary screen is spec-adversarial.yaml (one generated anchor item).",
+    )
+    write("EXP-CROSSFILE-003", spec)
+    adv = deterministic(
+        "EXP-CROSSFILE-003",
+        "Are hostile supplied Dictionaries refused before expensive work (HC-06 screen for DEC-CMP-013)?",
+        "Every one of the 8 pre-registered hostile Dictionary inputs is refused (adversarial_true_refusal_fraction = 1) with bounded allocation.",
+        ["DEC-CMP-013", "DEC-CMP-020"],
+        [{"name": "adversarial-dict-screen", "params": {"set": "v1"}}],
+        f"{XF} dict-sweep --adversarial-set {{set}} --item-id {{item_id}} --experiment-id EXP-CROSSFILE-003 --env-name wsl-ubuntu --alloc-isolate true",
+        {"generated": [{"item_id": "xf003-adversarial-anchor", "family": "generated-anchor", "generator": "zeros-v1",
+                        "bytes": 1, "seed": 20260917034, "sha256": ZERO_BYTE_SHA}]},
+        [
+            pj("adversarial_true_refusal_fraction", "correctness", "maximize"),
+            pj("refusal_alloc_peak_bytes", "memory_peak", "minimize", "B"),
+            pj("refusal_bytes_read", "size", "minimize", "B"),
+            pj("adversarial_outcomes_sha256", "correctness", kind="string"),
+        ],
+        {"order": 20260917035, "bootstrap": 20260917036, "command": 20260917037},
+        "adversarial-dict-screen", ["adversarial_true_refusal_fraction", "refusal_alloc_peak_bytes"],
+    )
+    write("EXP-CROSSFILE-003", adv, "spec-adversarial.yaml")
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-004
+def exp004():
+    cands = []
+
+    def add(name, profile, topology):
+        cands.append({"name": name, "params": {"profile": profile, "topology": topology}})
+
+    for p in ("dense", "extreme"):
+        add(f"sq-profile-lookbacks-{p}", p, "production")
+        add(f"chain-k0-{p}", p, "chain-k0")
+        for k in (1, 2, 4, 8, 16, 32):
+            add(f"chain-k{k}-w1m-{p}", p, f"chain-k{k}-w1m")
+        for k in (1, 2, 4, 8):
+            for w in ("256k", "2m", "4m", "8m", "chunkmax"):
+                add(f"chain-k{k}-w{w}-{p}", p, f"chain-k{k}-w{w}")
+        for wl in (23, 27):
+            for k in (4, 8):
+                add(f"ldm-w{wl}-k{k}-{p}", p, f"ldm-w{wl}-k{k}")
+        add(f"leader-only-star-{p}", p, "leader-only-star")
+        for n in (2, 4, 8, 16):
+            add(f"restart-n{n}-{p}", p, f"restart-n{n}")
+        for L in (4, 8, 16, 32):
+            add(f"cap-group-len{L}-{p}", p, f"cap-group-len{L}")
+        for k in (2, 4):
+            add(f"anchor-k{k}-{p}", p, f"anchor-k{k}")
+        for b in ("1m", "4m", "16m", "64m"):
+            add(f"bsolid-b{b}-{p}", p, f"bsolid-b{b}")
+        add(f"per-category-lookback-{p}", p, "per-category-lookback")
+    command = (f"{XF} topology --item-path {{item_path}} --item-id {{item_id}} --experiment-id EXP-CROSSFILE-004 "
+               "--env-name wsl-ubuntu --profile {profile} --topology {topology} --synthetic-from-item-id true "
+               "--declarations all --blast-definitions all --cost-models all --access-sample v1 --coalesce-gap default "
+               "--network-profiles NP-LAN,NP-METRO,NP-CONT,NP-INTER --slow-start both --archive-out {scratch}/out.eb "
+               "--memo-dir /root/eb-research/cache/crossfile/EXP-CROSSFILE-004/rep{rep} --verify-roundtrip true")
+    metrics = [
+        pj("artifact_bytes", "size", "minimize", "B"),
+        pj("artifact_bytes_source", "correctness", kind="string"),
+        pj("side_data_bytes", "size", "minimize", "B"),
+        pj("access_granularity_bytes", "size", "minimize", "B"),
+    ]
+    for s in ("1b", "4k", "1m", "entry"):
+        metrics.append(pj(f"access_amplification_{s}", "other", "minimize"))
+    metrics += [
+        pj("closure_chunks_max", "other", unit="count"),
+        pj("closure_decoded_bytes_max", "size", unit="B"),
+        pj("declared_preceding_bytes_max", "size", unit="B"),
+        m("declared_tightness_ratio", "stdout_json", "other", "minimize", key="payload.declared_tightness_ratio_access"),
+        pj("declared_cost_accuracy", "correctness", "minimize"),
+        m("blast_logical_bytes_p95", "stdout_json", "other", "minimize", "B", key="payload.blast_logical_bytes_p95_payload"),
+        m("blast_logical_bytes_max", "stdout_json", "other", "minimize", "B", key="payload.blast_logical_bytes_max_payload"),
+        m("blast_entries_p95", "stdout_json", "other", "minimize", "count", key="payload.blast_entries_p95_payload"),
+        pj("blast_logical_bytes_p95_dictionary", "other", "minimize", "B"),
+    ]
+    for n in (2, 4, 8, 16):
+        metrics.append(pj(f"workspan_speedup_bound_n{n}", "other", "maximize"))
+    metrics += [
+        m("http_bytes", "stdout_json", "size", "minimize", "B", key="payload.http_bytes_random_entry"),
+        m("http_requests", "stdout_json", "other", "minimize", "count", key="payload.http_requests_random_entry"),
+    ]
+    for prof in ("np_lan", "np_metro", "np_cont", "np_inter"):
+        metrics.append(pj(f"remote_random_entry_latency_s_{prof}", "time_wall", "minimize", "s"))
+    for d in ("status_quo_direct_prerequisite", "k_following", "transitive_closure", "whole_group", "byte_bounded", "dictionary_inclusive"):
+        metrics.append(pj(f"localization_recall_{d}", "correctness", "maximize"))
+        metrics.append(pj(f"localization_precision_{d}", "other", "maximize"))
+    for c in ("status_quo_chunks_and_lookback", "decode_work_model", "fetch_model", "dual_local_remote_model", "measured_calibration"):
+        metrics.append(pj(f"cost_model_accuracy_{c}", "correctness", "minimize"))
+        metrics.append(pj(f"cost_model_tightness_{c}", "other", "minimize"))
+    metrics.append(pj("analytics_sha256", "correctness", kind="string"))
+    metrics += CORRECTNESS
+    spec = deterministic(
+        "EXP-CROSSFILE-004",
+        "Which lookback values and prefix window should each profile allow, is chained prefix lookback sufficient versus leader-only, restarts, caps, larger/LDM windows and bounded-solid blocks, and are declared access costs direct or transitive?",
+        "H1a: status-quo declarations under-state transitive closure (declared_cost_accuracy fails) for groups longer than max_lookback+1; H1b: k in {1,2} captures >= 70% of the k=8 byte gain and k=16/32 adds < 1 T-01 band unit; H1c: restart-n4 or cap-group-len8 keeps >= 80% of the k=4 gain with bounded closure; H1d: only transitive/dictionary-inclusive blast definitions reach recall 1; H0: lookback > 0 gains nothing beyond band over dictionaries.",
+        ["DEC-CMP-027", "DEC-ACC-025", "DEC-INT-002", "DEC-ACC-001", "DEC-CMP-013", "DEC-CON-004"],
+        cands, command, corpus(TARGET, LONG_GROUPS), metrics,
+        {"order": 20260917044, "bootstrap": 20260917045, "command": 20260917046},
+        "sq-profile-lookbacks-dense",
+        ["artifact_bytes", "access_amplification_1b", "access_granularity_bytes", "blast_logical_bytes_p95", "declared_tightness_ratio"],
+        notes="xf004-long-group-* are placeholder generated items; the tool builds the 8/64/128-member stress trees from item_id and seed (protocol.md section 5).",
+    )
+    write("EXP-CROSSFILE-004", spec)
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-005
+def exp005():
+    sa = f"python3 {REPO_WSL}/research/experiments/EXP-CROSSFILE-005/solid_access.py"
+    tar = "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} ."
+    cands = []
+    for solid in ("off", "1m", "4m", "16m", "64m", "on"):
+        cands.append({"name": f"7z-mx9-ms{solid}", "params": {"format": "sevenzip"},
+                      "command": f"cd {{item_path}} && 7z a -t7z -mx=9 -mmt=1 -ms={solid} -snl -bd -y {{scratch}}/artifact.bin . >/dev/null && {sa} --format sevenzip --artifact {{scratch}}/artifact.bin --item-path {{item_path}} --item-id {{item_id}}"})
+    cands.append({"name": "7z-mx9-ms16m-qs", "params": {"format": "sevenzip"},
+                  "command": f"cd {{item_path}} && 7z a -t7z -mx=9 -mmt=1 -ms=16m -mqs=on -snl -bd -y {{scratch}}/artifact.bin . >/dev/null && {sa} --format sevenzip --artifact {{scratch}}/artifact.bin --item-path {{item_path}} --item-id {{item_id}}"})
+    for b, flag in (("1m", "--block-size=1MiB"), ("4m", "--block-size=4MiB"), ("16m", "--block-size=16MiB"), ("64m", "--block-size=64MiB"), ("single", "")):
+        opt = f" {flag}" if flag else ""
+        cands.append({"name": f"tarxz-9e-{'b' + b if b != 'single' else 'single'}", "params": {"format": "tar+xz"},
+                      "command": f"{tar} | xz -9e -T1{opt} -q > {{scratch}}/artifact.bin && {sa} --format tar+xz --artifact {{scratch}}/artifact.bin --item-path {{item_path}} --item-id {{item_id}}"})
+    cands.append({"name": "tarzstd-19-long27", "params": {"format": "tar+zstd"},
+                  "command": f"{tar} | zstd -19 --long=27 -T1 -q > {{scratch}}/artifact.bin && {sa} --format tar+zstd --artifact {{scratch}}/artifact.bin --item-path {{item_path}} --item-id {{item_id}}"})
+    cands.append({"name": "squashfs-xz-b1m", "params": {"format": "squashfs"},
+                  "command": f"mksquashfs {{item_path}} {{scratch}}/artifact.bin -comp xz -b 1M -noappend -no-progress -no-exports -processors 1 -mkfs-time 0 >/dev/null && {sa} --format squashfs --block-bytes 1048576 --artifact {{scratch}}/artifact.bin --item-path {{item_path}} --item-id {{item_id}}"})
+    cands.append({"name": "squashfs-zstd19-b1m", "params": {"format": "squashfs"},
+                  "command": f"mksquashfs {{item_path}} {{scratch}}/artifact.bin -comp zstd -Xcompression-level 19 -b 1M -noappend -no-progress -no-exports -processors 1 -mkfs-time 0 >/dev/null && {sa} --format squashfs --block-bytes 1048576 --artifact {{scratch}}/artifact.bin --item-path {{item_path}} --item-id {{item_id}}"})
+    dw = "mkdwarfs -i {item_path} -o {scratch}/artifact.bin -l7 -N 1 --num-scanner-workers 1 --num-segmenter-workers 1 --no-history-timestamps --no-create-timestamp --no-progress --log-level error --force"
+    for bits in (20, 22, 24, 26):
+        cands.append({"name": f"dwarfs-l7-S{bits}", "params": {"format": "dwarfs"},
+                      "command": f"{dw} -S {bits} && {sa} --format dwarfs --block-bytes {2**bits} --artifact {{scratch}}/artifact.bin --item-path {{item_path}} --item-id {{item_id}}"})
+    cands.append({"name": "dwarfs-l7-S24-order-path", "params": {"format": "dwarfs"},
+                  "command": f"{dw} -S 24 --order=path && {sa} --format dwarfs --block-bytes {2**24} --artifact {{scratch}}/artifact.bin --item-path {{item_path}} --item-id {{item_id}}"})
+    rt = (f"python3 {REPO_WSL}/research/baselines/probes/roundtrip_check.py {{item_path}} {{scratch}}/artifact.bin {{format}} "
+          f"{{scratch}}/extracted {{scratch}}/roundtrip.json --detail-log {REPO_WSL}/research/raw/EXP-CROSSFILE-005/roundtrip-detail.jsonl "
+          "--candidate {candidate} --item-id {item_id} --rep {rep}")
+    metrics = [
+        m("artifact_bytes", "stdout_json", "size", "minimize", "B", key="artifact_bytes"),
+        m("access_granularity_bytes", "stdout_json", "size", "minimize", "B", key="access_granularity_bytes"),
+    ]
+    for s in ("1b", "4k", "1m", "entry"):
+        metrics.append(m(f"access_amplification_{s}", "stdout_json", "other", "minimize", key=f"access_amplification_{s}"))
+    metrics += [
+        m("granularity_source", "stdout_json", "correctness", key="granularity_source", kind="string"),
+        m("artifact_sha256", "path_sha256", "correctness", path="{scratch}/artifact.bin"),
+        m("roundtrip_ok", "check", "correctness", "maximize", command=rt),
+        m("input_bytes", "input", "size", unit="B"),
+    ]
+    spec = deterministic(
+        "EXP-CROSSFILE-005",
+        "What artifact size do block-bounded solid incumbents reach at each exact access granularity and amplification on the cross-file items, for DEC-CMP-027's ratio-gap-at-equal-access-cost comparison?",
+        "H1: the incumbent frontier at 1-4 MiB granularity is within 1.05x of the unbounded-solid best on F01/F03/F05 but not on F18; H0: block bounding at 1-4 MiB costs > 5% on most target families.",
+        ["DEC-CMP-027"], cands, None, corpus(TARGET), metrics,
+        {"order": 20260917051, "bootstrap": 20260917052},
+        "7z-mx9-mson", ["artifact_bytes", "access_granularity_bytes", "access_amplification_1b", "access_amplification_entry"],
+        requires=["7z", "xz", "zstd", "mksquashfs", "unsquashfs", "/root/eb-research/tools/dwarfs/mkdwarfs"],
+        timeout=21600, env={"PATH": "/root/eb-research/tools/dwarfs:/usr/local/bin:/usr/bin:/bin"},
+        notes="REF-INC configurations; tool versions pinned in research/baselines/tool-versions.json.",
+    )
+    write("EXP-CROSSFILE-005", spec)
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-006
+def exp006():
+    cands = []
+
+    def add(name, build, profile, build_args, decoder="production"):
+        cands.append({"name": name, "params": {"build": build, "profile": profile, "build_args": build_args, "decoder": decoder}})
+
+    for p in ("balanced", "dense", "extreme"):
+        add(f"access-prod-{p}", "ebr-pack", p, "none")
+    for p in ("dense", "extreme"):
+        for k in (1, 2, 4, 8):
+            add(f"access-forced-chain-k{k}-w1m-{p}", "topology", p, f"chain-k{k}-w1m")
+    for L in (4, 8):
+        add(f"access-forced-cap-group-len{L}-extreme", "topology", "extreme", f"cap-group-len{L}")
+    for r in ("sq-abs128", "charge-access-k1", "no-dictionaries"):
+        add(f"access-forced-dict-{r}-balanced", "dict-sweep", "balanced", r)
+    for p in ("dense", "extreme"):
+        add(f"access-iterative-bounded-{p}", "ebr-pack", p, "none", decoder="iterative-bounded")
+    command = (f"{XF} access --item-path {{item_path}} --item-id {{item_id}} --experiment-id EXP-CROSSFILE-006 "
+               "--env-name wsl-ubuntu --build {build} --profile {profile} --build-args {build_args} "
+               "--synthetic-from-item-id true --archive-out {scratch}/out.eb --sources memory,local-file,http "
+               f"--origin-bin {HX}/ebr-origin --reads access-sample-v1,t2 --decoder {{decoder}} --models all --alloc-isolate true")
+    metrics = [
+        m("declared_tightness_ratio", "stdout_json", "other", "minimize", key="payload.declared_tightness_ratio_decoded_bytes"),
+        pj("declared_tightness_ratio_working_set", "other", "minimize"),
+        pj("declared_tightness_ratio_fetched_bytes", "other", "minimize"),
+        pj("declared_cost_accuracy", "correctness", "minimize"),
+        m("alloc_peak_bytes", "stdout_json", "memory_peak", "minimize", "B", key="payload.alloc_peak_bytes_per_read_p95"),
+        m("http_bytes", "stdout_json", "size", "minimize", "B", key="payload.http_bytes_per_read_p50"),
+        m("http_requests", "stdout_json", "other", "minimize", "count", key="payload.http_requests_per_read_p50"),
+        pj("dependency_chunk_count_per_read_max", "other", unit="count"),
+        pj("decoded_logical_bytes_per_read_max", "size", unit="B"),
+        pj("benign_false_refusal_fraction", "other", "minimize"),
+    ]
+    for c in ("status_quo_chunks_and_lookback", "decode_work_model", "fetch_model", "dual_local_remote_model", "measured_calibration"):
+        metrics.append(pj(f"cost_model_accuracy_{c}", "correctness", "minimize"))
+        metrics.append(pj(f"cost_model_tightness_{c}", "other", "minimize"))
+    metrics += [pj("read_log_sha256", "correctness", kind="string")] + CORRECTNESS
+    spec = deterministic(
+        "EXP-CROSSFILE-006",
+        "On production-decodable archives, what are measured per-read decoded bytes, dependency Chunks, fetched bytes, requests and decode memory, and do declarations and each cost model predict them soundly and tightly?",
+        "H1a: only decode-work and dual local/remote models are sound on every read; H1b: last members of 64/128-member groups decode their transitive closure and can exceed the declared working set; H1d: the production working set is sound but loose beyond T-23 on dictionary-heavy archives; H0: declarations sound and tight.",
+        ["DEC-ACC-001", "DEC-ACC-025", "DEC-CON-004", "DEC-CMP-027", "DEC-CMP-020"],
+        cands, command, corpus(TARGET, LONG_GROUPS), metrics,
+        {"order": 20260917061, "bootstrap": 20260917062, "command": 20260917063},
+        "access-prod-balanced", ["declared_tightness_ratio", "declared_cost_accuracy", "alloc_peak_bytes", "http_bytes"],
+        requires=[XF, f"{HX}/ebr-origin", f"{HX}/ebr-pack"],
+    )
+    write("EXP-CROSSFILE-006", spec)
+
+    icands = []
+    for p in ("balanced", "dense", "extreme"):
+        icands.append({"name": f"inject-prod-{p}", "params": {"build": "ebr-pack", "profile": p, "build_args": "none"}})
+    for k in (1, 4, 8):
+        icands.append({"name": f"inject-forced-chain-k{k}-w1m-extreme", "params": {"build": "topology", "profile": "extreme", "build_args": f"chain-k{k}-w1m"}})
+    icands.append({"name": "inject-forced-dict-sq-abs128-balanced", "params": {"build": "dict-sweep", "profile": "balanced", "build_args": "sq-abs128"}})
+    icommand = (f"{XF} inject --item-path {{item_path}} --item-id {{item_id}} --experiment-id EXP-CROSSFILE-006 "
+                "--env-name wsl-ubuntu --build {build} --profile {profile} --build-args {build_args} "
+                "--synthetic-from-item-id true --archive-out {scratch}/out.eb "
+                "--strata payload,index,metadata,dictionary,integrity --events 200 --classes byte,512b,64k,1m,truncate "
+                f"--seed {{seed}} --oracle read-every-entry --verify-cli {PROD_CLI} --compare-analytic true")
+    imetrics = [
+        pj("blast_logical_bytes_p95", "other", "minimize", "B"),
+        pj("blast_logical_bytes_max", "other", "minimize", "B"),
+        pj("blast_entries_p95", "other", "minimize", "count"),
+    ]
+    for s in ("payload", "index", "metadata", "dictionary", "integrity"):
+        imetrics.append(pj(f"blast_logical_bytes_p95_{s}", "other", "minimize", "B"))
+    imetrics += [
+        pj("localization_recall", "correctness", "maximize"),
+        pj("localization_precision", "other", "maximize"),
+        pj("truncation_salvage_fraction", "other", "maximize"),
+        pj("detection_rate", "correctness", "maximize"),
+        pj("analytic_model_agreement", "correctness", "maximize"),
+        pj("injection_outcomes_sha256", "correctness", kind="string"),
+    ] + CORRECTNESS
+    ispec = deterministic(
+        "EXP-CROSSFILE-006",
+        "After seeded corruption per region stratum, which entries and logical bytes become unreadable, is every corruption detected, is verify's localization sound and precise, and does the analytic closure model of EXP-CROSSFILE-004 match exactly?",
+        "H1c: measured unreadable sets equal the analytic sets on every payload and dictionary injection; detection is 100%; only transitive/dictionary-inclusive definitions reach recall 1.",
+        ["DEC-INT-002", "DEC-CMP-027", "DEC-ACC-025"],
+        icands, icommand, corpus(SMALL, LONG_GROUPS), imetrics,
+        {"order": 20260917064, "bootstrap": 20260917065, "command": 20260917066},
+        "inject-prod-balanced", ["blast_logical_bytes_p95", "localization_recall", "localization_precision", "detection_rate"],
+        requires=[XF, f"{HX}/ebr-pack", PROD_CLI],
+    )
+    write("EXP-CROSSFILE-006", ispec, "spec-inject.yaml")
+
+
+# ------------------------------------------------------------------ timing helpers
+def timing_spec(exp_id, question, hypothesis, decisions, cands, command, corpus_sel, metrics, seeds, baseline, report,
+                affinity, loadavg, repetitions=10, warmups=2, requires=None, notes=None):
+    spec = {
+        "schema": "ebr.spec.v1",
+        "experiment_id": exp_id,
+        "status": "pre-registration-design",
+        "question": question,
+        "hypothesis": hypothesis,
+        "decision_ids": decisions,
+        "candidates": cands,
+        "command": command,
+        "shell": "bash",
+        "corpus": corpus_sel,
+        "metrics": metrics,
+        "repetitions": repetitions,
+        "warmups": warmups,
+        "seeds": seeds,
+        "timing": True,
+        "order": "randomized_blocks",
+        "raw_compression": "gzip",
+        "record_warmups": True,
+        "platform": {"os": ["linux"], "arch": ["x86_64"], "emulated": False, "min_cpus": len(affinity),
+                     "cpu_affinity": affinity, "requires": requires or [XF], "timeout_s": 86400},
+        "guard": {"max_loadavg_1m": loadavg, "max_other_cpu_percent": 3.0, "sample_interval_s": 1.0, "max_wait_s": 300},
+        "analysis": {"baseline": baseline, "pairing": "item_repetition", "report_metrics": report},
+    }
+    if notes:
+        spec["notes"] = notes
+    return spec
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-007
+def exp007():
+    cands = []
+    for p in ("balanced", "dense", "extreme"):
+        cands.append({"name": f"sq-bottomk-v1-{p}", "params": {"profile": p, "stage_config": "production"}})
+    for name, p in (("minhash-oph128-lsh-b16", "dense"), ("simhash-64-h6", "dense"), ("tlsh-t60", "dense"),
+                    ("nilsimsa-dwarfs", "dense"), ("sf-finesse-3x4", "dense"), ("cds-gear-m8-k16", "dense"),
+                    ("cheap-type-path", "balanced"), ("no-clustering", "dense"), ("oracle-exact-jaccard", "dense"),
+                    ("order-path-order-base", "balanced"), ("order-spec-clustering-modes", "balanced"),
+                    ("dict-trainer-cover-opt", "dense"), ("dict-trainer-fastcover-opt", "dense"),
+                    ("dict-per-archive-32k", "dense"), ("dict-no-dictionaries", "balanced"),
+                    ("topo-chain-k0", "extreme"), ("topo-chain-k8-w1m", "extreme"), ("topo-restart-n4", "extreme"),
+                    ("topo-bsolid-b4m", "extreme"), ("region-first", "dense"), ("region-joint-complete-cost", "dense")):
+        cands.append({"name": f"{name}-{p}", "params": {"profile": p, "stage_config": name}})
+    command = (f"{XF} plan-cost --item-path {{item_path}} --item-id {{item_id}} --experiment-id EXP-CROSSFILE-007 "
+               "--env-name wsl-ubuntu --profile {profile} --stage-config {stage_config} --no-memo --timers in-process --alloc true")
+    metrics = [
+        pj("encode_cpu_s", "time_cpu", "minimize", "s"),
+        pj("encode_wall_s", "time_wall", "minimize", "s"),
+        pj("similarity_cpu_s", "time_cpu", "minimize", "s"),
+        pj("ordering_cpu_s", "time_cpu", "minimize", "s"),
+        pj("training_cpu_s", "time_cpu", "minimize", "s"),
+        pj("cohort_search_cpu_s", "time_cpu", "minimize", "s"),
+        pj("region_stage_cpu_s", "time_cpu", "minimize", "s"),
+        pj("alloc_peak_bytes", "memory_peak", "minimize", "B"),
+        m("max_rss_bytes", "resource", "memory_peak", "minimize", "B"),
+        m("cpu_s", "resource", "time_cpu", "minimize", "s"),
+        m("wall_s", "resource", "time_wall", "minimize", "s"),
+    ]
+    spec = timing_spec(
+        "EXP-CROSSFILE-007",
+        "What CPU time and planning memory does each cross-file stage candidate add at pack time?",
+        "H1a: LSH/content-defined sampling within the T-05 dense band of sq-bottomk-v1; oracle and unbounded scans > 1 band unit; H1b: training dominates balanced and lookback search dominates extreme; H0: no survivor differs beyond T-05.",
+        ["DEC-CMP-041", "DEC-CMP-006", "DEC-CMP-020", "DEC-CMP-027", "DEC-CMP-039"],
+        cands, command, corpus(TIMING), metrics,
+        {"order": 20260917071, "bootstrap": 20260917072, "command": 20260917073},
+        "sq-bottomk-v1-dense", ["encode_cpu_s", "alloc_peak_bytes", "similarity_cpu_s", "training_cpu_s", "cohort_search_cpu_s"],
+        affinity=[2], loadavg=2.0,
+        notes="WSL st-v; VIRTUALIZED; decision-grade only after section 4.7 calibration and section 14 item 3 runner additions. Survivor candidates are added in spec-survivors.yaml by rule before the campaign.",
+    )
+    write("EXP-CROSSFILE-007", spec)
+    hc = []
+    for method, p in (("sq-bottomk-v1", "balanced"), ("sq-bottomk-v1", "dense"), ("sq-bottomk-v1", "extreme"),
+                      ("minhash-oph128-lsh-b16", "dense"), ("simhash-64-h6", "dense"), ("tlsh-t60", "dense"),
+                      ("nilsimsa-dwarfs", "dense"), ("sf-finesse-3x4", "dense"), ("cds-gear-m8-k16", "dense"),
+                      ("oracle-exact-jaccard", "dense")):
+        for gen in ("shared-shingle", "colliding-bucket"):
+            hc.append({"name": f"hostile-{method}-{p}-{gen}", "params": {"method": method, "profile": p, "generator": gen}})
+    hspec = timing_spec(
+        "EXP-CROSSFILE-007",
+        "Does any similarity or cohort-selection stage show superlinear CPU on adversarial many-similar Chunk sets (objective MVT-06(d))?",
+        "H1c: the 0.99 interval lower bound of the fitted exponent stays <= 1.15 for sq-bottomk-v1 (candidate cap bounds leader comparisons); an uncapped alternative violates it.",
+        ["DEC-CMP-041"],
+        hc,
+        f"{XF} plan-cost --hostile-series {{generator}} --points 10..20 --runs-per-point 3 --method {{method}} --profile {{profile}} --seed 20260917074 --item-id {{item_id}} --experiment-id EXP-CROSSFILE-007 --env-name wsl-ubuntu --timers in-process",
+        {"generated": [{"item_id": "xf007-hostile-anchor", "family": "generated-anchor", "generator": "zeros-v1",
+                        "bytes": 1, "seed": 20260917074, "sha256": ZERO_BYTE_SHA}]},
+        [
+            pj("hostile_cpu_scaling_exponent", "other", "minimize"),
+            pj("hostile_cpu_scaling_exponent_ci99_low", "other", "minimize"),
+            pj("hostile_cpu_scaling_exponent_ci99_high", "other", "minimize"),
+            pj("hostile_cpu_s_at_2e20", "time_cpu", "minimize", "s"),
+            pj("mvt_06d_violation", "correctness", "minimize"),
+        ],
+        {"order": 20260917075, "bootstrap": 20260917076, "command": 20260917074},
+        "hostile-sq-bottomk-v1-dense-shared-shingle", ["hostile_cpu_scaling_exponent", "mvt_06d_violation"],
+        affinity=[2], loadavg=2.0, repetitions=1, warmups=0,
+        notes="Each sample runs the whole 2^10..2^20 series with 3 runs per point in-process (Appendix C.1 complexity bound).",
+    )
+    write("EXP-CROSSFILE-007", hspec, "spec-hostile.yaml")
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-008
+def exp008():
+    configs = ["prod-balanced", "prod-dense", "prod-extreme"] + [f"forced-chain-k{k}-w1m-extreme" for k in (0, 1, 2, 4, 8)] + \
+              [f"forced-cap-group-len{L}-extreme" for L in (4, 8, 16)] + \
+              ["forced-dict-sq-abs128-balanced", "forced-dict-charge-access-k1-balanced", "forced-no-dictionaries-balanced"]
+    cands = [{"name": f"{c}-production", "params": {"config": c, "decoder": "production"}} for c in configs]
+    for c in ("prod-dense", "prod-extreme", "forced-chain-k8-w1m-extreme", "forced-cap-group-len8-extreme"):
+        cands.append({"name": f"{c}-iterative-bounded", "params": {"config": c, "decoder": "iterative-bounded"}})
+    command = (f"{XF} decode-bench --item-id {{item_id}} --experiment-id EXP-CROSSFILE-008 --env-name wsl-ubuntu "
+               "--archive /root/eb-research/scratch/EXP-CROSSFILE-008/{item_id}/{config}.eb --decoder {decoder} --threads 1 "
+               "--reads access-sample-v1,t2 --batch-min 1000 --timers in-process --check-output-identity true")
+    metrics = [
+        pj("first_entry_latency_s", "time_wall", "minimize", "s"),
+        pj("first_entry_unverified_latency_s", "time_wall", "minimize", "s"),
+        pj("random_entry_latency_s_p50", "time_wall", "minimize", "s"),
+        pj("random_entry_latency_s_p95", "time_wall", "minimize", "s"),
+        pj("decode_wall_s", "time_wall", "minimize", "s"),
+        pj("decode_cpu_s", "time_cpu", "minimize", "s"),
+        pj("decode_throughput_bps", "throughput", "maximize", "B/s"),
+        pj("alloc_peak_bytes", "memory_peak", "minimize", "B"),
+        pj("output_identity_ok", "correctness", "maximize"),
+        m("wall_s", "resource", "time_wall", "minimize", "s"),
+    ]
+    spec = timing_spec(
+        "EXP-CROSSFILE-008",
+        "How much first-byte and random-entry latency does each lookback depth, topology and dictionary policy add for a local reader?",
+        "H1a: dependent-member latency grows ~linearly with closure bytes; chained k=8 last members of 128-member groups > 2 T-08 band units slower than k=0; restart/cap variants within 1 band unit of k=1; H1c: dictionaries <= 32 KiB add < 1 band unit; H1d: iterative-bounded decoder non-inferior in latency with lower peak memory; H0: no difference beyond bands.",
+        ["DEC-CMP-027", "DEC-ACC-025", "DEC-CMP-020", "DEC-CMP-014", "DEC-CON-004"],
+        cands, command, corpus(TIMING, LONG_GROUPS), metrics,
+        {"order": 20260917081, "bootstrap": 20260917082, "command": 20260917083},
+        "prod-balanced-production", ["first_entry_latency_s", "random_entry_latency_s_p50", "random_entry_latency_s_p95", "alloc_peak_bytes"],
+        affinity=[2], loadavg=2.0,
+        notes="Archives are prepared by an untimed pass (ebr-crossfile decode-bench --prepare) whose SHA-256 are recorded before the timed run.",
+    )
+    write("EXP-CROSSFILE-008", spec)
+    scands = []
+    for c in ("prod-dense", "prod-extreme", "forced-chain-k0-w1m-extreme", "forced-chain-k1-w1m-extreme",
+              "forced-chain-k4-w1m-extreme", "forced-chain-k8-w1m-extreme", "forced-cap-group-len8-extreme"):
+        for k in (2, 4, 8):
+            scands.append({"name": f"{c}-dag-parallel-k{k}", "params": {"config": c, "k": k}})
+    scommand = (f"{XF} decode-bench --item-id {{item_id}} --experiment-id EXP-CROSSFILE-008 --env-name wsl-ubuntu "
+                "--archive /root/eb-research/scratch/EXP-CROSSFILE-008/{item_id}/{config}.eb --decoder dag-parallel "
+                "--speedup-pair {k} --pin-base-cpu 2 --timers in-process --check-output-identity true")
+    smetrics = [
+        pj("decode_wall_s_n1", "time_wall", "minimize", "s"),
+        pj("decode_wall_s_nk", "time_wall", "minimize", "s"),
+        pj("parallel_speedup", "other", "maximize"),
+        pj("parallel_efficiency", "other", "maximize"),
+        pj("output_identity_ok", "correctness", "maximize"),
+    ]
+    sspec = timing_spec(
+        "EXP-CROSSFILE-008",
+        "How much parallel-decode speedup does the dependency structure forfeit within one core class (mt-v-k versus st-v)?",
+        "H1b: measured parallel_speedup follows the EXP-CROSSFILE-004 work-span bound in rank order; chained groups lose more than the T-14 band against k=0 on cohort-heavy items.",
+        ["DEC-CMP-027"],
+        scands, scommand, corpus(TIMING, LONG_GROUPS), smetrics,
+        {"order": 20260917084, "bootstrap": 20260917085, "command": 20260917086},
+        "prod-dense-dag-parallel-k2", ["parallel_speedup", "parallel_efficiency"],
+        affinity=list(range(2, 10)), loadavg=9.0,
+        notes="Each sample forms the T-14 pair (T(1) pinned to vCPU 2, T(k) pinned to 2..k+1) within the round.",
+    )
+    write("EXP-CROSSFILE-008", sspec, "spec-speedup.yaml")
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-009
+XF009_ITEMS = ["f01-tuning-ripgrep-14-1-1-git", "f01-tuning-zstd-v1-5-7-git", "f03-tuning-fzf-go-mod-vendor",
+               "f04-tuning-sourcelike", "f05-tuning-gutenberg-books", "f05-tuning-logrotate-from-loghub-hdfs",
+               "f06-tuning-census-popest-2023", "f06-tuning-gen-structured-a-small", "f08-tuning-chinook-sqlite",
+               "f18-tuning-lz4-releases-1-9-to-1-10", "f17-tuning-duptree-mixed", "f18-tuning-zstd-releases-1-5-x",
+               "xf009-json-dictionary-tree"]
+FP = f"python3 {REPO_WSL}/research/experiments/EXP-CROSSFILE-009/crossfile_fingerprint.py"
+FP_METRICS = [
+    m("crossfile_physical_sha256", "stdout_json", "correctness", key="crossfile_physical_sha256", kind="string"),
+    m("plans_sha256", "stdout_json", "correctness", key="plans_sha256", kind="string"),
+    m("assignment_sha256", "stdout_json", "correctness", key="assignment_sha256", kind="string"),
+    m("pcr", "stdout_json", "correctness", key="pcr", kind="string"),
+    m("dictionary_count", "stdout_json", "other", key="dictionary_count"),
+    m("dictionary_chunk_count", "stdout_json", "other", key="dictionary_chunk_count"),
+    m("group_count", "stdout_json", "other", key="group_count"),
+    m("grouped_chunk_count", "stdout_json", "other", key="grouped_chunk_count"),
+    m("archive_sha256", "path_sha256", "correctness", path="{scratch}/out.eb"),
+    m("artifact_bytes", "path_size", "size", unit="B", path="{scratch}/out.eb"),
+]
+
+
+def exp009():
+    cands = []
+    for p in ("balanced", "dense", "extreme"):
+        for cell, cpus, lc, tz in (("aff1-c-utc", "2", "C", "UTC"), ("aff8-cutf8-syd", "2-9", "C.UTF-8", "Australia/Sydney"),
+                                   ("affall-c-utc", "0-31", "C", "UTC")):
+            cands.append({"name": f"{p}-{cell}", "params": {"profile": p, "cpus": cpus, "lc": lc, "tz": tz}})
+    command = (f"env LC_ALL={{lc}} TZ={{tz}} taskset -c {{cpus}} {PROD_CLI} pack {{item_path}} {{scratch}}/out.eb --profile {{profile}} >/dev/null "
+               f"&& {FP} --ebound {PROD_CLI} --archive {{scratch}}/out.eb")
+    spec = deterministic(
+        "EXP-CROSSFILE-009",
+        "Are Dictionaries, plans, groups and Chunk assignments byte-identical across repetitions, CPU affinity, locale and time zone on WSL2 ext4 (and, with spec-windows.yaml, across WSL and Windows)?",
+        "H1: one PCI per (input, profile) within the host; identical cross-file fingerprints across hosts wherever PCR is equal. Any mismatch is an HC-13 violation artifact.",
+        ["DEC-CMP-021"], cands, command,
+        {"splits": ["tuning"], "item_ids": XF009_ITEMS, "root": "/root/eb-research/scratch/xf009-inputs"},
+        FP_METRICS, {"order": 20260917092, "bootstrap": 20260917093},
+        "balanced-aff1-c-utc", ["artifact_bytes", "dictionary_count", "grouped_chunk_count"],
+        repetitions=3, requires=[PROD_CLI, "taskset"], timeout=43200,
+        notes="Input root prepared per protocol.md section 5 (cp -a of corpus items plus make_dictionary_tree.py --seed 20260917091 --count 4000).",
+    )
+    write("EXP-CROSSFILE-009", spec)
+    win_cli = "D:/eb-research/target/prod-cli-win/release/ebound.exe"
+    win_fp = "C:/Python313/python.exe D:/Projects/entrybound/entrybound/research/experiments/EXP-CROSSFILE-009/crossfile_fingerprint.py"
+    wc = []
+    for p in ("balanced", "dense", "extreme"):
+        wc.append({"name": f"{p}-os-default", "params": {"profile": p},
+                   "command": f"& {win_cli} pack {{item_path}} {{scratch}}/out.eb --profile {{profile}} | Out-Null; & {win_fp} --ebound {win_cli} --archive {{scratch}}/out.eb"})
+        wc.append({"name": f"{p}-aff1", "params": {"profile": p},
+                   "command": f"(Get-Process -Id $PID).ProcessorAffinity = [IntPtr]4; & {win_cli} pack {{item_path}} {{scratch}}/out.eb --profile {{profile}} | Out-Null; & {win_fp} --ebound {win_cli} --archive {{scratch}}/out.eb"})
+    wspec = deterministic(
+        "EXP-CROSSFILE-009",
+        "Windows 11 NTFS half of the dictionary/group determinism test (compared with the WSL run by compare_hosts.py).",
+        "H1: one PCI per (input, profile) on Windows; cross-file fingerprints equal to WSL wherever PCR is equal.",
+        ["DEC-CMP-021"], wc, None,
+        {"splits": ["tuning"], "item_ids": XF009_ITEMS, "root": "D:/eb-research/xf009-win"},
+        FP_METRICS, {"order": 20260917094, "bootstrap": 20260917095},
+        "balanced-os-default", ["artifact_bytes", "dictionary_count", "grouped_chunk_count"],
+        repetitions=3, requires=[win_cli], timeout=43200,
+    )
+    wspec["shell"] = "pwsh"
+    wspec["platform"] = {"os": ["windows"], "arch": ["x86_64"], "emulated": False, "requires": [win_cli], "timeout_s": 43200}
+    write("EXP-CROSSFILE-009", wspec, "spec-windows.yaml")
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-010
+def exp010():
+    cells = [
+        ("x86-native-1.5.7", "", "zstd-1.5.7"),
+        ("x86-qemu64-1.5.7", "qemu-x86_64 -cpu qemu64 ", "zstd-1.5.7"),
+        ("x86-nehalem-1.5.7", "qemu-x86_64 -cpu Nehalem ", "zstd-1.5.7"),
+        ("x86-haswell-1.5.7", "qemu-x86_64 -cpu Haswell ", "zstd-1.5.7"),
+        ("arm64-qemu-1.5.7", "qemu-aarch64 -L /usr/aarch64-linux-gnu ", "zstd-1.5.7-aarch64"),
+    ] + [(f"x86-native-1.5.{v}", "", f"zstd-1.5.{v}") for v in (0, 2, 4, 5, 6)]
+    cands = []
+    for name, prefix, build in cells:
+        binp = f"/root/eb-research/target/zstd-drift/{build}/release/ebr-crossfile"
+        if build.endswith("aarch64"):
+            binp = f"/root/eb-research/target/zstd-drift/{build}/aarch64-unknown-linux-gnu/release/ebr-crossfile"
+        cands.append({"name": name, "params": {"cell": name},
+                      "command": (f"{prefix}{binp} determinism-cell --vectors /root/eb-research/cache/crossfile/EXP-CROSSFILE-010/vectors "
+                                  "--item-path {item_path} --item-id {item_id} --profiles balanced,dense,extreme "
+                                  "--archive-dir {scratch} --experiment-id EXP-CROSSFILE-010 --env-name wsl-ubuntu")})
+    metrics = [
+        pj("dictionary_vector_set_sha256", "correctness", kind="string"),
+        pj("archive_set_sha256", "correctness", kind="string"),
+        pj("crossfile_physical_set_sha256", "correctness", kind="string"),
+        pj("vectors_trained", "other", unit="count"),
+        pj("artifact_bytes_total", "size", unit="B"),
+    ]
+    spec = deterministic(
+        "EXP-CROSSFILE-010",
+        "Do trained Dictionaries and dictionary-bearing archives stay byte-identical under emulated arm64, restricted x86-64 CPU models, and across libzstd 1.5.x releases?",
+        "H1a: identical across CPU/architecture cells at a fixed libzstd release; H1b: training output differs between at least two 1.5.x releases for at least one vector.",
+        ["DEC-CMP-021"], cands, None,
+        {"splits": ["tuning"], "item_ids": XF009_ITEMS, "root": "/root/eb-research/scratch/xf009-inputs"},
+        metrics, {"order": 20260917101, "bootstrap": 20260917102},
+        "x86-native-1.5.7", ["dictionary_vector_set_sha256", "archive_set_sha256"],
+        repetitions=3, requires=["qemu-x86_64", "qemu-aarch64"], timeout=172800,
+        notes="EMULATED cells are correctness/determinism only. Binaries are research builds under /root/eb-research/target/zstd-drift (protocol.md section 4).",
+    )
+    write("EXP-CROSSFILE-010", spec)
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-011
+def exp011():
+    cli = "/opt/eb-research/target/prod-cli/release/ebound"
+    fp = "python3 /opt/eb-research/repo/research/experiments/EXP-CROSSFILE-009/crossfile_fingerprint.py"
+    cands = []
+    for p in ("balanced", "dense", "extreme"):
+        for cell, lc, tz in (("c-utc", "C", "UTC"), ("cutf8-syd", "C.UTF-8", "Australia/Sydney")):
+            cands.append({"name": f"{p}-{cell}", "params": {"profile": p, "lc": lc, "tz": tz}})
+    command = (f"env LC_ALL={{lc}} TZ={{tz}} {cli} pack {{item_path}} {{scratch}}/out.eb --profile {{profile}} >/dev/null "
+               f"&& {fp} --ebound {cli} --archive {{scratch}}/out.eb")
+    spec = deterministic(
+        "EXP-CROSSFILE-011",
+        "Are dictionary/group-bearing archives byte-identical on native linux/arm64, macOS/arm64 and macOS/x86-64 relative to the x86-64 hosts? (PLATFORM_BLOCKED)",
+        "H1: identical cross-file fingerprints wherever PCR is equal; any difference is an HC-11/HC-13 violation for that platform class.",
+        ["DEC-CMP-021"], cands, command,
+        {"splits": ["tuning"], "item_ids": XF009_ITEMS, "root": "/opt/eb-research/xf011-inputs"},
+        FP_METRICS, {"order": 20260917111, "bootstrap": 20260917112},
+        "balanced-c-utc", ["artifact_bytes", "dictionary_count"], repetitions=3, requires=[cli], timeout=43200,
+        status="blocked-platform",
+        notes="BLOCKED: no native ARM64 or macOS host. Run once per platform when available.",
+    )
+    spec["platform"] = {"os": ["linux", "darwin"], "arch": ["aarch64", "arm64", "x86_64"], "emulated": False,
+                        "requires": [cli], "timeout_s": 43200}
+    write("EXP-CROSSFILE-011", spec)
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-012
+def exp012():
+    extra = sorted([i["item_id"] for i in manifest["items"] if i["split"] == "tuning" and i["scale"] != "large"
+                    and i["family"] == "F12"] + ["f13-tuning-kodak-image-codecs-small"])
+    items = sorted(set(TARGET) | set(extra))
+    cands = []
+    for p in ("dense", "extreme"):
+        for rule in ("sq-cohorts-first-conservative", "region-first", "joint-complete-cost", "split-audit-reasons",
+                     "region-first-split-audit", "joint-split-audit"):
+            cands.append({"name": f"{rule}-{p}", "params": {"profile": p, "rule": rule}})
+    command = (f"{XF} region-conflict --item-path {{item_path}} --item-id {{item_id}} --experiment-id EXP-CROSSFILE-012 "
+               "--env-name wsl-ubuntu --profile {profile} --rule {rule} --archive-out {scratch}/out.eb "
+               "--memo-dir /root/eb-research/cache/crossfile/EXP-CROSSFILE-012/rep{rep} --verify-roundtrip true")
+    metrics = [
+        pj("artifact_bytes", "size", "minimize", "B"),
+        pj("side_data_bytes", "size", "minimize", "B"),
+        pj("regions_selected", "other", unit="count"),
+        pj("regions_suppressed_dedup", "other", unit="count"),
+        pj("regions_suppressed_cohort_dictionary", "other", unit="count"),
+        pj("regions_suppressed_cohort_group", "other", unit="count"),
+        pj("audit_reason_specificity_fraction", "other", "maximize"),
+        pj("audit_reason_consistent", "correctness", "maximize"),
+    ] + CORRECTNESS
+    spec = deterministic(
+        "EXP-CROSSFILE-012",
+        "When a Chunk is eligible for a whole-object JPEG region but shared or assigned to a cohort Dictionary/ChunkGroup, which representation should win, and should audit reasons distinguish the conflicts?",
+        "H1: cohort-driven region suppression is frequent on F12 near-duplicates and joint-complete-cost saves >= 1 T-01 band unit on F12, non-inferior elsewhere; H0: conflicts rare, all rules EQUIVALENT.",
+        ["DEC-CMP-039"], cands, command, corpus(items), metrics,
+        {"order": 20260917121, "bootstrap": 20260917122, "command": 20260917123},
+        "sq-cohorts-first-conservative-dense", ["artifact_bytes", "regions_selected", "regions_suppressed_cohort_dictionary"],
+    )
+    write("EXP-CROSSFILE-012", spec)
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-013
+def exp013():
+    ec = f"python3 {REPO_WSL}/research/experiments/EXP-CROSSFILE-013/export_case.py"
+    cands = []
+    for src, profile, layout in (("fast", "fast", "indexed"), ("balanced", "balanced", "indexed"), ("dense", "dense", "indexed"),
+                                 ("extreme", "extreme", "indexed"), ("balanced-stream-auto", "balanced", "stream")):
+        for target in ("tar", "zip", "tar.zst"):
+            cands.append({"name": f"{src}-to-{target.replace('.', '')}", "params": {"profile": profile, "layout": layout, "target": target}})
+    command = (f"{ec} --ebound {PROD_CLI} --item-path {{item_path}} --scratch {{scratch}}/case --profile {{profile}} "
+               "--layout {layout} --target {target}")
+    metrics = [
+        m("export_sha256", "stdout_json", "correctness", key="export_sha256", kind="string"),
+        m("outcome", "stdout_json", "correctness", key="outcome", kind="string"),
+        m("issues_sha256", "stdout_json", "correctness", key="issues_sha256", kind="string"),
+        m("receipt_sha256", "stdout_json", "correctness", key="receipt_sha256", kind="string"),
+        m("source_group_count", "stdout_json", "other", key="source_group_count"),
+        m("source_grouped_chunks", "stdout_json", "other", key="source_grouped_chunks"),
+        m("source_dictionary_chunks", "stdout_json", "other", key="source_dictionary_chunks"),
+        m("export_bytes", "stdout_json", "size", unit="B", key="export_bytes"),
+        m("source_bytes", "stdout_json", "size", unit="B", key="source_bytes"),
+        m("input_bytes", "input", "size", unit="B"),
+    ]
+    spec = deterministic(
+        "EXP-CROSSFILE-013",
+        "Do physical-only differences of the native source (profile, codecs, Dictionaries, ChunkGroups, layout) ever change legacy export bytes, outcome class or issues?",
+        "H1: export_sha256, outcome and issues_sha256 identical across every source configuration per (item, target); any difference is an HC-13 MVT-13(d) violation.",
+        ["DEC-LEG-016"], cands, command, corpus(TARGET), metrics,
+        {"order": 20260917131, "bootstrap": 20260917132},
+        "balanced-to-tar", ["export_bytes", "source_group_count", "source_dictionary_chunks"],
+        requires=[PROD_CLI], timeout=43200,
+    )
+    write("EXP-CROSSFILE-013", spec)
+
+
+# ------------------------------------------------------------------ EXP-CROSSFILE-014
+def exp014():
+    cz = f"python3 {REPO_WSL}/research/experiments/EXP-CROSSFILE-014/zstd_dictid_census.py"
+    metrics = [m(n, "stdout_json", "other", key=n) for n in (
+        "zstd_frames", "zstd_frames_with_dictid", "zstd_members", "zstd_members_with_dictid", "distinct_dictids",
+        "skippable_frames", "unscanned_members", "decode_errors")]
+    metrics.append(m("census_sha256", "stdout_json", "correctness", key="census_sha256", kind="string"))
+    spec = deterministic(
+        "EXP-CROSSFILE-014",
+        "How common are Zstandard frames that declare a Dictionary_ID among real corpus artifacts?",
+        "H1: dictionary-dependent frames are absent or below 0.1% of zstd frames in every family; H0: >= 1% in at least one family.",
+        ["DEC-LEG-106"], [{"name": "census-v1", "params": {"depth": 4}}],
+        f"{cz} --item-path {{item_path}} --item-id {{item_id}} --max-depth {{depth}} --member-bound-bytes 268435456",
+        {"splits": ["tuning"], "manifest": MANIFEST_REL}, metrics,
+        {"order": 20260917141, "bootstrap": 20260917142},
+        "census-v1", ["zstd_frames", "zstd_frames_with_dictid"], requires=["zstd"], timeout=21600,
+    )
+    write("EXP-CROSSFILE-014", spec)
+
+
+if __name__ == "__main__":
+    for fn in (exp001, exp002, exp003, exp004, exp005, exp006, exp007, exp008, exp009, exp010, exp011, exp012, exp013, exp014):
+        fn()
+    print("ok")
