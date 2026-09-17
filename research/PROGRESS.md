@@ -177,3 +177,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T00:48Z — STORAGE INCIDENT: C: at 0.38 GB free. Stopped A3/B1d, moved Docker data disk to D: (C: now 30.8 GB free); WSL service hung, distro move to D:\WSL\Ubuntu awaits owner WSL service restart. Added research/orchestration/disk_guard.py.
 - 2026-09-17T02:09Z — Storage incident RESOLVED: Ubuntu distro at D:\WSL\Ubuntu (sparse), Docker disks at D:\Docker\wsl; C: 375 GB free; disk_guard passes (C>=25, D>=75 GB). Docker Desktop startup BLOCKED by pre-existing AF_UNIX socket error 1920 (also seen 2026-09-05); Docker-dependent steps deferred.
 - 2026-09-17T02:09Z — WIP: interrupted method revision preserved (archetypal-objective.md, decision-method.md, method-review-round1.md, thresholds.json); pre-registration commit still pending.
+- 2026-09-17T02:10Z — Added research/orchestration/disk_alarm.py (C: < 50 GB, D: < 100 GB alarms), armed during workflows.
