@@ -1,18 +1,34 @@
-//! Research-only alternative content-defined chunking (CDC).
+//! Buzhash CDC: a cyclic-polynomial rolling hash over a fixed-size window,
+//! cut when the low bits of the hash are zero.
 //!
-//! This is a Buzhash-windowed rolling hash: XOR-rotate over a fixed-size
-//! sliding window, cut when the low bits of the hash are zero. It is a
-//! different construction from production `gear-norm-v1`
-//! (`entrybound::chunker`, a *gear* hash: shift-and-add over the whole
-//! preceding run, not a fixed window) -- deliberately not a copy of it, and
-//! not wired into any production code path. Its only purpose is to give
-//! [`crate::compare`] something else to measure against.
+//! Broder, A. Z. (1993). *Some Applications of Rabin's Fingerprinting
+//! Method.* Buzhash is the cyclic-polynomial rolling hash construction
+//! described there (rotate-and-XOR rather than Rabin's polynomial-ring
+//! reduction, see [`super::rabin`] for that one); it is the rolling hash
+//! several real backup/dedup tools use for CDC (e.g. borg/attic-style
+//! chunkers).
 //!
-//! Buzhash construction (see e.g. Broder 1993; used by borg/attic-style
-//! backup tools): maintain `H`, and for each byte entering a full window,
-//! `H = rol(H, 1) XOR table[byte_in] XOR rol(table[byte_out], window)`. A cut
-//! point is any position where `H & mask == 0`, clamped to `[min_size,
-//! max_size]`.
+//! **Construction.** For each byte entering a full window: `H = rol(H, 1)
+//! XOR TABLE[byte_in] XOR rol(TABLE[byte_out], window)`. A cut point is any
+//! position where `H & mask == 0`, clamped to `[min_size, max_size]`. The
+//! `rol(TABLE[byte_out], window)` term is exact (not approximate) for
+//! `window` up to and including 64: `u64::rotate_left` computes its shift
+//! amount modulo the bit width, which is precisely the rotation `byte_out`'s
+//! original contribution has accumulated after `window` further rotations.
+//!
+//! This module's `TABLE` is a fixed pseudo-random table, distinct from
+//! `entrybound::chunker`'s `GEAR_TABLE` (different seed, different mixing,
+//! and a different kind of table -- Buzhash needs values that mix well
+//! *under rotation*, Gear hash needs values that mix well under
+//! shift-and-add). Not wired into any production code path.
+
+use super::{ChunkRange, pow2_mask_for_target};
+use entrybound::chunker::ChunkingParameters;
+
+/// Default window width in bytes (64, per this crate's brief -- the widest a
+/// single rotation position can be while every byte in the window still
+/// maps to a distinct rotation amount in a 64-bit word).
+pub const DEFAULT_WINDOW: usize = 64;
 
 /// A fixed pseudo-random table, distinct from `entrybound::chunker`'s
 /// `GEAR_TABLE` (different seed, different mixing -- see [`build_table`]).
@@ -39,73 +55,46 @@ const fn build_table() -> [u64; 256] {
     table
 }
 
-/// Parameters for [`chunk_ranges`]. Unlike `entrybound::chunker`'s frozen
-/// presets, these are freely chosen so small test inputs can exercise real
-/// cut points.
 #[derive(Debug, Clone, Copy)]
-pub struct BuzhashParameters {
-    /// Sliding window width in bytes. Must be `< 64` (see [`chunk_ranges`]).
-    pub window: usize,
+pub struct Params {
     pub min_size: usize,
-    /// Target mean chunk size; the cut mask is the next power of two below
-    /// this (so the true mean is a power of two near, not exactly,
-    /// `target_size`).
     pub target_size: usize,
     pub max_size: usize,
+    /// Sliding window width in bytes. Must be in `1..=64` (see
+    /// [`chunk_ranges`]).
+    pub window: usize,
 }
 
-impl BuzhashParameters {
-    /// Mirrors an `entrybound::chunker::ChunkingParameters` preset's
-    /// min/target/max at a fixed 48-byte window, so [`crate::compare`] can
-    /// run both chunkers with matching size targets.
+impl Params {
     #[must_use]
-    pub fn matching(production: entrybound::chunker::ChunkingParameters) -> Self {
-        BuzhashParameters {
-            window: 48,
-            min_size: production.minimum_size,
-            target_size: production.target_size,
-            max_size: production.maximum_size,
+    pub fn from_profile(profile: ChunkingParameters, window: usize) -> Self {
+        Params {
+            min_size: profile.minimum_size,
+            target_size: profile.target_size,
+            max_size: profile.maximum_size,
+            window,
         }
     }
-}
-
-/// A complete, non-overlapping plaintext range (mirrors
-/// `entrybound::chunker::ChunkRange`'s shape without depending on it).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ChunkRange {
-    pub start: usize,
-    pub end: usize,
-}
-
-impl ChunkRange {
-    #[must_use]
-    pub const fn len(self) -> usize {
-        self.end - self.start
-    }
 
     #[must_use]
-    pub const fn is_empty(self) -> bool {
-        self.start == self.end
+    pub fn algorithm_id(&self) -> String {
+        format!(
+            "buzhash-cdc-v1/min-{}/target-{}/max-{}/window-{}",
+            self.min_size, self.target_size, self.max_size, self.window
+        )
     }
-}
-
-fn mask_for_target(target_size: usize) -> u64 {
-    // The largest power of two <= target_size, minus one: an average chunk
-    // size of that power of two under a uniform-hash assumption.
-    let clamped = target_size.max(2);
-    let bits = usize::BITS - clamped.leading_zeros() - 1;
-    (1u64 << bits) - 1
 }
 
 /// Finds Buzhash CDC ranges. Empty input has no ranges, matching
 /// `entrybound::chunker::chunk_ranges`'s convention. Panics if
-/// `params.window >= 64` (u64 rotation is only meaningful below the type's
-/// bit width) or `params.min_size == 0`.
+/// `params.window` is 0 or greater than 64 (beyond 64, distinct bytes in the
+/// window would alias to the same rotation amount in a 64-bit word) or
+/// `params.min_size == 0`.
 #[must_use]
-pub fn chunk_ranges(data: &[u8], params: &BuzhashParameters) -> Vec<ChunkRange> {
+pub fn chunk_ranges(data: &[u8], params: &Params) -> Vec<ChunkRange> {
     assert!(
-        params.window < 64,
-        "buzhash window must be < 64, got {}",
+        params.window >= 1 && params.window <= 64,
+        "buzhash window must be in 1..=64, got {}",
         params.window
     );
     assert!(params.min_size > 0, "min_size must be nonzero");
@@ -113,7 +102,7 @@ pub fn chunk_ranges(data: &[u8], params: &BuzhashParameters) -> Vec<ChunkRange> 
         return Vec::new();
     }
 
-    let mask = mask_for_target(params.target_size);
+    let mask = pow2_mask_for_target(params.target_size);
     let mut ranges = Vec::new();
     let mut start = 0usize;
     let mut hash: u64 = 0;
@@ -144,13 +133,14 @@ pub fn chunk_ranges(data: &[u8], params: &BuzhashParameters) -> Vec<ChunkRange> 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::algorithms::assert_valid_ranges;
 
-    fn params(min: usize, target: usize, max: usize) -> BuzhashParameters {
-        BuzhashParameters {
-            window: 16,
+    fn params(min: usize, target: usize, max: usize, window: usize) -> Params {
+        Params {
             min_size: min,
             target_size: target,
             max_size: max,
+            window,
         }
     }
 
@@ -168,31 +158,24 @@ mod tests {
 
     #[test]
     fn empty_input_has_no_ranges() {
-        assert!(chunk_ranges(&[], &params(4, 16, 64)).is_empty());
+        assert!(chunk_ranges(&[], &params(4, 16, 64, 16)).is_empty());
     }
 
     #[test]
-    fn ranges_are_contiguous_nonoverlapping_and_cover_the_input() {
-        let data = pseudo_random_bytes(20_000, 1);
-        let ranges = chunk_ranges(&data, &params(64, 512, 4096));
-        assert!(!ranges.is_empty());
-        assert_eq!(ranges[0].start, 0);
-        assert_eq!(ranges.last().unwrap().end, data.len());
-        for window in ranges.windows(2) {
-            assert_eq!(window[0].end, window[1].start);
-        }
-        for r in &ranges {
-            assert!(r.len() >= 64, "chunk shorter than min_size: {r:?}");
-            assert!(r.len() <= 4096, "chunk longer than max_size: {r:?}");
-        }
-    }
-
-    #[test]
-    fn chunking_is_deterministic() {
-        let data = pseudo_random_bytes(50_000, 7);
-        let a = chunk_ranges(&data, &params(64, 1024, 8192));
-        let b = chunk_ranges(&data, &params(64, 1024, 8192));
+    fn ranges_are_valid_and_deterministic() {
+        let data = pseudo_random_bytes(60_000, 1);
+        let p = params(64, 512, 4096, 64);
+        let a = chunk_ranges(&data, &p);
+        let b = chunk_ranges(&data, &p);
         assert_eq!(a, b);
+        assert_valid_ranges(data.len(), &a, p.min_size, p.max_size);
+    }
+
+    #[test]
+    #[should_panic(expected = "window must be in 1..=64")]
+    fn rejects_a_window_wider_than_64() {
+        let data = pseudo_random_bytes(1_000, 1);
+        let _ = chunk_ranges(&data, &params(4, 16, 64, 65));
     }
 
     /// The property that actually distinguishes CDC from fixed-size
@@ -205,10 +188,11 @@ mod tests {
         let mut data = pseudo_random_bytes(200_000, 42);
         let insert_at = 5_000;
         let insertion = pseudo_random_bytes(37, 99);
+        let p = params(256, 4096, 32_768, 64);
 
-        let original = chunk_ranges(&data, &params(256, 4096, 32_768));
+        let original = chunk_ranges(&data, &p);
         data.splice(insert_at..insert_at, insertion.iter().copied());
-        let modified = chunk_ranges(&data, &params(256, 4096, 32_768));
+        let modified = chunk_ranges(&data, &p);
 
         let shifted_original: std::collections::HashSet<usize> =
             original.iter().map(|r| r.end + insertion.len()).collect();

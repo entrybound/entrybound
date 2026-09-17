@@ -15,6 +15,14 @@ serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
 entrybound = { path = "../../../../crates/entrybound", features = ["research-internals"] }
 
+# Reference implementation ONLY, used exclusively by
+# src/algorithms/fastcdc2016.rs and src/algorithms/fastcdc2020.rs's
+# `#[cfg(test)]` modules to cross-check this crate's own FastCDC port
+# against an independent, maintained implementation. Never imported outside
+# `#[cfg(test)]`.
+[dev-dependencies]
+fastcdc = "=4.0.1"
+
 [[bin]]
 name = "ebr-chunk"
 path = "src/main.rs"
