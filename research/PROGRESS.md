@@ -200,3 +200,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T03:32Z — Phase B1 baselines: configs.json + tool-versions.json (14 incumbent families), run_baselines.py/EXP-BASE-SIZE size+determinism pass (140/2240 small-scale samples this session, all rep=0), capability-matrix.csv (283 rows, incl. Entrybound probed via a fresh dev-HEAD build). Flagged (not fixed): ebr/corpus.py backslash-path bug (task_bb8ca4e8).
 - 2026-09-17T03:34Z — Corpus WIP: late fix outputs committed (4 F05 items' fingerprints/pins, 11 stats files); corpus assembly round 1 still incomplete (manifest not regenerated).
 - 2026-09-17T03:34Z — Launched detached EXP-BASE-SIZE size pass (small tier + medium sample) via research/baselines/run_size_pass.sh; log /root/eb-research/logs/baselines/size-pass.log.
+- 2026-09-17T03:37Z — Watcher now quiet (failures/disk/markers only) to cut orchestrator usage; watching B2r and size-pass markers.

@@ -35,6 +35,10 @@ def read_entries(path):
 
 
 DISK_LIMITS_GB = {"C:\\": 50.0, "D:\\": 100.0}
+# EB_WATCH_QUIET=1 reports only failures, empty results, and disk alarms; workflow
+# completion already arrives as its own notification, so per-agent DONE lines are noise
+# that costs orchestrator turns.
+QUIET = os.environ.get("EB_WATCH_QUIET") == "1"
 
 
 def check_disks(warned):
@@ -51,8 +55,17 @@ def check_disks(warned):
             warned.discard(drive)
 
 
+def check_markers(seen_markers):
+    """Report completion-marker files (EB_WATCH_MARKERS, ';'-separated paths) once when they appear."""
+    for path in filter(None, os.environ.get("EB_WATCH_MARKERS", "").split(";")):
+        if path not in seen_markers and os.path.exists(path):
+            print(f"MARKER {path}", flush=True)
+            seen_markers.add(path)
+
+
 def main(dirs):
     warned = set()
+    seen_markers = set()
     seen = {}
     for directory in dirs:
         seen[directory] = len(read_entries(os.path.join(directory, "journal.jsonl")))
@@ -69,11 +82,13 @@ def main(dirs):
                 if kind == "result":
                     label = labels.get(entry.get("agentId"), entry.get("agentId"))
                     ok = "null" if entry.get("result") is None else "ok"
-                    print(f"DONE {run} {label} {ok}", flush=True)
+                    if not QUIET or ok == "null":
+                        print(f"DONE {run} {label} {ok}", flush=True)
                 elif kind not in ("started", "launched"):
                     print(f"EVENT {run} {kind}", flush=True)
             seen[directory] = len(entries)
         check_disks(warned)
+        check_markers(seen_markers)
         time.sleep(POLL_SECONDS)
 
 
