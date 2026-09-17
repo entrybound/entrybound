@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f11-fedora-44-large-rpm-set",
+  "inputs": {},
+  "output": {
+    "materialization_key": "0d76bf3e7d30b574653ed2dedfbbd469e82f2c0772da3b965a3241e48cbad0a4",
+    "logical_tree_sha256": "affcbdb78f308593470c0e9ca15f42f8d6130a816bab1439d721817f0b9ffdaf",
+    "pinned_utc": "2026-09-17T08:28:28Z"
+  },
+  "history": []
+}

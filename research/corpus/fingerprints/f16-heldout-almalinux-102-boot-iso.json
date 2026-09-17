@@ -1,0 +1,79 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f16-heldout-almalinux-102-boot-iso",
+  "family": "F16",
+  "split": "heldout",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "almalinux",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "2002f97545623955105947b227489d1639a9f5a1698bd348bbe16229520f6170",
+  "materialization_key": "bfced9e7ab83936fdd7f6744d73185130e1be545d78be10ea0c6f9a2ce45c454",
+  "materialized_utc": "2026-09-17T08:27:22Z",
+  "materialized_relpath": "heldout/f16-heldout-almalinux-102-boot-iso",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "968353e9c5b42fabaef75b08f136d96843d744c0bbce5b6323a30cae337a5d0e",
+    "pinned_utc": "2026-09-17T08:27:22Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 1056202752,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "iso",
+        "url": "https://repo.almalinux.org/almalinux/10/isos/x86_64/AlmaLinux-10.2-x86_64-boot.iso",
+        "final_url": "https://repo.almalinux.org/almalinux/10/isos/x86_64/AlmaLinux-10.2-x86_64-boot.iso",
+        "sha256": "b3f865468075bcada8f208d830289302c67529789d668041d24e8d6fc697ba6a",
+        "size": 1056202752,
+        "retrieved_utc": "2026-09-17T08:27:19Z",
+        "retrieval_date": "2026-09-17",
+        "pin": "declared",
+        "filename": "AlmaLinux-10.2-x86_64-boot.iso"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "iso"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c4f76238b6d31b1076c93dead92e464c2cd21e7a171dea1c82928f9cd10e8601",
+    "logical_tree_sha256": "968353e9c5b42fabaef75b08f136d96843d744c0bbce5b6323a30cae337a5d0e",
+    "content_tree_sha256": "4cfc889ad1625647995a4300b750c2964d9f6d22d0d026b7d7065d0dd126ef2c",
+    "extended_tree_sha256": "5dd42c6254d5c6db1e1efb222287bf82cae5107ded4e44d21eb31b1a4d286fdd",
+    "bytes": 1056202752,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

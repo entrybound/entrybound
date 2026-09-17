@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-debian-13-netinst-iso",
+  "inputs": {},
+  "output": {
+    "materialization_key": "4d52070f01bad92a8d0451c3888d1839fc24603dfcdf5b307cdb732ae4eaf672",
+    "logical_tree_sha256": "0e8ca6d863235d44adc4eaf83c7eb51a588ec20fb55a4fe4a8f918d7fce944e8",
+    "pinned_utc": "2026-09-17T08:27:18Z"
+  },
+  "history": []
+}

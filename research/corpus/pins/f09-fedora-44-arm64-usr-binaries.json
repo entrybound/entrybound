@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f09-fedora-44-arm64-usr-binaries",
+  "inputs": {},
+  "output": {
+    "materialization_key": "4cbca60af78717230342edb5a2312c38e796c3a3fe34ca98da86159c07323200",
+    "logical_tree_sha256": "5d2346e71d06909a64f87c49f6c4e884f184db21597d8f22cce76174417fe28b",
+    "pinned_utc": "2026-09-17T08:26:19Z"
+  },
+  "history": []
+}

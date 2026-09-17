@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-alpine-3241-minirootfs-ext4-vhdx",
+  "inputs": {},
+  "output": {
+    "materialization_key": "afdd6349ba8867917a8a4d2626872a5f6605924e52f06af7c6a94546f6096895",
+    "logical_tree_sha256": "279f8ad92419496abb1c8a966ac5637c13e817fe85ef0dab872e37a356690cf6",
+    "pinned_utc": "2026-09-17T08:36:04Z"
+  },
+  "history": []
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-heldout-oci-almalinux-10-whiteout-derive",
+  "inputs": {},
+  "output": {
+    "materialization_key": "a9756e3c600871e94b5288638e9b95af0c6b4951251bf7b25d692e4fa57e0abe",
+    "logical_tree_sha256": "01b92acf3d225bfbc28a84556d08975e619fbcf03a228f8119f4c90b13cc1b97",
+    "pinned_utc": "2026-09-17T08:33:31Z"
+  },
+  "history": []
+}

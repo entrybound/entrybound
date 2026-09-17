@@ -1,0 +1,99 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f16-alpine-3241-minirootfs-ext4-vhdx",
+  "family": "F16",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "derive",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "alpine-linux",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "4e64f02b936be28c7377534f623f6a1937af047fd1ef7887dc924757ee942c29",
+  "materialization_key": "afdd6349ba8867917a8a4d2626872a5f6605924e52f06af7c6a94546f6096895",
+  "materialized_utc": "2026-09-17T08:36:04Z",
+  "materialized_relpath": "corpus/tuning/f16-alpine-3241-minirootfs-ext4-vhdx",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "279f8ad92419496abb1c8a966ac5637c13e817fe85ef0dab872e37a356690cf6",
+    "pinned_utc": "2026-09-17T08:36:04Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 41943291,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "from_items": [
+      {
+        "item_id": "f16-alpine-3241-minirootfs-ext4-raw",
+        "logical_tree_sha256": "65bcc17d5553bd76e93d6b71755c1acecc24a97bb9c321d5a005cf95eca87d94"
+      }
+    ],
+    "steps": [],
+    "generator": {
+      "script": "research/corpus/generators/g4-binary/convert_image.sh",
+      "script_sha256": "f055bbc0b98d7e90a8574a0cee26027083016831f62eca0900c58c317b57c782",
+      "interpreter": "bash",
+      "interpreter_path": "/bin/bash",
+      "seed": 0,
+      "params": {
+        "from_item": "f16-alpine-3241-minirootfs-ext4-raw",
+        "src": "alpine-3.24.1-x86_64-ext4.img",
+        "src_format": "raw",
+        "dst": "alpine-3.24.1-x86_64-ext4.vhdx",
+        "dst_format": "vhdx",
+        "options": "subformat=dynamic"
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "ddf90c0be05fabdf5641d79a4c34861a0e7c3f0ad4de0082b4e3a351c59e030f",
+    "logical_tree_sha256": "279f8ad92419496abb1c8a966ac5637c13e817fe85ef0dab872e37a356690cf6",
+    "content_tree_sha256": "5c1a14ca1d5a8c8e215561272d8022f00aa4f0419bd1bb5d95c3051827e50e3b",
+    "extended_tree_sha256": "982bdb8a4096eb5de409382910a7af377b62e24c13381ef0caaa52cd1b6798ab",
+    "bytes": 41943291,
+    "bytes_all_paths": 41943291,
+    "allocated_bytes": 9457664,
+    "counts": {
+      "objects": 3,
+      "files": 2,
+      "unique_file_inodes": 2,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 30,
+      "path_length_bytes": {
+        "min": 15,
+        "max": 30,
+        "mean": 22.5,
+        "p50": 15,
+        "p95": 30
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

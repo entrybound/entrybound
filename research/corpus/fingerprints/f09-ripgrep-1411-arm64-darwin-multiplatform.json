@@ -1,0 +1,116 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f09-ripgrep-1411-arm64-darwin-multiplatform",
+  "family": "F09",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "ripgrep",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "c56d323284e98ea48a495258c5573a29ace897c6126ecca6e5980a15804d2c02",
+  "materialization_key": "5fd79a0179cb60d4def59f8422d30d1660997ef948ff5d4f7b705604feb94688",
+  "materialized_utc": "2026-09-17T08:26:13Z",
+  "materialized_relpath": "corpus/tuning/f09-ripgrep-1411-arm64-darwin-multiplatform",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "8293ad10d6fc92d3d93d957b216275efda789d6f27fd44679fa0dee6c1238d5d",
+    "pinned_utc": "2026-09-17T08:26:13Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 10336322,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "ripgrep-14-1-1-aarch64-unknown-linux-gnu-tar-gz",
+        "url": "https://github.com/BurntSushi/ripgrep/releases/download/14.1.1/ripgrep-14.1.1-aarch64-unknown-linux-gnu.tar.gz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/53631945/8e840155-9eef-4913-86af-543147ed1ff3?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T09%3A13%3A38Z&rscd=attachment%3B+filename%3Dripgrep-14.1.1-aarch64-unknown-linux-gnu.tar.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-17T08%3A12%3A53Z&ske=2026-09-17T09%3A13%3A38Z&sks=b&skv=2018-11-09&sig=5VocpY09MNGgHTJPcSZxhrMjEgSzW4SroXQ9zpStioA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYzMzg3NCwibmJmIjoxNzg5NjMzNTc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.ZfmxiPuaIMvFvmMKQOqaAMc99eRk_N6RvPUnHOHLIrQ&response-content-disposition=attachment%3B%20filename%3Dripgrep-14.1.1-aarch64-unknown-linux-gnu.tar.gz&response-content-type=application%2Foctet-stream",
+        "sha256": "c827481c4ff4ea10c9dc7a4022c8de5db34a5737cb74484d62eb94a95841ab2f",
+        "size": 2047405,
+        "retrieved_utc": "2026-09-17T08:26:13Z",
+        "retrieval_date": "2026-09-17",
+        "pin": "tofu-first-retrieval",
+        "filename": "ripgrep-14.1.1-aarch64-unknown-linux-gnu.tar.gz"
+      },
+      {
+        "name": "ripgrep-14-1-1-aarch64-apple-darwin-tar-gz",
+        "url": "https://github.com/BurntSushi/ripgrep/releases/download/14.1.1/ripgrep-14.1.1-aarch64-apple-darwin.tar.gz",
+        "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/53631945/6de10f11-dc22-45b7-a403-56b605ac5e85?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-17T09%3A13%3A53Z&rscd=attachment%3B+filename%3Dripgrep-14.1.1-aarch64-apple-darwin.tar.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-17T08%3A13%3A13Z&ske=2026-09-17T09%3A13%3A53Z&sks=b&skv=2018-11-09&sig=F4rioAf59FpLfIOqR2WAF0qAZJrZaV3ivY%2FGSzxeER4%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4OTYzMzg3NCwibmJmIjoxNzg5NjMzNTc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.ZfmxiPuaIMvFvmMKQOqaAMc99eRk_N6RvPUnHOHLIrQ&response-content-disposition=attachment%3B%20filename%3Dripgrep-14.1.1-aarch64-apple-darwin.tar.gz&response-content-type=application%2Foctet-stream",
+        "sha256": "24ad76777745fbff131c8fbc466742b011f925bfa4fffa2ded6def23b5b937be",
+        "size": 1787248,
+        "retrieved_utc": "2026-09-17T08:26:13Z",
+        "retrieval_date": "2026-09-17",
+        "pin": "tofu-first-retrieval",
+        "filename": "ripgrep-14.1.1-aarch64-apple-darwin.tar.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "extract",
+        "input": "ripgrep-14-1-1-aarch64-unknown-linux-gnu-tar-gz",
+        "format": "tar",
+        "dest": "aarch64-unknown-linux-gnu"
+      },
+      {
+        "op": "extract",
+        "input": "ripgrep-14-1-1-aarch64-apple-darwin-tar-gz",
+        "format": "tar",
+        "dest": "aarch64-apple-darwin"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tar": "tar (GNU tar) 1.35",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "c051b4ab01e74e70c86fe36cadf90b27a9c2037cc1af414c1e9ed68513e12c7b",
+    "logical_tree_sha256": "8293ad10d6fc92d3d93d957b216275efda789d6f27fd44679fa0dee6c1238d5d",
+    "content_tree_sha256": "627ab7239f8bd9726fc9ed8cf2b2f0b534b94a462a6152314fbd60d8aeadfce7",
+    "extended_tree_sha256": "b4df6456e2ffb2d427e2459703ff0a6d2639d567983a787dcb665baf7f13a642",
+    "bytes": 10336322,
+    "bytes_all_paths": 10336322,
+    "allocated_bytes": 10407936,
+    "counts": {
+      "objects": 35,
+      "files": 26,
+      "unique_file_inodes": 26,
+      "dirs": 8,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 4,
+      "max_name_length_bytes": 40,
+      "path_length_bytes": {
+        "min": 20,
+        "max": 83,
+        "mean": 68.735,
+        "p50": 70,
+        "p95": 83
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

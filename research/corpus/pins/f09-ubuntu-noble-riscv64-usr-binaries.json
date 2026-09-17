@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f09-ubuntu-noble-riscv64-usr-binaries",
+  "inputs": {},
+  "output": {
+    "materialization_key": "445412138c55b34dfa4a22aacda551f1529ddedbe8fc2323da9334ef0272b2bf",
+    "logical_tree_sha256": "92b2c14c8e33914afa3487f834b36b81f887e2112a68cf328c527fd96f573da9",
+    "pinned_utc": "2026-09-17T08:26:25Z"
+  },
+  "history": []
+}

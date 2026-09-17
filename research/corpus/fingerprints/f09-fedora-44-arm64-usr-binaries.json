@@ -1,0 +1,128 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f09-fedora-44-arm64-usr-binaries",
+  "family": "F09",
+  "split": "validation",
+  "scale": "medium",
+  "kind": "build",
+  "real_or_generated": "real",
+  "independence_group": "fedora",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "7332c1591a4a54ae0d8537a36e74cdf501c0d14e05184eb55de0350aa6112d6f",
+  "materialization_key": "4cbca60af78717230342edb5a2312c38e796c3a3fe34ca98da86159c07323200",
+  "materialized_utc": "2026-09-17T08:26:19Z",
+  "materialized_relpath": "corpus/validation/f09-fedora-44-arm64-usr-binaries",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "5d2346e71d06909a64f87c49f6c4e884f184db21597d8f22cce76174417fe28b",
+    "pinned_utc": "2026-09-17T08:26:19Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 117997421,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/oci_arch_export.py",
+        "interpreter": "python",
+        "seed": 0,
+        "params": {
+          "repo": "fedora",
+          "platform": "linux/arm64",
+          "manifest_digest": "sha256:e402cca673711fee025f9ce21c6c08b1bd25ee26b3c482119c8675fbaaedbc85"
+        }
+      }
+    ],
+    "generator": {
+      "script": "research/corpus/generators/g4-binary/prune_tree.py",
+      "script_sha256": "71eb5132ec883b935f6f8c819902172c46446ca8a71d04a92099bbb1f2574b5b",
+      "interpreter": "python",
+      "interpreter_path": "/root/eb-research/venv/bin/python",
+      "seed": 0,
+      "params": {
+        "keep": [
+          "bin",
+          "sbin",
+          "lib",
+          "lib64",
+          "usr/bin",
+          "usr/sbin",
+          "usr/lib",
+          "usr/lib64",
+          "usr/libexec"
+        ],
+        "require": [
+          "usr/bin",
+          "usr/lib64"
+        ]
+      }
+    },
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g4-binary/oci_arch_export.py",
+        "script_sha256": "dce22e11a0f538051a9e86c39855d8b627771fb9aa73ba6b1df8a9bfc2ad592d",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "repo": "fedora",
+          "platform": "linux/arm64",
+          "manifest_digest": "sha256:e402cca673711fee025f9ce21c6c08b1bd25ee26b3c482119c8675fbaaedbc85"
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "bab906b2fefed0fe77848e3bd3d54c1ec092419a9e08e2fb2de8c4d206d78a42",
+    "logical_tree_sha256": "5d2346e71d06909a64f87c49f6c4e884f184db21597d8f22cce76174417fe28b",
+    "content_tree_sha256": "b7a7afba127f26a63888d9440156de4524245fd7014d4566f6376baf779318b6",
+    "extended_tree_sha256": "e9a5709a99aba233fb73324610c35b86fd459130a1e87138cd1ba797223298a6",
+    "bytes": 117997421,
+    "bytes_all_paths": 118160503,
+    "allocated_bytes": 119361536,
+    "counts": {
+      "objects": 1867,
+      "files": 744,
+      "unique_file_inodes": 732,
+      "dirs": 392,
+      "symlinks": 730,
+      "hardlink_groups": 6,
+      "hardlink_extra_paths": 12,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 6,
+      "max_name_length_bytes": 40,
+      "path_length_bytes": {
+        "min": 3,
+        "max": 82,
+        "mean": 34.212,
+        "p50": 29,
+        "p95": 59
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

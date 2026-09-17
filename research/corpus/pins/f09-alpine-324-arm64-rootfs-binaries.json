@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f09-alpine-324-arm64-rootfs-binaries",
+  "inputs": {},
+  "output": {
+    "materialization_key": "ee4ae27c22d045d2bf98e334f17b24658c50c6a2f59c8396dac8c8f2e25efdb2",
+    "logical_tree_sha256": "b45043380a0614f397fccb28022f00b419a83fc3ba9df9183ec87f99f2ad7d27",
+    "pinned_utc": "2026-09-17T08:26:11Z"
+  },
+  "history": []
+}

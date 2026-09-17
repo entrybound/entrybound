@@ -975,12 +975,382 @@ def items():
     return out
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--write", action="store_true")
-    ap.add_argument("--plan", action="store_true")
-    args = ap.parse_args()
-    its = items()
+# ---------------------------------------------------------------------------------------------
+# 2026-09-17 gap-closing pass (critique-round1.md G09/G10/G13/G25: F14 legacy archive migration
+# matrix, F16 OCI/ISO/VHDX images, F09 arm64/riscv64 architecture skew, F10/F11 large tier).
+#
+# This is intentionally a SEPARATE function from items() above, appended to the committed JSON
+# rather than folded into a full --write regeneration: several of the resolvers items() calls
+# (ubuntu_debs/fedora_rpms/alpine_apks/arch_pkgs/pypi_wheels/maven_jars) hit live package indexes
+# that drift over time (point-release package bumps, rolling repos), so re-running items() today
+# and overwriting the whole file would silently re-resolve -- and likely change -- the already
+# committed, already materialized-and-fingerprinted 2026-09-12 items.  See main()'s --write-new.
+
+def nodejs_files(version, names):
+    base = f"https://nodejs.org/dist/{version}/"
+    res = []
+    for n in names:
+        url = base + n
+        sha = sums_lookup(base + "SHASUMS256.txt", n)
+        res.append(inp(n, url, sha, head_size(url), notes=f"Node.js {version} (SHA-256 from SHASUMS256.txt)"))
+    return res
+
+
+def new_items_20260917():
+    out = []
+
+    def add(**kw):
+        out.append(kw)
+
+    prune = f"{GEN}/prune_tree.py"
+    oci_export = f"{GEN}/oci_arch_export.py"
+    oci_layout = f"{GEN}/build_oci_layout.py"
+    legacy_matrix = f"{GEN}/legacy_writer_matrix.py"
+    convert = f"{GEN}/convert_image.sh"
+
+    ubuntu_lic = lic("Ubuntu archive packages (GPL-2.0/GPL-3.0/LGPL-2.1/MIT/BSD and others)", True,
+                      "Canonical Ltd. and the respective upstream authors", "")
+    alpine_lic = lic("Alpine packages (GPL-2.0-only busybox, MIT musl, OpenSSL Apache-2.0, others)", True,
+                      "Alpine Linux developers and upstream authors", "")
+    fedora_lic = lic("Fedora packages (GPL/LGPL/MIT/BSD and others)", True, "Fedora Project contributors", "")
+    almalinux_lic = lic("AlmaLinux packages (GPL/LGPL/MIT/BSD and others)", True,
+                         "AlmaLinux OS Foundation and upstream authors", "")
+
+    # ======================= F09: real arm64/riscv64 in tuning + validation (G13) =======================
+    # No Docker daemon anywhere below: skopeo is a plain read-only HTTPS registry client, and the
+    # exported rootfs is extracted with plain tar (see oci_arch_export.py).
+    add(item_id="f09-ubuntu-noble-arm64-usr-binaries", family="F09", split="tuning", scale="medium",
+        kind="build", real_or_generated="real",
+        recipe={"steps": [{"op": "run", "script": oci_export, "interpreter": "python", "seed": 0,
+                           "params": {"repo": "ubuntu", "platform": "linux/arm64", "manifest_digest":
+                                      "sha256:11dc1ccb427f0464a2369e645454c272bb0baece7357c892ba69d313b3a332cf"}}],
+                "generator": {"script": prune, "interpreter": "python", "seed": 0,
+                              "params": {"keep": ["bin", "sbin", "lib", "lib64", "usr/bin", "usr/sbin", "usr/lib",
+                                                  "usr/lib64", "usr/libexec"], "require": ["usr/bin", "usr/lib"]}},
+                "output_pin": "TOFU",
+                "notes": "No Docker daemon: skopeo copy of the official Docker Hub ubuntu:24.04 multi-arch "
+                         "index's arm64 (aarch64/v8) platform manifest (resolved 2026-09-17), layer(s) "
+                         "extracted with GNU tar --xattrs; pruned exactly like the amd64 "
+                         "f09-ubuntu-noble-usr-binaries item."},
+        license=ubuntu_lic, independence_group="ubuntu-noble",
+        description="Tuning: real arm64 (aarch64) ELF executables and shared libraries from the official "
+                    "Ubuntu 24.04 container image, exported via skopeo with no Docker daemon.",
+        tags=["elf", "glibc", "container-rootfs", "arm64"])
+    add(item_id="f09-ubuntu-noble-riscv64-usr-binaries", family="F09", split="tuning", scale="medium",
+        kind="build", real_or_generated="real",
+        recipe={"steps": [{"op": "run", "script": oci_export, "interpreter": "python", "seed": 0,
+                           "params": {"repo": "ubuntu", "platform": "linux/riscv64", "manifest_digest":
+                                      "sha256:f28b71827ff6cb4fe9b6b536b583bc0227072516de20c9225847be7722ab5715"}}],
+                "generator": {"script": prune, "interpreter": "python", "seed": 0,
+                              "params": {"keep": ["bin", "sbin", "lib", "lib64", "usr/bin", "usr/sbin", "usr/lib",
+                                                  "usr/lib64", "usr/libexec"], "require": ["usr/bin", "usr/lib"]}},
+                "output_pin": "TOFU",
+                "notes": "No Docker daemon (riscv64 needs no emulation either: export does not execute anything): "
+                         "skopeo copy of the official Docker Hub ubuntu:24.04 multi-arch index's riscv64 "
+                         "platform manifest (resolved 2026-09-17)."},
+        license=ubuntu_lic, independence_group="ubuntu-noble",
+        description="Tuning: real riscv64 ELF executables and shared libraries from the official Ubuntu 24.04 "
+                    "container image (bonus architecture beyond arm64, per the ideally-riscv64 request).",
+        tags=["elf", "glibc", "container-rootfs", "riscv64"])
+    add(item_id="f09-alpine-324-arm64-rootfs-binaries", family="F09", split="tuning", scale="small",
+        kind="build", real_or_generated="real",
+        recipe={"steps": [{"op": "run", "script": oci_export, "interpreter": "python", "seed": 0,
+                           "params": {"repo": "alpine", "platform": "linux/arm64", "manifest_digest":
+                                      "sha256:e7a1a92a5bfeee40966aea60f0796b0e7917cc35591542701834f03a68fa3d18"}}],
+                "generator": {"script": prune, "interpreter": "python", "seed": 0,
+                              "params": {"keep": ["bin", "sbin", "lib", "usr/bin", "usr/sbin", "usr/lib",
+                                                  "usr/libexec"], "require": ["usr/lib"]}},
+                "output_pin": "TOFU",
+                "notes": "No Docker daemon: skopeo copy of the official Docker Hub alpine:3.24 multi-arch "
+                         "index's arm64 platform manifest (resolved 2026-09-17)."},
+        license=alpine_lic, independence_group="alpine-linux",
+        description="Tuning: real arm64 musl/busybox ELF binaries and libraries of the official Alpine 3.24 "
+                    "container image, exported via skopeo with no Docker daemon.",
+        tags=["elf", "musl", "container-rootfs", "arm64"])
+    add(item_id="f09-alpine-324-riscv64-rootfs-binaries", family="F09", split="tuning", scale="small",
+        kind="build", real_or_generated="real",
+        recipe={"steps": [{"op": "run", "script": oci_export, "interpreter": "python", "seed": 0,
+                           "params": {"repo": "alpine", "platform": "linux/riscv64", "manifest_digest":
+                                      "sha256:20a26477b54fb521bc8f633ea0af1f8f9b3dac5661739f857b381b117226919b"}}],
+                "generator": {"script": prune, "interpreter": "python", "seed": 0,
+                              "params": {"keep": ["bin", "sbin", "lib", "usr/bin", "usr/sbin", "usr/lib",
+                                                  "usr/libexec"], "require": ["usr/lib"]}},
+                "output_pin": "TOFU",
+                "notes": "No Docker daemon: skopeo copy of the official Docker Hub alpine:3.24 multi-arch "
+                         "index's riscv64 platform manifest (resolved 2026-09-17)."},
+        license=alpine_lic, independence_group="alpine-linux",
+        description="Tuning: real riscv64 musl/busybox ELF binaries and libraries of the official Alpine 3.24 "
+                    "container image (bonus architecture).",
+        tags=["elf", "musl", "container-rootfs", "riscv64"])
+
+    rg_inputs = [gh_asset("BurntSushi/ripgrep", "14.1.1", "ripgrep-14.1.1-aarch64-unknown-linux-gnu.tar.gz"),
+                 gh_asset("BurntSushi/ripgrep", "14.1.1", "ripgrep-14.1.1-aarch64-apple-darwin.tar.gz")]
+    dedupe_names(rg_inputs)
+    add(item_id="f09-ripgrep-1411-arm64-darwin-multiplatform", family="F09", split="tuning", scale="small",
+        kind="download", real_or_generated="real",
+        recipe={"inputs": rg_inputs,
+                "steps": [{"op": "extract", "input": rg_inputs[0]["name"], "format": "tar",
+                           "dest": "aarch64-unknown-linux-gnu"},
+                          {"op": "extract", "input": rg_inputs[1]["name"], "format": "tar",
+                           "dest": "aarch64-apple-darwin"}]},
+        license=lic("Unlicense OR MIT", True, "Andrew Gallant and ripgrep contributors", ""),
+        independence_group="ripgrep",
+        description="Tuning: official ripgrep 14.1.1 release binaries for arm64 Linux (ELF) and arm64 macOS "
+                    "(Mach-O), extracted -- gives tuning a real arm64 Mach-O executable alongside the OCI-based "
+                    "arm64/riscv64 ELF items above.",
+        tags=["elf", "macho", "arm64"])
+
+    add(item_id="f09-fedora-44-arm64-usr-binaries", family="F09", split="validation", scale="medium",
+        kind="build", real_or_generated="real",
+        recipe={"steps": [{"op": "run", "script": oci_export, "interpreter": "python", "seed": 0,
+                           "params": {"repo": "fedora", "platform": "linux/arm64", "manifest_digest":
+                                      "sha256:e402cca673711fee025f9ce21c6c08b1bd25ee26b3c482119c8675fbaaedbc85"}}],
+                "generator": {"script": prune, "interpreter": "python", "seed": 0,
+                              "params": {"keep": ["bin", "sbin", "lib", "lib64", "usr/bin", "usr/sbin", "usr/lib",
+                                                  "usr/lib64", "usr/libexec"],
+                                         "require": ["usr/bin", "usr/lib64"]}},
+                "output_pin": "TOFU",
+                "notes": "No Docker daemon: skopeo copy of the official Docker Hub fedora:44 multi-arch index's "
+                         "arm64 platform manifest (resolved 2026-09-17); pruned exactly like the amd64 "
+                         "f09-fedora-44-usr-binaries item."},
+        license=fedora_lic, independence_group="fedora",
+        description="Validation: real arm64 ELF executables and shared libraries of the official Fedora 44 "
+                    "container image (glibc, lib64 layout), exported via skopeo with no Docker daemon.",
+        tags=["elf", "glibc", "container-rootfs", "arm64"])
+
+    node_inputs = nodejs_files("v22.20.0", ["node-v22.20.0-linux-arm64.tar.xz", "node-v22.20.0-darwin-arm64.tar.gz",
+                                            "node-v22.20.0-win-arm64.zip"])
+    dedupe_names(node_inputs)
+    add(item_id="f09-nodejs-v2220-arm64-multiplatform", family="F09", split="validation", scale="medium",
+        kind="download", real_or_generated="real",
+        recipe={"inputs": node_inputs,
+                "steps": [{"op": "extract", "input": node_inputs[0]["name"], "format": "tar", "dest": "linux-arm64"},
+                          {"op": "extract", "input": node_inputs[1]["name"], "format": "tar", "dest": "darwin-arm64"},
+                          {"op": "extract", "input": node_inputs[2]["name"], "format": "zip", "dest": "win-arm64"}]},
+        license=lic("MIT (Node.js core; V8 BSD-3-Clause, OpenSSL Apache-2.0, ICU Unicode-3.0 and other bundled "
+                    "components)", True, "Node.js contributors, OpenJS Foundation", ""),
+        independence_group="nodejs",
+        description="Validation: official Node.js v22.20.0 release binaries for arm64 Linux (ELF), arm64 macOS "
+                    "(Mach-O) and arm64 Windows (PE), extracted -- gives validation real arm64 ELF and Mach-O "
+                    "executables alongside the existing win-x64 Node.js PDB item (same nodejs group).",
+        tags=["elf", "macho", "pe", "arm64"])
+
+    # ======================= F10/F11: at least one large (>512 MiB) item each (G25) =======================
+    add(item_id="f10-linux-firmware-20260910-full-tree", family="F10", split="tuning", scale="large",
+        kind="download", real_or_generated="real",
+        recipe={"inputs": [inp("firmware",
+                               "https://cdn.kernel.org/pub/linux/kernel/firmware/linux-firmware-20260910.tar.xz",
+                               "f3937ca282ba256242e2b6dbe523df8a80007d29ffd61f56d270190865492ea8", 656677324,
+                               notes="SHA-256 from kernel.org sha256sums.asc (identical pin already used by "
+                                     "f10-linux-firmware-20260910-subset)")],
+                "steps": [{"op": "run", "script": f"{GEN}/unpack.py", "interpreter": "python", "seed": 0,
+                          "params": {"input": "firmware", "format": "tar", "dest": "", "strip_components": 1}}],
+                "notes": "Full linux-firmware 20260910 tree (no member filter, unlike the curated subset item): "
+                         "closes the F10 large-tier gap (>512 MiB) with the complete real firmware collection."},
+        license=lic("linux-firmware (per-file licenses listed in WHENCE; redistribution permitted, modification "
+                    "often not)", True,
+                    "Firmware vendors (AMD, Intel, Realtek, MediaTek, Qualcomm, NVIDIA) via linux-firmware",
+                    "WHENCE is kept in the item; only unmodified redistribution is permitted for most blobs."),
+        independence_group="linux-firmware",
+        description="Tuning: the full decompressed linux-firmware 20260910 tree (same pinned tarball as the "
+                    "existing curated near-duplicate subset item), large tier.",
+        tags=["firmware", "large"])
+
+    add(item_id="f11-fedora-44-large-rpm-set", family="F11", split="validation", scale="large",
+        kind="download", real_or_generated="real",
+        recipe={"inputs": fedora_rpms(["kernel-core", "kernel-modules-core", "kernel-modules",
+                                       "kernel-modules-extra", "kernel-modules-internal", "libreoffice-core",
+                                       "qt6-qtwebengine", "firefox", "gcc", "llvm-libs", "R-core",
+                                       "glibc-all-langpacks", "kernel-devel"]),
+                "notes": "Curated for size (~676 MiB combined, disjoint from the existing medium-tier "
+                         "f11-fedora-44-rpms package set): kernel family, LibreOffice, Qt WebEngine, Firefox, "
+                         "GCC, LLVM libs, R, full glibc locale data. Closes the F11 large-tier gap (>512 MiB)."},
+        license=fedora_lic, independence_group="fedora",
+        description="Validation: a larger set of Fedora 44 release RPMs as published (RPM lead/header plus "
+                    "zstd-compressed cpio payload), reaching the large scale tier.",
+        tags=["rpm", "zstd", "large"])
+
+    # ======================= F16: OCI image layouts, ISO9660, VHDX (G10) =======================
+    add(item_id="f16-oci-ubuntu-noble-multiarch-index", family="F16", split="tuning", scale="medium",
+        kind="build", real_or_generated="real",
+        recipe={"generator": {"script": oci_layout, "interpreter": "python", "seed": 0,
+                              "params": {"mode": "copy", "repo": "ubuntu", "multi_arch": True, "compress": "gzip",
+                                         "ref_digest":
+                                         "sha256:69cecf4bbf72d2d44a9eef1b71fb98c7fb973d78af11399deccef19beb008ad9"}},
+                "output_pin": "TOFU",
+                "notes": "No Docker daemon: skopeo copy --multi-arch all of the official Docker Hub ubuntu:24.04 "
+                         "image index (resolved 2026-09-17 -- pinned by the index's own raw-manifest SHA-256, a "
+                         "real, independently-recomputable OCI content digest) into an OCI image layout "
+                         "directory (oci-layout, index.json, blobs/sha256/*): all 12 manifests (amd64, arm/v6, "
+                         "arm/v7, arm64/v8, 386, ppc64le, riscv64, s390x, plus each platform's attestation "
+                         "manifest) with every platform's real gzip layer(s)."},
+        license=ubuntu_lic, independence_group="ubuntu-noble",
+        description="Tuning: a real OCI image layout for the official multi-arch ubuntu:24.04 image index, "
+                    "gzip layers, exactly as served by the registry (skopeo is a plain HTTPS registry client; "
+                    "no Docker daemon).",
+        tags=["oci", "container-image", "multi-arch-index", "gzip"])
+    add(item_id="f16-oci-fedora-44-zstd-layers", family="F16", split="validation", scale="medium",
+        kind="build", real_or_generated="derived-from-real",
+        recipe={"generator": {"script": oci_layout, "interpreter": "python", "seed": 0,
+                              "params": {"mode": "copy", "repo": "fedora", "multi_arch": False, "compress": "zstd",
+                                         "ref_digest":
+                                         "sha256:be9d65e2344d805cc11114319c685ecaa96b6d9b4350a0a6460cdb931babbd19"}},
+                "output_pin": "TOFU",
+                "notes": "skopeo copy --dest-compress-format zstd of the official Docker Hub fedora:44 amd64 "
+                         "manifest (resolved 2026-09-17): the same real filesystem content as fedora's other "
+                         "items, re-encoded to zstd-compressed OCI layers (layer mediaType "
+                         "application/vnd.oci.image.layer.v1.tar+zstd) instead of the as-published gzip."},
+        license=fedora_lic, independence_group="fedora",
+        description="Validation: a real OCI image layout for the official Fedora 44 amd64 image with its "
+                    "layer(s) re-encoded to zstd compression -- closes the 'at least one zstd-layer copy' gap.",
+        tags=["oci", "container-image", "zstd"])
+    add(item_id="f16-heldout-oci-almalinux-10-whiteout-derive", family="F16", split="heldout", scale="medium",
+        kind="build", real_or_generated="derived-from-real",
+        recipe={"generator": {"script": oci_layout, "interpreter": "python", "seed": 0,
+                              "params": {"mode": "whiteout-derive", "repo": "almalinux",
+                                         "ref_digest":
+                                         "sha256:7b3a2db3971727029b6aed0e6c30ad0f3812229ac5447520acea308cb535800d",
+                                         "add_path": "etc/entrybound-research-note.txt",
+                                         "add_text": "entrybound research: synthetic whiteout-demo layer\n",
+                                         "whiteout_path": "etc/os-release"}},
+                "output_pin": "TOFU",
+                "notes": "No Docker daemon, no build tool: the base layer is skopeo-copied byte-identical from "
+                         "the official Docker Hub almalinux:10 amd64 manifest (resolved 2026-09-17); a second, "
+                         "synthetic gzip layer is appended that adds one small file and whiteouts etc/os-release "
+                         "(the OCI/Docker '.wh.<name>' convention) -- a genuine 2-layer OCI image with a real "
+                         "base and a real whiteout entry."},
+        license=lic("AlmaLinux packages (GPL/LGPL/MIT/BSD and others)", True,
+                    "AlmaLinux OS Foundation and upstream authors",
+                    "The added second layer is entrybound research's own text, CC0-1.0."),
+        independence_group="almalinux",
+        description="Held-out: a real AlmaLinux 10 amd64 base plus one synthetic layer demonstrating an "
+                    "OCI/Docker-style whiteout deletion and a plain addition -- closes the layers+whiteouts gap.",
+        tags=["oci", "container-image", "whiteout", "layered"])
+
+    add(item_id="f16-alpine-virt-3241-iso", family="F16", split="tuning", scale="medium",
+        kind="download", real_or_generated="real",
+        recipe={"inputs": [inp("iso",
+                               "https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/x86_64/"
+                               "alpine-virt-3.24.1-x86_64.iso",
+                               "e73a6241bd5f3c5c2d4d38c02cc52c378c0415a7c888bd292066bf36e0f41a39", 69206016,
+                               notes="SHA-256 from latest-releases.yaml")]},
+        license=alpine_lic, independence_group="alpine-linux",
+        description="Tuning: official Alpine 3.24.1 'virt' ISO9660 installer image, as published -- gives "
+                    "tuning its first as-published ISO9660 filesystem.",
+        tags=["iso9660"])
+    add(item_id="f16-debian-13-netinst-iso", family="F16", split="validation", scale="large",
+        kind="download", real_or_generated="real",
+        recipe={"inputs": [inp("iso",
+                               "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/"
+                               "debian-13.7.0-amd64-netinst.iso",
+                               "a7ef94ac2fb9a7fec454552abd629b7cc9d5155c886165a45649f5ce6167e355", 792723456,
+                               notes="SHA-256 from debian-cd/current/amd64/iso-cd/SHA256SUMS; cdimage.debian.org "
+                                     "redirects to a nearby mirror, but the filename and SHA-256 are pinned "
+                                     "from the canonical SHA256SUMS")]},
+        license=lic("Debian image (DFSG-free packages, per-package copyright)", True, "Debian Project", ""),
+        independence_group="debian-trixie",
+        description="Validation: official Debian 13.7.0 amd64 netinst ISO9660 image, as published -- closes "
+                    "the F16 validation large-tier gap and gives validation an as-published ISO9660 image.",
+        tags=["iso9660", "large"])
+    add(item_id="f16-heldout-almalinux-102-boot-iso", family="F16", split="heldout", scale="large",
+        kind="download", real_or_generated="real",
+        recipe={"inputs": [inp("iso", "https://repo.almalinux.org/almalinux/10/isos/x86_64/"
+                               "AlmaLinux-10.2-x86_64-boot.iso",
+                               "b3f865468075bcada8f208d830289302c67529789d668041d24e8d6fc697ba6a", 1056202752,
+                               notes="SHA-256 from the isos/x86_64/CHECKSUM file; the dated file name is pinned "
+                                     "rather than the -latest- alias")]},
+        license=almalinux_lic, independence_group="almalinux",
+        description="Held-out: official AlmaLinux 10.2 x86_64 boot/network-install ISO9660 image, as published.",
+        tags=["iso9660", "large"])
+
+    add(item_id="f16-alpine-3241-minirootfs-ext4-vhdx", family="F16", split="tuning", scale="medium",
+        kind="derive", real_or_generated="derived-from-real",
+        recipe={"from_items": ["f16-alpine-3241-minirootfs-ext4-raw"],
+                "generator": {"script": convert, "interpreter": "bash", "seed": 0,
+                              "params": {"from_item": "f16-alpine-3241-minirootfs-ext4-raw",
+                                         "src": "alpine-3.24.1-x86_64-ext4.img", "src_format": "raw",
+                                         "dst": "alpine-3.24.1-x86_64-ext4.vhdx", "dst_format": "vhdx",
+                                         "options": "subformat=dynamic"}}},
+        license=alpine_lic, independence_group="alpine-linux",
+        description="Tuning: the same Alpine ext4 image converted to VHDX (dynamic) -- gives F16 a "
+                    "Hyper-V-style virtual disk format alongside the existing raw/qcow2 items.",
+        tags=["vhdx", "ext4"])
+
+    # ======================= F14: legacy archive-writer matrix (G09) =======================
+    # legacy_writer_matrix.py runs the SAME real, same-split source tree through 7-Zip (LZMA,
+    # LZMA2, LZMA2+BCJ, BCJ2, PPMd, BZip2, Deflate, solid/non-solid, encrypted headers,
+    # multi-volume), Info-Zip zip (store/deflate levels, its own bzip2 method, symlink-as-is,
+    # ZipCrypto), 7-Zip's WinZip-AES256 zip writer, CP437- and Shift-JIS-named entries (UTF-8 flag
+    # clear), Python zipfile forcing ZIP64 (>65535 entries, and a >4 GiB logical-size entry) and
+    # data-descriptor records, GNU tar (v7/ustar/oldgnu/gnu/pax/posix, a GNU-sparse member, and
+    # pax --xattrs/--acls using the SCHILY.xattr.*/SCHILY.acl.* extensions star also uses),
+    # bsdtar's own pax writer, cpio (newc/odc), wimlib (XPRESS/LZX/solid-LZMS), gcab CAB, a
+    # format-faithful macOS __MACOSX/AppleDouble zip (GENERATED -- see the module docstring: no
+    # real macOS-authored public-release zip with __MACOSX entries was found within this
+    # session's budget), and, via WSL-to-Windows interop with no Docker/VM, the real Windows-host
+    # C:/Windows/System32/tar.exe (bsdtar) and PowerShell 5.1 Compress-Archive (all Windows-side
+    # I/O stays under D:/eb-research, never C:).  A shared demo password is used for every
+    # encrypted variant, recorded here exactly like the F20 private-vault items already do.
+    _LWM_PASSWORD = "eb-research-legacy-demo-2026"
+    add(item_id="f14-legacy-writer-matrix-tuning", family="F14", split="tuning", scale="medium",
+        kind="build", real_or_generated="derived-from-real",
+        recipe={"from_items": ["f01-tuning-zstd-v1-5-7-git"],
+                "generator": {"script": legacy_matrix, "interpreter": "python", "seed": 0,
+                              "params": {"source_item": "f01-tuning-zstd-v1-5-7-git",
+                                         "password": _LWM_PASSWORD, "windows": True}},
+                "notes": "Real source tree: the zstd git-archive source (same split, same "
+                         "f01-tuning-zstd-v1-5-7-git item). WIM/CAB embed real capture timestamps and are not "
+                         "bit-reproducible across runs, so this item is unpinned (output_pin left at the "
+                         "kind=build default of null); _generation_manifest.json in the item root records every "
+                         "writer invocation and its outcome."},
+        license=lic("Legacy-archive-writer matrix over zstd's BSD-3-Clause source (see "
+                    "f01-tuning-zstd-v1-5-7-git); the archive wrappers themselves add no new copyrightable "
+                    "content", True, "Meta Platforms, Inc. and Facebook, Inc. (zstd) via research re-packaging",
+                    f"Shared demo password for every encrypted variant: {_LWM_PASSWORD!r}."),
+        independence_group="zstd",
+        description="Tuning: a real source tree written through 7z/zip/tar/cpio/WIM/CAB/Windows-host legacy "
+                    "archive writers spanning filters, encryption, ZIP64, non-UTF-8 names and tar dialects.",
+        tags=["7z", "zip", "tar", "cpio", "wim", "cab", "legacy-writer-matrix"])
+    add(item_id="f14-legacy-writer-matrix-validation", family="F14", split="validation", scale="medium",
+        kind="build", real_or_generated="derived-from-real",
+        recipe={"from_items": ["f01-validation-redis-7-2-16-git"],
+                "generator": {"script": legacy_matrix, "interpreter": "python", "seed": 0,
+                              "params": {"source_item": "f01-validation-redis-7-2-16-git",
+                                         "password": _LWM_PASSWORD, "windows": True}},
+                "notes": "Real source tree: the redis git-archive source (same split, same "
+                         "f01-validation-redis-7-2-16-git item). Unpinned for the same WIM/CAB timestamp reason "
+                         "as the tuning variant."},
+        license=lic("Legacy-archive-writer matrix over redis's BSD-3-Clause source (see "
+                    "f01-validation-redis-7-2-16-git); the archive wrappers themselves add no new copyrightable "
+                    "content", True, "Redis Ltd. and contributors via research re-packaging",
+                    f"Shared demo password for every encrypted variant: {_LWM_PASSWORD!r}."),
+        independence_group="redis",
+        description="Validation: the same legacy-writer matrix over a different, validation-split real source "
+                    "tree (redis).",
+        tags=["7z", "zip", "tar", "cpio", "wim", "cab", "legacy-writer-matrix"])
+    add(item_id="f14-legacy-writer-matrix-heldout", family="F14", split="heldout", scale="medium",
+        kind="build", real_or_generated="derived-from-real",
+        recipe={"from_items": ["f01-heldout-musl-1-2-5-src"],
+                "generator": {"script": legacy_matrix, "interpreter": "python", "seed": 0,
+                              "params": {"source_item": "f01-heldout-musl-1-2-5-src",
+                                         "password": _LWM_PASSWORD, "windows": True}},
+                "notes": "Real source tree: the musl source release (same split, same "
+                         "f01-heldout-musl-1-2-5-src item; a plain source tree, not a git checkout, per the "
+                         "critique's own suggestion for this split). Unpinned for the same WIM/CAB timestamp "
+                         "reason as the tuning variant."},
+        license=lic("Legacy-archive-writer matrix over musl's MIT-licensed source (see "
+                    "f01-heldout-musl-1-2-5-src); the archive wrappers themselves add no new copyrightable "
+                    "content", True, "musl libc authors via research re-packaging",
+                    f"Shared demo password for every encrypted variant: {_LWM_PASSWORD!r}."),
+        independence_group="musl",
+        description="Held-out: the same legacy-writer matrix over a held-out-split real source tree (musl), "
+                    "provenance-only per the held-out description rule.",
+        tags=["7z", "zip", "tar", "cpio", "wim", "cab", "legacy-writer-matrix"])
+
+    return out
+
+
+def _normalize(its):
     for it in its:
         r = it["recipe"]
         if r.get("inputs"):
@@ -997,6 +1367,50 @@ def main():
                 steps.append(st)
         if steps:
             r["steps"] = steps
+    return its
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--write", action="store_true")
+    ap.add_argument("--plan", action="store_true")
+    ap.add_argument("--write-new", action="store_true",
+                     help="Append new_items_20260917() to the ALREADY-COMMITTED on-disk JSON "
+                          "(loaded as-is, not re-derived from items()) instead of regenerating the whole file. "
+                          "This is the safe path for adding items without re-invoking items()'s live resolvers "
+                          "(ubuntu_debs/fedora_rpms/alpine_apks/arch_pkgs/pypi_wheels/maven_jars), which would "
+                          "silently re-resolve -- and could change -- the 45 already-committed 2026-09-12 items.")
+    ap.add_argument("--plan-new", action="store_true", help="Like --plan but for new_items_20260917() only.")
+    args = ap.parse_args()
+
+    if args.write_new or args.plan_new:
+        new_its = _normalize(new_items_20260917())
+        if args.plan_new:
+            tot = 0
+            for it in new_its:
+                s = sum(d.get("size") or 0 for d in it["recipe"].get("inputs", []))
+                tot += s
+                print(f"{it['family']} {it['split']:<10} {it['scale']:<6} {it['item_id']:<52} "
+                      f"inputs={len(it['recipe'].get('inputs', []))} {s / 2**20:9.1f} MiB")
+                for d in it["recipe"].get("inputs", []):
+                    print(f"      {d['name']:<44} {(d.get('size') or 0) / 2**20:8.1f} MiB {d['sha256'][:12]} "
+                          f"{d['url']}")
+            print(f"total declared download bytes (new items only): {tot / 2**30:.2f} GiB")
+        if args.write_new:
+            doc = json.loads(OUT_JSON.read_text(encoding="utf-8"))
+            existing_ids = {it["item_id"] for it in doc["items"]}
+            dup = existing_ids & {it["item_id"] for it in new_its}
+            if dup:
+                raise SystemExit(f"--write-new: item_id collision with the committed JSON: {sorted(dup)}")
+            doc["items"] = doc["items"] + new_its
+            doc.setdefault("notes", {})["gap_closure_2026_09_17"] = (
+                "F14/F16/F09/F10/F11 MAJOR-gap closure (critique-round1.md G09/G10/G13/G25), appended via "
+                "new_items_20260917()/--write-new so the 2026-09-12 items above are preserved byte-for-byte.")
+            OUT_JSON.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            print(f"wrote {OUT_JSON} ({len(doc['items'])} items total, {len(new_its)} newly appended)")
+        return
+
+    its = _normalize(items())
     if args.plan:
         tot = 0
         for it in its:

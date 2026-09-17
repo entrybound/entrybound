@@ -1,0 +1,26 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f09-ripgrep-1411-arm64-darwin-multiplatform",
+  "inputs": {
+    "ripgrep-14-1-1-aarch64-unknown-linux-gnu-tar-gz": {
+      "url": "https://github.com/BurntSushi/ripgrep/releases/download/14.1.1/ripgrep-14.1.1-aarch64-unknown-linux-gnu.tar.gz",
+      "sha256": "c827481c4ff4ea10c9dc7a4022c8de5db34a5737cb74484d62eb94a95841ab2f",
+      "size": 2047405,
+      "retrieved_utc": "2026-09-17T08:26:13Z",
+      "retrieval_date": "2026-09-17"
+    },
+    "ripgrep-14-1-1-aarch64-apple-darwin-tar-gz": {
+      "url": "https://github.com/BurntSushi/ripgrep/releases/download/14.1.1/ripgrep-14.1.1-aarch64-apple-darwin.tar.gz",
+      "sha256": "24ad76777745fbff131c8fbc466742b011f925bfa4fffa2ded6def23b5b937be",
+      "size": 1787248,
+      "retrieved_utc": "2026-09-17T08:26:13Z",
+      "retrieval_date": "2026-09-17"
+    }
+  },
+  "output": {
+    "materialization_key": "5fd79a0179cb60d4def59f8422d30d1660997ef948ff5d4f7b705604feb94688",
+    "logical_tree_sha256": "8293ad10d6fc92d3d93d957b216275efda789d6f27fd44679fa0dee6c1238d5d",
+    "pinned_utc": "2026-09-17T08:26:13Z"
+  },
+  "history": []
+}

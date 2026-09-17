@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-alpine-virt-3241-iso",
+  "inputs": {},
+  "output": {
+    "materialization_key": "cfa090ee71faf5f83bfe86cfb3ca683342cfc859b36d94614596cecc6f1c8c8d",
+    "logical_tree_sha256": "20b5cf69df879924a9c5fda20424f85c6bcf2952c8b94abee2beae0062558302",
+    "pinned_utc": "2026-09-17T08:26:29Z"
+  },
+  "history": []
+}

@@ -11,7 +11,8 @@
     ],
     "authored": "2026-09-12 with research/corpus/generators/g4-binary/author_sources.py (resolutions of package indexes on that date); this JSON is authoritative",
     "split_plan": "(no upstream repository/URL/docker repo crosses splits, and held-out groups are\nnever used in tuning/validation by this group; see notes in the JSON):\n  tuning:     Ubuntu 24.04, Alpine 3.24, Silesia corpus (public benchmark), linux-firmware, fd-find (Rust),\n              PyPI binary wheels, Apache Maven, Jenkins, generated (py) nested archives / redundant blobs\n  validation: Fedora 44, Debian 13 (edk2 firmware, nocloud image), CPython Windows embeddable, Git for Windows,\n              Maven Central JVM jars, Apache Spark (pyspark sdist), generated office documents, generated FAT image\n  heldout:    AlmaLinux 10, PowerShell, uutils coreutils (macOS), OpenWrt, QuickJS, Arch Linux packages,\n              X.org release tarballs, F-Droid APKs, Firefox, FreeBSD 15.1, generated (cli) nested archives,\n              generated GPT disk",
-    "gap_closing_2026_09_16": "Round-1 critic gap-closing pass (F09/F10/F11/F14/F16 gaps). g4-binary was already at ~11.93 GiB (the ~12 GiB group budget) before this pass, so items were prioritized by severity and size: F09 Silesia licence MINOR fix applied for free (f09-silesia-mozilla-ooffice.license.redistributable -> false, matching f07/f08 silesia items). F11 [BLOCKER] supply-chain-verification gap: added f11-cosign-v250-signing-assets (tuning; every sigstore/cosign v2.5.0 detached keyless .sig/.pem, the checksum manifest and per-platform SBOMs, excluding the signed binaries themselves), f11-cpython-3137-release-set (validation; Python-3.13.7.tar.xz sdist with its .asc/.sigstore, the release SPDX SBOM, and 16 amd64 MSI installer components), and f11-heldout-firefox-15501-signing-metadata (heldout; SHA256SUMS/.asc/KEY and the existing f14-heldout-firefox-15501-linux-tarball release tarball's detached .asc, without re-fetching that tarball). New group total: ~11.994 GiB. NOT closed in this pass (would exceed the group budget): F11 tuning ripgrep .crate files, an apt metadata snapshot, npm pack tarballs for bootstrap's lockfile, and PyPI sdists for locks/pypi-web-service-stack.txt; all of F09 architecture/object-format skew (arm64 exports/binaries); all of F14 legacy-writer-matrix real archives and generated archives; all of F16 OCI layouts and the ISO/OVA/VHD/VDI/VHDX items; and F10's large-tier items (full linux-firmware tree, expanded Fedora RPM set). See PROGRESS.md change log 2026-09-16 and the task problems list for the full accounting and a recommended path (either raise g4-binary's budget for a dedicated large-item pass, or carve the large VM-image/firmware items into a separate budget tier)."
+    "gap_closing_2026_09_16": "Round-1 critic gap-closing pass (F09/F10/F11/F14/F16 gaps). g4-binary was already at ~11.93 GiB (the ~12 GiB group budget) before this pass, so items were prioritized by severity and size: F09 Silesia licence MINOR fix applied for free (f09-silesia-mozilla-ooffice.license.redistributable -> false, matching f07/f08 silesia items). F11 [BLOCKER] supply-chain-verification gap: added f11-cosign-v250-signing-assets (tuning; every sigstore/cosign v2.5.0 detached keyless .sig/.pem, the checksum manifest and per-platform SBOMs, excluding the signed binaries themselves), f11-cpython-3137-release-set (validation; Python-3.13.7.tar.xz sdist with its .asc/.sigstore, the release SPDX SBOM, and 16 amd64 MSI installer components), and f11-heldout-firefox-15501-signing-metadata (heldout; SHA256SUMS/.asc/KEY and the existing f14-heldout-firefox-15501-linux-tarball release tarball's detached .asc, without re-fetching that tarball). New group total: ~11.994 GiB. NOT closed in this pass (would exceed the group budget): F11 tuning ripgrep .crate files, an apt metadata snapshot, npm pack tarballs for bootstrap's lockfile, and PyPI sdists for locks/pypi-web-service-stack.txt; all of F09 architecture/object-format skew (arm64 exports/binaries); all of F14 legacy-writer-matrix real archives and generated archives; all of F16 OCI layouts and the ISO/OVA/VHD/VDI/VHDX items; and F10's large-tier items (full linux-firmware tree, expanded Fedora RPM set). See PROGRESS.md change log 2026-09-16 and the task problems list for the full accounting and a recommended path (either raise g4-binary's budget for a dedicated large-item pass, or carve the large VM-image/firmware items into a separate budget tier).",
+    "gap_closure_2026_09_17": "F14/F16/F09/F10/F11 MAJOR-gap closure (critique-round1.md G09/G10/G13/G25), appended via new_items_20260917()/--write-new so the 2026-09-12 items above are preserved byte-for-byte."
   },
   "items": [
     {
@@ -3632,6 +3633,955 @@
         "signature",
         "checksum-manifest",
         "supply-chain"
+      ]
+    },
+    {
+      "item_id": "f09-ubuntu-noble-arm64-usr-binaries",
+      "family": "F09",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "real",
+      "recipe": {
+        "steps": [
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/oci_arch_export.py",
+            "interpreter": "python",
+            "seed": 0,
+            "params": {
+              "repo": "ubuntu",
+              "platform": "linux/arm64",
+              "manifest_digest": "sha256:11dc1ccb427f0464a2369e645454c272bb0baece7357c892ba69d313b3a332cf"
+            }
+          }
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/prune_tree.py",
+          "interpreter": "python",
+          "seed": 0,
+          "params": {
+            "keep": [
+              "bin",
+              "sbin",
+              "lib",
+              "lib64",
+              "usr/bin",
+              "usr/sbin",
+              "usr/lib",
+              "usr/lib64",
+              "usr/libexec"
+            ],
+            "require": [
+              "usr/bin",
+              "usr/lib"
+            ]
+          }
+        },
+        "output_pin": "TOFU",
+        "notes": "No Docker daemon: skopeo copy of the official Docker Hub ubuntu:24.04 multi-arch index's arm64 (aarch64/v8) platform manifest (resolved 2026-09-17), layer(s) extracted with GNU tar --xattrs; pruned exactly like the amd64 f09-ubuntu-noble-usr-binaries item."
+      },
+      "license": {
+        "spdx_or_name": "Ubuntu archive packages (GPL-2.0/GPL-3.0/LGPL-2.1/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "Canonical Ltd. and the respective upstream authors",
+        "notes": ""
+      },
+      "independence_group": "ubuntu-noble",
+      "description": "Tuning: real arm64 (aarch64) ELF executables and shared libraries from the official Ubuntu 24.04 container image, exported via skopeo with no Docker daemon.",
+      "tags": [
+        "elf",
+        "glibc",
+        "container-rootfs",
+        "arm64"
+      ]
+    },
+    {
+      "item_id": "f09-ubuntu-noble-riscv64-usr-binaries",
+      "family": "F09",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "real",
+      "recipe": {
+        "steps": [
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/oci_arch_export.py",
+            "interpreter": "python",
+            "seed": 0,
+            "params": {
+              "repo": "ubuntu",
+              "platform": "linux/riscv64",
+              "manifest_digest": "sha256:f28b71827ff6cb4fe9b6b536b583bc0227072516de20c9225847be7722ab5715"
+            }
+          }
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/prune_tree.py",
+          "interpreter": "python",
+          "seed": 0,
+          "params": {
+            "keep": [
+              "bin",
+              "sbin",
+              "lib",
+              "lib64",
+              "usr/bin",
+              "usr/sbin",
+              "usr/lib",
+              "usr/lib64",
+              "usr/libexec"
+            ],
+            "require": [
+              "usr/bin",
+              "usr/lib"
+            ]
+          }
+        },
+        "output_pin": "TOFU",
+        "notes": "No Docker daemon (riscv64 needs no emulation either: export does not execute anything): skopeo copy of the official Docker Hub ubuntu:24.04 multi-arch index's riscv64 platform manifest (resolved 2026-09-17)."
+      },
+      "license": {
+        "spdx_or_name": "Ubuntu archive packages (GPL-2.0/GPL-3.0/LGPL-2.1/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "Canonical Ltd. and the respective upstream authors",
+        "notes": ""
+      },
+      "independence_group": "ubuntu-noble",
+      "description": "Tuning: real riscv64 ELF executables and shared libraries from the official Ubuntu 24.04 container image (bonus architecture beyond arm64, per the ideally-riscv64 request).",
+      "tags": [
+        "elf",
+        "glibc",
+        "container-rootfs",
+        "riscv64"
+      ]
+    },
+    {
+      "item_id": "f09-alpine-324-arm64-rootfs-binaries",
+      "family": "F09",
+      "split": "tuning",
+      "scale": "small",
+      "kind": "build",
+      "real_or_generated": "real",
+      "recipe": {
+        "steps": [
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/oci_arch_export.py",
+            "interpreter": "python",
+            "seed": 0,
+            "params": {
+              "repo": "alpine",
+              "platform": "linux/arm64",
+              "manifest_digest": "sha256:e7a1a92a5bfeee40966aea60f0796b0e7917cc35591542701834f03a68fa3d18"
+            }
+          }
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/prune_tree.py",
+          "interpreter": "python",
+          "seed": 0,
+          "params": {
+            "keep": [
+              "bin",
+              "sbin",
+              "lib",
+              "usr/bin",
+              "usr/sbin",
+              "usr/lib",
+              "usr/libexec"
+            ],
+            "require": [
+              "usr/lib"
+            ]
+          }
+        },
+        "output_pin": "TOFU",
+        "notes": "No Docker daemon: skopeo copy of the official Docker Hub alpine:3.24 multi-arch index's arm64 platform manifest (resolved 2026-09-17)."
+      },
+      "license": {
+        "spdx_or_name": "Alpine packages (GPL-2.0-only busybox, MIT musl, OpenSSL Apache-2.0, others)",
+        "redistributable": true,
+        "attribution": "Alpine Linux developers and upstream authors",
+        "notes": ""
+      },
+      "independence_group": "alpine-linux",
+      "description": "Tuning: real arm64 musl/busybox ELF binaries and libraries of the official Alpine 3.24 container image, exported via skopeo with no Docker daemon.",
+      "tags": [
+        "elf",
+        "musl",
+        "container-rootfs",
+        "arm64"
+      ]
+    },
+    {
+      "item_id": "f09-alpine-324-riscv64-rootfs-binaries",
+      "family": "F09",
+      "split": "tuning",
+      "scale": "small",
+      "kind": "build",
+      "real_or_generated": "real",
+      "recipe": {
+        "steps": [
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/oci_arch_export.py",
+            "interpreter": "python",
+            "seed": 0,
+            "params": {
+              "repo": "alpine",
+              "platform": "linux/riscv64",
+              "manifest_digest": "sha256:20a26477b54fb521bc8f633ea0af1f8f9b3dac5661739f857b381b117226919b"
+            }
+          }
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/prune_tree.py",
+          "interpreter": "python",
+          "seed": 0,
+          "params": {
+            "keep": [
+              "bin",
+              "sbin",
+              "lib",
+              "usr/bin",
+              "usr/sbin",
+              "usr/lib",
+              "usr/libexec"
+            ],
+            "require": [
+              "usr/lib"
+            ]
+          }
+        },
+        "output_pin": "TOFU",
+        "notes": "No Docker daemon: skopeo copy of the official Docker Hub alpine:3.24 multi-arch index's riscv64 platform manifest (resolved 2026-09-17)."
+      },
+      "license": {
+        "spdx_or_name": "Alpine packages (GPL-2.0-only busybox, MIT musl, OpenSSL Apache-2.0, others)",
+        "redistributable": true,
+        "attribution": "Alpine Linux developers and upstream authors",
+        "notes": ""
+      },
+      "independence_group": "alpine-linux",
+      "description": "Tuning: real riscv64 musl/busybox ELF binaries and libraries of the official Alpine 3.24 container image (bonus architecture).",
+      "tags": [
+        "elf",
+        "musl",
+        "container-rootfs",
+        "riscv64"
+      ]
+    },
+    {
+      "item_id": "f09-ripgrep-1411-arm64-darwin-multiplatform",
+      "family": "F09",
+      "split": "tuning",
+      "scale": "small",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "ripgrep-14-1-1-aarch64-unknown-linux-gnu-tar-gz",
+            "url": "https://github.com/BurntSushi/ripgrep/releases/download/14.1.1/ripgrep-14.1.1-aarch64-unknown-linux-gnu.tar.gz",
+            "sha256": "TOFU",
+            "size": 2047405,
+            "notes": "GitHub release BurntSushi/ripgrep@14.1.1"
+          },
+          {
+            "name": "ripgrep-14-1-1-aarch64-apple-darwin-tar-gz",
+            "url": "https://github.com/BurntSushi/ripgrep/releases/download/14.1.1/ripgrep-14.1.1-aarch64-apple-darwin.tar.gz",
+            "sha256": "TOFU",
+            "size": 1787248,
+            "notes": "GitHub release BurntSushi/ripgrep@14.1.1"
+          }
+        ],
+        "steps": [
+          {
+            "op": "extract",
+            "input": "ripgrep-14-1-1-aarch64-unknown-linux-gnu-tar-gz",
+            "format": "tar",
+            "dest": "aarch64-unknown-linux-gnu"
+          },
+          {
+            "op": "extract",
+            "input": "ripgrep-14-1-1-aarch64-apple-darwin-tar-gz",
+            "format": "tar",
+            "dest": "aarch64-apple-darwin"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Unlicense OR MIT",
+        "redistributable": true,
+        "attribution": "Andrew Gallant and ripgrep contributors",
+        "notes": ""
+      },
+      "independence_group": "ripgrep",
+      "description": "Tuning: official ripgrep 14.1.1 release binaries for arm64 Linux (ELF) and arm64 macOS (Mach-O), extracted -- gives tuning a real arm64 Mach-O executable alongside the OCI-based arm64/riscv64 ELF items above.",
+      "tags": [
+        "elf",
+        "macho",
+        "arm64"
+      ]
+    },
+    {
+      "item_id": "f09-fedora-44-arm64-usr-binaries",
+      "family": "F09",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "real",
+      "recipe": {
+        "steps": [
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/oci_arch_export.py",
+            "interpreter": "python",
+            "seed": 0,
+            "params": {
+              "repo": "fedora",
+              "platform": "linux/arm64",
+              "manifest_digest": "sha256:e402cca673711fee025f9ce21c6c08b1bd25ee26b3c482119c8675fbaaedbc85"
+            }
+          }
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/prune_tree.py",
+          "interpreter": "python",
+          "seed": 0,
+          "params": {
+            "keep": [
+              "bin",
+              "sbin",
+              "lib",
+              "lib64",
+              "usr/bin",
+              "usr/sbin",
+              "usr/lib",
+              "usr/lib64",
+              "usr/libexec"
+            ],
+            "require": [
+              "usr/bin",
+              "usr/lib64"
+            ]
+          }
+        },
+        "output_pin": "TOFU",
+        "notes": "No Docker daemon: skopeo copy of the official Docker Hub fedora:44 multi-arch index's arm64 platform manifest (resolved 2026-09-17); pruned exactly like the amd64 f09-fedora-44-usr-binaries item."
+      },
+      "license": {
+        "spdx_or_name": "Fedora packages (GPL/LGPL/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "Fedora Project contributors",
+        "notes": ""
+      },
+      "independence_group": "fedora",
+      "description": "Validation: real arm64 ELF executables and shared libraries of the official Fedora 44 container image (glibc, lib64 layout), exported via skopeo with no Docker daemon.",
+      "tags": [
+        "elf",
+        "glibc",
+        "container-rootfs",
+        "arm64"
+      ]
+    },
+    {
+      "item_id": "f09-nodejs-v2220-arm64-multiplatform",
+      "family": "F09",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "node-v22-20-0-linux-arm64-tar-xz",
+            "url": "https://nodejs.org/dist/v22.20.0/node-v22.20.0-linux-arm64.tar.xz",
+            "sha256": "06907b9c088ce62305bc1530e5c1ae1510245114645768f7750c349c5b6fe667",
+            "size": 29921788,
+            "notes": "Node.js v22.20.0 (SHA-256 from SHASUMS256.txt)"
+          },
+          {
+            "name": "node-v22-20-0-darwin-arm64-tar-gz",
+            "url": "https://nodejs.org/dist/v22.20.0/node-v22.20.0-darwin-arm64.tar.gz",
+            "sha256": "cc04a76a09f79290194c0646f48fec40354d88969bec467789a5d55dd097f949",
+            "size": 49838299,
+            "notes": "Node.js v22.20.0 (SHA-256 from SHASUMS256.txt)"
+          },
+          {
+            "name": "node-v22-20-0-win-arm64-zip",
+            "url": "https://nodejs.org/dist/v22.20.0/node-v22.20.0-win-arm64.zip",
+            "sha256": "b12919e609b4fa1176ba8a155b49f761419a0c7cc97b42e6be09874a3f760ab6",
+            "size": 31250974,
+            "notes": "Node.js v22.20.0 (SHA-256 from SHASUMS256.txt)"
+          }
+        ],
+        "steps": [
+          {
+            "op": "extract",
+            "input": "node-v22-20-0-linux-arm64-tar-xz",
+            "format": "tar",
+            "dest": "linux-arm64"
+          },
+          {
+            "op": "extract",
+            "input": "node-v22-20-0-darwin-arm64-tar-gz",
+            "format": "tar",
+            "dest": "darwin-arm64"
+          },
+          {
+            "op": "extract",
+            "input": "node-v22-20-0-win-arm64-zip",
+            "format": "zip",
+            "dest": "win-arm64"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "MIT (Node.js core; V8 BSD-3-Clause, OpenSSL Apache-2.0, ICU Unicode-3.0 and other bundled components)",
+        "redistributable": true,
+        "attribution": "Node.js contributors, OpenJS Foundation",
+        "notes": ""
+      },
+      "independence_group": "nodejs",
+      "description": "Validation: official Node.js v22.20.0 release binaries for arm64 Linux (ELF), arm64 macOS (Mach-O) and arm64 Windows (PE), extracted -- gives validation real arm64 ELF and Mach-O executables alongside the existing win-x64 Node.js PDB item (same nodejs group).",
+      "tags": [
+        "elf",
+        "macho",
+        "pe",
+        "arm64"
+      ]
+    },
+    {
+      "item_id": "f10-linux-firmware-20260910-full-tree",
+      "family": "F10",
+      "split": "tuning",
+      "scale": "large",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "firmware",
+            "url": "https://cdn.kernel.org/pub/linux/kernel/firmware/linux-firmware-20260910.tar.xz",
+            "sha256": "f3937ca282ba256242e2b6dbe523df8a80007d29ffd61f56d270190865492ea8",
+            "size": 656677324,
+            "notes": "SHA-256 from kernel.org sha256sums.asc (identical pin already used by f10-linux-firmware-20260910-subset)"
+          }
+        ],
+        "steps": [
+          {
+            "op": "run",
+            "script": "research/corpus/generators/g4-binary/unpack.py",
+            "interpreter": "python",
+            "seed": 0,
+            "params": {
+              "input": "firmware",
+              "format": "tar",
+              "dest": "",
+              "strip_components": 1
+            }
+          }
+        ],
+        "notes": "Full linux-firmware 20260910 tree (no member filter, unlike the curated subset item): closes the F10 large-tier gap (>512 MiB) with the complete real firmware collection."
+      },
+      "license": {
+        "spdx_or_name": "linux-firmware (per-file licenses listed in WHENCE; redistribution permitted, modification often not)",
+        "redistributable": true,
+        "attribution": "Firmware vendors (AMD, Intel, Realtek, MediaTek, Qualcomm, NVIDIA) via linux-firmware",
+        "notes": "WHENCE is kept in the item; only unmodified redistribution is permitted for most blobs."
+      },
+      "independence_group": "linux-firmware",
+      "description": "Tuning: the full decompressed linux-firmware 20260910 tree (same pinned tarball as the existing curated near-duplicate subset item), large tier.",
+      "tags": [
+        "firmware",
+        "large"
+      ]
+    },
+    {
+      "item_id": "f11-fedora-44-large-rpm-set",
+      "family": "F11",
+      "split": "validation",
+      "scale": "large",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "kernel-core",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-core-6.19.10-300.fc44.x86_64.rpm",
+            "sha256": "a69aebcfe61ed91a593926dd008a5178e0a84dff04b3700cf25b4d92032c4b6d",
+            "size": 21394553,
+            "notes": "kernel-core 0:6.19.10-300.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "kernel-modules-core",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-modules-core-6.19.10-300.fc44.x86_64.rpm",
+            "sha256": "97c409946fa6eeaf5d026bdb214a709d40a7a9204a3efb38ff23a59f518239d3",
+            "size": 76562633,
+            "notes": "kernel-modules-core 0:6.19.10-300.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "kernel-modules",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-modules-6.19.10-300.fc44.x86_64.rpm",
+            "sha256": "94045c641cc0edda2987dbe5a3468265c38383589a280e2adc106a3c05bee039",
+            "size": 103890061,
+            "notes": "kernel-modules 0:6.19.10-300.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "kernel-modules-extra",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-modules-extra-6.19.10-300.fc44.x86_64.rpm",
+            "sha256": "62047ba3ab7e928209c212cecbf23ffe170e709f3f7fdca5f489ecc9367b059a",
+            "size": 5025541,
+            "notes": "kernel-modules-extra 0:6.19.10-300.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "kernel-modules-internal",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-modules-internal-6.19.10-300.fc44.x86_64.rpm",
+            "sha256": "ad7b7ea56522cfa6d742b8babfb9ac55d2ae03fde412bb936551c791383fe4f7",
+            "size": 4118105,
+            "notes": "kernel-modules-internal 0:6.19.10-300.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "libreoffice-core",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/l/libreoffice-core-26.2.1.2-2.fc44.x86_64.rpm",
+            "sha256": "aa746834b468007d604c44842522e9d953f988074c609e671ca6d2e19901351f",
+            "size": 122999882,
+            "notes": "libreoffice-core 1:26.2.1.2-2.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "qt6-qtwebengine",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/q/qt6-qtwebengine-6.10.2-1.fc44.x86_64.rpm",
+            "sha256": "98fdd86bed52b2e5bd24da08c40396836fec1dc3785de3dff12d64d1c3d94ad3",
+            "size": 97287482,
+            "notes": "qt6-qtwebengine 0:6.10.2-1.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "firefox",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/f/firefox-150.0-1.fc44.x86_64.rpm",
+            "sha256": "5355effa003cad4a537db3244e8afc5a404eaf493c7761924fc70c9a2995e58f",
+            "size": 88054359,
+            "notes": "firefox 0:150.0-1.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "gcc",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/gcc-16.0.1-0.10.fc44.x86_64.rpm",
+            "sha256": "5410123363bb8a6e3ac5d00448619957f8062e4769a434ba28cf61e9f2524871",
+            "size": 45161684,
+            "notes": "gcc 0:16.0.1-0.10.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "llvm-libs",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/l/llvm-libs-22.1.1-2.fc44.x86_64.rpm",
+            "sha256": "9d0218f2ba9bcb2a786948ede00e62a8ae84fccb56122aec64b45e640bc74d81",
+            "size": 35736978,
+            "notes": "llvm-libs 0:22.1.1-2.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "r-core",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/r/R-core-4.5.3-1.fc44.x86_64.rpm",
+            "sha256": "786872050382a63ca1d6e54c625554393099fc6176ae5bb49bd357636f9abd97",
+            "size": 64586898,
+            "notes": "R-core 0:4.5.3-1.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "glibc-all-langpacks",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/g/glibc-all-langpacks-2.43-2.fc44.x86_64.rpm",
+            "sha256": "7201d468b000b3bbef3eef24727b0c8c358e702ada786ff68972413e5e79474a",
+            "size": 18406358,
+            "notes": "glibc-all-langpacks 0:2.43-2.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          },
+          {
+            "name": "kernel-devel",
+            "url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/os/Packages/k/kernel-devel-6.19.10-300.fc44.x86_64.rpm",
+            "sha256": "dfcc13793b3c0d1e12b28e89cddd6fd517adba8496be5768b21fa9952b677196",
+            "size": 25313941,
+            "notes": "kernel-devel 0:6.19.10-300.fc44.x86_64 (SHA-256 from Fedora 44 primary.xml)"
+          }
+        ],
+        "notes": "Curated for size (~676 MiB combined, disjoint from the existing medium-tier f11-fedora-44-rpms package set): kernel family, LibreOffice, Qt WebEngine, Firefox, GCC, LLVM libs, R, full glibc locale data. Closes the F11 large-tier gap (>512 MiB)."
+      },
+      "license": {
+        "spdx_or_name": "Fedora packages (GPL/LGPL/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "Fedora Project contributors",
+        "notes": ""
+      },
+      "independence_group": "fedora",
+      "description": "Validation: a larger set of Fedora 44 release RPMs as published (RPM lead/header plus zstd-compressed cpio payload), reaching the large scale tier.",
+      "tags": [
+        "rpm",
+        "zstd",
+        "large"
+      ]
+    },
+    {
+      "item_id": "f16-oci-ubuntu-noble-multiarch-index",
+      "family": "F16",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "real",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/build_oci_layout.py",
+          "interpreter": "python",
+          "seed": 0,
+          "params": {
+            "mode": "copy",
+            "repo": "ubuntu",
+            "multi_arch": true,
+            "compress": "gzip",
+            "ref_digest": "sha256:69cecf4bbf72d2d44a9eef1b71fb98c7fb973d78af11399deccef19beb008ad9"
+          }
+        },
+        "output_pin": "TOFU",
+        "notes": "No Docker daemon: skopeo copy --multi-arch all of the official Docker Hub ubuntu:24.04 image index (resolved 2026-09-17 -- pinned by the index's own raw-manifest SHA-256, a real, independently-recomputable OCI content digest) into an OCI image layout directory (oci-layout, index.json, blobs/sha256/*): all 12 manifests (amd64, arm/v6, arm/v7, arm64/v8, 386, ppc64le, riscv64, s390x, plus each platform's attestation manifest) with every platform's real gzip layer(s)."
+      },
+      "license": {
+        "spdx_or_name": "Ubuntu archive packages (GPL-2.0/GPL-3.0/LGPL-2.1/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "Canonical Ltd. and the respective upstream authors",
+        "notes": ""
+      },
+      "independence_group": "ubuntu-noble",
+      "description": "Tuning: a real OCI image layout for the official multi-arch ubuntu:24.04 image index, gzip layers, exactly as served by the registry (skopeo is a plain HTTPS registry client; no Docker daemon).",
+      "tags": [
+        "oci",
+        "container-image",
+        "multi-arch-index",
+        "gzip"
+      ]
+    },
+    {
+      "item_id": "f16-oci-fedora-44-zstd-layers",
+      "family": "F16",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/build_oci_layout.py",
+          "interpreter": "python",
+          "seed": 0,
+          "params": {
+            "mode": "copy",
+            "repo": "fedora",
+            "multi_arch": false,
+            "compress": "zstd",
+            "ref_digest": "sha256:be9d65e2344d805cc11114319c685ecaa96b6d9b4350a0a6460cdb931babbd19"
+          }
+        },
+        "output_pin": "TOFU",
+        "notes": "skopeo copy --dest-compress-format zstd of the official Docker Hub fedora:44 amd64 manifest (resolved 2026-09-17): the same real filesystem content as fedora's other items, re-encoded to zstd-compressed OCI layers (layer mediaType application/vnd.oci.image.layer.v1.tar+zstd) instead of the as-published gzip."
+      },
+      "license": {
+        "spdx_or_name": "Fedora packages (GPL/LGPL/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "Fedora Project contributors",
+        "notes": ""
+      },
+      "independence_group": "fedora",
+      "description": "Validation: a real OCI image layout for the official Fedora 44 amd64 image with its layer(s) re-encoded to zstd compression -- closes the 'at least one zstd-layer copy' gap.",
+      "tags": [
+        "oci",
+        "container-image",
+        "zstd"
+      ]
+    },
+    {
+      "item_id": "f16-heldout-oci-almalinux-10-whiteout-derive",
+      "family": "F16",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/build_oci_layout.py",
+          "interpreter": "python",
+          "seed": 0,
+          "params": {
+            "mode": "whiteout-derive",
+            "repo": "almalinux",
+            "ref_digest": "sha256:7b3a2db3971727029b6aed0e6c30ad0f3812229ac5447520acea308cb535800d",
+            "add_path": "etc/entrybound-research-note.txt",
+            "add_text": "entrybound research: synthetic whiteout-demo layer\n",
+            "whiteout_path": "etc/os-release"
+          }
+        },
+        "output_pin": "TOFU",
+        "notes": "No Docker daemon, no build tool: the base layer is skopeo-copied byte-identical from the official Docker Hub almalinux:10 amd64 manifest (resolved 2026-09-17); a second, synthetic gzip layer is appended that adds one small file and whiteouts etc/os-release (the OCI/Docker '.wh.<name>' convention) -- a genuine 2-layer OCI image with a real base and a real whiteout entry."
+      },
+      "license": {
+        "spdx_or_name": "AlmaLinux packages (GPL/LGPL/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "AlmaLinux OS Foundation and upstream authors",
+        "notes": "The added second layer is entrybound research's own text, CC0-1.0."
+      },
+      "independence_group": "almalinux",
+      "description": "Held-out: a real AlmaLinux 10 amd64 base plus one synthetic layer demonstrating an OCI/Docker-style whiteout deletion and a plain addition -- closes the layers+whiteouts gap.",
+      "tags": [
+        "oci",
+        "container-image",
+        "whiteout",
+        "layered"
+      ]
+    },
+    {
+      "item_id": "f16-alpine-virt-3241-iso",
+      "family": "F16",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "iso",
+            "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/x86_64/alpine-virt-3.24.1-x86_64.iso",
+            "sha256": "e73a6241bd5f3c5c2d4d38c02cc52c378c0415a7c888bd292066bf36e0f41a39",
+            "size": 69206016,
+            "notes": "SHA-256 from latest-releases.yaml"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Alpine packages (GPL-2.0-only busybox, MIT musl, OpenSSL Apache-2.0, others)",
+        "redistributable": true,
+        "attribution": "Alpine Linux developers and upstream authors",
+        "notes": ""
+      },
+      "independence_group": "alpine-linux",
+      "description": "Tuning: official Alpine 3.24.1 'virt' ISO9660 installer image, as published -- gives tuning its first as-published ISO9660 filesystem.",
+      "tags": [
+        "iso9660"
+      ]
+    },
+    {
+      "item_id": "f16-debian-13-netinst-iso",
+      "family": "F16",
+      "split": "validation",
+      "scale": "large",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "iso",
+            "url": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.7.0-amd64-netinst.iso",
+            "sha256": "a7ef94ac2fb9a7fec454552abd629b7cc9d5155c886165a45649f5ce6167e355",
+            "size": 792723456,
+            "notes": "SHA-256 from debian-cd/current/amd64/iso-cd/SHA256SUMS; cdimage.debian.org redirects to a nearby mirror, but the filename and SHA-256 are pinned from the canonical SHA256SUMS"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "Debian image (DFSG-free packages, per-package copyright)",
+        "redistributable": true,
+        "attribution": "Debian Project",
+        "notes": ""
+      },
+      "independence_group": "debian-trixie",
+      "description": "Validation: official Debian 13.7.0 amd64 netinst ISO9660 image, as published -- closes the F16 validation large-tier gap and gives validation an as-published ISO9660 image.",
+      "tags": [
+        "iso9660",
+        "large"
+      ]
+    },
+    {
+      "item_id": "f16-heldout-almalinux-102-boot-iso",
+      "family": "F16",
+      "split": "heldout",
+      "scale": "large",
+      "kind": "download",
+      "real_or_generated": "real",
+      "recipe": {
+        "inputs": [
+          {
+            "name": "iso",
+            "url": "https://repo.almalinux.org/almalinux/10/isos/x86_64/AlmaLinux-10.2-x86_64-boot.iso",
+            "sha256": "b3f865468075bcada8f208d830289302c67529789d668041d24e8d6fc697ba6a",
+            "size": 1056202752,
+            "notes": "SHA-256 from the isos/x86_64/CHECKSUM file; the dated file name is pinned rather than the -latest- alias"
+          }
+        ]
+      },
+      "license": {
+        "spdx_or_name": "AlmaLinux packages (GPL/LGPL/MIT/BSD and others)",
+        "redistributable": true,
+        "attribution": "AlmaLinux OS Foundation and upstream authors",
+        "notes": ""
+      },
+      "independence_group": "almalinux",
+      "description": "Held-out: official AlmaLinux 10.2 x86_64 boot/network-install ISO9660 image, as published.",
+      "tags": [
+        "iso9660",
+        "large"
+      ]
+    },
+    {
+      "item_id": "f16-alpine-3241-minirootfs-ext4-vhdx",
+      "family": "F16",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "derive",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "from_items": [
+          "f16-alpine-3241-minirootfs-ext4-raw"
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/convert_image.sh",
+          "interpreter": "bash",
+          "seed": 0,
+          "params": {
+            "from_item": "f16-alpine-3241-minirootfs-ext4-raw",
+            "src": "alpine-3.24.1-x86_64-ext4.img",
+            "src_format": "raw",
+            "dst": "alpine-3.24.1-x86_64-ext4.vhdx",
+            "dst_format": "vhdx",
+            "options": "subformat=dynamic"
+          }
+        }
+      },
+      "license": {
+        "spdx_or_name": "Alpine packages (GPL-2.0-only busybox, MIT musl, OpenSSL Apache-2.0, others)",
+        "redistributable": true,
+        "attribution": "Alpine Linux developers and upstream authors",
+        "notes": ""
+      },
+      "independence_group": "alpine-linux",
+      "description": "Tuning: the same Alpine ext4 image converted to VHDX (dynamic) -- gives F16 a Hyper-V-style virtual disk format alongside the existing raw/qcow2 items.",
+      "tags": [
+        "vhdx",
+        "ext4"
+      ]
+    },
+    {
+      "item_id": "f14-legacy-writer-matrix-tuning",
+      "family": "F14",
+      "split": "tuning",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "from_items": [
+          "f01-tuning-zstd-v1-5-7-git"
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/legacy_writer_matrix.py",
+          "interpreter": "python",
+          "seed": 0,
+          "params": {
+            "source_item": "f01-tuning-zstd-v1-5-7-git",
+            "password": "eb-research-legacy-demo-2026",
+            "windows": true
+          }
+        },
+        "notes": "Real source tree: the zstd git-archive source (same split, same f01-tuning-zstd-v1-5-7-git item). WIM/CAB embed real capture timestamps and are not bit-reproducible across runs, so this item is unpinned (output_pin left at the kind=build default of null); _generation_manifest.json in the item root records every writer invocation and its outcome."
+      },
+      "license": {
+        "spdx_or_name": "Legacy-archive-writer matrix over zstd's BSD-3-Clause source (see f01-tuning-zstd-v1-5-7-git); the archive wrappers themselves add no new copyrightable content",
+        "redistributable": true,
+        "attribution": "Meta Platforms, Inc. and Facebook, Inc. (zstd) via research re-packaging",
+        "notes": "Shared demo password for every encrypted variant: 'eb-research-legacy-demo-2026'."
+      },
+      "independence_group": "zstd",
+      "description": "Tuning: a real source tree written through 7z/zip/tar/cpio/WIM/CAB/Windows-host legacy archive writers spanning filters, encryption, ZIP64, non-UTF-8 names and tar dialects.",
+      "tags": [
+        "7z",
+        "zip",
+        "tar",
+        "cpio",
+        "wim",
+        "cab",
+        "legacy-writer-matrix"
+      ]
+    },
+    {
+      "item_id": "f14-legacy-writer-matrix-validation",
+      "family": "F14",
+      "split": "validation",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "from_items": [
+          "f01-validation-redis-7-2-16-git"
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/legacy_writer_matrix.py",
+          "interpreter": "python",
+          "seed": 0,
+          "params": {
+            "source_item": "f01-validation-redis-7-2-16-git",
+            "password": "eb-research-legacy-demo-2026",
+            "windows": true
+          }
+        },
+        "notes": "Real source tree: the redis git-archive source (same split, same f01-validation-redis-7-2-16-git item). Unpinned for the same WIM/CAB timestamp reason as the tuning variant."
+      },
+      "license": {
+        "spdx_or_name": "Legacy-archive-writer matrix over redis's BSD-3-Clause source (see f01-validation-redis-7-2-16-git); the archive wrappers themselves add no new copyrightable content",
+        "redistributable": true,
+        "attribution": "Redis Ltd. and contributors via research re-packaging",
+        "notes": "Shared demo password for every encrypted variant: 'eb-research-legacy-demo-2026'."
+      },
+      "independence_group": "redis",
+      "description": "Validation: the same legacy-writer matrix over a different, validation-split real source tree (redis).",
+      "tags": [
+        "7z",
+        "zip",
+        "tar",
+        "cpio",
+        "wim",
+        "cab",
+        "legacy-writer-matrix"
+      ]
+    },
+    {
+      "item_id": "f14-legacy-writer-matrix-heldout",
+      "family": "F14",
+      "split": "heldout",
+      "scale": "medium",
+      "kind": "build",
+      "real_or_generated": "derived-from-real",
+      "recipe": {
+        "from_items": [
+          "f01-heldout-musl-1-2-5-src"
+        ],
+        "generator": {
+          "script": "research/corpus/generators/g4-binary/legacy_writer_matrix.py",
+          "interpreter": "python",
+          "seed": 0,
+          "params": {
+            "source_item": "f01-heldout-musl-1-2-5-src",
+            "password": "eb-research-legacy-demo-2026",
+            "windows": true
+          }
+        },
+        "notes": "Real source tree: the musl source release (same split, same f01-heldout-musl-1-2-5-src item; a plain source tree, not a git checkout, per the critique's own suggestion for this split). Unpinned for the same WIM/CAB timestamp reason as the tuning variant."
+      },
+      "license": {
+        "spdx_or_name": "Legacy-archive-writer matrix over musl's MIT-licensed source (see f01-heldout-musl-1-2-5-src); the archive wrappers themselves add no new copyrightable content",
+        "redistributable": true,
+        "attribution": "musl libc authors via research re-packaging",
+        "notes": "Shared demo password for every encrypted variant: 'eb-research-legacy-demo-2026'."
+      },
+      "independence_group": "musl",
+      "description": "Held-out: the same legacy-writer matrix over a held-out-split real source tree (musl), provenance-only per the held-out description rule.",
+      "tags": [
+        "7z",
+        "zip",
+        "tar",
+        "cpio",
+        "wim",
+        "cab",
+        "legacy-writer-matrix"
       ]
     }
   ]

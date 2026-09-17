@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-heldout-almalinux-102-boot-iso",
+  "inputs": {},
+  "output": {
+    "materialization_key": "bfced9e7ab83936fdd7f6744d73185130e1be545d78be10ea0c6f9a2ce45c454",
+    "logical_tree_sha256": "968353e9c5b42fabaef75b08f136d96843d744c0bbce5b6323a30cae337a5d0e",
+    "pinned_utc": "2026-09-17T08:27:22Z"
+  },
+  "history": []
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-oci-fedora-44-zstd-layers",
+  "inputs": {},
+  "output": {
+    "materialization_key": "2943da25f982bd916910a555de270055f0699b8a805b0c1d12913a63f7fb706a",
+    "logical_tree_sha256": "258cea8122ae223f401c87ca23e8b9757f7d836346ea8f23c7477ee50f6f4779",
+    "pinned_utc": "2026-09-17T08:33:32Z"
+  },
+  "history": []
+}

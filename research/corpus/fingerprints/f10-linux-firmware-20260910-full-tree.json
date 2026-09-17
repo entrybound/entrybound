@@ -1,0 +1,119 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f10-linux-firmware-20260910-full-tree",
+  "family": "F10",
+  "split": "tuning",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "linux-firmware",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "f3fa3472564b467fb59aa046e654c7e553dac70d9c4eb62d09151e2c0099f0bd",
+  "materialization_key": "2ffb881a9acad03bfd0fba9635d319f020f98ac98ec091616ca86e5103307f12",
+  "materialized_utc": "2026-09-17T08:27:07Z",
+  "materialized_relpath": "corpus/tuning/f10-linux-firmware-20260910-full-tree",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "79c31e9e62dfd3572debba8d3a05b99c6de4b66d9651214eb64971ef2445590d",
+    "pinned_utc": "2026-09-17T08:27:07Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 2015065171,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "firmware",
+        "url": "https://cdn.kernel.org/pub/linux/kernel/firmware/linux-firmware-20260910.tar.xz",
+        "final_url": "https://cdn.kernel.org/pub/linux/kernel/firmware/linux-firmware-20260910.tar.xz",
+        "sha256": "f3937ca282ba256242e2b6dbe523df8a80007d29ffd61f56d270190865492ea8",
+        "size": 656677324,
+        "retrieved_utc": "2026-09-13T02:28:00Z",
+        "retrieval_date": "2026-09-12",
+        "pin": "declared",
+        "filename": "linux-firmware-20260910.tar.xz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "interpreter": "python",
+        "seed": 0,
+        "params": {
+          "input": "firmware",
+          "format": "tar",
+          "dest": "",
+          "strip_components": 1
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g4-binary/unpack.py",
+        "script_sha256": "db837e63edecd5f21791a22b7e8924360aba42d7d069f4ae55722c1642def48c",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "input": "firmware",
+          "format": "tar",
+          "dest": "",
+          "strip_components": 1
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "00d44d65a6ce9abd885cde0b8391944a5944da3d967d32f7b57f58dcf14ea3a9",
+    "logical_tree_sha256": "79c31e9e62dfd3572debba8d3a05b99c6de4b66d9651214eb64971ef2445590d",
+    "content_tree_sha256": "2d3d2e537282667c8bb7b87d55c1bede99fd2ba7729318592fe1b44745add66c",
+    "extended_tree_sha256": "0ae117a9ea3427fed083431f8a4932575c5ff2d889512c430d08c9bc94c956b9",
+    "bytes": 2015065171,
+    "bytes_all_paths": 2015065171,
+    "allocated_bytes": 2025975808,
+    "counts": {
+      "objects": 5323,
+      "files": 4889,
+      "unique_file_inodes": 4889,
+      "dirs": 433,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 5,
+      "max_name_length_bytes": 62,
+      "path_length_bytes": {
+        "min": 2,
+        "max": 81,
+        "mean": 29.505,
+        "p50": 27,
+        "p95": 52
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

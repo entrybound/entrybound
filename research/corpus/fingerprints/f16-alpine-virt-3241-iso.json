@@ -1,0 +1,96 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f16-alpine-virt-3241-iso",
+  "family": "F16",
+  "split": "tuning",
+  "scale": "medium",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "alpine-linux",
+  "source_file": "research/corpus/sources/g4-binary.json",
+  "item_def_sha256": "7d8a513a3f895c3e3e1ea0051b3a82d85491c80615213287e21f35a920ee62f3",
+  "materialization_key": "cfa090ee71faf5f83bfe86cfb3ca683342cfc859b36d94614596cecc6f1c8c8d",
+  "materialized_utc": "2026-09-17T08:26:29Z",
+  "materialized_relpath": "corpus/tuning/f16-alpine-virt-3241-iso",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "20b5cf69df879924a9c5fda20424f85c6bcf2952c8b94abee2beae0062558302",
+    "pinned_utc": "2026-09-17T08:26:29Z"
+  },
+  "scale_check": {
+    "tier": "medium",
+    "tier_limit_bytes": 536870912,
+    "bytes": 69206016,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "iso",
+        "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/x86_64/alpine-virt-3.24.1-x86_64.iso",
+        "final_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/x86_64/alpine-virt-3.24.1-x86_64.iso",
+        "sha256": "e73a6241bd5f3c5c2d4d38c02cc52c378c0415a7c888bd292066bf36e0f41a39",
+        "size": 69206016,
+        "retrieved_utc": "2026-09-17T08:26:29Z",
+        "retrieval_date": "2026-09-17",
+        "pin": "declared",
+        "filename": "alpine-virt-3.24.1-x86_64.iso"
+      }
+    ],
+    "steps": [
+      {
+        "op": "copy",
+        "input": "iso"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "8f2a7cb95f4d3bf1b8c7834a11af71843a0a2fd56b51ce54e6ef84073501e391",
+    "logical_tree_sha256": "20b5cf69df879924a9c5fda20424f85c6bcf2952c8b94abee2beae0062558302",
+    "content_tree_sha256": "06760d1389c7a316cfb8d5102873385cb1d67fbc975bc93c15dbadb3b1509e5f",
+    "extended_tree_sha256": "f727f870e92499b6cb43de0281bd8e0fe407211080c315fe0003699366993063",
+    "bytes": 69206016,
+    "bytes_all_paths": 69206016,
+    "allocated_bytes": 69206016,
+    "counts": {
+      "objects": 2,
+      "files": 1,
+      "unique_file_inodes": 1,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 29,
+      "path_length_bytes": {
+        "min": 29,
+        "max": 29,
+        "mean": 29.0,
+        "p50": 29,
+        "p95": 29
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

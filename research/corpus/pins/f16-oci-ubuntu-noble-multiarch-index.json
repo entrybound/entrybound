@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f16-oci-ubuntu-noble-multiarch-index",
+  "inputs": {},
+  "output": {
+    "materialization_key": "06c0d7534aba93ce8be8cee7e0e48e37decdc5cfcdc8dc409894a51c189a5f7e",
+    "logical_tree_sha256": "7960b844ef766c03f3c3fb25a88036626d280294d82da2fd21e05c080f564bde",
+    "pinned_utc": "2026-09-17T08:27:29Z"
+  },
+  "history": []
+}
