@@ -5,8 +5,102 @@ Product-Decision Research Program. It is updated and committed at every
 atomically meaningful change. If work is interrupted, start at
 [How to resume](#how-to-resume).
 
-Status: **IN PROGRESS** — `COMPREHENSIVE RESEARCH PROGRAM: INCOMPLETE` until the
-completion gate (program §43) is audited and met.
+Status: **PAUSED by the program owner on 2026-09-17 (~14:10 UTC)** — `COMPREHENSIVE RESEARCH PROGRAM: INCOMPLETE`. Nothing is running. Start with [Pause state and remaining work](#pause-state-and-remaining-work-2026-09-17).
+The program cannot be reported COMPLETE until the program §43 completion gate is audited and met.
+
+## Pause state and remaining work (2026-09-17)
+
+### State at pause
+
+- **Running work:** none.
+  - Phase C-design workflow `wf_47347bc4-611` was stopped during its final `revise:design` agent.
+  - The detached EXP-BASE-SIZE size pass was stopped with `research/baselines/stop_size_pass.sh` (marker `/root/eb-research/logs/baselines/size-pass.paused`).
+  - No monitors or background jobs remain.
+- **Uncommitted work:** none. The last pause checkpoints are `c711d09` (design revision WIP), `5ce7cfe` (partial size pass), and `1b24800` (late corpus stats), followed by the commit that adds this section.
+- **Usage at pause:** weekly 20% (resets 2026-09-23 21:00 UTC). Pacing policy: at most about 14% per day, Sonnet for mechanical stages.
+- **Storage:** C: about 373 GB free, D: about 422 GB free. `disk_guard.py` passes; the WSL distro is at `D:\WSL\Ubuntu`, Docker disks at `D:\Docker\wsl`.
+- **Docker Desktop:** does not start (pre-existing AF_UNIX socket error 1920; see the storage incident section). Docker-dependent work is deferred.
+
+### Completed (see the phase table for commits)
+
+- **A. Source-of-truth audit:** 36 extraction slices / 8,429 records.
+  - Ledgers: 1,521 requirements and 596 decisions; mechanical coverage 100%; one completeness-critic round.
+  - Also produced: source inventory, supersession ledger, findings F-0001 and F-0002.
+- **Method pre-registration:** `archetypal-objective.md`, `decision-method.md`, `methods/thresholds.json` (`14b977c`); round-1 method review (85 findings; 84 fixed, 1 accepted risk).
+- **B1. Infrastructure and corpus:**
+  - Environment fingerprints, the `ebr` runner/statistics, and corpus tooling.
+  - Corpus `ebrc-2026.09-v1`, 300 items (manifest `ed28b1b4…`). Round-2 critic: adequate for tuning/validation with conditions; held-out NOT yet adequate.
+  - Baselines: 27 incumbent configurations, `capability-matrix.csv` (298 rows), probes.
+- **B2. Research harness:** default-off `research-internals` (byte-identity proven); 7 harness crates (249 tests); adversarial review (14 of 16 HIGH/MEDIUM fixed).
+- **Operations:** `checkpoint.py` (serialized commit, `--set-row`, `--co-author`), `watch_journals.py` (quiet mode, disk alarm, markers), `disk_guard.py`, `disk_alarm.py`, the ledger assembler, and the corpus shard tools.
+
+### Work in progress (committed, not final)
+
+- **C-design (`c711d09`):**
+  - 238 experiment designs (43 READY, 167 NEEDS_TOOLING, 28 BLOCKED) under `research/experiments/`. `decision-coverage.csv`: 591/596 decisions covered by an experiment; 5 explicitly uncovered.
+  - `design-review-round1.md` verdict: **not ready as the pre-registration record** (2 BLOCKER, 10 HIGH, 15 MEDIUM, 8 LOW). The revision is only partly applied.
+  - `build_index.py` reports 100 validation issues (39 `ready_not_runnable`, 60 `blocked_reason_on_unblocked`, 1 `timing_flag_mismatch`), listed in `research/experiments/index-validation-WIP-20260917.txt`.
+  - **No experiment pre-registration record exists yet.**
+- **EXP-BASE-SIZE (`5ce7cfe`):**
+  - Small tier `size-small-20260917T033541Z` complete (757 rows).
+  - Medium sample `size-medium-20260917T033541Z` partial (405 of 1,120 samples). Both gzip files are intact.
+  - Normalized outputs do not yet include the medium run. No timing data exists (timing requires quiet windows).
+
+### Remaining work, in dependency order
+
+1. **Finish C-design.** Resolve every BLOCKER/HIGH/MEDIUM finding in `research/experiments/design-review-round1.md`, especially:
+   - DR1-01: every design session read `research/corpus/coverage.md`, which names held-out items. This compounds the held-out exposure finding G01.
+   - DR1-02: decision-bearing quantities lacking Appendix A.2 metric names.
+   - DR1-03: no cross-domain allocation of validation looks.
+
+   Then clear the 100 index validation issues, rerun `research/tools/experiments/build_index.py` and `ebr validate`, and commit the experiment pre-registration record.
+2. **Close the method RD-4 gates:** the B01 constraint crosswalk, the K01 ledger-schema extension, the C03 `objective_screen.py` fix, and a round-2 method review re-checking every RD-4 row.
+3. **Decide the held-out strategy (G01 + DR1-01):** whether the existing held-out split remains usable, and the sealed supplementary held-out selection procedure (fixed before the freeze, executed after it). Freeze `heldout-lock.json` only at the design freeze.
+4. **Close the corpus conditions (critique round 2):**
+   - G02 custom/directory-format DB dumps (needs Docker or a non-Docker PostgreSQL);
+   - G03 registry source packages;
+   - G17 F02 CI artifacts and a validation large-tier item;
+   - an F17 kernel-header cross-split overlap audit.
+5. **Close the harness review items:**
+   - R1-16: `ebr/execute.py` RSS accounting when GNU time is absent;
+   - R1-14: netem slow-start sensitivity;
+   - regenerate the netem calibration in a quiet window;
+   - build production `ebound` for decision-grade timing.
+6. **Complete the baselines:** finish the medium sample (rerun `run_size_pass.sh`; it starts new run IDs), large items, second repetitions for determinism, the `zstd --patch-from` versioned-tree config, and quiet-window timing runs.
+7. **C-exec:**
+   - build tooling for the 167 NEEDS_TOOLING experiments, then run the 43 READY and newly runnable experiments (scripted compute where possible);
+   - quiet-window timing;
+   - platform runs on Windows NTFS and Linux ext4/XFS/btrfs;
+   - crypto literature review and leakage-attack reproduction;
+   - independent reader, conformance corpus, fuzzing campaigns;
+   - simulated first-use CLI evaluations;
+   - follow-up experiments for F-0001/F-0002.
+8. **C-analyze:** normalize results, write the 13 domain reports under `research/reports/`, update the Decision Ledger with evidence links, counterevidence, sensitivity and costs, record negative results, and run the round-2 ledger completeness critic.
+9. **D:** commit `research/decisions/design-freeze.json` (key `design_freeze_sha`), unlock held-out, run the final held-out system evaluation against capability-matched incumbents, and produce the Pareto frontiers.
+10. **E:** write the stable-v1 disposition for every feature, `product-decisions.md`, `stable-v1-scope.md`, `final-system-evaluation.md`, `remaining-unknowns.md`, `reproducibility.md`, `threats-to-validity.md`, and the top-level `research/README.md`.
+11. **F:** run the adversarial §43 gate audit and write the final completion report (§45).
+
+### Evidence this host cannot produce (will be recorded in remaining-unknowns.md unless resolved)
+
+- macOS/APFS/HFS+ behavior and native ARM64 (hosted runners declined).
+- Docker-based emulated arm64 and Docker-built items (host Docker startup issue).
+- ReFS and admin-only Windows metadata (non-admin session).
+- Independent external cryptographic review.
+- Human usability participants (§33 simulations only).
+
+Unless these are resolved, the final report must state `COMPREHENSIVE RESEARCH PROGRAM: INCOMPLETE`.
+
+### Rough remaining effort
+
+The largest remaining blocks are tooling, experiment execution (mostly scripted compute), analysis, reports, and reviews. Estimate: roughly 2–4 more weekly usage windows plus many hours of machine compute (quiet-window timing and scale tests). This is an estimate, not a measurement.
+
+### Resume sequence
+
+1. `git -C D:\Projects\entrybound\entrybound log --oneline -15`, then read this section and the phase table.
+2. `C:\Python313\python.exe research/orchestration/disk_guard.py` must pass. Check plan usage before launching anything.
+3. Resume C-design either with `Workflow({scriptPath: 'D:/Projects/entrybound/entrybound/research/orchestration/workflows/phase-c-design.js', resumeFromRunId: 'wf_47347bc4-611'})`, where completed agents replay from cache and the revise agent reruns on top of the committed WIP, or with a new revision-only workflow that first addresses DR1-01.
+4. Relaunch the size pass only when the machine is otherwise idle: `wsl.exe -d Ubuntu -- bash -lc 'setsid nohup bash /mnt/d/Projects/entrybound/entrybound/research/baselines/run_size_pass.sh >/dev/null 2>&1 &'` (stop with `research/baselines/stop_size_pass.sh`).
+5. Then continue from item 2 of the remaining work list above.
 
 ## Program baseline
 
@@ -69,7 +163,7 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 | B1. Infrastructure & corpus | §4, §5, §6, §7 | DONE WITH CONDITIONS (2026-09-17) — closure `wf_a924ee34-6e0` (`phase-b1e-corpus-closure.js`) completed; the detached size pass continues | Corpus `ebrc-2026.09-v1`: 300 items (manifest `ed28b1b4…`), `provision --check` 300/300 OK. The round-2 critic `research/corpus/critique-round2.md` rates it **ADEQUATE_FOR_TUNING_AND_VALIDATION = YES, WITH CONDITIONS**: all 7 round-1 blockers are closed or substantially closed. Conditions: G02 DB dumps partial (no pg_dump -Fc/-Fd without Docker); G03 registry source packages absent; G17 F02 CI artifacts and validation large tier open; cross-split overlaps (F03 yq/fzf, bat/ripgrep; new F17 kernel headers) documented as covariates rather than removed. **HELD-OUT = NOT YET ADEQUATE** (draft `heldout-lock.json`, no design freeze, G01 sealed-supplement decision pending). Fixes: ebr backslash-path bug; fingerprint extent map now drops the page cache before SEEK_DATA/SEEK_HOLE (a root cause of earlier flip-flopping identities); upstream-digest cache checks. Baselines `f516306`; EXP-BASE-SIZE small tier complete, medium sample running detached. |
 | Gate: method pre-registration | §3.3, §37 | DONE — pre-registration commit `14b977c`; round-1 review `research/methods/method-review-round1.md` recorded 85 findings (10 BLOCKER): 84 fixed, 1 accepted risk (RD-3) | `research/archetypal-objective.md`, `research/decision-method.md`, `research/methods/thresholds.json` (status `pre-registered`). No decision may reach DECIDED until the RD-4 gates listed under Open integration items are closed and a round-2 method review has re-checked every RD-4 row. |
 | B2. Research harness | §4, §7, §9, §12 | DONE (2026-09-17) — `wf_b2e35b8c-f65` (`phase-b2r-harness.js`) | research-internals `c9a2d3a` (default-off, additive-only, 8/8 CLI outputs identical with and without the feature); harness workspace `research/harness` with 7 crates: ebr-common, ebr-pack `ab31252`, ebr-chunk `50b6a1c` (gear-norm-v1 + 8 CDC algorithms), ebr-codec `9d80208`, ebr-planner `f144878` (exhaustive search, regret, alternative selectors), ebr-access `ee5118e`, ebr-netem `4593671`. Integration `68dfa5d`: 249/249 tests on WSL, Windows builds clean. Adversarial review `5bd33f8` (`research/harness/harness-review-round1.md`): 16 HIGH/MEDIUM findings, 14 fixed. **Binding use constraints:** decision-grade timing uses `ebound` built from the production workspace (research-internals may change inlining); the netem calibration must be regenerated in a quiet window before citation; R1-16 (ebr `execute.py` RSS includes the Python/GNU time process when GNU time is missing) and R1-14 (netem has no TCP slow start, so range-coalescing decisions need a slow-start sensitivity analysis) remain open; emulated arm64 is deferred (Docker). Findings F-0001 and F-0002. |
-| C-design | §6–§35 | RUNNING — `wf_47347bc4-611` (script `research/orchestration/workflows/phase-c-design.js`; resume with `resumeFromRunId`) | 15 domain design agents (chunking, crossfile, codecs, reconstruction, planner, container, remote, scale, platform, crypto, integrity, legacy, conformance, ecosystem, evaluation) write `research/experiments/<EXP-ID>/{protocol.md,spec.yaml}` and index fragments. A Sonnet agent then builds `research/experiments/index.csv` and `decision-coverage.csv`, followed by an adversarial design review and a revision; the revision commit is the experiment pre-registration record. Blocked evidence routes (macOS/ARM64/Docker/humans/external review) are designed and marked BLOCKED. |
+| C-design | §6–§35 | PAUSED (2026-09-17) — `wf_47347bc4-611` stopped during `revise:design`; WIP `c711d09` | 238 experiment designs (43 READY, 167 NEEDS_TOOLING, 28 BLOCKED); `decision-coverage.csv` 591/596 covered, 5 explicitly uncovered. `design-review-round1.md`: not ready as the pre-registration record (2 BLOCKER, 10 HIGH, 15 MEDIUM, 8 LOW), revision partially applied, 100 index validation issues. **The pre-registration record is not yet committed.** |
 | C-exec | §8–§33 | PLANNED | Size/determinism/platform/security experiments in parallel; timing only in quiet windows via runner `--timing` guard. |
 | C-analyze | §8–§33, §38, §39 | PLANNED | Normalization, domain reports, Decision Ledger updates, negative results. |
 | D. Design freeze + held-out | §35 | PLANNED | Freeze commit recorded in `research/decisions/design-freeze.json`; held-out unlock only after it. |
@@ -250,3 +344,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T14:10Z — PAUSE: C-design revision stopped mid-run; WIP committed (238 experiments; review 2 BLOCKER/10 HIGH unresolved; 100 index validation issues). Not the pre-registration record.
 - 2026-09-17T14:10Z — PAUSE: EXP-BASE-SIZE size pass stopped (small 757 rows; medium 405/1120 partial, intact); normalized outputs not yet regenerated for the medium run.
 - 2026-09-17T14:10Z — Late corpus statistics committed.
+- 2026-09-17T14:12Z — PROGRAM PAUSED by owner 2026-09-17; pause state, remaining work, and resume sequence documented at the top of PROGRESS.md.
