@@ -19,6 +19,9 @@
 //! between a candidate and the one actually selected. [`candidate_regret`]
 //! computes it directly from one chunk's trace.
 
+pub mod exhaustive;
+pub mod strategies;
+
 use entrybound::diagnostics::Diagnostic;
 use entrybound::eam::{
     Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, DecodeRequirements, Digest,
@@ -241,5 +244,112 @@ mod tests {
         let trace = trace_chunk(CompressionProfile::Balanced, PlannerVersion::V6, &bytes).unwrap();
         let regret = candidate_regret(&trace);
         assert_eq!(regret[trace.selected], 0);
+    }
+
+    /// A deterministic xorshift64* stream: unlike `entrybound`'s own private
+    /// `deterministic_noise` test helper (not exposed to this crate), this is
+    /// this crate's own, but built the same way -- a fixed seed, no OS
+    /// randomness, so every run of every test using it sees identical bytes.
+    fn generated_noise(seed: u64, len: usize) -> Vec<u8> {
+        let mut state = seed | 1;
+        (0..len)
+            .map(|_| {
+                state ^= state << 13;
+                state ^= state >> 7;
+                state ^= state << 17;
+                state as u8
+            })
+            .collect()
+    }
+
+    /// A handful of small, varied, synthetic inputs -- repetitive text,
+    /// pseudo-random noise, a sparse mostly-zero buffer, and a little-endian
+    /// numeric sequence (the shape `select_v4_plan`'s own transform-candidate
+    /// tests use to trigger delta/shuffle transforms). None of these are
+    /// recognizable DEFLATE/gzip streams, so no v5 reconstruction candidate
+    /// can win over them -- see `exhaustive.rs`'s module docs' "Scope".
+    fn generated_inputs() -> Vec<(&'static str, Vec<u8>)> {
+        let sparse = {
+            let mut bytes = vec![0_u8; 8 * 1024];
+            for (index, byte) in bytes.iter_mut().enumerate().step_by(97) {
+                *byte = (index % 251) as u8;
+            }
+            bytes
+        };
+        let numeric = (0_u32..2_048).flat_map(u32::to_le_bytes).collect();
+        vec![
+            ("repeating_text", text_bytes("gen", 8 * 1024)),
+            ("noise", generated_noise(0x1234_5678_9abc_def1, 8 * 1024)),
+            ("sparse_zeros", sparse),
+            ("numeric_sequence", numeric),
+        ]
+    }
+
+    #[test]
+    fn trace_reconstruction_selects_exactly_what_plan_archive_v6_selected_on_generated_inputs() {
+        for (name, bytes) in generated_inputs() {
+            let chunk_size = bytes.len().max(1);
+            let inputs = [NamedInput {
+                name: "item",
+                bytes: bytes.clone(),
+                chunk_size,
+            }];
+            let unplanned = archive_for(&inputs).unwrap();
+            let report = check_enumeration_matches_real_planner(
+                &unplanned,
+                CompressionProfile::Extreme,
+                PlannerVersion::V6,
+            )
+            .unwrap();
+            assert!(
+                report.matches(),
+                "{name}: trace reconstruction drifted from plan_archive_v6: {:?}",
+                report.differences
+            );
+        }
+    }
+
+    #[test]
+    fn exhaustive_search_never_exceeds_the_production_choice() {
+        use crate::exhaustive::{SearchCaps, chunk_regret, search_chunk};
+        use entrybound::research::planner::CandidateStage;
+
+        for (name, bytes) in generated_inputs() {
+            // `search_chunk` depends only on the plaintext, not on
+            // profile/version, so it is computed once per input and reused
+            // for every regret check below.
+            let search = search_chunk(&bytes, &SearchCaps::full()).unwrap();
+            for profile in [
+                CompressionProfile::Fast,
+                CompressionProfile::Balanced,
+                CompressionProfile::Dense,
+                CompressionProfile::Extreme,
+            ] {
+                for version in PlannerVersion::ALL {
+                    let trace = trace_chunk(profile, version, &bytes).unwrap();
+                    let selected = &trace.candidates[trace.selected];
+                    // Out of this module's declared scope (see
+                    // `exhaustive.rs`'s module docs' "Scope"); none of this
+                    // test's generated inputs are DEFLATE/gzip streams, so
+                    // this should never actually fire -- it is a guard, not
+                    // a skip.
+                    assert_ne!(
+                        selected.stage,
+                        CandidateStage::V5Reconstruction,
+                        "{name}/{profile:?}/{version:?}: selected a reconstructive candidate, \
+                         out of this test's scope"
+                    );
+                    let regret = chunk_regret(trace.selected_plan(), &bytes, &search).unwrap();
+                    assert!(
+                        regret >= 0,
+                        "{name}/{profile:?}/{version:?}: regret={regret} \
+                         (production complete_cost recomputed under v5_independent_cost minus \
+                         this crate's exhaustive optimum {}), selected plan {:?}",
+                        search.optimal_cost,
+                        trace.selected_plan()
+                    );
+                }
+            }
+        }
     }
 }
