@@ -79,6 +79,20 @@ def append_progress_note(note):
     PROGRESS.write_text(text, encoding="utf-8", newline="\n")
 
 
+def set_progress_rows(replacements):
+    """Replace whole PROGRESS.md table rows by their leading text, under the checkpoint lock."""
+    if not replacements:
+        return
+    lines = PROGRESS.read_text(encoding="utf-8").split("\n")
+    for prefix, new_row in replacements:
+        matches = [i for i, line in enumerate(lines) if line.startswith(prefix)]
+        if len(matches) != 1:
+            sys.stderr.write(f"--set-row prefix {prefix!r} matched {len(matches)} rows (need exactly 1)\n")
+            sys.exit(2)
+        lines[matches[0]] = new_row
+    PROGRESS.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--subject", required=True)
@@ -88,6 +102,14 @@ def main():
         "--co-author",
         default=TRAILER,
         help="full Co-Authored-By trailer line for the model that produced the change",
+    )
+    parser.add_argument(
+        "--set-row",
+        nargs=2,
+        action="append",
+        metavar=("PREFIX", "ROW"),
+        default=[],
+        help="replace the unique PROGRESS.md line starting with PREFIX by ROW (applied under the lock)",
     )
     parser.add_argument("--no-push", action="store_true")
     parser.add_argument("--allow-outside", action="store_true")
@@ -125,6 +147,9 @@ def main():
             sys.stderr.write(f"refusing to commit on branch {branch!r}; research commits belong on dev\n")
             sys.exit(2)
         git("add", "--", *args.paths)
+        if args.set_row:
+            set_progress_rows(args.set_row)
+            git("add", "--", str(PROGRESS.relative_to(REPO)))
         if args.note:
             append_progress_note(args.note)
             git("add", "--", str(PROGRESS.relative_to(REPO)))
