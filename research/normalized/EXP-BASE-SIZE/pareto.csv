@@ -1,7 +1,8 @@
 # generated-by: python -m ebr normalize --spec research/baselines/specs/EXP-BASE-SIZE-small.yaml --include-incomplete
 # tool: ebr 0.1.0 (research/tools/ebr)
-# tool-git-sha: 54c1727139c8c1c9c7522fc8c0e6a534a5a2f180
+# tool-git-sha: ab31252312efde894207d1dacdd421d54c7f9e97
 # experiment: EXP-BASE-SIZE
 # input: research/raw/EXP-BASE-SIZE/20260917T031201Z-e86b28.jsonl sha256=None
+# input: research/raw/EXP-BASE-SIZE/size-small-20260917T033541Z.jsonl.gz sha256=d579b69af1eb5c5200a81e933dc563313708ae9ac27cacfbd39b26621d92f6f0
 # do-not-edit: regenerate with the generated-by command; no number here is hand-entered
 env_id,candidate,on_frontier,dominated_by,decision_grade,status,epsilon

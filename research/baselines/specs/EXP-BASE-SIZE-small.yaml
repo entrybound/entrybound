@@ -331,7 +331,7 @@ platform:
   - zip
   - zpaq
   - zstd
-  timeout_s: 1800.0
+  timeout_s: 1800
 analysis:
   report_metrics:
   - output_bytes

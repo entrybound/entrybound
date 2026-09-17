@@ -248,3 +248,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T13:07Z — Legacy-domain C-design: 20 EXP-LEGACY designs (1 READY, 18 NEEDS_TOOLING, 1 BLOCKED); 118/119 decisions covered; L7 exposure disclosed.
 - 2026-09-17T13:42Z — Design review round 1: 2 BLOCKER, 10 HIGH, 15 MEDIUM, 8 LOW; not ready as pre-registration record.
 - 2026-09-17T14:10Z — PAUSE: C-design revision stopped mid-run; WIP committed (238 experiments; review 2 BLOCKER/10 HIGH unresolved; 100 index validation issues). Not the pre-registration record.
+- 2026-09-17T14:10Z — PAUSE: EXP-BASE-SIZE size pass stopped (small 757 rows; medium 405/1120 partial, intact); normalized outputs not yet regenerated for the medium run.
