@@ -1,0 +1,112 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-008
+status: pre-registration-draft
+question: Do the candidate restore orders produce identical final states on every fixture, filesystem
+  and privilege context?
+hypothesis: Repository order and ACL-last order diverge on masked ACL fixtures; symlinks-before-dirmeta
+  perturbs parent mtimes unless times are re-applied.
+decision_ids:
+- DEC-PLT-007
+- DEC-PLT-043
+- DEC-PLT-061
+- DEC-PLT-026
+- DEC-PLT-046
+- DEC-PLT-001
+- DEC-PLT-009
+- DEC-PLT-052
+- DEC-PLT-016
+- DEC-MOD-021
+candidates:
+- name: order-repo
+  params:
+    order: repo
+- name: order-spec-acl-last
+  params:
+    order: spec-acl-last
+- name: order-mode-acl-mode-verify
+  params:
+    order: mode-acl-mode
+- name: order-single-call-acl-mode
+  params:
+    order: single-call
+- name: order-symlinks-before-dirmeta
+  params:
+    order: symlinks-before-dirmeta
+- name: order-reapply-dir-times
+  params:
+    order: reapply-dir-times
+- name: order-immutable-last
+  params:
+    order: immutable-last
+command: /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-008/scripts/restore_order_sim.py
+  --order {order} --fixture-from {item_id} --scratch {scratch} --counterexamples /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-PLAT-008/counterexamples
+shell: bash
+corpus:
+  generated:
+  - item_id: plat008-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat008-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: order_divergent_fixtures
+  source: stdout_json
+  key: payload.order_divergent_fixtures
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - setfacl
+  - getfacl
+  - chattr
+  - mkfs.xfs
+  - mkfs.btrfs
+  timeout_s: 3600
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: order-repo
+  pairing: item
+  report_metrics:
+  - restore_fidelity_fraction
+  - hc07_mvt07a_undeclared_differences
+  - order_divergent_fixtures

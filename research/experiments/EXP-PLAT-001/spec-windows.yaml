@@ -1,0 +1,109 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-001
+status: pre-registration-draft
+question: 'Which capability cells are available on the Windows host NTFS volume D: without elevation?'
+hypothesis: Capability vectors are deterministic; symlink creation is blocked; the query predictor agrees
+  with write probes where a query exists.
+decision_ids:
+- DEC-PLT-062
+- DEC-PLT-014
+- DEC-PLT-003
+- DEC-PLT-047
+candidates:
+- name: ntfs-d-win32
+  params:
+    mode: win32
+- name: ntfs-d-verbatim
+  params:
+    mode: verbatim
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-001/scripts/windows_capability_probe.ps1
+  -Mode {mode} -Scratch {scratch}'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat001-trigger
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 1
+metrics:
+- name: platform_coverage_count
+  source: stdout_json
+  key: payload.platform_coverage_count
+  family: other
+  direction: none
+  unit: count
+- name: capability_cells_total
+  source: stdout_json
+  key: payload.capability_cells_total
+  family: other
+  direction: none
+- name: capability_cells_available
+  source: stdout_json
+  key: payload.capability_cells_available
+  family: other
+  direction: none
+- name: capability_cells_blocked
+  source: stdout_json
+  key: payload.capability_cells_blocked
+  family: other
+  direction: none
+- name: query_predictor_miss_count
+  source: stdout_json
+  key: payload.query_predictor_miss_count
+  family: other
+  direction: none
+- name: static_predictor_miss_count
+  source: stdout_json
+  key: payload.static_predictor_miss_count
+  family: other
+  direction: none
+- name: observer_tools_missing
+  source: stdout_json
+  key: payload.observer_tools_missing
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - fsutil
+  - icacls
+  timeout_s: 1800
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: ntfs-d-win32
+  pairing: item
+  report_metrics:
+  - platform_coverage_count
+  - capability_cells_total
+  - capability_cells_available
+  - capability_cells_blocked
+  - query_predictor_miss_count
+  - static_predictor_miss_count
+  - observer_tools_missing
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

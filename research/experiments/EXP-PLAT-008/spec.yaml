@@ -1,0 +1,196 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-008
+status: pre-registration-draft
+question: Which dangerous restorations occur under each extraction policy and incumbent default for root,
+  non-root and user-namespace extraction?
+hypothesis: Status quo default restores special bits unmasked (unsafe_defaults >= 1 as root); Python data
+  filter and GNU tar non-root default do not.
+decision_ids:
+- DEC-PLT-007
+- DEC-PLT-043
+- DEC-PLT-061
+- DEC-PLT-026
+- DEC-PLT-046
+- DEC-PLT-001
+- DEC-PLT-009
+- DEC-PLT-052
+- DEC-PLT-016
+- DEC-MOD-021
+candidates:
+- name: eb-default
+  params:
+    system: eb
+    flags: default
+- name: eb-restore-owner
+  params:
+    system: eb
+    flags: owner
+- name: eb-xattrs-restore
+  params:
+    system: eb
+    flags: xattrs
+- name: eb-acls-restore
+  params:
+    system: eb
+    flags: acls
+- name: eb-symlinks-all
+  params:
+    system: eb
+    flags: symlinks-all
+- name: eb-all-grants
+  params:
+    system: eb
+    flags: all
+- name: gnutar-default
+  params:
+    system: gnutar
+    flags: default
+- name: gnutar-p
+  params:
+    system: gnutar
+    flags: p
+- name: gnutar-same-owner-xattrs-acls-selinux
+  params:
+    system: gnutar
+    flags: full
+- name: bsdtar-default
+  params:
+    system: bsdtar
+    flags: default
+- name: bsdtar-p-xattrs-acls-fflags
+  params:
+    system: bsdtar
+    flags: full
+- name: py312-data
+  params:
+    system: py312
+    flags: data
+- name: py312-tar
+  params:
+    system: py312
+    flags: tar
+- name: py312-fully-trusted
+  params:
+    system: py312
+    flags: fully_trusted
+- name: py313-data
+  params:
+    system: py313
+    flags: data
+- name: py314-data
+  params:
+    system: py314
+    flags: data
+- name: 7z-23.01-snl
+  params:
+    system: sevenzip
+    flags: snl
+- name: cpio-idm
+  params:
+    system: cpio
+    flags: idm
+command: bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-008/scripts/extract_dangerous.sh
+  --system {system} --flags {flags} --item {item_path} --item-id {item_id} --scratch {scratch} --detail-dir
+  /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-PLAT-008/detail
+shell: bash
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+  item_ids:
+  - f19-tuning-zoo
+  - f19-tuning-real-ext4-acl-selinux
+  - f19-validation-real-xfs-acl-selinux
+  - f20-tuning-generated-malicious-structures
+  - f20-validation-generated-malicious-structures
+  generated:
+  - item_id: plat008-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat008-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: unsafe_defaults
+  source: stdout_json
+  key: payload.unsafe_defaults
+  family: correctness
+  direction: none
+  unit: count
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: error_actionability_fraction
+  source: stdout_json
+  key: payload.error_actionability_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: hc05_mvt05_escapes
+  source: stdout_json
+  key: payload.hc05_mvt05_escapes
+  family: correctness
+  direction: minimize
+  unit: count
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/production/release/ebound
+  - tar
+  - bsdtar
+  - 7z
+  - cpio
+  - setcap
+  - getcap
+  - setfacl
+  - getfacl
+  - chattr
+  - unshare
+  - setpriv
+  timeout_s: 5400
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: eb-default
+  pairing: item
+  report_metrics:
+  - unsafe_defaults
+  - restore_fidelity_fraction
+  - error_actionability_fraction
+  - hc05_mvt05_escapes
+  - hc07_mvt07a_undeclared_differences

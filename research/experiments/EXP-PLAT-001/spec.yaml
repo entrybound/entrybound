@@ -1,0 +1,151 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-001
+status: pre-registration-draft
+question: Which capability cells are available per Linux target and privilege context, and how accurate
+  are non-writing predictors?
+hypothesis: Capability vectors are deterministic per context; the query predictor agrees with write probes
+  where the OS exposes a query; the static table misses at least one case.
+decision_ids:
+- DEC-PLT-062
+- DEC-PLT-014
+- DEC-PLT-003
+- DEC-PLT-047
+candidates:
+- name: wsl-ext4
+  params:
+    target: wsl-ext4
+- name: loop-ext4-i128
+  params:
+    target: loop-ext4-i128
+- name: loop-xfs-bigtime
+  params:
+    target: loop-xfs-bigtime
+- name: loop-xfs-nobigtime
+  params:
+    target: loop-xfs-nobigtime
+- name: loop-btrfs
+  params:
+    target: loop-btrfs
+- name: tmpfs
+  params:
+    target: tmpfs
+- name: loop-vfat
+  params:
+    target: loop-vfat
+- name: ntfs3g-windows-names
+  params:
+    target: ntfs3g-windows-names
+- name: ntfs3g-xattr-streams
+  params:
+    target: ntfs3g-xattr-streams
+- name: loop-ext4-casefold
+  params:
+    target: loop-ext4-casefold
+- name: drvfs-mnt-d-control
+  params:
+    target: drvfs-mnt-d-control
+- name: cifs-loopback-samba
+  params:
+    target: cifs-loopback-samba
+- name: nfs4-loopback-knfsd
+  params:
+    target: nfs4-loopback-knfsd
+command: bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-001/scripts/linux_capability_probe.sh
+  --target {target} --scratch {scratch}
+shell: bash
+corpus:
+  generated:
+  - item_id: plat001-trigger
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 1
+metrics:
+- name: platform_coverage_count
+  source: stdout_json
+  key: payload.platform_coverage_count
+  family: other
+  direction: none
+  unit: count
+- name: capability_cells_total
+  source: stdout_json
+  key: payload.capability_cells_total
+  family: other
+  direction: none
+- name: capability_cells_available
+  source: stdout_json
+  key: payload.capability_cells_available
+  family: other
+  direction: none
+- name: capability_cells_blocked
+  source: stdout_json
+  key: payload.capability_cells_blocked
+  family: other
+  direction: none
+- name: query_predictor_miss_count
+  source: stdout_json
+  key: payload.query_predictor_miss_count
+  family: other
+  direction: none
+- name: static_predictor_miss_count
+  source: stdout_json
+  key: payload.static_predictor_miss_count
+  family: other
+  direction: none
+- name: observer_tools_missing
+  source: stdout_json
+  key: payload.observer_tools_missing
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - mkfs.ext4
+  - mkfs.xfs
+  - mkfs.btrfs
+  - mkfs.vfat
+  - mkntfs
+  - ntfs-3g
+  - getfacl
+  - setfacl
+  - getfattr
+  - lsattr
+  - filefrag
+  - setpriv
+  - unshare
+  - strace
+  timeout_s: 1800
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: wsl-ext4
+  pairing: item
+  report_metrics:
+  - platform_coverage_count
+  - capability_cells_total
+  - capability_cells_available
+  - capability_cells_blocked
+  - query_predictor_miss_count
+  - static_predictor_miss_count
+  - observer_tools_missing

@@ -1,0 +1,144 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-018
+status: pre-registration-draft
+question: Which stability predicates detect seeded concurrent mutations during pack on each Linux target,
+  and does the status quo ever capture a mixed version silently?
+hypothesis: Length plus mtime misses same-size rewrites with restored mtime; ctime detects them except
+  on vfat; btrfs snapshots eliminate mixed versions.
+decision_ids:
+- DEC-CMP-028
+- DEC-ACC-023
+- DEC-LEG-056
+- DEC-PLT-044
+candidates:
+- name: ext4
+  params:
+    target: ext4
+- name: xfs
+  params:
+    target: xfs
+- name: btrfs
+  params:
+    target: btrfs
+- name: btrfs-snapshot
+  params:
+    target: btrfs-snapshot
+- name: tmpfs
+  params:
+    target: tmpfs
+- name: vfat
+  params:
+    target: vfat
+- name: ntfs3g
+  params:
+    target: ntfs3g
+- name: cifs-samba-loopback
+  params:
+    target: cifs-samba-loopback
+command: bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-018/scripts/instability_arms.sh
+  --target {target} --schedules-from {item_id} --scratch {scratch} --detail-dir /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-PLAT-018/detail
+shell: bash
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+  item_ids:
+  - f05-tuning-gen-logs-a-small
+  - f05-validation-gen-logs-b
+  - f04-tuning-sourcelike
+  generated:
+  - item_id: plat018-schedules-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat018-schedules-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: hc07_mvt07d_mixed_version_entries
+  source: stdout_json
+  key: payload.hc07_mvt07d_mixed_version_entries
+  family: correctness
+  direction: minimize
+  unit: count
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: unstable_source_retry_cost_s
+  source: stdout_json
+  key: payload.unstable_source_retry_cost_s
+  family: other
+  direction: none
+  unit: s
+- name: roundtrip_mismatches
+  source: stdout_json
+  key: payload.roundtrip_mismatches
+  family: correctness
+  direction: none
+  unit: count
+- name: events_detected_len_mtime
+  source: stdout_json
+  key: payload.events_detected_len_mtime
+  family: other
+  direction: none
+- name: events_detected_ctime
+  source: stdout_json
+  key: payload.events_detected_ctime
+  family: other
+  direction: none
+- name: events_total
+  source: stdout_json
+  key: payload.events_total
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/production/release/ebound
+  - /root/eb-research/target/harness/release/ebr-inspect-meta
+  - strace
+  - tar
+  - bsdtar
+  - mkfs.btrfs
+  timeout_s: 14400
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: ext4
+  pairing: item
+  report_metrics:
+  - hc07_mvt07d_mixed_version_entries
+  - capture_fidelity_fraction
+  - unstable_source_retry_cost_s
+  - roundtrip_mismatches
+  - events_detected_len_mtime
+  - events_detected_ctime
+  - events_total

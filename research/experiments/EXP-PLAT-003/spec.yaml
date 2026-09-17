@@ -1,0 +1,193 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-003
+status: pre-registration-draft
+question: How prevalent are platform hazards, link topologies and structure-stressing metadata in tuning
+  and validation items, and what benign cost does each candidate rule impose?
+hypothesis: Hazards occur in a small non-zero share of benign items; no benign item reaches a frozen structural
+  bound.
+decision_ids:
+- DEC-PLT-059
+- DEC-PLT-028
+- DEC-PLT-048
+- DEC-MOD-038
+- DEC-MOD-010
+- DEC-MOD-036
+- DEC-PLT-060
+- DEC-PLT-002
+- DEC-PLT-045
+- DEC-PLT-046
+- DEC-PLT-001
+- DEC-PLT-041
+- DEC-PLT-018
+- DEC-PLT-033
+- DEC-CON-001
+- DEC-LEG-032
+- DEC-LEG-033
+- DEC-LEG-065
+- DEC-LEG-067
+- DEC-LEG-070
+- DEC-LEG-076
+- DEC-LEG-088
+- DEC-LEG-092
+- DEC-LEG-094
+candidates:
+- name: census-v1
+  params:
+    rules: rules.json
+command: /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-003/scripts/platform_census.py
+  --item {item_path} --item-id {item_id} --family {family} --rules /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-003/{rules}
+  --detail-dir /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-PLAT-003/detail
+shell: bash
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+metrics:
+- name: scale_limits
+  source: stdout_json
+  key: payload.scale_limits
+  family: other
+  direction: none
+  unit: count; B
+- name: entries
+  source: stdout_json
+  key: payload.entries
+  family: other
+  direction: none
+- name: non_utf8_components
+  source: stdout_json
+  key: payload.non_utf8_components
+  family: other
+  direction: none
+- name: portable_hazard_components
+  source: stdout_json
+  key: payload.portable_hazard_components
+  family: other
+  direction: none
+- name: casefold_collision_groups
+  source: stdout_json
+  key: payload.casefold_collision_groups
+  family: other
+  direction: none
+- name: nfc_nfd_collision_groups
+  source: stdout_json
+  key: payload.nfc_nfd_collision_groups
+  family: other
+  direction: none
+- name: max_component_bytes
+  source: stdout_json
+  key: payload.max_component_bytes
+  family: other
+  direction: none
+- name: max_depth
+  source: stdout_json
+  key: payload.max_depth
+  family: other
+  direction: none
+- name: max_path_bytes
+  source: stdout_json
+  key: payload.max_path_bytes
+  family: other
+  direction: none
+- name: symlinks_absolute
+  source: stdout_json
+  key: payload.symlinks_absolute
+  family: other
+  direction: none
+- name: symlinks_escaping_lexical
+  source: stdout_json
+  key: payload.symlinks_escaping_lexical
+  family: other
+  direction: none
+- name: symlinks_through_links
+  source: stdout_json
+  key: payload.symlinks_through_links
+  family: other
+  direction: none
+- name: hardlink_groups
+  source: stdout_json
+  key: payload.hardlink_groups
+  family: other
+  direction: none
+- name: partial_hardlink_groups
+  source: stdout_json
+  key: payload.partial_hardlink_groups
+  family: other
+  direction: none
+- name: special_files
+  source: stdout_json
+  key: payload.special_files
+  family: other
+  direction: none
+- name: max_xattr_count
+  source: stdout_json
+  key: payload.max_xattr_count
+  family: other
+  direction: none
+- name: max_xattr_value_bytes
+  source: stdout_json
+  key: payload.max_xattr_value_bytes
+  family: other
+  direction: none
+- name: max_acl_entries
+  source: stdout_json
+  key: payload.max_acl_entries
+  family: other
+  direction: none
+- name: max_sparse_extents
+  source: stdout_json
+  key: payload.max_sparse_extents
+  family: other
+  direction: none
+- name: legacy_archives_scanned
+  source: stdout_json
+  key: payload.legacy_archives_scanned
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/venv/bin/python
+  - 7z
+  - bsdtar
+  timeout_s: 14400
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: census-v1
+  pairing: item
+  report_metrics:
+  - scale_limits
+  - entries
+  - non_utf8_components
+  - portable_hazard_components
+  - casefold_collision_groups
+  - nfc_nfd_collision_groups
+  - max_component_bytes
+  - max_depth
+  - max_path_bytes
+  - symlinks_absolute
+  - symlinks_escaping_lexical
+  - symlinks_through_links

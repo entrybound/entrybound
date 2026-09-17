@@ -1,0 +1,144 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-006
+status: pre-registration-draft
+question: What granularity, range and out-of-range behaviour do Linux filesystems show, and does Entrybound
+  capture and restore timestamps exactly or declare every difference?
+hypothesis: Granularities differ by filesystem; at least one target clamps silently; the five-class registry
+  misses 2-second sources.
+decision_ids:
+- DEC-PLT-050
+- DEC-PLT-051
+- DEC-PLT-049
+- DEC-MOD-050
+- DEC-PLT-003
+- DEC-LEG-088
+candidates:
+- name: ext4
+  params:
+    target: ext4
+- name: ext4-i128
+  params:
+    target: ext4-i128
+- name: xfs-bigtime
+  params:
+    target: xfs-bigtime
+- name: xfs-nobigtime
+  params:
+    target: xfs-nobigtime
+- name: btrfs
+  params:
+    target: btrfs
+- name: tmpfs
+  params:
+    target: tmpfs
+- name: vfat-utc
+  params:
+    target: vfat-utc
+- name: vfat-localtime
+  params:
+    target: vfat-localtime
+- name: ntfs3g
+  params:
+    target: ntfs3g
+- name: exfat-fuse
+  params:
+    target: exfat-fuse
+- name: drvfs-control
+  params:
+    target: drvfs-control
+- name: legacy-zip-extras
+  params:
+    target: legacy-zip
+- name: legacy-pax-digits
+  params:
+    target: legacy-pax
+command: /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-006/scripts/timestamp_probe.py
+  --target {target} --ladder-from {item_id} --scratch {scratch} --detail-dir /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-PLAT-006/detail
+shell: bash
+corpus:
+  generated:
+  - item_id: plat006-ladder-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat006-ladder-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: granularity_ns
+  source: stdout_json
+  key: payload.granularity_ns
+  family: other
+  direction: none
+- name: silent_clamps
+  source: stdout_json
+  key: payload.silent_clamps
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/production/release/ebound
+  - mkfs.xfs
+  - mkfs.btrfs
+  - mkfs.vfat
+  - mkntfs
+  - ntfs-3g
+  - zip
+  - 7z
+  - tar
+  - bsdtar
+  timeout_s: 3600
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: ext4
+  pairing: item
+  report_metrics:
+  - capture_fidelity_fraction
+  - restore_fidelity_fraction
+  - hc07_mvt07a_undeclared_differences
+  - granularity_ns
+  - silent_clamps

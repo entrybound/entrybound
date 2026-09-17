@@ -244,3 +244,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T13:03Z — Phase C-design planner domain: 12 experiments (1 READY, 9 NEEDS_TOOLING, 2 BLOCKED), 25 specs valid, 31/36 decisions covered, 5 routed
 - 2026-09-17T13:04Z — C-design container domain: EXP-CON-001..010 (1 READY, 7 NEEDS_TOOLING, 2 BLOCKED); 27 decisions covered, 22 routed to other domains
 - 2026-09-17T13:04Z — Reconstruction (8.8) experiment designs EXP-RECON-001..012 written; 1 READY, 10 NEEDS_TOOLING, 1 BLOCKED; all 15 decisions covered.
+- 2026-09-17T13:05Z — Phase C-design platform: 25 experiments (13 ready, 9 tooling, 3 blocked), 103/109 decisions covered

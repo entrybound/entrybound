@@ -1,0 +1,120 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-012
+status: pre-registration-draft
+question: Do Windows extractors propagate an archive's mark of the web to extracted members, and what
+  does status-quo capture do with ADS?
+hypothesis: Explorer propagates MOTW; tar.exe and ebound unpack do not; status quo neither captures nor
+  declares ADS.
+decision_ids:
+- DEC-PLT-027
+- DEC-PLT-031
+- DEC-MOD-035
+- DEC-INT-034
+- DEC-PLT-060
+- DEC-CON-001
+candidates:
+- name: explorer-shell-copyhere
+  params:
+    extractor: explorer-shell-copyhere
+- name: 7zip-default
+  params:
+    extractor: 7zip-default
+- name: 7zip-snz
+  params:
+    extractor: 7zip-snz
+- name: tarexe
+  params:
+    extractor: tarexe
+- name: expand-archive
+  params:
+    extractor: expand-archive
+- name: python-zipfile
+  params:
+    extractor: python-zipfile
+- name: ebound-unpack
+  params:
+    extractor: ebound-unpack
+- name: ebound-pack-ads-capture
+  params:
+    extractor: ebound-pack-ads-capture
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-012/scripts/motw_propagation.ps1
+  -Extractor {extractor} -FixtureFrom {item_id} -Scratch {scratch}'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat012-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat012-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: unsafe_defaults
+  source: stdout_json
+  key: payload.unsafe_defaults
+  family: correctness
+  direction: none
+  unit: count
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - tar.exe
+  - D:/eb-research/target/production-win/release/ebound.exe
+  timeout_s: 3600
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: ebound-unpack
+  pairing: item
+  report_metrics:
+  - restore_fidelity_fraction
+  - capture_fidelity_fraction
+  - unsafe_defaults
+  - hc07_mvt07a_undeclared_differences
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

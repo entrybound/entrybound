@@ -1,0 +1,104 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-017
+status: pre-registration-draft
+question: Which commit primitives work on NTFS D:, and are Windows spill files private and cleaned up
+  after termination?
+hypothesis: Hardlink publish and MoveFileEx without replace work on NTFS; spill files inherit the directory
+  DACL and remain after forced termination.
+decision_ids:
+- DEC-PLT-037
+- DEC-INT-003
+- DEC-INT-039
+- DEC-PLT-011
+- DEC-ACC-053
+- DEC-PLT-018
+candidates:
+- name: ntfs-d-commit
+  params:
+    arm: commit
+- name: ntfs-d-staging
+  params:
+    arm: staging
+- name: ntfs-d-spill
+  params:
+    arm: spill
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-017/scripts/commit_arms.ps1
+  -Arm {arm} -FixtureFrom {item_id} -Scratch {scratch}'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat017-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat017-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: hc18_mvt18a_crash_violations
+  source: stdout_json
+  key: payload.hc18_mvt18a_crash_violations
+  family: correctness
+  direction: minimize
+  unit: count
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: unsafe_defaults
+  source: stdout_json
+  key: payload.unsafe_defaults
+  family: correctness
+  direction: none
+  unit: count
+- name: primitives_available
+  source: stdout_json
+  key: payload.primitives_available
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - D:/eb-research/target/production-win/release/ebound.exe
+  - D:/eb-research/target/harness-win/release/ebr-platform-probe.exe
+  timeout_s: 7200
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: ntfs-d-commit
+  pairing: item
+  report_metrics:
+  - hc18_mvt18a_crash_violations
+  - restore_fidelity_fraction
+  - unsafe_defaults
+  - primitives_available
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

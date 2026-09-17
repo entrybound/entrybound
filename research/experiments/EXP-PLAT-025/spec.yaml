@@ -1,0 +1,105 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-025
+status: blocked-platform
+question: Do native ARM64 identities and feature bits equal x86-64 results per filesystem?
+hypothesis: Native ARM64 equals x86-64 and matches the EMULATED arm.
+decision_ids:
+- DEC-PLT-062
+- DEC-MOD-049
+- DEC-CON-030
+candidates:
+- name: native-ext4
+  params:
+    context: native-ext4
+- name: native-xfs
+  params:
+    context: native-xfs
+- name: native-btrfs
+  params:
+    context: native-btrfs
+- name: native-tmpfs
+  params:
+    context: native-tmpfs
+command: bash research/experiments/EXP-PLAT-005/scripts/identity_capture.sh --context {context} --item
+  {item_path} --item-id {item_id} --scratch {scratch}
+shell: bash
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+  item_ids:
+  - f01-tuning-ripgrep-14-1-1-git
+  - f04-tuning-sourcelike
+  - f19-validation-rsnapshot-b
+  - f03-validation-yq-go-mod-vendor
+  generated:
+  - item_id: plat025-detsmoke-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat025-detsmoke-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: lai
+  source: stdout_json
+  key: payload.lai
+  family: correctness
+  kind: string
+- name: aux
+  source: stdout_json
+  key: payload.aux
+  family: correctness
+  kind: string
+- name: pcr
+  source: stdout_json
+  key: payload.pcr
+  family: correctness
+  kind: string
+- name: pci
+  source: stdout_json
+  key: payload.pci
+  family: correctness
+  kind: string
+- name: incompat_features
+  source: stdout_json
+  key: payload.incompat_features
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - aarch64
+  emulated: false
+  requires:
+  - ebound
+  timeout_s: 7200
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: native-ext4
+  pairing: item
+  report_metrics:
+  - incompat_features

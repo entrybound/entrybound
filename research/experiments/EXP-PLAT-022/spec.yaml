@@ -1,0 +1,139 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-022
+status: blocked-platform
+question: How do APFS/HFS+ and macOS tools treat hostile names, platform metadata, quarantine and containment?
+hypothesis: APFS aliases NFC/NFD pairs; decmpfs is hidden; SF_* flags need privilege; Archive Utility
+  propagates quarantine; status quo declares ACLs unavailable.
+decision_ids:
+- DEC-PLT-008
+- DEC-PLT-016
+- DEC-PLT-027
+- DEC-PLT-029
+- DEC-PLT-031
+- DEC-PLT-049
+- DEC-PLT-005
+- DEC-PLT-017
+- DEC-PLT-041
+- DEC-PLT-048
+- DEC-PLT-028
+- DEC-PLT-035
+- DEC-PLT-024
+- DEC-PLT-040
+- DEC-PLT-045
+- DEC-PLT-047
+- DEC-PLT-062
+- DEC-LEG-076
+- DEC-PLT-007
+- DEC-PLT-061
+- DEC-INT-034
+candidates:
+- name: paths
+  params:
+    arm: paths
+- name: fidelity
+  params:
+    arm: fidelity
+- name: special
+  params:
+    arm: special
+- name: streams
+  params:
+    arm: streams
+- name: confinement
+  params:
+    arm: confinement
+command: bash research/experiments/EXP-PLAT-022/scripts/macos/suite.sh --arm {arm} --fixture-from {item_id}
+  --scratch {scratch}
+shell: bash
+corpus:
+  generated:
+  - item_id: plat022-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat022-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: hostile_name_handling_fraction
+  source: stdout_json
+  key: payload.hostile_name_handling_fraction
+  family: correctness
+  direction: none
+  unit: fraction
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: hc05_mvt05_escapes
+  source: stdout_json
+  key: payload.hc05_mvt05_escapes
+  family: correctness
+  direction: minimize
+  unit: count
+- name: unsafe_defaults
+  source: stdout_json
+  key: payload.unsafe_defaults
+  family: correctness
+  direction: none
+  unit: count
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - darwin
+  arch:
+  - aarch64
+  - x86_64
+  emulated: false
+  requires:
+  - ditto
+  - aa
+  - xattr
+  - chflags
+  - bsdtar
+  timeout_s: 14400
+  scratch_root: /Volumes/eb-research/scratch/platform
+analysis:
+  baseline: paths
+  pairing: item
+  report_metrics:
+  - capture_fidelity_fraction
+  - restore_fidelity_fraction
+  - hostile_name_handling_fraction
+  - hc07_mvt07a_undeclared_differences
+  - hc05_mvt05_escapes
+  - unsafe_defaults

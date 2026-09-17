@@ -1,0 +1,155 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-013
+status: pre-registration-draft
+question: Which NTFS reparse objects, attributes, hardlinks and descriptors occur non-admin, and how do
+  status-quo pack/unpack and Windows tools handle them?
+hypothesis: Junctions, AF_UNIX and LX symlink objects abort status-quo pack; dev trees contain junctions;
+  symlink extraction without privilege aborts wholesale.
+decision_ids:
+- DEC-PLT-056
+- DEC-PLT-058
+- DEC-PLT-030
+- DEC-PLT-038
+- DEC-PLT-055
+- DEC-PLT-008
+- DEC-PLT-033
+- DEC-MOD-044
+- DEC-PLT-042
+- DEC-PLT-057
+- DEC-LEG-055
+- DEC-LEG-091
+candidates:
+- name: reparse-junction
+  params:
+    arm: reparse-junction
+- name: reparse-afunix-via-wsl
+  params:
+    arm: reparse-afunix-via-wsl
+- name: reparse-lxsymlink-via-wsl
+  params:
+    arm: reparse-lxsymlink-via-wsl
+- name: appexeclink-observe
+  params:
+    arm: appexeclink-observe
+- name: symlink-extract-noprivilege
+  params:
+    arm: symlink-extract-noprivilege
+- name: attributes-perbit
+  params:
+    arm: attributes-perbit
+- name: compression-compact
+  params:
+    arm: compression-compact
+- name: hardlink-ntfs
+  params:
+    arm: hardlink-ntfs
+- name: sd-inheritance-census
+  params:
+    arm: sd-inheritance-census
+- name: devtree-census
+  params:
+    arm: devtree-census
+- name: legacy-7z-attributes
+  params:
+    arm: legacy-7z-attributes
+- name: legacy-zip-extras-windows-extractors
+  params:
+    arm: legacy-zip-extras-windows-extractors
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-013/scripts/windows_arms.ps1
+  -Arm {arm} -FixtureFrom {item_id} -Scratch {scratch} -DetailDir D:/Projects/entrybound/entrybound/research/raw/EXP-PLAT-013/detail'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat013-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat013-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: unsafe_defaults
+  source: stdout_json
+  key: payload.unsafe_defaults
+  family: correctness
+  direction: none
+  unit: count
+- name: platform_coverage_count
+  source: stdout_json
+  key: payload.platform_coverage_count
+  family: other
+  direction: none
+  unit: count
+- name: applicable
+  source: stdout_json
+  key: payload.applicable
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - fsutil
+  - wsl.exe
+  - tar.exe
+  - robocopy
+  - git
+  - D:/eb-research/target/production-win/release/ebound.exe
+  timeout_s: 7200
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: reparse-junction
+  pairing: item
+  report_metrics:
+  - capture_fidelity_fraction
+  - restore_fidelity_fraction
+  - hc07_mvt07a_undeclared_differences
+  - unsafe_defaults
+  - platform_coverage_count
+  - applicable
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

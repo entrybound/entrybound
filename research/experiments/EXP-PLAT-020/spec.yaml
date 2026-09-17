@@ -1,0 +1,101 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-020
+status: pre-registration-draft
+question: How do incumbents and ebound handle group/world-readable key files on Linux, and which provisioning
+  mechanisms present such modes?
+hypothesis: OpenSSH refuses, GnuPG warns, age/minisign do not check; vfat/drvfs/Kubernetes-style mounts
+  present other-readable keys.
+decision_ids:
+- DEC-CRY-108
+- DEC-PLT-042
+candidates:
+- name: openssh
+  params:
+    tool: openssh
+- name: gnupg
+  params:
+    tool: gnupg
+- name: age
+  params:
+    tool: age
+- name: minisign
+  params:
+    tool: minisign
+- name: restic
+  params:
+    tool: restic
+- name: ebound
+  params:
+    tool: ebound
+- name: provisioning-modes
+  params:
+    tool: provisioning-modes
+command: bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-020/scripts/key_perm_incumbents.sh
+  --tool {tool} --modes all --scratch {scratch}
+shell: bash
+corpus:
+  generated:
+  - item_id: plat020-trigger
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+metrics:
+- name: unsafe_defaults
+  source: stdout_json
+  key: payload.unsafe_defaults
+  family: correctness
+  direction: none
+  unit: count
+- name: error_actionability_fraction
+  source: stdout_json
+  key: payload.error_actionability_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: workflow_refusals
+  source: stdout_json
+  key: payload.workflow_refusals
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - ssh
+  - ssh-keygen
+  - gpg
+  - age
+  - minisign
+  - restic
+  - /root/eb-research/target/production/release/ebound
+  timeout_s: 1800
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: ebound
+  pairing: item
+  report_metrics:
+  - unsafe_defaults
+  - error_actionability_fraction
+  - workflow_refusals

@@ -1,0 +1,127 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-014
+status: pre-registration-draft
+question: Do containment backends keep every extraction operation beneath the root under interleaving
+  swaps, random races, chains, root swaps and injected mechanism failures, and do they report modes truthfully?
+hypothesis: Status quo has no Linux escape but misreports under ENOSYS; lexical Safe admits an escaping
+  chain; unlinkat-excl-retry overwrite is race-safe while rename-over is not.
+decision_ids:
+- DEC-PLT-005
+- DEC-PLT-006
+- DEC-PLT-004
+- DEC-PLT-017
+- DEC-PLT-041
+- DEC-PLT-009
+- DEC-PLT-039
+- DEC-PLT-047
+- DEC-PLT-034
+- DEC-PLT-001
+- DEC-INT-004
+- DEC-MOD-038
+candidates:
+- name: eb-statusquo-capstd
+  params:
+    backend: production
+- name: proto-openat2-inroot-nosymlinks
+  params:
+    backend: openat2-inroot
+- name: proto-openat2-beneath-nosymlinks-noxdev
+  params:
+    backend: openat2-beneath-noxdev
+- name: proto-openat-nofollow-walk
+  params:
+    backend: nofollow-walk
+- name: proto-mountns-sandbox
+  params:
+    backend: mountns
+- name: proto-landlock-complement
+  params:
+    backend: landlock-plus-openat2
+command: /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-014/scripts/confinement_suite.py
+  --backend {backend} --scenarios-from {item_id} --arms A,B,C,D,E,G --scratch {scratch} --detail-dir /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-PLAT-014/detail
+shell: bash
+corpus:
+  generated:
+  - item_id: plat014-scenarios-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat014-scenarios-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: hc05_mvt05_escapes
+  source: stdout_json
+  key: payload.hc05_mvt05_escapes
+  family: correctness
+  direction: minimize
+  unit: count
+- name: hc15_confinement_misreports
+  source: stdout_json
+  key: payload.hc15_confinement_misreports
+  family: correctness
+  direction: minimize
+  unit: count
+- name: unsafe_defaults
+  source: stdout_json
+  key: payload.unsafe_defaults
+  family: correctness
+  direction: none
+  unit: count
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: retry_exhaustion_count
+  source: stdout_json
+  key: payload.retry_exhaustion_count
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/production/release/ebound
+  - /root/eb-research/target/harness/release/ebr-platform-probe
+  - strace
+  - fatrace
+  - unshare
+  - mkfs.xfs
+  - mkfs.btrfs
+  timeout_s: 86400
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: eb-statusquo-capstd
+  pairing: item
+  report_metrics:
+  - hc05_mvt05_escapes
+  - hc15_confinement_misreports
+  - unsafe_defaults
+  - restore_fidelity_fraction
+  - retry_exhaustion_count

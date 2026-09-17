@@ -1,0 +1,88 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-020
+status: pre-registration-draft
+question: How do Windows OpenSSH and ebound handle key files readable by other principals, and what ACL
+  does a new ebound key file inherit on D:?
+hypothesis: Windows OpenSSH refuses keys readable by other principals; ebound does not check; new key
+  files inherit non-owner read ACEs.
+decision_ids:
+- DEC-CRY-108
+- DEC-PLT-042
+candidates:
+- name: openssh-win
+  params:
+    tool: openssh
+- name: ebound-win
+  params:
+    tool: ebound
+- name: acl-census
+  params:
+    tool: acl-census
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-020/scripts/key_perm_incumbents.ps1
+  -Tool {tool} -Scratch {scratch}'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat020-trigger
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+metrics:
+- name: unsafe_defaults
+  source: stdout_json
+  key: payload.unsafe_defaults
+  family: correctness
+  direction: none
+  unit: count
+- name: error_actionability_fraction
+  source: stdout_json
+  key: payload.error_actionability_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: workflow_refusals
+  source: stdout_json
+  key: payload.workflow_refusals
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - ssh.exe
+  - D:/eb-research/target/production-win/release/ebound.exe
+  timeout_s: 1800
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: ebound-win
+  pairing: item
+  report_metrics:
+  - unsafe_defaults
+  - error_actionability_fraction
+  - workflow_refusals
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

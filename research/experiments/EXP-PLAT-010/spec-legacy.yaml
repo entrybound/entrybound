@@ -1,0 +1,93 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-010
+status: pre-registration-draft
+question: Can GNU tar and bsdtar sparse members be projected exactly into native sparse maps, and does
+  status-quo import declare them?
+hypothesis: GNU sparse 1.0 projects exactly; 0.0/0.1 need block re-alignment; status quo imports them
+  as regular files without declaration.
+decision_ids:
+- DEC-PLT-045
+- DEC-MOD-026
+- DEC-MOD-002
+- DEC-LEG-020
+candidates:
+- name: gnu-sparse-0.0
+  params:
+    variant: '0.0'
+- name: gnu-sparse-0.1
+  params:
+    variant: '0.1'
+- name: gnu-sparse-1.0
+  params:
+    variant: '1.0'
+- name: bsdtar-sparse
+  params:
+    variant: bsdtar
+command: /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-010/scripts/gnu_sparse_project.py
+  --variant {variant} --item {item_path} --item-id {item_id} --scratch {scratch}
+shell: bash
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+  item_ids:
+  - f15-validation-edgecases
+  - f15-validation-fragmented
+  - f15-tuning-dbprealloc
+metrics:
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: roundtrip_mismatches
+  source: stdout_json
+  key: payload.roundtrip_mismatches
+  family: correctness
+  direction: none
+  unit: count
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/production/release/ebound
+  - tar
+  - bsdtar
+  timeout_s: 3600
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: gnu-sparse-1.0
+  pairing: item
+  report_metrics:
+  - capture_fidelity_fraction
+  - hc07_mvt07a_undeclared_differences
+  - roundtrip_mismatches

@@ -1,0 +1,97 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-009
+status: pre-registration-draft
+question: Which metadata is per-link on NTFS, and are Windows hardlinks and lone aliases declared by status-quo
+  capture?
+hypothesis: NTFS directory-entry times can differ per link; status quo captures hardlinks as independent
+  files without declaration.
+decision_ids:
+- DEC-PLT-046
+- DEC-MOD-021
+- DEC-PLT-018
+- DEC-PLT-019
+- DEC-PLT-033
+candidates:
+- name: inode-scope-ntfs
+  params:
+    arm: inodescope
+- name: hardlink-capture-ntfs
+  params:
+    arm: hardlink
+- name: lone-alias-ntfs
+  params:
+    arm: lonealias
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-009/scripts/inode_scope_probe.ps1
+  -Arm {arm} -FixtureFrom {item_id} -Scratch {scratch}'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat009-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat009-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - fsutil
+  - D:/eb-research/target/production-win/release/ebound.exe
+  timeout_s: 3600
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: inode-scope-ntfs
+  pairing: item
+  report_metrics:
+  - capture_fidelity_fraction
+  - restore_fidelity_fraction
+  - hc07_mvt07a_undeclared_differences
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

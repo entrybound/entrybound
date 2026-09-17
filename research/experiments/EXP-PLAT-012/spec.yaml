@@ -1,0 +1,123 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-012
+status: pre-registration-draft
+question: What do stream representation candidates cost in bytes and restorability on Linux targets?
+hypothesis: AUX named values fail restore above xattr limits and forfeit dedup; the ContentObject proxy
+  stays within the plain-file byte band.
+decision_ids:
+- DEC-PLT-027
+- DEC-PLT-031
+- DEC-MOD-035
+- DEC-INT-034
+- DEC-PLT-060
+- DEC-CON-001
+candidates:
+- name: statusquo-windows-interface
+  params:
+    repr: statusquo
+- name: xattr-analogue
+  params:
+    repr: xattr
+- name: sibling-content-proxy
+  params:
+    repr: sibling
+command: bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-012/scripts/stream_repr_arms.sh
+  --repr {repr} --item {item_path} --item-id {item_id} --scratch {scratch} --detail-dir /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-PLAT-012/detail
+shell: bash
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+  item_ids:
+  - f19-tuning-real-ntfs-metadata
+  - f19-validation-real-ntfs-metadata
+  generated:
+  - item_id: plat012-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat012-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: artifact_bytes
+  source: stdout_json
+  key: payload.artifact_bytes
+  family: size
+  direction: minimize
+  unit: B
+- name: metadata_bytes
+  source: stdout_json
+  key: payload.metadata_bytes
+  family: size
+  direction: minimize
+  unit: B
+- name: dedup_stored_fraction
+  source: stdout_json
+  key: payload.dedup_stored_fraction
+  family: size
+  direction: minimize
+  unit: ratio
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/production/release/ebound
+  - /root/eb-research/target/harness/release/ebr-pack
+  - ntfs-3g
+  - mkntfs
+  timeout_s: 5400
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: statusquo-windows-interface
+  pairing: item
+  report_metrics:
+  - artifact_bytes
+  - metadata_bytes
+  - dedup_stored_fraction
+  - capture_fidelity_fraction
+  - restore_fidelity_fraction
+  - hc07_mvt07a_undeclared_differences

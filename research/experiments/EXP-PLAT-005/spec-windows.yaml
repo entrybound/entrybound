@@ -1,0 +1,163 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-005
+status: pre-registration-draft
+question: Which identity roots and feature bits differ when the same tree is packed on Windows NTFS after
+  robocopy copy or git checkout?
+hypothesis: LAI differs from Linux for trees with executables (F-0002) and 0x10000 is always required
+  (F-0001).
+decision_ids:
+- DEC-MOD-049
+- DEC-MOD-050
+- DEC-CON-030
+- DEC-MOD-002
+- DEC-MOD-022
+- DEC-MOD-030
+- DEC-MOD-035
+- DEC-MOD-028
+- DEC-MOD-025
+- DEC-MOD-019
+- DEC-CON-010
+- DEC-CRY-008
+- DEC-PLT-003
+- DEC-PLT-022
+- DEC-PLT-049
+- DEC-PLT-062
+candidates:
+- name: windows-ntfs-robocopy
+  params:
+    mode: robocopy
+- name: windows-ntfs-git-checkout
+  params:
+    mode: git
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-005/scripts/identity_capture.ps1
+  -Mode {mode} -Item {item_path} -ItemId {item_id} -Scratch {scratch} -DetailDir D:/Projects/entrybound/entrybound/research/raw/EXP-PLAT-005/detail-windows'
+shell: pwsh
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+  item_ids:
+  - f01-tuning-ripgrep-14-1-1-git
+  - f02-tuning-lz4-intree-make-build
+  - f03-tuning-fzf-go-mod-vendor
+  - f04-tuning-sourcelike
+  - f17-tuning-duptree-mixed
+  - f18-tuning-lz4-releases-1-9-to-1-10
+  - f19-tuning-rsnapshot-a
+  - f19-tuning-real-home-snapshot
+  - f03-validation-yq-go-mod-vendor
+  - f04-validation-objstore
+  - f17-validation-duptree-vendor
+  - f19-validation-rsnapshot-b
+  - f19-validation-real-home-snapshot
+  - f02-validation-cjson-cmake-build
+  - f18-validation-cjson-releases
+  generated:
+  - item_id: plat005-detsmoke-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat005-detsmoke-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: lai
+  source: stdout_json
+  key: payload.lai
+  family: correctness
+  kind: string
+- name: aux
+  source: stdout_json
+  key: payload.aux
+  family: correctness
+  kind: string
+- name: pcr
+  source: stdout_json
+  key: payload.pcr
+  family: correctness
+  kind: string
+- name: pci
+  source: stdout_json
+  key: payload.pci
+  family: correctness
+  kind: string
+- name: incompat_features
+  source: stdout_json
+  key: payload.incompat_features
+  family: other
+  direction: none
+- name: ro_compat_features
+  source: stdout_json
+  key: payload.ro_compat_features
+  family: other
+  direction: none
+- name: compat_features
+  source: stdout_json
+  key: payload.compat_features
+  family: other
+  direction: none
+- name: public_required_bits_encrypted
+  source: stdout_json
+  key: payload.public_required_bits_encrypted
+  family: other
+  direction: none
+- name: entries_executable_true
+  source: stdout_json
+  key: payload.entries_executable_true
+  family: other
+  direction: none
+- name: artifact_bytes
+  source: stdout_json
+  key: payload.artifact_bytes
+  family: size
+  direction: minimize
+  unit: B
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - robocopy
+  - git
+  - D:/eb-research/target/production-win/release/ebound.exe
+  timeout_s: 7200
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: windows-ntfs-robocopy
+  pairing: item
+  report_metrics:
+  - incompat_features
+  - ro_compat_features
+  - compat_features
+  - public_required_bits_encrypted
+  - entries_executable_true
+  - artifact_bytes
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp
+  EB_DATA_ROOT: //wsl.localhost/Ubuntu/root/eb-research

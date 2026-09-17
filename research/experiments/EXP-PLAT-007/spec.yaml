@@ -1,0 +1,131 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-007
+status: pre-registration-draft
+question: How stable are ids and names across namespaces, idmapped mounts and account databases, and which
+  ownership restore policy restores the intended owner without unsafe defaults?
+hypothesis: Names survive account-database changes but not namespace shifts; map-by-name beats numeric
+  across databases; numeric restore with setuid has an unsafe case.
+decision_ids:
+- DEC-PLT-032
+- DEC-MOD-028
+- DEC-PLT-007
+candidates:
+- name: eb-ignore
+  params:
+    system: eb
+    policy: ignore
+- name: eb-restore-owner-numeric
+  params:
+    system: eb
+    policy: restore
+- name: gnutar-names-default
+  params:
+    system: gnutar
+    policy: names
+- name: gnutar-numeric-owner
+  params:
+    system: gnutar
+    policy: numeric
+- name: gnutar-no-same-owner
+  params:
+    system: gnutar
+    policy: none
+- name: bsdtar-default
+  params:
+    system: bsdtar
+    policy: names
+- name: bsdtar-numeric-owner
+  params:
+    system: bsdtar
+    policy: numeric
+- name: py312-tar-filter
+  params:
+    system: py312
+    policy: tar
+- name: py312-data-filter
+  params:
+    system: py312
+    policy: data
+command: bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-007/scripts/ownership_scenarios.sh
+  --system {system} --policy {policy} --item {item_path} --item-id {item_id} --scratch {scratch} --detail-dir
+  /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-PLAT-007/detail
+shell: bash
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+  item_ids:
+  - f19-tuning-zoo
+  - f19-validation-rsnapshot-b
+  - f16-oci-ubuntu-noble-multiarch-index
+  - f16-oci-fedora-44-zstd-layers
+  generated:
+  - item_id: plat007-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat007-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: unsafe_defaults
+  source: stdout_json
+  key: payload.unsafe_defaults
+  family: correctness
+  direction: none
+  unit: count
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/production/release/ebound
+  - tar
+  - bsdtar
+  - unshare
+  - setpriv
+  timeout_s: 3600
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: eb-ignore
+  pairing: item
+  report_metrics:
+  - restore_fidelity_fraction
+  - capture_fidelity_fraction
+  - unsafe_defaults

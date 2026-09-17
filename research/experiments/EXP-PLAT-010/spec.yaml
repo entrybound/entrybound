@@ -1,0 +1,157 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-010
+status: pre-registration-draft
+question: How accurately is sparse layout reported, captured and restored per Linux filesystem and policy,
+  and what do dense-file maps cost?
+hypothesis: ext4/XFS/btrfs report and restore layouts exactly; dense maps add a distinguishable metadata
+  cost on F04; no item exceeds the extent bound.
+decision_ids:
+- DEC-PLT-045
+- DEC-MOD-026
+- DEC-MOD-002
+- DEC-LEG-020
+candidates:
+- name: ext4-restore
+  params:
+    target: ext4
+    policy: restore
+- name: ext4-logical
+  params:
+    target: ext4
+    policy: logical
+- name: xfs-restore
+  params:
+    target: xfs
+    policy: restore
+- name: xfs-logical
+  params:
+    target: xfs
+    policy: logical
+- name: btrfs-restore
+  params:
+    target: btrfs
+    policy: restore
+- name: btrfs-logical
+  params:
+    target: btrfs
+    policy: logical
+- name: tmpfs-restore
+  params:
+    target: tmpfs
+    policy: restore
+- name: vfat-logical
+  params:
+    target: vfat
+    policy: logical
+- name: ntfs3g-restore
+  params:
+    target: ntfs3g
+    policy: restore
+command: bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-010/scripts/sparse_arms.sh
+  --target {target} --policy {policy} --item {item_path} --item-id {item_id} --scratch {scratch} --detail-dir
+  /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-PLAT-010/detail
+shell: bash
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+  item_ids:
+  - f15-tuning-dbprealloc
+  - f15-tuning-vmraw
+  - f15-tuning-real-ubuntu-noble-ova-raw
+  - f15-validation-edgecases
+  - f15-validation-fragmented
+  - f15-validation-real-debian-nocloud-raw
+  - f16-alpine-3241-minirootfs-ext4-raw
+  - f20-validation-sparsedup
+  - f04-tuning-sourcelike
+  - f04-validation-objstore
+metrics:
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: metadata_bytes
+  source: stdout_json
+  key: payload.metadata_bytes
+  family: size
+  direction: minimize
+  unit: B
+- name: side_data_bytes
+  source: stdout_json
+  key: payload.side_data_bytes
+  family: size
+  direction: minimize
+  unit: B
+- name: artifact_bytes
+  source: stdout_json
+  key: payload.artifact_bytes
+  family: size
+  direction: minimize
+  unit: B
+- name: roundtrip_mismatches
+  source: stdout_json
+  key: payload.roundtrip_mismatches
+  family: correctness
+  direction: none
+  unit: count
+- name: scale_limits
+  source: stdout_json
+  key: payload.scale_limits
+  family: other
+  direction: none
+  unit: count; B
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/production/release/ebound
+  - /root/eb-research/target/harness/release/ebr-pack
+  - mkfs.xfs
+  - mkfs.btrfs
+  - mkfs.vfat
+  - ntfs-3g
+  - filefrag
+  timeout_s: 14400
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: ext4-restore
+  pairing: item
+  report_metrics:
+  - capture_fidelity_fraction
+  - restore_fidelity_fraction
+  - metadata_bytes
+  - side_data_bytes
+  - artifact_bytes
+  - roundtrip_mismatches
+  - scale_limits

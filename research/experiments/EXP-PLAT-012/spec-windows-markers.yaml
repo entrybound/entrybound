@@ -1,0 +1,96 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-012
+status: pre-registration-draft
+question: Which salvage and origin marker forms survive common Windows transports?
+hypothesis: ADS markers survive Copy-Item and robocopy but not zip or git; filename and manifest markers
+  survive all.
+decision_ids:
+- DEC-PLT-027
+- DEC-PLT-031
+- DEC-MOD-035
+- DEC-INT-034
+- DEC-PLT-060
+- DEC-CON-001
+candidates:
+- name: copy-item
+  params:
+    transport: copy-item
+- name: robocopy-dat
+  params:
+    transport: robocopy-dat
+- name: explorer-copy
+  params:
+    transport: explorer-copy
+- name: sevenzip-sns
+  params:
+    transport: sevenzip-sns
+- name: tarexe
+  params:
+    transport: tarexe
+- name: git-win
+  params:
+    transport: git-win
+- name: wsl-to-ntfs-copy
+  params:
+    transport: wsl-to-ntfs-copy
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-012/scripts/marker_transports.ps1
+  -Transport {transport} -FixtureFrom {item_id} -Scratch {scratch}'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat012-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat012-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - robocopy
+  - git
+  - tar.exe
+  timeout_s: 3600
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: copy-item
+  pairing: item
+  report_metrics:
+  - restore_fidelity_fraction
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

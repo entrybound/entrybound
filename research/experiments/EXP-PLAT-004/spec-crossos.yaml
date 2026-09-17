@@ -1,0 +1,107 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-004
+status: pre-registration-draft
+question: For archives packed on one OS and restored on the other, what fraction of metadata is restored
+  exactly and is every loss declared?
+hypothesis: Cross-OS restore fidelity is the minimum of the two platforms' class lists; every cross-OS
+  loss is declared.
+decision_ids:
+- DEC-PLT-035
+- DEC-PLT-024
+- DEC-PLT-049
+- DEC-PLT-016
+- DEC-PLT-008
+- DEC-PLT-055
+- DEC-PLT-022
+- DEC-PLT-025
+- DEC-MOD-009
+- DEC-MOD-035
+- DEC-LEG-068
+candidates:
+- name: wsl-ext4-to-ntfsD
+  params:
+    direction: linux-to-windows
+- name: ntfsD-to-wsl-ext4
+  params:
+    direction: windows-to-linux
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-004/scripts/cross_os_driver.ps1
+  -Direction {direction} -FixtureFrom {item_id} -Scratch {scratch} -DetailDir D:/Projects/entrybound/entrybound/research/raw/EXP-PLAT-004/detail-crossos'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat004-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat004-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: cross_platform_restore_fidelity_fraction
+  source: stdout_json
+  key: payload.cross_platform_restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: declared_gap_count
+  source: stdout_json
+  key: payload.declared_gap_count
+  family: other
+  direction: none
+  unit: count
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: roundtrip_mismatches
+  source: stdout_json
+  key: payload.roundtrip_mismatches
+  family: correctness
+  direction: none
+  unit: count
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - wsl.exe
+  - D:/eb-research/target/production-win/release/ebound.exe
+  timeout_s: 7200
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: wsl-ext4-to-ntfsD
+  pairing: item
+  report_metrics:
+  - cross_platform_restore_fidelity_fraction
+  - declared_gap_count
+  - hc07_mvt07a_undeclared_differences
+  - roundtrip_mismatches
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

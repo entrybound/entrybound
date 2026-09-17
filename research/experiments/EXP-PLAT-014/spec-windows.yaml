@@ -1,0 +1,114 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-014
+status: pre-registration-draft
+question: Do Windows extraction backends stay inside the root under oplock-paused and random junction/rename
+  swaps, and do Windows incumbents escape on replay cases?
+hypothesis: Status quo escapes or misreports under at least one oplock-paused junction swap unless every
+  component is opened reparse-aware.
+decision_ids:
+- DEC-PLT-005
+- DEC-PLT-006
+- DEC-PLT-004
+- DEC-PLT-017
+- DEC-PLT-041
+- DEC-PLT-009
+- DEC-PLT-039
+- DEC-PLT-047
+- DEC-PLT-034
+- DEC-PLT-001
+- DEC-INT-004
+- DEC-MOD-038
+candidates:
+- name: eb-statusquo-capstd-win
+  params:
+    backend: production
+- name: proto-ntcreatefile-reparse-walk
+  params:
+    backend: ntcreatefile-walk
+- name: tarexe-replay
+  params:
+    backend: tarexe
+- name: 7zip-win-replay
+  params:
+    backend: sevenzip
+- name: expand-archive-replay
+  params:
+    backend: expand-archive
+- name: py313-win-replay
+  params:
+    backend: py313
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-014/scripts/confinement_suite.ps1
+  -Backend {backend} -ScenariosFrom {item_id} -Scratch {scratch} -DetailDir D:/Projects/entrybound/entrybound/research/raw/EXP-PLAT-014/detail-windows'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat014-scenarios-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat014-scenarios-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: hc05_mvt05_escapes
+  source: stdout_json
+  key: payload.hc05_mvt05_escapes
+  family: correctness
+  direction: minimize
+  unit: count
+- name: hc15_confinement_misreports
+  source: stdout_json
+  key: payload.hc15_confinement_misreports
+  family: correctness
+  direction: minimize
+  unit: count
+- name: hostile_name_handling_fraction
+  source: stdout_json
+  key: payload.hostile_name_handling_fraction
+  family: correctness
+  direction: none
+  unit: fraction
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - tar.exe
+  - D:/eb-research/target/production-win/release/ebound.exe
+  - D:/eb-research/target/prototypes-ffi/release/ebr-oplock-attacker.exe
+  timeout_s: 86400
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: eb-statusquo-capstd-win
+  pairing: item
+  report_metrics:
+  - hc05_mvt05_escapes
+  - hc15_confinement_misreports
+  - hostile_name_handling_fraction
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

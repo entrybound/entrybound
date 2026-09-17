@@ -1,0 +1,143 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-015
+status: pre-registration-draft
+question: What do containment backends, collision detectors and planned-tree link resolution cost per
+  extracted entry on WSL ext4?
+hypothesis: openat2 beats a userspace no-follow walk at depth >= 64 beyond the T-04 band; Unicode detection
+  stays within the band on F04.
+decision_ids:
+- DEC-PLT-005
+- DEC-PLT-041
+- DEC-PLT-048
+- DEC-MOD-010
+candidates:
+- name: statusquo-capstd-inprocess
+  params:
+    backend: capstd
+    detector: none
+- name: openat2-inroot-inprocess
+  params:
+    backend: openat2-inroot
+    detector: none
+- name: openat-nofollow-walk-inprocess
+  params:
+    backend: nofollow-walk
+    detector: none
+- name: detect-none
+  params:
+    backend: capstd
+    detector: none
+- name: detect-ascii-fold
+  params:
+    backend: capstd
+    detector: ascii
+- name: detect-unicode-full-fold-nfc
+  params:
+    backend: capstd
+    detector: unicode15-nfc
+- name: detect-ntfs-upcase
+  params:
+    backend: capstd
+    detector: ntfs-upcase
+- name: detect-conservative-superset
+  params:
+    backend: capstd
+    detector: superset
+- name: links-lexical
+  params:
+    backend: capstd
+    detector: links-lexical
+- name: links-planned-tree-hop8
+  params:
+    backend: capstd
+    detector: links-planned-8
+- name: links-planned-tree-hop40
+  params:
+    backend: capstd
+    detector: links-planned-40
+command: /root/eb-research/target/harness/release/ebr-platform-probe bench-extract --backend {backend}
+  --detector {detector} --item {item_path} --scratch {scratch} --timer in-process
+shell: bash
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+  item_ids:
+  - f04-tuning-sourcelike
+  - f04-tuning-real-netbsd-pkgsrc
+  - f04-tuning-maildir
+  - f03-tuning-typescript-npm-node-modules
+  - f04-validation-real-gentoo-repo-20260915
+  - f04-validation-objstore
+  - f03-validation-bootstrap-npm-node-modules
+  - f19-validation-deep
+  - f19-tuning-zoo
+  generated:
+  - item_id: plat015-ladders-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat015-ladders-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: decode_wall_s
+  source: stdout_json
+  key: payload.decode_wall_s
+  family: time_wall
+  direction: minimize
+  unit: s
+- name: decode_cpu_s
+  source: stdout_json
+  key: payload.decode_cpu_s
+  family: time_cpu
+  direction: minimize
+  unit: s
+- name: roundtrip_mismatches
+  source: stdout_json
+  key: payload.roundtrip_mismatches
+  family: correctness
+  direction: none
+  unit: count
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/harness/release/ebr-platform-probe
+  - /root/eb-research/target/production/release/ebound
+  timeout_s: 7200
+  scratch_root: /root/eb-research/scratch/platform
+  cpu_affinity:
+  - 2
+analysis:
+  baseline: statusquo-capstd-inprocess
+  pairing: item_repetition
+  report_metrics:
+  - decode_wall_s
+  - decode_cpu_s
+  - roundtrip_mismatches
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300

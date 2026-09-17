@@ -1,0 +1,103 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-014
+status: pre-registration-draft
+question: Do decoded-form validation rules of each name-encoding candidate reject every component that
+  some target resolves as traversal?
+hypothesis: UTF-16/WTF-8 candidates need target-normalization-aware checks (trailing dots) to avoid accepting
+  traversal-equivalent components.
+decision_ids:
+- DEC-PLT-005
+- DEC-PLT-006
+- DEC-PLT-004
+- DEC-PLT-017
+- DEC-PLT-041
+- DEC-PLT-009
+- DEC-PLT-039
+- DEC-PLT-047
+- DEC-PLT-034
+- DEC-PLT-001
+- DEC-INT-004
+- DEC-MOD-038
+candidates:
+- name: utf8-statusquo
+  params:
+    encoding: utf8-statusquo
+- name: opaque-bytes
+  params:
+    encoding: opaque-bytes
+- name: utf16le-code-units
+  params:
+    encoding: utf16le-code-units
+- name: wtf8
+  params:
+    encoding: wtf8
+- name: legacy-charset-cp437
+  params:
+    encoding: legacy-charset-cp437
+- name: escape-surrogateescape
+  params:
+    encoding: escape-surrogateescape
+- name: escape-percent
+  params:
+    encoding: escape-percent
+command: /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-014/scripts/encoding_models.py
+  --encoding {encoding} --seed-from {item_id} --count 1000000
+shell: bash
+corpus:
+  generated:
+  - item_id: plat014-encodings-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat014-encodings-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: hc17_encoded_hazards
+  source: stdout_json
+  key: payload.hc17_encoded_hazards
+  family: correctness
+  direction: minimize
+  unit: count
+- name: accepted_components
+  source: stdout_json
+  key: payload.accepted_components
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/venv/bin/python
+  timeout_s: 14400
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: utf8-statusquo
+  pairing: item
+  report_metrics:
+  - hc17_encoded_hazards
+  - accepted_components

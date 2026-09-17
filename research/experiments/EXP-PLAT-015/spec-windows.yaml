@@ -1,0 +1,112 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-015
+status: pre-registration-draft
+question: What do containment backends and collision detectors cost per extracted entry on NTFS D:?
+hypothesis: NTFS per-component opens dominate extraction time at depth >= 256; detectors stay within the
+  T-04 band.
+decision_ids:
+- DEC-PLT-005
+- DEC-PLT-041
+- DEC-PLT-048
+- DEC-MOD-010
+candidates:
+- name: statusquo-capstd-inprocess-win
+  params:
+    backend: capstd
+    detector: none
+- name: ntcreatefile-walk-inprocess-win
+  params:
+    backend: ntcreatefile-walk
+    detector: none
+- name: detect-unicode-full-fold-nfc-win
+  params:
+    backend: capstd
+    detector: unicode15-nfc
+- name: detect-ntfs-upcase-win
+  params:
+    backend: capstd
+    detector: ntfs-upcase
+command: '& D:/eb-research/target/harness-win/release/ebr-platform-probe.exe bench-extract --backend {backend}
+  --detector {detector} --item {item_path} --scratch {scratch} --timer in-process'
+shell: pwsh
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+  item_ids:
+  - f04-tuning-sourcelike
+  - f04-validation-objstore
+  - f03-tuning-typescript-npm-node-modules
+  - f19-validation-deep
+  generated:
+  - item_id: plat015-ladders-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat015-ladders-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: decode_wall_s
+  source: stdout_json
+  key: payload.decode_wall_s
+  family: time_wall
+  direction: minimize
+  unit: s
+- name: decode_cpu_s
+  source: stdout_json
+  key: payload.decode_cpu_s
+  family: time_cpu
+  direction: minimize
+  unit: s
+- name: roundtrip_mismatches
+  source: stdout_json
+  key: payload.roundtrip_mismatches
+  family: correctness
+  direction: none
+  unit: count
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - D:/eb-research/target/harness-win/release/ebr-platform-probe.exe
+  - D:/eb-research/target/production-win/release/ebound.exe
+  timeout_s: 7200
+  scratch_root: D:/eb-research/scratch/platform
+  cpu_affinity:
+  - 2
+analysis:
+  baseline: statusquo-capstd-inprocess-win
+  pairing: item_repetition
+  report_metrics:
+  - decode_wall_s
+  - decode_cpu_s
+  - roundtrip_mismatches
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp
+  EB_DATA_ROOT: //wsl.localhost/Ubuntu/root/eb-research
+guard:
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300

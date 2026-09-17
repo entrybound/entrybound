@@ -1,0 +1,146 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-023
+status: blocked-platform
+question: What changes for Entrybound and Windows incumbents with elevation, ReFS/exFAT/8.3-enabled volumes,
+  VSS, symlink privilege and cloud placeholders?
+hypothesis: SACL needs SeSecurityPrivilege; 8.3 aliases collide; symlink type depends on target kind;
+  exFAT lacks hardlinks and ADS; placeholders hydrate on read.
+decision_ids:
+- DEC-PLT-057
+- DEC-PLT-044
+- DEC-PLT-058
+- DEC-PLT-048
+- DEC-PLT-028
+- DEC-PLT-035
+- DEC-PLT-030
+- DEC-PLT-038
+- DEC-PLT-055
+- DEC-PLT-037
+- DEC-PLT-018
+- DEC-PLT-056
+- DEC-CMP-028
+- DEC-PLT-062
+candidates:
+- name: sacl
+  params:
+    arm: sacl
+- name: vss
+  params:
+    arm: vss
+- name: symlinks
+  params:
+    arm: symlinks
+- name: 8dot3
+  params:
+    arm: 8dot3
+- name: casesensitive
+  params:
+    arm: casesensitive
+- name: refs
+  params:
+    arm: refs
+- name: exfat
+  params:
+    arm: exfat
+- name: placeholders
+  params:
+    arm: placeholders
+- name: dedup
+  params:
+    arm: dedup
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-023/scripts/elevated/suite.ps1
+  -Arm {arm} -FixtureFrom {item_id} -Scratch {scratch}'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat023-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat023-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: hostile_name_handling_fraction
+  source: stdout_json
+  key: payload.hostile_name_handling_fraction
+  family: correctness
+  direction: none
+  unit: fraction
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: hc07_mvt07d_mixed_version_entries
+  source: stdout_json
+  key: payload.hc07_mvt07d_mixed_version_entries
+  family: correctness
+  direction: minimize
+  unit: count
+- name: hc18_mvt18a_crash_violations
+  source: stdout_json
+  key: payload.hc18_mvt18a_crash_violations
+  family: correctness
+  direction: minimize
+  unit: count
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - fsutil
+  - robocopy
+  - D:/eb-research/target/production-win/release/ebound.exe
+  timeout_s: 14400
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: sacl
+  pairing: item
+  report_metrics:
+  - capture_fidelity_fraction
+  - restore_fidelity_fraction
+  - hostile_name_handling_fraction
+  - hc07_mvt07a_undeclared_differences
+  - hc07_mvt07d_mixed_version_entries
+  - hc18_mvt18a_crash_violations
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

@@ -1,0 +1,128 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-004
+status: pre-registration-draft
+question: Per class on NTFS D:, what fraction of metadata do Entrybound and Windows incumbents capture
+  and restore exactly, and are all differences declared?
+hypothesis: Status quo captures attributes and creation time but restores neither, does not capture ADS
+  or descriptors, and leaves at least one undeclared difference.
+decision_ids:
+- DEC-PLT-035
+- DEC-PLT-024
+- DEC-PLT-049
+- DEC-PLT-016
+- DEC-PLT-008
+- DEC-PLT-055
+- DEC-PLT-022
+- DEC-PLT-025
+- DEC-MOD-009
+- DEC-MOD-035
+- DEC-LEG-068
+candidates:
+- name: eb-default-win
+  params:
+    system: eb-default
+- name: eb-restore-all-win
+  params:
+    system: eb-restore-all
+- name: tarexe-bsdtar-3.8.8
+  params:
+    system: tarexe
+- name: 7zip-win-snl-sni-sns
+  params:
+    system: sevenzip
+- name: robocopy-dat
+  params:
+    system: robocopy-dat
+- name: robocopy-dat-sec
+  params:
+    system: robocopy-sec
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-004/scripts/run_system.ps1
+  -System {system} -FixtureFrom {item_id} -Scratch {scratch} -DetailDir D:/Projects/entrybound/entrybound/research/raw/EXP-PLAT-004/detail-windows'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat004-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat004-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: capture_fidelity_fraction
+  source: stdout_json
+  key: payload.capture_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: declared_gap_count
+  source: stdout_json
+  key: payload.declared_gap_count
+  family: other
+  direction: none
+  unit: count
+- name: hc07_mvt07a_undeclared_differences
+  source: stdout_json
+  key: payload.hc07_mvt07a_undeclared_differences
+  family: correctness
+  direction: minimize
+  unit: count
+- name: roundtrip_mismatches
+  source: stdout_json
+  key: payload.roundtrip_mismatches
+  family: correctness
+  direction: none
+  unit: count
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - fsutil
+  - tar.exe
+  - robocopy
+  - D:/eb-research/target/production-win/release/ebound.exe
+  timeout_s: 7200
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: eb-default-win
+  pairing: item
+  report_metrics:
+  - capture_fidelity_fraction
+  - restore_fidelity_fraction
+  - declared_gap_count
+  - hc07_mvt07a_undeclared_differences
+  - roundtrip_mismatches
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

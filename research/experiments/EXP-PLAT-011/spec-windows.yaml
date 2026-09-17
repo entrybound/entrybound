@@ -1,0 +1,69 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-011
+status: pre-registration-draft
+question: 'How many ACEs does an NTFS DACL on D: accept for a non-admin owner?'
+hypothesis: NTFS DACLs stop near the 64 KiB ACL size limit, far below 65,536 ACEs.
+decision_ids:
+- DEC-PLT-002
+- DEC-PLT-052
+- DEC-PLT-054
+- DEC-PLT-029
+- DEC-PLT-036
+candidates:
+- name: maxima-ntfs-d
+  params:
+    arm: maxima
+command: '& D:/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-011/scripts/acl_maxima.ps1
+  -Arm {arm} -Scratch {scratch}'
+shell: pwsh
+corpus:
+  generated:
+  - item_id: plat011-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+metrics:
+- name: scale_limits
+  source: stdout_json
+  key: payload.scale_limits
+  family: other
+  direction: none
+  unit: count; B
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - windows
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - pwsh
+  - icacls
+  timeout_s: 3600
+  scratch_root: D:/eb-research/scratch/platform
+analysis:
+  baseline: maxima-ntfs-d
+  pairing: item
+  report_metrics:
+  - scale_limits
+env:
+  TEMP: D:/eb-research/tmp
+  TMP: D:/eb-research/tmp

@@ -1,0 +1,136 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-017
+status: pre-registration-draft
+question: Which commit primitives and status-quo output commands work on each Linux target, and are spill
+  files private and cleaned up?
+hypothesis: Hardlink publish fails on vfat/exFAT/cifs; renameat2 NOREPLACE works on ext4/XFS/btrfs/tmpfs;
+  spill files are 0644 and remain after SIGKILL.
+decision_ids:
+- DEC-PLT-037
+- DEC-INT-003
+- DEC-INT-039
+- DEC-PLT-011
+- DEC-ACC-053
+- DEC-PLT-018
+candidates:
+- name: ext4
+  params:
+    target: ext4
+- name: xfs
+  params:
+    target: xfs
+- name: btrfs
+  params:
+    target: btrfs
+- name: tmpfs
+  params:
+    target: tmpfs
+- name: vfat
+  params:
+    target: vfat
+- name: ntfs3g
+  params:
+    target: ntfs3g
+- name: cifs-samba-loopback
+  params:
+    target: cifs-samba-loopback
+- name: nfs4-knfsd-loopback
+  params:
+    target: nfs4-knfsd-loopback
+- name: exfat-fuse
+  params:
+    target: exfat-fuse
+command: bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-017/scripts/commit_arms.sh
+  --target {target} --fixture-from {item_id} --item {item_path} --scratch {scratch} --detail-dir /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-PLAT-017/detail
+shell: bash
+corpus:
+  splits:
+  - tuning
+  - validation
+  manifest: research/corpus/manifest.json
+  item_ids:
+  - f04-tuning-sourcelike
+  - f04-validation-objstore
+  - f15-validation-edgecases
+  generated:
+  - item_id: plat017-fixture-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat017-fixture-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: hc18_mvt18a_crash_violations
+  source: stdout_json
+  key: payload.hc18_mvt18a_crash_violations
+  family: correctness
+  direction: minimize
+  unit: count
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: unsafe_defaults
+  source: stdout_json
+  key: payload.unsafe_defaults
+  family: correctness
+  direction: none
+  unit: count
+- name: primitives_available
+  source: stdout_json
+  key: payload.primitives_available
+  family: other
+  direction: none
+- name: status_quo_refusals
+  source: stdout_json
+  key: payload.status_quo_refusals
+  family: other
+  direction: none
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/production/release/ebound
+  - /root/eb-research/target/harness/release/ebr-platform-probe
+  - mkfs.xfs
+  - mkfs.btrfs
+  - mkfs.vfat
+  - ntfs-3g
+  timeout_s: 7200
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: ext4
+  pairing: item
+  report_metrics:
+  - hc18_mvt18a_crash_violations
+  - restore_fidelity_fraction
+  - unsafe_defaults
+  - primitives_available
+  - status_quo_refusals

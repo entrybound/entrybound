@@ -1,0 +1,144 @@
+# ebr spec (schema ebr.spec.v1) -- Phase C-design pre-registration DRAFT, platform domain.
+# Not executable as decision evidence until the gates in protocol.md are met; scripts named in
+# `command` are specified in protocol.md (Commands) and are written before the first run.
+schema: ebr.spec.v1
+experiment_id: EXP-PLAT-002
+status: pre-registration-draft
+question: How does each Linux target treat each hostile name class, and which extractors and rule sets
+  avoid silent merges, overwrites, normalization or skips?
+hypothesis: Every non-POSIX-native target transforms or aliases at least one class; a per-target refusal
+  table has zero misses and beats the portable superset on exact restores.
+decision_ids:
+- DEC-PLT-028
+- DEC-PLT-048
+- DEC-MOD-038
+- DEC-PLT-059
+- DEC-PLT-011
+- DEC-MOD-010
+- DEC-MOD-036
+- DEC-LEG-015
+- DEC-LEG-054
+- DEC-LEG-077
+- DEC-LEG-079
+candidates:
+- name: ext4
+  params:
+    target: ext4
+- name: xfs
+  params:
+    target: xfs
+- name: btrfs
+  params:
+    target: btrfs
+- name: tmpfs
+  params:
+    target: tmpfs
+- name: vfat-utf8
+  params:
+    target: vfat-utf8
+- name: vfat-default
+  params:
+    target: vfat-default
+- name: ntfs3g-windows-names
+  params:
+    target: ntfs3g-windows-names
+- name: ntfs3g-posix-names
+  params:
+    target: ntfs3g-posix-names
+- name: cifs-samba-mangling
+  params:
+    target: cifs-samba-mangling
+- name: ext4-casefold
+  params:
+    target: ext4-casefold
+command: /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-PLAT-002/scripts/path_matrix.py
+  --target {target} --cases-from {item_id} --extractors ebound,gnutar,bsdtar,sevenzip,unzip,py312,py313,py314
+  --scratch {scratch} --detail-dir /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-PLAT-002/detail
+shell: bash
+corpus:
+  generated:
+  - item_id: plat002-cases-tuning
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260917
+  - item_id: plat002-cases-validation
+    family: synthetic-trigger
+    generator: zeros-v1
+    bytes: 1
+    seed: 20260918
+metrics:
+- name: hostile_name_handling_fraction
+  source: stdout_json
+  key: payload.hostile_name_handling_fraction
+  family: correctness
+  direction: none
+  unit: fraction
+- name: restore_fidelity_fraction
+  source: stdout_json
+  key: payload.restore_fidelity_fraction
+  family: other
+  direction: maximize
+  unit: fraction
+- name: hc05_mvt05_escapes
+  source: stdout_json
+  key: payload.hc05_mvt05_escapes
+  family: correctness
+  direction: minimize
+  unit: count
+- name: hc17_encoded_hazards
+  source: stdout_json
+  key: payload.hc17_encoded_hazards
+  family: correctness
+  direction: minimize
+  unit: count
+- name: platform_coverage_count
+  source: stdout_json
+  key: payload.platform_coverage_count
+  family: other
+  direction: none
+  unit: count
+- name: observation_sha256
+  source: stdout_json
+  key: payload.observation_sha256
+  family: correctness
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+  command: 20260917
+timing: false
+order: sequential
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/production/release/ebound
+  - tar
+  - bsdtar
+  - 7z
+  - unzip
+  - strace
+  - mkfs.xfs
+  - mkfs.btrfs
+  - mkfs.vfat
+  - mkntfs
+  - ntfs-3g
+  timeout_s: 7200
+  scratch_root: /root/eb-research/scratch/platform
+analysis:
+  baseline: ext4
+  pairing: item
+  report_metrics:
+  - hostile_name_handling_fraction
+  - restore_fidelity_fraction
+  - hc05_mvt05_escapes
+  - hc17_encoded_hazards
+  - platform_coverage_count
