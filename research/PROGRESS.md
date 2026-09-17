@@ -42,6 +42,7 @@ hashes and extracts the two tarballs to a stable directory.
 | 2026-09-12 | Downloads of public third-party corpora and tools are approved. | Large inputs live outside git under `/root/eb-research` (WSL ext4); only source definitions, manifests, and hashes are committed. |
 | 2026-09-12 | Commit and document progress at every atomically meaningful change. | This log plus per-phase commits; workflow scripts are copied into `research/orchestration/workflows/`. |
 | 2026-09-16 | Usage-budget pacing (orchestrator decision after two limit interruptions: the 5-hour limit on 2026-09-13 and the weekly limit on 2026-09-13, reset 2026-09-16). | Check plan usage (`get_usage`) between workflows and keep weekly use at or below about 14% per day. Use Sonnet for mechanical stages (provisioning, verification, harness boilerplate, experiment execution) and the session model for judgment stages (merges, method, experiment design, analysis, adversarial review). Merge agents read compact topic shards (`research/tools/ledger/make_merge_shards.py`). Workflows stay small so progress can be checkpointed and usage re-checked between them. |
+| 2026-09-16 | **Never consume C: drive space** (program owner, urgent). | All research storage lives on D:: the WSL Ubuntu distro disk (move to `D:\WSL\Ubuntu`), the Docker Desktop data disk (`D:\Docker\wsl`), `/root/eb-research` (inside the D:-hosted distro), and cargo targets (`D:\eb-research\target`). `research/orchestration/disk_guard.py` must pass (C: free ≥ 25 GB, distro BasePath on D:, no Docker data disk on C:) before any workflow launches. |
 | 2026-09-12 | Production semantics are not changed by experiments. Alternate algorithms/parameters stay in research-only tooling or default-off research features until a Decision Ledger entry is accepted. | Any research feature in production crates must be default-off and proven byte-identical when disabled. |
 
 ## Execution environment
@@ -83,6 +84,23 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - Packet-level loss/latency emulation (`netem`) is unavailable; remote-access experiments use an application-level proxy.
 - Human usability participants are unavailable; §33 will use independently simulated first-use evaluations, labeled as such.
 - Independent external cryptographic review cannot be performed internally; crypto final selections remain `EXTERNAL_REVIEW_REQUIRED` with a dossier.
+
+## Storage incident 2026-09-16 (C: drive exhausted) — resume state
+
+- **Cause:** the WSL Ubuntu distro disk (`ext4.vhdx`, default location under `C:\Users\<user>\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu_...\LocalState`) grew from about 188 GB to 342.4 GB as the corpus (about 46 GiB of materialized items plus download caches, builds, and Docker exports) accumulated in `/root/eb-research`. Together with Docker Desktop's 30.5 GB `docker_data.vhdx`, this left C: with 0.38 GB free.
+- **Actions taken:**
+  - Stopped B1d (`wf_3615a3d7-fe4`) after all five corpus gap fixes were committed, before corpus reassembly r1 and baselines.
+  - Stopped A3 (`wf_16094fa5-38e`) during `method:revise`. Merges, assembly r0/r1, critics, the objective draft, the decision-method draft, and the review were already committed; the pre-registration revision is not.
+  - Stopped Docker Desktop.
+  - Moved `docker_data.vhdx` to `D:\Docker\wsl\disk\docker_data.vhdx`, freeing 30.8 GB on C:.
+- **Blocker:** `wsl --shutdown`/`--terminate` hang (`wslservice` is unresponsive with no CPU or disk activity), and the non-admin session cannot restart the WSL service, so the Ubuntu distro disk cannot yet be moved.
+- **Required next steps, in order:**
+  1. The owner restarts the WSL service (elevated `Restart-Service WSLService`, or reboot).
+  2. `wsl --manage Ubuntu --move D:\WSL\Ubuntu`.
+  3. Repoint Docker Desktop to `D:\Docker\wsl` (Settings → Resources → Advanced → Disk image location, or `CustomWslDistroDir`) before starting Docker; otherwise Docker creates a new empty data disk on C:.
+  4. `python research/orchestration/disk_guard.py` must pass.
+  5. Resume A3 from `method:revise` (script `phase-a3-ledgers-method.js` with `resumeFromRunId wf_16094fa5-38e`) and B1d from corpus reassembly (`phase-b1d-corpus-baselines.js` with `resumeFromRunId wf_3615a3d7-fe4`).
+  6. Launch B2 (`phase-b2r-harness.js`).
 
 ## Open integration items (carry forward)
 
@@ -159,3 +177,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T00:00Z — g2-generated F04: added 3 real many-small-file items (NetBSD pkgsrc tuning, Gentoo snapshot validation, FreeBSD ports heldout), tagged the 2 byte-identical F03-derived items duplicate-of, closing the F04 real-tree gap. Relabeled pkgsrc/Gentoo scale large->medium to match materialized bytes.
 - 2026-09-17T00:04Z — g2-generated F20 (structurally-adversarial archives, MAJOR): WIP only -- 4 new generator scripts + a drafted 8-item block saved at wip/f20-structural-items-pending.py, NOT provisioned, because the WSL2 VM became unresponsive mid-session (systemic resource exhaustion, all agents affected). Needs a fresh session once WSL recovers: run provision --check, fix any schema errors, provision, verify scale tiers, then merge into make_sources.py and checkpoint.
 - 2026-09-17T00:05Z — g4-binary: F16 AlmaLinux fingerprint re-verified (matched-tofu, no content change) as a side effect of the g2-generated F15 gap closure.
+- 2026-09-17T00:48Z — STORAGE INCIDENT: C: at 0.38 GB free. Stopped A3/B1d, moved Docker data disk to D: (C: now 30.8 GB free); WSL service hung, distro move to D:\WSL\Ubuntu awaits owner WSL service restart. Added research/orchestration/disk_guard.py.
