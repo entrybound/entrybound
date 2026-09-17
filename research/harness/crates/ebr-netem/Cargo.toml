@@ -1,0 +1,13 @@
+[package]
+name = "ebr-netem"
+description = "Network emulation proxy and range origin for remote-access research. Skeleton only: built out by a separate agent (see README.md)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+ebr-common = { path = "../ebr-common" }

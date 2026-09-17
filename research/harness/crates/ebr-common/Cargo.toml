@@ -1,0 +1,27 @@
+[package]
+name = "ebr-common"
+description = "Shared library for Entrybound research harness (Phase B2) crates: corpus manifest reading, held-out refusal, tree walking, JSONL result writing, environment/run identity, process self-measurement, timing, and hashing helpers."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.151"
+sha2 = "=0.11.0"
+
+# Peak-RSS self-measurement is platform-specific and each side is reached
+# through a crate whose public API is already safe, per the workspace's
+# `unsafe_code = "forbid"` lint (see src/measure.rs for why the two platforms
+# are not at parity yet).
+[target.'cfg(target_os = "linux")'.dependencies]
+nix = { version = "=0.31.3", default-features = false, features = ["resource"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+sysinfo = { version = "=0.39.6", default-features = false, features = ["system"] }
+
+[dev-dependencies]

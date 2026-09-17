@@ -1,0 +1,20 @@
+[package]
+name = "ebr-access"
+description = "Random/remote access and streaming/memory measurements over entrybound's public production API: INDEXED random access byte/range accounting, and STREAM sequential encode/open/verify, each with process self-measurement."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+ebr-common = { path = "../ebr-common" }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.151"
+entrybound = { path = "../../../../crates/entrybound", features = ["research-internals"] }
+
+[[bin]]
+name = "ebr-access"
+path = "src/main.rs"

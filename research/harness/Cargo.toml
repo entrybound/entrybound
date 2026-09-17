@@ -1,0 +1,38 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/ebr-common",
+    "crates/ebr-pack",
+    "crates/ebr-chunk",
+    "crates/ebr-codec",
+    "crates/ebr-planner",
+    "crates/ebr-access",
+    "crates/ebr-netem",
+]
+
+# This is its own workspace, deliberately NOT a member of the production
+# workspace rooted at D:/Projects/entrybound/entrybound/Cargo.toml. Cargo stops
+# its ancestor search for a workspace root at the nearest [workspace] table, so
+# nothing under research/harness is ever swept into `cargo test --workspace`
+# (or any other cargo invocation) run from the repo root, and vice versa. See
+# research/harness/README.md for why, and for how the two are verified to stay
+# isolated.
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98.1"
+publish = false
+
+# Mirrors the production workspace's lint policy (D:/Projects/entrybound/entrybound/Cargo.toml):
+# no unsafe code anywhere in this harness, ever.
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = "warn"
+
+# Keep target/ out of the repo and off any per-agent shared path; see build.sh
+# / build.ps1 for the CARGO_TARGET_DIR convention.
+[profile.dev]
+debug = 1

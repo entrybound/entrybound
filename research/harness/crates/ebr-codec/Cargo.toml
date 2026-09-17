@@ -1,0 +1,25 @@
+[package]
+name = "ebr-codec"
+description = "Codec/transform/reconstruction research: production internals via entrybound's research-internals feature, plus candidate external codecs not shaped by TransformPlan's model."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+ebr-common = { path = "../ebr-common" }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.151"
+entrybound = { path = "../../../../crates/entrybound", features = ["research-internals"] }
+# Same exact pin as crates/entrybound's own dependency: used here not to
+# duplicate production's zstd codec, but to reach parameters (long-distance
+# matching, explicit window log, ...) that entrybound::codec::TransformPlan
+# does not expose. See src/external.rs.
+zstd = { version = "=0.13.3", default-features = false, features = ["zdict_builder"] }
+
+[[bin]]
+name = "ebr-codec"
+path = "src/main.rs"
