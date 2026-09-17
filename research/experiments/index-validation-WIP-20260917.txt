@@ -1,0 +1,120 @@
+=== build_index summary ===
+experiments: 238
+  by status: {'BLOCKED': 28, 'NEEDS_TOOLING': 167, 'READY': 43}
+  runnable now: {'N': 234, 'Y': 4}
+  by domain: {'chunking': 14, 'codecs': 9, 'conformance': 14, 'container': 10, 'crossfile': 14, 'crypto': 23, 'ecosystem': 22, 'evaluation': 13, 'integrity': 20, 'legacy': 20, 'planner': 12, 'platform': 25, 'reconstruction': 12, 'remote': 14, 'scale': 16}
+compute hours total: 23256.5  (timing: 7621.0; by status: {'BLOCKED': 2995.0, 'NEEDS_TOOLING': 18743.5, 'READY': 1518.0})
+disk GB total: 9594.9  (by status: {'BLOCKED': 1636.1, 'NEEDS_TOOLING': 6659.799999999999, 'READY': 1299.0})
+decisions: 596
+  covered: 591
+  uncovered (no experiment): 5
+  with explicit uncovered_reason text: 131
+  with a validation-look owner: 476
+  with route notes: 0
+  by blocker_class: {'EVIDENCE': 545, 'EXTERNAL_REVIEW': 16, 'HUMAN_PARTICIPANTS': 34, 'PLATFORM': 1}
+    covered by blocker_class: {'EVIDENCE': 541, 'EXTERNAL_REVIEW': 16, 'HUMAN_PARTICIPANTS': 33, 'PLATFORM': 1}
+    uncovered by blocker_class: {'EVIDENCE': 4, 'HUMAN_PARTICIPANTS': 1}
+validation errors: 100  {'blocked_reason_on_unblocked': 60, 'ready_not_runnable': 39, 'timing_flag_mismatch': 1}
+--- errors ---
+{"detail": "missing 1 path(s): research/experiments/EXP-CHUNK-001/analyze_screen.py", "experiment_id": "EXP-CHUNK-001", "kind": "ready_not_runnable"}
+{"experiment_id": "EXP-CHUNK-001", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CHUNK-002", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CHUNK-003", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CHUNK-004", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CHUNK-005", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CHUNK-006", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CHUNK-007", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CHUNK-008", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CHUNK-009", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CHUNK-010", "kind": "blocked_reason_on_unblocked"}
+{"detail": "missing 1 path(s): research/experiments/EXP-CHUNK-011/cell_table.py", "experiment_id": "EXP-CHUNK-011", "kind": "ready_not_runnable"}
+{"experiment_id": "EXP-CHUNK-011", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CHUNK-012", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CHUNK-014", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CODEC-001", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CODEC-002", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CODEC-003", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CODEC-004", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CODEC-004", "kind": "timing_flag_mismatch"}
+{"experiment_id": "EXP-CODEC-005", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CODEC-006", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CODEC-007", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CODEC-008", "kind": "blocked_reason_on_unblocked"}
+{"detail": "missing 1 path(s): research/tools/container/feature_tier_analysis.py", "experiment_id": "EXP-CON-007", "kind": "ready_not_runnable"}
+{"experiment_id": "EXP-CRYPTO-008", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CRYPTO-012", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CRYPTO-013", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CRYPTO-015", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CRYPTO-017", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CRYPTO-019", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CRYPTO-020", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-CRYPTO-022", "kind": "blocked_reason_on_unblocked"}
+{"detail": "missing 2 path(s): research/tools/ecosystem/depcensus/*.py, research/tools/ecosystem/unsafe-census; 3 non-path tooling item(s)", "experiment_id": "EXP-ECO-001", "kind": "ready_not_runnable"}
+{"detail": "missing 10 path(s): research/tools/ecosystem/release/attest_offline, research/tools/ecosystem/release/cross_host_compare, research/tools/ecosystem/release/distro_floor_build, research/tools/ecosystem/release/distro_survey, research/tools/ecosystem/release/identity_matrix, research/tools/ecosystem/release/merge_gate ...; 3 non-path tooling item(s)", "experiment_id": "EXP-ECO-004", "kind": "ready_not_runnable"}
+{"detail": "missing 4 path(s): research/tools/ecosystem/workflows/check_*.py, research/tools/ecosystem/workflows/derive_w14.py, research/tools/ecosystem/workflows/make_specs.py, research/tools/ecosystem/workflows/run_workflow.py; 2 non-path tooling item(s)", "experiment_id": "EXP-ECO-006", "kind": "ready_not_runnable"}
+{"detail": "missing 10 path(s): research/tools/ecosystem/verification/benign_ops.py, research/tools/ecosystem/verification/chain_assemble.py, research/tools/ecosystem/verification/copy_channels.py, research/tools/ecosystem/verification/gen_many_entries.py, research/tools/ecosystem/verification/matrix_report.py, research/tools/ecosystem/verification/produce.sh ...; 2 non-path tooling item(s)", "experiment_id": "EXP-ECO-007", "kind": "ready_not_runnable"}
+{"detail": "missing 10 path(s): research/tools/ecosystem/ci/adaptive.py, research/tools/ecosystem/ci/make_specs.py, research/tools/ecosystem/ci/pick_subtree.py, research/tools/ecosystem/ci/prepare.sh, research/tools/ecosystem/ci/reexport_byte_compare.sh, research/tools/ecosystem/ci/restore_subtree_*.sh ...; 1 non-path tooling item(s)", "experiment_id": "EXP-ECO-008", "kind": "ready_not_runnable"}
+{"detail": "missing 7 path(s): research/tools/ecosystem/hosting/capture_proxy.py, research/tools/ecosystem/hosting/hosting_matrix.py, research/tools/ecosystem/hosting/http3_check.sh, research/tools/ecosystem/hosting/live_run.py, research/tools/ecosystem/hosting/public_probe.py, research/tools/ecosystem/hosting/range_policy_probe.py ...; 2 non-path tooling item(s)", "experiment_id": "EXP-ECO-009", "kind": "ready_not_runnable"}
+{"detail": "missing 7 path(s): research/tools/ecosystem/registry/analyze.py, research/tools/ecosystem/registry/check_artifact.py, research/tools/ecosystem/registry/fetch_scan.py, research/tools/ecosystem/registry/frames.py, research/tools/ecosystem/registry/policy_drift.py, research/tools/ecosystem/registry/reproduce_upstream.py ...; 3 non-path tooling item(s)", "experiment_id": "EXP-ECO-011", "kind": "ready_not_runnable"}
+{"detail": "missing 13 path(s): research/tools/ecosystem/identification/extensions.py, research/tools/ecosystem/identification/fetch_dbs.sh, research/tools/ecosystem/identification/foreign_signatures.py, research/tools/ecosystem/identification/glob_magic.py, research/tools/ecosystem/identification/identify.py, research/tools/ecosystem/identification/make_test_sets.py ...; 1 non-path tooling item(s)", "experiment_id": "EXP-ECO-012", "kind": "ready_not_runnable"}
+{"detail": "missing 7 path(s): research/tools/ecosystem/usage/classify.py, research/tools/ecosystem/usage/commands.py, research/tools/ecosystem/usage/fetch_extract.py, research/tools/ecosystem/usage/frame.py, research/tools/ecosystem/usage/normalize_flags.py, research/tools/ecosystem/usage/report.py ...; 2 non-path tooling item(s)", "experiment_id": "EXP-ECO-013", "kind": "ready_not_runnable"}
+{"detail": "missing 8 path(s): research/tools/ecosystem/digests/digests.py, research/tools/ecosystem/digests/identities_under_normalization.py, research/tools/ecosystem/digests/matrix.py, research/tools/ecosystem/digests/normalizers/*, research/tools/ecosystem/digests/perturb_base.py, research/tools/ecosystem/digests/perturb_matrix.py ...; 2 non-path tooling item(s)", "experiment_id": "EXP-ECO-014", "kind": "ready_not_runnable"}
+{"detail": "missing 13 path(s): research/tools/ecosystem/clisurface/actionability.py, research/tools/ecosystem/clisurface/ambient.py, research/tools/ecosystem/clisurface/code_coverage.py, research/tools/ecosystem/clisurface/divergence.py, research/tools/ecosystem/clisurface/exit_mappings.py, research/tools/ecosystem/clisurface/fixtures.py ...; 2 non-path tooling item(s)", "experiment_id": "EXP-ECO-015", "kind": "ready_not_runnable"}
+{"detail": "missing 4 path(s): research/tools/ecosystem/safety/census.py, research/tools/ecosystem/safety/fixtures.py, research/tools/ecosystem/safety/oracle.py, research/tools/ecosystem/safety/run_tool.py; 2 non-path tooling item(s)", "experiment_id": "EXP-ECO-016", "kind": "ready_not_runnable"}
+{"detail": "missing 6 path(s): research/tools/ecosystem/secrets/automation_check.py, research/tools/ecosystem/secrets/keyfile_matrix.py, research/tools/ecosystem/secrets/secret_source_probe.py, research/tools/ecosystem/secrets/sources_matrix.py, research/tools/ecosystem/secrets/unicode_unlock.py, research/tools/ecosystem/secrets/windows_acl.ps1; 1 non-path tooling item(s)", "experiment_id": "EXP-ECO-017", "kind": "ready_not_runnable"}
+{"detail": "missing 5 path(s): research/tools/ecosystem/tasks/aggregate.py, research/tools/ecosystem/tasks/check_task.py, research/tools/ecosystem/tasks/count_synopsis.py, research/tools/ecosystem/tasks/fixtures.py, research/tools/ecosystem/tasks/run_task.py; 2 non-path tooling item(s)", "experiment_id": "EXP-ECO-018", "kind": "ready_not_runnable"}
+{"detail": "missing 1 path(s): research/baselines/merge_size_pass.py", "experiment_id": "EXP-EVAL-001", "kind": "ready_not_runnable"}
+{"experiment_id": "EXP-EVAL-004", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-EVAL-005", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-EVAL-006", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-EVAL-009", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-EVAL-011", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-INT-005", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-INT-008", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-INT-009", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-INT-011", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-INT-014", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-INT-016", "kind": "blocked_reason_on_unblocked"}
+{"detail": "missing 1 path(s): research/experiments/EXP-LEGACY-006/findings_cases.py; 1 non-path tooling item(s)", "experiment_id": "EXP-LEGACY-006", "kind": "ready_not_runnable"}
+{"experiment_id": "EXP-LEGACY-020", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-LEGACY-021", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-LEGACY-030", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-LEGACY-031", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-LEGACY-034", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-LEGACY-050", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-LEGACY-070", "kind": "blocked_reason_on_unblocked"}
+{"detail": "missing 1 path(s): research/planner/tools/shard_launch.py; 1 non-path tooling item(s)", "experiment_id": "EXP-PLANNER-001", "kind": "ready_not_runnable"}
+{"detail": "missing 5 path(s): research/experiments/EXP-PLAT-001/cases.json, research/experiments/EXP-PLAT-001/scripts/fsimg.sh, research/experiments/EXP-PLAT-001/scripts/linux_capability_probe.sh, research/experiments/EXP-PLAT-001/scripts/query_predictors.py, research/experiments/EXP-PLAT-001/scripts/windows_capability_probe.ps1; 1 non-path tooling item(s)", "experiment_id": "EXP-PLAT-001", "kind": "ready_not_runnable"}
+{"detail": "missing 7 path(s): research/experiments/EXP-PLAT-002/scripts/build_hostile_archives.py, research/experiments/EXP-PLAT-002/scripts/extract_matrix.py, research/experiments/EXP-PLAT-002/scripts/gen_hostility_cases.py, research/experiments/EXP-PLAT-002/scripts/observe_tree.py, research/experiments/EXP-PLAT-002/scripts/path_matrix.ps1, research/experiments/EXP-PLAT-002/scripts/path_matrix.py ...; 1 non-path tooling item(s)", "experiment_id": "EXP-PLAT-002", "kind": "ready_not_runnable"}
+{"detail": "missing 3 path(s): research/experiments/EXP-PLAT-003/scripts/archive_members.py, research/experiments/EXP-PLAT-003/scripts/candidate_costs.py, research/experiments/EXP-PLAT-003/scripts/platform_census.py", "experiment_id": "EXP-PLAT-003", "kind": "ready_not_runnable"}
+{"detail": "missing 4 path(s): research/experiments/EXP-PLAT-006/scripts/legacy_time_fixtures.py, research/experiments/EXP-PLAT-006/scripts/precision_models.py, research/experiments/EXP-PLAT-006/scripts/timestamp_probe.ps1, research/experiments/EXP-PLAT-006/scripts/timestamp_probe.py; 1 non-path tooling item(s)", "experiment_id": "EXP-PLAT-006", "kind": "ready_not_runnable"}
+{"detail": "missing 4 path(s): research/experiments/EXP-PLAT-007/scripts/alt_accountdb/, research/experiments/EXP-PLAT-007/scripts/gen_ownership_fixture.py, research/experiments/EXP-PLAT-007/scripts/ownership_scenarios.sh, research/experiments/EXP-PLAT-007/scripts/sid_capture.ps1; 1 non-path tooling item(s)", "experiment_id": "EXP-PLAT-007", "kind": "ready_not_runnable"}
+{"detail": "missing 4 path(s): research/experiments/EXP-PLAT-008/scripts/extract_dangerous.sh, research/experiments/EXP-PLAT-008/scripts/gen_dangerous_fixture.py, research/experiments/EXP-PLAT-008/scripts/observe_dangerous.py, research/experiments/EXP-PLAT-008/scripts/restore_order_sim.py; 1 non-path tooling item(s)", "experiment_id": "EXP-PLAT-008", "kind": "ready_not_runnable"}
+{"detail": "missing 6 path(s): research/experiments/EXP-PLAT-009/scripts/devt_formats.py, research/experiments/EXP-PLAT-009/scripts/inode_scope_probe.ps1, research/experiments/EXP-PLAT-009/scripts/inode_scope_probe.py, research/experiments/EXP-PLAT-009/scripts/lone_alias.sh, research/experiments/EXP-PLAT-009/scripts/overlay_whiteouts.sh, research/experiments/EXP-PLAT-009/scripts/special_hardlink_arms.sh", "experiment_id": "EXP-PLAT-009", "kind": "ready_not_runnable"}
+{"detail": "missing 5 path(s): research/experiments/EXP-PLAT-010/scripts/extent_truth.py, research/experiments/EXP-PLAT-010/scripts/gnu_sparse_project.py, research/experiments/EXP-PLAT-010/scripts/map_bytes_model.py, research/experiments/EXP-PLAT-010/scripts/sparse_arms.sh, research/experiments/EXP-PLAT-010/scripts/sparse_windows.ps1; 1 non-path tooling item(s)", "experiment_id": "EXP-PLAT-010", "kind": "ready_not_runnable"}
+{"detail": "missing 6 path(s): research/experiments/EXP-PLAT-011/scripts/acl_arms.sh, research/experiments/EXP-PLAT-011/scripts/acl_fuzz.py, research/experiments/EXP-PLAT-011/scripts/acl_maxima.ps1, research/experiments/EXP-PLAT-011/scripts/acl_xattr_codec.py, research/experiments/EXP-PLAT-011/scripts/freebsd_vm.sh, research/experiments/EXP-PLAT-011/scripts/nfs4_knfsd.sh; 1 non-path tooling item(s)", "experiment_id": "EXP-PLAT-011", "kind": "ready_not_runnable"}
+{"detail": "missing 6 path(s): research/experiments/EXP-PLAT-012/scripts/gen_stream_fixture.ps1, research/experiments/EXP-PLAT-012/scripts/gen_stream_fixture.py, research/experiments/EXP-PLAT-012/scripts/marker_transports.ps1, research/experiments/EXP-PLAT-012/scripts/marker_transports.sh, research/experiments/EXP-PLAT-012/scripts/motw_propagation.ps1, research/experiments/EXP-PLAT-012/scripts/stream_repr_arms.sh; 1 non-path tooling item(s)", "experiment_id": "EXP-PLAT-012", "kind": "ready_not_runnable"}
+{"detail": "missing 5 path(s): research/experiments/EXP-PLAT-013/scripts/attr_perbit.ps1, research/experiments/EXP-PLAT-013/scripts/devtree_materialize.ps1, research/experiments/EXP-PLAT-013/scripts/reparse_observe.ps1, research/experiments/EXP-PLAT-013/scripts/windows_arms.ps1, research/experiments/EXP-PLAT-013/scripts/wsl_reparse_helper.sh; 2 non-path tooling item(s)", "experiment_id": "EXP-PLAT-013", "kind": "ready_not_runnable"}
+{"detail": "missing 4 path(s): research/experiments/EXP-PLAT-020/scripts/key_perm_incumbents.ps1, research/experiments/EXP-PLAT-020/scripts/key_perm_incumbents.sh, research/experiments/EXP-PLAT-020/scripts/provisioning_modes.sh, research/experiments/EXP-PLAT-020/scripts/workflow_cases.yaml; 1 non-path tooling item(s)", "experiment_id": "EXP-PLAT-020", "kind": "ready_not_runnable"}
+{"detail": "missing 4 path(s): research/experiments/EXP-PLAT-021/scripts/fetch_sources.py, research/experiments/EXP-PLAT-021/scripts/limits_table.py, research/experiments/EXP-PLAT-021/scripts/mechanism_timeline.py, research/experiments/EXP-PLAT-021/scripts/registry_crosscheck.py", "experiment_id": "EXP-PLAT-021", "kind": "ready_not_runnable"}
+{"experiment_id": "EXP-PLAT-024", "kind": "blocked_reason_on_unblocked"}
+{"detail": "missing 1 path(s): research/tools/recon/analyze_status_quo.py", "experiment_id": "EXP-RECON-001", "kind": "ready_not_runnable"}
+{"experiment_id": "EXP-REMOTE-001", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-REMOTE-003", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-REMOTE-004", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-REMOTE-005", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-REMOTE-006", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-REMOTE-007", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-REMOTE-008", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-REMOTE-009", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-REMOTE-010", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-REMOTE-011", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-REMOTE-012", "kind": "blocked_reason_on_unblocked"}
+{"experiment_id": "EXP-REMOTE-014", "kind": "blocked_reason_on_unblocked"}
+{"detail": "missing 4 path(s): research/target/scale-prod, research/tools/scale/classify_scaling.py, research/tools/scale/scale_cell.py, research/tools/scale/select_stage2.py", "experiment_id": "EXP-SCALE-001", "kind": "ready_not_runnable"}
+{"detail": "missing 2 path(s): research/tools/scale/legacy_counts.py, research/tools/scale/scale_cell.py", "experiment_id": "EXP-SCALE-002", "kind": "ready_not_runnable"}
+{"detail": "missing 4 path(s): research/experiments/EXP-SCALE-003/candidate-defaults.json, research/tools/scale/census_item.py, research/tools/scale/legacy_limit_stats.py, research/tools/scale/predict_refusals.py", "experiment_id": "EXP-SCALE-003", "kind": "ready_not_runnable"}
+{"detail": "missing 2 path(s): research/target/scale-prod-win, research/tools/scale/fault_cell.py; 2 non-path tooling item(s)", "experiment_id": "EXP-SCALE-004", "kind": "ready_not_runnable"}
+{"detail": "missing 4 path(s): research/tools/scale/bgload.py, research/tools/scale/det_cell.py, research/tools/scale/det_compare.py, research/tools/scale/shuffle_copy.py; 2 non-path tooling item(s)", "experiment_id": "EXP-SCALE-005", "kind": "ready_not_runnable"}
+wrote research/experiments/index.csv (238 rows)
+wrote research/experiments/decision-coverage.csv (596 rows)

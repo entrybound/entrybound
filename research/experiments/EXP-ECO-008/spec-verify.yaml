@@ -23,16 +23,16 @@ candidates:
       cd /root/eb-research/cache/eco008/verify/{item_id} && sha256sum -c --status release.eb.sha256
   - name: sidecar-digest-compare
     command: >-
-      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/sidecar_digest_compare.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id}
+      bash /root/eb-research/stage/EXP-ECO-008/repo/research/tools/ecosystem/ci/sidecar_digest_compare.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id}
   - name: sidecar-strict-reimport
     command: >-
-      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/sidecar_strict_reimport.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id} {scratch}
+      bash /root/eb-research/stage/EXP-ECO-008/repo/research/tools/ecosystem/ci/sidecar_strict_reimport.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id} {scratch}
   - name: reexport-byte-compare
     command: >-
-      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/reexport_byte_compare.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id} {scratch}
+      bash /root/eb-research/stage/EXP-ECO-008/repo/research/tools/ecosystem/ci/reexport_byte_compare.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id} {scratch}
   - name: strict-import-lai-compare
     command: >-
-      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/strict_import_lai_compare.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id} {scratch}
+      bash /root/eb-research/stage/EXP-ECO-008/repo/research/tools/ecosystem/ci/strict_import_lai_compare.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id} {scratch}
 shell: bash
 corpus:
   splits: [tuning]

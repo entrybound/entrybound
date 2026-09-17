@@ -38,7 +38,7 @@ candidates:
     layout: indexed
     profile: balanced
     enc: password
-command: bash /mnt/d/Projects/entrybound/entrybound/research/tools/container/pack_cache.sh --item-path
+command: bash /root/eb-research/stage/EXP-CON-005/repo/research/tools/container/pack_cache.sh --item-path
   {item_path} --profile {profile} --layout {layout} --encrypt {enc} --print-path > {scratch}/pack.path
   && /root/eb-research/target/harness/release/ebr-openers --mode bench --archive-path-file {scratch}/pack.path
   --ops open,list,first-entry,random-entry --batch 1000 --random-sample 1000 --seed {seed} --prod-cli
@@ -246,7 +246,7 @@ platform:
   requires:
   - /root/eb-research/target/prod-9e44608/release/ebound
   - /root/eb-research/target/harness/release/ebr-openers
-  - /mnt/d/Projects/entrybound/entrybound/research/tools/container/pack_cache.sh
+  - /root/eb-research/stage/EXP-CON-005/repo/research/tools/container/pack_cache.sh
   timeout_s: 14400
   cpu_affinity:
   - 2

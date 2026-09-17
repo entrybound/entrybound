@@ -86,8 +86,8 @@ candidates:
   - {name: nfs-100mbit-inc-zstd-tar}
   - {name: nfs-100mbit-inc-pigz}
 command: >-
-  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/scale/storage_cell.py --candidate {candidate} --item {item_path}
-  --item-id {item_id} --roots /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-SCALE-016/storage-roots.json --seed {seed} --scratch {scratch}
+  /root/eb-research/venv/bin/python /root/eb-research/stage/EXP-SCALE-016/repo/research/tools/scale/storage_cell.py --candidate {candidate} --item {item_path}
+  --item-id {item_id} --roots /root/eb-research/stage/EXP-SCALE-016/repo/research/experiments/EXP-SCALE-016/storage-roots.json --seed {seed} --scratch {scratch}
 shell: bash
 
 corpus:

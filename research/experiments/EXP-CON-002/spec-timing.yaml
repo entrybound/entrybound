@@ -70,7 +70,7 @@ candidates:
     validation: per-record
 command: /root/eb-research/target/harness/release/ebr-index-repr --model {item_path} --chunks-per-entry-model
   fitted --index-repr {index_repr} --validation {validation} --timing-batch 1000 --resolve-sample 1000
-  --workload-file research/experiments/EXP-REMOTE-002/workloads.json --connection-model research/experiments/EXP-REMOTE-001/connection-model.json
+  --workload-file /root/eb-research/stage/EXP-CON-002/repo/research/experiments/EXP-REMOTE-002/workloads.json --connection-model /root/eb-research/stage/EXP-CON-002/repo/research/experiments/EXP-REMOTE-001/connection-model.json
   --seed {seed} --experiment-id EXP-CON-002 --env-name wsl-ubuntu
 shell: bash
 corpus:

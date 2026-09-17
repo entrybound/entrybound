@@ -1,6 +1,22 @@
 # EXP-CRYPTO-017: Password-KDF cost, recipient and attempt budgets, password policy, and indistinguishable secret-dependent failures
 
 <!-- BEGIN AUTO:meta -->
+| Field | Value |
+|---|---|
+| Index status | **NEEDS_TOOLING** — Timing indistinguishability HC_UNVERIFIED on this virtualized host; ARM cost is EXP-CRYPTO-004 |
+| Kind | decision |
+| Domain | crypto (program §22.1, §22.3, §22.5) |
+| Decisions informed | DEC-CRY-002, DEC-CRY-013, DEC-CRY-015, DEC-CRY-058, DEC-CRY-068, DEC-CRY-077, DEC-CRY-046, DEC-CRY-064 |
+| Platforms | Windows+Linux/x86-64; requires calibration |
+| Requires timing | True |
+| Estimates | 40 machine-hours; 5 GB disk |
+| Tooling to build | ebr-crypto unlock; dudect_unlock.py; failure_census.py |
+| Environment prerequisites | none beyond the harness and the ebr venv |
+| Blocked arms | none |
+| Specs | `spec.yaml` |
+| Validation looks | owns look 1 for DEC-CRY-002, DEC-CRY-013, DEC-CRY-015, DEC-CRY-046, DEC-CRY-058, DEC-CRY-064, DEC-CRY-068, DEC-CRY-077 |
+| Gates | G-A and G-B unmet at this revision (generated `gate_state` column of `research/experiments/index.csv`); timing runs also need a PASS calibration record for the calibration identity (PA-04) |
+| Conventions | `research/experiments/_index/crypto-conventions.md` (CR0-CR10); program amendments `research/experiments/_program/design-revision-round1.md` |
 <!-- END AUTO:meta -->
 
 ## 1. Question
@@ -17,6 +33,149 @@ What unlock latency and peak memory do the Argon2id creation parameters and the 
 ## 3. Decisions informed and evidence route
 
 <!-- BEGIN AUTO:candidates -->
+#### DEC-CRY-002 — Is Argon2id v19 the v1 password KDF, and are the frozen creation parameters (256 MiB, t=3, p=4, random unlabelled 16-byte salt) the right defaults, or should defaults, creator tunability or salt domain separation change?
+
+Ledger status `EXTERNAL_REVIEW_REQUIRED`, blocker class `EXTERNAL_REVIEW`. Other experiments informing it: EXP-CRYPTO-004, EXP-CRYPTO-020, EXP-CRYPTO-021.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-256mib-t3-p4` | Status quo: Argon2id m=256 MiB, t=3, p=4 fixed at creation | status quo | yes | — |
+| `rfc9106-second-64mib` | RFC 9106 second recommendation m=64 MiB, t=3, p=4 | ledger alternative | yes | — |
+| `rfc9106-first-2gib` | RFC 9106 first recommendation m=2 GiB, t=1, p=4 | ledger alternative | yes | — |
+| `owasp-19mib` | OWASP m=19 MiB, t=2, p=1 | ledger alternative | yes | — |
+| `calibrated-per-host` | Calibrate to a target unlock latency on the creating host within wire bounds | ledger alternative | yes | — |
+| `named-cost-profiles` | Named cost profiles selectable at creation | ledger alternative | yes | — |
+| `scrypt` | scrypt as age uses (N=2^18, r=8, p=1) | ledger alternative | yes | — |
+| `balloon-hashing` | Balloon hashing | ledger alternative | yes | — |
+| `pbkdf2-fips` | PBKDF2-HMAC-SHA256 with 600,000 iterations for FIPS environments | ledger alternative | yes | — |
+| `labelled-salt-or-ad` | Status quo parameters plus format-label domain separation in salt or Argon2 associated data | status quo | yes | — |
+
+**Ledger exclusions:** {"candidate_id": "rfc9106-first-2gib", "reason": "2 GiB exceeds the frozen 1 GiB crypto v1 reader memory bound", "invariant_violated": "docs/crypto-suite-v1.md L510-520 reader wire bounds"}.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `public-fingerprint-hints`, `rfc9106-first-2gib`.
+
+**R0 checklist:** 1 status quo: `status-quo-256mib-t3-p4`, `labelled-salt-or-ad`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 10 ledger candidates listed above; 4 strongest incumbent: `rfc9106-second-64mib`, `rfc9106-first-2gib`, `scrypt`, `pbkdf2-fips`; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-013 — Are the crypto resource ceilings justified: Argon2id caller defaults equal to the wire ceiling (1 GiB, 10 passes, parallelism 16) versus lower open defaults, and the 1,024-recipient cap?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CONF-007, EXP-CONF-014, EXP-CRYPTO-004, EXP-CRYPTO-009, EXP-SCALE-010.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-default-equals-ceiling` | Status quo: open defaults equal wire ceiling; 1,024 recipients | status quo | yes | EXP-CONF-007 |
+| `default-equals-creation-default` | Open default equals 256 MiB/3-pass creation default | ledger alternative | yes | EXP-CONF-007 |
+| `hardware-probed-default` | Default derived from available memory | ledger alternative | yes | EXP-CONF-007 |
+| `confirm-above-threshold` | Interactive confirmation above a cost threshold | ledger alternative | yes | EXP-CONF-007 |
+| `lower-recipient-cap` | Lower recipient cap based on measured unlock cost | ledger alternative | yes | EXP-CONF-007 |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `public-fingerprint-hints`, `rfc9106-first-2gib`.
+
+**R0 checklist:** 1 status quo: `status-quo-default-equals-ceiling`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-015 — What frozen caps and default caller policies should crypto v1 use (1 MiB CONTROL and 64 MiB PAYLOAD records, 2^20-1 DATA and 1 GiB per segment, 1,000,000 segments, 1 GiB working memory, EBCS 1,000,000 items/64 MiB/1 GiB, 4,096 identity attempts)?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CONF-007, EXP-CRYPTO-009.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-limits` | Status quo numeric caps and defaults | status quo | no | EXP-CONF-007, EXP-CRYPTO-009 |
+| `measured-defaults-same-caps` | Keep frozen caps; retune caller defaults from measurements | ledger alternative | no | EXP-CONF-007, EXP-CRYPTO-009 |
+| `tiered-policy-profiles` | Named policy profiles (constrained, desktop, server) | ledger alternative | no | EXP-CONF-007, EXP-CRYPTO-009 |
+| `smaller-record-caps` | Lower PAYLOAD record cap (e.g. 16 MiB) to reduce buffering | ledger alternative | no | EXP-CONF-007, EXP-CRYPTO-009 |
+| `larger-control-cap` | Raise CONTROL cap for very large manifests/Index fragments | ledger alternative | no | EXP-CONF-007, EXP-CRYPTO-009 |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `public-fingerprint-hints`, `rfc9106-first-2gib`.
+
+**R0 checklist:** 1 status quo: `status-quo-limits`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-058 — Should encrypted creation (library and CLI) refuse empty or weak passwords, warn with a strength estimate, or leave password policy to callers?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CRYPTO-022, EXP-ECO-016, EXP-ECO-019.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-inconsistent` | Status quo: library and CLI pack accept empty; change-password rejects empty | status quo | yes | — |
+| `reject-empty-library` | Reject empty passwords at the library boundary for creation and change | ledger alternative | yes | — |
+| `minimum-length` | Enforce a minimum length | ledger alternative | yes | — |
+| `strength-estimate-warning` | zxcvbn-style strength estimate with a warning | ledger alternative | yes | — |
+| `strength-enforcement-override` | Enforce a strength threshold with an explicit override flag | ledger alternative | yes | — |
+| `caller-policy-only` | No library policy; document caller responsibility | ledger alternative | yes | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `public-fingerprint-hints`, `rfc9106-first-2gib`.
+
+**R0 checklist:** 1 status quo: `status-quo-inconsistent`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 6 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-068 — Should recipient stanzas stay anonymous (zero hints) with trial unlock, what attempt-budget semantics and default apply when one identity meets at most 1,024 stanzas, and should unlock be constant-work?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: none.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-zero-hints-4096` | Status quo: zero hints; 4,096 attempts counted after each attempt | status quo | yes | — |
+| `budget-checked-before-attempt` | Budget below the stanza cap and checked before each attempt | ledger alternative | yes | — |
+| `constant-work-all-stanzas` | Process every stanza regardless of match to hide position | ledger alternative | yes | — |
+| `keyed-hints-future` | Future version: privacy-preserving keyed hints | ledger alternative | no | — |
+| `local-hint-cache` | Client-side cache mapping archive_id to matching stanza | ledger alternative | yes | — |
+| `public-fingerprint-hints` | Public key fingerprints as hints | ledger alternative | yes | — |
+
+**Ledger exclusions:** {"candidate_id": "public-fingerprint-hints", "reason": "Stable public identifiers enable correlation and are forbidden in crypto v1", "invariant_violated": "docs/crypto-wire-v1.md L270; AR-19"}.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `public-fingerprint-hints`, `rfc9106-first-2gib`.
+
+**R0 checklist:** 1 status quo: `status-quo-zero-hints-4096`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 6 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+**R0 gap — ledger candidates named by no covering protocol:** `keyed-hints-future`. Recorded for the critic pass; they must be measured, excluded with a rule id, or shown to be covered before G-A.
+
+#### DEC-CRY-077 — Which secret-dependent failures (wrong identity, wrong password, tag failure, padding or structure invalid after decryption, policy refusal) must be indistinguishable in reason codes, messages and timing?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CONF-003, EXP-CONF-004, EXP-CRYPTO-021.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-selective-collapse` | Status quo: envelope auth failure collapsed; post-decryption padding/structure errors have distinct codes | status quo | yes | — |
+| `collapse-all-post-decryption-errors` | Collapse all post-decryption failures to one integrity code at the user boundary | ledger alternative | yes | — |
+| `verbose-local-diagnostics-flag` | Distinct codes only with an explicit local diagnostics flag | ledger alternative | yes | — |
+| `constant-time-unlock-loop` | Make unlock attempt timing independent of which stanza matched | ledger alternative | yes | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `public-fingerprint-hints`, `rfc9106-first-2gib`.
+
+**R0 checklist:** 1 status quo: `status-quo-selective-collapse`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 4 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-046 — How should inspect report stored password KDF parameters and assess them against current guidance, and how is that baseline versioned in a long-lived tool?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CRYPTO-022, EXP-ECO-019.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-not-reported` | Status quo: inspect reports stanza type only, no parameters or assessment | status quo | yes | — |
+| `raw-parameters-only` | Report raw Argon2id parameters without judgement | ledger alternative | yes | — |
+| `versioned-baseline-table` | Compare against a baseline table versioned with the tool release | ledger alternative | yes | — |
+| `rfc9106-profile-comparison` | Compare against RFC 9106 named profiles | ledger alternative | yes | — |
+| `warn-and-suggest-change-password` | Warn below baseline and suggest key change-password | ledger alternative | yes | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `public-fingerprint-hints`, `rfc9106-first-2gib`.
+
+**R0 checklist:** 1 status quo: `status-quo-not-reported`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: `rfc9106-profile-comparison`; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-064 — Which recipient-related public fields (stanza count, types, classes, X-Wing encapsulations, password salt and Argon2 parameters) are acceptable, should recipient count be padded with dummy stanzas, and what may keyless inspect --crypto and diff --public report about recipients? The whole-archive public byte inventory is decided in encrypted-public-byte-leakage-inventory.
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CRYPTO-006, EXP-CRYPTO-007, EXP-CRYPTO-021.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-public-count-types` | Status quo: count, types, classes and parameters public; no stanza padding; keyless inspect and diff show them | status quo | no | EXP-CRYPTO-007 |
+| `dummy-stanza-padding` | Optional dummy stanzas bucketing recipient count (SPEC §9.8 optional stanza padding) | SPEC design | no | EXP-CRYPTO-007 |
+| `uniform-stanza-encoding` | Indistinguishable stanza encodings across types in a later version | defer / no change | no | EXP-CRYPTO-007 |
+| `restrict-keyless-reporting` | Keyless inspect and diff omit recipient count and types by default | ledger alternative | no | EXP-CRYPTO-007 |
+| `document-only` | Keep exposure and document it precisely in inspect --crypto | defer / no change | no | EXP-CRYPTO-007 |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `public-fingerprint-hints`, `rfc9106-first-2gib`.
+
+**R0 checklist:** 1 status quo: `status-quo-public-count-types`; 2 SPEC design: `dummy-stanza-padding`; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: `uniform-stanza-encoding`, `document-only`; 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
 <!-- END AUTO:candidates -->
 
 Evidence route: `EMPIRICALLY_MEASURED` latency, memory, envelope size and a message/reason-code census; the KDF *selection* is `EXTERNAL_REVIEW_REQUIRED` (DEC-CRY-002, DEC-CRY-035), so this experiment supplies measured inputs. Timing indistinguishability on a virtualized laptop is HC_UNVERIFIED and routed to external review; the reason-code/message census is decided here.
@@ -112,4 +271,17 @@ Latency/memory confirmatory verdicts on held-out encrypted archives after unlock
 - Agent effort: tooling **scripted** plus **judgment** (dudect, census); execution **scripted**; analysis **judgment**.
 
 <!-- BEGIN AUTO:common -->
+**Shared provisions (binding; `research/experiments/_index/crypto-conventions.md`).**
+
+- **Author and L7 exposure (CR1):** designed by the Phase C-design crypto session, which read `research/corpus/coverage.md` and `research/PROGRESS.md` under the shared design instructions and is recorded as L7-exposed for all families (`research/experiments/_program/l7-exposures-design-phase.jsonl`). Its candidate operationalizations, exclusions and analysis plans are re-signed by an unexposed session before G-A (PA-01); decision analyses are executed by unexposed sessions only.
+- **Gates (CR0):** runs before G-A/G-B are `NOT_DECISION_GRADE`; specs with non-empty `decision_ids` launch only through `research/tools/experiments/run_guarded.py` (PA-13).
+- **Candidates (CR2):** the tables above are generated; R0 item 6 is open until the crypto-cluster critic pass (PA-12).
+- **Security claims (CR3):** attack, leakage and tamper results are lower bounds; selections resting on a security claim, sufficiency of a mitigation or acceptance of leakage are provisional until the EXP-CRYPTO-021 external review is received.
+- **Metrics (CR6):** component throughput uses `__component_<name>` strata; chunk-stage throughput is owned by EXP-CHUNK-008 T1 (PA-17); HC oracle counts are binary under their MVT ids pending the PA-02 metric-registry disposition.
+- **Timing (CR5):** affinity and guard per §4.2-§4.4 (lint-checked), staged helpers (PA-16), calibration identity and instrument-class calibration (PA-04, PA-15).
+- **Split discipline (CR7):** committed specs are tuning-only or binary HC screens; graded looks use look specs derived at look time with candidates restricted to W ∪ S, registered by the owner in `research/experiments/_program/look-plan.csv` (PA-03, PA-09).
+- **Held-out (CR8):** generated only by EXP-EVAL-012 at Commit A (PA-20).
+- **Power (PA-06):** a banded comparison enters its full tuning run only after `research/tools/experiments/mde_feasibility.py` projects an MDE of at most 1 band unit on a tuning proxy.
+
+_Generated by `python research/tools/experiments/fill_crypto_auto_blocks.py` for EXP-CRYPTO-017; edit the inputs, not this block._
 <!-- END AUTO:common -->

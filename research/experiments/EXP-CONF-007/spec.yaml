@@ -40,8 +40,8 @@ candidates:
 command: >-
   /root/eb-research/target/harness-research/release/ebcc-resource
   --mode timing --bundle {item_path} --item-id {item_id}
-  --presets research/conformance/resource/presets-v1.json --preset {preset}
-  --h-table research/conformance/resource/h-v1.json --batch-min-ops 1000 --order-seed 2809170701
+  --presets /root/eb-research/stage/EXP-CONF-007/repo/research/conformance/resource/presets-v1.json --preset {preset}
+  --h-table /root/eb-research/stage/EXP-CONF-007/repo/research/conformance/resource/h-v1.json --batch-min-ops 1000 --order-seed 2809170701
   --artifact-dir /root/eb-research/raw-artifacts/EXP-CONF-007/{candidate}/{item_id}/rep{rep}
   --experiment-id EXP-CONF-007 --env-name wsl-ubuntu
 shell: bash
@@ -78,8 +78,8 @@ platform:
   cpu_affinity: [2]
   requires:
     - /root/eb-research/target/harness-research/release/ebcc-resource
-    - research/conformance/resource/presets-v1.json
-    - research/conformance/resource/h-v1.json
+    - /root/eb-research/stage/EXP-CONF-007/repo/research/conformance/resource/presets-v1.json
+    - /root/eb-research/stage/EXP-CONF-007/repo/research/conformance/resource/h-v1.json
   timeout_s: 7200
 
 guard:

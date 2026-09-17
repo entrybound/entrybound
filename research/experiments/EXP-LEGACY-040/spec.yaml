@@ -15,10 +15,10 @@ decision_ids: [DEC-ACC-017, DEC-LEG-002, DEC-LEG-003, DEC-LEG-022, DEC-LEG-059, 
 notes: >
   Design pre-registration; timing experiment. Requires calibration EXP-CAL-*-wsl-ubuntu (time_wall, time_cpu,
   memory_peak, scratch_peak), runner write accounting and the research prototypes with identity proof.
-cwd: /mnt/d/Projects/entrybound/entrybound
+cwd: /root/eb-research/stage/EXP-LEGACY-040/repo
 shell: bash
 env:
-  PYTHONPATH: research/tools
+  PYTHONPATH: /root/eb-research/stage/EXP-LEGACY-040/repo/research/tools
 
 command: >-
   /root/eb-research/target/harness/release/ebr-legacy-import
@@ -26,20 +26,20 @@ command: >-
   --out {scratch}/out.eb --scratch {scratch} --experiment-id EXP-LEGACY-040 --env-name wsl-ubuntu
 
 candidates:
-  - {name: status-quo, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
-  - {name: streaming-decode-spill, params: {mode: strict, strategy: streaming-decode-spill, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
-  - {name: compact-lom-evidence, params: {mode: strict, strategy: compact-lom-evidence, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
-  - {name: import-to-stream-producer, params: {mode: strict, strategy: import-to-stream-producer, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
-  - {name: exclude-structural-absence, params: {mode: strict, strategy: status-quo, evidence: exclude-structural-absence, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
-  - {name: aggregate-resolutions, params: {mode: strict, strategy: status-quo, evidence: aggregate-resolutions, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
-  - {name: external-evidence-object, params: {mode: strict, strategy: status-quo, evidence: external-evidence-object, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
-  - {name: provenance-byte-bound, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/add-provenance-byte-bound.json}}
-  - {name: derive-observation-cap, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/derive-observation-cap.json}}
-  - {name: unlimited-when-unset-reference, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/unlimited-reference.json}}
-  - {name: spool-then-cd, params: {mode: strict, strategy: spool-then-cd, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
-  - {name: lfh-streaming-untrusted, params: {mode: strict, strategy: lfh-streaming-untrusted, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
-  - {name: compat-libarchive, params: {mode: "compat:zip/libarchive-bsdtar@3.8.8", strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
-  - {name: preserve-libarchive, params: {mode: "preserve:zip/libarchive-bsdtar@3.8.8", strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: status-quo, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: streaming-decode-spill, params: {mode: strict, strategy: streaming-decode-spill, evidence: per-entry, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: compact-lom-evidence, params: {mode: strict, strategy: compact-lom-evidence, evidence: per-entry, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: import-to-stream-producer, params: {mode: strict, strategy: import-to-stream-producer, evidence: per-entry, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: exclude-structural-absence, params: {mode: strict, strategy: status-quo, evidence: exclude-structural-absence, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: aggregate-resolutions, params: {mode: strict, strategy: status-quo, evidence: aggregate-resolutions, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: external-evidence-object, params: {mode: strict, strategy: status-quo, evidence: external-evidence-object, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: provenance-byte-bound, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/add-provenance-byte-bound.json}}
+  - {name: derive-observation-cap, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/derive-observation-cap.json}}
+  - {name: unlimited-when-unset-reference, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/unlimited-reference.json}}
+  - {name: spool-then-cd, params: {mode: strict, strategy: spool-then-cd, evidence: per-entry, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: lfh-streaming-untrusted, params: {mode: strict, strategy: lfh-streaming-untrusted, evidence: per-entry, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: compat-libarchive, params: {mode: "compat:zip/libarchive-bsdtar@3.8.8", strategy: status-quo, evidence: per-entry, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: preserve-libarchive, params: {mode: "preserve:zip/libarchive-bsdtar@3.8.8", strategy: status-quo, evidence: per-entry, policy: /root/eb-research/stage/EXP-LEGACY-040/repo/research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
 
 corpus:
   manifest: research/experiments/EXP-LEGACY-040/cases-manifest.jsonl

@@ -15,10 +15,10 @@ notes: >
   Design pre-registration; timing experiment. Each sample encodes one exported tar (or ZIP entries) with one wrapper
   configuration via ebr-legacy-wrap and decodes it with the configured consumer decoder; encode and decode stage
   timings come from the harness row, whole-sample resources from the runner. wrap_parity.py must PASS first.
-cwd: /mnt/d/Projects/entrybound/entrybound
+cwd: /root/eb-research/stage/EXP-LEGACY-033/repo
 shell: bash
 env:
-  PYTHONPATH: research/tools
+  PYTHONPATH: /root/eb-research/stage/EXP-LEGACY-033/repo/research/tools
 
 command: >-
   /root/eb-research/target/harness/release/ebr-legacy-wrap

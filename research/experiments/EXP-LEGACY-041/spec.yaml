@@ -17,15 +17,15 @@ notes: >
   Design pre-registration; bomb arms with in-process refusal timers (calibration of time_cpu in-process timers
   required for decision-grade refusal_cpu_s). Each candidate is a policy file plus optional compat-revalidation and
   refusal-strategy prototypes; each sample runs one bomb set in strict, each ZIP compat profile and preserve modes.
-cwd: /mnt/d/Projects/entrybound/entrybound
+cwd: /root/eb-research/stage/EXP-LEGACY-041/repo
 shell: bash
 env:
-  PYTHONPATH: research/tools
+  PYTHONPATH: /root/eb-research/stage/EXP-LEGACY-041/repo/research/tools
 
 command: >-
-  /root/eb-research/venv/bin/python research/tools/legacy/bomb_run.py
+  /root/eb-research/venv/bin/python /root/eb-research/stage/EXP-LEGACY-041/repo/research/tools/legacy/bomb_run.py
   --experiment EXP-LEGACY-041 --import-bin /root/eb-research/target/harness/release/ebr-legacy-import
-  --policy research/experiments/EXP-LEGACY-041/policies/{policy}.json --compat-revalidation {revalidation}
+  --policy /root/eb-research/stage/EXP-LEGACY-041/repo/research/experiments/EXP-LEGACY-041/policies/{policy}.json --compat-revalidation {revalidation}
   --refusal-strategy {refusal} --bombs {item_path} --item-id {item_id} --split {split} --rep {rep}
   --modes strict,compat-all,preserve-all --memory-ceiling-bytes 8589934592 --wall-limit-s 600
   --scratch {scratch} --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-041

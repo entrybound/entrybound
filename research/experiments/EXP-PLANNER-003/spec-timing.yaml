@@ -217,7 +217,7 @@ candidates:
 command: >-
   /root/eb-research/target/planner-harness/release/ebr-planner time-select
   --item-path {item_path} --profile {profile} --strategy {strategy}
-  --strategy-config /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-003/replay/strategy-configs.json
+  --strategy-config /root/eb-research/stage/EXP-PLANNER-003/repo/research/normalized/EXP-PLANNER-003/replay/strategy-configs.json
   --experiment-id EXP-PLANNER-003 --env-name wsl-ubuntu
 shell: bash
 

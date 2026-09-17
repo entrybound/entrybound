@@ -247,3 +247,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T13:05Z — Phase C-design platform: 25 experiments (13 ready, 9 tooling, 3 blocked), 103/109 decisions covered
 - 2026-09-17T13:07Z — Legacy-domain C-design: 20 EXP-LEGACY designs (1 READY, 18 NEEDS_TOOLING, 1 BLOCKED); 118/119 decisions covered; L7 exposure disclosed.
 - 2026-09-17T13:42Z — Design review round 1: 2 BLOCKER, 10 HIGH, 15 MEDIUM, 8 LOW; not ready as pre-registration record.
+- 2026-09-17T14:10Z — PAUSE: C-design revision stopped mid-run; WIP committed (238 experiments; review 2 BLOCKER/10 HIGH unresolved; 100 index validation issues). Not the pre-registration record.

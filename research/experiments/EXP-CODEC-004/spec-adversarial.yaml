@@ -14,7 +14,7 @@ candidates:
     params: {rule: dtype-signature}
 command: >-
   /root/eb-research/target/harness/release/ebr-codec applicability-cost --item-path {item_path} --experiment-id EXP-CODEC-004-adversarial
-  --env-name wsl-ubuntu --rule {rule} --applicability-rules /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CODEC-004/configs/applicability.json --profile extreme --summary-stdout
+  --env-name wsl-ubuntu --rule {rule} --applicability-rules /root/eb-research/stage/EXP-CODEC-004/repo/research/experiments/EXP-CODEC-004/configs/applicability.json --profile extreme --summary-stdout
 shell: bash
 corpus:
   manifest: research/experiments/EXP-CODEC-004/adversarial-manifest.json

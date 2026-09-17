@@ -1,0 +1,50 @@
+{
+  "schema": "entrybound.research.runnable-probe/1",
+  "probed_utc": "2026-09-17T13:56:26+00:00",
+  "generator": "research/tools/experiments/probe_runnable.py",
+  "probes": {
+    "docker-desktop": true,
+    "external-reviewers": false,
+    "human-participants": false,
+    "macos": false,
+    "native-arm64": false,
+    "windows-edge": true,
+    "wsl-7z": true,
+    "wsl-dm-flakey": false,
+    "wsl-ebr-venv": true,
+    "wsl-gcc-aarch64": false,
+    "wsl-kvm": true,
+    "wsl-par2": true,
+    "wsl-podman": false,
+    "wsl-proverif": false,
+    "wsl-qemu-system-x86_64": true,
+    "wsl-qemu-user-aarch64": false,
+    "wsl-qemu-user-x86_64": false,
+    "wsl-sch-netem": false,
+    "wsl-tamarin": false
+  },
+  "policy_overrides": {
+    "docker-desktop": "Phase C-design rules state Docker is unavailable, and PROGRESS (storage incident 2026-09-16) defers every Docker-dependent step until the owner verifies Docker Desktop starts cleanly with its relocated disks; an engine answering `docker info` at probe time does not change experiment status until that verification is recorded"
+  },
+  "effective": {
+    "docker-desktop": false,
+    "external-reviewers": false,
+    "human-participants": false,
+    "macos": false,
+    "native-arm64": false,
+    "windows-edge": true,
+    "wsl-7z": true,
+    "wsl-dm-flakey": false,
+    "wsl-ebr-venv": true,
+    "wsl-gcc-aarch64": false,
+    "wsl-kvm": true,
+    "wsl-par2": true,
+    "wsl-podman": false,
+    "wsl-proverif": false,
+    "wsl-qemu-system-x86_64": true,
+    "wsl-qemu-user-aarch64": false,
+    "wsl-qemu-user-x86_64": false,
+    "wsl-sch-netem": false,
+    "wsl-tamarin": false
+  }
+}

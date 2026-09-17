@@ -16,10 +16,10 @@ notes: >
   Design pre-registration; timing experiment. Requires calibration EXP-CAL-*-wsl-ubuntu for time_wall, time_cpu,
   memory_peak and scratch_peak, runner write accounting (decision-method section 14 item 3) and research prototypes
   with the identity proof. The adaptive rule adds rounds under new run ids up to the section 4.6 cap.
-cwd: /mnt/d/Projects/entrybound/entrybound
+cwd: /root/eb-research/stage/EXP-LEGACY-032/repo
 shell: bash
 env:
-  PYTHONPATH: research/tools
+  PYTHONPATH: /root/eb-research/stage/EXP-LEGACY-032/repo/research/tools
 
 command: >-
   /root/eb-research/target/harness/release/ebr-legacy-export

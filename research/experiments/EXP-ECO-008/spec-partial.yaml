@@ -13,10 +13,10 @@ decision_ids: [DEC-ECO-004]
 candidates:
   - name: inc-full-decode-then-select
     command: >-
-      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/restore_subtree_incumbent.sh /root/eb-research/cache/eco008/inc-tar-zstd3-long30-t1/{item_id}.bin /root/eb-research/cache/eco008/subtrees/{item_id}.txt {scratch}/out
+      bash /root/eb-research/stage/EXP-ECO-008/repo/research/tools/ecosystem/ci/restore_subtree_incumbent.sh /root/eb-research/cache/eco008/inc-tar-zstd3-long30-t1/{item_id}.bin /root/eb-research/cache/eco008/subtrees/{item_id}.txt {scratch}/out
   - name: ebound-indexed-read-subtree
     command: >-
-      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/restore_subtree_ebound.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/ebound-fast-indexed/{item_id}.bin /root/eb-research/cache/eco008/subtrees/{item_id}.txt {scratch}/out
+      bash /root/eb-research/stage/EXP-ECO-008/repo/research/tools/ecosystem/ci/restore_subtree_ebound.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/ebound-fast-indexed/{item_id}.bin /root/eb-research/cache/eco008/subtrees/{item_id}.txt {scratch}/out
 shell: bash
 corpus:
   splits: [tuning]
@@ -42,7 +42,7 @@ metrics:
   - {name: input_bytes, source: input, family: size, direction: none, unit: B}
   - name: subtree_ok
     source: check
-    command: /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/subtree_equal.py {item_path} /root/eb-research/cache/eco008/subtrees/{item_id}.txt {scratch}/out
+    command: /root/eb-research/venv/bin/python /root/eb-research/stage/EXP-ECO-008/repo/research/tools/ecosystem/ci/subtree_equal.py {item_path} /root/eb-research/cache/eco008/subtrees/{item_id}.txt {scratch}/out
     family: correctness
     direction: maximize
 repetitions: 10

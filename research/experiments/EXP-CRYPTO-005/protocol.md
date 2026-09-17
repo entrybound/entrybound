@@ -1,6 +1,22 @@
 # EXP-CRYPTO-005: Compression-context side channel under encryption (chosen-plaintext co-packing)
 
 <!-- BEGIN AUTO:meta -->
+| Field | Value |
+|---|---|
+| Index status | **NEEDS_TOOLING** |
+| Kind | decision |
+| Domain | crypto (program §22.2, §22.3, §22.5) |
+| Decisions informed | DEC-CRY-028, DEC-CMP-029 |
+| Platforms | Linux/x86-64 |
+| Requires timing | False |
+| Estimates | 70 machine-hours; 30 GB disk |
+| Tooling to build | research-internals planner switches; copack_attack.py |
+| Environment prerequisites | none beyond the harness and the ebr venv |
+| Blocked arms | none |
+| Specs | `spec.yaml` |
+| Validation looks | owns look 1 for DEC-CMP-029, DEC-CRY-028 |
+| Gates | G-A and G-B unmet at this revision (generated `gate_state` column of `research/experiments/index.csv`); timing runs also need a PASS calibration record for the calibration identity (PA-04) |
+| Conventions | `research/experiments/_index/crypto-conventions.md` (CR0-CR10); program amendments `research/experiments/_program/design-revision-round1.md` |
 <!-- END AUTO:meta -->
 
 ## 1. Question
@@ -18,6 +34,41 @@ When the planner uses cross-file compression context (shared dictionaries, lookb
 ## 3. Decisions informed and evidence route
 
 <!-- BEGIN AUTO:candidates -->
+#### DEC-CRY-028 — Under encryption, should the planner disable or restrict cross-file dictionaries, lookback groups and similarity cohorts, require stronger padding, or keep full compression (which the CDC-attack literature recommends)?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-PLANNER-006, EXP-PLANNER-012, EXP-CRYPTO-021.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-same-planner` | Status quo: identical v6 planning with *-enc-v1 planner ids | status quo | yes | EXP-PLANNER-006 |
+| `no-cross-file-context-when-encrypted` | Disable shared dictionaries, lookback and similarity mixing under encryption | ledger alternative | yes | EXP-PLANNER-006 |
+| `same-owner-cross-file-only` | Allow cross-file context only within one input source/owner | ledger alternative | yes | EXP-PLANNER-006 |
+| `require-maximum-padding-for-cross-file` | Cross-file context only with MAXIMUM padding | ledger alternative | yes | — |
+| `mandatory-compression-under-encryption` | Always compress under encryption; forbid stored-only chunks | ledger alternative | yes | EXP-PLANNER-006 |
+| `profile-opt-in` | Cross-file context under encryption only for explicit Dense/Extreme opt-in | ledger alternative | yes | EXP-PLANNER-006 |
+
+**Ledger exclusions:** none recorded in the ledger.
+
+**R0 checklist:** 1 status quo: `status-quo-same-planner`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 6 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CMP-029 — Should planner decisions (candidate rankings, measured sizes, rejection reasons) be persisted in archives so explain can report them as RECORDED, recomputed from retained plaintext, or left NOT_RECORDED, and where should existing reconstruction audits live (authoritative sections affecting PCI, or a separate non-authoritative area)?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CRYPTO-007, EXP-ECO-019, EXP-PLANNER-009, EXP-PLANNER-010, EXP-PLANNER-012.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-audits-only` | Status quo: reconstruction fallbacks and audits persisted in authoritative sections; rankings NOT_RECORDED; explain re-derives alternatives from plaintext | status quo | no | EXP-PLANNER-010 |
+| `persist-full-rankings` | Persist every candidate size per chunk | ledger alternative | no | EXP-PLANNER-010 |
+| `persist-top-k-summary` | Persist compact per-plan or per-category summaries (winner margin, runner-up) | ledger alternative | no | EXP-PLANNER-010 |
+| `recompute-with-planner-id` | Recompute rankings by rerunning the recorded planner ID, labelled DERIVED | ledger alternative | no | EXP-PLANNER-010 |
+| `sidecar-decision-log` | Emit decision log as an optional sidecar outside the archive | ledger alternative | no | EXP-PLANNER-010 |
+| `drop-audits` | Remove creation audits from archives entirely | ledger alternative | no | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+
+**R0 checklist:** 1 status quo: `status-quo-audits-only`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 6 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+**R0 gap — ledger candidates named by no covering protocol:** `drop-audits`. Recorded for the critic pass; they must be measured, excluded with a rule id, or shown to be covered before G-A.
 <!-- END AUTO:candidates -->
 
 Evidence route: `EMPIRICALLY_MEASURED` attack lower bound (OD-16) plus size cost (OD-05). The claim that a restriction is sufficient is an external-review item.
@@ -115,4 +166,17 @@ Candidates reaching Commit A run once on held-out host items with the same secre
 - Agent effort: tooling **judgment** (planner switches, attack loop); execution **scripted**; analysis **judgment**.
 
 <!-- BEGIN AUTO:common -->
+**Shared provisions (binding; `research/experiments/_index/crypto-conventions.md`).**
+
+- **Author and L7 exposure (CR1):** designed by the Phase C-design crypto session, which read `research/corpus/coverage.md` and `research/PROGRESS.md` under the shared design instructions and is recorded as L7-exposed for all families (`research/experiments/_program/l7-exposures-design-phase.jsonl`). Its candidate operationalizations, exclusions and analysis plans are re-signed by an unexposed session before G-A (PA-01); decision analyses are executed by unexposed sessions only.
+- **Gates (CR0):** runs before G-A/G-B are `NOT_DECISION_GRADE`; specs with non-empty `decision_ids` launch only through `research/tools/experiments/run_guarded.py` (PA-13).
+- **Candidates (CR2):** the tables above are generated; R0 item 6 is open until the crypto-cluster critic pass (PA-12).
+- **Security claims (CR3):** attack, leakage and tamper results are lower bounds; selections resting on a security claim, sufficiency of a mitigation or acceptance of leakage are provisional until the EXP-CRYPTO-021 external review is received.
+- **Metrics (CR6):** component throughput uses `__component_<name>` strata; chunk-stage throughput is owned by EXP-CHUNK-008 T1 (PA-17); HC oracle counts are binary under their MVT ids pending the PA-02 metric-registry disposition.
+- **Timing (CR5):** affinity and guard per §4.2-§4.4 (lint-checked), staged helpers (PA-16), calibration identity and instrument-class calibration (PA-04, PA-15).
+- **Split discipline (CR7):** committed specs are tuning-only or binary HC screens; graded looks use look specs derived at look time with candidates restricted to W ∪ S, registered by the owner in `research/experiments/_program/look-plan.csv` (PA-03, PA-09).
+- **Held-out (CR8):** generated only by EXP-EVAL-012 at Commit A (PA-20).
+- **Power (PA-06):** a banded comparison enters its full tuning run only after `research/tools/experiments/mde_feasibility.py` projects an MDE of at most 1 band unit on a tuning proxy.
+
+_Generated by `python research/tools/experiments/fill_crypto_auto_blocks.py` for EXP-CRYPTO-005; edit the inputs, not this block._
 <!-- END AUTO:common -->

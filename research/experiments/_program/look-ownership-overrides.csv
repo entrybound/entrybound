@@ -1,0 +1,61 @@
+# Explicit validation-look ownership (design review DR1-03 fix item 3, DR1-17 fix item 3; integrity conventions C13 splits).
+# role: owner | participant | tuning_only. comparison: the comparison or OD the row's experiment owns inside the look.
+# Read by research/tools/experiments/look_plan.py. Rows naming an experiment that does not cover the decision are reported as problems.
+decision_id,experiment_id,role,comparison,basis
+DEC-CMP-001,EXP-CHUNK-004,owner,OD-05 artifact_bytes (V1 look),DR1-03
+DEC-CMP-001,EXP-CHUNK-008,participant,OD-06 chunk-stage and end-to-end throughput (T1/T2),DR1-17
+DEC-CMP-001,EXP-CRYPTO-003,tuning_only,,DR1-03/DR1-17 (keyed-chunking MVT-14(e) and encrypted pack cost stay; size and throughput are tuning evidence)
+DEC-CMP-001,EXP-SCALE-012,tuning_only,,DR1-03
+DEC-CMP-001,EXP-CHUNK-001,tuning_only,,DR1-03
+DEC-CMP-001,EXP-CHUNK-002,tuning_only,,DR1-03
+DEC-CRY-023,EXP-CRYPTO-003,owner,OD-06 end-to-end encrypted encode_wall_s (ebound pack),DR1-17
+DEC-CRY-023,EXP-CHUNK-008,participant,OD-06 chunk-stage throughput (T1; single source),DR1-17
+DEC-CRY-023,EXP-CRYPTO-002,participant,OD-16 boundary leakage,DR1-03
+DEC-INT-002,EXP-INT-001,owner,OD-14 blast radius (injection and oracle),integrity C13
+DEC-INT-002,EXP-CROSSFILE-004,participant,lookback candidate packing,integrity C13
+DEC-INT-002,EXP-CROSSFILE-006,participant,lookback candidate packing,integrity C13
+DEC-CMP-027,EXP-CROSSFILE-004,owner,OD-05 size and lookback candidates,integrity C13
+DEC-CMP-027,EXP-INT-001,participant,OD-14 blast radius of lookback candidates,integrity C13
+DEC-INT-006,EXP-INT-001,owner,damage classes and blast radius,integrity C13
+DEC-INT-040,EXP-INT-002,owner,cut campaigns and intact-prefix mechanisms,integrity C13
+DEC-INT-019,EXP-INT-001,owner,header and footer binding damage detection,integrity C13
+DEC-INT-042,EXP-INT-003,owner,MVT-15(a) oracle matrix,integrity C13
+DEC-INT-020,EXP-INT-003,owner,MVT-15(a) oracle matrix,integrity C13
+DEC-MOD-014,EXP-INT-003,owner,MVT-15(a) oracle matrix,integrity C13
+DEC-INT-038,EXP-INT-003,owner,MVT-15(a) oracle matrix,integrity C13
+DEC-INT-021,EXP-INT-003,owner,MVT-15(a) oracle matrix,integrity C13
+DEC-INT-044,EXP-INT-003,owner,MVT-15(a) oracle matrix,integrity C13
+DEC-INT-044,EXP-REMOTE-010,participant,remote byte and request cost at scale,integrity C13
+DEC-CRY-090,EXP-CRYPTO-014,owner,signature-status semantics,integrity C13
+DEC-CRY-090,EXP-INT-003,participant,MVT-15(a) oracle matrix,integrity C13
+DEC-INT-043,EXP-INT-004,owner,detection coverage per verification level,integrity C13
+DEC-INT-043,EXP-SCALE-001,participant,memory and staging growth beyond RAM,integrity C13
+DEC-INT-043,EXP-SCALE-008,participant,memory and staging growth beyond RAM,integrity C13
+DEC-INT-039,EXP-INT-006,owner,failure cleanup and staging behaviour,integrity C13
+DEC-INT-039,EXP-SCALE-004,participant,memory and staging growth beyond RAM,integrity C13
+DEC-INT-039,EXP-SCALE-008,participant,memory and staging growth beyond RAM,integrity C13
+DEC-INT-046,EXP-INT-009,owner,identity and binding staleness,integrity C13
+DEC-LEG-040,EXP-INT-009,owner,identity and binding staleness,integrity C13
+DEC-INT-035,EXP-INT-012,owner,recovery measurements,integrity C13
+DEC-INT-008,EXP-INT-013,owner,crafted canonicality,integrity C13
+DEC-INT-008,EXP-CODEC-005,participant,decoder resource profiles,integrity C13
+DEC-INT-008,EXP-CODEC-007,participant,decoder resource profiles,integrity C13
+DEC-LEG-021,EXP-INT-013,owner,legacy check strictness,integrity C13
+DEC-CMP-044,EXP-CODEC-006,owner,pack-time verification cost,integrity C13
+DEC-CMP-044,EXP-INT-014,participant,fault-injection detection,integrity C13
+DEC-INT-030,EXP-INT-014,owner,fault-injection detection and independent-decoder differentials,integrity C13
+DEC-INT-024,EXP-INT-015,owner,counterexample search and exact proof-cost model,integrity C13
+DEC-INT-029,EXP-INT-015,owner,counterexample search and exact proof-cost model,integrity C13
+DEC-INT-029,EXP-REMOTE-007,participant,emulated-network cost,integrity C13
+DEC-MOD-007,EXP-INT-015,owner,counterexample search and exact proof-cost model,integrity C13
+DEC-MOD-007,EXP-REMOTE-007,participant,emulated-network cost,integrity C13
+DEC-CON-020,EXP-INT-015,owner,exact proof-cost model,integrity C13
+DEC-CON-020,EXP-REMOTE-007,participant,emulated-network cost,integrity C13
+DEC-INT-010,EXP-INT-016,owner,tamper corpora against partial-read states,integrity C13
+DEC-INT-033,EXP-INT-016,owner,encrypted salvage,integrity C13
+DEC-CRY-080,EXP-CRYPTO-010,owner,constructions,integrity C13
+DEC-CRY-080,EXP-INT-016,participant,tamper corpora,integrity C13
+DEC-CRY-073,EXP-CRYPTO-008,owner,constructions,integrity C13
+DEC-CRY-073,EXP-INT-016,participant,tamper corpora,integrity C13
+DEC-LEG-009,EXP-INT-017,owner,reproducibility and gate mutation tests,integrity C13
+DEC-LEG-009,EXP-CRYPTO-019,participant,receipt signing and forgery analysis,integrity C13

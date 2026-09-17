@@ -1,6 +1,22 @@
 # EXP-CRYPTO-013: RFC 3161 timestamp verification profile, dependency attack surface and long-term validity
 
 <!-- BEGIN AUTO:meta -->
+| Field | Value |
+|---|---|
+| Index status | **NEEDS_TOOLING** — Docker sandboxing unavailable (process-isolation substitute) |
+| Kind | decision |
+| Domain | crypto (program §22.1, §22.4) |
+| Decisions informed | DEC-CRY-006, DEC-CRY-076, DEC-CRY-098, DEC-CRY-099, DEC-CRY-083, DEC-CRY-066, DEC-CRY-097, DEC-CRY-100 |
+| Platforms | Linux/x86-64 |
+| Requires timing | False |
+| Estimates | 20 machine-hours; 5 GB disk |
+| Tooling to build | ebr-crypto tsverify; real TSA token corpus (owner-fetched); negative generator; cargo-fuzz targets |
+| Environment prerequisites | none beyond the harness and the ebr venv |
+| Blocked arms | none |
+| Specs | `spec.yaml` |
+| Validation looks | owns no validation look |
+| Gates | G-A and G-B unmet at this revision (generated `gate_state` column of `research/experiments/index.csv`); timing runs also need a PASS calibration record for the calibration identity (PA-04) |
+| Conventions | `research/experiments/_index/crypto-conventions.md` (CR0-CR10); program amendments `research/experiments/_program/design-revision-round1.md` |
 <!-- END AUTO:meta -->
 
 ## 1. Question
@@ -17,6 +33,152 @@ Which TSTInfo/CMS fields must the v1 timestamp verifier constrain, and does the 
 ## 3. Decisions informed and evidence route
 
 <!-- BEGIN AUTO:candidates -->
+#### DEC-CRY-006 — Is shipping v1 RFC 3161 verification on cms =0.3.0-pre.2 (with der, spki and x509-cert) acceptable, or must timestamp verification be gated to TIMESTAMP_UNSUPPORTED, vendored and fuzzed, replaced by a minimal profile parser, or isolated?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CONF-009, EXP-ECO-001.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-prerelease-cms` | Status quo: cms =0.3.0-pre.2 pinned | status quo | yes | EXP-ECO-001 |
+| `pin-stable-release` | Wait for and pin a stable cms release before stable v1 | ledger alternative | yes | EXP-ECO-001 |
+| `gate-timestamps-unsupported` | Ship with timestamp verification disabled until audited | ledger alternative | yes | — |
+| `minimal-profile-parser` | Hand-written DER parser limited to the frozen profile | ledger alternative | yes | EXP-ECO-001 |
+| `vendor-and-fuzz` | Vendor the crate and run continuous local fuzzing | ledger alternative | yes | EXP-ECO-001 |
+| `sandboxed-parse` | Parse tokens in an isolated process with resource limits | ledger alternative | yes | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+
+**R0 checklist:** 1 status quo: `status-quo-prerelease-cms`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 6 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-076 — Which TSTInfo and CMS fields must the v1 timestamp verifier constrain (policy OID allowlist, TSA name, nonce, accuracy and skew, critical extensions, ESS signing-certificate-v2), and which negative tests make the profile normative?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CONF-004.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-minimal-checks` | Status quo: imprint, signed attributes, EKU, chain; TSTInfo policy/nonce/accuracy/extensions and ESS ignored | status quo | yes | — |
+| `require-ess-signing-certificate-v2` | Require and check ESS signing-certificate-v2 (RFC 5035/5816) | ledger alternative | yes | — |
+| `policy-oid-allowlist` | Caller policy carries acceptable TSA policy OIDs | ledger alternative | yes | — |
+| `tsa-name-match` | Check TSTInfo tsa GeneralName against the signer certificate | ledger alternative | yes | — |
+| `reject-unknown-critical-extensions` | Reject tokens and certificates with unknown critical extensions | ledger alternative | yes | — |
+| `accuracy-and-skew-window` | Apply accuracy and allowed clock skew to genTime comparisons | ledger alternative | yes | — |
+| `full-rfc3161-rfc5816-profile` | Implement every MUST in RFC 3161 and RFC 5816 verification | ledger alternative | yes | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+
+**R0 checklist:** 1 status quo: `status-quo-minimal-checks`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 7 ledger candidates listed above; 4 strongest incumbent: `require-ess-signing-certificate-v2`, `full-rfc3161-rfc5816-profile`; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-098 — Which TSA signature and digest algorithms does the v1 RFC 3161 profile admit: Ed25519 with SHA-256 only (frozen), SHA-512 for Ed25519 per RFC 8419, ECDSA and RSA signers and chains, NULL-parameter digest identifiers, or timestamps gated off?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: none.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-ed25519-sha256-only` | Status quo: Ed25519 CMS signer, SHA-256 digests, Ed25519-signed chain | status quo | yes | — |
+| `ed25519-with-sha512` | Admit SHA-512 CMS digest for Ed25519 signers per RFC 8419 | ledger alternative | yes | — |
+| `add-ecdsa` | Admit ECDSA P-256/P-384 signers and chains | ledger alternative | yes | — |
+| `add-rsa` | Admit RSA PKCS#1 v1.5 and RSA-PSS signers and chains | ledger alternative | yes | — |
+| `accept-null-parameters` | Accept SHA-256 AlgorithmIdentifiers with explicit NULL parameters | ledger alternative | yes | — |
+| `separately-versioned-profile` | Keep v1 narrow and add a broader timestamp profile under a new feature | ledger alternative | yes | — |
+| `gate-timestamps-unsupported` | Report all tokens TIMESTAMP_UNSUPPORTED until a reviewed profile exists | ledger alternative | yes | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+
+**R0 checklist:** 1 status quo: `status-quo-ed25519-sha256-only`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 7 ledger candidates listed above; 4 strongest incumbent: `ed25519-with-sha512`, `add-rsa`; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-099 — Given the RFC 3161 token lies outside the signed transcript, should caller policy be able to require a valid timestamp, should some signing profiles mandate timestamps, and should verify detect or report stripping and substitution (for example records differing only by token)?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: none.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-optional-unrequirable` | Status quo: optional token, no policy can require it | status quo | yes | — |
+| `require-timestamp-policy` | Add require-timestamp (optionally with anchors) to SignaturePolicy and CLI | ledger alternative | yes | — |
+| `profile-mandated-timestamps` | Release-signing profile requires a valid timestamp | ledger alternative | yes | — |
+| `report-transcript-duplicates` | Report records sharing a signed transcript with differing tokens | ledger alternative | yes | — |
+| `unique-transcript-on-embed` | Refuse embedding a record whose transcript is already present | ledger alternative | yes | — |
+| `timestamp-inside-v1-transcript` | Move the timestamp claim inside the signed transcript (minisign trusted-comment style) | ledger alternative | no | — |
+
+**Ledger exclusions:** {"candidate_id": "timestamp-inside-v1-transcript", "reason": "The token is defined over the signed record and excluded from the Ed25519 transcript", "invariant_violated": "crypto-v1 wire frozen (docs/crypto-wire-v1.md L704-708)"}.
+
+**R0 checklist:** 1 status quo: `status-quo-optional-unrequirable`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 6 ledger candidates listed above; 4 strongest incumbent: `timestamp-inside-v1-transcript`; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+**R0 gap — ledger candidates named by no covering protocol:** `timestamp-inside-v1-transcript`. Recorded for the critic pass; they must be measured, excluded with a rule id, or shown to be covered before G-A.
+
+#### DEC-CRY-083 — Are the frozen signature limits justified: 64 KiB maximum timestamp token, 16-certificate chain depth, and 16-byte signer identifier truncation?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: none.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-limits` | Status quo limits | status quo | yes | — |
+| `raise-token-limit-new-version` | Larger token limit in a new version | ledger alternative | no | — |
+| `lower-token-limit` | Lower reader-side limit via policy | ledger alternative | no | — |
+| `full-key-display` | Display and pin full 32-byte public keys | ledger alternative | no | — |
+| `pin-by-public-key-only` | Use signer id for display only, never for trust | defer / no change | no | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+
+**R0 checklist:** 1 status quo: `status-quo-limits`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: `pin-by-public-key-only`; 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+**R0 gap — ledger candidates named by no covering protocol:** `raise-token-limit-new-version`, `lower-token-limit`, `full-key-display`, `pin-by-public-key-only`. Recorded for the critic pass; they must be measured, excluded with a rule id, or shown to be covered before G-A.
+
+#### DEC-CRY-066 — What operation renews signature and timestamp evidence before classical algorithms become forgeable (add a new signature, re-timestamp an existing record, evidence-record chains, an archive timestamp over the signature collection), and does it rewrite archive bytes?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: none.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-none` | Status quo: no renewal operation | status quo | no | — |
+| `add-new-signature` | Add a new detached or embedded signature under a newer algorithm | ledger alternative | no | — |
+| `re-timestamp-existing-record` | Attach a newer token over the same record | ledger alternative | no | — |
+| `evidence-record-sidecar` | RFC 4998 evidence-record chain sidecar | ledger alternative | no | — |
+| `archive-timestamp-over-collection` | Timestamp over the whole signature collection | ledger alternative | no | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+
+**R0 checklist:** 1 status quo: `status-quo-none`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: `evidence-record-sidecar`; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+**R0 gap — ledger candidates named by no covering protocol:** `status-quo-none`, `add-new-signature`, `re-timestamp-existing-record`, `evidence-record-sidecar`, `archive-timestamp-over-collection`. Recorded for the critic pass; they must be measured, excluded with a rule id, or shown to be covered before G-A.
+
+#### DEC-CRY-097 — How is timestamp validity established decades later without live infrastructure: genTime-evaluated chains with no revocation (status quo), verification-time validity, caller-supplied offline revocation data, embedded revocation evidence, renewable evidence records, or a TSA trust list with indefinite validity?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: none.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-gentime-no-revocation` | Status quo: validity at TSA-asserted genTime, exact-DER anchors, no revocation | status quo | no | — |
+| `verification-time-validity` | Evaluate certificate validity at verification time | ledger alternative | no | — |
+| `caller-supplied-offline-revocation` | Caller supplies CRLs or OCSP responses as files | ledger alternative | no | — |
+| `embedded-revocation-evidence` | Carry revocation evidence captured at signing time (new record version) | ledger alternative | no | — |
+| `evidence-record-renewal` | RFC 4998-style evidence records renewed before algorithm or key expiry | ledger alternative | no | — |
+| `tsa-trust-list-indefinite` | C2PA-style TSA trust list with indefinitely valid timestamps | ledger alternative | no | — |
+| `transparency-log-anchoring-sidecar` | Optional transparency-log inclusion proof sidecar | ledger alternative | no | — |
+| `online-revocation-fetch` | Fetch OCSP/CRL during verify | ledger alternative | no | — |
+
+**Ledger exclusions:** {"candidate_id": "online-revocation-fetch", "reason": "Makes verification depend on live revocation infrastructure", "invariant_violated": "SPEC §24 item 7 L2509 verification never requires live infrastructure"}.
+
+**R0 checklist:** 1 status quo: `status-quo-gentime-no-revocation`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 8 ledger candidates listed above; 4 strongest incumbent: `evidence-record-renewal`; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+**R0 gap — ledger candidates named by no covering protocol:** `status-quo-gentime-no-revocation`, `verification-time-validity`, `caller-supplied-offline-revocation`, `embedded-revocation-evidence`, `evidence-record-renewal`, `tsa-trust-list-indefinite`, `transparency-log-anchoring-sidecar`, `online-revocation-fetch`. Recorded for the critic pass; they must be measured, excluded with a rule id, or shown to be covered before G-A.
+
+#### DEC-CRY-100 — What are the default timestamp trust anchors (none, bundled list, platform store, TSA trust list) and reference time (system clock, explicit --at-time, genTime only), and how is a token reported when no anchors are supplied?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: none.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-caller-files-system-clock` | Status quo: --timestamp-trust files, system clock, UNSUPPORTED without policy | status quo | no | — |
+| `explicit-reference-time` | Add an explicit reference-time option | ledger alternative | no | — |
+| `bundled-tsa-trust-list` | Ship a curated TSA trust list | ledger alternative | no | — |
+| `platform-trust-store` | Use platform trust stores for timeStamping anchors | ledger alternative | no | — |
+| `report-not-evaluated` | Report NOT_EVALUATED when no anchors are supplied | ledger alternative | no | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+
+**R0 checklist:** 1 status quo: `status-quo-caller-files-system-clock`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+**R0 gap — ledger candidates named by no covering protocol:** `status-quo-caller-files-system-clock`, `explicit-reference-time`, `bundled-tsa-trust-list`, `platform-trust-store`, `report-not-evaluated`. Recorded for the critic pass; they must be measured, excluded with a rule id, or shown to be covered before G-A.
 <!-- END AUTO:candidates -->
 
 Evidence route: `EMPIRICALLY_MEASURED` accept/reject fractions over pre-registered case sets (T-20), attack-surface cost inputs (C4), and fuzzing findings (M24.2, binary at the coverage target). Long-term-validity semantics (DEC-CRY-097) and renewal (DEC-CRY-066) are largely analytical/standards comparisons; the mechanical parts (what verify reports, whether bytes are rewritten) are measured, and the trust semantics feed external review.
@@ -105,4 +267,17 @@ Not applicable (fixed case sets, no corpus). The accept/reject and fuzzing gates
 - Agent effort: **judgment** (profile design, negative generation, dependency-surface assessment, fuzz triage); execution **scripted**. Long-term-validity analysis is **judgment** feeding external review.
 
 <!-- BEGIN AUTO:common -->
+**Shared provisions (binding; `research/experiments/_index/crypto-conventions.md`).**
+
+- **Author and L7 exposure (CR1):** designed by the Phase C-design crypto session, which read `research/corpus/coverage.md` and `research/PROGRESS.md` under the shared design instructions and is recorded as L7-exposed for all families (`research/experiments/_program/l7-exposures-design-phase.jsonl`). Its candidate operationalizations, exclusions and analysis plans are re-signed by an unexposed session before G-A (PA-01); decision analyses are executed by unexposed sessions only.
+- **Gates (CR0):** runs before G-A/G-B are `NOT_DECISION_GRADE`; specs with non-empty `decision_ids` launch only through `research/tools/experiments/run_guarded.py` (PA-13).
+- **Candidates (CR2):** the tables above are generated; R0 item 6 is open until the crypto-cluster critic pass (PA-12).
+- **Security claims (CR3):** attack, leakage and tamper results are lower bounds; selections resting on a security claim, sufficiency of a mitigation or acceptance of leakage are provisional until the EXP-CRYPTO-021 external review is received.
+- **Metrics (CR6):** component throughput uses `__component_<name>` strata; chunk-stage throughput is owned by EXP-CHUNK-008 T1 (PA-17); HC oracle counts are binary under their MVT ids pending the PA-02 metric-registry disposition.
+- **Timing (CR5):** affinity and guard per §4.2-§4.4 (lint-checked), staged helpers (PA-16), calibration identity and instrument-class calibration (PA-04, PA-15).
+- **Split discipline (CR7):** committed specs are tuning-only or binary HC screens; graded looks use look specs derived at look time with candidates restricted to W ∪ S, registered by the owner in `research/experiments/_program/look-plan.csv` (PA-03, PA-09).
+- **Held-out (CR8):** generated only by EXP-EVAL-012 at Commit A (PA-20).
+- **Power (PA-06):** a banded comparison enters its full tuning run only after `research/tools/experiments/mde_feasibility.py` projects an MDE of at most 1 band unit on a tuning proxy.
+
+_Generated by `python research/tools/experiments/fill_crypto_auto_blocks.py` for EXP-CRYPTO-013; edit the inputs, not this block._
 <!-- END AUTO:common -->

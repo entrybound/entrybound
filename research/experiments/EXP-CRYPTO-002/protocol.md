@@ -1,6 +1,22 @@
 # EXP-CRYPTO-002: Boundary leakage of encrypted archives: public CDC, secret Gear, PHTE-AES128 and alternatives, by padding, layout and compression
 
 <!-- BEGIN AUTO:meta -->
+| Field | Value |
+|---|---|
+| Index status | **NEEDS_TOOLING** |
+| Kind | decision |
+| Domain | crypto (program §22.2, §22.3, §22.5) |
+| Decisions informed | DEC-CRY-023, DEC-CRY-081, DEC-CRY-022, DEC-MOD-012, DEC-CRY-039 |
+| Platforms | Linux/x86-64 |
+| Requires timing | False |
+| Estimates | 300 machine-hours; 220 GB disk |
+| Tooling to build | ebr-crypto observe; research-internals private-length accessor; leakage_metrics.py |
+| Environment prerequisites | none beyond the harness and the ebr venv |
+| Blocked arms | none |
+| Specs | `spec.yaml` |
+| Validation looks | owns look 1 for DEC-CRY-022, DEC-CRY-081, DEC-MOD-012; participates in looks owned by other experiments for DEC-CRY-023 |
+| Gates | G-A and G-B unmet at this revision (generated `gate_state` column of `research/experiments/index.csv`); timing runs also need a PASS calibration record for the calibration identity (PA-04) |
+| Conventions | `research/experiments/_index/crypto-conventions.md` (CR0-CR10); program amendments `research/experiments/_program/design-revision-round1.md` |
 <!-- END AUTO:meta -->
 
 ## 1. Question
@@ -19,6 +35,95 @@ For the committed observer model and attack suite (EXP-CRYPTO-001), how much doe
 ## 3. Decisions informed and evidence route
 
 <!-- BEGIN AUTO:candidates -->
+#### DEC-CRY-023 — Which chunk-boundary construction is the default for encrypted archives (and per profile or threat setting), given secret Gear tables are known-breakable and PHTE/AES costs more?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CHUNK-006, EXP-CHUNK-008, EXP-CHUNK-012, EXP-CHUNK-013, EXP-CRYPTO-003, EXP-CRYPTO-004, EXP-CRYPTO-021.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-secret-gear-default-phte-opt-in` | Status quo: SECRET_GEAR_TABLE default (defense in depth), PHTE_AES128 via --chunk-boundary keyed-prf | status quo | yes | EXP-CHUNK-006 |
+| `phte-default-everywhere` | PHTE_AES128 default for all encrypted archives; secret Gear retained only for reading/compatibility | ledger alternative | yes | EXP-CHUNK-006 |
+| `phte-default-for-selected-profiles` | PHTE default for remote/storage-provider oriented or Dense/Extreme profiles; secret Gear elsewhere | ledger alternative | yes | EXP-CHUNK-006 |
+| `widened-keyed-rolling-hash` | Hardened secret table (wider state, e.g. 256-bit buzhash as recommended to Borg) with mandatory compression; new boundary mode id | ledger alternative | yes | EXP-CHUNK-006 |
+| `fixed-size-chunks-under-encryption` | Fixed-size chunking for encrypted archives (no content-defined boundaries), losing shift-resistant dedup | ledger alternative | yes | EXP-CHUNK-006 |
+| `keyed-cdc-with-coarse-rechunking` | Keyed CDC followed by packing chunks into fixed-size padded containers so boundaries are not observable | ledger alternative | yes | EXP-CHUNK-006 |
+| `public-unkeyed-cdc` | Public unkeyed gear-norm-v1 boundaries under encryption | ledger alternative | yes | EXP-CHUNK-006 |
+
+**Ledger exclusions:** {"candidate_id": "public-unkeyed-cdc", "reason": "Encrypted boundary modes are keyed by frozen registry; unkeyed boundaries directly expose plaintext-derived structure", "invariant_violated": "I24; docs/crypto-wire-v1.md L56-57"}.
+
+**R0 checklist:** 1 status quo: `status-quo-secret-gear-default-phte-opt-in`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 7 ledger candidates listed above; 4 strongest incumbent: `widened-keyed-rolling-hash`; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-081 — Should the writer keep one private object per segment (exposing unique Chunk count and per-Chunk buckets) or pack multiple objects or fixed-size units per segment to hide object counts?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-REMOTE-010.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-one-object-per-segment` | Status quo: one complete private object per segment | status quo | yes | EXP-REMOTE-010 |
+| `batch-objects-to-target-segment-size` | Pack multiple objects into segments up to a target plaintext size | ledger alternative | yes | — |
+| `fixed-size-padded-segments` | Uniform fixed-size padded segments independent of object boundaries | ledger alternative | yes | — |
+| `group-by-chunkgroup` | One segment per ChunkGroup or dependency closure | ledger alternative | yes | EXP-REMOTE-010 |
+| `dummy-segments` | Add dummy padded segments to quantise segment count | ledger alternative | yes | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+
+**R0 checklist:** 1 status quo: `status-quo-one-object-per-segment`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-022 — Should the public encrypt_archive API refuse plans not chunked with the AFK-derived boundary key, replan internally with keyed CDC, report public-boundary status honestly, or become crate-private?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: none.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-relabel` | Status quo: relabel planner_id to -enc-v1 and keep caller boundaries | status quo | no | — |
+| `refuse-unkeyed-plans` | Refuse plans whose chunker_id is not the AFK-keyed chunker | ledger alternative | no | — |
+| `replan-internally` | Draw the AFK first and replan with keyed CDC inside encrypt_archive | ledger alternative | no | — |
+| `crate-private` | Make encrypt_archive crate-private and expose only keyed creation APIs | ledger alternative | no | — |
+| `honest-label-and-warn` | Keep boundaries without relabelling; inspect warns of public boundaries | ledger alternative | no | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+
+**R0 checklist:** 1 status quo: `status-quo-relabel`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+**R0 gap — ledger candidates named by no covering protocol:** `status-quo-relabel`, `refuse-unkeyed-plans`, `replan-internally`, `crate-private`, `honest-label-and-warn`. Recorded for the critic pass; they must be measured, excluded with a rule id, or shown to be covered before G-A.
+
+#### DEC-MOD-012 — Given that encrypted bytes are intentionally non-reproducible, what reproducibility and identity guarantees apply to encrypted archives (LAI/AUX stability, PCR under keyed boundaries), and what identity material may be exposed outside encryption?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CRYPTO-007, EXP-SCALE-005.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `lai-aux-anchor-status-quo` | Status quo: fresh randomness; LAI and AUX stable, PCR may change with AFK-keyed boundaries, PCI always differs | status quo | no | — |
+| `stable-pcr-under-encryption` | Keep boundaries key-independent so PCR is also stable (conflicts with boundary-leakage mitigations) | ledger alternative | no | — |
+| `encrypted-roots-only` | Keep LAI/AUX inside encryption; expose only keyed or blinded identities publicly | ledger alternative | no | EXP-CRYPTO-007 |
+| `keyed-lai-commitment` | Publish a keyed commitment to LAI instead of LAI in detached signatures | ledger alternative | no | EXP-CRYPTO-007 |
+| `deterministic-test-vectors-only` | Deterministic encryption only behind test-only interfaces for vectors (status quo for vectors) | ledger alternative | no | — |
+| `convergent-encryption-mode` | Deterministic convergent-encryption mode for reproducible ciphertext | ledger alternative | no | — |
+
+**Ledger exclusions:** {"candidate_id": "convergent-encryption-mode", "reason": "Deterministic production ciphertext is prohibited and leaks file presence to holders of candidate files", "invariant_violated": "docs/crypto-threat-model-v1.md §Nondeterminism MUST NOT; SPEC §12.3 L1487 non-goal"}.
+
+**R0 checklist:** 1 status quo: `lai-aux-anchor-status-quo`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 6 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+**R0 gap — ledger candidates named by no covering protocol:** `lai-aux-anchor-status-quo`, `stable-pcr-under-encryption`, `deterministic-test-vectors-only`, `convergent-encryption-mode`. Recorded for the critic pass; they must be measured, excluded with a rule id, or shown to be covered before G-A.
+
+#### DEC-CRY-039 — What residual chunk-size and boundary leakage is acceptable for the default encrypted profile, and how must I24 and related claims (quantised not hidden, provably secure keyed-prf, defense in depth) be worded in docs, help and inspect?
+
+Ledger status `EXTERNAL_REVIEW_REQUIRED`, blocker class `EXTERNAL_REVIEW`. Other experiments informing it: EXP-CRYPTO-021, EXP-CRYPTO-006, EXP-CRYPTO-007.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-objective-and-qualitative-disclosure` | Status quo: I24 as objective; qualitative residual-leakage text; keyed-prf described as provably secure | status quo | no | — |
+| `measured-bound-per-mode` | Publish measured leakage metrics per padding x boundary mode and word claims to those numbers | ledger alternative | no | — |
+| `strong-claim-only-for-phte-plus-maximum` | Allow a strong boundary-privacy claim only for PHTE plus MAXIMUM padding; everything else labelled quantised | ledger alternative | no | — |
+| `restate-i24-as-documented-leakage` | Restate I24 as documented, bounded leakage rather than no leakage | ledger alternative | no | — |
+| `disable-dedup-under-encryption` | Eliminate within-archive dedup structure under encryption to strengthen I24 | ledger alternative | no | — |
+| `external-review-sets-wording` | Defer all claim wording to the external security review outcome | defer / no change | no | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+
+**R0 checklist:** 1 status quo: `status-quo-objective-and-qualitative-disclosure`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 6 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: `external-review-sets-wording`; 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+**R0 gap — ledger candidates named by no covering protocol:** `status-quo-objective-and-qualitative-disclosure`, `measured-bound-per-mode`, `strong-claim-only-for-phte-plus-maximum`, `restate-i24-as-documented-leakage`, `disable-dedup-under-encryption`, `external-review-sets-wording`. Recorded for the critic pass; they must be measured, excluded with a rule id, or shown to be covered before G-A.
 <!-- END AUTO:candidates -->
 
 Evidence route: `EMPIRICALLY_MEASURED` leakage lower bounds per padding mode (graded under OD-16, never R1). Interpretation and any claim of effectiveness go to external review (§8.3, T-17). HC-14's mechanical parts (keyed boundaries, recorded padding mode, conforming public lengths) are checked here as binary preconditions on every produced archive: MVT-14(j) on every archive, and MVT-14(e) in EXP-CRYPTO-003.
@@ -156,4 +261,17 @@ After the single program-wide freeze (decision-method.md §5.5), every candidate
 - Agent effort: tooling **judgment** (observation transforms, accessor); execution **scripted**; analysis **judgment** (decision tooling outputs only).
 
 <!-- BEGIN AUTO:common -->
+**Shared provisions (binding; `research/experiments/_index/crypto-conventions.md`).**
+
+- **Author and L7 exposure (CR1):** designed by the Phase C-design crypto session, which read `research/corpus/coverage.md` and `research/PROGRESS.md` under the shared design instructions and is recorded as L7-exposed for all families (`research/experiments/_program/l7-exposures-design-phase.jsonl`). Its candidate operationalizations, exclusions and analysis plans are re-signed by an unexposed session before G-A (PA-01); decision analyses are executed by unexposed sessions only.
+- **Gates (CR0):** runs before G-A/G-B are `NOT_DECISION_GRADE`; specs with non-empty `decision_ids` launch only through `research/tools/experiments/run_guarded.py` (PA-13).
+- **Candidates (CR2):** the tables above are generated; R0 item 6 is open until the crypto-cluster critic pass (PA-12).
+- **Security claims (CR3):** attack, leakage and tamper results are lower bounds; selections resting on a security claim, sufficiency of a mitigation or acceptance of leakage are provisional until the EXP-CRYPTO-021 external review is received.
+- **Metrics (CR6):** component throughput uses `__component_<name>` strata; chunk-stage throughput is owned by EXP-CHUNK-008 T1 (PA-17); HC oracle counts are binary under their MVT ids pending the PA-02 metric-registry disposition.
+- **Timing (CR5):** affinity and guard per §4.2-§4.4 (lint-checked), staged helpers (PA-16), calibration identity and instrument-class calibration (PA-04, PA-15).
+- **Split discipline (CR7):** committed specs are tuning-only or binary HC screens; graded looks use look specs derived at look time with candidates restricted to W ∪ S, registered by the owner in `research/experiments/_program/look-plan.csv` (PA-03, PA-09).
+- **Held-out (CR8):** generated only by EXP-EVAL-012 at Commit A (PA-20).
+- **Power (PA-06):** a banded comparison enters its full tuning run only after `research/tools/experiments/mde_feasibility.py` projects an MDE of at most 1 band unit on a tuning proxy.
+
+_Generated by `python research/tools/experiments/fill_crypto_auto_blocks.py` for EXP-CRYPTO-002; edit the inputs, not this block._
 <!-- END AUTO:common -->

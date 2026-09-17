@@ -1,6 +1,22 @@
 # EXP-CRYPTO-001: Observer model and CDC attack-suite validation against reference keyed-chunking schemes
 
 <!-- BEGIN AUTO:meta -->
+| Field | Value |
+|---|---|
+| Index status | **NEEDS_TOOLING** |
+| Kind | instrument (calibrates an instrument; informs no decision directly) |
+| Domain | crypto (program §22.1, §22.2, §22.3, §22.4, §22.5) |
+| Decisions informed | none (instrument) |
+| Platforms | Linux/x86-64 |
+| Requires timing | False |
+| Estimates | 150 machine-hours; 50 GB disk |
+| Tooling to build | research/tools/crypto/cdc_attacks/*; ebr-crypto attack + reference schemes |
+| Environment prerequisites | none beyond the harness and the ebr venv |
+| Blocked arms | none |
+| Specs | `spec.yaml` |
+| Validation looks | owns no validation look |
+| Gates | G-A and G-B unmet at this revision (generated `gate_state` column of `research/experiments/index.csv`); timing runs also need a PASS calibration record for the calibration identity (PA-04) |
+| Conventions | `research/experiments/_index/crypto-conventions.md` (CR0-CR10); program amendments `research/experiments/_program/design-revision-round1.md` |
 <!-- END AUTO:meta -->
 
 ## 1. Question
@@ -14,14 +30,15 @@ This experiment calibrates an instrument. It produces no OD-16 result for an Ent
 - **H1 (positive controls).** Each attack that a primary source reports as successful against a scheme succeeds against the program's target for that scheme, within the work budget of §8, on at least 9 of 10 seeded keys at the published parameters. Where the published work exceeds the budget, it succeeds at scaled parameters, and the fitted slope of log2(work) against the scaled security parameter agrees with the published asymptotic order.
 - **H2 (negative control).** Against `phte-aes128-norm-v1`, no attack in the suite recovers key material within the same budget, and the presence advantage of every boundary-exploiting attack is not greater than the advantage of the length-only reference attack A0 on the same observations (both at T-17 resolution).
 - **H3 (null control).** On archives that do not contain the target file, every attack's false-positive rate at its tuned threshold is at most 0.01 on held-back negatives. Its measured presence advantage on a pure-null set is `EQUIVALENT` to 0 at the T-17 band.
-- **Falsification.** H1 fails if any published successful attack fails against its faithful target (the suite is then a strawman for that attack class, and the attack is repaired and re-validated under a new attack version id before use). H2 fails if an attack recovers PHTE key material or beats A0 on PHTE. Because that would contradict the Truong et al. security claim, it is first checked for implementation bugs and then recorded as a finding for external review (EXP-CRYPTO-025). H3 fails if false-positive control fails, and the scoring rule is then repaired.
+- **Falsification.** H1 fails if any published successful attack fails against its faithful target (the suite is then a strawman for that attack class, and the attack is repaired and re-validated under a new attack version id before use). H2 fails if an attack recovers PHTE key material or beats A0 on PHTE. Because that would contradict the Truong et al. security claim, it is first checked for implementation bugs and then recorded as a finding for external review (EXP-CRYPTO-021 dossier). H3 fails if false-positive control fails, and the scoring rule is then repaired.
 
 ## 3. Decisions informed and evidence route
 
 <!-- BEGIN AUTO:candidates -->
+This experiment informs no ledger decision directly (instrument or calibration). Its outputs are inputs to the decisions of the experiments that cite it; no candidate table applies.
 <!-- END AUTO:candidates -->
 
-Evidence route: instrument calibration (`EMPIRICALLY_MEASURED`, correctness-type) plus `EXTERNALLY_SOURCED` attack descriptions re-implemented from primary sources. The attack suite's adequacy is an `EXPERT_REVIEW_REQUIRED` item (objective OD-16 M16.2) and goes into the dossier (EXP-CRYPTO-024).
+Evidence route: instrument calibration (`EMPIRICALLY_MEASURED`, correctness-type) plus `EXTERNALLY_SOURCED` attack descriptions re-implemented from primary sources. The attack suite's adequacy is an `EXPERT_REVIEW_REQUIRED` item (objective OD-16 M16.2) and goes into the dossier (EXP-CRYPTO-021).
 
 ## 4. Arms: targets, attacks and observer model
 
@@ -165,4 +182,17 @@ Not applicable. Instrument calibration uses tuning items and generated inputs on
 - Agent effort: **judgment** to implement attacks from the primary sources (tooling stage) and to adjudicate H1 failures. Execution is **scripted**. The analysis is a short **judgment** pass over `suite-validation.json`.
 
 <!-- BEGIN AUTO:common -->
+**Shared provisions (binding; `research/experiments/_index/crypto-conventions.md`).**
+
+- **Author and L7 exposure (CR1):** designed by the Phase C-design crypto session, which read `research/corpus/coverage.md` and `research/PROGRESS.md` under the shared design instructions and is recorded as L7-exposed for all families (`research/experiments/_program/l7-exposures-design-phase.jsonl`). Its candidate operationalizations, exclusions and analysis plans are re-signed by an unexposed session before G-A (PA-01); decision analyses are executed by unexposed sessions only.
+- **Gates (CR0):** runs before G-A/G-B are `NOT_DECISION_GRADE`; specs with non-empty `decision_ids` launch only through `research/tools/experiments/run_guarded.py` (PA-13).
+- **Candidates (CR2):** the tables above are generated; R0 item 6 is open until the crypto-cluster critic pass (PA-12).
+- **Security claims (CR3):** attack, leakage and tamper results are lower bounds; selections resting on a security claim, sufficiency of a mitigation or acceptance of leakage are provisional until the EXP-CRYPTO-021 external review is received.
+- **Metrics (CR6):** component throughput uses `__component_<name>` strata; chunk-stage throughput is owned by EXP-CHUNK-008 T1 (PA-17); HC oracle counts are binary under their MVT ids pending the PA-02 metric-registry disposition.
+- **Timing (CR5):** affinity and guard per §4.2-§4.4 (lint-checked), staged helpers (PA-16), calibration identity and instrument-class calibration (PA-04, PA-15).
+- **Split discipline (CR7):** committed specs are tuning-only or binary HC screens; graded looks use look specs derived at look time with candidates restricted to W ∪ S, registered by the owner in `research/experiments/_program/look-plan.csv` (PA-03, PA-09).
+- **Held-out (CR8):** generated only by EXP-EVAL-012 at Commit A (PA-20).
+- **Power (PA-06):** a banded comparison enters its full tuning run only after `research/tools/experiments/mde_feasibility.py` projects an MDE of at most 1 band unit on a tuning proxy.
+
+_Generated by `python research/tools/experiments/fill_crypto_auto_blocks.py` for EXP-CRYPTO-001; edit the inputs, not this block._
 <!-- END AUTO:common -->

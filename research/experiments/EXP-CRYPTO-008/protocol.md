@@ -1,6 +1,22 @@
 # EXP-CRYPTO-008: Remote encrypted access — requests, bytes, modelled latency, access-pattern leakage, sublinearity
 
 <!-- BEGIN AUTO:meta -->
+| Field | Value |
+|---|---|
+| Index status | **NEEDS_TOOLING** — Emulated latency needs EXP-NETEM-CAL; no TCP slow start (R1-14) |
+| Kind | decision |
+| Domain | crypto (program §22.3, §22.4, §22.5) |
+| Decisions informed | DEC-ACC-010, DEC-CRY-072, DEC-CRY-073, DEC-INT-010, DEC-CRY-030 |
+| Platforms | Linux/x86-64; application-level network |
+| Requires timing | True |
+| Estimates | 50 machine-hours; 40 GB disk |
+| Tooling to build | latency_model.py; access_pattern_eval.py; future-version writers; EXP-NETEM-CAL |
+| Environment prerequisites | none beyond the harness and the ebr venv |
+| Blocked arms | none |
+| Specs | `spec.yaml` |
+| Validation looks | owns look 1 for DEC-CRY-072, DEC-CRY-073; participates in looks owned by other experiments for DEC-ACC-010, DEC-CRY-030, DEC-INT-010 |
+| Gates | G-A and G-B unmet at this revision (generated `gate_state` column of `research/experiments/index.csv`); timing runs also need a PASS calibration record for the calibration identity (PA-04) |
+| Conventions | `research/experiments/_index/crypto-conventions.md` (CR0-CR10); program amendments `research/experiments/_program/design-revision-round1.md` |
 <!-- END AUTO:meta -->
 
 ## 1. Question
@@ -17,6 +33,91 @@ For an encrypted archive read over HTTP range requests, how many requests and by
 ## 3. Decisions informed and evidence route
 
 <!-- BEGIN AUTO:candidates -->
+#### DEC-ACC-010 — Must encrypted remote open be sublinear in segment count (segment offset/locator table, coalesced header prefetch, authenticated control-object locator), how should whole-segment fetches above range caps be handled, should range Chunk bounds use min(declared, caller), and does this require a new crypto wire version?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-REMOTE-010.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-header-walk` | One 64-byte range per SegmentHeader; whole-segment fetch; declared budget bounds Chunks | status quo | yes | EXP-REMOTE-010 |
+| `coalesced-header-prefetch` | Batch header ranges (no wire change) | ledger alternative | yes | EXP-REMOTE-010 |
+| `segment-locator-table-v2` | Authenticated segment offset/control locator table in a new crypto version | ledger alternative | yes | EXP-REMOTE-010 |
+| `chunked-segment-fetch` | Fetch large segments in bounded sub-ranges with streaming AEAD verification | ledger alternative | yes | EXP-REMOTE-010 |
+| `min-declared-caller-bounds` | Use min(declared, caller) for range Chunk bounds | ledger alternative | yes | EXP-REMOTE-010 |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `full-oblivious-access`, `merkle-over-segments`.
+
+**R0 checklist:** 1 status quo: `status-quo-header-walk`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-072 — Is remote range access-pattern leakage accepted and documented for v1, or mitigated (whole-segment or batched prefetch, dummy fetches, https-only), and should cleartext http:// sources be refused?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-REMOTE-010, EXP-CRYPTO-021.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-documented-non-goal` | Status quo: no mitigation; leakage documented; http and https accepted | status quo | yes | EXP-REMOTE-010 |
+| `batched-dependency-prefetch` | Fetch whole dependency closures or segment batches to blur which entry is read | ledger alternative | yes | EXP-REMOTE-010 |
+| `dummy-range-requests` | Optional dummy or padded range requests | ledger alternative | yes | EXP-REMOTE-010 |
+| `https-only-default` | Refuse http:// by default; opt-in flag for cleartext | ledger alternative | yes | EXP-REMOTE-010 |
+| `full-oblivious-access` | ORAM/PIR-style oblivious access | ledger alternative | yes | EXP-REMOTE-010 |
+
+**Ledger exclusions:** {"candidate_id": "full-oblivious-access", "reason": "Oblivious access is a frozen non-goal of crypto v1", "invariant_violated": "docs/crypto-threat-model-v1.md §Non-goals L198-199"}.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `full-oblivious-access`, `merkle-over-segments`.
+
+**R0 checklist:** 1 status quo: `status-quo-documented-non-goal`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-073 — Should remote and range openers decode and verify embedded signatures and the recipient directory, and should plain-http remote access require an expected digest, PCI or signature pin?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-INT-016, EXP-INT-020, EXP-REMOTE-009, EXP-REMOTE-010.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-no-signatures-remote` | Status quo: range opener skips signatures; plain http accepted | status quo | no | EXP-INT-016, EXP-REMOTE-009, EXP-REMOTE-010 |
+| `verify-signatures-on-range-open` | Fetch and verify signature CONTROL data on range open | ledger alternative | yes | EXP-INT-016, EXP-REMOTE-009, EXP-REMOTE-010 |
+| `require-pin-for-plain-http` | Require expected digest or signature for plain http | ledger alternative | yes | EXP-INT-016, EXP-REMOTE-009 |
+| `https-only-default` | Default to https only (cross-ref access http-client-transport-features) | ledger alternative | yes | EXP-INT-016, EXP-REMOTE-009, EXP-REMOTE-010 |
+| `expected-pci-before-parse` | Expected PCI checked before parsing (cross-ref integrity pci-and-container-digest-verification) | ledger alternative | no | EXP-INT-016, EXP-REMOTE-009 |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `full-oblivious-access`, `merkle-over-segments`.
+
+**R0 checklist:** 1 status quo: `status-quo-no-signatures-remote`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-INT-010 — What verification status is reported for encrypted random reads that do not verify segment END and the full segment-sequence digest, and is incremental remote whole-archive verification (PCR/PCI via ranges) required in v1?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CRYPTO-010, EXP-CRYPTO-021, EXP-INT-016, EXP-INT-020, EXP-REMOTE-010.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-per-object-plus-archivefinal` | Status quo: per-object AEAD plus authenticated ArchiveFinal and Descriptor/Manifest binding; PCR DeclaredNotFullyVerified; PCI NotComputed; no remote whole verification | status quo | yes | EXP-CRYPTO-010, EXP-INT-016, EXP-REMOTE-010 |
+| `verify-touched-segment-ends` | Also verify END records of every touched segment and report segment-level status | ledger alternative | yes | EXP-CRYPTO-010, EXP-INT-016, EXP-REMOTE-010 |
+| `per-segment-digests-in-archivefinal` | Bind per-segment digests usable by partial readers into ArchiveFinal | ledger alternative | yes | EXP-INT-016, EXP-REMOTE-010 |
+| `remote-streaming-whole-verify` | Remote whole-archive verification fetching all ranges with bounded memory, computing PCR and PCI | ledger alternative | yes | EXP-CRYPTO-010, EXP-INT-016, EXP-REMOTE-010 |
+| `full-download-only` | Whole-archive verification only after full download | ledger alternative | yes | EXP-CRYPTO-010, EXP-INT-016, EXP-REMOTE-010 |
+| `merkle-over-segments` | Authenticated Merkle tree over segment digests enabling logarithmic partial proofs | ledger alternative | yes | EXP-INT-016, EXP-REMOTE-010 |
+
+**Ledger exclusions:** {"candidate_id": "per-segment-digests-in-archivefinal", "reason": "Changes ArchiveFinalV1 fields; only possible in a new crypto wire version", "invariant_violated": "crypto-v1 wire frozen"}; {"candidate_id": "merkle-over-segments", "reason": "Requires new authenticated wire structures; only possible in a new crypto wire version", "invariant_violated": "crypto-v1 wire frozen"}.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `full-oblivious-access`, `merkle-over-segments`.
+
+**R0 checklist:** 1 status quo: `status-quo-per-object-plus-archivefinal`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 6 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-030 — Which bytes of an encrypted archive remain public (preamble feature bits including embedded-signature presence 0x200, recipient count, padded lengths, segment and record counts, buckets) and which must be hidden, padded or declared as accepted leakage?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CRYPTO-007, EXP-CRYPTO-021.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-documented-public-framing` | Status quo: public discovery, envelope, framing and feature bits | status quo | no | EXP-CRYPTO-007 |
+| `hide-signature-presence-new-version` | Move signature presence out of public feature bits (new version) | ledger alternative | no | EXP-CRYPTO-007 |
+| `pad-record-counts` | Pad record and segment counts | ledger alternative | no | EXP-CRYPTO-007 |
+| `maximum-padding-default` | Default to maximum padding mode | ledger alternative | no | EXP-CRYPTO-007 |
+| `declare-accepted-leakage` | Accept and document each residual leak | ledger alternative | no | EXP-CRYPTO-007 |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `full-oblivious-access`, `merkle-over-segments`.
+
+**R0 checklist:** 1 status quo: `status-quo-documented-public-framing`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
 <!-- END AUTO:candidates -->
 
 Evidence route: exact request and byte counts (`EMPIRICALLY_MEASURED`, deterministic), modelled latency (primary, `FORMALLY_DERIVED` from the request/byte log per §4.15), and emulated latency (`EMULATED`, corroborating after `EXP-NETEM-CAL`). Access-pattern leakage is graded (OD-16); mitigation effectiveness feeds external review. Access-pattern hiding beyond documented leakage is a frozen non-goal (`docs/crypto-threat-model-v1.md` L198-199): `full-oblivious-access` is excluded at R1.
@@ -105,4 +206,17 @@ Frozen candidates run once on held-out encrypted archives after unlock, requests
 - Agent effort: tooling **judgment** (latency model, classifiers, future-version writers); execution **scripted**; analysis **judgment**.
 
 <!-- BEGIN AUTO:common -->
+**Shared provisions (binding; `research/experiments/_index/crypto-conventions.md`).**
+
+- **Author and L7 exposure (CR1):** designed by the Phase C-design crypto session, which read `research/corpus/coverage.md` and `research/PROGRESS.md` under the shared design instructions and is recorded as L7-exposed for all families (`research/experiments/_program/l7-exposures-design-phase.jsonl`). Its candidate operationalizations, exclusions and analysis plans are re-signed by an unexposed session before G-A (PA-01); decision analyses are executed by unexposed sessions only.
+- **Gates (CR0):** runs before G-A/G-B are `NOT_DECISION_GRADE`; specs with non-empty `decision_ids` launch only through `research/tools/experiments/run_guarded.py` (PA-13).
+- **Candidates (CR2):** the tables above are generated; R0 item 6 is open until the crypto-cluster critic pass (PA-12).
+- **Security claims (CR3):** attack, leakage and tamper results are lower bounds; selections resting on a security claim, sufficiency of a mitigation or acceptance of leakage are provisional until the EXP-CRYPTO-021 external review is received.
+- **Metrics (CR6):** component throughput uses `__component_<name>` strata; chunk-stage throughput is owned by EXP-CHUNK-008 T1 (PA-17); HC oracle counts are binary under their MVT ids pending the PA-02 metric-registry disposition.
+- **Timing (CR5):** affinity and guard per §4.2-§4.4 (lint-checked), staged helpers (PA-16), calibration identity and instrument-class calibration (PA-04, PA-15).
+- **Split discipline (CR7):** committed specs are tuning-only or binary HC screens; graded looks use look specs derived at look time with candidates restricted to W ∪ S, registered by the owner in `research/experiments/_program/look-plan.csv` (PA-03, PA-09).
+- **Held-out (CR8):** generated only by EXP-EVAL-012 at Commit A (PA-20).
+- **Power (PA-06):** a banded comparison enters its full tuning run only after `research/tools/experiments/mde_feasibility.py` projects an MDE of at most 1 band unit on a tuning proxy.
+
+_Generated by `python research/tools/experiments/fill_crypto_auto_blocks.py` for EXP-CRYPTO-008; edit the inputs, not this block._
 <!-- END AUTO:common -->

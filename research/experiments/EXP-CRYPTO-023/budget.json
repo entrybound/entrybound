@@ -1,0 +1,13 @@
+{
+  "schema": "entrybound.research.formal-budget/1",
+  "experiment_id": "EXP-CRYPTO-023",
+  "pre_registered_by": "Phase C design revision round 1 (design review DR1-08)",
+  "per_query": {
+    "proverif": {"cpu_hours": 4, "memory_gib": 32},
+    "tamarin": {"cpu_hours": 8, "memory_gib": 32, "heuristic": "default", "retry_on_timeout": {"heuristic": "O", "cpu_hours": 8}}
+  },
+  "mutation_sequence_max_depth": 5,
+  "positive_controls_required": true,
+  "rerun_for_hash_check": ["PROVEN_IN_MODEL", "ATTACK_TRACE"],
+  "outcome_classes": ["PROVEN_IN_MODEL", "ATTACK_TRACE", "TIMEOUT_WITHIN_BUDGET", "POSITIVE_CONTROL_MISSED"]
+}

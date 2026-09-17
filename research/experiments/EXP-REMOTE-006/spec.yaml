@@ -29,13 +29,13 @@ candidates:
   - {name: http2-multiplexing-100, params: {executor: "h2:100", profile: NP-CONT}}
   - {name: multi-range-single-request, params: {executor: "multirange:16", profile: NP-CONT}}
 command: >-
-  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-006/run_emulated.sh
+  bash /root/eb-research/stage/EXP-REMOTE-006/repo/research/experiments/EXP-REMOTE-006/run_emulated.sh
   --item-path {item_path} --item-id {item_id} --config balanced-plain --scratch {scratch}
   --rep {rep} --seed {seed} --executor {executor} --profile {profile}
   --plans /root/eb-research/raw-detail/EXP-REMOTE-006/plans
   --workload-subset WL-RAND1,WL-SUBTREE,WL-LARGE,WL-FULL
   --proxy-args "--shared-link true --setup-rtt-multiple 2.0 --loss-p 0"
-  --calibration research/normalized/EXP-REMOTE-001/decision/calibration-verdicts.json
+  --calibration /root/eb-research/stage/EXP-REMOTE-006/repo/research/normalized/EXP-REMOTE-001/decision/calibration-verdicts.json
 shell: bash
 
 corpus:

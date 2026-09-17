@@ -29,10 +29,10 @@ candidates:
   - {name: tunem-NP-CONT, params: {arm: tunem, profile: NP-CONT}}
   - {name: tunem-NP-INTER, params: {arm: tunem, profile: NP-INTER}}
 command: >-
-  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/run_calibration.sh
+  bash /root/eb-research/stage/EXP-REMOTE-001/repo/research/experiments/EXP-REMOTE-001/run_calibration.sh
   --arm {arm} --profile {profile} --object {item_path} --scratch {scratch}
   --seed {seed} --rep {rep}
-  --connection-model /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/connection-model.json
+  --connection-model /root/eb-research/stage/EXP-REMOTE-001/repo/research/experiments/EXP-REMOTE-001/connection-model.json
   --probes P1,P2,P3,P4,P5,P6,P7
   --replay-logs /root/eb-research/raw-detail/EXP-REMOTE-002/replay-selection-tuning
 shell: bash

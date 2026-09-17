@@ -13,7 +13,7 @@ hypothesis: >
 decision_ids: [DEC-CMP-011, DEC-ECO-070, DEC-ACC-002, DEC-ECO-031, DEC-ECO-069, DEC-ECO-043]
 
 command: >-
-  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-EVAL-005/ops/extract.sh
+  bash /root/eb-research/stage/EXP-EVAL-005/repo/research/experiments/EXP-EVAL-005/ops/extract.sh
   --format {format} --artifact /root/eb-research/cache/eval005/{item_id}/{artifact}
   --dest {scratch}/out --threads 1
   --ebound /root/eb-research/target/refprod/release/ebound

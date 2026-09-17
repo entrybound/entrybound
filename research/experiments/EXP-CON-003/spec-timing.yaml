@@ -103,8 +103,8 @@ command: /root/eb-research/target/harness/release/ebr-outboard --model {item_pat
   fitted --structure {structure} --layout {layout} --range-strata 1,4096,1048576,entry --ranges-per-stratum
   1000 --timing-batch 1000 --hash-constructions h0,h1,h2 --count-bindings b0,b1,b2,b3,b4 --export-formats
   cose_receipt,custom,bao_slice,scitt_statement --attack-suite truncate,extend,reorder,leaf-as-node,node-as-leaf,count-lie,length-lie
-  --second-impl /mnt/d/Projects/entrybound/entrybound/research/tools/container/merkle_ref.py --connection-model
-  research/experiments/EXP-REMOTE-001/connection-model.json --seed {seed} --experiment-id EXP-CON-003
+  --connection-model
+  /root/eb-research/stage/EXP-CON-003/repo/research/experiments/EXP-REMOTE-001/connection-model.json --seed {seed} --experiment-id EXP-CON-003
   --env-name wsl-ubuntu
 shell: bash
 corpus:

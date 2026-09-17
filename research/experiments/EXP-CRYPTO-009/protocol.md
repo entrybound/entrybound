@@ -1,6 +1,22 @@
 # EXP-CRYPTO-009: Bounded memory of encrypted creation, open, verify and range sessions, and justification of crypto-v1 structural limits
 
 <!-- BEGIN AUTO:meta -->
+| Field | Value |
+|---|---|
+| Index status | **NEEDS_TOOLING** |
+| Kind | decision |
+| Domain | crypto (program §22.1, §22.5) |
+| Decisions informed | DEC-ACC-011, DEC-CON-009, DEC-CRY-013, DEC-CRY-015, DEC-ACC-009, DEC-CRY-027 |
+| Platforms | Linux/x86-64; cgroup memory caps |
+| Requires timing | False |
+| Estimates | 200 machine-hours; 200 GB disk |
+| Tooling to build | counting allocator (method §14 item 17); ebr-crypto mem; streaming generators; streamed-writer prototypes |
+| Environment prerequisites | none beyond the harness and the ebr venv |
+| Blocked arms | none |
+| Specs | `spec.yaml` |
+| Validation looks | owns look 1 for DEC-CRY-027; participates in looks owned by other experiments for DEC-ACC-009, DEC-ACC-011, DEC-CON-009, DEC-CRY-013, DEC-CRY-015 |
+| Gates | G-A and G-B unmet at this revision (generated `gate_state` column of `research/experiments/index.csv`); timing runs also need a PASS calibration record for the calibration identity (PA-04) |
+| Conventions | `research/experiments/_index/crypto-conventions.md` (CR0-CR10); program amendments `research/experiments/_program/design-revision-round1.md` |
 <!-- END AUTO:meta -->
 
 ## 1. Question
@@ -18,6 +34,107 @@ Do encrypted creation, open, verification and range sessions run in memory bound
 ## 3. Decisions informed and evidence route
 
 <!-- BEGIN AUTO:candidates -->
+#### DEC-ACC-011 — Must encrypted creation, open, verification and range sessions operate in bounded memory, and do crypto-v1 single-object MANIFEST/ENCRYPTED_INDEX limits (1M items, 1 GiB) require sharding in a new crypto wire version?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-SCALE-010.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-in-memory` | Whole-buffer encrypted write/open, cloned PAYLOAD reuse map, single-object manifest/index (container.rs, wire.rs) | status quo | yes | — |
+| `streamed-segment-writer` | Emit segments progressively with bounded staging | ledger alternative | yes | EXP-SCALE-010 |
+| `plaintext-discarding-open` | Authenticate and verify segments without retaining ciphertext copies | ledger alternative | yes | EXP-SCALE-010 |
+| `sharded-manifest-index-v2` | Shard MANIFEST/ENCRYPTED_INDEX across objects in a future crypto version | ledger alternative | yes | EXP-SCALE-010 |
+| `bounded-decrypted-frame-cache` | Byte-bounded decrypted frame cache in range sessions | ledger alternative | yes | — |
+| `declared-scale-limits` | Document ~1M entry/Chunk ceilings for crypto-v1 | ledger alternative | yes | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `silent-layout-switch-or-buffer`.
+
+**R0 checklist:** 1 status quo: `status-quo-in-memory`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 6 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CON-009 — Are the frozen crypto-v1 structural limits (segment at most 2^20-1 DATA records and 1 GiB plaintext; private object at most 1 GiB; EBCS at most 1,000,000 items, 1 GiB and 64 MiB per item; effective EBCS maximum 2^30-12) justified by measurement, and is the boundary text corrected?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CONF-004, EXP-CONF-007, EXP-SCALE-010.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-limits` | Keep all current limits and clarify the effective boundary | status quo | yes | EXP-CONF-007 |
+| `smaller-segments` | Smaller segment plaintext caps (e.g. 64 MiB) to improve random access | ledger alternative | yes | — |
+| `larger-limits-declared-budget` | Raise item and object limits and bound them via declared budgets | ledger alternative | yes | — |
+| `limits-as-declared-fields` | Encode structural limits as declared resource fields | ledger alternative | yes | — |
+| `clarify-boundary-only` | Document the effective EBCS maximum without changing limits | ledger alternative | yes | — |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `silent-layout-switch-or-buffer`.
+
+**R0 checklist:** 1 status quo: `status-quo-limits`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-013 — Are the crypto resource ceilings justified: Argon2id caller defaults equal to the wire ceiling (1 GiB, 10 passes, parallelism 16) versus lower open defaults, and the 1,024-recipient cap?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CONF-007, EXP-CONF-014, EXP-CRYPTO-004, EXP-CRYPTO-017, EXP-SCALE-010.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-default-equals-ceiling` | Status quo: open defaults equal wire ceiling; 1,024 recipients | status quo | no | EXP-CONF-007, EXP-CRYPTO-017 |
+| `default-equals-creation-default` | Open default equals 256 MiB/3-pass creation default | ledger alternative | no | EXP-CONF-007, EXP-CRYPTO-017 |
+| `hardware-probed-default` | Default derived from available memory | ledger alternative | no | EXP-CONF-007, EXP-CRYPTO-017 |
+| `confirm-above-threshold` | Interactive confirmation above a cost threshold | ledger alternative | no | EXP-CONF-007, EXP-CRYPTO-017 |
+| `lower-recipient-cap` | Lower recipient cap based on measured unlock cost | ledger alternative | no | EXP-CONF-007, EXP-CRYPTO-017 |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `silent-layout-switch-or-buffer`.
+
+**R0 checklist:** 1 status quo: `status-quo-default-equals-ceiling`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-015 — What frozen caps and default caller policies should crypto v1 use (1 MiB CONTROL and 64 MiB PAYLOAD records, 2^20-1 DATA and 1 GiB per segment, 1,000,000 segments, 1 GiB working memory, EBCS 1,000,000 items/64 MiB/1 GiB, 4,096 identity attempts)?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CONF-007, EXP-CRYPTO-017.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-limits` | Status quo numeric caps and defaults | status quo | yes | EXP-CONF-007 |
+| `measured-defaults-same-caps` | Keep frozen caps; retune caller defaults from measurements | ledger alternative | yes | EXP-CONF-007 |
+| `tiered-policy-profiles` | Named policy profiles (constrained, desktop, server) | ledger alternative | yes | EXP-CONF-007 |
+| `smaller-record-caps` | Lower PAYLOAD record cap (e.g. 16 MiB) to reduce buffering | ledger alternative | yes | EXP-CONF-007 |
+| `larger-control-cap` | Raise CONTROL cap for very large manifests/Index fragments | ledger alternative | yes | EXP-CONF-007 |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `silent-layout-switch-or-buffer`.
+
+**R0 checklist:** 1 status quo: `status-quo-limits`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-ACC-009 — What does v1 do when encryption is requested with pipe/STREAM output (refuse as now, explicit spool-to-temp then emit INDEXED, or buffer), and when and under what privacy contract is encrypted STREAM specified?
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-EVAL-008, EXP-SCALE-010.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-refuse-before-output` | EB_CRYPTO_LAYOUT_UNSUPPORTED before emitting bytes | status quo | yes | — |
+| `explicit-spool-to-temp` | Opt-in spool to a private temp file, emit INDEXED encrypted bytes to pipe | ledger alternative | yes | EXP-SCALE-010 |
+| `encrypted-stream-v2` | Future crypto version defining encrypted sequential layout with trailer manifest and bounded staging | ledger alternative | yes | — |
+| `silent-layout-switch-or-buffer` | Silently buffer or switch to INDEXED | ledger alternative | yes | EXP-SCALE-010 |
+
+**Ledger exclusions:** {"candidate_id": "silent-layout-switch-or-buffer", "reason": "Repo crypto freeze forbids secret buffering or silent layout change", "invariant_violated": "docs/crypto-review-v1.md L136-142"}.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `silent-layout-switch-or-buffer`.
+
+**R0 checklist:** 1 status quo: `status-quo-refuse-before-output`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 4 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
+
+#### DEC-CRY-027 — Should convert import and publish accept --recipient or --password to produce encrypted native output directly from plaintext or legacy sources, and without staging plaintext on disk? Encrypted-to-encrypted repack is decided in encrypted-repack-mutation-contract.
+
+Ledger status `INSUFFICIENT_EVIDENCE`, blocker class `EVIDENCE`. Other experiments informing it: EXP-CRYPTO-019, EXP-EVAL-008.
+
+| Candidate id | Ledger description | Role | Named in this protocol | Named in other protocols |
+|---|---|---|---|---|
+| `status-quo-no-encrypted-output` | Status quo: import and publish cannot encrypt; users pack an extracted tree or publish an existing .eb | status quo | no | EXP-CRYPTO-019 |
+| `direct-encrypted-import` | convert import --recipient/--password writes encrypted INDEXED output directly | ledger alternative | yes | EXP-CRYPTO-019 |
+| `direct-encrypted-publish` | publish --recipient/--password encrypts native artefacts from directories | ledger alternative | no | EXP-CRYPTO-019 |
+| `documented-two-step-workflow` | Document a two-step workflow and its plaintext exposure | ledger alternative | no | EXP-CRYPTO-019 |
+| `encrypted-import-with-temp-staging` | Encrypted import via temporary plaintext staging | ledger alternative | yes | EXP-CRYPTO-019 |
+
+**Ledger exclusions:** none recorded in the ledger.
+**Exclusions proposed in this protocol (need independent sign-off, CR2):** `silent-layout-switch-or-buffer`.
+
+**R0 checklist:** 1 status quo: `status-quo-no-encrypted-output`; 2 SPEC design: not separately identified (often the status quo); critic pass confirms; 3 ledger alternatives: 5 ledger candidates listed above; 4 strongest incumbent: no candidate names an incumbent technique; critic pass checks SPEC §22; 5 defer / not in v1: absent from the ledger set; add at the critic pass where release relevance permits (C7 add-later cost); 6 critic-proposed: **OPEN** — supplied only by the unexposed crypto-cluster critic pass (PA-12, `research/experiments/_program/critic-pass-plan.csv`); 7 re-specify: not applicable unless the critic pass finds an objective §2.0 rule 5 defect.
 <!-- END AUTO:candidates -->
 
 Evidence route: `EMPIRICALLY_MEASURED` peak memory and scale limits. The counting allocator with a pre-validation bound H per candidate is required (§14 item 17) before any HC-06 record. Bounded-memory claims are binary (objective M08.3, §3.3); the graded remainder is T-06. Wire-changing candidates (`sharded-manifest-index-v2`, `segment-locator-table-v2`) are future crypto versions (T4) and are out of scope for crypto-v1 decisions except as future-version evidence.
@@ -112,4 +229,17 @@ Bounded-memory and scale-limit checks on held-out large items after unlock; boun
 - Agent effort: tooling **judgment** (allocator, streaming writers); execution **scripted** (detached scale pass); analysis **judgment**.
 
 <!-- BEGIN AUTO:common -->
+**Shared provisions (binding; `research/experiments/_index/crypto-conventions.md`).**
+
+- **Author and L7 exposure (CR1):** designed by the Phase C-design crypto session, which read `research/corpus/coverage.md` and `research/PROGRESS.md` under the shared design instructions and is recorded as L7-exposed for all families (`research/experiments/_program/l7-exposures-design-phase.jsonl`). Its candidate operationalizations, exclusions and analysis plans are re-signed by an unexposed session before G-A (PA-01); decision analyses are executed by unexposed sessions only.
+- **Gates (CR0):** runs before G-A/G-B are `NOT_DECISION_GRADE`; specs with non-empty `decision_ids` launch only through `research/tools/experiments/run_guarded.py` (PA-13).
+- **Candidates (CR2):** the tables above are generated; R0 item 6 is open until the crypto-cluster critic pass (PA-12).
+- **Security claims (CR3):** attack, leakage and tamper results are lower bounds; selections resting on a security claim, sufficiency of a mitigation or acceptance of leakage are provisional until the EXP-CRYPTO-021 external review is received.
+- **Metrics (CR6):** component throughput uses `__component_<name>` strata; chunk-stage throughput is owned by EXP-CHUNK-008 T1 (PA-17); HC oracle counts are binary under their MVT ids pending the PA-02 metric-registry disposition.
+- **Timing (CR5):** affinity and guard per §4.2-§4.4 (lint-checked), staged helpers (PA-16), calibration identity and instrument-class calibration (PA-04, PA-15).
+- **Split discipline (CR7):** committed specs are tuning-only or binary HC screens; graded looks use look specs derived at look time with candidates restricted to W ∪ S, registered by the owner in `research/experiments/_program/look-plan.csv` (PA-03, PA-09).
+- **Held-out (CR8):** generated only by EXP-EVAL-012 at Commit A (PA-20).
+- **Power (PA-06):** a banded comparison enters its full tuning run only after `research/tools/experiments/mde_feasibility.py` projects an MDE of at most 1 band unit on a tuning proxy.
+
+_Generated by `python research/tools/experiments/fill_crypto_auto_blocks.py` for EXP-CRYPTO-009; edit the inputs, not this block._
 <!-- END AUTO:common -->

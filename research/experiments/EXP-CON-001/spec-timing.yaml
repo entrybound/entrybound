@@ -96,7 +96,7 @@ candidates:
     stored_digests: stored
 command: /root/eb-research/target/harness/release/ebr-manifest-repr --model {item_path} --repr {repr}
   --stored-digests {stored_digests} --timing-batch 1000 --lookup-sample 1000 --list-dir-sample 100 --orders
-  o0,o1,o2,o3,o4,o5 --seed {seed} --production-crosscheck-max-entries 1000000 --connection-model research/experiments/EXP-REMOTE-001/connection-model.json
+  o0,o1,o2,o3,o4,o5 --seed {seed} --production-crosscheck-max-entries 1000000 --connection-model /root/eb-research/stage/EXP-CON-001/repo/research/experiments/EXP-REMOTE-001/connection-model.json
   --experiment-id EXP-CON-001 --env-name wsl-ubuntu
 shell: bash
 corpus:

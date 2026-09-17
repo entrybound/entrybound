@@ -18,7 +18,7 @@ candidates:
     command: "/root/eb-research/target/planner-cli/release/ebound pack {item_path} {scratch}/archive.eb --layout indexed --profile dense >/dev/null"
   - name: enc-fit-dense
     params: {kind: fit, profile: dense, op: encode}
-    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile dense --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --no-verify true --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb >/dev/null"
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile dense --fitted-profiles /root/eb-research/stage/EXP-PLANNER-007/repo/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --no-verify true --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb >/dev/null"
   - name: enc-par-dense
     params: {kind: par, profile: dense, op: encode}
     command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile dense --layout indexed --no-verify true --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb >/dev/null"
@@ -33,7 +33,7 @@ candidates:
     command: "/root/eb-research/target/planner-cli/release/ebound pack {item_path} {scratch}/archive.eb --layout indexed --profile extreme >/dev/null"
   - name: enc-fit-extreme
     params: {kind: fit, profile: extreme, op: encode}
-    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile extreme --fitted-profiles /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --no-verify true --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb >/dev/null"
+    command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile extreme --fitted-profiles /root/eb-research/stage/EXP-PLANNER-007/repo/research/normalized/EXP-PLANNER-006/replay/fitted-profiles.json --layout indexed --no-verify true --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb >/dev/null"
   - name: enc-par-extreme
     params: {kind: par, profile: extreme, op: encode}
     command: "/root/eb-research/target/planner-harness/release/ebr-planner param-plan --item-path {item_path} --base-profile extreme --layout indexed --no-verify true --experiment-id EXP-PLANNER-007 --env-name wsl-ubuntu --archive-out {scratch}/archive.eb >/dev/null"
