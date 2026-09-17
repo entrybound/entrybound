@@ -85,23 +85,20 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - Human usability participants are unavailable; §33 will use independently simulated first-use evaluations, labeled as such.
 - Independent external cryptographic review cannot be performed internally; crypto final selections remain `EXTERNAL_REVIEW_REQUIRED` with a dossier.
 
-## Storage incident 2026-09-16 (C: drive exhausted) — resume state
+## Storage incident 2026-09-16 (C: drive exhausted) — RESOLVED 2026-09-17
 
-- **Cause:** the WSL Ubuntu distro disk (`ext4.vhdx`, default location under `C:\Users\<user>\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu_...\LocalState`) grew from about 188 GB to 342.4 GB as the corpus (about 46 GiB of materialized items plus download caches, builds, and Docker exports) accumulated in `/root/eb-research`. Together with Docker Desktop's 30.5 GB `docker_data.vhdx`, this left C: with 0.38 GB free.
-- **Actions taken:**
-  - Stopped B1d (`wf_3615a3d7-fe4`) after all five corpus gap fixes were committed, before corpus reassembly r1 and baselines.
-  - Stopped A3 (`wf_16094fa5-38e`) during `method:revise`. Merges, assembly r0/r1, critics, the objective draft, the decision-method draft, and the review were already committed; the pre-registration revision is not.
-  - Stopped Docker Desktop.
-  - Moved `docker_data.vhdx` to `D:\Docker\wsl\disk\docker_data.vhdx`, freeing 30.8 GB on C:.
-- **Blocker:** `wsl --shutdown`/`--terminate` hang (`wslservice` is unresponsive with no CPU or disk activity), and the non-admin session cannot restart the WSL service, so the Ubuntu distro disk cannot yet be moved.
-- **Required next steps, in order:**
-  1. The owner restarts the WSL service (elevated `Restart-Service WSLService`, or reboot).
-  2. `wsl --manage Ubuntu --move D:\WSL\Ubuntu`.
-  3. Repoint Docker Desktop to `D:\Docker\wsl` (Settings → Resources → Advanced → Disk image location, or `CustomWslDistroDir`) before starting Docker; otherwise Docker creates a new empty data disk on C:.
-  4. `python research/orchestration/disk_guard.py` must pass.
-  5. Resume A3 from `method:revise` (script `phase-a3-ledgers-method.js` with `resumeFromRunId wf_16094fa5-38e`) and B1d from corpus reassembly (`phase-b1d-corpus-baselines.js` with `resumeFromRunId wf_3615a3d7-fe4`).
-  6. Launch B2 (`phase-b2r-harness.js`).
-
+- **Cause:** the WSL Ubuntu distro disk (`ext4.vhdx`, default location under `C:\Users\<user>\AppData\Local\Packages\...\LocalState`) grew from about 188 GB to 342.4 GB as `/root/eb-research` accumulated (corpus 50 GB, held-out 42 GB, download cache 54 GB, scratch/staging about 6 GB). Together with Docker Desktop's 30.5 GB data disk, this left C: with 0.38 GB free.
+- **Resolution:**
+  - Stopped the A3 and B1d workflows.
+  - Moved Docker's data disk to `D:\Docker\wsl\disk`.
+  - After the owner rebooted to clear a hung WSL service, relocated the distro with `wsl --manage Ubuntu --move D:\WSL\Ubuntu` (43 minutes) and enabled sparse mode (`--set-sparse true`).
+  - Relocated the `docker-desktop` distro with `wsl --manage docker-desktop --move D:\Docker\wsl\main` and set Docker Desktop `CustomWslDistroDir = D:\Docker\wsl`; the settings backup is at `D:\Docker\settings-store.json.bak-20260916`.
+  - Afterwards C: had about 375 GB free and D: about 485 GB free. `research/orchestration/disk_guard.py` (C: ≥ 25 GB, D: ≥ 75 GB, distro on D:, no Docker data disk on C:) passes.
+- **Docker Desktop is currently BLOCKED (pre-existing host issue, not caused by the relocation).** Startup crashes because stale AF_UNIX socket reparse points (e.g. `%LOCALAPPDATA%\Docker\run\sailor-ingest.sock`, `%LOCALAPPDATA%\docker-secrets-engine\engine.sock`) return Win32 error 1920 on every access. The same failure occurred on 2026-09-05 (`*.codex-backup-20260905` entries).
+  - Directories renamed non-destructively: `%LOCALAPPDATA%\Docker\run.claude-backup-20260916` and `%LOCALAPPDATA%\docker-secrets-engine.claude-backup-20260916`. Each failed start creates new stale sockets, so start attempts were stopped.
+  - Likely fix: a reboot, then start Docker once (without force-killing it). Do NOT use Docker's "Reset to factory defaults".
+  - Docker-dependent research steps are deferred until Docker is verified to start with its relocated disks: QEMU arm64 determinism, pinned-container environment captures, and Docker-built corpus items.
+- **Resume:** A3 from `method:revise` (resume `wf_16094fa5-38e`), B1d from corpus reassembly r1 and baselines (resume `wf_3615a3d7-fe4`), then B2 (`phase-b2r-harness.js`). Run `disk_guard.py` before each launch.
 ## Open integration items (carry forward)
 
 - `research/methods/thresholds.json` is a null template; fill it from the pre-registered `decision-method.md` (Phase A output) before any timing run. The runner refuses timing runs while quiet-machine limits are unset.
@@ -178,3 +175,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T00:04Z — g2-generated F20 (structurally-adversarial archives, MAJOR): WIP only -- 4 new generator scripts + a drafted 8-item block saved at wip/f20-structural-items-pending.py, NOT provisioned, because the WSL2 VM became unresponsive mid-session (systemic resource exhaustion, all agents affected). Needs a fresh session once WSL recovers: run provision --check, fix any schema errors, provision, verify scale tiers, then merge into make_sources.py and checkpoint.
 - 2026-09-17T00:05Z — g4-binary: F16 AlmaLinux fingerprint re-verified (matched-tofu, no content change) as a side effect of the g2-generated F15 gap closure.
 - 2026-09-17T00:48Z — STORAGE INCIDENT: C: at 0.38 GB free. Stopped A3/B1d, moved Docker data disk to D: (C: now 30.8 GB free); WSL service hung, distro move to D:\WSL\Ubuntu awaits owner WSL service restart. Added research/orchestration/disk_guard.py.
+- 2026-09-17T02:09Z — Storage incident RESOLVED: Ubuntu distro at D:\WSL\Ubuntu (sparse), Docker disks at D:\Docker\wsl; C: 375 GB free; disk_guard passes (C>=25, D>=75 GB). Docker Desktop startup BLOCKED by pre-existing AF_UNIX socket error 1920 (also seen 2026-09-05); Docker-dependent steps deferred.

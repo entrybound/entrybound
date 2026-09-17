@@ -1,7 +1,9 @@
 """Refuse to proceed when research storage would consume the C: drive.
 
 Checks (Windows host):
-  1. C: free space is at least --min-c-free-gb (default 25 GB).
+  1. C: free space is at least --min-c-free-gb (default 25 GB), and D: free
+     space (where every research disk now lives) is at least --min-d-free-gb
+     (default 75 GB).
   2. The WSL distro that hosts /root/eb-research (default Ubuntu) has its
      BasePath on D:, read from HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Lxss.
   3. No Docker Desktop data disk (docker_data.vhdx) exists under C:.
@@ -45,6 +47,7 @@ def distro_base_paths():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--min-c-free-gb", type=float, default=25.0)
+    parser.add_argument("--min-d-free-gb", type=float, default=75.0)
     parser.add_argument("--distro", default="Ubuntu")
     args = parser.parse_args()
     failures = []
@@ -53,6 +56,11 @@ def main():
     print(f"C: free {free_gb:.1f} GB (minimum {args.min_c_free_gb} GB)")
     if free_gb < args.min_c_free_gb:
         failures.append(f"C: free space {free_gb:.1f} GB is below {args.min_c_free_gb} GB")
+
+    d_free_gb = shutil.disk_usage("D:\\").free / 1024**3
+    print(f"D: free {d_free_gb:.1f} GB (minimum {args.min_d_free_gb} GB)")
+    if d_free_gb < args.min_d_free_gb:
+        failures.append(f"D: free space {d_free_gb:.1f} GB is below {args.min_d_free_gb} GB")
 
     base = distro_base_paths().get(args.distro)
     print(f"WSL distro {args.distro} BasePath: {base}")
