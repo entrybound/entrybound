@@ -1,0 +1,288 @@
+# EXP-CON-007 spec.yaml. Pre-registered design (Phase C-design, container domain).
+# READY: needs only ebound-prod, harness ebr-inspect-bytes and ebr-pack, and jq. WSL ext4 host. Join key cell links rows to EXP-PLANNER-001.
+# Conventions: research/experiments/_index/container-conventions.md. Do not run before gate G-A;
+# runs before G-B are NOT_DECISION_GRADE. Tuning split only; validation looks are derived (CT-4).
+schema: ebr.spec.v1
+experiment_id: EXP-CON-007
+status: pre-registered-design
+question: Beyond the planner-domain census (EXP-PLANNER-001), which feature bits do encrypted archives,
+  legacy conversions with provenance and preservation, and Windows-packed archives require, and under
+  each feature-tier assignment policy what fraction of real archives would a minimal or older reader have
+  to refuse?
+hypothesis: 'H1: every Windows-packed archive requires 0x10000 (F-0001) and every converted archive requires
+  0x2000 (and 0x4000 when preserving), so under the status-quo all-incompat policy a reader lacking auxiliary-metadata
+  support refuses 100% of Windows-packed and converted archives, while an auxiliary-as-compat policy refuses
+  none of them for content extraction. Falsified by any Windows-packed archive without 0x10000 or any
+  conversion without 0x2000. See protocol.md section 2.'
+decision_ids:
+- DEC-CON-010
+- DEC-MOD-024
+candidates:
+- name: balanced-indexed-join-key
+  params:
+    mode: pack
+    profile: balanced
+    layout: indexed
+    enc: none
+- name: balanced-indexed-encrypted
+  params:
+    mode: pack
+    profile: balanced
+    layout: indexed
+    enc: password
+- name: convert-strict-zip-members
+  params:
+    mode: convert-strict
+    profile: balanced
+    layout: indexed
+    enc: none
+- name: convert-preserve-zip-members
+  params:
+    mode: convert-preserve
+    profile: balanced
+    layout: indexed
+    enc: none
+command: bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CON-007/census_row.sh --mode
+  {mode} --item-path {item_path} --out {scratch}/a.eb --profile {profile} --layout {layout} --encrypt
+  {enc} --ebound /root/eb-research/target/prod-9e44608/release/ebound --inspect-bytes /root/eb-research/target/harness/release/ebr-inspect-bytes
+  --env-name wsl-ubuntu
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits:
+  - tuning
+  item_ids:
+  - f01-tuning-curl-8-19-0-git
+  - f01-tuning-llvm-project-20-1-8-git
+  - f01-tuning-ripgrep-14-1-1-git
+  - f01-tuning-typescript-5-9-3-git
+  - f01-tuning-zstd-v1-5-7-full-clone
+  - f01-tuning-zstd-v1-5-7-git
+  - f02-tuning-lz4-intree-make-build
+  - f02-tuning-ripgrep-cargo-target
+  - f02-tuning-zstd-cmake-build
+  - f03-tuning-fzf-go-mod-vendor
+  - f03-tuning-pypi-scientific-site-packages
+  - f03-tuning-ripgrep-cargo-vendor
+  - f03-tuning-typescript-npm-node-modules
+  - f04-tuning-maildir
+  - f04-tuning-real-netbsd-pkgsrc
+  - f04-tuning-sourcelike
+  - f05-tuning-enwik8
+  - f05-tuning-gen-logs-a-medium
+  - f05-tuning-gen-logs-a-small
+  - f05-tuning-google-clusterdata-2011-2-task-usage
+  - f05-tuning-gutenberg-books
+  - f05-tuning-loghub-hdfs-v1
+  - f05-tuning-loghub-openstack
+  - f05-tuning-logrotate-from-loghub-hdfs
+  - f06-tuning-census-popest-2023
+  - f06-tuning-gen-structured-a-medium
+  - f06-tuning-gen-structured-a-small
+  - f06-tuning-gharchive-2015-01-01-h15-h16
+  - f06-tuning-gharchive-2024-01-15-h15
+  - f06-tuning-nyc-tlc-yellow-tripdata-2024
+  - f06-tuning-wikimedia-tnwiki-20260901
+  - f07-tuning-ann-benchmarks-fashion-mnist-hdf5
+  - f07-tuning-gen-numeric-a-medium
+  - f07-tuning-gen-numeric-a-small
+  - f07-tuning-mnist-npz
+  - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+  - f07-tuning-pythia-160m-safetensors-main
+  - f07-tuning-pythia-160m-safetensors-step100000
+  - f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km
+  - f07-tuning-qwen2-5-1-5b-safetensors-bf16
+  - f07-tuning-sdrbench-hurricane-isabel
+  - f07-tuning-sdss-dr17-frames
+  - f07-tuning-silesia-mr
+  - f07-tuning-silesia-sao
+  - f07-tuning-silesia-xray
+  - f08-tuning-chinook-sqlite
+  - f08-tuning-gen-sqlite-tpch-medium
+  - f08-tuning-gen-sqlite-tpch-small
+  - f08-tuning-postgres17-pgbench-s40
+  - f08-tuning-silesia-osdb
+  - f08-tuning-wikimedia-simplewiki-sql-dump
+  - f09-alpine-324-arm64-rootfs-binaries
+  - f09-alpine-324-riscv64-rootfs-binaries
+  - f09-alpine-324-rootfs-binaries
+  - f09-ripgrep-1411-arm64-darwin-multiplatform
+  - f09-silesia-mozilla-ooffice
+  - f09-ubuntu-noble-arm64-usr-binaries
+  - f09-ubuntu-noble-riscv64-usr-binaries
+  - f09-ubuntu-noble-usr-binaries
+  - f10-gen-redundant-binary-blobs
+  - f10-linux-firmware-20260910-full-tree
+  - f10-linux-firmware-20260910-subset
+  - f10-rust-fd-find-1050-multiprofile
+  - f11-alpine-324-apks
+  - f11-cosign-v250-signing-assets
+  - f11-pypi-binary-wheels-cp312
+  - f11-ubuntu-noble-debs
+  - f12-tuning-kodak-jpeg-edge-cases-small
+  - f12-tuning-kodak-jpeg-matrix-medium
+  - f12-tuning-nasa-ivl-photos-large
+  - f12-tuning-nasa-ivl-photos-medium
+  - f12-tuning-nasa-ivl-photos-small
+  - f13-tuning-bbb-video-large
+  - f13-tuning-bbb-video-medium
+  - f13-tuning-kodak-image-codecs-small
+  - f13-tuning-librivox-audiobook-medium
+  - f13-tuning-musopen-flac-medium
+  - f13-tuning-nasa-ntrs-pdf-small
+  - f13-tuning-prelinger-video-medium
+  - f14-apache-maven-3916-bin-tarball
+  - f14-gen-nested-archives-py
+  - f14-jenkins-25683-war
+  - f14-legacy-writer-matrix-tuning
+  - f15-tuning-dbprealloc
+  - f15-tuning-real-ubuntu-noble-ova-raw
+  - f15-tuning-vmraw
+  - f16-alpine-3241-minirootfs-ext4-qcow2
+  - f16-alpine-3241-minirootfs-ext4-raw
+  - f16-alpine-3241-minirootfs-ext4-vhdx
+  - f16-alpine-virt-3241-iso
+  - f16-oci-ubuntu-noble-multiarch-index
+  - f16-ubuntu-noble-cloudimg-20260911-raw
+  - f17-tuning-duptree-mixed
+  - f17-tuning-duptree-nested
+  - f17-tuning-real-ubuntu-kernel-headers-2ver
+  - f18-tuning-curl-8-x-release-series
+  - f18-tuning-lz4-releases-1-9-to-1-10
+  - f18-tuning-ripgrep-commit-snapshots
+  - f18-tuning-sqlite-amalgamation-series
+  - f18-tuning-ubuntu-noble-cloud-images
+  - f18-tuning-zstd-releases-1-5-x
+  - f19-tuning-real-ext4-acl-selinux
+  - f19-tuning-real-home-snapshot
+  - f19-tuning-real-ntfs-metadata
+  - f19-tuning-rsnapshot-a
+  - f19-tuning-zoo
+  - f20-tuning-bombs-dense
+  - f20-tuning-csprng
+  - f20-tuning-gear-extremes
+  - f20-tuning-generated-malicious-structures
+  - f20-tuning-generated-private-vault
+  - f20-tuning-real-libarchive-testsuite
+metrics:
+- name: desc_pack_outcome
+  source: stdout_json
+  family: correctness
+  key: pack_outcome
+  kind: string
+- name: desc_incompat_bits
+  source: stdout_json
+  family: other
+  direction: none
+  unit: bitmask
+  key: incompat
+- name: desc_ro_compat_bits
+  source: stdout_json
+  family: other
+  direction: none
+  unit: bitmask
+  key: read_only_compat
+- name: desc_compat_bits
+  source: stdout_json
+  family: other
+  direction: none
+  unit: bitmask
+  key: compat
+- name: desc_incompat_values
+  source: stdout_json
+  family: correctness
+  key: incompat_values
+  kind: string
+- name: desc_preamble_feature_words_hex
+  source: stdout_json
+  family: correctness
+  key: preamble_feature_words_hex
+  kind: string
+- name: desc_reconstruction_audit_count
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: reconstruction_audit_count
+- name: side_data_bytes__reconstruction_section
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: reconstruction_bytes
+- name: side_data_bytes__metadata_sections
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: metadata_bytes
+- name: metadata_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: manifest_bytes
+- name: artifact_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: artifact_bytes
+- name: desc_converted
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: converted
+- name: desc_refused
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: refused
+- name: desc_refusal_codes
+  source: stdout_json
+  family: correctness
+  key: refusal_codes
+  kind: string
+- name: desc_entry_count
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: entry_count
+- name: desc_planner_id
+  source: stdout_json
+  family: correctness
+  key: planner_id
+  kind: string
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 17001
+  bootstrap: 17002
+  command: 17003
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/prod-9e44608/release/ebound
+  - /root/eb-research/target/harness/release/ebr-inspect-bytes
+  - /root/eb-research/target/harness/release/ebr-pack
+  - /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-CON-007/census_row.sh
+  - jq
+  timeout_s: 14400
+analysis:
+  baseline: balanced-indexed-join-key
+  pairing: item
+  report_metrics:
+  - desc_incompat_bits
+  - side_data_bytes__metadata_sections
+  - artifact_bytes

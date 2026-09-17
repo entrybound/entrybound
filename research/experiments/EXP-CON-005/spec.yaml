@@ -1,0 +1,264 @@
+# EXP-CON-005 spec.yaml. Pre-registered design (Phase C-design, container domain).
+# Status-quo anchor: production archives, in-process batches (harness) with production-CLI parity arm; WSL st-v.
+# Conventions: research/experiments/_index/container-conventions.md. Do not run before gate G-A;
+# runs before G-B are NOT_DECISION_GRADE. Tuning split only; validation looks are derived (CT-4).
+schema: ebr.spec.v1
+experiment_id: EXP-CON-005
+status: pre-registered-design
+question: How do production open, list, first-entry and random-entry latency and parser memory scale with
+  entry count, layout and Index presence today, on the WSL and Windows hosts, and at which entry counts
+  do the bootstrap default policies refuse legitimate archives?
+hypothesis: 'H1: production open latency and alloc_peak_bytes__open grow at least linearly in entry count
+  for INDEXED and STREAM (whole-manifest residency), and the bootstrap policy refuses benign archives
+  below the 1e6 entry limit because the declared metadata bytes exceed 1 GiB. Falsified if open cost is
+  sublinear or no benign archive below 1e6 entries is refused. See protocol.md section 2.'
+decision_ids:
+- DEC-CON-018
+- DEC-CON-015
+- DEC-CON-028
+- DEC-CON-002
+candidates:
+- name: indexed-balanced
+  params:
+    layout: indexed
+    profile: balanced
+    enc: none
+- name: stream-balanced
+  params:
+    layout: stream
+    profile: balanced
+    enc: none
+- name: indexed-balanced-index-absent
+  params:
+    layout: indexed-noindex
+    profile: balanced
+    enc: none
+- name: indexed-balanced-encrypted-password
+  params:
+    layout: indexed
+    profile: balanced
+    enc: password
+command: bash /mnt/d/Projects/entrybound/entrybound/research/tools/container/pack_cache.sh --item-path
+  {item_path} --profile {profile} --layout {layout} --encrypt {enc} --print-path > {scratch}/pack.path
+  && /root/eb-research/target/harness/release/ebr-openers --mode bench --archive-path-file {scratch}/pack.path
+  --ops open,list,first-entry,random-entry --batch 1000 --random-sample 1000 --seed {seed} --prod-cli
+  /root/eb-research/target/prod-9e44608/release/ebound --prod-parity-ops list --experiment-id EXP-CON-005
+  --env-name wsl-ubuntu
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits:
+  - tuning
+  item_ids:
+  - f01-tuning-curl-8-19-0-git
+  - f01-tuning-llvm-project-20-1-8-git
+  - f01-tuning-ripgrep-14-1-1-git
+  - f01-tuning-typescript-5-9-3-git
+  - f01-tuning-zstd-v1-5-7-full-clone
+  - f01-tuning-zstd-v1-5-7-git
+  - f02-tuning-lz4-intree-make-build
+  - f02-tuning-ripgrep-cargo-target
+  - f02-tuning-zstd-cmake-build
+  - f03-tuning-fzf-go-mod-vendor
+  - f03-tuning-pypi-scientific-site-packages
+  - f03-tuning-ripgrep-cargo-vendor
+  - f03-tuning-typescript-npm-node-modules
+  - f04-tuning-maildir
+  - f04-tuning-real-netbsd-pkgsrc
+  - f04-tuning-sourcelike
+  - f05-tuning-enwik8
+  - f05-tuning-gen-logs-a-medium
+  - f05-tuning-gen-logs-a-small
+  - f05-tuning-google-clusterdata-2011-2-task-usage
+  - f05-tuning-gutenberg-books
+  - f05-tuning-loghub-hdfs-v1
+  - f05-tuning-loghub-openstack
+  - f05-tuning-logrotate-from-loghub-hdfs
+  - f06-tuning-census-popest-2023
+  - f06-tuning-gen-structured-a-medium
+  - f06-tuning-gen-structured-a-small
+  - f06-tuning-gharchive-2015-01-01-h15-h16
+  - f06-tuning-gharchive-2024-01-15-h15
+  - f06-tuning-nyc-tlc-yellow-tripdata-2024
+  - f06-tuning-wikimedia-tnwiki-20260901
+  - f07-tuning-ann-benchmarks-fashion-mnist-hdf5
+  - f07-tuning-gen-numeric-a-medium
+  - f07-tuning-gen-numeric-a-small
+  - f07-tuning-mnist-npz
+  - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+  - f07-tuning-pythia-160m-safetensors-main
+  - f07-tuning-pythia-160m-safetensors-step100000
+  - f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km
+  - f07-tuning-qwen2-5-1-5b-safetensors-bf16
+  - f07-tuning-sdrbench-hurricane-isabel
+  - f07-tuning-sdss-dr17-frames
+  - f07-tuning-silesia-mr
+  - f07-tuning-silesia-sao
+  - f07-tuning-silesia-xray
+  - f08-tuning-chinook-sqlite
+  - f08-tuning-gen-sqlite-tpch-medium
+  - f08-tuning-gen-sqlite-tpch-small
+  - f08-tuning-postgres17-pgbench-s40
+  - f08-tuning-silesia-osdb
+  - f08-tuning-wikimedia-simplewiki-sql-dump
+  - f09-alpine-324-arm64-rootfs-binaries
+  - f09-alpine-324-riscv64-rootfs-binaries
+  - f09-alpine-324-rootfs-binaries
+  - f09-ripgrep-1411-arm64-darwin-multiplatform
+  - f09-silesia-mozilla-ooffice
+  - f09-ubuntu-noble-arm64-usr-binaries
+  - f09-ubuntu-noble-riscv64-usr-binaries
+  - f09-ubuntu-noble-usr-binaries
+  - f10-gen-redundant-binary-blobs
+  - f10-linux-firmware-20260910-full-tree
+  - f10-linux-firmware-20260910-subset
+  - f10-rust-fd-find-1050-multiprofile
+  - f11-alpine-324-apks
+  - f11-cosign-v250-signing-assets
+  - f11-pypi-binary-wheels-cp312
+  - f11-ubuntu-noble-debs
+  - f12-tuning-kodak-jpeg-edge-cases-small
+  - f12-tuning-kodak-jpeg-matrix-medium
+  - f12-tuning-nasa-ivl-photos-large
+  - f12-tuning-nasa-ivl-photos-medium
+  - f12-tuning-nasa-ivl-photos-small
+  - f13-tuning-bbb-video-large
+  - f13-tuning-bbb-video-medium
+  - f13-tuning-kodak-image-codecs-small
+  - f13-tuning-librivox-audiobook-medium
+  - f13-tuning-musopen-flac-medium
+  - f13-tuning-nasa-ntrs-pdf-small
+  - f13-tuning-prelinger-video-medium
+  - f14-apache-maven-3916-bin-tarball
+  - f14-gen-nested-archives-py
+  - f14-jenkins-25683-war
+  - f14-legacy-writer-matrix-tuning
+  - f15-tuning-dbprealloc
+  - f15-tuning-real-ubuntu-noble-ova-raw
+  - f15-tuning-vmraw
+  - f16-alpine-3241-minirootfs-ext4-qcow2
+  - f16-alpine-3241-minirootfs-ext4-raw
+  - f16-alpine-3241-minirootfs-ext4-vhdx
+  - f16-alpine-virt-3241-iso
+  - f16-oci-ubuntu-noble-multiarch-index
+  - f16-ubuntu-noble-cloudimg-20260911-raw
+  - f17-tuning-duptree-mixed
+  - f17-tuning-duptree-nested
+  - f17-tuning-real-ubuntu-kernel-headers-2ver
+  - f18-tuning-curl-8-x-release-series
+  - f18-tuning-lz4-releases-1-9-to-1-10
+  - f18-tuning-ripgrep-commit-snapshots
+  - f18-tuning-sqlite-amalgamation-series
+  - f18-tuning-ubuntu-noble-cloud-images
+  - f18-tuning-zstd-releases-1-5-x
+  - f19-tuning-real-ext4-acl-selinux
+  - f19-tuning-real-home-snapshot
+  - f19-tuning-real-ntfs-metadata
+  - f19-tuning-rsnapshot-a
+  - f19-tuning-zoo
+  - f20-tuning-bombs-dense
+  - f20-tuning-csprng
+  - f20-tuning-gear-extremes
+  - f20-tuning-generated-malicious-structures
+  - f20-tuning-generated-private-vault
+  - f20-tuning-real-libarchive-testsuite
+metrics:
+- name: open_latency_s
+  source: stdout_json
+  family: time_wall
+  direction: minimize
+  unit: s
+  key: payload.open_latency_s
+- name: list_latency_s
+  source: stdout_json
+  family: time_wall
+  direction: minimize
+  unit: s
+  key: payload.list_latency_s
+- name: first_entry_latency_s
+  source: stdout_json
+  family: time_wall
+  direction: minimize
+  unit: s
+  key: payload.first_entry_latency_s
+- name: random_entry_latency_s
+  source: stdout_json
+  family: time_wall
+  direction: minimize
+  unit: s
+  key: payload.random_entry_latency_s
+- name: encrypted_random_entry_latency_s
+  source: stdout_json
+  family: time_wall
+  direction: minimize
+  unit: s
+  key: payload.encrypted_random_entry_latency_s
+- name: alloc_peak_bytes__open
+  source: stdout_json
+  family: memory_peak
+  direction: minimize
+  unit: B
+  key: payload.alloc_peak_bytes__open
+- name: alloc_peak_bytes__list
+  source: stdout_json
+  family: memory_peak
+  direction: minimize
+  unit: B
+  key: payload.alloc_peak_bytes__list
+- name: peak_rss_bytes__ebound_list
+  source: stdout_json
+  family: memory_peak
+  direction: minimize
+  unit: B
+  key: payload.peak_rss_bytes__ebound_list
+- name: desc_timing_parity_ratio_harness_vs_prod
+  source: stdout_json
+  family: other
+  direction: none
+  unit: ratio
+  key: payload.desc_timing_parity_ratio_harness_vs_prod
+- name: desc_payload_sha256
+  source: stdout_json
+  family: correctness
+  key: payload.payload_sha256
+  kind: string
+- name: wall_s
+  source: resource
+  family: time_wall
+  direction: minimize
+  unit: s
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds:
+  order: 15001
+  bootstrap: 15002
+  command: 15003
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/prod-9e44608/release/ebound
+  - /root/eb-research/target/harness/release/ebr-openers
+  - /mnt/d/Projects/entrybound/entrybound/research/tools/container/pack_cache.sh
+  timeout_s: 14400
+  cpu_affinity:
+  - 2
+analysis:
+  baseline: indexed-balanced
+  pairing: item_repetition
+  report_metrics:
+  - open_latency_s
+  - list_latency_s
+  - alloc_peak_bytes__open
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300

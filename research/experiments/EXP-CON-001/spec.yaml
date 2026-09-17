@@ -1,0 +1,430 @@
+# EXP-CON-001 spec.yaml. Pre-registered design (Phase C-design, container domain).
+# Deterministic pass over every tuning item (real trees packed by ebound-prod, REF-PROD balanced INDEXED).
+# Conventions: research/experiments/_index/container-conventions.md. Do not run before gate G-A;
+# runs before G-B are NOT_DECISION_GRADE. Tuning split only; validation looks are derived (CT-4).
+schema: ebr.spec.v1
+experiment_id: EXP-CON-001
+status: pre-registered-design
+question: Which physical manifest representation and canonical record encoding minimize manifest bytes
+  per entry, bytes and requests to open, look up and list, and parser memory, from 1e3 to 1e7 entries,
+  while staying canonical, single-authority and round-trip exact?
+hypothesis: 'H1: on entry-heavy families and at >=1e5 synthetic entries, at least one non-status-quo representation
+  is DISTINGUISHABLE_BETTER than m0-flat-tlv-u64 on metadata_bytes_per_entry by at least the T3 minimum-gain
+  band, and paged or segmented representations cut open_bytes_read__lookup_mean by more than 1 band unit
+  at >=1e5 entries. Falsified if every alternative is EQUIVALENT or INCONCLUSIVE with demonstrated power,
+  or fails the correctness screens. See protocol.md section 2.'
+decision_ids:
+- DEC-CON-018
+- DEC-CON-028
+- DEC-MOD-006
+- DEC-MOD-047
+- DEC-MOD-004
+- DEC-ACC-018
+- DEC-CON-002
+candidates:
+- name: m0-flat-tlv-u64
+  params:
+    repr: flat-tlv-u64
+    stored_digests: stored
+- name: m0-flat-tlv-u64-nodigests
+  params:
+    repr: flat-tlv-u64
+    stored_digests: derived
+- name: m1-flat-tlv-varint
+  params:
+    repr: flat-tlv-varint
+    stored_digests: stored
+- name: m1-flat-tlv-varint-nodigests
+  params:
+    repr: flat-tlv-varint
+    stored_digests: derived
+- name: e2-deterministic-cbor
+  params:
+    repr: det-cbor
+    stored_digests: stored
+- name: e3-asn1-der
+  params:
+    repr: asn1-der
+    stored_digests: stored
+- name: e4-nar-padded
+  params:
+    repr: nar-padded
+    stored_digests: stored
+- name: m2-compact-zstd3
+  params:
+    repr: compact-zstd-l3
+    stored_digests: stored
+- name: m2-compact-zstd19
+  params:
+    repr: compact-zstd-l19
+    stored_digests: stored
+- name: m3-segmented-zstd3-64k
+  params:
+    repr: segmented-zstd-l3-65536
+    stored_digests: stored
+- name: m3-segmented-zstd3-256k
+  params:
+    repr: segmented-zstd-l3-262144
+    stored_digests: stored
+- name: m3-segmented-zstd3-1m
+  params:
+    repr: segmented-zstd-l3-1048576
+    stored_digests: stored
+- name: m4-paged-16k
+  params:
+    repr: paged-16384
+    stored_digests: stored
+- name: m4-paged-64k
+  params:
+    repr: paged-65536
+    stored_digests: stored
+- name: m4-paged-256k
+  params:
+    repr: paged-262144
+    stored_digests: stored
+- name: m5-path-fanout-table
+  params:
+    repr: path-fanout-table
+    stored_digests: stored
+- name: m5-path-btree-256
+  params:
+    repr: path-btree-256
+    stored_digests: stored
+- name: m6-columnar-frontcoded
+  params:
+    repr: columnar-frontcoded
+    stored_digests: stored
+- name: m6-columnar-fsst
+  params:
+    repr: columnar-fsst
+    stored_digests: stored
+command: A=$(bash /mnt/d/Projects/entrybound/entrybound/research/tools/container/pack_cache.sh --item-path
+  {item_path} --profile balanced --layout indexed --print-path) && /root/eb-research/target/harness/release/ebr-manifest-repr
+  --archive "$A" --repr {repr} --stored-digests {stored_digests} --lookup-sample 1000 --list-dir-sample
+  100 --orders o0,o1,o2,o3,o4,o5 --seed {seed} --connection-model research/experiments/EXP-REMOTE-001/connection-model.json
+  --experiment-id EXP-CON-001 --env-name wsl-ubuntu
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits:
+  - tuning
+  item_ids:
+  - f01-tuning-curl-8-19-0-git
+  - f01-tuning-llvm-project-20-1-8-git
+  - f01-tuning-ripgrep-14-1-1-git
+  - f01-tuning-typescript-5-9-3-git
+  - f01-tuning-zstd-v1-5-7-full-clone
+  - f01-tuning-zstd-v1-5-7-git
+  - f02-tuning-lz4-intree-make-build
+  - f02-tuning-ripgrep-cargo-target
+  - f02-tuning-zstd-cmake-build
+  - f03-tuning-fzf-go-mod-vendor
+  - f03-tuning-pypi-scientific-site-packages
+  - f03-tuning-ripgrep-cargo-vendor
+  - f03-tuning-typescript-npm-node-modules
+  - f04-tuning-maildir
+  - f04-tuning-real-netbsd-pkgsrc
+  - f04-tuning-sourcelike
+  - f05-tuning-enwik8
+  - f05-tuning-gen-logs-a-medium
+  - f05-tuning-gen-logs-a-small
+  - f05-tuning-google-clusterdata-2011-2-task-usage
+  - f05-tuning-gutenberg-books
+  - f05-tuning-loghub-hdfs-v1
+  - f05-tuning-loghub-openstack
+  - f05-tuning-logrotate-from-loghub-hdfs
+  - f06-tuning-census-popest-2023
+  - f06-tuning-gen-structured-a-medium
+  - f06-tuning-gen-structured-a-small
+  - f06-tuning-gharchive-2015-01-01-h15-h16
+  - f06-tuning-gharchive-2024-01-15-h15
+  - f06-tuning-nyc-tlc-yellow-tripdata-2024
+  - f06-tuning-wikimedia-tnwiki-20260901
+  - f07-tuning-ann-benchmarks-fashion-mnist-hdf5
+  - f07-tuning-gen-numeric-a-medium
+  - f07-tuning-gen-numeric-a-small
+  - f07-tuning-mnist-npz
+  - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+  - f07-tuning-pythia-160m-safetensors-main
+  - f07-tuning-pythia-160m-safetensors-step100000
+  - f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km
+  - f07-tuning-qwen2-5-1-5b-safetensors-bf16
+  - f07-tuning-sdrbench-hurricane-isabel
+  - f07-tuning-sdss-dr17-frames
+  - f07-tuning-silesia-mr
+  - f07-tuning-silesia-sao
+  - f07-tuning-silesia-xray
+  - f08-tuning-chinook-sqlite
+  - f08-tuning-gen-sqlite-tpch-medium
+  - f08-tuning-gen-sqlite-tpch-small
+  - f08-tuning-postgres17-pgbench-s40
+  - f08-tuning-silesia-osdb
+  - f08-tuning-wikimedia-simplewiki-sql-dump
+  - f09-alpine-324-arm64-rootfs-binaries
+  - f09-alpine-324-riscv64-rootfs-binaries
+  - f09-alpine-324-rootfs-binaries
+  - f09-ripgrep-1411-arm64-darwin-multiplatform
+  - f09-silesia-mozilla-ooffice
+  - f09-ubuntu-noble-arm64-usr-binaries
+  - f09-ubuntu-noble-riscv64-usr-binaries
+  - f09-ubuntu-noble-usr-binaries
+  - f10-gen-redundant-binary-blobs
+  - f10-linux-firmware-20260910-full-tree
+  - f10-linux-firmware-20260910-subset
+  - f10-rust-fd-find-1050-multiprofile
+  - f11-alpine-324-apks
+  - f11-cosign-v250-signing-assets
+  - f11-pypi-binary-wheels-cp312
+  - f11-ubuntu-noble-debs
+  - f12-tuning-kodak-jpeg-edge-cases-small
+  - f12-tuning-kodak-jpeg-matrix-medium
+  - f12-tuning-nasa-ivl-photos-large
+  - f12-tuning-nasa-ivl-photos-medium
+  - f12-tuning-nasa-ivl-photos-small
+  - f13-tuning-bbb-video-large
+  - f13-tuning-bbb-video-medium
+  - f13-tuning-kodak-image-codecs-small
+  - f13-tuning-librivox-audiobook-medium
+  - f13-tuning-musopen-flac-medium
+  - f13-tuning-nasa-ntrs-pdf-small
+  - f13-tuning-prelinger-video-medium
+  - f14-apache-maven-3916-bin-tarball
+  - f14-gen-nested-archives-py
+  - f14-jenkins-25683-war
+  - f14-legacy-writer-matrix-tuning
+  - f15-tuning-dbprealloc
+  - f15-tuning-real-ubuntu-noble-ova-raw
+  - f15-tuning-vmraw
+  - f16-alpine-3241-minirootfs-ext4-qcow2
+  - f16-alpine-3241-minirootfs-ext4-raw
+  - f16-alpine-3241-minirootfs-ext4-vhdx
+  - f16-alpine-virt-3241-iso
+  - f16-oci-ubuntu-noble-multiarch-index
+  - f16-ubuntu-noble-cloudimg-20260911-raw
+  - f17-tuning-duptree-mixed
+  - f17-tuning-duptree-nested
+  - f17-tuning-real-ubuntu-kernel-headers-2ver
+  - f18-tuning-curl-8-x-release-series
+  - f18-tuning-lz4-releases-1-9-to-1-10
+  - f18-tuning-ripgrep-commit-snapshots
+  - f18-tuning-sqlite-amalgamation-series
+  - f18-tuning-ubuntu-noble-cloud-images
+  - f18-tuning-zstd-releases-1-5-x
+  - f19-tuning-real-ext4-acl-selinux
+  - f19-tuning-real-home-snapshot
+  - f19-tuning-real-ntfs-metadata
+  - f19-tuning-rsnapshot-a
+  - f19-tuning-zoo
+  - f20-tuning-bombs-dense
+  - f20-tuning-csprng
+  - f20-tuning-gear-extremes
+  - f20-tuning-generated-malicious-structures
+  - f20-tuning-generated-private-vault
+  - f20-tuning-real-libarchive-testsuite
+metrics:
+- name: metadata_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.metadata_bytes
+- name: metadata_bytes_per_entry
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B/entry
+  key: payload.metadata_bytes_per_entry
+- name: artifact_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.artifact_bytes
+- name: open_bytes_read__lookup_mean
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.open_bytes_read__lookup_mean
+- name: open_bytes_read__lookup_max
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.open_bytes_read__lookup_max
+- name: open_bytes_read__list_dir_mean
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.open_bytes_read__list_dir_mean
+- name: open_bytes_read__list_all
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.open_bytes_read__list_all
+- name: http_requests__open_lookup
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__open_lookup
+- name: http_requests__list_dir_mean
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__list_dir_mean
+- name: http_requests__list_all
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__list_all
+- name: alloc_peak_bytes__open
+  source: stdout_json
+  family: memory_peak
+  direction: minimize
+  unit: B
+  key: payload.alloc_peak_bytes__open
+- name: alloc_peak_bytes__list_all
+  source: stdout_json
+  family: memory_peak
+  direction: minimize
+  unit: B
+  key: payload.alloc_peak_bytes__list_all
+- name: roundtrip_mismatches
+  source: stdout_json
+  family: correctness
+  direction: minimize
+  unit: count
+  key: payload.roundtrip_mismatches
+- name: reader_disagreements
+  source: stdout_json
+  family: correctness
+  direction: minimize
+  unit: count
+  key: payload.reader_disagreements
+- name: desc_transparency_path_recovery_fraction
+  source: stdout_json
+  family: other
+  direction: maximize
+  unit: fraction
+  key: payload.desc_transparency_path_recovery_fraction
+- name: desc_pages_touched_list_dir__o0
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_pages_touched_list_dir__o0
+- name: desc_pages_touched_list_dir__o1
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_pages_touched_list_dir__o1
+- name: desc_pages_touched_list_dir__o2
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_pages_touched_list_dir__o2
+- name: desc_pages_touched_list_dir__o3
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_pages_touched_list_dir__o3
+- name: desc_pages_touched_list_dir__o4
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_pages_touched_list_dir__o4
+- name: desc_pages_touched_list_dir__o5
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_pages_touched_list_dir__o5
+- name: desc_reorder_buffer_entries__o0
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_reorder_buffer_entries__o0
+- name: desc_reorder_buffer_entries__o1
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_reorder_buffer_entries__o1
+- name: desc_reorder_buffer_entries__o2
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_reorder_buffer_entries__o2
+- name: desc_reorder_buffer_entries__o3
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_reorder_buffer_entries__o3
+- name: desc_reorder_buffer_entries__o4
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_reorder_buffer_entries__o4
+- name: desc_reorder_buffer_entries__o5
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_reorder_buffer_entries__o5
+- name: desc_entry_count
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: payload.desc_entry_count
+- name: desc_payload_sha256
+  source: stdout_json
+  family: correctness
+  key: payload.payload_sha256
+  kind: string
+- name: input_bytes
+  source: input
+  family: size
+  direction: none
+  unit: B
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 11001
+  bootstrap: 11002
+  command: 11003
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/prod-9e44608/release/ebound
+  - /root/eb-research/target/harness/release/ebr-manifest-repr
+  - /mnt/d/Projects/entrybound/entrybound/research/tools/container/pack_cache.sh
+  timeout_s: 14400
+analysis:
+  baseline: m0-flat-tlv-u64
+  pairing: item
+  report_metrics:
+  - metadata_bytes_per_entry
+  - open_bytes_read__lookup_mean
+  - alloc_peak_bytes__open

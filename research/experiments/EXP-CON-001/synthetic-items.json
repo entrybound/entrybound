@@ -1,0 +1,1687 @@
+{
+ "schema": "ebr-con.generated-items.v1",
+ "experiment_id": "EXP-CON-001",
+ "note": "Synthetic EAM models (not filesystem trees). Materialized at C-exec by `ebr-eamgen fit` on the named same-split source item, then `ebr-eamgen model`; fingerprint_sha256 is filled and committed before the first run. Shared by EXP-CON-001, EXP-CON-002 and EXP-CON-003.",
+ "items": [
+  {
+   "item_id": "syn-t-f04-pkgsrc-posix-n1e3",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-posix",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-posix-n1e3/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 51001
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f04-pkgsrc-posix-n1e4",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-posix",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-posix-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 51002
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f04-pkgsrc-posix-n1e5",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-posix",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-posix-n1e5/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 51003
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f04-pkgsrc-posix-n1e6",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-posix",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-posix-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 51004
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f04-pkgsrc-posix-n4e6",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-posix",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-posix-n4e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 51005
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f04-pkgsrc-posix-n1e7",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-posix",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-posix-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 10000000,
+    "meta": "posix",
+    "seed": 51006
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f04-pkgsrc-rich-n1e4",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-rich",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-rich-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f19-tuning-real-ext4-acl-selinux",
+    "entries": 10000,
+    "meta": "rich",
+    "seed": 51007
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f04-pkgsrc-rich-n1e6",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-rich",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-rich-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f19-tuning-real-ext4-acl-selinux",
+    "entries": 1000000,
+    "meta": "rich",
+    "seed": 51008
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f04-pkgsrc-rich-n1e7",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-rich",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-rich-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f19-tuning-real-ext4-acl-selinux",
+    "entries": 10000000,
+    "meta": "rich",
+    "seed": 51009
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f04-pkgsrc-windows-n1e4",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-windows",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-windows-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f19-tuning-real-ntfs-metadata",
+    "entries": 10000,
+    "meta": "windows",
+    "seed": 51010
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f04-pkgsrc-windows-n1e6",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-windows",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-windows-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f19-tuning-real-ntfs-metadata",
+    "entries": 1000000,
+    "meta": "windows",
+    "seed": 51011
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f04-pkgsrc-windows-n1e7",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-netbsd-pkgsrc-windows",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f04-pkgsrc-windows-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "metadata_model_item_id": "f19-tuning-real-ntfs-metadata",
+    "entries": 10000000,
+    "meta": "windows",
+    "seed": 51012
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f01-llvm-posix-n1e3",
+   "split": "tuning",
+   "family": "F01",
+   "independence_group": "synthetic-llvm-project-posix",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f01-llvm-posix-n1e3/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "metadata_model_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 51013
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f01-llvm-posix-n1e4",
+   "split": "tuning",
+   "family": "F01",
+   "independence_group": "synthetic-llvm-project-posix",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f01-llvm-posix-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "metadata_model_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 51014
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f01-llvm-posix-n1e5",
+   "split": "tuning",
+   "family": "F01",
+   "independence_group": "synthetic-llvm-project-posix",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f01-llvm-posix-n1e5/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "metadata_model_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 51015
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f01-llvm-posix-n1e6",
+   "split": "tuning",
+   "family": "F01",
+   "independence_group": "synthetic-llvm-project-posix",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f01-llvm-posix-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "metadata_model_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 51016
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f01-llvm-posix-n4e6",
+   "split": "tuning",
+   "family": "F01",
+   "independence_group": "synthetic-llvm-project-posix",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f01-llvm-posix-n4e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "metadata_model_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 51017
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f01-llvm-posix-n1e7",
+   "split": "tuning",
+   "family": "F01",
+   "independence_group": "synthetic-llvm-project-posix",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f01-llvm-posix-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "metadata_model_item_id": "f01-tuning-llvm-project-20-1-8-git",
+    "entries": 10000000,
+    "meta": "posix",
+    "seed": 51018
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f03-tsnode-posix-n1e3",
+   "split": "tuning",
+   "family": "F03",
+   "independence_group": "synthetic-microsoft-typescript-posix",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f03-tsnode-posix-n1e3/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-tuning-typescript-npm-node-modules",
+    "metadata_model_item_id": "f03-tuning-typescript-npm-node-modules",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 51019
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f03-tsnode-posix-n1e4",
+   "split": "tuning",
+   "family": "F03",
+   "independence_group": "synthetic-microsoft-typescript-posix",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f03-tsnode-posix-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-tuning-typescript-npm-node-modules",
+    "metadata_model_item_id": "f03-tuning-typescript-npm-node-modules",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 51020
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f03-tsnode-posix-n1e5",
+   "split": "tuning",
+   "family": "F03",
+   "independence_group": "synthetic-microsoft-typescript-posix",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f03-tsnode-posix-n1e5/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-tuning-typescript-npm-node-modules",
+    "metadata_model_item_id": "f03-tuning-typescript-npm-node-modules",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 51021
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f03-tsnode-posix-n1e6",
+   "split": "tuning",
+   "family": "F03",
+   "independence_group": "synthetic-microsoft-typescript-posix",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f03-tsnode-posix-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-tuning-typescript-npm-node-modules",
+    "metadata_model_item_id": "f03-tuning-typescript-npm-node-modules",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 51022
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f03-tsnode-posix-n4e6",
+   "split": "tuning",
+   "family": "F03",
+   "independence_group": "synthetic-microsoft-typescript-posix",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f03-tsnode-posix-n4e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-tuning-typescript-npm-node-modules",
+    "metadata_model_item_id": "f03-tuning-typescript-npm-node-modules",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 51023
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f03-tsnode-posix-n1e7",
+   "split": "tuning",
+   "family": "F03",
+   "independence_group": "synthetic-microsoft-typescript-posix",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f03-tsnode-posix-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-tuning-typescript-npm-node-modules",
+    "metadata_model_item_id": "f03-tuning-typescript-npm-node-modules",
+    "entries": 10000000,
+    "meta": "posix",
+    "seed": 51024
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f17-khdr-posix-n1e3",
+   "split": "tuning",
+   "family": "F17",
+   "independence_group": "synthetic-ubuntu-noble-kernel-headers-posix",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f17-khdr-posix-n1e3/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "metadata_model_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 51025
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f17-khdr-posix-n1e4",
+   "split": "tuning",
+   "family": "F17",
+   "independence_group": "synthetic-ubuntu-noble-kernel-headers-posix",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f17-khdr-posix-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "metadata_model_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 51026
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f17-khdr-posix-n1e5",
+   "split": "tuning",
+   "family": "F17",
+   "independence_group": "synthetic-ubuntu-noble-kernel-headers-posix",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f17-khdr-posix-n1e5/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "metadata_model_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 51027
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f17-khdr-posix-n1e6",
+   "split": "tuning",
+   "family": "F17",
+   "independence_group": "synthetic-ubuntu-noble-kernel-headers-posix",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f17-khdr-posix-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "metadata_model_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 51028
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f17-khdr-posix-n4e6",
+   "split": "tuning",
+   "family": "F17",
+   "independence_group": "synthetic-ubuntu-noble-kernel-headers-posix",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f17-khdr-posix-n4e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "metadata_model_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 51029
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f17-khdr-posix-n1e7",
+   "split": "tuning",
+   "family": "F17",
+   "independence_group": "synthetic-ubuntu-noble-kernel-headers-posix",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f17-khdr-posix-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "metadata_model_item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+    "entries": 10000000,
+    "meta": "posix",
+    "seed": 51030
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-posix-n1e3",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-posix",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-posix-n1e3/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-rsnapshot-a",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 51031
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-posix-n1e4",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-posix",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-posix-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-rsnapshot-a",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 51032
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-posix-n1e5",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-posix",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-posix-n1e5/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-rsnapshot-a",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 51033
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-posix-n1e6",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-posix",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-posix-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-rsnapshot-a",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 51034
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-posix-n4e6",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-posix",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-posix-n4e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-rsnapshot-a",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 51035
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-posix-n1e7",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-posix",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-posix-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-rsnapshot-a",
+    "entries": 10000000,
+    "meta": "posix",
+    "seed": 51036
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-rich-n1e4",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-rich",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-rich-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-real-ext4-acl-selinux",
+    "entries": 10000,
+    "meta": "rich",
+    "seed": 51037
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-rich-n1e6",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-rich",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-rich-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-real-ext4-acl-selinux",
+    "entries": 1000000,
+    "meta": "rich",
+    "seed": 51038
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-rich-n1e7",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-rich",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-rich-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-real-ext4-acl-selinux",
+    "entries": 10000000,
+    "meta": "rich",
+    "seed": 51039
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-windows-n1e4",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-windows",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-windows-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-real-ntfs-metadata",
+    "entries": 10000,
+    "meta": "windows",
+    "seed": 51040
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-windows-n1e6",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-windows",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-windows-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-real-ntfs-metadata",
+    "entries": 1000000,
+    "meta": "windows",
+    "seed": 51041
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-t-f19-rsnap-windows-n1e7",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-a-windows",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-t-f19-rsnap-windows-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "metadata_model_item_id": "f19-tuning-real-ntfs-metadata",
+    "entries": 10000000,
+    "meta": "windows",
+    "seed": 51042
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-posix-n1e3",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-posix",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-posix-n1e3/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 52001
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-posix-n1e4",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-posix",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-posix-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 52002
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-posix-n1e5",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-posix",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-posix-n1e5/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 52003
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-posix-n1e6",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-posix",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-posix-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 52004
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-posix-n4e6",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-posix",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-posix-n4e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 52005
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-posix-n1e7",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-posix",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-posix-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 10000000,
+    "meta": "posix",
+    "seed": 52006
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-rich-n1e4",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-rich",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-rich-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f19-validation-real-xfs-acl-selinux",
+    "entries": 10000,
+    "meta": "rich",
+    "seed": 52007
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-rich-n1e6",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-rich",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-rich-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f19-validation-real-xfs-acl-selinux",
+    "entries": 1000000,
+    "meta": "rich",
+    "seed": 52008
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-rich-n1e7",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-rich",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-rich-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f19-validation-real-xfs-acl-selinux",
+    "entries": 10000000,
+    "meta": "rich",
+    "seed": 52009
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-windows-n1e4",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-windows",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-windows-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f19-validation-real-ntfs-metadata",
+    "entries": 10000,
+    "meta": "windows",
+    "seed": 52010
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-windows-n1e6",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-windows",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-windows-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f19-validation-real-ntfs-metadata",
+    "entries": 1000000,
+    "meta": "windows",
+    "seed": 52011
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f04-gentoo-windows-n1e7",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-gentoo-repo-windows",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f04-gentoo-windows-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "metadata_model_item_id": "f19-validation-real-ntfs-metadata",
+    "entries": 10000000,
+    "meta": "windows",
+    "seed": 52012
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f01-cpython-posix-n1e3",
+   "split": "validation",
+   "family": "F01",
+   "independence_group": "synthetic-cpython-posix",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f01-cpython-posix-n1e3/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-validation-cpython-3-13-15-git",
+    "metadata_model_item_id": "f01-validation-cpython-3-13-15-git",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 52013
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f01-cpython-posix-n1e4",
+   "split": "validation",
+   "family": "F01",
+   "independence_group": "synthetic-cpython-posix",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f01-cpython-posix-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-validation-cpython-3-13-15-git",
+    "metadata_model_item_id": "f01-validation-cpython-3-13-15-git",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 52014
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f01-cpython-posix-n1e5",
+   "split": "validation",
+   "family": "F01",
+   "independence_group": "synthetic-cpython-posix",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f01-cpython-posix-n1e5/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-validation-cpython-3-13-15-git",
+    "metadata_model_item_id": "f01-validation-cpython-3-13-15-git",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 52015
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f01-cpython-posix-n1e6",
+   "split": "validation",
+   "family": "F01",
+   "independence_group": "synthetic-cpython-posix",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f01-cpython-posix-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-validation-cpython-3-13-15-git",
+    "metadata_model_item_id": "f01-validation-cpython-3-13-15-git",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 52016
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f01-cpython-posix-n4e6",
+   "split": "validation",
+   "family": "F01",
+   "independence_group": "synthetic-cpython-posix",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f01-cpython-posix-n4e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-validation-cpython-3-13-15-git",
+    "metadata_model_item_id": "f01-validation-cpython-3-13-15-git",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 52017
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f01-cpython-posix-n1e7",
+   "split": "validation",
+   "family": "F01",
+   "independence_group": "synthetic-cpython-posix",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f01-cpython-posix-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f01-validation-cpython-3-13-15-git",
+    "metadata_model_item_id": "f01-validation-cpython-3-13-15-git",
+    "entries": 10000000,
+    "meta": "posix",
+    "seed": 52018
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f03-bsnode-posix-n1e3",
+   "split": "validation",
+   "family": "F03",
+   "independence_group": "synthetic-twbs-bootstrap-posix",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f03-bsnode-posix-n1e3/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "metadata_model_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 52019
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f03-bsnode-posix-n1e4",
+   "split": "validation",
+   "family": "F03",
+   "independence_group": "synthetic-twbs-bootstrap-posix",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f03-bsnode-posix-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "metadata_model_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 52020
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f03-bsnode-posix-n1e5",
+   "split": "validation",
+   "family": "F03",
+   "independence_group": "synthetic-twbs-bootstrap-posix",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f03-bsnode-posix-n1e5/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "metadata_model_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 52021
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f03-bsnode-posix-n1e6",
+   "split": "validation",
+   "family": "F03",
+   "independence_group": "synthetic-twbs-bootstrap-posix",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f03-bsnode-posix-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "metadata_model_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 52022
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f03-bsnode-posix-n4e6",
+   "split": "validation",
+   "family": "F03",
+   "independence_group": "synthetic-twbs-bootstrap-posix",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f03-bsnode-posix-n4e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "metadata_model_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 52023
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f03-bsnode-posix-n1e7",
+   "split": "validation",
+   "family": "F03",
+   "independence_group": "synthetic-twbs-bootstrap-posix",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f03-bsnode-posix-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "metadata_model_item_id": "f03-validation-bootstrap-npm-node-modules",
+    "entries": 10000000,
+    "meta": "posix",
+    "seed": 52024
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f17-fedkdev-posix-n1e3",
+   "split": "validation",
+   "family": "F17",
+   "independence_group": "synthetic-fedora-kernel-devel-posix",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f17-fedkdev-posix-n1e3/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "metadata_model_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 52025
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f17-fedkdev-posix-n1e4",
+   "split": "validation",
+   "family": "F17",
+   "independence_group": "synthetic-fedora-kernel-devel-posix",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f17-fedkdev-posix-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "metadata_model_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 52026
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f17-fedkdev-posix-n1e5",
+   "split": "validation",
+   "family": "F17",
+   "independence_group": "synthetic-fedora-kernel-devel-posix",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f17-fedkdev-posix-n1e5/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "metadata_model_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 52027
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f17-fedkdev-posix-n1e6",
+   "split": "validation",
+   "family": "F17",
+   "independence_group": "synthetic-fedora-kernel-devel-posix",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f17-fedkdev-posix-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "metadata_model_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 52028
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f17-fedkdev-posix-n4e6",
+   "split": "validation",
+   "family": "F17",
+   "independence_group": "synthetic-fedora-kernel-devel-posix",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f17-fedkdev-posix-n4e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "metadata_model_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 52029
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f17-fedkdev-posix-n1e7",
+   "split": "validation",
+   "family": "F17",
+   "independence_group": "synthetic-fedora-kernel-devel-posix",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f17-fedkdev-posix-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "metadata_model_item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+    "entries": 10000000,
+    "meta": "posix",
+    "seed": 52030
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-posix-n1e3",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-posix",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-posix-n1e3/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-rsnapshot-b",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 52031
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-posix-n1e4",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-posix",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-posix-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-rsnapshot-b",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 52032
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-posix-n1e5",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-posix",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-posix-n1e5/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-rsnapshot-b",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 52033
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-posix-n1e6",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-posix",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-posix-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-rsnapshot-b",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 52034
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-posix-n4e6",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-posix",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-posix-n4e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-rsnapshot-b",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 52035
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-posix-n1e7",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-posix",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-posix-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-rsnapshot-b",
+    "entries": 10000000,
+    "meta": "posix",
+    "seed": 52036
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-rich-n1e4",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-rich",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-rich-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-real-xfs-acl-selinux",
+    "entries": 10000,
+    "meta": "rich",
+    "seed": 52037
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-rich-n1e6",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-rich",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-rich-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-real-xfs-acl-selinux",
+    "entries": 1000000,
+    "meta": "rich",
+    "seed": 52038
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-rich-n1e7",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-rich",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-rich-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-real-xfs-acl-selinux",
+    "entries": 10000000,
+    "meta": "rich",
+    "seed": 52039
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-windows-n1e4",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-windows",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-windows-n1e4/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-real-ntfs-metadata",
+    "entries": 10000,
+    "meta": "windows",
+    "seed": 52040
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-windows-n1e6",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-windows",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-windows-n1e6/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-real-ntfs-metadata",
+    "entries": 1000000,
+    "meta": "windows",
+    "seed": 52041
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "syn-v-f19-rsnap-windows-n1e7",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-ebrc-g2-f19-rsnapshot-b-windows",
+   "evaluation_condition": "entry-count-1e7",
+   "real_or_generated": "generated",
+   "kind": "eam-model",
+   "path": "/root/eb-research/generated/EXP-CON-001/syn-v-f19-rsnap-windows-n1e7/model.json",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "model",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "metadata_model_item_id": "f19-validation-real-ntfs-metadata",
+    "entries": 10000000,
+    "meta": "windows",
+    "seed": 52042
+   },
+   "fingerprint_sha256": null
+  }
+ ]
+}

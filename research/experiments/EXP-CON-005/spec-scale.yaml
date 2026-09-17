@@ -1,0 +1,152 @@
+# EXP-CON-005 spec-scale.yaml. Pre-registered design (Phase C-design, container domain).
+# Deterministic outcomes and memory at 1e3..4e6 materialized entries under the bootstrap and a raised caller policy; process peak RSS under a 24 GiB cgroup limit; single-shot latency is informational only.
+# Conventions: research/experiments/_index/container-conventions.md. Do not run before gate G-A;
+# runs before G-B are NOT_DECISION_GRADE. Tuning split only; validation looks are derived (CT-4).
+schema: ebr.spec.v1
+experiment_id: EXP-CON-005
+status: pre-registered-design
+question: How do production open, list, first-entry and random-entry latency and parser memory scale with
+  entry count, layout and Index presence today, on the WSL and Windows hosts, and at which entry counts
+  do the bootstrap default policies refuse legitimate archives?
+hypothesis: 'H1: production open latency and alloc_peak_bytes__open grow at least linearly in entry count
+  for INDEXED and STREAM (whole-manifest residency), and the bootstrap policy refuses benign archives
+  below the 1e6 entry limit because the declared metadata bytes exceed 1 GiB. Falsified if open cost is
+  sublinear or no benign archive below 1e6 entries is refused. See protocol.md section 2.'
+decision_ids:
+- DEC-CON-006
+- DEC-CON-018
+- DEC-CON-015
+candidates:
+- name: indexed-balanced--policy-bootstrap
+  params:
+    layout: indexed
+    policy: bootstrap
+- name: indexed-balanced--policy-raised
+  params:
+    layout: indexed
+    policy: raised-64x
+- name: stream-balanced--policy-bootstrap
+  params:
+    layout: stream
+    policy: bootstrap
+- name: stream-balanced--policy-raised
+  params:
+    layout: stream
+    policy: raised-64x
+command: bash /mnt/d/Projects/entrybound/entrybound/research/tools/container/scale_probe.sh --tree {item_path}
+  --layout {layout} --policy {policy} --prod-cli /root/eb-research/target/prod-9e44608/release/ebound
+  --openers /root/eb-research/target/harness/release/ebr-openers --memory-limit-gib 24 --seed {seed} --experiment-id
+  EXP-CON-005 --env-name wsl-ubuntu
+shell: bash
+corpus:
+  manifest: research/experiments/EXP-CON-005/scale-items.json
+  splits:
+  - tuning
+  item_ids:
+  - tree-t-f04-pkgsrc-n1e3
+  - tree-t-f04-pkgsrc-n1e4
+  - tree-t-f04-pkgsrc-n1e5
+  - tree-t-f04-pkgsrc-n1e6
+  - tree-t-f04-pkgsrc-n2e6
+  - tree-t-f04-pkgsrc-n4e6
+  - tree-t-f04-pkgsrc-n5e5
+  - tree-t-f04-pkgsrc-n7e5
+  - tree-t-f19-rsnap-n1e4
+  - tree-t-f19-rsnap-n1e5
+  - tree-t-f19-rsnap-n1e6
+metrics:
+- name: desc_pack_outcome
+  source: stdout_json
+  family: correctness
+  key: payload.pack_outcome
+  kind: string
+- name: desc_open_outcome
+  source: stdout_json
+  family: correctness
+  key: payload.open_outcome
+  kind: string
+- name: desc_refused_under_policy
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: binary
+  key: payload.desc_refused_under_policy
+- name: desc_budget_field_that_refused
+  source: stdout_json
+  family: correctness
+  key: payload.budget_field_that_refused
+  kind: string
+- name: metadata_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.metadata_bytes
+- name: artifact_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.artifact_bytes
+- name: open_latency_s__single_shot
+  source: stdout_json
+  family: time_wall
+  direction: none
+  unit: s
+  key: payload.open_latency_s__single_shot
+- name: alloc_peak_bytes__open
+  source: stdout_json
+  family: memory_peak
+  direction: minimize
+  unit: B
+  key: payload.alloc_peak_bytes__open
+- name: peak_rss_bytes__pack
+  source: stdout_json
+  family: memory_peak
+  direction: minimize
+  unit: B
+  key: payload.peak_rss_bytes__pack
+- name: peak_rss_bytes__open
+  source: stdout_json
+  family: memory_peak
+  direction: minimize
+  unit: B
+  key: payload.peak_rss_bytes__open
+- name: desc_scale_limit_reason_code
+  source: stdout_json
+  family: correctness
+  key: payload.scale_limit_reason_code
+  kind: string
+- name: wall_s
+  source: resource
+  family: time_wall
+  direction: none
+  unit: s
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 15011
+  bootstrap: 15012
+  command: 15013
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/prod-9e44608/release/ebound
+  - /root/eb-research/target/harness/release/ebr-openers
+  - /mnt/d/Projects/entrybound/entrybound/research/tools/container/scale_probe.sh
+  timeout_s: 86400
+analysis:
+  baseline: indexed-balanced--policy-bootstrap
+  pairing: item
+  report_metrics:
+  - desc_refused_under_policy
+  - alloc_peak_bytes__open
+  - peak_rss_bytes__pack

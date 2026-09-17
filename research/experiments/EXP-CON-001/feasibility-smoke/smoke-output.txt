@@ -1,0 +1,64 @@
+# NON-DECISION-GRADE feasibility smoke (Phase C-design, container domain). Sizing and tooling check only;
+# not a result under decision-method.md 12.3 (no quiet-machine guard, one run, dev-HEAD baseline build, generated input).
+# Produced by the smoke script in this directory; first line is the UTC time, then binary SHA-256 where recorded.
+2026-09-17T12:39:40Z
+fbda9d84c647414cebdd6b1317e55626e1a00d3440415cb967950571b0da711e  /root/eb-research/target/baseline/release/ebound
+128d9b2f0c7db02824b807fe984babaf3fca6c474422f38ddf03bbb3f2055bd5  /root/eb-research/target/harness/release/ebr-inspect-bytes
+generated_files 20000
+pack maxrss_kib=181296 wall_s=2.05
+archive_bytes=35103974
+inspect maxrss_kib=124060 wall_s=0.91
+list maxrss_kib=124052 wall_s=0.77
+top_keys ['access', 'archive', 'chunk_records', 'chunks', 'content_objects', 'entries', 'format', 'identities', 'plans', 'provenance', 'reconstruction', 'reconstruction_audits', 'reconstruction_regions', 'resources', 'security', 'verification_scope', 'version']
+archive.layout INDEXED
+resources.budget_declared True
+resources.entry_count 20120
+resources.total_logical_bytes 638027
+resources.max_single_entry_logical_bytes 64
+resources.chunk_count 19541
+resources.max_metadata_bytes 30634147
+resources.window_bytes 0
+resources.working_set_bytes 0
+chunks.unique_plaintext_bytes 637872
+chunks.deduplicated_bytes 155
+chunks.minimum_bytes 1
+chunks.average_bytes 32
+chunks.maximum_bytes 64
+reconstruction.data_bytes 0
+reconstruction.worst_access_bytes 0
+security.embedded_signature_count 0
+access.stream_dedup_window 0
+access.index_status present-valid
+access.group_count 0
+access.worst_group_access_bytes 0
+ib.artifact_bytes 35103974
+ib.byte_accounting.accounted_bytes 35103974
+ib.byte_accounting.chunk_frame_header_bytes 1875936
+ib.byte_accounting.chunk_group_bytes 64
+ib.byte_accounting.chunk_payload_bytes 637872
+ib.byte_accounting.descriptor_bytes 350
+ib.byte_accounting.dictionary_bytes 64
+ib.byte_accounting.footer_bytes 128
+ib.byte_accounting.index_bytes 1954164
+ib.byte_accounting.manifest_bytes 26843136
+ib.byte_accounting.metadata_bytes 499
+ib.byte_accounting.padding_bytes 0
+ib.byte_accounting.preamble_bytes 256
+ib.byte_accounting.reconstruction_bytes 3791203
+ib.byte_accounting.signature_bytes 0
+ib.byte_accounting.transform_plan_bytes 238
+ib.counts.chunks.average_chunk_bytes 32
+ib.counts.chunks.deduplicated_bytes 155
+ib.counts.chunks.maximum_chunk_bytes 64
+ib.counts.chunks.minimum_chunk_bytes 1
+ib.counts.chunks.unique_plaintext_bytes 637872
+ib.counts.cross_file.dictionary_bytes 0
+ib.counts.reconstruction.object_bytes 0
+ib.counts.total_logical_bytes 638027
+out.eb: data
+/usr/share/file/magic.mgc
+/usr/share/misc/magic.mgc
+file 1:5.45-3build1
+libmagic1t64 1:5.45-3build1
+shared-mime-info 2.4-4
+ 8e 45 42 31 0d 0a 1a 0a

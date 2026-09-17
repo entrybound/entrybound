@@ -1,0 +1,449 @@
+# EXP-CON-003 spec-synthetic.yaml. Pre-registered design (Phase C-design, container domain).
+# Synthetic per-object Chunk lists up to 1e7 leaves (entry/Chunk-count strata); 1e8-1e9 leaves are computed exactly by formula in protocol section 7.
+# Conventions: research/experiments/_index/container-conventions.md. Do not run before gate G-A;
+# runs before G-B are NOT_DECISION_GRADE. Tuning split only; validation looks are derived (CT-4).
+schema: ebr.spec.v1
+experiment_id: EXP-CON-003
+status: pre-registered-design
+question: Which byte-range verification structure, outboard layout, tree construction and count binding
+  give the fewest fetched bytes, requests and digest operations per verified range from 1e3 to 1e7 Chunks
+  per object, with small cacheable proofs, sound refusal of malformed proofs and byte-exact independent
+  reproduction?
+hypothesis: 'H1: for 1-byte and 4 KiB ranges in objects of >=1e4 Chunks, a binary or k-ary outboard is
+  DISTINGUISHABLE_BETTER than s0-flat-leaflist-sq on verified_range_fetch_bytes and verification_digest_ops
+  by at least the T3 minimum gain, with side_data_bytes below 1% of artifact_bytes; for objects below
+  64 Chunks no structure beats the status quo by 1 band unit. Falsified as stated in protocol.md section
+  2.'
+decision_ids:
+- DEC-CON-020
+- DEC-INT-029
+- DEC-ACC-024
+- DEC-MOD-034
+- DEC-MOD-007
+- DEC-INT-024
+- DEC-INT-025
+candidates:
+- name: s0-flat-leaflist-sq
+  params:
+    structure: flat-leaflist
+    layout: none
+- name: s1-two-stage-leaflist
+  params:
+    structure: two-stage-leaflist
+    layout: none
+- name: s2-outboard-level-order
+  params:
+    structure: binary-outboard
+    layout: level-order
+- name: s2-outboard-bao-preorder
+  params:
+    structure: binary-outboard
+    layout: bao-preorder
+- name: s2-outboard-rfc9162-shape
+  params:
+    structure: binary-outboard
+    layout: rfc9162
+- name: s2-outboard-paged-4k
+  params:
+    structure: binary-outboard
+    layout: paged-subtree-4096
+- name: s2-outboard-paged-64k
+  params:
+    structure: binary-outboard
+    layout: paged-subtree-65536
+- name: s2-outboard-fsverity-4k
+  params:
+    structure: binary-outboard
+    layout: fsverity-bottom-up-4096
+- name: s3-per-object-outboard-t64
+  params:
+    structure: per-object-outboard-64
+    layout: level-order
+- name: s3-per-object-outboard-t1024
+  params:
+    structure: per-object-outboard-1024
+    layout: level-order
+- name: s3-per-object-outboard-t16384
+  params:
+    structure: per-object-outboard-16384
+    layout: level-order
+- name: s4-bao-slice
+  params:
+    structure: bao-slice
+    layout: bao-preorder
+- name: s5-segment-aligned-proofs
+  params:
+    structure: segment-aligned
+    layout: level-order
+- name: s6-sizes-sister-dag
+  params:
+    structure: sizes-sister-dag
+    layout: dag-blocks
+- name: s7-hash-chain
+  params:
+    structure: hash-chain
+    layout: none
+- name: s8-kary-4
+  params:
+    structure: kary-4
+    layout: level-order
+- name: s8-kary-16
+  params:
+    structure: kary-16
+    layout: level-order
+- name: s8-kary-64
+  params:
+    structure: kary-64
+    layout: level-order
+- name: s9-hashsplit-tree
+  params:
+    structure: hashsplit-tree
+    layout: level-order
+- name: s10-tree-native-leaves-shape
+  params:
+    structure: tree-native-fixed-1024
+    layout: bao-preorder
+command: /root/eb-research/target/harness/release/ebr-outboard --model {item_path} --chunk-list-model
+  fitted --structure {structure} --layout {layout} --range-strata 1,4096,1048576,entry --ranges-per-stratum
+  1000 --hash-constructions h0,h1,h2 --count-bindings b0,b1,b2,b3,b4 --export-formats cose_receipt,custom,bao_slice,scitt_statement
+  --attack-suite truncate,extend,reorder,leaf-as-node,node-as-leaf,count-lie,length-lie --second-impl
+  /mnt/d/Projects/entrybound/entrybound/research/tools/container/merkle_ref.py --connection-model research/experiments/EXP-REMOTE-001/connection-model.json
+  --seed {seed} --experiment-id EXP-CON-003 --env-name wsl-ubuntu
+shell: bash
+corpus:
+  manifest: research/experiments/EXP-CON-001/synthetic-items.json
+  splits:
+  - tuning
+  item_ids:
+  - syn-t-f01-llvm-posix-n1e3
+  - syn-t-f01-llvm-posix-n1e4
+  - syn-t-f01-llvm-posix-n1e5
+  - syn-t-f01-llvm-posix-n1e6
+  - syn-t-f01-llvm-posix-n1e7
+  - syn-t-f01-llvm-posix-n4e6
+  - syn-t-f03-tsnode-posix-n1e3
+  - syn-t-f03-tsnode-posix-n1e4
+  - syn-t-f03-tsnode-posix-n1e5
+  - syn-t-f03-tsnode-posix-n1e6
+  - syn-t-f03-tsnode-posix-n1e7
+  - syn-t-f03-tsnode-posix-n4e6
+  - syn-t-f04-pkgsrc-posix-n1e3
+  - syn-t-f04-pkgsrc-posix-n1e4
+  - syn-t-f04-pkgsrc-posix-n1e5
+  - syn-t-f04-pkgsrc-posix-n1e6
+  - syn-t-f04-pkgsrc-posix-n1e7
+  - syn-t-f04-pkgsrc-posix-n4e6
+  - syn-t-f04-pkgsrc-rich-n1e4
+  - syn-t-f04-pkgsrc-rich-n1e6
+  - syn-t-f04-pkgsrc-rich-n1e7
+  - syn-t-f04-pkgsrc-windows-n1e4
+  - syn-t-f04-pkgsrc-windows-n1e6
+  - syn-t-f04-pkgsrc-windows-n1e7
+  - syn-t-f17-khdr-posix-n1e3
+  - syn-t-f17-khdr-posix-n1e4
+  - syn-t-f17-khdr-posix-n1e5
+  - syn-t-f17-khdr-posix-n1e6
+  - syn-t-f17-khdr-posix-n1e7
+  - syn-t-f17-khdr-posix-n4e6
+  - syn-t-f19-rsnap-posix-n1e3
+  - syn-t-f19-rsnap-posix-n1e4
+  - syn-t-f19-rsnap-posix-n1e5
+  - syn-t-f19-rsnap-posix-n1e6
+  - syn-t-f19-rsnap-posix-n1e7
+  - syn-t-f19-rsnap-posix-n4e6
+  - syn-t-f19-rsnap-rich-n1e4
+  - syn-t-f19-rsnap-rich-n1e6
+  - syn-t-f19-rsnap-rich-n1e7
+  - syn-t-f19-rsnap-windows-n1e4
+  - syn-t-f19-rsnap-windows-n1e6
+  - syn-t-f19-rsnap-windows-n1e7
+metrics:
+- name: verified_range_fetch_bytes__1b__p50
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__1b__p50
+- name: verified_range_fetch_bytes__1b__p95
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__1b__p95
+- name: verified_range_fetch_bytes__1b__max
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__1b__max
+- name: http_requests__1b__p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__1b__p95
+- name: verification_digest_ops__1b__p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.verification_digest_ops__1b__p95
+- name: desc_range_signature_count__1b
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_range_signature_count__1b
+- name: verified_range_fetch_bytes__4k__p50
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__4k__p50
+- name: verified_range_fetch_bytes__4k__p95
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__4k__p95
+- name: verified_range_fetch_bytes__4k__max
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__4k__max
+- name: http_requests__4k__p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__4k__p95
+- name: verification_digest_ops__4k__p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.verification_digest_ops__4k__p95
+- name: desc_range_signature_count__4k
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_range_signature_count__4k
+- name: verified_range_fetch_bytes__1m__p50
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__1m__p50
+- name: verified_range_fetch_bytes__1m__p95
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__1m__p95
+- name: verified_range_fetch_bytes__1m__max
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__1m__max
+- name: http_requests__1m__p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__1m__p95
+- name: verification_digest_ops__1m__p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.verification_digest_ops__1m__p95
+- name: desc_range_signature_count__1m
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_range_signature_count__1m
+- name: verified_range_fetch_bytes__entry__p50
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__entry__p50
+- name: verified_range_fetch_bytes__entry__p95
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__entry__p95
+- name: verified_range_fetch_bytes__entry__max
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.verified_range_fetch_bytes__entry__max
+- name: http_requests__entry__p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__entry__p95
+- name: verification_digest_ops__entry__p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.verification_digest_ops__entry__p95
+- name: desc_range_signature_count__entry
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_range_signature_count__entry
+- name: side_data_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.side_data_bytes
+- name: artifact_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.artifact_bytes
+- name: alloc_peak_bytes__verify_range
+  source: stdout_json
+  family: memory_peak
+  direction: minimize
+  unit: B
+  key: payload.alloc_peak_bytes__verify_range
+- name: adversarial_true_refusal_fraction
+  source: stdout_json
+  family: correctness
+  direction: maximize
+  unit: fraction
+  key: payload.adversarial_true_refusal_fraction
+- name: reader_disagreements
+  source: stdout_json
+  family: correctness
+  direction: minimize
+  unit: count
+  key: payload.reader_disagreements
+- name: desc_rebuild_digest_ops
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.desc_rebuild_digest_ops
+- name: desc_export_proof_bytes__cose_receipt__4k_p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: B
+  key: payload.desc_export_proof_bytes__cose_receipt__4k_p95
+- name: desc_export_proof_bytes__custom__4k_p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: B
+  key: payload.desc_export_proof_bytes__custom__4k_p95
+- name: desc_export_proof_bytes__bao_slice__4k_p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: B
+  key: payload.desc_export_proof_bytes__bao_slice__4k_p95
+- name: desc_export_proof_bytes__scitt_statement__4k_p95
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: B
+  key: payload.desc_export_proof_bytes__scitt_statement__4k_p95
+- name: desc_count_binding_bytes__b0_bare_root_pcr
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: B
+  key: payload.desc_count_binding_bytes__b0_bare_root_pcr
+- name: desc_count_binding_bytes__b1_object_descriptor
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: B
+  key: payload.desc_count_binding_bytes__b1_object_descriptor
+- name: desc_count_binding_bytes__b2_length_in_root
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: B
+  key: payload.desc_count_binding_bytes__b2_length_in_root
+- name: desc_count_binding_bytes__b3_manifest_counts
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: B
+  key: payload.desc_count_binding_bytes__b3_manifest_counts
+- name: desc_count_binding_bytes__b4_outboard_header
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: B
+  key: payload.desc_count_binding_bytes__b4_outboard_header
+- name: desc_hash_construction_root_agreement__h0_named_domain
+  source: stdout_json
+  family: correctness
+  direction: maximize
+  unit: fraction
+  key: payload.desc_hash_construction_root_agreement__h0_named_domain
+- name: desc_hash_construction_root_agreement__h1_rfc9162_prefix
+  source: stdout_json
+  family: correctness
+  direction: maximize
+  unit: fraction
+  key: payload.desc_hash_construction_root_agreement__h1_rfc9162_prefix
+- name: desc_hash_construction_root_agreement__h2_c2sp_sequencehash
+  source: stdout_json
+  family: correctness
+  direction: maximize
+  unit: fraction
+  key: payload.desc_hash_construction_root_agreement__h2_c2sp_sequencehash
+- name: desc_payload_sha256
+  source: stdout_json
+  family: correctness
+  key: payload.payload_sha256
+  kind: string
+- name: input_bytes
+  source: input
+  family: size
+  direction: none
+  unit: B
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 13011
+  bootstrap: 13012
+  command: 13013
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/harness/release/ebr-outboard
+  - /mnt/d/Projects/entrybound/entrybound/research/tools/container/merkle_ref.py
+  timeout_s: 43200
+analysis:
+  baseline: s0-flat-leaflist-sq
+  pairing: item
+  report_metrics:
+  - verified_range_fetch_bytes__4k__p95
+  - verification_digest_ops__4k__p95
+  - side_data_bytes

@@ -1,0 +1,309 @@
+# EXP-CON-002 spec-synthetic.yaml. Pre-registered design (Phase C-design, container domain).
+# Synthetic Chunk tables from the shared EXP-CON-001 models (entry-count strata).
+# Conventions: research/experiments/_index/container-conventions.md. Do not run before gate G-A;
+# runs before G-B are NOT_DECISION_GRADE. Tuning split only; validation looks are derived (CT-4).
+schema: ebr.spec.v1
+experiment_id: EXP-CON-002
+status: pre-registered-design
+question: Which Index data structure and validation granularity resolve entries to Chunk-frame ranges
+  with the fewest bytes, requests and resident memory from 1e3 to 1e7 Chunks, while the Index stays a
+  small, rebuildable, non-authoritative cache?
+hypothesis: 'H1: at >=1e5 Chunks a paged or fanout Index is DISTINGUISHABLE_BETTER than i0-sorted-records-sq
+  on open_bytes_read__resolve_entry_cold_mean and alloc_peak_bytes__index_resident by more than the T3
+  minimum gain, and NON_INFERIOR on artifact_bytes; below 1e4 Chunks no alternative beats the status quo
+  by 1 band unit. Falsified as stated in protocol.md section 2.'
+decision_ids:
+- DEC-CON-015
+- DEC-ACC-019
+- DEC-CMP-002
+candidates:
+- name: i0-sorted-records-sq
+  params:
+    index_repr: sorted-records-100b
+    validation: lazy
+- name: i1-fanout-oid-table
+  params:
+    index_repr: fanout-oid-table
+    validation: lazy
+- name: i2-paged-4k
+  params:
+    index_repr: paged-4096
+    validation: lazy
+- name: i2-paged-16k
+  params:
+    index_repr: paged-16384
+    validation: lazy
+- name: i2-paged-64k
+  params:
+    index_repr: paged-65536
+    validation: lazy
+- name: i3-dual-coordinate-seek-table
+  params:
+    index_repr: dual-coordinate-seek-table
+    validation: lazy
+- name: i4-sizes-sister-list
+  params:
+    index_repr: sizes-sister-list
+    validation: lazy
+- name: i5-delta-compressed-locators
+  params:
+    index_repr: delta-varint-blocks-256
+    validation: lazy
+- name: i6-per-object-locator-runs
+  params:
+    index_repr: per-object-runs
+    validation: lazy
+- name: i7-no-index-scan-only
+  params:
+    index_repr: none
+    validation: scan
+- name: v1-sq-always-cross-check
+  params:
+    index_repr: sorted-records-100b
+    validation: always-rebuild
+- name: v2-sq-digest-bound-index
+  params:
+    index_repr: sorted-records-100b
+    validation: digest-bound
+- name: v3-sq-per-record-frame-check
+  params:
+    index_repr: sorted-records-100b
+    validation: per-record
+command: /root/eb-research/target/harness/release/ebr-index-repr --model {item_path} --chunks-per-entry-model
+  fitted --index-repr {index_repr} --validation {validation} --resolve-sample 1000 --workload-file research/experiments/EXP-REMOTE-002/workloads.json
+  --connection-model research/experiments/EXP-REMOTE-001/connection-model.json --seed {seed} --experiment-id
+  EXP-CON-002 --env-name wsl-ubuntu
+shell: bash
+corpus:
+  manifest: research/experiments/EXP-CON-001/synthetic-items.json
+  splits:
+  - tuning
+  item_ids:
+  - syn-t-f01-llvm-posix-n1e3
+  - syn-t-f01-llvm-posix-n1e4
+  - syn-t-f01-llvm-posix-n1e5
+  - syn-t-f01-llvm-posix-n1e6
+  - syn-t-f01-llvm-posix-n1e7
+  - syn-t-f01-llvm-posix-n4e6
+  - syn-t-f03-tsnode-posix-n1e3
+  - syn-t-f03-tsnode-posix-n1e4
+  - syn-t-f03-tsnode-posix-n1e5
+  - syn-t-f03-tsnode-posix-n1e6
+  - syn-t-f03-tsnode-posix-n1e7
+  - syn-t-f03-tsnode-posix-n4e6
+  - syn-t-f04-pkgsrc-posix-n1e3
+  - syn-t-f04-pkgsrc-posix-n1e4
+  - syn-t-f04-pkgsrc-posix-n1e5
+  - syn-t-f04-pkgsrc-posix-n1e6
+  - syn-t-f04-pkgsrc-posix-n1e7
+  - syn-t-f04-pkgsrc-posix-n4e6
+  - syn-t-f04-pkgsrc-rich-n1e4
+  - syn-t-f04-pkgsrc-rich-n1e6
+  - syn-t-f04-pkgsrc-rich-n1e7
+  - syn-t-f04-pkgsrc-windows-n1e4
+  - syn-t-f04-pkgsrc-windows-n1e6
+  - syn-t-f04-pkgsrc-windows-n1e7
+  - syn-t-f17-khdr-posix-n1e3
+  - syn-t-f17-khdr-posix-n1e4
+  - syn-t-f17-khdr-posix-n1e5
+  - syn-t-f17-khdr-posix-n1e6
+  - syn-t-f17-khdr-posix-n1e7
+  - syn-t-f17-khdr-posix-n4e6
+  - syn-t-f19-rsnap-posix-n1e3
+  - syn-t-f19-rsnap-posix-n1e4
+  - syn-t-f19-rsnap-posix-n1e5
+  - syn-t-f19-rsnap-posix-n1e6
+  - syn-t-f19-rsnap-posix-n1e7
+  - syn-t-f19-rsnap-posix-n4e6
+  - syn-t-f19-rsnap-rich-n1e4
+  - syn-t-f19-rsnap-rich-n1e6
+  - syn-t-f19-rsnap-rich-n1e7
+  - syn-t-f19-rsnap-windows-n1e4
+  - syn-t-f19-rsnap-windows-n1e6
+  - syn-t-f19-rsnap-windows-n1e7
+metrics:
+- name: index_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.index_bytes
+- name: artifact_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.artifact_bytes
+- name: open_bytes_read__resolve_entry_cold_mean
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.open_bytes_read__resolve_entry_cold_mean
+- name: open_bytes_read__first_verified_read_mean
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.open_bytes_read__first_verified_read_mean
+- name: open_bytes_read__rebuild
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.open_bytes_read__rebuild
+- name: http_requests__resolve_entry_cold_mean
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__resolve_entry_cold_mean
+- name: http_requests__resolve_entry_warm_mean
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__resolve_entry_warm_mean
+- name: http_requests__first_verified_read_mean
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__first_verified_read_mean
+- name: alloc_peak_bytes__index_resident
+  source: stdout_json
+  family: memory_peak
+  direction: minimize
+  unit: B
+  key: payload.alloc_peak_bytes__index_resident
+- name: reader_disagreements
+  source: stdout_json
+  family: correctness
+  direction: minimize
+  unit: count
+  key: payload.reader_disagreements
+- name: desc_index_bytes_per_chunk
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: B/chunk
+  key: payload.desc_index_bytes_per_chunk
+- name: desc_page_cache_hit_fraction__wl_zipf
+  source: stdout_json
+  family: other
+  direction: maximize
+  unit: fraction
+  key: payload.desc_page_cache_hit_fraction__wl_zipf
+- name: desc_decoder_loc
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: LoC
+  key: payload.desc_decoder_loc
+- name: index_bytes__fast
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.index_bytes__fast
+- name: index_bytes__balanced
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.index_bytes__balanced
+- name: index_bytes__dense
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.index_bytes__dense
+- name: index_bytes__extreme
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.index_bytes__extreme
+- name: desc_chunk_count__fast
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: payload.desc_chunk_count__fast
+- name: desc_chunk_count__balanced
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: payload.desc_chunk_count__balanced
+- name: desc_chunk_count__dense
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: payload.desc_chunk_count__dense
+- name: desc_chunk_count__extreme
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: payload.desc_chunk_count__extreme
+- name: desc_chunk_count_limit_fraction__fast
+  source: stdout_json
+  family: other
+  direction: none
+  unit: fraction
+  key: payload.desc_chunk_count_limit_fraction__fast
+- name: desc_chunk_count_limit_fraction__balanced
+  source: stdout_json
+  family: other
+  direction: none
+  unit: fraction
+  key: payload.desc_chunk_count_limit_fraction__balanced
+- name: desc_chunk_count_limit_fraction__dense
+  source: stdout_json
+  family: other
+  direction: none
+  unit: fraction
+  key: payload.desc_chunk_count_limit_fraction__dense
+- name: desc_chunk_count_limit_fraction__extreme
+  source: stdout_json
+  family: other
+  direction: none
+  unit: fraction
+  key: payload.desc_chunk_count_limit_fraction__extreme
+- name: desc_payload_sha256
+  source: stdout_json
+  family: correctness
+  key: payload.payload_sha256
+  kind: string
+- name: input_bytes
+  source: input
+  family: size
+  direction: none
+  unit: B
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 12011
+  bootstrap: 12012
+  command: 12013
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/harness/release/ebr-index-repr
+  timeout_s: 28800
+analysis:
+  baseline: i0-sorted-records-sq
+  pairing: item
+  report_metrics:
+  - index_bytes
+  - alloc_peak_bytes__index_resident

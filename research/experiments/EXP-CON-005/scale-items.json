@@ -1,0 +1,425 @@
+{
+ "schema": "ebr-con.generated-items.v1",
+ "experiment_id": "EXP-CON-005",
+ "note": "Materialized synthetic filesystem trees (ext4 under /root/eb-research/generated) fitted on same-split sources; fingerprints committed before the first run.",
+ "items": [
+  {
+   "item_id": "tree-t-f04-pkgsrc-n1e3",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-pkgsrc",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-t-f04-pkgsrc-n1e3",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 55000
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-t-f04-pkgsrc-n1e4",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-pkgsrc",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-t-f04-pkgsrc-n1e4",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 55001
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-t-f04-pkgsrc-n1e5",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-pkgsrc",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-t-f04-pkgsrc-n1e5",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 55002
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-t-f04-pkgsrc-n5e5",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-pkgsrc",
+   "evaluation_condition": "entry-count-5e5",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-t-f04-pkgsrc-n5e5",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 500000,
+    "meta": "posix",
+    "seed": 55003
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-t-f04-pkgsrc-n7e5",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-pkgsrc",
+   "evaluation_condition": "entry-count-7e5",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-t-f04-pkgsrc-n7e5",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 700000,
+    "meta": "posix",
+    "seed": 55004
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-t-f04-pkgsrc-n1e6",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-pkgsrc",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-t-f04-pkgsrc-n1e6",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 55005
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-t-f04-pkgsrc-n2e6",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-pkgsrc",
+   "evaluation_condition": "entry-count-2e6",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-t-f04-pkgsrc-n2e6",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 2000000,
+    "meta": "posix",
+    "seed": 55006
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-t-f04-pkgsrc-n4e6",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-pkgsrc",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-t-f04-pkgsrc-n4e6",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-tuning-real-netbsd-pkgsrc",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 55007
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-t-f19-rsnap-n1e4",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-tree-f19-rsnap",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-t-f19-rsnap-n1e4",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 55008
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-t-f19-rsnap-n1e5",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-tree-f19-rsnap",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-t-f19-rsnap-n1e5",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 55009
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-t-f19-rsnap-n1e6",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "synthetic-tree-f19-rsnap",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-t-f19-rsnap-n1e6",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f19-tuning-rsnapshot-a",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 55010
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-v-f04-gentoo-n1e3",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-gentoo",
+   "evaluation_condition": "entry-count-1e3",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-v-f04-gentoo-n1e3",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 1000,
+    "meta": "posix",
+    "seed": 55011
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-v-f04-gentoo-n1e4",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-gentoo",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-v-f04-gentoo-n1e4",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 55012
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-v-f04-gentoo-n1e5",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-gentoo",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-v-f04-gentoo-n1e5",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 55013
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-v-f04-gentoo-n5e5",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-gentoo",
+   "evaluation_condition": "entry-count-5e5",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-v-f04-gentoo-n5e5",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 500000,
+    "meta": "posix",
+    "seed": 55014
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-v-f04-gentoo-n7e5",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-gentoo",
+   "evaluation_condition": "entry-count-7e5",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-v-f04-gentoo-n7e5",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 700000,
+    "meta": "posix",
+    "seed": 55015
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-v-f04-gentoo-n1e6",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-gentoo",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-v-f04-gentoo-n1e6",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 55016
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-v-f04-gentoo-n2e6",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-gentoo",
+   "evaluation_condition": "entry-count-2e6",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-v-f04-gentoo-n2e6",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 2000000,
+    "meta": "posix",
+    "seed": 55017
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-v-f04-gentoo-n4e6",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "synthetic-tree-f04-gentoo",
+   "evaluation_condition": "entry-count-4e6",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-v-f04-gentoo-n4e6",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f04-validation-real-gentoo-repo-20260915",
+    "entries": 4000000,
+    "meta": "posix",
+    "seed": 55018
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-v-f19-rsnap-n1e4",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-tree-f19-rsnap",
+   "evaluation_condition": "entry-count-1e4",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-v-f19-rsnap-n1e4",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "entries": 10000,
+    "meta": "posix",
+    "seed": 55019
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-v-f19-rsnap-n1e5",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-tree-f19-rsnap",
+   "evaluation_condition": "entry-count-1e5",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-v-f19-rsnap-n1e5",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "entries": 100000,
+    "meta": "posix",
+    "seed": 55020
+   },
+   "fingerprint_sha256": null
+  },
+  {
+   "item_id": "tree-v-f19-rsnap-n1e6",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "synthetic-tree-f19-rsnap",
+   "evaluation_condition": "entry-count-1e6",
+   "real_or_generated": "generated",
+   "kind": "tree",
+   "path": "/root/eb-research/generated/EXP-CON-005/tree-v-f19-rsnap-n1e6",
+   "generator": {
+    "binary": "ebr-eamgen",
+    "subcommand": "tree",
+    "fit_source_item_id": "f19-validation-rsnapshot-b",
+    "entries": 1000000,
+    "meta": "posix",
+    "seed": 55021
+   },
+   "fingerprint_sha256": null
+  }
+ ]
+}

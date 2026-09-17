@@ -1,0 +1,1582 @@
+{
+ "schema": "ebr-con.ntfs-copies.v1",
+ "experiment_id": "EXP-CON-007",
+ "note": "NTFS copies made by stage_ntfs_copies.ps1 from the WSL corpus (small and medium tiers only; large tier excluded for disk and staging time). The copy changes captured metadata by design (F-0001/F-0002).",
+ "items": [
+  {
+   "item_id": "f01-tuning-curl-8-19-0-git",
+   "split": "tuning",
+   "family": "F01",
+   "independence_group": "curl",
+   "scale": "medium",
+   "source_logical_tree_sha256": "02618987e7e518109ceb5a971eb5881e95b657518500af2173b3efa408ea6925",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f01-tuning-curl-8-19-0-git"
+  },
+  {
+   "item_id": "f01-tuning-ripgrep-14-1-1-git",
+   "split": "tuning",
+   "family": "F01",
+   "independence_group": "ripgrep",
+   "scale": "small",
+   "source_logical_tree_sha256": "3d10cb8fe1533d5552d6d8ac8141aa4bcc6fcdc85e566da2061def81a65aaaae",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f01-tuning-ripgrep-14-1-1-git"
+  },
+  {
+   "item_id": "f01-tuning-typescript-5-9-3-git",
+   "split": "tuning",
+   "family": "F01",
+   "independence_group": "microsoft-typescript",
+   "scale": "medium",
+   "source_logical_tree_sha256": "463f65885b6e73baada27e53452dbe4e1f69f1cc07ac0c62b8861d04d9f2111c",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f01-tuning-typescript-5-9-3-git"
+  },
+  {
+   "item_id": "f01-tuning-zstd-v1-5-7-full-clone",
+   "split": "tuning",
+   "family": "F01",
+   "independence_group": "zstd",
+   "scale": "medium",
+   "source_logical_tree_sha256": "0c6be2d26a1ac00d20ec22a60dde1df209b5b3bbc64718139f2e195b46f2cc62",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f01-tuning-zstd-v1-5-7-full-clone"
+  },
+  {
+   "item_id": "f01-tuning-zstd-v1-5-7-git",
+   "split": "tuning",
+   "family": "F01",
+   "independence_group": "zstd",
+   "scale": "small",
+   "source_logical_tree_sha256": "a587cd5e1471dd737139fde30aadb8839bd265fc08c7018b563fffdf1150934f",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f01-tuning-zstd-v1-5-7-git"
+  },
+  {
+   "item_id": "f02-tuning-lz4-intree-make-build",
+   "split": "tuning",
+   "family": "F02",
+   "independence_group": "lz4",
+   "scale": "small",
+   "source_logical_tree_sha256": "b1fbc451b6a53cf7f42275539e3a82bbca36097b7877419a1801d95e5f5eae3c",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f02-tuning-lz4-intree-make-build"
+  },
+  {
+   "item_id": "f02-tuning-zstd-cmake-build",
+   "split": "tuning",
+   "family": "F02",
+   "independence_group": "zstd",
+   "scale": "medium",
+   "source_logical_tree_sha256": "24a30e45f9b38d7debd3ec1db59988e10dcce68c96214fb212ca42554197758d",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f02-tuning-zstd-cmake-build"
+  },
+  {
+   "item_id": "f03-tuning-fzf-go-mod-vendor",
+   "split": "tuning",
+   "family": "F03",
+   "independence_group": "junegunn-fzf",
+   "scale": "small",
+   "source_logical_tree_sha256": "d9f47f1deb8f6d81caa5f46d77ff439da69210defb5c59b4c996932e5e23973d",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f03-tuning-fzf-go-mod-vendor"
+  },
+  {
+   "item_id": "f03-tuning-pypi-scientific-site-packages",
+   "split": "tuning",
+   "family": "F03",
+   "independence_group": "pypi-scientific-stack",
+   "scale": "medium",
+   "source_logical_tree_sha256": "b2cb59565b66b449b268d3e32b78f003b171fbba9a14070aaa90b04b694bba83",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f03-tuning-pypi-scientific-site-packages"
+  },
+  {
+   "item_id": "f03-tuning-ripgrep-cargo-vendor",
+   "split": "tuning",
+   "family": "F03",
+   "independence_group": "ripgrep",
+   "scale": "medium",
+   "source_logical_tree_sha256": "c9b78a73b5afefc97f77f059790229a001052c60c2485def1691ec0b52ead241",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f03-tuning-ripgrep-cargo-vendor"
+  },
+  {
+   "item_id": "f03-tuning-typescript-npm-node-modules",
+   "split": "tuning",
+   "family": "F03",
+   "independence_group": "microsoft-typescript",
+   "scale": "medium",
+   "source_logical_tree_sha256": "3a3f315c0c9c8217926223682762591a620f79f62a69c169c2544cf1f3d5a035",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f03-tuning-typescript-npm-node-modules"
+  },
+  {
+   "item_id": "f04-tuning-maildir",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "ebrc-g2-f04-maildir",
+   "scale": "medium",
+   "source_logical_tree_sha256": "7eff2fdcd39279f79ff04d1609519a52b35192b574ba2b18c2e9429be3b3ebe8",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f04-tuning-maildir"
+  },
+  {
+   "item_id": "f04-tuning-real-netbsd-pkgsrc",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "netbsd-pkgsrc",
+   "scale": "medium",
+   "source_logical_tree_sha256": "ee5efc817b83ef0dd33073f186930bb7141518ab53c840697cdba049ce678020",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f04-tuning-real-netbsd-pkgsrc"
+  },
+  {
+   "item_id": "f04-tuning-sourcelike",
+   "split": "tuning",
+   "family": "F04",
+   "independence_group": "ebrc-g2-f04-sourcelike",
+   "scale": "small",
+   "source_logical_tree_sha256": "9f1b793b5a8e326076062ffe3078b587b6450af425365ac759cf74507a20032c",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f04-tuning-sourcelike"
+  },
+  {
+   "item_id": "f05-tuning-enwik8",
+   "split": "tuning",
+   "family": "F05",
+   "independence_group": "hutter-enwik8",
+   "scale": "medium",
+   "source_logical_tree_sha256": "0b7854e845f3d5df948d19817f53f8a9a2a07dd45feb6fef30b6054b34048e0c",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f05-tuning-enwik8"
+  },
+  {
+   "item_id": "f05-tuning-gen-logs-a-medium",
+   "split": "tuning",
+   "family": "F05",
+   "independence_group": "ebrc-gen-logs-a",
+   "scale": "medium",
+   "source_logical_tree_sha256": "278ef49ba067281a3a80bbf9d96144c49d34fff5e98fc02fc99330a4906b6d72",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f05-tuning-gen-logs-a-medium"
+  },
+  {
+   "item_id": "f05-tuning-gen-logs-a-small",
+   "split": "tuning",
+   "family": "F05",
+   "independence_group": "ebrc-gen-logs-a",
+   "scale": "small",
+   "source_logical_tree_sha256": "0adaf812516e5f00c8051e58883f785f250015e679dff144825222a5d426ef17",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f05-tuning-gen-logs-a-small"
+  },
+  {
+   "item_id": "f05-tuning-gutenberg-books",
+   "split": "tuning",
+   "family": "F05",
+   "independence_group": "gutenberg-pd-books",
+   "scale": "small",
+   "source_logical_tree_sha256": "b5bb4de8a6458857451be5d65e180222d4bd0f0917acdd2a50208629e2d45244",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f05-tuning-gutenberg-books"
+  },
+  {
+   "item_id": "f05-tuning-loghub-openstack",
+   "split": "tuning",
+   "family": "F05",
+   "independence_group": "loghub-openstack",
+   "scale": "medium",
+   "source_logical_tree_sha256": "4fb953b58ec4635f396245e2baa77193affcc21efdc8b7ea764b0206f7b95643",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f05-tuning-loghub-openstack"
+  },
+  {
+   "item_id": "f05-tuning-logrotate-from-loghub-hdfs",
+   "split": "tuning",
+   "family": "F05",
+   "independence_group": "ebrc-gen-logrotate-tuning",
+   "scale": "small",
+   "source_logical_tree_sha256": "e26bcf7b48195526be52930fdc25db2ca9c54ec3354e6fc61eea5ec73bd19d5b",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f05-tuning-logrotate-from-loghub-hdfs"
+  },
+  {
+   "item_id": "f06-tuning-census-popest-2023",
+   "split": "tuning",
+   "family": "F06",
+   "independence_group": "census-popest-v2023",
+   "scale": "small",
+   "source_logical_tree_sha256": "1d694494df8f55ef242e451cfd0a3829eee569a289b9aed4239d248c34bbe86a",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f06-tuning-census-popest-2023"
+  },
+  {
+   "item_id": "f06-tuning-gen-structured-a-medium",
+   "split": "tuning",
+   "family": "F06",
+   "independence_group": "ebrc-gen-structured-a",
+   "scale": "medium",
+   "source_logical_tree_sha256": "889c0be11eb6f517aea973ee91a651daed455c81ea9c9adcd76856e0d102feaa",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f06-tuning-gen-structured-a-medium"
+  },
+  {
+   "item_id": "f06-tuning-gen-structured-a-small",
+   "split": "tuning",
+   "family": "F06",
+   "independence_group": "ebrc-gen-structured-a",
+   "scale": "small",
+   "source_logical_tree_sha256": "94132171fca5665d08b64dd27f7dddabc22e67716e8e1dd4f0291cf9ba03e588",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f06-tuning-gen-structured-a-small"
+  },
+  {
+   "item_id": "f06-tuning-gharchive-2015-01-01-h15-h16",
+   "split": "tuning",
+   "family": "F06",
+   "independence_group": "gharchive-github-events",
+   "scale": "medium",
+   "source_logical_tree_sha256": "aafe652be9f127dbcdb9b9eaea90b3de65ff095cfc20c7f9168c76a4e145a606",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f06-tuning-gharchive-2015-01-01-h15-h16"
+  },
+  {
+   "item_id": "f06-tuning-nyc-tlc-yellow-tripdata-2024",
+   "split": "tuning",
+   "family": "F06",
+   "independence_group": "nyc-tlc",
+   "scale": "medium",
+   "source_logical_tree_sha256": "79fede4a294cb8ad94218fcbf0dadbf0f8d0efba5425ec1ea388f2ad03cf1060",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f06-tuning-nyc-tlc-yellow-tripdata-2024"
+  },
+  {
+   "item_id": "f06-tuning-wikimedia-tnwiki-20260901",
+   "split": "tuning",
+   "family": "F06",
+   "independence_group": "wikimedia-tnwiki",
+   "scale": "medium",
+   "source_logical_tree_sha256": "bc886452dd69e805af612c4f7db9651e28849b2af88bff6acbd246b9d84e0f44",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f06-tuning-wikimedia-tnwiki-20260901"
+  },
+  {
+   "item_id": "f07-tuning-ann-benchmarks-fashion-mnist-hdf5",
+   "split": "tuning",
+   "family": "F07",
+   "independence_group": "ann-benchmarks-fashion-mnist",
+   "scale": "medium",
+   "source_logical_tree_sha256": "bbbb1dc141e822babfd75567b5ef85ab0feae04775b51f8d3d03fdd0dfcf898f",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f07-tuning-ann-benchmarks-fashion-mnist-hdf5"
+  },
+  {
+   "item_id": "f07-tuning-gen-numeric-a-medium",
+   "split": "tuning",
+   "family": "F07",
+   "independence_group": "ebrc-gen-numeric-a",
+   "scale": "medium",
+   "source_logical_tree_sha256": "f91745e39381dfc3a54071c58d63c17e2eefc2b76392d7af07f6dd359cd66008",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f07-tuning-gen-numeric-a-medium"
+  },
+  {
+   "item_id": "f07-tuning-gen-numeric-a-small",
+   "split": "tuning",
+   "family": "F07",
+   "independence_group": "ebrc-gen-numeric-a",
+   "scale": "small",
+   "source_logical_tree_sha256": "f6c9ec276f907d44509b947f416ef958b47528aeb6c8a3476d5bd77b0693d858",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f07-tuning-gen-numeric-a-small"
+  },
+  {
+   "item_id": "f07-tuning-mnist-npz",
+   "split": "tuning",
+   "family": "F07",
+   "independence_group": "mnist",
+   "scale": "small",
+   "source_logical_tree_sha256": "dd3d7b52ae6f10c3a376710561ebe55ff6341d33de6ecbc6012ab33ba6063d62",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f07-tuning-mnist-npz"
+  },
+  {
+   "item_id": "f07-tuning-noaa-ncep-reanalysis-air-sig995-2020",
+   "split": "tuning",
+   "family": "F07",
+   "independence_group": "noaa-psl-ncep-reanalysis",
+   "scale": "medium",
+   "source_logical_tree_sha256": "3d9f8fd303acf220c651f0f1c64937fd9597d9db21f7b6a2cb885c0d587357e6",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f07-tuning-noaa-ncep-reanalysis-air-sig995-2020"
+  },
+  {
+   "item_id": "f07-tuning-pythia-160m-safetensors-main",
+   "split": "tuning",
+   "family": "F07",
+   "independence_group": "eleutherai-pythia",
+   "scale": "medium",
+   "source_logical_tree_sha256": "ea8bf9e52bc874eda3d1e13641fcf5ddbbba244c1fd61bdc8f1429a37f5012ce",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f07-tuning-pythia-160m-safetensors-main"
+  },
+  {
+   "item_id": "f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km",
+   "split": "tuning",
+   "family": "F07",
+   "independence_group": "qwen2-5",
+   "scale": "medium",
+   "source_logical_tree_sha256": "f220c07ca1f9d697cf6a3e8642342403aa60454aec52bb6891a5a91f226966ae",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km"
+  },
+  {
+   "item_id": "f07-tuning-sdss-dr17-frames",
+   "split": "tuning",
+   "family": "F07",
+   "independence_group": "sdss-dr17",
+   "scale": "medium",
+   "source_logical_tree_sha256": "e8103bfd98a88d3e8445085aeab39372179a632ae06338428bc7dafcb49b001c",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f07-tuning-sdss-dr17-frames"
+  },
+  {
+   "item_id": "f07-tuning-silesia-mr",
+   "split": "tuning",
+   "family": "F07",
+   "independence_group": "silesia-corpus",
+   "scale": "small",
+   "source_logical_tree_sha256": "252351c2aa3f0c3b8c97e7ae79d7251267f3f29de84b046ca6335f6f65a2174a",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f07-tuning-silesia-mr"
+  },
+  {
+   "item_id": "f07-tuning-silesia-sao",
+   "split": "tuning",
+   "family": "F07",
+   "independence_group": "silesia-corpus",
+   "scale": "small",
+   "source_logical_tree_sha256": "21b4bc47637afbbea5b06e3e7209f2c8ec2050b3756fc0911159834d26b992a4",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f07-tuning-silesia-sao"
+  },
+  {
+   "item_id": "f07-tuning-silesia-xray",
+   "split": "tuning",
+   "family": "F07",
+   "independence_group": "silesia-corpus",
+   "scale": "small",
+   "source_logical_tree_sha256": "68436205e475008f4295be8a4c3cf8c9095cd5932131889e2480719b71848405",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f07-tuning-silesia-xray"
+  },
+  {
+   "item_id": "f08-tuning-chinook-sqlite",
+   "split": "tuning",
+   "family": "F08",
+   "independence_group": "chinook-sample-db",
+   "scale": "small",
+   "source_logical_tree_sha256": "ed6ba20aea92737f780c70842c5445c1a4700b87cabbd5939689162414a6dbc4",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f08-tuning-chinook-sqlite"
+  },
+  {
+   "item_id": "f08-tuning-gen-sqlite-tpch-medium",
+   "split": "tuning",
+   "family": "F08",
+   "independence_group": "ebrc-gen-sqlite-tpch",
+   "scale": "medium",
+   "source_logical_tree_sha256": "a51a15258d769f433ccfee3200f778f599f3a97dd239ecd50cd496143d1ad1d2",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f08-tuning-gen-sqlite-tpch-medium"
+  },
+  {
+   "item_id": "f08-tuning-gen-sqlite-tpch-small",
+   "split": "tuning",
+   "family": "F08",
+   "independence_group": "ebrc-gen-sqlite-tpch",
+   "scale": "small",
+   "source_logical_tree_sha256": "7027fe891ae55e8d6490fe6cd03ae2d8133c34c351e1125aa1d4703dc1c37615",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f08-tuning-gen-sqlite-tpch-small"
+  },
+  {
+   "item_id": "f08-tuning-silesia-osdb",
+   "split": "tuning",
+   "family": "F08",
+   "independence_group": "silesia-corpus",
+   "scale": "small",
+   "source_logical_tree_sha256": "02359541c9dd6c23d6bf82c29643bc04ba5e7ded87a7a6fa3285aa57f24bae21",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f08-tuning-silesia-osdb"
+  },
+  {
+   "item_id": "f09-alpine-324-arm64-rootfs-binaries",
+   "split": "tuning",
+   "family": "F09",
+   "independence_group": "alpine-linux",
+   "scale": "small",
+   "source_logical_tree_sha256": "b45043380a0614f397fccb28022f00b419a83fc3ba9df9183ec87f99f2ad7d27",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f09-alpine-324-arm64-rootfs-binaries"
+  },
+  {
+   "item_id": "f09-alpine-324-riscv64-rootfs-binaries",
+   "split": "tuning",
+   "family": "F09",
+   "independence_group": "alpine-linux",
+   "scale": "small",
+   "source_logical_tree_sha256": "293be4e67193c477d9777673aa5b1959f9ba1f0760bb91f469e28c12d3602e45",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f09-alpine-324-riscv64-rootfs-binaries"
+  },
+  {
+   "item_id": "f09-alpine-324-rootfs-binaries",
+   "split": "tuning",
+   "family": "F09",
+   "independence_group": "alpine-linux",
+   "scale": "small",
+   "source_logical_tree_sha256": "d75a3cbcaac6e90c57b1a01d9f1f97422b12681c5a5472add719a772b589b40c",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f09-alpine-324-rootfs-binaries"
+  },
+  {
+   "item_id": "f09-ripgrep-1411-arm64-darwin-multiplatform",
+   "split": "tuning",
+   "family": "F09",
+   "independence_group": "ripgrep",
+   "scale": "small",
+   "source_logical_tree_sha256": "8293ad10d6fc92d3d93d957b216275efda789d6f27fd44679fa0dee6c1238d5d",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f09-ripgrep-1411-arm64-darwin-multiplatform"
+  },
+  {
+   "item_id": "f09-silesia-mozilla-ooffice",
+   "split": "tuning",
+   "family": "F09",
+   "independence_group": "silesia-corpus",
+   "scale": "medium",
+   "source_logical_tree_sha256": "c499d6b5f02d05bcf65adf0f3f4a60a973ed2bceeccae0c250bdd611dc18438d",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f09-silesia-mozilla-ooffice"
+  },
+  {
+   "item_id": "f09-ubuntu-noble-arm64-usr-binaries",
+   "split": "tuning",
+   "family": "F09",
+   "independence_group": "ubuntu-noble",
+   "scale": "medium",
+   "source_logical_tree_sha256": "e6c0941e6430f5397f70d15b78f1a5cd79430d02f7700df4399f6dc0d70927cf",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f09-ubuntu-noble-arm64-usr-binaries"
+  },
+  {
+   "item_id": "f09-ubuntu-noble-riscv64-usr-binaries",
+   "split": "tuning",
+   "family": "F09",
+   "independence_group": "ubuntu-noble",
+   "scale": "medium",
+   "source_logical_tree_sha256": "92b2c14c8e33914afa3487f834b36b81f887e2112a68cf328c527fd96f573da9",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f09-ubuntu-noble-riscv64-usr-binaries"
+  },
+  {
+   "item_id": "f09-ubuntu-noble-usr-binaries",
+   "split": "tuning",
+   "family": "F09",
+   "independence_group": "ubuntu-noble",
+   "scale": "medium",
+   "source_logical_tree_sha256": "fa34c8c7bc1960d0fc8deb8318bffa178f73174689d7ffefd504c2138c4cac71",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f09-ubuntu-noble-usr-binaries"
+  },
+  {
+   "item_id": "f10-gen-redundant-binary-blobs",
+   "split": "tuning",
+   "family": "F10",
+   "independence_group": "gen-g4-redundant-blobs",
+   "scale": "small",
+   "source_logical_tree_sha256": "722f8bdeae4950dfcb27e3d3c0bab2bd503a15b90f88cb44182ef6c9a849f907",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f10-gen-redundant-binary-blobs"
+  },
+  {
+   "item_id": "f10-linux-firmware-20260910-subset",
+   "split": "tuning",
+   "family": "F10",
+   "independence_group": "linux-firmware",
+   "scale": "medium",
+   "source_logical_tree_sha256": "ae4d6ab8ff7235d8bcca3e53bdac6f9a7e8212f4862eed47547829722ec19d3e",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f10-linux-firmware-20260910-subset"
+  },
+  {
+   "item_id": "f10-rust-fd-find-1050-multiprofile",
+   "split": "tuning",
+   "family": "F10",
+   "independence_group": "rust-fd-find",
+   "scale": "medium",
+   "source_logical_tree_sha256": "19c7a503eac31c5e02f1b0380d84574dc5a46e89170ef2f1f045b3c4d1b39fe3",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f10-rust-fd-find-1050-multiprofile"
+  },
+  {
+   "item_id": "f11-alpine-324-apks",
+   "split": "tuning",
+   "family": "F11",
+   "independence_group": "alpine-linux",
+   "scale": "small",
+   "source_logical_tree_sha256": "4243996682d67d39c0396f0bda9b0259f221c1d63aaa6fee672a4f5c840e892c",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f11-alpine-324-apks"
+  },
+  {
+   "item_id": "f11-cosign-v250-signing-assets",
+   "split": "tuning",
+   "family": "F11",
+   "independence_group": "sigstore-cosign",
+   "scale": "small",
+   "source_logical_tree_sha256": "e8fb4c4d543a695ec48895462eed60fc69a6ffacdd9cfc2623867d9aac2004fc",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f11-cosign-v250-signing-assets"
+  },
+  {
+   "item_id": "f11-pypi-binary-wheels-cp312",
+   "split": "tuning",
+   "family": "F11",
+   "independence_group": "pypi-binary-wheels",
+   "scale": "medium",
+   "source_logical_tree_sha256": "98d65f5ca62fe408da5afa57a40955dd2d4f691e43fcbe0944e7b0539d144ae5",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f11-pypi-binary-wheels-cp312"
+  },
+  {
+   "item_id": "f11-ubuntu-noble-debs",
+   "split": "tuning",
+   "family": "F11",
+   "independence_group": "ubuntu-noble",
+   "scale": "medium",
+   "source_logical_tree_sha256": "67bb0d4a2a5e7416d9f9126a737c8c3cf9b1b027aa8e9198fc7322fc154e0532",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f11-ubuntu-noble-debs"
+  },
+  {
+   "item_id": "f12-tuning-kodak-jpeg-edge-cases-small",
+   "split": "tuning",
+   "family": "F12",
+   "independence_group": "g5-kodak-photocd-suite",
+   "scale": "small",
+   "source_logical_tree_sha256": "e22ad66d20acf48ff779fad94f1e9d3518a46c822e0386c653ca73e49c3a5785",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f12-tuning-kodak-jpeg-edge-cases-small"
+  },
+  {
+   "item_id": "f12-tuning-kodak-jpeg-matrix-medium",
+   "split": "tuning",
+   "family": "F12",
+   "independence_group": "g5-kodak-photocd-suite",
+   "scale": "medium",
+   "source_logical_tree_sha256": "bc2398c32694f7b54be3ca4f756fa76978eccb99e3d1f85da7cd6c3f67267236",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f12-tuning-kodak-jpeg-matrix-medium"
+  },
+  {
+   "item_id": "f12-tuning-nasa-ivl-photos-medium",
+   "split": "tuning",
+   "family": "F12",
+   "independence_group": "g5-nasa-ivl-photos",
+   "scale": "medium",
+   "source_logical_tree_sha256": "88f6b92680fc492a2fa4587c1b82e8410af5f413745c6dbadb63cb73a79b1b31",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f12-tuning-nasa-ivl-photos-medium"
+  },
+  {
+   "item_id": "f12-tuning-nasa-ivl-photos-small",
+   "split": "tuning",
+   "family": "F12",
+   "independence_group": "g5-nasa-ivl-photos",
+   "scale": "small",
+   "source_logical_tree_sha256": "4835190aac2f82a3d96dace58f5fa050146522b7ba67a048c7077f239e584f76",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f12-tuning-nasa-ivl-photos-small"
+  },
+  {
+   "item_id": "f13-tuning-bbb-video-medium",
+   "split": "tuning",
+   "family": "F13",
+   "independence_group": "g5-blender-bbb",
+   "scale": "medium",
+   "source_logical_tree_sha256": "3ced0e41fb1fbe9c346b7e9eaf1d05fdd96dcdb9c9075ed84f7f8bed67b86349",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f13-tuning-bbb-video-medium"
+  },
+  {
+   "item_id": "f13-tuning-kodak-image-codecs-small",
+   "split": "tuning",
+   "family": "F13",
+   "independence_group": "g5-kodak-photocd-suite",
+   "scale": "small",
+   "source_logical_tree_sha256": "4097f60942bdb767b9ae2a3f91c38ef45040ff598005533d77cdf5aa07b6bd26",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f13-tuning-kodak-image-codecs-small"
+  },
+  {
+   "item_id": "f13-tuning-librivox-audiobook-medium",
+   "split": "tuning",
+   "family": "F13",
+   "independence_group": "g5-librivox-1900-last-president",
+   "scale": "medium",
+   "source_logical_tree_sha256": "cec48e9c26fb26a2a0fded905636088c823744171fb3f3038cf6a580719f7862",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f13-tuning-librivox-audiobook-medium"
+  },
+  {
+   "item_id": "f13-tuning-musopen-flac-medium",
+   "split": "tuning",
+   "family": "F13",
+   "independence_group": "g5-musopen-kickstarter-flac",
+   "scale": "medium",
+   "source_logical_tree_sha256": "8b65092f480feee5f82bd846d70682fd73b9e816ed3f51a6549af765841e2297",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f13-tuning-musopen-flac-medium"
+  },
+  {
+   "item_id": "f13-tuning-nasa-ntrs-pdf-small",
+   "split": "tuning",
+   "family": "F13",
+   "independence_group": "g5-nasa-ntrs-pdf",
+   "scale": "small",
+   "source_logical_tree_sha256": "00ac9e6490cb2f0b2c86c775e27a502a39889327e570f5f74aa5a5da5c784522",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f13-tuning-nasa-ntrs-pdf-small"
+  },
+  {
+   "item_id": "f13-tuning-prelinger-video-medium",
+   "split": "tuning",
+   "family": "F13",
+   "independence_group": "g5-prelinger-archives",
+   "scale": "medium",
+   "source_logical_tree_sha256": "5312b094c2b7fbf64c18f32b7445fce8ac2841d58d1a402fe46602220b5e526f",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f13-tuning-prelinger-video-medium"
+  },
+  {
+   "item_id": "f14-apache-maven-3916-bin-tarball",
+   "split": "tuning",
+   "family": "F14",
+   "independence_group": "apache-maven",
+   "scale": "small",
+   "source_logical_tree_sha256": "2746c5313bddd49f9d572a54cc8604f4c6604f82eb77d1b422a92d356cfe4f5b",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f14-apache-maven-3916-bin-tarball"
+  },
+  {
+   "item_id": "f14-gen-nested-archives-py",
+   "split": "tuning",
+   "family": "F14",
+   "independence_group": "gen-g4-nested-archives-py",
+   "scale": "small",
+   "source_logical_tree_sha256": "b34f047f2a279bd2b2d8a709bd798d4e5a8cf9c5063f3f9f22cbd9011bd4c583",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f14-gen-nested-archives-py"
+  },
+  {
+   "item_id": "f14-jenkins-25683-war",
+   "split": "tuning",
+   "family": "F14",
+   "independence_group": "jenkins",
+   "scale": "medium",
+   "source_logical_tree_sha256": "32354499b6ae27734e6d6ac3e8ebc4fa976f308d24a2799d84a8cfd058cf6090",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f14-jenkins-25683-war"
+  },
+  {
+   "item_id": "f14-legacy-writer-matrix-tuning",
+   "split": "tuning",
+   "family": "F14",
+   "independence_group": "zstd",
+   "scale": "medium",
+   "source_logical_tree_sha256": "aa3ace37530d5c44d7d4d376ad94b921546351b38b9479defe108c29b61368fa",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f14-legacy-writer-matrix-tuning"
+  },
+  {
+   "item_id": "f15-tuning-dbprealloc",
+   "split": "tuning",
+   "family": "F15",
+   "independence_group": "ebrc-g2-f15-dbprealloc",
+   "scale": "medium",
+   "source_logical_tree_sha256": "9735dd9a3bbf7d3ac365e019a4788a11c43a112a866c80353b9331e4ca016643",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f15-tuning-dbprealloc"
+  },
+  {
+   "item_id": "f15-tuning-vmraw",
+   "split": "tuning",
+   "family": "F15",
+   "independence_group": "ebrc-g2-f15-vmraw",
+   "scale": "medium",
+   "source_logical_tree_sha256": "d460c45b7b46bdc43380b82bb60a3dc68f4de21e5e1f54d757f1ec72247c406f",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f15-tuning-vmraw"
+  },
+  {
+   "item_id": "f16-alpine-3241-minirootfs-ext4-qcow2",
+   "split": "tuning",
+   "family": "F16",
+   "independence_group": "alpine-linux",
+   "scale": "small",
+   "source_logical_tree_sha256": "b0241f5c17345f80b3576e6220585c39ea1b2ee8fa66e2bb079d9d4b2b5f3c8e",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f16-alpine-3241-minirootfs-ext4-qcow2"
+  },
+  {
+   "item_id": "f16-alpine-3241-minirootfs-ext4-raw",
+   "split": "tuning",
+   "family": "F16",
+   "independence_group": "alpine-linux",
+   "scale": "medium",
+   "source_logical_tree_sha256": "90bab670499914883b036cc1cca38515b107a22963fc58f6ce940398dc8ad337",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f16-alpine-3241-minirootfs-ext4-raw"
+  },
+  {
+   "item_id": "f16-alpine-3241-minirootfs-ext4-vhdx",
+   "split": "tuning",
+   "family": "F16",
+   "independence_group": "alpine-linux",
+   "scale": "medium",
+   "source_logical_tree_sha256": "8745ec2ee28be2e020aea60b13fc42c62cca5f629979ae318902ff7755961c02",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f16-alpine-3241-minirootfs-ext4-vhdx"
+  },
+  {
+   "item_id": "f16-alpine-virt-3241-iso",
+   "split": "tuning",
+   "family": "F16",
+   "independence_group": "alpine-linux",
+   "scale": "medium",
+   "source_logical_tree_sha256": "20b5cf69df879924a9c5fda20424f85c6bcf2952c8b94abee2beae0062558302",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f16-alpine-virt-3241-iso"
+  },
+  {
+   "item_id": "f16-oci-ubuntu-noble-multiarch-index",
+   "split": "tuning",
+   "family": "F16",
+   "independence_group": "ubuntu-noble",
+   "scale": "medium",
+   "source_logical_tree_sha256": "7960b844ef766c03f3c3fb25a88036626d280294d82da2fd21e05c080f564bde",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f16-oci-ubuntu-noble-multiarch-index"
+  },
+  {
+   "item_id": "f17-tuning-duptree-mixed",
+   "split": "tuning",
+   "family": "F17",
+   "independence_group": "ebrc-g2-f17-duptree-mixed",
+   "scale": "medium",
+   "source_logical_tree_sha256": "c577f3c802d1b97648776d5cfc69eac9ea9a04ba3ad5316c96d582dceb777839",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f17-tuning-duptree-mixed"
+  },
+  {
+   "item_id": "f17-tuning-duptree-nested",
+   "split": "tuning",
+   "family": "F17",
+   "independence_group": "ebrc-g2-f17-duptree-nested",
+   "scale": "medium",
+   "source_logical_tree_sha256": "83d1d2ed4dcce4b7d07c1e2fe912e42dc95f96f11ea8907291f72db09c66f2b3",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f17-tuning-duptree-nested"
+  },
+  {
+   "item_id": "f17-tuning-real-ubuntu-kernel-headers-2ver",
+   "split": "tuning",
+   "family": "F17",
+   "independence_group": "ubuntu-noble-kernel-headers",
+   "scale": "medium",
+   "source_logical_tree_sha256": "84d8d14eb51eb46a41186b6d078b29422c3639cc2749a553150f881a3829fd34",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f17-tuning-real-ubuntu-kernel-headers-2ver"
+  },
+  {
+   "item_id": "f18-tuning-lz4-releases-1-9-to-1-10",
+   "split": "tuning",
+   "family": "F18",
+   "independence_group": "lz4",
+   "scale": "small",
+   "source_logical_tree_sha256": "e2badb01e3286b174d42759de91922c1edb7c973a40d3ed8249476452d3e8ac2",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f18-tuning-lz4-releases-1-9-to-1-10"
+  },
+  {
+   "item_id": "f18-tuning-ripgrep-commit-snapshots",
+   "split": "tuning",
+   "family": "F18",
+   "independence_group": "ripgrep",
+   "scale": "medium",
+   "source_logical_tree_sha256": "ab27bf8de2a61e264f412e0b7969512ae2a561140f7a8d7efe493b89c687e427",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f18-tuning-ripgrep-commit-snapshots"
+  },
+  {
+   "item_id": "f18-tuning-sqlite-amalgamation-series",
+   "split": "tuning",
+   "family": "F18",
+   "independence_group": "sqlite",
+   "scale": "medium",
+   "source_logical_tree_sha256": "b5b858153e41929078b87fbe3765afce407e9d01cef0382d1ce3816410fdcd21",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f18-tuning-sqlite-amalgamation-series"
+  },
+  {
+   "item_id": "f18-tuning-zstd-releases-1-5-x",
+   "split": "tuning",
+   "family": "F18",
+   "independence_group": "zstd",
+   "scale": "medium",
+   "source_logical_tree_sha256": "48e1a8931db0d477dfa60f22f057fb95c6f6f70b035d463b489963db53a14145",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f18-tuning-zstd-releases-1-5-x"
+  },
+  {
+   "item_id": "f19-tuning-real-ext4-acl-selinux",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "ebrc-g2-f19-ext4-acl-selinux",
+   "scale": "medium",
+   "source_logical_tree_sha256": "71dfa7747e1166adcff994b9a279be409517179ce53f5f4d5117fff2319c5796",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f19-tuning-real-ext4-acl-selinux"
+  },
+  {
+   "item_id": "f19-tuning-real-home-snapshot",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "nodejs-mkdirp-home-snapshot",
+   "scale": "medium",
+   "source_logical_tree_sha256": "cad58df109320158d60d214fe033da2dc4674a09355ddbe1c4dcfaf9433c40d4",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f19-tuning-real-home-snapshot"
+  },
+  {
+   "item_id": "f19-tuning-real-ntfs-metadata",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "ebrc-g2-f19-ntfs-tuning",
+   "scale": "medium",
+   "source_logical_tree_sha256": "16a24b491b6eefccaf2d5a7a78067f8c51ae46cdd831e0dddb8bd4a86d013028",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f19-tuning-real-ntfs-metadata"
+  },
+  {
+   "item_id": "f19-tuning-rsnapshot-a",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "ebrc-g2-f19-rsnapshot-a",
+   "scale": "medium",
+   "source_logical_tree_sha256": "785a9a3ba8ca32b118c6d1c158106d070c7cc8b7527143391383e23fcad90561",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f19-tuning-rsnapshot-a"
+  },
+  {
+   "item_id": "f19-tuning-zoo",
+   "split": "tuning",
+   "family": "F19",
+   "independence_group": "ebrc-g2-f19-zoo",
+   "scale": "small",
+   "source_logical_tree_sha256": "e9c775cb8c8460e554a9bd263aea71da8ed38fc864943e588a604366a095754b",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f19-tuning-zoo"
+  },
+  {
+   "item_id": "f20-tuning-bombs-dense",
+   "split": "tuning",
+   "family": "F20",
+   "independence_group": "ebrc-g2-f20-bombs-dense",
+   "scale": "medium",
+   "source_logical_tree_sha256": "dc14b29d4ea32ad4798ae8a402acb946fcc749df45052f644abff2856ba73709",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f20-tuning-bombs-dense"
+  },
+  {
+   "item_id": "f20-tuning-csprng",
+   "split": "tuning",
+   "family": "F20",
+   "independence_group": "ebrc-g2-f20-csprng",
+   "scale": "medium",
+   "source_logical_tree_sha256": "feff88ae2761edefc2c2585b133f61afbdd7046c50f33aaf687013ab13e57207",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f20-tuning-csprng"
+  },
+  {
+   "item_id": "f20-tuning-gear-extremes",
+   "split": "tuning",
+   "family": "F20",
+   "independence_group": "ebrc-g2-f20-gear-extremes",
+   "scale": "medium",
+   "source_logical_tree_sha256": "00aab77844b76cc8e852a1caca501b043af9b36b571ff6b696533e87b3fac34f",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f20-tuning-gear-extremes"
+  },
+  {
+   "item_id": "f20-tuning-generated-malicious-structures",
+   "split": "tuning",
+   "family": "F20",
+   "independence_group": "ebrc-g2-f20-malicious-tuning",
+   "scale": "small",
+   "source_logical_tree_sha256": "54444fb6c2802f9687d47d8511a3526e4eebd3c9c5947587d784802862c0e580",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f20-tuning-generated-malicious-structures"
+  },
+  {
+   "item_id": "f20-tuning-generated-private-vault",
+   "split": "tuning",
+   "family": "F20",
+   "independence_group": "ebrc-g2-f20-private-vault-tuning",
+   "scale": "small",
+   "source_logical_tree_sha256": "0aaf8d0e9e021b9cf17187a944530b294ddafc7e0bfe38091e7d9e939886418d",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f20-tuning-generated-private-vault"
+  },
+  {
+   "item_id": "f20-tuning-real-libarchive-testsuite",
+   "split": "tuning",
+   "family": "F20",
+   "independence_group": "libarchive",
+   "scale": "small",
+   "source_logical_tree_sha256": "68bf390a383ad0b6d52d1807c883110a6b3c4fe9de0e8819046ab6da2e6d951b",
+   "path": "D:\\eb-research\\corpus-ntfs\\tuning\\f20-tuning-real-libarchive-testsuite"
+  },
+  {
+   "item_id": "f01-validation-bootstrap-5-3-8-git",
+   "split": "validation",
+   "family": "F01",
+   "independence_group": "twbs-bootstrap",
+   "scale": "medium",
+   "source_logical_tree_sha256": "3152c7a2f068463e0472753ff5ae65a358b88ee6fe73fcb5cd1b6179482bb71d",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f01-validation-bootstrap-5-3-8-git"
+  },
+  {
+   "item_id": "f01-validation-cpython-3-13-15-git",
+   "split": "validation",
+   "family": "F01",
+   "independence_group": "cpython",
+   "scale": "medium",
+   "source_logical_tree_sha256": "8de9646f761ba371352c59a1b876edffd386ef0934f025b28d2dcfa6be150074",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f01-validation-cpython-3-13-15-git"
+  },
+  {
+   "item_id": "f01-validation-redis-7-2-16-git",
+   "split": "validation",
+   "family": "F01",
+   "independence_group": "redis",
+   "scale": "small",
+   "source_logical_tree_sha256": "62b48c6c43a30ec32c08fbba0fd7fff05634cbca88dcde18a72fd2277fd211fa",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f01-validation-redis-7-2-16-git"
+  },
+  {
+   "item_id": "f02-validation-cjson-cmake-build",
+   "split": "validation",
+   "family": "F02",
+   "independence_group": "cjson",
+   "scale": "small",
+   "source_logical_tree_sha256": "38cd2d563c95a2a9e2410a21e23432b2bde6b62e24ac268409f8e7e51ebe0362",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f02-validation-cjson-cmake-build"
+  },
+  {
+   "item_id": "f02-validation-cpython-build",
+   "split": "validation",
+   "family": "F02",
+   "independence_group": "cpython",
+   "scale": "medium",
+   "source_logical_tree_sha256": "653c792b3f3f28145cd354f00da6fd08fb1159e616ff91bb2513fa7ef1ea79da",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f02-validation-cpython-build"
+  },
+  {
+   "item_id": "f02-validation-nodejs-22-20-0-win-x64-pdb",
+   "split": "validation",
+   "family": "F02",
+   "independence_group": "nodejs",
+   "scale": "medium",
+   "source_logical_tree_sha256": "31e26f6ae48a677f3c77a00ddf1b171a7b19529430e3341aeea4d0b6e16f52c9",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f02-validation-nodejs-22-20-0-win-x64-pdb"
+  },
+  {
+   "item_id": "f02-validation-redis-intree-build",
+   "split": "validation",
+   "family": "F02",
+   "independence_group": "redis",
+   "scale": "medium",
+   "source_logical_tree_sha256": "6e562b84fd161b484faad2c36eae03ee9bea1ec926247c8dc91bf191e433cbd3",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f02-validation-redis-intree-build"
+  },
+  {
+   "item_id": "f03-validation-bootstrap-npm-node-modules",
+   "split": "validation",
+   "family": "F03",
+   "independence_group": "twbs-bootstrap",
+   "scale": "medium",
+   "source_logical_tree_sha256": "9348e03e8c316a9724d765a0901ae969c53e96625b519434e249fe0cd8087e74",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f03-validation-bootstrap-npm-node-modules"
+  },
+  {
+   "item_id": "f03-validation-yq-go-mod-vendor",
+   "split": "validation",
+   "family": "F03",
+   "independence_group": "mikefarah-yq",
+   "scale": "medium",
+   "source_logical_tree_sha256": "e6e075ee93b3f3d70a94f4dec7f8fdc42de2dcfc0eb2ac633db46ea992d19f7c",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f03-validation-yq-go-mod-vendor"
+  },
+  {
+   "item_id": "f04-validation-bootstrap-npm-modules",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "twbs-bootstrap-node-modules",
+   "scale": "medium",
+   "source_logical_tree_sha256": "9348e03e8c316a9724d765a0901ae969c53e96625b519434e249fe0cd8087e74",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f04-validation-bootstrap-npm-modules"
+  },
+  {
+   "item_id": "f04-validation-objstore",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "ebrc-g2-f04-objstore",
+   "scale": "medium",
+   "source_logical_tree_sha256": "27ff02c7123fc31afbde0fe58f3123a6746b4b1c9cc475bed651c5be686c1c7f",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f04-validation-objstore"
+  },
+  {
+   "item_id": "f04-validation-real-gentoo-repo-20260915",
+   "split": "validation",
+   "family": "F04",
+   "independence_group": "gentoo-repo",
+   "scale": "medium",
+   "source_logical_tree_sha256": "eaab1a038847fd283a58339b71958c49d0032bf7ce4c0993043b1dce56fde0f5",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f04-validation-real-gentoo-repo-20260915"
+  },
+  {
+   "item_id": "f05-validation-gen-journal-systemd",
+   "split": "validation",
+   "family": "F05",
+   "independence_group": "ebrc-gen-journal",
+   "scale": "medium",
+   "source_logical_tree_sha256": "e758ee517a0462ede8acb7977f50cb347071e3bcd03cc7966630080312028562",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f05-validation-gen-journal-systemd"
+  },
+  {
+   "item_id": "f05-validation-gen-logs-b",
+   "split": "validation",
+   "family": "F05",
+   "independence_group": "ebrc-gen-logs-b",
+   "scale": "medium",
+   "source_logical_tree_sha256": "c1145a5787e36cde20139485e3103606222fa441c0553ece5adad4f53f585412",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f05-validation-gen-logs-b"
+  },
+  {
+   "item_id": "f05-validation-loghub-ssh",
+   "split": "validation",
+   "family": "F05",
+   "independence_group": "loghub-openssh",
+   "scale": "medium",
+   "source_logical_tree_sha256": "a88147b8e93b0033f64d4ae99a4de5ebfa01b789be343b84c1019d8dc2f04f37",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f05-validation-loghub-ssh"
+  },
+  {
+   "item_id": "f05-validation-logrotate-from-loghub-ssh",
+   "split": "validation",
+   "family": "F05",
+   "independence_group": "ebrc-gen-logrotate-validation",
+   "scale": "small",
+   "source_logical_tree_sha256": "8110b6b4a6d9f44bbc4fe3d04c726c3082e49c7915b9be11f9c355a788193a25",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f05-validation-logrotate-from-loghub-ssh"
+  },
+  {
+   "item_id": "f05-validation-rfc-texts",
+   "split": "validation",
+   "family": "F05",
+   "independence_group": "ietf-rfc-texts",
+   "scale": "small",
+   "source_logical_tree_sha256": "e2c5d5aef020f520bc5d7ba861f5cc2b1c6ecfffbee1004826eb238fe9744008",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f05-validation-rfc-texts"
+  },
+  {
+   "item_id": "f06-validation-gen-structured-b",
+   "split": "validation",
+   "family": "F06",
+   "independence_group": "ebrc-gen-structured-b",
+   "scale": "medium",
+   "source_logical_tree_sha256": "4dd9c8f007274c91bc6a272fac205530ec235fb1847a67931e7c8d93704a6dc8",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f06-validation-gen-structured-b"
+  },
+  {
+   "item_id": "f06-validation-noaa-ghcn-daily-parquet-2023",
+   "split": "validation",
+   "family": "F06",
+   "independence_group": "noaa-ghcn-daily",
+   "scale": "small",
+   "source_logical_tree_sha256": "fb4854e6301f988e30cb154237604ae3175b78e3f1b1f0715c6feac28b9bf839",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f06-validation-noaa-ghcn-daily-parquet-2023"
+  },
+  {
+   "item_id": "f06-validation-noaa-storm-events-2016",
+   "split": "validation",
+   "family": "F06",
+   "independence_group": "noaa-storm-events",
+   "scale": "medium",
+   "source_logical_tree_sha256": "fa687b1d51a1814eafd122a62ffc9b063ebf3b8a98f060caff5b9e12101c8bce",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f06-validation-noaa-storm-events-2016"
+  },
+  {
+   "item_id": "f06-validation-osm-andorra-20250101-xml",
+   "split": "validation",
+   "family": "F06",
+   "independence_group": "openstreetmap-planet",
+   "scale": "medium",
+   "source_logical_tree_sha256": "0d52ecee8df9d4156ef739956211e7dc424095a6c7e94f2d464e677a18487afa",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f06-validation-osm-andorra-20250101-xml"
+  },
+  {
+   "item_id": "f06-validation-osm-monaco-20250101-xml",
+   "split": "validation",
+   "family": "F06",
+   "independence_group": "openstreetmap-planet",
+   "scale": "small",
+   "source_logical_tree_sha256": "886b916e110f51e3cf6bc347733ffb7475d6c9553c703d8b7db354da8c50af8c",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f06-validation-osm-monaco-20250101-xml"
+  },
+  {
+   "item_id": "f07-validation-bert-base-uncased-pytorch-bin",
+   "split": "validation",
+   "family": "F07",
+   "independence_group": "google-bert",
+   "scale": "medium",
+   "source_logical_tree_sha256": "deb7bfd6479d9a7e2b16c88850cc47b40a6ef64b0c4d6fc07bcafd91fa343118",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f07-validation-bert-base-uncased-pytorch-bin"
+  },
+  {
+   "item_id": "f07-validation-bert-base-uncased-safetensors",
+   "split": "validation",
+   "family": "F07",
+   "independence_group": "google-bert",
+   "scale": "medium",
+   "source_logical_tree_sha256": "ef005d331af59bb70ce865eea6c6e239db2ad7f7103cfd5c7dba33802e17152f",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f07-validation-bert-base-uncased-safetensors"
+  },
+  {
+   "item_id": "f07-validation-bert-base-uncased-tf-h5",
+   "split": "validation",
+   "family": "F07",
+   "independence_group": "google-bert",
+   "scale": "medium",
+   "source_logical_tree_sha256": "45b2cc8f643aca0c115cf46c47a51e033799bfbaa68e421027333a9a97e0765a",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f07-validation-bert-base-uncased-tf-h5"
+  },
+  {
+   "item_id": "f07-validation-cmip6-ncar-cesm2-tas-zarr",
+   "split": "validation",
+   "family": "F07",
+   "independence_group": "cmip6-ncar-cesm2",
+   "scale": "medium",
+   "source_logical_tree_sha256": "becbb66b2eaed392aa4fb2029793e2245848e318eceb4323920e2df136c2b085",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f07-validation-cmip6-ncar-cesm2-tas-zarr"
+  },
+  {
+   "item_id": "f07-validation-gen-numeric-b",
+   "split": "validation",
+   "family": "F07",
+   "independence_group": "ebrc-gen-numeric-b",
+   "scale": "medium",
+   "source_logical_tree_sha256": "f2f6cfda3713acdd5901b49098bd59618f0469ae1fd57a8810ef0df4e984d747",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f07-validation-gen-numeric-b"
+  },
+  {
+   "item_id": "f07-validation-gen-numeric-b-small",
+   "split": "validation",
+   "family": "F07",
+   "independence_group": "ebrc-gen-numeric-b",
+   "scale": "small",
+   "source_logical_tree_sha256": "b89b9b6ffa17d86a5e919879d7fac5adea53f3159b9aaa5646dc8e09a2fd8a4d",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f07-validation-gen-numeric-b-small"
+  },
+  {
+   "item_id": "f07-validation-nasa-gistemp-1200km",
+   "split": "validation",
+   "family": "F07",
+   "independence_group": "nasa-giss-gistemp",
+   "scale": "medium",
+   "source_logical_tree_sha256": "0b9648517749df657a43aa92d6beff842e5c76995be0c2e95296e6cff4017869",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f07-validation-nasa-gistemp-1200km"
+  },
+  {
+   "item_id": "f07-validation-sdrbench-exafel",
+   "split": "validation",
+   "family": "F07",
+   "independence_group": "sdrbench-exafel",
+   "scale": "medium",
+   "source_logical_tree_sha256": "038e7c1e1d0f91f936643141514129f60748352e49c320fe6129df8fdf950a86",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f07-validation-sdrbench-exafel"
+  },
+  {
+   "item_id": "f07-validation-smollm2-135m-safetensors",
+   "split": "validation",
+   "family": "F07",
+   "independence_group": "huggingfacetb-smollm2",
+   "scale": "medium",
+   "source_logical_tree_sha256": "59bdc875ae1aaf7ed98c93648f0e29f7f5b17777705936a202a2557d7268388b",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f07-validation-smollm2-135m-safetensors"
+  },
+  {
+   "item_id": "f08-validation-ensembl-scerevisiae-core-sql-dump",
+   "split": "validation",
+   "family": "F08",
+   "independence_group": "ensembl",
+   "scale": "medium",
+   "source_logical_tree_sha256": "92cf946ed1aacc5b926dcd8d4ac0c461e563d5cc8f800c7d63dc49b4b3206287",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f08-validation-ensembl-scerevisiae-core-sql-dump"
+  },
+  {
+   "item_id": "f08-validation-mariadb11-test-db-employees",
+   "split": "validation",
+   "family": "F08",
+   "independence_group": "mysql-test-db-employees",
+   "scale": "medium",
+   "source_logical_tree_sha256": "072d83c1deeec41a7392b288020fef567d261d430fb2ef8f36feb68f81ba5cc4",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f08-validation-mariadb11-test-db-employees"
+  },
+  {
+   "item_id": "f08-validation-northwind-sqlite",
+   "split": "validation",
+   "family": "F08",
+   "independence_group": "northwind-sample-db",
+   "scale": "medium",
+   "source_logical_tree_sha256": "2a3c73bfccdd1b8180b0a7a7ee5a8c7720086af4419acd8625fde4e2a7bbe148",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f08-validation-northwind-sqlite"
+  },
+  {
+   "item_id": "f08-validation-sakila-sqlite",
+   "split": "validation",
+   "family": "F08",
+   "independence_group": "sakila-sample-db",
+   "scale": "small",
+   "source_logical_tree_sha256": "5812ed2b28c1f11fcafef0810617cec9dfd1ea64155d4b8dac2850ced882dba2",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f08-validation-sakila-sqlite"
+  },
+  {
+   "item_id": "f09-cpython-3147-embed-win-amd64",
+   "split": "validation",
+   "family": "F09",
+   "independence_group": "cpython",
+   "scale": "medium",
+   "source_logical_tree_sha256": "f86cd9cae5b6307a99057e59b3274ab571bcc6cc342f89dba57c2d5756a34199",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f09-cpython-3147-embed-win-amd64"
+  },
+  {
+   "item_id": "f09-fedora-44-arm64-usr-binaries",
+   "split": "validation",
+   "family": "F09",
+   "independence_group": "fedora",
+   "scale": "medium",
+   "source_logical_tree_sha256": "5d2346e71d06909a64f87c49f6c4e884f184db21597d8f22cce76174417fe28b",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f09-fedora-44-arm64-usr-binaries"
+  },
+  {
+   "item_id": "f09-fedora-44-usr-binaries",
+   "split": "validation",
+   "family": "F09",
+   "independence_group": "fedora",
+   "scale": "medium",
+   "source_logical_tree_sha256": "d375f5ae347c4f99336718905ca11668f6cf3abf0ba7c1bb440bfdb4693c836c",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f09-fedora-44-usr-binaries"
+  },
+  {
+   "item_id": "f09-git-for-windows-portable-2550",
+   "split": "validation",
+   "family": "F09",
+   "independence_group": "git-for-windows",
+   "scale": "medium",
+   "source_logical_tree_sha256": "2cf5be549399dad4fbe97b5b773f5760bb78b2fd2cc9d8474fe5c551ca60cfe9",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f09-git-for-windows-portable-2550"
+  },
+  {
+   "item_id": "f09-nodejs-v2220-arm64-multiplatform",
+   "split": "validation",
+   "family": "F09",
+   "independence_group": "nodejs",
+   "scale": "medium",
+   "source_logical_tree_sha256": "bd8eebe4f404b6b8f99e95453092e1494e131ac51c5f6a30b724f235e551cf62",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f09-nodejs-v2220-arm64-multiplatform"
+  },
+  {
+   "item_id": "f10-debian-13-edk2-firmware-images",
+   "split": "validation",
+   "family": "F10",
+   "independence_group": "debian-trixie",
+   "scale": "medium",
+   "source_logical_tree_sha256": "f191fac833b6fd97fe5d5da15cb33455f203bd58c4856838a0272d71fe45a766",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f10-debian-13-edk2-firmware-images"
+  },
+  {
+   "item_id": "f10-fedora-44-static-libraries",
+   "split": "validation",
+   "family": "F10",
+   "independence_group": "fedora",
+   "scale": "medium",
+   "source_logical_tree_sha256": "2d7de33fb0bdcad27ea5cecc89b654763f40b3470e1e8911d7a13ac461dbf8c4",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f10-fedora-44-static-libraries"
+  },
+  {
+   "item_id": "f11-cpython-3137-release-set",
+   "split": "validation",
+   "family": "F11",
+   "independence_group": "cpython",
+   "scale": "medium",
+   "source_logical_tree_sha256": "1b31a8f1952b6b5873bd42cc6492b5f5960a3e74f2adad9eceea19c43c5b8706",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f11-cpython-3137-release-set"
+  },
+  {
+   "item_id": "f11-fedora-44-rpms",
+   "split": "validation",
+   "family": "F11",
+   "independence_group": "fedora",
+   "scale": "medium",
+   "source_logical_tree_sha256": "e00bd408b944578fb4470cac54e3493d8afafd69207de020f2b6b37acd1e2063",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f11-fedora-44-rpms"
+  },
+  {
+   "item_id": "f11-maven-central-jvm-jars",
+   "split": "validation",
+   "family": "F11",
+   "independence_group": "maven-central-jvm-jars",
+   "scale": "medium",
+   "source_logical_tree_sha256": "b09f69796118d5c53ba633bf7f49c125c46df921013b8b48fb7fafbcfcbd975d",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f11-maven-central-jvm-jars"
+  },
+  {
+   "item_id": "f12-validation-commons-cc0-photos-medium",
+   "split": "validation",
+   "family": "F12",
+   "independence_group": "g5-commons-cc0-photos",
+   "scale": "medium",
+   "source_logical_tree_sha256": "25b34786dbc690d72582395850ad7f03b3c52c04f565866d318e823fa03884a1",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f12-validation-commons-cc0-photos-medium"
+  },
+  {
+   "item_id": "f12-validation-commons-cc0-photos-small",
+   "split": "validation",
+   "family": "F12",
+   "independence_group": "g5-commons-cc0-photos",
+   "scale": "small",
+   "source_logical_tree_sha256": "b25fc1866d1947ca0d8bc01486a05327e8cd184f53272cf74142a47d49cec9d9",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f12-validation-commons-cc0-photos-small"
+  },
+  {
+   "item_id": "f12-validation-fsa-jpeg-edge-cases-small",
+   "split": "validation",
+   "family": "F12",
+   "independence_group": "g5-loc-fsa-owi-color",
+   "scale": "small",
+   "source_logical_tree_sha256": "636dc6013c7bc617899a371b5be8b3b5ac8ed56c3c013d77b33f8609d1cfb206",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f12-validation-fsa-jpeg-edge-cases-small"
+  },
+  {
+   "item_id": "f12-validation-fsa-jpeg-matrix-medium",
+   "split": "validation",
+   "family": "F12",
+   "independence_group": "g5-loc-fsa-owi-color",
+   "scale": "medium",
+   "source_logical_tree_sha256": "6a01d60afeabfb8d7cc94ecfb7138af02c1cabad753e4974f40e492163f05e5b",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f12-validation-fsa-jpeg-matrix-medium"
+  },
+  {
+   "item_id": "f13-validation-federal-register-pdf-small",
+   "split": "validation",
+   "family": "F13",
+   "independence_group": "g5-federal-register-pdf",
+   "scale": "small",
+   "source_logical_tree_sha256": "141e4a79534c98d7eac31bc3ba52fab6eda5cfeaddbeba53d1e14459f5599eb7",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f13-validation-federal-register-pdf-small"
+  },
+  {
+   "item_id": "f13-validation-fsa-image-codecs-small",
+   "split": "validation",
+   "family": "F13",
+   "independence_group": "g5-loc-fsa-owi-color",
+   "scale": "small",
+   "source_logical_tree_sha256": "39719d35cdae0ac987741a0af03e38d577ca7467b6dc919ff33794b3ceca904b",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f13-validation-fsa-image-codecs-small"
+  },
+  {
+   "item_id": "f13-validation-librivox-audiobook-medium",
+   "split": "validation",
+   "family": "F13",
+   "independence_group": "g5-librivox-tenn-sf-stories",
+   "scale": "medium",
+   "source_logical_tree_sha256": "a2a115a3b71d36434a44e65b88d90778e68ab24600ccd4349956d262d4beb32c",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f13-validation-librivox-audiobook-medium"
+  },
+  {
+   "item_id": "f13-validation-phone-matrix-small",
+   "split": "validation",
+   "family": "F13",
+   "independence_group": "g5-loc-fsa-owi-color",
+   "scale": "small",
+   "source_logical_tree_sha256": "eb219a3156a42564cdfbce84bc0189bfe08a69fc91a1ad3e93f79e14e7222580",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f13-validation-phone-matrix-small"
+  },
+  {
+   "item_id": "f13-validation-sintel-media-medium",
+   "split": "validation",
+   "family": "F13",
+   "independence_group": "g5-blender-sintel",
+   "scale": "medium",
+   "source_logical_tree_sha256": "adb75f485cdbfa8f496774ba5f885d34079d435b1ac17718dba0f30901ba2bff",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f13-validation-sintel-media-medium"
+  },
+  {
+   "item_id": "f14-gen-office-documents",
+   "split": "validation",
+   "family": "F14",
+   "independence_group": "gen-g4-office-docs",
+   "scale": "small",
+   "source_logical_tree_sha256": "594cdb250c00b0a0018097ebbe9e41c2a868682fc0a837827ed3159de45b7087",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f14-gen-office-documents"
+  },
+  {
+   "item_id": "f14-legacy-writer-matrix-validation",
+   "split": "validation",
+   "family": "F14",
+   "independence_group": "redis",
+   "scale": "medium",
+   "source_logical_tree_sha256": "9ad563301da34b026d1c0c1754eef722644578cca93c1ba76d799364037c9985",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f14-legacy-writer-matrix-validation"
+  },
+  {
+   "item_id": "f14-pyspark-420-sdist",
+   "split": "validation",
+   "family": "F14",
+   "independence_group": "apache-spark",
+   "scale": "medium",
+   "source_logical_tree_sha256": "7a5a65a9b59a4b21e1769de09502511137e6fd3c3c8944b9dc509e918f10651c",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f14-pyspark-420-sdist"
+  },
+  {
+   "item_id": "f15-validation-edgecases",
+   "split": "validation",
+   "family": "F15",
+   "independence_group": "ebrc-g2-f15-edgecases",
+   "scale": "small",
+   "source_logical_tree_sha256": "11beccb19b1260a794b342618899ed0364d49802a006c6db7d315c0daf03d3bb",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f15-validation-edgecases"
+  },
+  {
+   "item_id": "f15-validation-fragmented",
+   "split": "validation",
+   "family": "F15",
+   "independence_group": "ebrc-g2-f15-fragmented",
+   "scale": "medium",
+   "source_logical_tree_sha256": "d670d81063b386cc9399929da27580053b2072f15672d4a5c66baf70b803b7f3",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f15-validation-fragmented"
+  },
+  {
+   "item_id": "f16-debian-13-nocloud-20260831-qcow2",
+   "split": "validation",
+   "family": "F16",
+   "independence_group": "debian-trixie",
+   "scale": "medium",
+   "source_logical_tree_sha256": "cf58e83693e527d99adecd5cc9a1cf4c3f94fcd29672ebeaf0b71ce8707e04f2",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f16-debian-13-nocloud-20260831-qcow2"
+  },
+  {
+   "item_id": "f16-gen-fat32-image",
+   "split": "validation",
+   "family": "F16",
+   "independence_group": "gen-g4-fat-image",
+   "scale": "medium",
+   "source_logical_tree_sha256": "2ccffa4cf35119de521864f5a8ed76cbc19903abefa848daedf7d2bf677a1b1a",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f16-gen-fat32-image"
+  },
+  {
+   "item_id": "f16-oci-fedora-44-zstd-layers",
+   "split": "validation",
+   "family": "F16",
+   "independence_group": "fedora",
+   "scale": "medium",
+   "source_logical_tree_sha256": "258cea8122ae223f401c87ca23e8b9757f7d836346ea8f23c7477ee50f6f4779",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f16-oci-fedora-44-zstd-layers"
+  },
+  {
+   "item_id": "f17-validation-duptree-vendor",
+   "split": "validation",
+   "family": "F17",
+   "independence_group": "ebrc-g2-f17-duptree-vendor",
+   "scale": "medium",
+   "source_logical_tree_sha256": "ba4b50f2fb7d25db8bebcafed77cb1a5a3457ba4a83381b7276dcc2191ac5621",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f17-validation-duptree-vendor"
+  },
+  {
+   "item_id": "f17-validation-real-fedora-kernel-devel-2ver",
+   "split": "validation",
+   "family": "F17",
+   "independence_group": "fedora-kernel-devel",
+   "scale": "medium",
+   "source_logical_tree_sha256": "84f2e174eda7c18af80f1bffec89f7e9a2629b11169a7d03b29bbed320e5eef1",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f17-validation-real-fedora-kernel-devel-2ver"
+  },
+  {
+   "item_id": "f17-validation-real-yq-vendor-8x",
+   "split": "validation",
+   "family": "F17",
+   "independence_group": "real-yq-vendor-8x",
+   "scale": "medium",
+   "source_logical_tree_sha256": "073bce63b403ba1300d433c446a8d72d0dc342426eb15f4813bcf5e34245ac9d",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f17-validation-real-yq-vendor-8x"
+  },
+  {
+   "item_id": "f18-validation-cjson-releases",
+   "split": "validation",
+   "family": "F18",
+   "independence_group": "cjson",
+   "scale": "small",
+   "source_logical_tree_sha256": "40ead9b540f4e1f99760c50f9412013c7c3e75330fc292cf0d8a97c7e5b8a918",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f18-validation-cjson-releases"
+  },
+  {
+   "item_id": "f18-validation-cpython-embeddable-3-14-series",
+   "split": "validation",
+   "family": "F18",
+   "independence_group": "cpython",
+   "scale": "medium",
+   "source_logical_tree_sha256": "05aa3ce5fbe2012e6995fb392a379af5beb9346d4c098787ffb92d71d8a8e27e",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f18-validation-cpython-embeddable-3-14-series"
+  },
+  {
+   "item_id": "f18-validation-redis-7-2-point-releases",
+   "split": "validation",
+   "family": "F18",
+   "independence_group": "redis",
+   "scale": "medium",
+   "source_logical_tree_sha256": "c101f0ed5e733368ddd9e0fe58d73b547c4101d6453b137063b1cd830a2c5294",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f18-validation-redis-7-2-point-releases"
+  },
+  {
+   "item_id": "f19-validation-deep",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "ebrc-g2-f19-deep",
+   "scale": "small",
+   "source_logical_tree_sha256": "6cfe313b356bc7c4dacae6a6fe0d990e9f5e2d78fcdecde2c0eff051abe6bad6",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f19-validation-deep"
+  },
+  {
+   "item_id": "f19-validation-real-home-snapshot",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "chalk-ansistyles-home-snapshot",
+   "scale": "small",
+   "source_logical_tree_sha256": "3532a0bbf75274e35217773f9bd21ce1d7e51c66e8c032f172d9795ff23731b8",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f19-validation-real-home-snapshot"
+  },
+  {
+   "item_id": "f19-validation-real-ntfs-metadata",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "ebrc-g2-f19-ntfs-validation",
+   "scale": "medium",
+   "source_logical_tree_sha256": "1ad5bf7d5552d299198d5244c131fcc47254946d0281929c87f946d1a122d014",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f19-validation-real-ntfs-metadata"
+  },
+  {
+   "item_id": "f19-validation-real-xfs-acl-selinux",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "ebrc-g2-f19-xfs-acl-selinux",
+   "scale": "medium",
+   "source_logical_tree_sha256": "54619e5c208e273137a597dc1625e8dd23b96cfd216afda09b603374f1c14b25",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f19-validation-real-xfs-acl-selinux"
+  },
+  {
+   "item_id": "f19-validation-rsnapshot-b",
+   "split": "validation",
+   "family": "F19",
+   "independence_group": "ebrc-g2-f19-rsnapshot-b",
+   "scale": "medium",
+   "source_logical_tree_sha256": "ee108bd50b97feac50c5178b614f624beb522abd0cd0990c9ff68e5dd4d410e0",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f19-validation-rsnapshot-b"
+  },
+  {
+   "item_id": "f20-validation-aesctr",
+   "split": "validation",
+   "family": "F20",
+   "independence_group": "ebrc-g2-f20-aesctr",
+   "scale": "medium",
+   "source_logical_tree_sha256": "311f6ed76641f6f64d55e3951e5fc53b5cb8dcadba1b60408c3aade75e7e1678",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f20-validation-aesctr"
+  },
+  {
+   "item_id": "f20-validation-bombs-compressed",
+   "split": "validation",
+   "family": "F20",
+   "independence_group": "ebrc-g2-f20-bombs-compressed",
+   "scale": "small",
+   "source_logical_tree_sha256": "9e8e749ab0ec9a349653f45cfae401a51cd1480626f655c9ce297a938803d51f",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f20-validation-bombs-compressed"
+  },
+  {
+   "item_id": "f20-validation-generated-malicious-structures",
+   "split": "validation",
+   "family": "F20",
+   "independence_group": "ebrc-g2-f20-malicious-validation",
+   "scale": "small",
+   "source_logical_tree_sha256": "4004d3616ea78453d15e37bc9eb2eb8e6b676a3cc6fb917d45fa57315d7bbb9a",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f20-validation-generated-malicious-structures"
+  },
+  {
+   "item_id": "f20-validation-generated-private-vault",
+   "split": "validation",
+   "family": "F20",
+   "independence_group": "ebrc-g2-f20-private-vault-validation",
+   "scale": "small",
+   "source_logical_tree_sha256": "506e13f7bd0225d92574f90f7ad8687f3f6649ead1c1a1858eaeba81688a59ed",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f20-validation-generated-private-vault"
+  },
+  {
+   "item_id": "f20-validation-real-commons-compress-testdata",
+   "split": "validation",
+   "family": "F20",
+   "independence_group": "apache-commons-compress",
+   "scale": "medium",
+   "source_logical_tree_sha256": "7bb28ba7963bf8a31f045126025e6b49fe320885d403dcbd2cf34d313ff75b15",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f20-validation-real-commons-compress-testdata"
+  },
+  {
+   "item_id": "f20-validation-real-cpython-archivetestdata",
+   "split": "validation",
+   "family": "F20",
+   "independence_group": "cpython",
+   "scale": "small",
+   "source_logical_tree_sha256": "6cae97b9c90cee6e794d10190be1bc0538acc5c196924792537b6ea6c8e642cc",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f20-validation-real-cpython-archivetestdata"
+  },
+  {
+   "item_id": "f20-validation-sparsedup",
+   "split": "validation",
+   "family": "F20",
+   "independence_group": "ebrc-g2-f20-sparsedup",
+   "scale": "medium",
+   "source_logical_tree_sha256": "9fe90ed3e5516b793569711d714e583a9ec4389ee1276a56f3cb3cefcc0e990c",
+   "path": "D:\\eb-research\\corpus-ntfs\\validation\\f20-validation-sparsedup"
+  }
+ ]
+}

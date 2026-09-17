@@ -1,0 +1,163 @@
+# EXP-CON-002 spec-timing.yaml. Pre-registered design (Phase C-design, container domain).
+# In-process timing arm (st-v) on survivors (CT-4 filter).
+# Conventions: research/experiments/_index/container-conventions.md. Do not run before gate G-A;
+# runs before G-B are NOT_DECISION_GRADE. Tuning split only; validation looks are derived (CT-4).
+schema: ebr.spec.v1
+experiment_id: EXP-CON-002
+status: pre-registered-design
+question: Which Index data structure and validation granularity resolve entries to Chunk-frame ranges
+  with the fewest bytes, requests and resident memory from 1e3 to 1e7 Chunks, while the Index stays a
+  small, rebuildable, non-authoritative cache?
+hypothesis: 'H1: at >=1e5 Chunks a paged or fanout Index is DISTINGUISHABLE_BETTER than i0-sorted-records-sq
+  on open_bytes_read__resolve_entry_cold_mean and alloc_peak_bytes__index_resident by more than the T3
+  minimum gain, and NON_INFERIOR on artifact_bytes; below 1e4 Chunks no alternative beats the status quo
+  by 1 band unit. Falsified as stated in protocol.md section 2.'
+decision_ids:
+- DEC-CON-015
+- DEC-ACC-019
+candidates:
+- name: i0-sorted-records-sq
+  params:
+    index_repr: sorted-records-100b
+    validation: lazy
+- name: i1-fanout-oid-table
+  params:
+    index_repr: fanout-oid-table
+    validation: lazy
+- name: i2-paged-4k
+  params:
+    index_repr: paged-4096
+    validation: lazy
+- name: i2-paged-16k
+  params:
+    index_repr: paged-16384
+    validation: lazy
+- name: i2-paged-64k
+  params:
+    index_repr: paged-65536
+    validation: lazy
+- name: i3-dual-coordinate-seek-table
+  params:
+    index_repr: dual-coordinate-seek-table
+    validation: lazy
+- name: i4-sizes-sister-list
+  params:
+    index_repr: sizes-sister-list
+    validation: lazy
+- name: i5-delta-compressed-locators
+  params:
+    index_repr: delta-varint-blocks-256
+    validation: lazy
+- name: i6-per-object-locator-runs
+  params:
+    index_repr: per-object-runs
+    validation: lazy
+- name: i7-no-index-scan-only
+  params:
+    index_repr: none
+    validation: scan
+- name: v1-sq-always-cross-check
+  params:
+    index_repr: sorted-records-100b
+    validation: always-rebuild
+- name: v2-sq-digest-bound-index
+  params:
+    index_repr: sorted-records-100b
+    validation: digest-bound
+- name: v3-sq-per-record-frame-check
+  params:
+    index_repr: sorted-records-100b
+    validation: per-record
+command: /root/eb-research/target/harness/release/ebr-index-repr --model {item_path} --chunks-per-entry-model
+  fitted --index-repr {index_repr} --validation {validation} --timing-batch 1000 --resolve-sample 1000
+  --workload-file research/experiments/EXP-REMOTE-002/workloads.json --connection-model research/experiments/EXP-REMOTE-001/connection-model.json
+  --seed {seed} --experiment-id EXP-CON-002 --env-name wsl-ubuntu
+shell: bash
+corpus:
+  manifest: research/experiments/EXP-CON-001/synthetic-items.json
+  splits:
+  - tuning
+  item_ids:
+  - syn-t-f01-llvm-posix-n1e3
+  - syn-t-f01-llvm-posix-n1e4
+  - syn-t-f01-llvm-posix-n1e5
+  - syn-t-f01-llvm-posix-n1e6
+  - syn-t-f03-tsnode-posix-n1e3
+  - syn-t-f03-tsnode-posix-n1e4
+  - syn-t-f03-tsnode-posix-n1e5
+  - syn-t-f03-tsnode-posix-n1e6
+  - syn-t-f04-pkgsrc-posix-n1e3
+  - syn-t-f04-pkgsrc-posix-n1e4
+  - syn-t-f04-pkgsrc-posix-n1e5
+  - syn-t-f04-pkgsrc-posix-n1e6
+  - syn-t-f04-pkgsrc-rich-n1e4
+  - syn-t-f04-pkgsrc-rich-n1e6
+  - syn-t-f04-pkgsrc-windows-n1e4
+  - syn-t-f04-pkgsrc-windows-n1e6
+  - syn-t-f17-khdr-posix-n1e3
+  - syn-t-f17-khdr-posix-n1e4
+  - syn-t-f17-khdr-posix-n1e5
+  - syn-t-f17-khdr-posix-n1e6
+  - syn-t-f19-rsnap-posix-n1e3
+  - syn-t-f19-rsnap-posix-n1e4
+  - syn-t-f19-rsnap-posix-n1e5
+  - syn-t-f19-rsnap-posix-n1e6
+  - syn-t-f19-rsnap-rich-n1e4
+  - syn-t-f19-rsnap-rich-n1e6
+  - syn-t-f19-rsnap-windows-n1e4
+  - syn-t-f19-rsnap-windows-n1e6
+metrics:
+- name: open_latency_s__index_load
+  source: stdout_json
+  family: time_wall
+  direction: minimize
+  unit: s
+  key: payload.open_latency_s__index_load
+- name: random_entry_latency_s__resolve
+  source: stdout_json
+  family: time_wall
+  direction: minimize
+  unit: s
+  key: payload.random_entry_latency_s__resolve
+- name: desc_payload_sha256
+  source: stdout_json
+  family: correctness
+  key: payload.payload_sha256
+  kind: string
+- name: wall_s
+  source: resource
+  family: time_wall
+  direction: minimize
+  unit: s
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds:
+  order: 12021
+  bootstrap: 12022
+  command: 12023
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/harness/release/ebr-index-repr
+  timeout_s: 28800
+  cpu_affinity:
+  - 2
+analysis:
+  baseline: i0-sorted-records-sq
+  pairing: item_repetition
+  report_metrics:
+  - open_latency_s__index_load
+  - random_entry_latency_s__resolve
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300

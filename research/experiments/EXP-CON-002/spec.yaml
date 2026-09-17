@@ -1,0 +1,386 @@
+# EXP-CON-002 spec.yaml. Pre-registered design (Phase C-design, container domain).
+# Deterministic pass over every tuning item packed under all four profiles by ebound-prod.
+# Conventions: research/experiments/_index/container-conventions.md. Do not run before gate G-A;
+# runs before G-B are NOT_DECISION_GRADE. Tuning split only; validation looks are derived (CT-4).
+schema: ebr.spec.v1
+experiment_id: EXP-CON-002
+status: pre-registered-design
+question: Which Index data structure and validation granularity resolve entries to Chunk-frame ranges
+  with the fewest bytes, requests and resident memory from 1e3 to 1e7 Chunks, while the Index stays a
+  small, rebuildable, non-authoritative cache?
+hypothesis: 'H1: at >=1e5 Chunks a paged or fanout Index is DISTINGUISHABLE_BETTER than i0-sorted-records-sq
+  on open_bytes_read__resolve_entry_cold_mean and alloc_peak_bytes__index_resident by more than the T3
+  minimum gain, and NON_INFERIOR on artifact_bytes; below 1e4 Chunks no alternative beats the status quo
+  by 1 band unit. Falsified as stated in protocol.md section 2.'
+decision_ids:
+- DEC-CON-015
+- DEC-ACC-019
+- DEC-CMP-002
+- DEC-ACC-018
+- DEC-CON-002
+candidates:
+- name: i0-sorted-records-sq
+  params:
+    index_repr: sorted-records-100b
+    validation: lazy
+- name: i1-fanout-oid-table
+  params:
+    index_repr: fanout-oid-table
+    validation: lazy
+- name: i2-paged-4k
+  params:
+    index_repr: paged-4096
+    validation: lazy
+- name: i2-paged-16k
+  params:
+    index_repr: paged-16384
+    validation: lazy
+- name: i2-paged-64k
+  params:
+    index_repr: paged-65536
+    validation: lazy
+- name: i3-dual-coordinate-seek-table
+  params:
+    index_repr: dual-coordinate-seek-table
+    validation: lazy
+- name: i4-sizes-sister-list
+  params:
+    index_repr: sizes-sister-list
+    validation: lazy
+- name: i5-delta-compressed-locators
+  params:
+    index_repr: delta-varint-blocks-256
+    validation: lazy
+- name: i6-per-object-locator-runs
+  params:
+    index_repr: per-object-runs
+    validation: lazy
+- name: i7-no-index-scan-only
+  params:
+    index_repr: none
+    validation: scan
+- name: v1-sq-always-cross-check
+  params:
+    index_repr: sorted-records-100b
+    validation: always-rebuild
+- name: v2-sq-digest-bound-index
+  params:
+    index_repr: sorted-records-100b
+    validation: digest-bound
+- name: v3-sq-per-record-frame-check
+  params:
+    index_repr: sorted-records-100b
+    validation: per-record
+command: for P in fast balanced dense extreme; do bash /mnt/d/Projects/entrybound/entrybound/research/tools/container/pack_cache.sh
+  --item-path {item_path} --profile $P --layout indexed --print-path > {scratch}/pack-$P.path || exit
+  1; done && /root/eb-research/target/harness/release/ebr-index-repr --archives-from {scratch} --primary-profile
+  balanced --index-repr {index_repr} --validation {validation} --resolve-sample 1000 --workload-file research/experiments/EXP-REMOTE-002/workloads.json
+  --connection-model research/experiments/EXP-REMOTE-001/connection-model.json --seed {seed} --experiment-id
+  EXP-CON-002 --env-name wsl-ubuntu
+shell: bash
+corpus:
+  manifest: research/corpus/manifest.json
+  splits:
+  - tuning
+  item_ids:
+  - f01-tuning-curl-8-19-0-git
+  - f01-tuning-llvm-project-20-1-8-git
+  - f01-tuning-ripgrep-14-1-1-git
+  - f01-tuning-typescript-5-9-3-git
+  - f01-tuning-zstd-v1-5-7-full-clone
+  - f01-tuning-zstd-v1-5-7-git
+  - f02-tuning-lz4-intree-make-build
+  - f02-tuning-ripgrep-cargo-target
+  - f02-tuning-zstd-cmake-build
+  - f03-tuning-fzf-go-mod-vendor
+  - f03-tuning-pypi-scientific-site-packages
+  - f03-tuning-ripgrep-cargo-vendor
+  - f03-tuning-typescript-npm-node-modules
+  - f04-tuning-maildir
+  - f04-tuning-real-netbsd-pkgsrc
+  - f04-tuning-sourcelike
+  - f05-tuning-enwik8
+  - f05-tuning-gen-logs-a-medium
+  - f05-tuning-gen-logs-a-small
+  - f05-tuning-google-clusterdata-2011-2-task-usage
+  - f05-tuning-gutenberg-books
+  - f05-tuning-loghub-hdfs-v1
+  - f05-tuning-loghub-openstack
+  - f05-tuning-logrotate-from-loghub-hdfs
+  - f06-tuning-census-popest-2023
+  - f06-tuning-gen-structured-a-medium
+  - f06-tuning-gen-structured-a-small
+  - f06-tuning-gharchive-2015-01-01-h15-h16
+  - f06-tuning-gharchive-2024-01-15-h15
+  - f06-tuning-nyc-tlc-yellow-tripdata-2024
+  - f06-tuning-wikimedia-tnwiki-20260901
+  - f07-tuning-ann-benchmarks-fashion-mnist-hdf5
+  - f07-tuning-gen-numeric-a-medium
+  - f07-tuning-gen-numeric-a-small
+  - f07-tuning-mnist-npz
+  - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+  - f07-tuning-pythia-160m-safetensors-main
+  - f07-tuning-pythia-160m-safetensors-step100000
+  - f07-tuning-qwen2-5-0-5b-instruct-gguf-q4km
+  - f07-tuning-qwen2-5-1-5b-safetensors-bf16
+  - f07-tuning-sdrbench-hurricane-isabel
+  - f07-tuning-sdss-dr17-frames
+  - f07-tuning-silesia-mr
+  - f07-tuning-silesia-sao
+  - f07-tuning-silesia-xray
+  - f08-tuning-chinook-sqlite
+  - f08-tuning-gen-sqlite-tpch-medium
+  - f08-tuning-gen-sqlite-tpch-small
+  - f08-tuning-postgres17-pgbench-s40
+  - f08-tuning-silesia-osdb
+  - f08-tuning-wikimedia-simplewiki-sql-dump
+  - f09-alpine-324-arm64-rootfs-binaries
+  - f09-alpine-324-riscv64-rootfs-binaries
+  - f09-alpine-324-rootfs-binaries
+  - f09-ripgrep-1411-arm64-darwin-multiplatform
+  - f09-silesia-mozilla-ooffice
+  - f09-ubuntu-noble-arm64-usr-binaries
+  - f09-ubuntu-noble-riscv64-usr-binaries
+  - f09-ubuntu-noble-usr-binaries
+  - f10-gen-redundant-binary-blobs
+  - f10-linux-firmware-20260910-full-tree
+  - f10-linux-firmware-20260910-subset
+  - f10-rust-fd-find-1050-multiprofile
+  - f11-alpine-324-apks
+  - f11-cosign-v250-signing-assets
+  - f11-pypi-binary-wheels-cp312
+  - f11-ubuntu-noble-debs
+  - f12-tuning-kodak-jpeg-edge-cases-small
+  - f12-tuning-kodak-jpeg-matrix-medium
+  - f12-tuning-nasa-ivl-photos-large
+  - f12-tuning-nasa-ivl-photos-medium
+  - f12-tuning-nasa-ivl-photos-small
+  - f13-tuning-bbb-video-large
+  - f13-tuning-bbb-video-medium
+  - f13-tuning-kodak-image-codecs-small
+  - f13-tuning-librivox-audiobook-medium
+  - f13-tuning-musopen-flac-medium
+  - f13-tuning-nasa-ntrs-pdf-small
+  - f13-tuning-prelinger-video-medium
+  - f14-apache-maven-3916-bin-tarball
+  - f14-gen-nested-archives-py
+  - f14-jenkins-25683-war
+  - f14-legacy-writer-matrix-tuning
+  - f15-tuning-dbprealloc
+  - f15-tuning-real-ubuntu-noble-ova-raw
+  - f15-tuning-vmraw
+  - f16-alpine-3241-minirootfs-ext4-qcow2
+  - f16-alpine-3241-minirootfs-ext4-raw
+  - f16-alpine-3241-minirootfs-ext4-vhdx
+  - f16-alpine-virt-3241-iso
+  - f16-oci-ubuntu-noble-multiarch-index
+  - f16-ubuntu-noble-cloudimg-20260911-raw
+  - f17-tuning-duptree-mixed
+  - f17-tuning-duptree-nested
+  - f17-tuning-real-ubuntu-kernel-headers-2ver
+  - f18-tuning-curl-8-x-release-series
+  - f18-tuning-lz4-releases-1-9-to-1-10
+  - f18-tuning-ripgrep-commit-snapshots
+  - f18-tuning-sqlite-amalgamation-series
+  - f18-tuning-ubuntu-noble-cloud-images
+  - f18-tuning-zstd-releases-1-5-x
+  - f19-tuning-real-ext4-acl-selinux
+  - f19-tuning-real-home-snapshot
+  - f19-tuning-real-ntfs-metadata
+  - f19-tuning-rsnapshot-a
+  - f19-tuning-zoo
+  - f20-tuning-bombs-dense
+  - f20-tuning-csprng
+  - f20-tuning-gear-extremes
+  - f20-tuning-generated-malicious-structures
+  - f20-tuning-generated-private-vault
+  - f20-tuning-real-libarchive-testsuite
+metrics:
+- name: index_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.index_bytes
+- name: artifact_bytes
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.artifact_bytes
+- name: open_bytes_read__resolve_entry_cold_mean
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.open_bytes_read__resolve_entry_cold_mean
+- name: open_bytes_read__first_verified_read_mean
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.open_bytes_read__first_verified_read_mean
+- name: open_bytes_read__rebuild
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.open_bytes_read__rebuild
+- name: http_requests__resolve_entry_cold_mean
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__resolve_entry_cold_mean
+- name: http_requests__resolve_entry_warm_mean
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__resolve_entry_warm_mean
+- name: http_requests__first_verified_read_mean
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: count
+  key: payload.http_requests__first_verified_read_mean
+- name: alloc_peak_bytes__index_resident
+  source: stdout_json
+  family: memory_peak
+  direction: minimize
+  unit: B
+  key: payload.alloc_peak_bytes__index_resident
+- name: reader_disagreements
+  source: stdout_json
+  family: correctness
+  direction: minimize
+  unit: count
+  key: payload.reader_disagreements
+- name: desc_index_bytes_per_chunk
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: B/chunk
+  key: payload.desc_index_bytes_per_chunk
+- name: desc_page_cache_hit_fraction__wl_zipf
+  source: stdout_json
+  family: other
+  direction: maximize
+  unit: fraction
+  key: payload.desc_page_cache_hit_fraction__wl_zipf
+- name: desc_decoder_loc
+  source: stdout_json
+  family: other
+  direction: minimize
+  unit: LoC
+  key: payload.desc_decoder_loc
+- name: index_bytes__fast
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.index_bytes__fast
+- name: index_bytes__balanced
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.index_bytes__balanced
+- name: index_bytes__dense
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.index_bytes__dense
+- name: index_bytes__extreme
+  source: stdout_json
+  family: size
+  direction: minimize
+  unit: B
+  key: payload.index_bytes__extreme
+- name: desc_chunk_count__fast
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: payload.desc_chunk_count__fast
+- name: desc_chunk_count__balanced
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: payload.desc_chunk_count__balanced
+- name: desc_chunk_count__dense
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: payload.desc_chunk_count__dense
+- name: desc_chunk_count__extreme
+  source: stdout_json
+  family: other
+  direction: none
+  unit: count
+  key: payload.desc_chunk_count__extreme
+- name: desc_chunk_count_limit_fraction__fast
+  source: stdout_json
+  family: other
+  direction: none
+  unit: fraction
+  key: payload.desc_chunk_count_limit_fraction__fast
+- name: desc_chunk_count_limit_fraction__balanced
+  source: stdout_json
+  family: other
+  direction: none
+  unit: fraction
+  key: payload.desc_chunk_count_limit_fraction__balanced
+- name: desc_chunk_count_limit_fraction__dense
+  source: stdout_json
+  family: other
+  direction: none
+  unit: fraction
+  key: payload.desc_chunk_count_limit_fraction__dense
+- name: desc_chunk_count_limit_fraction__extreme
+  source: stdout_json
+  family: other
+  direction: none
+  unit: fraction
+  key: payload.desc_chunk_count_limit_fraction__extreme
+- name: desc_payload_sha256
+  source: stdout_json
+  family: correctness
+  key: payload.payload_sha256
+  kind: string
+- name: input_bytes
+  source: input
+  family: size
+  direction: none
+  unit: B
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds:
+  order: 12001
+  bootstrap: 12002
+  command: 12003
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  emulated: false
+  requires:
+  - /root/eb-research/target/prod-9e44608/release/ebound
+  - /root/eb-research/target/harness/release/ebr-index-repr
+  - /mnt/d/Projects/entrybound/entrybound/research/tools/container/pack_cache.sh
+  timeout_s: 28800
+analysis:
+  baseline: i0-sorted-records-sq
+  pairing: item
+  report_metrics:
+  - index_bytes
+  - open_bytes_read__resolve_entry_cold_mean
+  - alloc_peak_bytes__index_resident
