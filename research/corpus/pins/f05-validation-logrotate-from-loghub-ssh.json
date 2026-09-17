@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-validation-logrotate-from-loghub-ssh",
+  "inputs": {},
+  "output": {
+    "materialization_key": "4409bbe0fb0b4a52218f18d5aefc89ba34704a65c7bde5afa3922065947b7875",
+    "logical_tree_sha256": "8110b6b4a6d9f44bbc4fe3d04c726c3082e49c7915b9be11f9c355a788193a25",
+    "pinned_utc": "2026-09-17T02:15:27Z"
+  },
+  "history": []
+}

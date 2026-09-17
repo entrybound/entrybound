@@ -1,0 +1,93 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-heldout-logrotate-from-maccdc2012",
+  "family": "F05",
+  "split": "heldout",
+  "scale": "small",
+  "kind": "derive",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "ebrc-gen-logrotate-heldout",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "97c6a7126cb902e3c476f027fd22e4d5e6dc697bac8d7426ba5d681aafa26baa",
+  "materialization_key": "698771f2bda40f31999dc8489c1ec40b2fa2946f8649b1cd25a8511b599f4a9b",
+  "materialized_utc": "2026-09-17T02:15:26Z",
+  "materialized_relpath": "heldout/f05-heldout-logrotate-from-maccdc2012",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "1b2d50c3a54f4a43d07027b1a76373bdfa0a61dbf2721e6022f3c7d16f2245db",
+    "pinned_utc": "2026-09-17T02:15:26Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 2486044,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "from_items": [
+      {
+        "item_id": "f05-heldout-maccdc2012-zeek-logs",
+        "logical_tree_sha256": "f5b7fd0e93f22c6d76f250b409642f3c1acf0146229e77fa1e7cf8c6befc7196"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g3-data/logrotate_derive.py",
+        "params": {
+          "from_item": "f05-heldout-maccdc2012-zeek-logs",
+          "src": "dns.log",
+          "max_bytes": 9000000,
+          "segments": 6
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g3-data/logrotate_derive.py",
+        "script_sha256": "a96fab6647f6a5b999a533a2fe39825f809f773f415bc8e975af042794e9c86b",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "from_item": "f05-heldout-maccdc2012-zeek-logs",
+          "src": "dns.log",
+          "max_bytes": 9000000,
+          "segments": 6
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "8412ec30a733558f978c1f6f5dc321a6ffb8d6e46020e5707e8b9dd1dc853c8b",
+    "logical_tree_sha256": "1b2d50c3a54f4a43d07027b1a76373bdfa0a61dbf2721e6022f3c7d16f2245db",
+    "content_tree_sha256": "53698a553fdaf36fbfee89960626e0e38790bdcd5641f81a167949ad7d6a3a76",
+    "extended_tree_sha256": "07dae5143f9c45dc0592b32e50b8baeb4558bacababdc4536fc3b35681c0c4ab",
+    "bytes": 2486044,
+    "counts": {
+      "objects": 8,
+      "files": 7,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0
+    }
+  },
+  "fingerprint_view": "heldout-safe (hashes, bytes, basic counts)"
+}

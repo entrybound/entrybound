@@ -1,0 +1,110 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-tuning-logrotate-from-loghub-hdfs",
+  "family": "F05",
+  "split": "tuning",
+  "scale": "small",
+  "kind": "derive",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "ebrc-gen-logrotate-tuning",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "4c1ce90b156b794b5d074d2d37eafbe9710ea7ecc75b4e6c48395477047146ff",
+  "materialization_key": "6472358ab83b590b0c36dd1a979a934f61c0a84b2325dcea04270c67aec22cb2",
+  "materialized_utc": "2026-09-17T02:15:26Z",
+  "materialized_relpath": "corpus/tuning/f05-tuning-logrotate-from-loghub-hdfs",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "e26bcf7b48195526be52930fdc25db2ca9c54ec3354e6fc61eea5ec73bd19d5b",
+    "pinned_utc": "2026-09-17T02:15:26Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 2136749,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "from_items": [
+      {
+        "item_id": "f05-tuning-loghub-hdfs-v1",
+        "logical_tree_sha256": "d69a6227af324165481810752376aeb475d1cbc681211bf325b8db6737e58aa4"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g3-data/logrotate_derive.py",
+        "params": {
+          "from_item": "f05-tuning-loghub-hdfs-v1",
+          "src": "HDFS.log",
+          "max_bytes": 9000000,
+          "segments": 6
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g3-data/logrotate_derive.py",
+        "script_sha256": "a96fab6647f6a5b999a533a2fe39825f809f773f415bc8e975af042794e9c86b",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "from_item": "f05-tuning-loghub-hdfs-v1",
+          "src": "HDFS.log",
+          "max_bytes": 9000000,
+          "segments": 6
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "2c079cdac1366582396428658116b57c185e246aa07b078b618dfd63f752abe2",
+    "logical_tree_sha256": "e26bcf7b48195526be52930fdc25db2ca9c54ec3354e6fc61eea5ec73bd19d5b",
+    "content_tree_sha256": "804686d8f45d91da6792ca0d6b40ef69ff7e0b3db75e6a709c14d3369e3d1179",
+    "extended_tree_sha256": "046e45f5e8dc76a124747bc5491ab2068942294cf678a2b0bb8da8b0fc26b8ab",
+    "bytes": 2136749,
+    "bytes_all_paths": 2136749,
+    "allocated_bytes": 2154496,
+    "counts": {
+      "objects": 8,
+      "files": 7,
+      "unique_file_inodes": 7,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 30,
+      "path_length_bytes": {
+        "min": 8,
+        "max": 30,
+        "mean": 14.714,
+        "p50": 13,
+        "p95": 30
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-heldout-logrotate-from-maccdc2012",
+  "inputs": {},
+  "output": {
+    "materialization_key": "698771f2bda40f31999dc8489c1ec40b2fa2946f8649b1cd25a8511b599f4a9b",
+    "logical_tree_sha256": "1b2d50c3a54f4a43d07027b1a76373bdfa0a61dbf2721e6022f3c7d16f2245db",
+    "pinned_utc": "2026-09-17T02:15:26Z"
+  },
+  "history": []
+}

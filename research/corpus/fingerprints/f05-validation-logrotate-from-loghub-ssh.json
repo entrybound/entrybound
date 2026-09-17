@@ -1,0 +1,110 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-validation-logrotate-from-loghub-ssh",
+  "family": "F05",
+  "split": "validation",
+  "scale": "small",
+  "kind": "derive",
+  "real_or_generated": "derived-from-real",
+  "independence_group": "ebrc-gen-logrotate-validation",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "1c8554f319d9a9dcd332351d890fa5bd45ecd5aa4d342e79709f01a84e6d4159",
+  "materialization_key": "4409bbe0fb0b4a52218f18d5aefc89ba34704a65c7bde5afa3922065947b7875",
+  "materialized_utc": "2026-09-17T02:15:27Z",
+  "materialized_relpath": "corpus/validation/f05-validation-logrotate-from-loghub-ssh",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "8110b6b4a6d9f44bbc4fe3d04c726c3082e49c7915b9be11f9c355a788193a25",
+    "pinned_utc": "2026-09-17T02:15:27Z"
+  },
+  "scale_check": {
+    "tier": "small",
+    "tier_limit_bytes": 16777216,
+    "bytes": 1918990,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "from_items": [
+      {
+        "item_id": "f05-validation-loghub-ssh",
+        "logical_tree_sha256": "a88147b8e93b0033f64d4ae99a4de5ebfa01b789be343b84c1019d8dc2f04f37"
+      }
+    ],
+    "steps": [
+      {
+        "op": "run",
+        "script": "research/corpus/generators/g3-data/logrotate_derive.py",
+        "params": {
+          "from_item": "f05-validation-loghub-ssh",
+          "src": "SSH.log",
+          "max_bytes": 9000000,
+          "segments": 6
+        }
+      }
+    ],
+    "run_steps": [
+      {
+        "script": "research/corpus/generators/g3-data/logrotate_derive.py",
+        "script_sha256": "a96fab6647f6a5b999a533a2fe39825f809f773f415bc8e975af042794e9c86b",
+        "interpreter": "python",
+        "interpreter_path": "/root/eb-research/venv/bin/python",
+        "seed": 0,
+        "params": {
+          "from_item": "f05-validation-loghub-ssh",
+          "src": "SSH.log",
+          "max_bytes": 9000000,
+          "segments": 6
+        }
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "db73f2a37e19f548f2ef81ff9aec38944765132e183b4b6cd638a3cfbe228eeb",
+    "logical_tree_sha256": "8110b6b4a6d9f44bbc4fe3d04c726c3082e49c7915b9be11f9c355a788193a25",
+    "content_tree_sha256": "f7ddefb854543c29e129eb60d4d21edabf606123be87b24201ee8f9db8e05e28",
+    "extended_tree_sha256": "4a2b2ac14b7c43e52108610325eb297eb24316cd0ded66b046d931317b81e52a",
+    "bytes": 1918990,
+    "bytes_all_paths": 1918990,
+    "allocated_bytes": 1933312,
+    "counts": {
+      "objects": 8,
+      "files": 7,
+      "unique_file_inodes": 7,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 29,
+      "path_length_bytes": {
+        "min": 7,
+        "max": 29,
+        "mean": 13.714,
+        "p50": 12,
+        "p95": 29
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}

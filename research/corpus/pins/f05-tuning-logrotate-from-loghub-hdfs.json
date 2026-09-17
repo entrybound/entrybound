@@ -1,0 +1,11 @@
+{
+  "format": "ebrc-pins-v1",
+  "item_id": "f05-tuning-logrotate-from-loghub-hdfs",
+  "inputs": {},
+  "output": {
+    "materialization_key": "6472358ab83b590b0c36dd1a979a934f61c0a84b2325dcea04270c67aec22cb2",
+    "logical_tree_sha256": "e26bcf7b48195526be52930fdc25db2ca9c54ec3354e6fc61eea5ec73bd19d5b",
+    "pinned_utc": "2026-09-17T02:15:26Z"
+  },
+  "history": []
+}

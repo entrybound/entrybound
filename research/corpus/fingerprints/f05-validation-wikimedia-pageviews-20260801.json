@@ -1,0 +1,490 @@
+{
+  "format": "ebrc-fingerprint-record-v1",
+  "corpus_version": "ebrc-2026.09-v1",
+  "item_id": "f05-validation-wikimedia-pageviews-20260801",
+  "family": "F05",
+  "split": "validation",
+  "scale": "large",
+  "kind": "download",
+  "real_or_generated": "real",
+  "independence_group": "wikimedia-pageviews",
+  "source_file": "research/corpus/sources/g3-data.json",
+  "item_def_sha256": "29ca0c024b410da7e10f1d7eeea85e11db3f3dd86e9cbb92d2b7807218820f1a",
+  "materialization_key": "5506bf66cc1a5874c90fce08c9b689ffdc915b2dc40468950e29a82ab40fa09a",
+  "materialized_utc": "2026-09-17T02:20:56Z",
+  "materialized_relpath": "corpus/validation/f05-validation-wikimedia-pageviews-20260801",
+  "output_pin": {
+    "policy": "TOFU",
+    "status": "tofu-first-pin",
+    "logical_tree_sha256": "c2930cf681413e228b649234b4192bbbd6f3f6b634afb012e80e94f623d54b53",
+    "pinned_utc": "2026-09-17T02:20:56Z"
+  },
+  "scale_check": {
+    "tier": "large",
+    "tier_limit_bytes": 8589934592,
+    "bytes": 4738688282,
+    "ok": true,
+    "fits_smaller_tier": false
+  },
+  "provenance": {
+    "inputs": [
+      {
+        "name": "h00",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-000000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-000000.gz",
+        "sha256": "3ca58de202c1ce930b3d30c4042b8672775288c05cdda767245f635635f36299",
+        "size": 49655864,
+        "retrieved_utc": "2026-09-16T23:32:18Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-000000.gz"
+      },
+      {
+        "name": "h01",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-010000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-010000.gz",
+        "sha256": "20c2feb3abdfeb42541a05855eb8e9c86a68b6aa3a71fcf6854d15d7eac3ee3b",
+        "size": 47305306,
+        "retrieved_utc": "2026-09-16T23:32:26Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-010000.gz"
+      },
+      {
+        "name": "h02",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-020000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-020000.gz",
+        "sha256": "b8c7597a6b42dd7b7a274ca2db3cdf76163b63b93ba57cffc84665cfd2634aed",
+        "size": 45710200,
+        "retrieved_utc": "2026-09-16T23:32:39Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-020000.gz"
+      },
+      {
+        "name": "h03",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-030000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-030000.gz",
+        "sha256": "93430ed833a53b22da98ef7bd8e389a78adfc472c036b1c15fd2fcd6cedf2597",
+        "size": 45803746,
+        "retrieved_utc": "2026-09-16T23:32:47Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-030000.gz"
+      },
+      {
+        "name": "h04",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-040000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-040000.gz",
+        "sha256": "59b39134652b8ebef6b75b993a82fcee4dd6e65cc026b366c1db24fb5bafcc64",
+        "size": 45571078,
+        "retrieved_utc": "2026-09-16T23:32:56Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-040000.gz"
+      },
+      {
+        "name": "h05",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-050000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-050000.gz",
+        "sha256": "f67a33ad0de5ba8b92f72f80af9abc14fe89bfdcdffdc876f210efb51cf6f7c8",
+        "size": 51149755,
+        "retrieved_utc": "2026-09-16T23:33:09Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-050000.gz"
+      },
+      {
+        "name": "h06",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-060000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-060000.gz",
+        "sha256": "48ffde67820c7da5b13527bdba0f29625426002ea7141e29fa39ded5e11d50e5",
+        "size": 48830279,
+        "retrieved_utc": "2026-09-16T23:33:18Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-060000.gz"
+      },
+      {
+        "name": "h07",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-070000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-070000.gz",
+        "sha256": "4fda6277a226eeabc9b69f52d02a3afc882c2b2407cc18bfcfcc5c68ecbbac84",
+        "size": 53759289,
+        "retrieved_utc": "2026-09-16T23:33:29Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-070000.gz"
+      },
+      {
+        "name": "h08",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-080000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-080000.gz",
+        "sha256": "5a131c52ec624a8e4d59f377eea9c688266c69c3433bab9f724f799f67a9929d",
+        "size": 53096181,
+        "retrieved_utc": "2026-09-16T23:33:43Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-080000.gz"
+      },
+      {
+        "name": "h09",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-090000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-090000.gz",
+        "sha256": "66325c8bb9b9dda9ccab378f57653d0c5a0a0e53c8529b482a3692e02bca5e6f",
+        "size": 54584040,
+        "retrieved_utc": "2026-09-16T23:33:54Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-090000.gz"
+      },
+      {
+        "name": "h10",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-100000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-100000.gz",
+        "sha256": "37f55d8eb2fd50a8d2beb535309cf79dd45b68e1e5510c12cb70ccaaef9c54cb",
+        "size": 55900456,
+        "retrieved_utc": "2026-09-16T23:34:04Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-100000.gz"
+      },
+      {
+        "name": "h11",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-110000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-110000.gz",
+        "sha256": "5b4ed7b1200dfe924eccd62b288de18a8b051f9f39e7635d5537be54c32cb958",
+        "size": 55958877,
+        "retrieved_utc": "2026-09-16T23:34:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-110000.gz"
+      },
+      {
+        "name": "h12",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-120000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-120000.gz",
+        "sha256": "61d21d899b102f28646e99836ae80cecc47c44e12b76bc34a3e192968480484c",
+        "size": 58896417,
+        "retrieved_utc": "2026-09-16T23:34:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-120000.gz"
+      },
+      {
+        "name": "h13",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-130000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-130000.gz",
+        "sha256": "356e2473a6f4247c5b8c16ec6836baff3a307fb432612a2548c2503bee86f133",
+        "size": 60028443,
+        "retrieved_utc": "2026-09-16T23:34:39Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-130000.gz"
+      },
+      {
+        "name": "h14",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-140000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-140000.gz",
+        "sha256": "537983fabfc12956609edd3b2a1d0685e8f7fc3c77616a7387a71d68f349f12d",
+        "size": 61770978,
+        "retrieved_utc": "2026-09-16T23:34:53Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-140000.gz"
+      },
+      {
+        "name": "h15",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-150000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-150000.gz",
+        "sha256": "ed6678a8727d6b2a2d431213f696f80b7099d762333a1835ae9dcf03e8525425",
+        "size": 62408833,
+        "retrieved_utc": "2026-09-16T23:35:04Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-150000.gz"
+      },
+      {
+        "name": "h16",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-160000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-160000.gz",
+        "sha256": "5fa587a6fd985755c85dd139a69a43409d07b0a32461158644a20950ac277f22",
+        "size": 62678191,
+        "retrieved_utc": "2026-09-16T23:35:15Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-160000.gz"
+      },
+      {
+        "name": "h17",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-170000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-170000.gz",
+        "sha256": "5f5cb094815533d9041d7cb0fde04b4375fe65a3eea8952dea67bf2ab4cbcd47",
+        "size": 61075447,
+        "retrieved_utc": "2026-09-16T23:35:28Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-170000.gz"
+      },
+      {
+        "name": "h18",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-180000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-180000.gz",
+        "sha256": "76be068c8061ddb67c8cd07891182ad857906aa9188ae88834a734844156e4a4",
+        "size": 60400902,
+        "retrieved_utc": "2026-09-16T23:35:40Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-180000.gz"
+      },
+      {
+        "name": "h19",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-190000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-190000.gz",
+        "sha256": "30d1823a86d26fd96a04952515320eddd11fea1ce6f2ccc286f1756576cfe34a",
+        "size": 59959064,
+        "retrieved_utc": "2026-09-16T23:35:50Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-190000.gz"
+      },
+      {
+        "name": "h20",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-200000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-200000.gz",
+        "sha256": "92587b717cf926dcef3349e413d1e4557fb939db1934712eb4b60439b9d8f3ac",
+        "size": 60868544,
+        "retrieved_utc": "2026-09-16T23:36:03Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-200000.gz"
+      },
+      {
+        "name": "h21",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-210000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-210000.gz",
+        "sha256": "d7cb155a5c37fd66cbad34960d1bf1401765f2f2f19937189f24db03e59ad1ed",
+        "size": 60105953,
+        "retrieved_utc": "2026-09-16T23:36:14Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-210000.gz"
+      },
+      {
+        "name": "h22",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-220000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-220000.gz",
+        "sha256": "d811b40ecb895f4afe27a148f8196561d6c787baeb4f1784b3bef8a3daa6037d",
+        "size": 57663677,
+        "retrieved_utc": "2026-09-16T23:36:24Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-220000.gz"
+      },
+      {
+        "name": "h23",
+        "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-230000.gz",
+        "final_url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-230000.gz",
+        "sha256": "f62a806a37f9f49b1d23baeb08eea74be563d4cc1eb22511421fe3ccc1956671",
+        "size": 53810334,
+        "retrieved_utc": "2026-09-17T02:20:00Z",
+        "retrieval_date": "2026-09-16",
+        "pin": "tofu-first-retrieval",
+        "filename": "pageviews-20260801-230000.gz"
+      }
+    ],
+    "steps": [
+      {
+        "op": "decompress",
+        "input": "h00",
+        "dest": "pageviews-20260801-000000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h01",
+        "dest": "pageviews-20260801-010000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h02",
+        "dest": "pageviews-20260801-020000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h03",
+        "dest": "pageviews-20260801-030000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h04",
+        "dest": "pageviews-20260801-040000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h05",
+        "dest": "pageviews-20260801-050000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h06",
+        "dest": "pageviews-20260801-060000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h07",
+        "dest": "pageviews-20260801-070000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h08",
+        "dest": "pageviews-20260801-080000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h09",
+        "dest": "pageviews-20260801-090000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h10",
+        "dest": "pageviews-20260801-100000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h11",
+        "dest": "pageviews-20260801-110000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h12",
+        "dest": "pageviews-20260801-120000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h13",
+        "dest": "pageviews-20260801-130000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h14",
+        "dest": "pageviews-20260801-140000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h15",
+        "dest": "pageviews-20260801-150000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h16",
+        "dest": "pageviews-20260801-160000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h17",
+        "dest": "pageviews-20260801-170000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h18",
+        "dest": "pageviews-20260801-180000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h19",
+        "dest": "pageviews-20260801-190000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h20",
+        "dest": "pageviews-20260801-200000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h21",
+        "dest": "pageviews-20260801-210000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h22",
+        "dest": "pageviews-20260801-220000",
+        "format": "gz"
+      },
+      {
+        "op": "decompress",
+        "input": "h23",
+        "dest": "pageviews-20260801-230000",
+        "format": "gz"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_executable": "/root/eb-research/venv/bin/python",
+    "kernel": "5.15.167.4-microsoft-standard-WSL2",
+    "gzip": "gzip 1.12",
+    "tool_sha256": {
+      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
+      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
+    }
+  },
+  "fingerprint": {
+    "format": "ebrc-fp-v1",
+    "root_type": "dir",
+    "tree_sha256": "33e8cb5326f8718ba34610bb18799cf9ee8a01f657eb05b4696b3e4cdd9f0cfd",
+    "logical_tree_sha256": "c2930cf681413e228b649234b4192bbbd6f3f6b634afb012e80e94f623d54b53",
+    "content_tree_sha256": "cd80cb7aa95932531f9856eea77611e6ad5b829fedcc4641a9617bedf57b1330",
+    "extended_tree_sha256": "5e49eb68892cd6e580ad4de3cd0576da4670de26a1cffef72ad0481aef43596d",
+    "bytes": 4738688282,
+    "bytes_all_paths": 4738688282,
+    "allocated_bytes": 4738797568,
+    "counts": {
+      "objects": 25,
+      "files": 24,
+      "unique_file_inodes": 24,
+      "dirs": 0,
+      "symlinks": 0,
+      "hardlink_groups": 0,
+      "hardlink_extra_paths": 0,
+      "fifos": 0,
+      "other": 0
+    },
+    "structure": {
+      "max_depth": 1,
+      "max_name_length_bytes": 25,
+      "path_length_bytes": {
+        "min": 25,
+        "max": 25,
+        "mean": 25.0,
+        "p50": 25,
+        "p95": 25
+      }
+    }
+  },
+  "fingerprint_view": "full"
+}
