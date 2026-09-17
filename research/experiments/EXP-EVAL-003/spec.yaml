@@ -1,0 +1,72 @@
+schema: ebr.spec.v1
+experiment_id: EXP-EVAL-003
+status: pre-registered-design
+question: >
+  Known-answer test of the ebr runner's Linux peak-RSS accounting (harness review R1-16): does
+  resource.max_rss_bytes equal the measured child's own VmHWM within the T-06 process floor
+  (4 MiB) for allocations of 16-1024 MiB, independent of the runner's own high-water mark, and is
+  it null (not a runner-contaminated fallback) when GNU time is unavailable? Run-level factors
+  (runner ballast, GNU time disabled, runner version) are set by environment per
+  research/experiments/EXP-EVAL-003/protocol.md.
+hypothesis: >
+  H-RSS: |max_rss_bytes - self_vmhwm_bytes| <= 4 MiB in every sample with GNU time present, for
+  runner ballast 0 and 512 MiB; with GNU time disabled the fixed runner records null. Negative
+  control: the pre-fix runner (3c084ae) with GNU time disabled and 512 MiB ballast reports at
+  least 512 MiB for the 16 MiB child. H-WRITE and H-TREE rows use the same helpers.
+# Protocol-validity experiment; selects no product candidate (see protocol.md "Kind").
+decision_ids: [DEC-ECO-082]
+
+candidates:
+  - {name: alloc-16, params: {mib: 16}}
+  - {name: alloc-64, params: {mib: 64}}
+  - {name: alloc-256, params: {mib: 256}}
+  - {name: alloc-1024, params: {mib: 1024}}
+  - name: tree-64-then-256
+    params: {mib: 0}
+    command: >-
+      python3 /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-EVAL-003/tools/alloc_child.py
+      --mib {mib} --touch --grandchildren 64,256
+  - name: write-4096-fsync-delete
+    params: {mib: 0}
+    command: >-
+      python3 /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-EVAL-003/tools/write_child.py
+      --bytes 4096 --dir {scratch} --delete-after-ms 50
+command: >-
+  python3 /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-EVAL-003/tools/alloc_child.py
+  --mib {mib} --touch
+shell: bash
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+corpus:
+  generated:
+    - {item_id: kat-dummy, family: known-answer, generator: zeros-v1, bytes: 0, seed: 20260920}
+
+metrics:
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: none, unit: B}
+  - {name: tree_peak_rss_sum_bytes, source: resource, family: memory_peak, direction: none, unit: B}
+  - {name: io_write_bytes, source: resource, family: io, direction: none, unit: B}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: none, unit: B}
+  - {name: self_vmhwm_bytes, source: stdout_json, key: self_vmhwm_bytes, family: memory_peak, direction: none, unit: B}
+  - {name: written_bytes, source: stdout_json, key: written_bytes, family: io, direction: none, unit: B}
+  - {name: rss_error_bytes, source: derived, op: difference, args: [max_rss_bytes, self_vmhwm_bytes], family: memory_peak, direction: none, unit: B}
+
+repetitions: 20
+warmups: 1
+record_warmups: true
+seeds: {order: 20260920, bootstrap: 20260920, command: 20260920}
+timing: false
+order: randomized_blocks
+raw_compression: none
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [python3, /usr/bin/time]
+  poll_interval_s: 0.05
+  timeout_s: 120
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [max_rss_bytes, self_vmhwm_bytes, rss_error_bytes, io_write_bytes, written_bytes, scratch_peak_bytes]

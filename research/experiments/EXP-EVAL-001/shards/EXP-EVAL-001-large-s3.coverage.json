@@ -1,0 +1,30 @@
+{
+  "experiment_id": "EXP-EVAL-001-large-s3",
+  "config_ids": [
+    "zip-9",
+    "targz-gzip-6",
+    "tarzstd-3-t1",
+    "tarzstd-19-tN",
+    "tarzstd-22-ultra-long27-t1",
+    "tarxz-pixz",
+    "tarlz4-1",
+    "7z-mx9-solid",
+    "7z-mx9-nosolid",
+    "squashfs-zstd",
+    "dwarfs-l7",
+    "borg-repo",
+    "restic-repo"
+  ],
+  "item_count": 7,
+  "item_ids": [
+    "f01-tuning-llvm-project-20-1-8-git",
+    "f06-tuning-gharchive-2024-01-15-h15",
+    "f07-tuning-qwen2-5-1-5b-safetensors-bf16",
+    "f08-tuning-wikimedia-simplewiki-sql-dump",
+    "f15-validation-real-debian-nocloud-raw",
+    "f18-tuning-curl-8-x-release-series",
+    "f18-validation-cpython-3-12-point-releases"
+  ],
+  "item_bytes_total": 11099258528,
+  "samples": 182
+}

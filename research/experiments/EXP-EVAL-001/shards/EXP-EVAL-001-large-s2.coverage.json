@@ -1,0 +1,30 @@
+{
+  "experiment_id": "EXP-EVAL-001-large-s2",
+  "config_ids": [
+    "zip-9",
+    "targz-gzip-6",
+    "tarzstd-3-t1",
+    "tarzstd-19-tN",
+    "tarzstd-22-ultra-long27-t1",
+    "tarxz-pixz",
+    "tarlz4-1",
+    "7z-mx9-solid",
+    "7z-mx9-nosolid",
+    "squashfs-zstd",
+    "dwarfs-l7",
+    "borg-repo",
+    "restic-repo"
+  ],
+  "item_count": 7,
+  "item_ids": [
+    "f05-tuning-loghub-hdfs-v1",
+    "f08-validation-stackexchange-cs-sqlite",
+    "f10-linux-firmware-20260910-full-tree",
+    "f11-fedora-44-large-rpm-set",
+    "f12-tuning-nasa-ivl-photos-large",
+    "f16-ubuntu-noble-cloudimg-20260911-raw",
+    "f18-tuning-ubuntu-noble-cloud-images"
+  ],
+  "item_bytes_total": 11075280495,
+  "samples": 182
+}

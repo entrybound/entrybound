@@ -1,0 +1,73 @@
+schema: ebr.spec.v1
+experiment_id: EXP-EVAL-006
+status: pre-registered-design
+question: >
+  Arm A (research/experiments/EXP-EVAL-006/protocol.md): for each encrypted archive configuration
+  (REF-PROD X-Wing recipient per padding mode; 7z AES with and without -mhe; ZipCrypto; WinZip AE-2;
+  RAR5 -hp; tar|age; tar|gpg symmetric AEAD and public-key), how many of 200 seeded single-byte
+  ciphertext flips per region stratum yield wrong plaintext without a detected failure, and how
+  many plaintext bytes are released before detection?
+hypothesis: >
+  Entrybound encrypted INDEXED: undetected_tampers = 0 in every stratum (HC-14; any failure is an
+  R1 artifact). ZipCrypto has undetected wrong-output flips; WinZip AE-2 detects payload flips but
+  not unauthenticated header/central-directory flips; tar|age and gpg AEAD detect all payload flips.
+decision_ids: [DEC-CRY-042, DEC-ECO-069, DEC-ECO-070]
+
+command: >-
+  python3 /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-EVAL-006/probes/tamper_campaign.py
+  --tool {tool} --mode {mode} --source-file {item_path} --split-files {split_files}
+  --scratch {scratch} --flips-per-region 200 --seed {seed}
+  --ebound /root/eb-research/target/refprod/release/ebound
+  --tools-root /root/eb-research/tools/eval006
+shell: bash
+
+candidates:
+  - {name: refprod-enc-bucketed, params: {tool: ebound, mode: recipient-bucketed, split_files: 256}}
+  - {name: refprod-enc-none, params: {tool: ebound, mode: recipient-none, split_files: 256}}
+  - {name: refprod-enc-max, params: {tool: ebound, mode: recipient-max, split_files: 256}}
+  - {name: 7z-aes-mhe, params: {tool: 7z, mode: aes-mhe, split_files: 256}}
+  - {name: 7z-aes-nomhe, params: {tool: 7z, mode: aes-nomhe, split_files: 256}}
+  - {name: zip-zipcrypto, params: {tool: zip, mode: zipcrypto, split_files: 256}}
+  - {name: zip-winzip-ae2, params: {tool: 7z, mode: zip-aes256, split_files: 256}}
+  - {name: rar5-hp, params: {tool: rar, mode: rar5-hp, split_files: 256}}
+  - {name: tar-age, params: {tool: age, mode: x25519, split_files: 256}}
+  - {name: tar-gpg-sym-aead, params: {tool: gpg, mode: symmetric-aead, split_files: 256}}
+  - {name: tar-gpg-pub, params: {tool: gpg, mode: pubkey, split_files: 256}}
+
+corpus:
+  generated:
+    - {item_id: tamper-tree-64k, family: generated-crypto-probe, generator: text-v1, bytes: 65536, seed: 20260929}
+    - {item_id: tamper-tree-4m, family: generated-crypto-probe, generator: text-v1, bytes: 4194304, seed: 20260929}
+    - {item_id: tamper-tree-64m, family: generated-crypto-probe, generator: random-v1, bytes: 67108864, seed: 20260929}
+
+metrics:
+  - {name: flips_total, source: stdout_json, key: flips_total, family: correctness, direction: none}
+  - {name: undetected_tampers, source: stdout_json, key: undetected_wrong_output, family: correctness, direction: minimize}
+  - {name: detected, source: stdout_json, key: detected, family: correctness, direction: none}
+  - {name: benign_same_output, source: stdout_json, key: benign_same_output, family: correctness, direction: none}
+  - {name: crashes, source: stdout_json, key: crashes, family: correctness, direction: minimize}
+  - {name: released_before_detection_bytes, source: stdout_json, key: released_before_detection_bytes, family: correctness, direction: minimize, unit: B}
+  - {name: undetected_header_stratum, source: stdout_json, key: strata.header.undetected_wrong_output, family: correctness, direction: minimize}
+  - {name: undetected_index_stratum, source: stdout_json, key: strata.index.undetected_wrong_output, family: correctness, direction: minimize}
+  - {name: undetected_payload_stratum, source: stdout_json, key: strata.payload.undetected_wrong_output, family: correctness, direction: minimize}
+  - {name: undetected_trailer_stratum, source: stdout_json, key: strata.trailer.undetected_wrong_output, family: correctness, direction: minimize}
+  - {name: artifact_bytes, source: stdout_json, key: artifact_bytes, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260929, bootstrap: 20260929, command: 20260929}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/refprod/release/ebound, 7z, zip, unzip, gpg, tar, python3]
+  timeout_s: 21600
+
+analysis:
+  baseline: refprod-enc-bucketed
+  pairing: item
+  report_metrics: [undetected_tampers, detected, benign_same_output, crashes, released_before_detection_bytes]

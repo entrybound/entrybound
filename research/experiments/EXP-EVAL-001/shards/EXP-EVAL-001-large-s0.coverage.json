@@ -1,0 +1,30 @@
+{
+  "experiment_id": "EXP-EVAL-001-large-s0",
+  "config_ids": [
+    "zip-9",
+    "targz-gzip-6",
+    "tarzstd-3-t1",
+    "tarzstd-19-tN",
+    "tarzstd-22-ultra-long27-t1",
+    "tarxz-pixz",
+    "tarlz4-1",
+    "7z-mx9-solid",
+    "7z-mx9-nosolid",
+    "squashfs-zstd",
+    "dwarfs-l7",
+    "borg-repo",
+    "restic-repo"
+  ],
+  "item_count": 7,
+  "item_ids": [
+    "f01-validation-cpython-3-13-15-full-clone",
+    "f02-tuning-ripgrep-cargo-target",
+    "f03-validation-bat-cargo-vendor",
+    "f05-tuning-google-clusterdata-2011-2-task-usage",
+    "f05-validation-wikimedia-pageviews-20260801",
+    "f06-validation-noaa-ghcn-daily-csv-2023",
+    "f16-debian-13-netinst-iso"
+  ],
+  "item_bytes_total": 11079719164,
+  "samples": 182
+}

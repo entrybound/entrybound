@@ -1,0 +1,63 @@
+{
+  "config_ids": [
+    "zip-6",
+    "zip-9",
+    "7z-zip-9",
+    "targz-gzip-6",
+    "targz-gzip-9",
+    "targz-pigz-9-t1",
+    "targz-pigz-9-tN",
+    "tarzstd-3-t1",
+    "tarzstd-19-t1",
+    "tarzstd-19-tN",
+    "tarzstd-22-ultra-long27-t1",
+    "tarxz-6",
+    "tarxz-9e",
+    "tarxz-pixz",
+    "tarlz4-1",
+    "tarbrotli-q11",
+    "7z-mx5-solid",
+    "7z-mx9-solid",
+    "7z-mx9-nosolid",
+    "squashfs-zstd",
+    "squashfs-xz",
+    "wim-lzx",
+    "wim-lzms-solid",
+    "borg-repo",
+    "restic-repo",
+    "dwarfs-l7",
+    "dwarfs-l9",
+    "zpaq-m5"
+  ],
+  "item_count": 20,
+  "item_ids": [
+    "f01-tuning-curl-8-19-0-git",
+    "f02-validation-cpython-build",
+    "f03-tuning-typescript-npm-node-modules",
+    "f04-validation-bootstrap-npm-modules",
+    "f05-tuning-loghub-openstack",
+    "f06-tuning-gharchive-2015-01-01-h15-h16",
+    "f06-validation-osm-andorra-20250101-xml",
+    "f07-validation-gen-numeric-b",
+    "f08-validation-mariadb11-test-db-employees",
+    "f09-git-for-windows-portable-2550",
+    "f10-fedora-44-static-libraries",
+    "f11-maven-central-jvm-jars",
+    "f12-tuning-nasa-ivl-photos-medium",
+    "f13-tuning-musopen-flac-medium",
+    "f13-validation-sintel-media-medium",
+    "f15-tuning-vmraw",
+    "f16-gen-fat32-image",
+    "f17-validation-real-yq-vendor-8x",
+    "f18-validation-redis-7-2-point-releases",
+    "f20-tuning-csprng"
+  ],
+  "splits": [
+    "tuning",
+    "validation"
+  ],
+  "scales": [
+    "medium"
+  ],
+  "repetitions": 2
+}

@@ -1,0 +1,86 @@
+schema: ebr.spec.v1
+experiment_id: EXP-EVAL-004
+status: pre-registered-design
+question: >
+  Calibration arm AA / wsl-ubuntu / st-v / decode (method id EXP-CAL-AA-wsl-ubuntu, protocol.md of
+  research/experiments/EXP-EVAL-004): with two identical ebound unpack arms interleaved in randomized
+  blocks under the section 4 controls, is the corpus-level ratio interval EQUIVALENT at 0.99, is at
+  most one item DISTINGUISHABLE, are at most 10% of samples invalid, and is the median item-level
+  half-width at the cap at most 0.5 x log1p(r) for time_wall, time_cpu and memory_peak?
+hypothesis: >
+  H-CAL: the WSL st-v decode A/A arm passes every decision-method.md 4.7 criterion within the
+  strengthening ladder; a failure after the ladder makes (wsl-ubuntu, family) not decision-grade.
+# Protocol calibration: not a decision result (decision-method.md 4.7). Evidence for DEC-ECO-082.
+decision_ids: [DEC-ECO-082]
+
+candidates:
+  - {name: aa-a, params: {arm: a}}
+  - {name: aa-b, params: {arm: b}}
+command: >-
+  rm -rf {scratch}/out &&
+  /root/eb-research/target/refprod/release/ebound unpack
+  /root/eb-research/cache/eval004/{item_id}.balanced.eb {scratch}/out
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-zstd-v1-5-7-git
+    - f02-tuning-lz4-intree-make-build
+    - f05-tuning-gutenberg-books
+    - f07-tuning-silesia-xray
+    - f08-tuning-silesia-osdb
+    - f10-gen-redundant-binary-blobs
+    - f12-tuning-nasa-ivl-photos-small
+    - f14-apache-maven-3916-bin-tarball
+    - f01-tuning-curl-8-19-0-git
+    - f03-tuning-ripgrep-cargo-vendor
+    - f04-tuning-maildir
+    - f05-tuning-loghub-openstack
+    - f06-tuning-gharchive-2015-01-01-h15-h16
+    - f07-tuning-sdss-dr17-frames
+    - f09-silesia-mozilla-ooffice
+    - f11-ubuntu-noble-debs
+    - f16-alpine-virt-3241-iso
+    - f18-tuning-zstd-releases-1-5-x
+    - f02-tuning-ripgrep-cargo-target
+    - f06-tuning-gharchive-2024-01-15-h15
+    - f07-tuning-pythia-160m-safetensors-step100000
+    - f08-tuning-wikimedia-simplewiki-sql-dump
+    - f12-tuning-nasa-ivl-photos-large
+    - f13-tuning-bbb-video-large
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: decode_throughput_bps, source: derived, op: rate, args: [input_bytes, wall_s], family: throughput, direction: maximize, unit: B/s}
+
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 20260923, bootstrap: 20260923, command: 20260923}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  cpu_affinity: [2]
+  requires: [/root/eb-research/target/refprod/release/ebound]
+  timeout_s: 1800
+
+analysis:
+  baseline: aa-a
+  pairing: item_repetition
+  report_metrics: [wall_s, cpu_s, max_rss_bytes, decode_throughput_bps]

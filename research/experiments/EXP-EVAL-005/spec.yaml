@@ -1,0 +1,107 @@
+schema: ebr.spec.v1
+experiment_id: EXP-EVAL-005
+status: pre-registered-design
+question: >
+  O2 pilot (research/experiments/EXP-EVAL-005/protocol.md): on wsl-ubuntu, st-v, tuning split,
+  small tier, how does full unpack of REF-PROD ebound archives (fast/balanced INDEXED) compare in
+  decode wall time, CPU time and peak RSS with extraction of the capability-matched incumbent
+  artifacts, with every sample's output verified against the item's content fingerprint?
+hypothesis: >
+  H2/H4 of protocol.md: fast and balanced full unpack are non-inferior to tar+zstd -3 extraction at
+  T-04 and within the T-06 band on peak RSS. Tuning is exploratory: this run fixes the superiority
+  declarations for the validation look; it cannot select or eliminate.
+decision_ids: [DEC-CMP-011, DEC-ECO-070, DEC-ACC-002, DEC-ECO-031, DEC-ECO-069, DEC-ECO-043]
+
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-EVAL-005/ops/extract.sh
+  --format {format} --artifact /root/eb-research/cache/eval005/{item_id}/{artifact}
+  --dest {scratch}/out --threads 1
+  --ebound /root/eb-research/target/refprod/release/ebound
+shell: bash
+
+candidates:
+  - {name: refprod-fast-indexed, params: {format: eb, artifact: refprod-fast-indexed.eb}}
+  - {name: refprod-balanced-indexed, params: {format: eb, artifact: refprod-balanced-indexed.eb}}
+  - {name: tarzstd-3, params: {format: tar+zstd, artifact: tarzstd-3.bin}}
+  - {name: tarzstd-19, params: {format: tar+zstd, artifact: tarzstd-19.bin}}
+  - {name: targz-gzip-6, params: {format: tar+gzip, artifact: targz-gzip-6.bin}}
+  - {name: zip-6, params: {format: zip, artifact: zip-6.bin}}
+  - {name: 7z-mx5-solid, params: {format: 7z, artifact: 7z-mx5-solid.bin}}
+  - {name: 7z-mx9-nosolid, params: {format: 7z, artifact: 7z-mx9-nosolid.bin}}
+  - {name: tarxz-6, params: {format: tar+xz, artifact: tarxz-6.bin}}
+  - {name: squashfs-zstd, params: {format: squashfs, artifact: squashfs-zstd.bin}}
+
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-zstd-v1-5-7-git
+    - f02-tuning-lz4-intree-make-build
+    - f03-tuning-fzf-go-mod-vendor
+    - f04-tuning-sourcelike
+    - f05-tuning-gen-logs-a-small
+    - f05-tuning-gutenberg-books
+    - f05-tuning-logrotate-from-loghub-hdfs
+    - f06-tuning-census-popest-2023
+    - f06-tuning-gen-structured-a-small
+    - f07-tuning-gen-numeric-a-small
+    - f07-tuning-mnist-npz
+    - f07-tuning-silesia-mr
+    - f08-tuning-chinook-sqlite
+    - f08-tuning-gen-sqlite-tpch-small
+    - f08-tuning-silesia-osdb
+    - f09-alpine-324-arm64-rootfs-binaries
+    - f09-ripgrep-1411-arm64-darwin-multiplatform
+    - f10-gen-redundant-binary-blobs
+    - f11-alpine-324-apks
+    - f11-cosign-v250-signing-assets
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f12-tuning-nasa-ivl-photos-small
+    - f13-tuning-kodak-image-codecs-small
+    - f13-tuning-nasa-ntrs-pdf-small
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f16-alpine-3241-minirootfs-ext4-qcow2
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f19-tuning-zoo
+    - f20-tuning-generated-malicious-structures
+    - f20-tuning-generated-private-vault
+    - f20-tuning-real-libarchive-testsuite
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: io_write_bytes, source: resource, family: io, direction: none, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: decode_throughput_bps, source: derived, op: rate, args: [input_bytes, wall_s], family: throughput, direction: maximize, unit: B/s}
+  - {name: content_ok, source: stdout_json, key: content_ok, family: correctness, direction: maximize}
+  - {name: in_process_decode_s, source: stdout_json, key: in_process_decode_s, family: time_wall, direction: minimize, unit: s}
+
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 20260926, bootstrap: 20260926, command: 20260926}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  cpu_affinity: [2]
+  requires: [/root/eb-research/target/refprod/release/ebound, zstd, xz, gzip, unzip, 7z, unsquashfs]
+  timeout_s: 1800
+
+analysis:
+  baseline: refprod-balanced-indexed
+  pairing: item_repetition
+  report_metrics: [wall_s, cpu_s, max_rss_bytes, decode_throughput_bps, content_ok]

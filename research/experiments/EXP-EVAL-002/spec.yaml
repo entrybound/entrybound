@@ -1,0 +1,132 @@
+schema: ebr.spec.v1
+experiment_id: EXP-EVAL-002
+status: pre-registered-design
+question: >
+  How large is the whole Entrybound system (REF-PROD ebound built at 9e44608, every profile and
+  layout, encrypted and retrofit arms) in artifact_bytes, fixed overhead, determinism, round-trip
+  exactness and single-file self-containment, before comparison against the capability-matched
+  specialist incumbents of archetypal-objective.md 1.3? (Tuning pilot shard: small tuning items;
+  research/experiments/EXP-EVAL-002/protocol.md.)
+hypothesis: >
+  H1-H5 of protocol.md: dense/extreme are non-inferior to the per-item better of solid 7z and
+  tar.xz at the CC-01 declared-cost tolerance; balanced INDEXED beats 7z non-solid on F01-F06 and
+  F17-F18; dense is non-inferior on F17/F18 to long-window zstd and solid 7z; small-tier fixed
+  overhead is at most 512 B; native .eb beats the tar.zst+sidecar retrofit. Round-trip mismatches
+  are 0, unencrypted arms are repeat-hash deterministic, and encrypted arms never repeat bytes.
+decision_ids: [DEC-CMP-011, DEC-ECO-070, DEC-ECO-031, DEC-ECO-069, DEC-CON-022, DEC-ECO-043, DEC-CRY-042]
+
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-EVAL-002/refprod_sample.sh
+  --ebound /root/eb-research/target/refprod/release/ebound
+  --inspect /root/eb-research/target/harness/release/ebr-inspect-bytes
+  --item {item_path} --scratch {scratch} --profile {profile} --layout {layout}
+  --encrypt {encrypt} --pad {pad}
+shell: bash
+
+candidates:
+  - {name: refprod-fast-indexed, params: {profile: fast, layout: indexed, encrypt: "false", pad: none}}
+  - {name: refprod-balanced-indexed, params: {profile: balanced, layout: indexed, encrypt: "false", pad: none}}
+  - {name: refprod-dense-indexed, params: {profile: dense, layout: indexed, encrypt: "false", pad: none}}
+  - {name: refprod-extreme-indexed, params: {profile: extreme, layout: indexed, encrypt: "false", pad: none}}
+  - {name: refprod-fast-stream, params: {profile: fast, layout: stream, encrypt: "false", pad: none}}
+  - {name: refprod-balanced-stream, params: {profile: balanced, layout: stream, encrypt: "false", pad: none}}
+  - {name: refprod-dense-stream, params: {profile: dense, layout: stream, encrypt: "false", pad: none}}
+  - {name: refprod-extreme-stream, params: {profile: extreme, layout: stream, encrypt: "false", pad: none}}
+  - {name: refprod-balanced-indexed-enc-bucketed, params: {profile: balanced, layout: indexed, encrypt: "true", pad: bucketed}}
+  - {name: refprod-balanced-indexed-enc-none, params: {profile: balanced, layout: indexed, encrypt: "true", pad: none}}
+  - {name: refprod-balanced-indexed-enc-max, params: {profile: balanced, layout: indexed, encrypt: "true", pad: max}}
+  - name: retrofit-tarzstd19-sidecar
+    params: {profile: balanced, layout: indexed, encrypt: "false", pad: none}
+    command: >-
+      bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-EVAL-002/retrofit_sample.sh
+      --ebound /root/eb-research/target/refprod/release/ebound --item {item_path} --scratch {scratch}
+  - name: concat-stream-min
+    params: {profile: none, layout: none, encrypt: "false", pad: none}
+    command: >-
+      python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/concat_stream_min.py
+      --item {item_path} --scratch {scratch}
+
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-zstd-v1-5-7-git
+    - f02-tuning-lz4-intree-make-build
+    - f03-tuning-fzf-go-mod-vendor
+    - f04-tuning-sourcelike
+    - f05-tuning-gen-logs-a-small
+    - f05-tuning-gutenberg-books
+    - f05-tuning-logrotate-from-loghub-hdfs
+    - f06-tuning-census-popest-2023
+    - f06-tuning-gen-structured-a-small
+    - f07-tuning-gen-numeric-a-small
+    - f07-tuning-mnist-npz
+    - f07-tuning-silesia-mr
+    - f07-tuning-silesia-sao
+    - f07-tuning-silesia-xray
+    - f08-tuning-chinook-sqlite
+    - f08-tuning-gen-sqlite-tpch-small
+    - f08-tuning-silesia-osdb
+    - f09-alpine-324-arm64-rootfs-binaries
+    - f09-alpine-324-riscv64-rootfs-binaries
+    - f09-alpine-324-rootfs-binaries
+    - f09-ripgrep-1411-arm64-darwin-multiplatform
+    - f10-gen-redundant-binary-blobs
+    - f11-alpine-324-apks
+    - f11-cosign-v250-signing-assets
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f12-tuning-nasa-ivl-photos-small
+    - f13-tuning-kodak-image-codecs-small
+    - f13-tuning-nasa-ntrs-pdf-small
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f16-alpine-3241-minirootfs-ext4-qcow2
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f19-tuning-zoo
+    - f20-tuning-generated-malicious-structures
+    - f20-tuning-generated-private-vault
+    - f20-tuning-real-libarchive-testsuite
+
+metrics:
+  - {name: output_bytes, source: path_size, path: "{scratch}/artifact.eb", family: size, direction: minimize, unit: B}
+  - {name: artifact_sha256, source: path_sha256, path: "{scratch}/artifact.eb", family: correctness}
+  - {name: artifact_bytes, source: stdout_json, key: artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: metadata_bytes, source: stdout_json, key: metadata_bytes, family: size, direction: minimize, unit: B}
+  - {name: index_bytes, source: stdout_json, key: index_bytes, family: size, direction: minimize, unit: B}
+  - {name: dictionary_bytes, source: stdout_json, key: dictionary_bytes, family: size, direction: minimize, unit: B}
+  - {name: side_data_bytes, source: stdout_json, key: side_data_bytes, family: size, direction: minimize, unit: B}
+  - {name: named_bucket_total_bytes, source: stdout_json, key: named_bucket_total_bytes, family: correctness, direction: none, unit: B}
+  - {name: concat_min_bytes, source: stdout_json, key: concat_min_bytes, family: size, direction: none, unit: B}
+  - {name: roundtrip_ok, source: stdout_json, key: roundtrip_ok, family: correctness, direction: maximize}
+  - {name: self_contained_ok, source: stdout_json, key: self_contained_ok, family: correctness, direction: maximize}
+  - {name: verify_outcome, source: stdout_json, key: verify_outcome, family: correctness, kind: string}
+  - {name: refusal_reason_code, source: stdout_json, key: refusal_reason_code, family: correctness, kind: string}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: ratio, source: derived, op: ratio, args: [artifact_bytes, input_bytes], family: size, direction: minimize}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260918, bootstrap: 20260918, command: 20260918}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/refprod/release/ebound
+    - /root/eb-research/target/harness/release/ebr-inspect-bytes
+    - zstd
+    - xz
+    - brotli
+    - gzip
+    - unshare
+  timeout_s: 7200
+
+analysis:
+  baseline: refprod-balanced-indexed
+  pairing: item
+  report_metrics: [artifact_bytes, metadata_bytes, roundtrip_ok, self_contained_ok, ratio]

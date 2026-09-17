@@ -1,0 +1,319 @@
+schema: ebr.spec.v1
+experiment_id: EXP-BASE-SIZE
+status: baselines
+question: For each pinned incumbent container/compressor configuration, what artifact size, determinism
+  and round-trip fidelity does it achieve on the tuning+validation corpus, with timing disabled (research/PROGRESS.md
+  quiet-machine constraint)?
+hypothesis: 'No specific hypothesis: this is a descriptive measurement pass (baselines/configs.json) feeding
+  the domain experiments in Phase C, not a decision test.'
+decision_ids: []
+candidates:
+- name: zip-6
+  params:
+    level: 6
+    format: zip
+  command: cd {item_path} && zip -6 -r -X -y -q {scratch}/artifact.bin . ; test -f {scratch}/artifact.bin
+    || mv {scratch}/artifact.bin.zip {scratch}/artifact.bin ; python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: zip-9
+  params:
+    level: 9
+    format: zip
+  command: cd {item_path} && zip -9 -r -X -y -q {scratch}/artifact.bin . ; test -f {scratch}/artifact.bin
+    || mv {scratch}/artifact.bin.zip {scratch}/artifact.bin ; python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: 7z-zip-9
+  params:
+    level: 9
+    format: zip
+  command: cd {item_path} && 7z a -tzip -mx=9 -snl -bd -y {scratch}/artifact.bin . >/dev/null && python3
+    /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py {scratch}/artifact.bin
+- name: targz-gzip-6
+  params:
+    level: 6
+    threads: 1
+    format: tar+gzip
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | gzip
+    -6 -n > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: targz-gzip-9
+  params:
+    level: 9
+    threads: 1
+    format: tar+gzip
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | gzip
+    -9 -n > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: targz-pigz-9-t1
+  params:
+    level: 9
+    threads: 1
+    format: tar+gzip
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | pigz
+    -9 -n -p1 > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: targz-pigz-9-tN
+  params:
+    level: 9
+    threads: 0
+    format: tar+gzip
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | pigz
+    -9 -n -p$(nproc) > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: tarzstd-3-t1
+  params:
+    level: 3
+    threads: 1
+    format: tar+zstd
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | zstd
+    -3 -T1 -q > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: tarzstd-19-t1
+  params:
+    level: 19
+    threads: 1
+    format: tar+zstd
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | zstd
+    -19 -T1 -q > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: tarzstd-19-tN
+  params:
+    level: 19
+    threads: 0
+    format: tar+zstd
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | zstd
+    -19 -T0 -q > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: tarzstd-22-ultra-long27-t1
+  params:
+    level: 22
+    threads: 1
+    format: tar+zstd
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | zstd
+    --ultra -22 --long=27 -T1 -q > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: tarxz-6
+  params:
+    level: 6
+    threads: 1
+    format: tar+xz
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | xz
+    -6 -T1 -q > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: tarxz-9e
+  params:
+    level: 9
+    threads: 1
+    format: tar+xz
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | xz
+    -9 -e -T1 -q > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: tarxz-pixz
+  params:
+    threads: 0
+    format: tar+xz
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | pixz
+    -p$(nproc) > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: tarlz4-1
+  params:
+    level: 1
+    format: tar+lz4
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | lz4
+    -1 -q > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: tarbrotli-q11
+  params:
+    quality: 11
+    format: tar+brotli
+  command: tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | brotli
+    -q 11 -c > {scratch}/artifact.bin && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: 7z-mx5-solid
+  params:
+    level: 5
+    format: sevenzip
+  command: cd {item_path} && 7z a -t7z -mx=5 -snl -bd -y {scratch}/artifact.bin . >/dev/null && python3
+    /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py {scratch}/artifact.bin
+- name: 7z-mx9-solid
+  params:
+    level: 9
+    format: sevenzip
+  command: cd {item_path} && 7z a -t7z -mx=9 -snl -bd -y {scratch}/artifact.bin . >/dev/null && python3
+    /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py {scratch}/artifact.bin
+- name: 7z-mx9-nosolid
+  params:
+    level: 9
+    format: sevenzip
+  command: cd {item_path} && 7z a -t7z -mx=9 -ms=off -snl -bd -y {scratch}/artifact.bin . >/dev/null &&
+    python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py {scratch}/artifact.bin
+- name: squashfs-zstd
+  params:
+    level: 19
+    format: squashfs
+  command: rm -f {scratch}/artifact.bin && mksquashfs {item_path} {scratch}/artifact.bin -comp zstd -Xcompression-level
+    19 -no-progress -no-exports >/dev/null && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: squashfs-xz
+  params:
+    format: squashfs
+  command: rm -f {scratch}/artifact.bin && mksquashfs {item_path} {scratch}/artifact.bin -comp xz -no-progress
+    -no-exports >/dev/null && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: wim-lzx
+  params:
+    format: wim
+  command: rm -f {scratch}/artifact.bin && wimcapture {item_path} {scratch}/artifact.bin --compress=LZX
+    --no-acls >/dev/null && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: wim-lzms-solid
+  params:
+    format: wim
+  command: rm -f {scratch}/artifact.bin && wimcapture {item_path} {scratch}/artifact.bin --compress=LZMS
+    --solid --no-acls >/dev/null && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: borg-repo
+  params:
+    format: borg
+  command: rm -rf {scratch}/artifact.bin && borg init --encryption=none {scratch}/artifact.bin >/dev/null
+    && borg create --compression zstd,19 {scratch}/artifact.bin::onlyarchive {item_path} >/dev/null &&
+    python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py {scratch}/artifact.bin
+- name: restic-repo
+  params:
+    format: restic
+  command: rm -rf {scratch}/artifact.bin && restic init --repo {scratch}/artifact.bin -q && restic backup
+    {item_path} --repo {scratch}/artifact.bin -q --host ebr-baseline && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+  env:
+    RESTIC_PASSWORD: ebr-baseline-research-only
+- name: dwarfs-l7
+  params:
+    level: 7
+    format: dwarfs
+  command: rm -f {scratch}/artifact.bin && mkdwarfs -i {item_path} -o {scratch}/artifact.bin -l7 >/dev/null
+    2>&1 && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: dwarfs-l9
+  params:
+    level: 9
+    format: dwarfs
+  command: rm -f {scratch}/artifact.bin && mkdwarfs -i {item_path} -o {scratch}/artifact.bin -l9 >/dev/null
+    2>&1 && python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py
+    {scratch}/artifact.bin
+- name: zpaq-m5
+  params:
+    method: 5
+    format: zpaq
+  command: rm -f {scratch}/artifact.bin; zpaq a {scratch}/artifact.bin {item_path} -m5 -t1 >/dev/null
+    ; test -f {scratch}/artifact.bin || mv {scratch}/artifact.bin.zpaq {scratch}/artifact.bin ; python3
+    /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/finalize_artifact.py {scratch}/artifact.bin
+corpus:
+  splits:
+  - tuning
+  - validation
+  item_ids:
+  - f01-tuning-curl-8-19-0-git
+  - f02-validation-cpython-build
+  - f03-tuning-typescript-npm-node-modules
+  - f04-validation-bootstrap-npm-modules
+  - f05-tuning-loghub-openstack
+  - f06-tuning-gharchive-2015-01-01-h15-h16
+  - f06-validation-osm-andorra-20250101-xml
+  - f07-validation-gen-numeric-b
+  - f08-validation-mariadb11-test-db-employees
+  - f09-git-for-windows-portable-2550
+  - f10-fedora-44-static-libraries
+  - f11-maven-central-jvm-jars
+  - f12-tuning-nasa-ivl-photos-medium
+  - f13-tuning-musopen-flac-medium
+  - f13-validation-sintel-media-medium
+  - f15-tuning-vmraw
+  - f16-gen-fat32-image
+  - f17-validation-real-yq-vendor-8x
+  - f18-validation-redis-7-2-point-releases
+  - f20-tuning-csprng
+  manifest: research/corpus/manifest.json
+metrics:
+- name: output_bytes
+  source: path_size
+  path: '{scratch}/artifact.bin'
+  family: size
+  direction: minimize
+  unit: B
+- name: artifact_kind
+  source: stdout_json
+  key: artifact_kind
+  family: correctness
+  kind: string
+- name: artifact_sha256
+  source: stdout_json
+  key: artifact_sha256
+  family: correctness
+  kind: string
+- name: artifact_tree_sha256
+  source: stdout_json
+  key: artifact_tree_sha256
+  family: correctness
+  kind: string
+- name: artifact_logical_tree_sha256
+  source: stdout_json
+  key: artifact_logical_tree_sha256
+  family: correctness
+  kind: string
+- name: input_bytes
+  source: input
+  family: size
+  direction: none
+  unit: B
+- name: ratio
+  source: derived
+  op: ratio
+  args:
+  - output_bytes
+  - input_bytes
+  family: size
+  direction: minimize
+- name: roundtrip_ok
+  source: check
+  command: python3 /mnt/d/Projects/entrybound/entrybound/research/baselines/probes/roundtrip_check.py
+    {item_path} {scratch}/artifact.bin {format} {scratch}/extracted {scratch}/roundtrip.json --detail-log
+    /mnt/d/Projects/entrybound/entrybound/research/raw/EXP-BASE-SIZE/roundtrip-detail.jsonl --candidate
+    {candidate} --item-id {item_id} --rep {rep}
+  family: correctness
+  direction: maximize
+repetitions: 2
+warmups: 0
+seeds:
+  order: 20260917
+  bootstrap: 20260917
+timing: false
+order: randomized_blocks
+raw_compression: none
+platform:
+  os:
+  - linux
+  arch:
+  - x86_64
+  requires:
+  - 7z
+  - borg
+  - brotli
+  - gzip
+  - lz4
+  - mkdwarfs
+  - mksquashfs
+  - pigz
+  - pixz
+  - restic
+  - tar
+  - wimcapture
+  - xz
+  - zip
+  - zpaq
+  - zstd
+  timeout_s: 1800
+analysis:
+  report_metrics:
+  - output_bytes
+  - ratio
+  - roundtrip_ok

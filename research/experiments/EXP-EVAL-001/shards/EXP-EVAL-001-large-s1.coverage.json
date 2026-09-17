@@ -1,0 +1,30 @@
+{
+  "experiment_id": "EXP-EVAL-001-large-s1",
+  "config_ids": [
+    "zip-9",
+    "targz-gzip-6",
+    "tarzstd-3-t1",
+    "tarzstd-19-tN",
+    "tarzstd-22-ultra-long27-t1",
+    "tarxz-pixz",
+    "tarlz4-1",
+    "7z-mx9-solid",
+    "7z-mx9-nosolid",
+    "squashfs-zstd",
+    "dwarfs-l7",
+    "borg-repo",
+    "restic-repo"
+  ],
+  "item_count": 7,
+  "item_ids": [
+    "f07-tuning-pythia-160m-safetensors-step100000",
+    "f07-tuning-sdrbench-hurricane-isabel",
+    "f07-validation-smollm2-360m-safetensors",
+    "f08-tuning-postgres17-pgbench-s40",
+    "f13-tuning-bbb-video-large",
+    "f13-validation-sintel-media-large",
+    "f15-tuning-real-ubuntu-noble-ova-raw"
+  ],
+  "item_bytes_total": 11091006286,
+  "samples": 182
+}
