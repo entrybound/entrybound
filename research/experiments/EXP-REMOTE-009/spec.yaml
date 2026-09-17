@@ -1,0 +1,88 @@
+schema: ebr.spec.v1
+experiment_id: EXP-REMOTE-009
+status: designed-needs-tooling
+notes: >
+  Phase C-design pre-registration (remote domain). Each sample runs the full case
+  list of cases.json (misbehaviour, transient, redirect, environment, substitution
+  and auth cases) against ebr-origin and the local servers for one client candidate
+  and one archive; outcomes are deterministic counts (timing false). Items are the
+  small tuning archives listed in subset-manifest.jsonl (written by make_subset.py
+  before the run). Public endpoint probes, packaging builds and the cross-experiment
+  screen (spec-screen.yaml) are separate steps. Needs T3, T4 and server setup.
+question: >
+  Which origin behaviours and client features keep remote access safe and available
+  under misbehaving servers and transient faults, and how should faults map to outcome
+  classes and reason codes?
+hypothesis: >
+  Strict validator pinning refuses every misbehaviour case; bounded retries survive
+  every transient case without masking revision change; relaxed validators fail a
+  mixed-revision case; the status-quo fault mapping conflates distinct causes.
+decision_ids: [DEC-ACC-014, DEC-ACC-015, DEC-ACC-016, DEC-MOD-032, DEC-CRY-073]
+
+candidates:
+  - {name: status-quo-strict-head, params: {client: status-quo}}
+  - {name: get-range-probe, params: {client: get-range-probe}}
+  - {name: final-url-pinning, params: {client: final-url-pinning}}
+  - {name: last-modified-validator, params: {client: last-modified-validator}}
+  - {name: weak-etag-with-digest-verification, params: {client: weak-etag-digest}}
+  - {name: accept-200-whole-body, params: {client: accept-200}}
+  - {name: timeouts-and-bounded-retries, params: {client: retries}}
+  - {name: refuse-downgrade-cross-origin, params: {client: redirect-strict}}
+  - {name: https-only-default, params: {client: https-only}}
+  - {name: require-pin-for-plain-http, params: {client: pin-plain-http}}
+  - {name: hardened-client, params: {client: hardened}}
+  - {name: minimal-http11-client, params: {client: minimal-h11}}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-009/run_cases.sh
+  --item-path {item_path} --item-id {item_id} --scratch {scratch} --rep {rep} --seed {seed}
+  --client {client}
+  --cases /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-009/cases.json
+  --servers ebr-origin,nginx,apache2,lighttpd,python-http-server
+  --server-root /root/eb-research/servers
+  --detail-root /root/eb-research/raw-detail/EXP-REMOTE-009
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-REMOTE-009/subset-manifest.jsonl
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: origin_protocol_safety, source: stdout_json, key: payload.origin_protocol_safety, family: correctness, direction: maximize, unit: binary}
+  - {name: wrong_bytes_reported_verified, source: stdout_json, key: payload.wrong_bytes_reported_verified, family: correctness, direction: minimize, unit: count}
+  - {name: misbehaviour_cases_not_refused, source: stdout_json, key: payload.m_cases_not_refused, family: correctness, direction: minimize, unit: count}
+  - {name: benign_refused, source: stdout_json, key: payload.benign_refused_count, family: other, direction: minimize, unit: count}
+  - {name: benign_cases, source: stdout_json, key: payload.benign_case_count, family: other, direction: none, unit: count}
+  - {name: fault_causes, source: stdout_json, key: payload.fault_cause_count, family: other, direction: none, unit: count}
+  - {name: fault_causes_with_unique_code, source: stdout_json, key: payload.fault_causes_unique_code_count, family: other, direction: maximize, unit: count}
+  - {name: retry_added_requests, source: stdout_json, key: payload.retry_added_requests_total, family: other, direction: minimize, unit: count}
+  - {name: substitution_accepted, source: stdout_json, key: payload.substitution_accepted_count, family: correctness, direction: minimize, unit: count}
+  - {name: credential_echo_count, source: stdout_json, key: payload.credential_echo_count, family: correctness, direction: minimize, unit: count}
+  - {name: hung_cases, source: stdout_json, key: payload.cases_hit_external_timeout, family: other, direction: minimize, unit: count}
+  - {name: outcome_nondeterministic_cases, source: stdout_json, key: payload.outcome_differs_across_reps, family: correctness, direction: minimize, unit: count}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 20261011, bootstrap: 20261012, command: 20261013}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-remote
+    - /root/eb-research/target/harness/release/ebr-origin
+    - nginx
+    - apache2
+    - lighttpd
+    - tinyproxy
+  timeout_s: 7200
+
+analysis:
+  baseline: status-quo-strict-head
+  pairing: item
+  report_metrics: [origin_protocol_safety, wrong_bytes_reported_verified, benign_refused, fault_causes_with_unique_code, substitution_accepted, credential_echo_count]

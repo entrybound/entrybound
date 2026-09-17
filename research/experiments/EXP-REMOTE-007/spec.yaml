@@ -1,0 +1,85 @@
+schema: ebr.spec.v1
+experiment_id: EXP-REMOTE-007
+status: designed-needs-tooling
+notes: >
+  Phase C-design pre-registration (remote domain). Deterministic proof-structure
+  computation (proofsim, tooling T9) over real Chunk layouts of tuning archives
+  cached by EXP-REMOTE-002; candidates are structure families, each evaluated in
+  every applicable physical layout and root binding inside one sample (detail file).
+  The synthetic Chunk-count series and the hashing microbenchmark
+  (spec-hashbench.yaml, generated) are separate steps (protocol.md section 7).
+question: >
+  What do proof granularity and verification structure cost in proof bytes, fetched
+  bytes, requests, digest operations and modelled latency for verified byte ranges?
+hypothesis: >
+  Sub-object structures beat whole-object verification on verified range bytes for
+  small strata inside large objects; the flat leaf list wins below a Chunk-count
+  crossover and O(log n) outboards above it.
+decision_ids: [DEC-ACC-024, DEC-ACC-040, DEC-INT-029, DEC-CON-020, DEC-MOD-007, DEC-MOD-034]
+
+candidates:
+  - {name: status-quo-whole-object, params: {structure: whole-object}}
+  - {name: per-chunk-digest-with-leaf-list, params: {structure: leaf-list}}
+  - {name: merkle-outboard-balanced, params: {structure: merkle-binary}}
+  - {name: merkle-outboard-k4, params: {structure: merkle-k4}}
+  - {name: merkle-outboard-k16, params: {structure: merkle-k16}}
+  - {name: bao-slice, params: {structure: bao}}
+  - {name: bao-combined-interleaved, params: {structure: bao-combined}}
+  - {name: sizes-sister-list-dag, params: {structure: sister-dag}}
+  - {name: per-object-outboard-large-64m, params: {structure: "per-object-outboard:67108864"}}
+  - {name: hash-chain, params: {structure: hash-chain}}
+  - {name: content-defined-hashsplit-tree, params: {structure: hashsplit-16}}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-007/run_proofsim.sh
+  --item-id {item_id} --config balanced-plain --scratch {scratch} --rep {rep} --seed {seed}
+  --structure {structure}
+  --layouts-root /root/eb-research/cache/remote-archives
+  --strata 1,4096,1048576,whole --offsets-per-stratum 16 --sequential-scan-ranges 256
+  --connection-model /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/connection-model.json
+  --detail-root /root/eb-research/raw-detail/EXP-REMOTE-007
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: applicable_objects, source: stdout_json, key: payload.applicable_objects, family: other, direction: none, unit: count}
+  - {name: output_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: formula_mismatches, source: stdout_json, key: payload.formula_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: verified_range_fetch_bytes__1B, source: stdout_json, key: payload.strata.1.verified_range_fetch_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: verified_range_fetch_bytes__4K, source: stdout_json, key: payload.strata.4096.verified_range_fetch_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: verified_range_fetch_bytes__1M, source: stdout_json, key: payload.strata.1048576.verified_range_fetch_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: verified_range_fetch_bytes__WHOLE, source: stdout_json, key: payload.strata.whole.verified_range_fetch_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: remote_task_latency_s__RANGE_4K__NP_CONT, source: stdout_json, key: payload.strata.4096.model_median.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__RANGE_4K__NP_INTER, source: stdout_json, key: payload.strata.4096.model_median.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__RANGE_1M__NP_CONT, source: stdout_json, key: payload.strata.1048576.model_median.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__RANGE_1M__NP_INTER, source: stdout_json, key: payload.strata.1048576.model_median.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: access_amplification__1B, source: stdout_json, key: payload.strata.1.access_amplification_median, family: other, direction: minimize, unit: ratio}
+  - {name: access_amplification__1M, source: stdout_json, key: payload.strata.1048576.access_amplification_median, family: other, direction: minimize, unit: ratio}
+  - {name: verification_digest_ops__4K, source: stdout_json, key: payload.strata.4096.digest_ops_median, family: other, direction: minimize, unit: count}
+  - {name: http_requests__RANGE_4K, source: stdout_json, key: payload.strata.4096.http_requests_median, family: other, direction: minimize, unit: count}
+  - {name: proof_bytes_reused_fraction, source: stdout_json, key: payload.sequential_scan.proof_bytes_reused_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: side_data_bytes, source: stdout_json, key: payload.structure_bytes_total, family: size, direction: minimize, unit: B}
+  - {name: streaming_output_peak_bytes, source: stdout_json, key: payload.client_memory_formula_bytes_max, family: memory_peak, direction: minimize, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20261005, bootstrap: 20261006, command: 20261007}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /mnt/d/Projects/entrybound/entrybound/research/tools/remote/proofsim.py
+  timeout_s: 21600
+
+analysis:
+  baseline: status-quo-whole-object
+  pairing: item
+  report_metrics: [verified_range_fetch_bytes__4K, verified_range_fetch_bytes__1M, remote_task_latency_s__RANGE_4K__NP_INTER, verification_digest_ops__4K, proof_bytes_reused_fraction]

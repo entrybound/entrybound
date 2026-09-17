@@ -1,0 +1,84 @@
+schema: ebr.spec.v1
+experiment_id: EXP-REMOTE-010
+status: designed-needs-tooling
+notes: >
+  Phase C-design pre-registration (remote domain). Production encrypted random
+  reader and source-layer prototypes over encrypted and signed tuning archives
+  (small+medium) cached by EXP-REMOTE-002/T6 with 3 key replicates (repetition index
+  selects the replicate). Simulated packings, locator tables and whole-verify scopes
+  run through seglayout.py and fetchsim; the trace-observer attack runs on the raw
+  traces afterwards (protocol.md section 7). OD-16 results are not decision-grade
+  until decision-method.md section 14 item 16 is met. Timing false.
+question: >
+  How does encrypted remote open scale with segment count per discovery strategy, and
+  what do access-pattern mitigations and extra verification scopes cost?
+hypothesis: >
+  Status-quo encrypted open is linear in segment count; coalesced or table-based
+  discovery is sublinear; mitigations reduce trace identification only at a
+  measurable latency cost; added verification scopes are cheap per read.
+decision_ids: [DEC-ACC-010, DEC-CRY-072, DEC-CRY-081, DEC-INT-010, DEC-INT-044, DEC-CRY-073]
+
+candidates:
+  - {name: status-quo-header-walk, params: {config: balanced-enc-bucketed, wrapper: none, extra_scope: none}}
+  - {name: status-quo-header-walk-pad-max, params: {config: balanced-enc-max, wrapper: none, extra_scope: none}}
+  - {name: status-quo-header-walk-pad-none, params: {config: balanced-enc-none, wrapper: none, extra_scope: none}}
+  - {name: coalesced-header-prefetch, params: {config: balanced-enc-bucketed, wrapper: "readahead-declared:1048576", extra_scope: none}}
+  - {name: batched-dependency-prefetch-16, params: {config: balanced-enc-bucketed, wrapper: "blur-batch:16", extra_scope: none}}
+  - {name: dummy-range-requests-3, params: {config: balanced-enc-bucketed, wrapper: "blur-dummy:3", extra_scope: none}}
+  - {name: verify-touched-segment-ends, params: {config: balanced-enc-bucketed, wrapper: none, extra_scope: segment-ends}}
+  - {name: verify-more-in-random-reader, params: {config: balanced-enc-bucketed, wrapper: none, extra_scope: fidelity-aux-deps}}
+  - {name: verify-signatures-on-range-open, params: {config: balanced-enc-bucketed-signed, wrapper: none, extra_scope: embedded-signatures}}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-002/run_trace.sh
+  --item-path {item_path} --item-id {item_id} --config {config} --scratch {scratch}
+  --rep {rep} --seed {seed} --key-replicate-from-rep true --source-wrapper {wrapper} --extra-scope {extra_scope}
+  --workloads /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-002/workloads.json
+  --workload-subset WL-OPEN,WL-FIRST,WL-RAND1,WL-RANDK16,WL-RANGE-1M,WL-LARGE,WL-FULL
+  --connection-model /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/connection-model.json
+  --sources http-loopback --unlock password-env:EB_RESEARCH_TEST_PASSWORD
+  --detail-root /root/eb-research/raw-detail/EXP-REMOTE-010
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-REMOTE-002/manifest-tuning-small-medium.jsonl
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: roundtrip_ok, source: stdout_json, key: payload.roundtrip_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: report_mismatches, source: stdout_json, key: payload.differential.report_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: trace_sha256, source: stdout_json, key: payload.trace_sha256, family: correctness, kind: string}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: segment_count, source: stdout_json, key: payload.layout.encrypted_segment_count, family: other, direction: none, unit: count}
+  - {name: http_requests__WL_OPEN, source: stdout_json, key: payload.wl.WL-OPEN.http_requests, family: other, direction: minimize, unit: count}
+  - {name: http_bytes__WL_OPEN, source: stdout_json, key: payload.wl.WL-OPEN.http_bytes, family: size, direction: minimize, unit: B}
+  - {name: remote_first_entry_latency_s__NP_METRO, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-METRO, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_first_entry_latency_s__NP_CONT, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_first_entry_latency_s__NP_INTER, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_random_entry_latency_s__NP_CONT, source: stdout_json, key: payload.wl.WL-RAND1.model_median.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: http_bytes__WL_RAND1, source: stdout_json, key: payload.wl.WL-RAND1.http_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: range_length_signatures__WL_RAND1, source: stdout_json, key: payload.wl.WL-RAND1.range_length_signatures_median, family: other, direction: minimize, unit: count}
+  - {name: remote_task_latency_s__WL_FULL__NP_CONT, source: stdout_json, key: payload.wl.WL-FULL.model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: max_padded_range_outcome_ok, source: stdout_json, key: payload.wl.WL-RANGE-1M.outcomes_all_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: whole_archive_claimed, source: stdout_json, key: payload.whole_archive_verified_claims, family: correctness, direction: minimize, unit: count}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 20261014, bootstrap: 20261015, command: 20261016}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-remote
+    - /root/eb-research/target/harness/release/ebr-origin
+  timeout_s: 14400
+
+analysis:
+  baseline: status-quo-header-walk
+  pairing: item
+  report_metrics: [http_requests__WL_OPEN, remote_first_entry_latency_s__NP_INTER, range_length_signatures__WL_RAND1, http_bytes__WL_RAND1, whole_archive_claimed]

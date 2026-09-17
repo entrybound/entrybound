@@ -1,0 +1,83 @@
+schema: ebr.spec.v1
+experiment_id: EXP-REMOTE-014
+status: designed-needs-tooling
+notes: >
+  Phase C-design pre-registration (remote domain). WSL arm: each sample runs the full
+  mutation x interleaving case list of mutations.json for one revision-signal candidate
+  on one filesystem and one archive; outcomes are deterministic counts (timing false).
+  Items are the seeded archive subset in subset-manifest.jsonl (written by make_subset.py
+  before the run). spec-windows.yaml (NTFS and \\wsl.localhost cases, shell pwsh) and the
+  open-cost timing spec are generated from this file. Needs T10 and filesystem setup.
+question: >
+  Which revision signal should local random-read sources use, and what does each detect
+  under concurrent modification across filesystems?
+hypothesis: >
+  Digest verification prevents wrong bytes being reported verified in every case; length
+  plus mtime misattributes same-length writes with restored mtime; change-time signals
+  improve attribution but refuse metadata-only changes; snapshot copies cost open time
+  and scratch linear in archive size.
+decision_ids: [DEC-ACC-023]
+
+candidates:
+  - {name: status-quo-length-mtime-ext4, params: {signal: length-mtime, fs: ext4}}
+  - {name: file-id-plus-mtime-ext4, params: {signal: fileid-ctime-mtime, fs: ext4}}
+  - {name: share-mode-locking-ext4, params: {signal: advisory-lock, fs: ext4}}
+  - {name: digest-backstop-only-ext4, params: {signal: none, fs: ext4}}
+  - {name: snapshot-copy-ext4, params: {signal: snapshot-copy, fs: ext4}}
+  - {name: status-quo-length-mtime-xfs, params: {signal: length-mtime, fs: xfs}}
+  - {name: file-id-plus-mtime-xfs, params: {signal: fileid-ctime-mtime, fs: xfs}}
+  - {name: status-quo-length-mtime-btrfs, params: {signal: length-mtime, fs: btrfs}}
+  - {name: file-id-plus-mtime-btrfs, params: {signal: fileid-ctime-mtime, fs: btrfs}}
+  - {name: status-quo-length-mtime-fat32, params: {signal: length-mtime, fs: fat32}}
+  - {name: file-id-plus-mtime-fat32, params: {signal: fileid-ctime-mtime, fs: fat32}}
+  - {name: status-quo-length-mtime-tmpfs, params: {signal: length-mtime, fs: tmpfs}}
+  - {name: status-quo-length-mtime-9p, params: {signal: length-mtime, fs: drvfs-9p}}
+  - {name: file-id-plus-mtime-9p, params: {signal: fileid-ctime-mtime, fs: drvfs-9p}}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-014/run_mutation_cases.sh
+  --item-path {item_path} --item-id {item_id} --scratch {scratch} --rep {rep} --seed {seed}
+  --signal {signal} --fs {fs} --fs-root /root/eb-research/fsimg
+  --mutations /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-014/mutations.json
+  --interleavings open-read,mid-read,between-reads
+  --detail-root /root/eb-research/raw-detail/EXP-REMOTE-014
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-REMOTE-014/subset-manifest.jsonl
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: wrong_bytes_reported_verified, source: stdout_json, key: payload.wrong_bytes_reported_verified, family: correctness, direction: minimize, unit: count}
+  - {name: mutation_cases, source: stdout_json, key: payload.mutation_case_count, family: other, direction: none, unit: count}
+  - {name: cause_specific_attributions, source: stdout_json, key: payload.cause_specific_count, family: other, direction: maximize, unit: count}
+  - {name: benign_cases, source: stdout_json, key: payload.benign_case_count, family: other, direction: none, unit: count}
+  - {name: benign_refused, source: stdout_json, key: payload.benign_refused_count, family: other, direction: minimize, unit: count}
+  - {name: undetected_in_closure, source: stdout_json, key: payload.undetected_in_closure_count, family: correctness, direction: minimize, unit: count}
+  - {name: writer_blocked, source: stdout_json, key: payload.writer_blocked_count, family: other, direction: none, unit: count}
+  - {name: outcome_nondeterministic_cases, source: stdout_json, key: payload.outcome_differs_across_reps, family: correctness, direction: minimize, unit: count}
+  - {name: snapshot_scratch_write_bytes, source: stdout_json, key: payload.snapshot_scratch_write_bytes, family: scratch_peak, direction: minimize, unit: B}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 20261023, bootstrap: 20261024, command: 20261025}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-remote
+    - mkfs.xfs
+    - mkfs.btrfs
+    - mkfs.vfat
+  timeout_s: 7200
+
+analysis:
+  baseline: status-quo-length-mtime-ext4
+  pairing: item
+  report_metrics: [wrong_bytes_reported_verified, cause_specific_attributions, benign_refused, undetected_in_closure]

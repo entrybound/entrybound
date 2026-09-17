@@ -1,0 +1,91 @@
+schema: ebr.spec.v1
+experiment_id: EXP-REMOTE-004
+status: designed-needs-tooling
+notes: >
+  Phase C-design pre-registration (remote domain). Production client and
+  source-layer prototypes over the generated scale series (scale-manifest.jsonl is
+  written by gen_scale_trees.py before the run; it does not exist at design time).
+  Format-revision candidates (locator table, paged structures, Index and Manifest
+  representations) are simulated by metasim.py + fetchsim (protocol.md section 7)
+  and are not runner candidates. spec-corpus.yaml substitutes the tuning corpus
+  selector. Deterministic metrics only (timing false).
+question: >
+  What does remote open and first-entry resolution cost per discovery and
+  revalidation strategy as section, entry and Chunk counts grow, and does the
+  Index's presence change it?
+hypothesis: >
+  Head/tail speculative windows and once-per-session revalidation cut first-entry
+  latency at NP-CONT and NP-INTER for archives up to 10^5 entries; Index-less
+  opening scales with total Chunk count.
+decision_ids: [DEC-ACC-018, DEC-ACC-019, DEC-CON-015, DEC-CON-018, DEC-CON-028]
+
+candidates:
+  - {name: status-quo-header-walk, params: {config: balanced-plain, wrapper: none}}
+  - {name: remove-index-v1, params: {config: balanced-plain-noindex, wrapper: none}}
+  - {name: speculative-tail-window-64k, params: {config: balanced-plain, wrapper: "tail:65536"}}
+  - {name: speculative-tail-window-256k, params: {config: balanced-plain, wrapper: "tail:262144"}}
+  - {name: speculative-tail-window-1m, params: {config: balanced-plain, wrapper: "tail:1048576"}}
+  - {name: speculative-head-tail-window-256k, params: {config: balanced-plain, wrapper: "headtail:262144"}}
+  - {name: coalesced-header-prefetch, params: {config: balanced-plain, wrapper: "readahead-declared:65536"}}
+  - {name: revalidate-once-per-session, params: {config: balanced-plain, wrapper: revalidate-once}}
+  - {name: suffix-range-open, params: {config: balanced-plain, wrapper: "suffix:262144"}}
+  - {name: persistent-metadata-cache, params: {config: balanced-plain, wrapper: persistent-metadata}}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-002/run_trace.sh
+  --item-path {item_path} --item-id {item_id} --config {config} --scratch {scratch}
+  --rep {rep} --seed {seed} --source-wrapper {wrapper}
+  --workloads /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-002/workloads.json
+  --workload-subset WL-OPEN,WL-FIRST,WL-RAND1,WL-RANDK16,WL-REVISIT
+  --connection-model /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/connection-model.json
+  --sources http-loopback --measure-client-metadata-memory true
+  --detail-root /root/eb-research/raw-detail/EXP-REMOTE-004
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-REMOTE-004/scale-manifest.jsonl
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: roundtrip_ok, source: stdout_json, key: payload.roundtrip_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: report_mismatches, source: stdout_json, key: payload.differential.report_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: trace_sha256, source: stdout_json, key: payload.trace_sha256, family: correctness, kind: string}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: section_count, source: stdout_json, key: payload.layout.section_count, family: other, direction: none, unit: count}
+  - {name: entry_count, source: stdout_json, key: payload.layout.entry_count, family: other, direction: none, unit: count}
+  - {name: chunk_count, source: stdout_json, key: payload.layout.chunk_count, family: other, direction: none, unit: count}
+  - {name: open_bytes_read, source: stdout_json, key: payload.wl.WL-OPEN.session_bytes_fetched, family: size, direction: minimize, unit: B}
+  - {name: http_requests__WL_OPEN, source: stdout_json, key: payload.wl.WL-OPEN.http_requests, family: other, direction: minimize, unit: count}
+  - {name: http_bytes__WL_OPEN, source: stdout_json, key: payload.wl.WL-OPEN.http_bytes, family: size, direction: minimize, unit: B}
+  - {name: head_requests__WL_FIRST, source: stdout_json, key: payload.wl.WL-FIRST.head_requests, family: other, direction: minimize, unit: count}
+  - {name: http_requests__WL_FIRST, source: stdout_json, key: payload.wl.WL-FIRST.http_requests, family: other, direction: minimize, unit: count}
+  - {name: http_bytes__WL_FIRST, source: stdout_json, key: payload.wl.WL-FIRST.http_bytes, family: size, direction: minimize, unit: B}
+  - {name: remote_first_entry_latency_s__NP_LAN, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-LAN, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_first_entry_latency_s__NP_METRO, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-METRO, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_first_entry_latency_s__NP_CONT, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_first_entry_latency_s__NP_INTER, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_RANDK16__NP_CONT, source: stdout_json, key: payload.wl.WL-RANDK16.model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_RANDK16__NP_INTER, source: stdout_json, key: payload.wl.WL-RANDK16.model.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_REVISIT_S2__NP_CONT, source: stdout_json, key: payload.wl.WL-REVISIT.session2_model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: client_metadata_peak_bytes, source: stdout_json, key: payload.wl.WL-OPEN.scoped_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260926, bootstrap: 20260927, command: 20260928}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-remote
+    - /root/eb-research/target/harness/release/ebr-origin
+  timeout_s: 21600
+
+analysis:
+  baseline: status-quo-header-walk
+  pairing: item
+  report_metrics: [open_bytes_read, http_requests__WL_FIRST, remote_first_entry_latency_s__NP_CONT, remote_first_entry_latency_s__NP_INTER, head_requests__WL_FIRST]

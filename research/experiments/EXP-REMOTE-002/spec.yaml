@@ -1,0 +1,106 @@
+schema: ebr.spec.v1
+experiment_id: EXP-REMOTE-002
+status: designed-needs-tooling
+notes: >
+  Phase C-design pre-registration (remote domain). Deterministic census: counts,
+  bytes and modelled latency only (timing false). Needs tooling T1, T2, T3, T5,
+  T6 (protocol.md section 7). spec-dense-extreme.yaml and spec-encrypted.yaml are
+  generated from this file by make_item_lists.py --emit-specs (candidate and
+  item substitutions only). Metric names carry __<workload> and __<profile>
+  suffixes that the decision tooling maps to the canonical metric plus the
+  evaluation condition; modelled latency uses CM-H1-TLS-KA and SS-RFC6928, other
+  arms are in the detail file bound by detail_sha256.
+question: >
+  Exactly how many HTTP requests and bytes and how much modelled latency does the
+  production random-access client spend per workload, profile and Index state on
+  tuning items; how accurate are the candidate access-cost declaration models; and
+  does the fetch simulator reproduce the production traces exactly?
+hypothesis: >
+  Origin counts reconcile with session counters plus revision HEADs; the status
+  quo lookback declaration understates transitive decode on some dense or extreme
+  archive while transitive models never understate; fetchsim matches every trace.
+decision_ids: [DEC-ACC-001, DEC-ACC-025, DEC-ACC-038]
+
+candidates:
+  - {name: fast-plain, params: {config: fast-plain}}
+  - {name: balanced-plain, params: {config: balanced-plain}}
+  - {name: balanced-plain-noindex, params: {config: balanced-plain-noindex}}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-002/run_trace.sh
+  --item-path {item_path} --item-id {item_id} --config {config} --scratch {scratch}
+  --rep {rep} --seed {seed}
+  --workloads /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-002/workloads.json
+  --connection-model /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/connection-model.json
+  --sources memory,http-loopback
+  --detail-root /root/eb-research/raw-detail/EXP-REMOTE-002
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: pack_refused, source: stdout_json, key: payload.pack_refused, family: correctness, direction: none, unit: binary}
+  - {name: roundtrip_ok, source: stdout_json, key: payload.roundtrip_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: reconcile_ok, source: stdout_json, key: payload.reconcile_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: trace_sha256, source: stdout_json, key: payload.trace_sha256, family: correctness, kind: string}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: archive_sha256, source: stdout_json, key: payload.archive_sha256, family: correctness, kind: string}
+  - {name: artifact_bytes, source: stdout_json, key: payload.archive_bytes, family: size, direction: none, unit: B}
+  - {name: http_requests__WL_OPEN, source: stdout_json, key: payload.wl.WL-OPEN.http_requests, family: other, direction: minimize, unit: count}
+  - {name: http_bytes__WL_OPEN, source: stdout_json, key: payload.wl.WL-OPEN.http_bytes, family: size, direction: minimize, unit: B}
+  - {name: open_bytes_read, source: stdout_json, key: payload.wl.WL-OPEN.session_bytes_fetched, family: size, direction: minimize, unit: B}
+  - {name: head_requests__WL_OPEN, source: stdout_json, key: payload.wl.WL-OPEN.head_requests, family: other, direction: minimize, unit: count}
+  - {name: http_requests__WL_FIRST, source: stdout_json, key: payload.wl.WL-FIRST.http_requests, family: other, direction: minimize, unit: count}
+  - {name: http_bytes__WL_FIRST, source: stdout_json, key: payload.wl.WL-FIRST.http_bytes, family: size, direction: minimize, unit: B}
+  - {name: remote_first_entry_latency_s__NP_LAN, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-LAN, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_first_entry_latency_s__NP_METRO, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-METRO, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_first_entry_latency_s__NP_CONT, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_first_entry_latency_s__NP_INTER, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: http_requests__WL_RAND1, source: stdout_json, key: payload.wl.WL-RAND1.http_requests_median, family: other, direction: minimize, unit: count}
+  - {name: http_bytes__WL_RAND1, source: stdout_json, key: payload.wl.WL-RAND1.http_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: remote_random_entry_latency_s__NP_LAN, source: stdout_json, key: payload.wl.WL-RAND1.model_median.NP-LAN, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_random_entry_latency_s__NP_METRO, source: stdout_json, key: payload.wl.WL-RAND1.model_median.NP-METRO, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_random_entry_latency_s__NP_CONT, source: stdout_json, key: payload.wl.WL-RAND1.model_median.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_random_entry_latency_s__NP_INTER, source: stdout_json, key: payload.wl.WL-RAND1.model_median.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: http_requests__WL_RANDK16, source: stdout_json, key: payload.wl.WL-RANDK16.http_requests, family: other, direction: minimize, unit: count}
+  - {name: http_bytes__WL_RANDK16, source: stdout_json, key: payload.wl.WL-RANDK16.http_bytes, family: size, direction: minimize, unit: B}
+  - {name: http_requests__WL_SUBTREE, source: stdout_json, key: payload.wl.WL-SUBTREE.http_requests, family: other, direction: minimize, unit: count}
+  - {name: http_bytes__WL_SUBTREE, source: stdout_json, key: payload.wl.WL-SUBTREE.http_bytes, family: size, direction: minimize, unit: B}
+  - {name: remote_task_latency_s__WL_SUBTREE__NP_CONT, source: stdout_json, key: payload.wl.WL-SUBTREE.model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: access_amplification__1B, source: stdout_json, key: payload.wl.WL-RANGE-1B.access_amplification_median, family: other, direction: minimize, unit: ratio}
+  - {name: access_amplification__1M, source: stdout_json, key: payload.wl.WL-RANGE-1M.access_amplification_median, family: other, direction: minimize, unit: ratio}
+  - {name: verification_digest_ops__WL_RAND1, source: stdout_json, key: payload.wl.WL-RAND1.digest_ops_median, family: other, direction: minimize, unit: count}
+  - {name: dependency_chunk_count_max, source: stdout_json, key: payload.closure.dependency_chunk_count_max, family: other, direction: minimize, unit: count}
+  - {name: closure_over_declared_max, source: stdout_json, key: payload.closure.measured_over_declared_max, family: other, direction: minimize, unit: ratio}
+  - {name: declared_tightness_ratio__status_quo, source: stdout_json, key: payload.cost_models.status-quo-chunks-and-lookback.tightness_median, family: other, direction: minimize, unit: ratio}
+  - {name: declared_tightness_ratio__decode_work, source: stdout_json, key: payload.cost_models.decode-work-model.tightness_median, family: other, direction: minimize, unit: ratio}
+  - {name: declared_tightness_ratio__fetch, source: stdout_json, key: payload.cost_models.fetch-model.tightness_median, family: other, direction: minimize, unit: ratio}
+  - {name: declared_cost_accuracy__status_quo, source: stdout_json, key: payload.cost_models.status-quo-chunks-and-lookback.accuracy_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: declared_cost_accuracy__decode_work, source: stdout_json, key: payload.cost_models.decode-work-model.accuracy_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: declared_cost_accuracy__fetch, source: stdout_json, key: payload.cost_models.fetch-model.accuracy_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: refused_entry_kinds, source: stdout_json, key: payload.refusal_census.refused_kind_count, family: other, direction: none, unit: count}
+  - {name: sim_trace_mismatches, source: stdout_json, key: payload.fetchsim.status_quo_mismatches, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260920, bootstrap: 20260921, command: 20260922}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-remote
+    - /root/eb-research/target/harness/release/ebr-origin
+    - /root/eb-research/target/production/release/ebound
+  timeout_s: 14400
+
+analysis:
+  baseline: balanced-plain
+  pairing: item
+  report_metrics: [http_requests__WL_OPEN, http_requests__WL_RAND1, http_bytes__WL_RAND1, remote_random_entry_latency_s__NP_CONT, closure_over_declared_max, sim_trace_mismatches, reconcile_ok]

@@ -1,0 +1,89 @@
+schema: ebr.spec.v1
+experiment_id: EXP-REMOTE-012
+status: designed-needs-tooling
+notes: >
+  Phase C-design pre-registration (remote domain). Each candidate is a (system archive,
+  remote reader) pair served by ebr-origin over loopback; every system's exact request
+  log is priced by the same latency model (timing false). entrybound-provisional-w is
+  defined at the first validation look of EXP-REMOTE-003..006 and is added to a
+  generated spec then. Emulated corroboration (spec-emulated.yaml) is generated after
+  tuning. SOCI and Apple Archive arms are BLOCKED and not listed. Needs T1, T2, T5, T8.
+question: >
+  What remote random-access performance can v1 claim relative to full download and to
+  capability-matched incumbent remote readers under the canonical network profiles?
+hypothesis: >
+  Status-quo Entrybound is not non-inferior to a ZIP central-directory reader for single
+  small entries at high RTT; request counts stay within the fetch-model bound; lazy pull
+  is equivalent to eStargz and better than full download at low read fractions.
+decision_ids: [DEC-ACC-041, DEC-ACC-002]
+
+candidates:
+  - {name: entrybound-status-quo, params: {system: entrybound-balanced, reader: production}}
+  - {name: zip-cd-range-reader, params: {system: zip-6, reader: zip-range}}
+  - {name: 7z-nonsolid-range-reader, params: {system: 7z-mx9-nosolid, reader: 7z-range}}
+  - {name: tarzst-seekable-reader, params: {system: tarzst-seekable, reader: zstd-seekable-range}}
+  - {name: estargz-toc-reader, params: {system: estargz, reader: estargz-range}}
+  - {name: pixz-index-reader, params: {system: tarxz-pixz, reader: xz-index-plan}}
+  - {name: squashfs-image-reader, params: {system: squashfs-zstd, reader: squashfs-plan}}
+  - {name: erofs-image-reader, params: {system: erofs-lz4hc, reader: erofs-plan}}
+  - {name: dwarfs-image-reader, params: {system: dwarfs-l7, reader: dwarfs-plan}}
+  - {name: full-download-then-extract, params: {system: tarzstd-3-t1, reader: full-download}}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-012/run_system.sh
+  --item-path {item_path} --item-id {item_id} --scratch {scratch} --rep {rep} --seed {seed}
+  --system {system} --reader {reader}
+  --incumbent-cache /root/eb-research/cache/remote-incumbents
+  --workloads /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-002/workloads.json
+  --workload-subset WL-OPEN,WL-FIRST,WL-RAND1,WL-RANDK16,WL-SUBTREE,WL-LARGE,WL-FRACTION-0.1,WL-FULL,WL-REVISIT
+  --connection-model /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/connection-model.json
+  --detail-root /root/eb-research/raw-detail/EXP-REMOTE-012
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: system_applicable, source: stdout_json, key: payload.system_applicable, family: correctness, direction: none, unit: binary}
+  - {name: content_ok, source: stdout_json, key: payload.content_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: request_log_sha256, source: stdout_json, key: payload.request_log_sha256, family: correctness, kind: string}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: artifact_bytes, source: stdout_json, key: payload.archive_bytes, family: size, direction: minimize, unit: B}
+  - {name: remote_task_latency_s__WL_FIRST__NP_CONT, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_FIRST__NP_INTER, source: stdout_json, key: payload.wl.WL-FIRST.model.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_RAND1__NP_CONT, source: stdout_json, key: payload.wl.WL-RAND1.model_median.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_RAND1__NP_INTER, source: stdout_json, key: payload.wl.WL-RAND1.model_median.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_SUBTREE__NP_CONT, source: stdout_json, key: payload.wl.WL-SUBTREE.model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_FRACTION_0_1__NP_INTER, source: stdout_json, key: payload.wl.WL-FRACTION-0.1.model.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_FULL__NP_CONT, source: stdout_json, key: payload.wl.WL-FULL.model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: verified_range_fetch_bytes__WL_RAND1, source: stdout_json, key: payload.wl.WL-RAND1.bytes_to_result_median, family: size, direction: minimize, unit: B}
+  - {name: http_requests__WL_RAND1, source: stdout_json, key: payload.wl.WL-RAND1.http_requests_median, family: other, direction: minimize, unit: count}
+  - {name: http_bytes__WL_SUBTREE, source: stdout_json, key: payload.wl.WL-SUBTREE.http_bytes, family: size, direction: minimize, unit: B}
+  - {name: verified_fraction, source: stdout_json, key: payload.verified_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: requests_within_bound, source: stdout_json, key: payload.requests_within_fetch_model_bound, family: correctness, direction: maximize, unit: binary}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20261020, bootstrap: 20261021, command: 20261022}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-remote
+    - /root/eb-research/target/harness/release/ebr-origin
+    - /root/eb-research/tools/dwarfs/dwarfsck
+    - unsquashfs
+    - dump.erofs
+    - xz
+  timeout_s: 21600
+
+analysis:
+  baseline: entrybound-status-quo
+  pairing: item
+  report_metrics: [remote_task_latency_s__WL_RAND1__NP_INTER, remote_task_latency_s__WL_SUBTREE__NP_CONT, http_requests__WL_RAND1, verified_fraction, requests_within_bound]

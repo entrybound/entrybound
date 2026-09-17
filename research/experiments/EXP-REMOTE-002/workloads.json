@@ -1,0 +1,87 @@
+{
+  "schema": "ebr.remote.workloads.v1",
+  "experiment_id": "EXP-REMOTE-002",
+  "status": "pre-registered-design (Phase C-design); shared by EXP-REMOTE-002..012",
+  "note": "Workloads are 'user task' evaluation conditions (decision-method.md section 1.1, objective AGG-S): results are never averaged across workloads. File selection uses only the archive's own manifest (entry paths, kinds, sizes) and the declared seed; it never reads corpus statistics. 'Regular file' means an Entry whose data is File with internal content.",
+  "seed_rule": "Every workload seed is derived as SHA-256('EXP-REMOTE-002/' + workload_id + '/' + item_id + '/' + str(spec seeds.command)) truncated to 64 bits, so candidates and repetitions see identical file selections.",
+  "session_rule": "A session is one open_indexed_random (or open_indexed_random_encrypted) call with a fresh RangeSession; 'cold' means no state carried from earlier sessions except where a candidate explicitly defines a persistent cache.",
+  "workloads": {
+    "WL-OPEN": {
+      "sessions": 1,
+      "operations": ["open", "metadata_report"],
+      "applicability": "every INDEXED archive",
+      "note": "Also the list/inspect cost: remote list reads no data beyond open in the status quo (docs/random-access-v1.md, Reports and trace)"
+    },
+    "WL-FIRST": {
+      "sessions": 1,
+      "operations": ["open", "read_entry(first regular file in manifest path order)"],
+      "applicability": "at least 1 regular file"
+    },
+    "WL-RAND1": {
+      "sessions": "S = min(32, regular file count); each session is cold",
+      "operations": ["open", "read_entry(one file drawn uniformly without replacement across sessions)"],
+      "applicability": "at least 1 regular file",
+      "aggregation_within_item": "median over sessions (and p95 reported when S >= 20)"
+    },
+    "WL-RANDK": {
+      "variants": {"WL-RANDK16": 16, "WL-RANDK256": 256},
+      "sessions": 1,
+      "operations": ["open", "K x read_entry(files uniform without replacement; K capped at the regular file count)"],
+      "client_gap_s": {"batch": 0.0, "interactive": 1.0},
+      "applicability": "at least 2 regular files"
+    },
+    "WL-ZIPF": {
+      "sessions": 1,
+      "operations": ["open", "1024 x read_entry(with replacement; Zipf exponent 1.0 over a seeded permutation of regular files)"],
+      "client_gap_s": {"batch": 0.0, "interactive": 1.0},
+      "applicability": "at least 2 regular files"
+    },
+    "WL-SUBTREE": {
+      "sessions": 1,
+      "operations": ["open", "read_entry for every regular file under directory D in path order"],
+      "directory_rule": "D = the non-root directory with the largest number of descendant regular files among directories with at most 4096 descendant regular files; ties by smallest path bytes. If the archive has no such directory, the first min(4096, n) regular files in path order.",
+      "client_gap_s": {"batch": 0.0},
+      "applicability": "at least 2 regular files"
+    },
+    "WL-LARGE": {
+      "sessions": 1,
+      "operations": ["open", "read_entry(largest regular file; ties by path)"],
+      "applicability": "at least 1 regular file"
+    },
+    "WL-RANGE": {
+      "sessions": 1,
+      "operations": ["open", "for the largest regular file of at least 4 MiB: 16 seeded byte ranges per stratum, strata {1 B, 4096 B, 1048576 B} (decision-method T-22), plus the whole entry as the fourth stratum"],
+      "status_quo_semantics": "the production API has no sub-object range read, so each range costs one verified read_entry of the whole object followed by an in-memory slice; candidates with sub-object reads define their own request plans",
+      "variants": {"WL-RANGE-1B": 1, "WL-RANGE-4K": 4096, "WL-RANGE-1M": 1048576, "WL-RANGE-WHOLE": "whole"},
+      "applicability": "a regular file of at least 4 MiB"
+    },
+    "WL-SEQALL": {
+      "sessions": 1,
+      "operations": ["open", "read_entry for every regular file ordered by the physical offset of its first Chunk frame"],
+      "applicability": "at least 1 regular file"
+    },
+    "WL-FRACTION": {
+      "variants": {"WL-FRACTION-0.01": 0.01, "WL-FRACTION-0.1": 0.1, "WL-FRACTION-0.5": 0.5, "WL-FRACTION-1.0": 1.0},
+      "sessions": 1,
+      "operations": ["open", "read_entry for files taken from a seeded permutation until cumulative logical bytes >= f x total regular-file logical bytes"],
+      "applicability": "at least 1 regular file"
+    },
+    "WL-FULL": {
+      "sessions": 1,
+      "operations": ["HEAD", "GET the whole archive (status quo client cannot; modelled as one 200 response, or as consecutive 64 MiB ranges for range-only origins)", "local full verify (CPU measured in EXP-REMOTE-005)"],
+      "applicability": "every archive, both layouts"
+    },
+    "WL-REVISIT": {
+      "sessions": 2,
+      "operations": ["session 1: WL-RANDK16", "session 2: the same 16 files again"],
+      "applicability": "at least 2 regular files",
+      "purpose": "persistent cross-session cache candidates (EXP-REMOTE-004, EXP-REMOTE-005)"
+    }
+  },
+  "sources": {
+    "memory": "MemoryRandomReadSource wrapped in a recording source that logs every read_exact_at and revision call (revision calls are counted as HEAD requests for the HTTP projection)",
+    "http-loopback": "HttpRangeSource against ebr-origin on 127.0.0.1 with no proxy; origin log gives exact HTTP requests, statuses, body and header bytes",
+    "http-emulated": "HttpRangeSource through ebr-netem-proxy at a calibrated profile (EXP-REMOTE-001)",
+    "local-file": "LocalFileRandomReadSource (reference for OD-10 local metrics; page cache state recorded)"
+  }
+}

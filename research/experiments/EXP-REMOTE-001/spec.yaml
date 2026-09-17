@@ -1,0 +1,91 @@
+schema: ebr.spec.v1
+experiment_id: EXP-REMOTE-001
+status: designed-needs-tooling
+notes: >
+  Phase C-design pre-registration (remote domain). Fulfils EXP-NETEM-CAL
+  (decision-method.md section 4.15, section 14 item 18). Not runnable until
+  tooling T2, T3 and T7 exist (see protocol.md section 7) and gate G-A holds.
+  Candidates are (emulation arm x network profile) cells; the model arm A2 is
+  computed by analyze_calibration.py from the same raw request logs and is
+  not a runner candidate. The generated served objects are opaque payloads.
+question: >
+  Does the application-level emulator reproduce the canonical network profiles
+  within the section 4.15 tolerances, does the trace-replay latency model agree
+  with it under the emulator's own physics, and are candidate rankings stable
+  across proxy, model arms and a real-kernel-TCP loopback emulator (DEC-ACC-063)?
+hypothesis: >
+  NP-METRO, NP-CONT and NP-INTER pass calibration under the proxy and NP-LAN does
+  not (model-only); SS-NONE model error is within the RTT tolerance; no
+  rank-stability pair reverses between SS-RFC6928 and the kernel-TCP arm.
+decision_ids: [DEC-ACC-063]
+
+candidates:
+  - {name: proxy-NP-LAN, params: {arm: proxy, profile: NP-LAN}}
+  - {name: proxy-NP-METRO, params: {arm: proxy, profile: NP-METRO}}
+  - {name: proxy-NP-CONT, params: {arm: proxy, profile: NP-CONT}}
+  - {name: proxy-NP-INTER, params: {arm: proxy, profile: NP-INTER}}
+  - {name: tunem-NP-LAN, params: {arm: tunem, profile: NP-LAN}}
+  - {name: tunem-NP-METRO, params: {arm: tunem, profile: NP-METRO}}
+  - {name: tunem-NP-CONT, params: {arm: tunem, profile: NP-CONT}}
+  - {name: tunem-NP-INTER, params: {arm: tunem, profile: NP-INTER}}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/run_calibration.sh
+  --arm {arm} --profile {profile} --object {item_path} --scratch {scratch}
+  --seed {seed} --rep {rep}
+  --connection-model /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/connection-model.json
+  --probes P1,P2,P3,P4,P5,P6,P7
+  --replay-logs /root/eb-research/raw-detail/EXP-REMOTE-002/replay-selection-tuning
+shell: bash
+
+corpus:
+  generated:
+    - {item_id: calib-object-64m, family: synthetic-random, generator: random-v1, bytes: 67108864, seed: 20260917}
+    - {item_id: calib-object-1k, family: synthetic-random, generator: random-v1, bytes: 1024, seed: 20260917}
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: achieved_rtt_ms_median, source: stdout_json, key: payload.p1.rtt_ms_median, family: time_wall, direction: none, unit: ms}
+  - {name: achieved_rtt_ms_ci_low, source: stdout_json, key: payload.p1.rtt_ms_ci99_low, family: time_wall, direction: none, unit: ms}
+  - {name: achieved_rtt_ms_ci_high, source: stdout_json, key: payload.p1.rtt_ms_ci99_high, family: time_wall, direction: none, unit: ms}
+  - {name: achieved_throughput_mbit_median, source: stdout_json, key: payload.p2.mbit_median, family: throughput, direction: none, unit: Mbit/s}
+  - {name: setup_ms_median, source: stdout_json, key: payload.p3.setup_ms_median, family: time_wall, direction: none, unit: ms}
+  - {name: count_mismatches, source: stdout_json, key: payload.p4.count_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: header_bytes_median, source: stdout_json, key: payload.p5.header_bytes_median, family: size, direction: none, unit: B}
+  - {name: model_abs_rel_error_median, source: stdout_json, key: payload.p6.abs_rel_error_median, family: other, direction: minimize, unit: fraction}
+  - {name: model_signed_rel_error_median, source: stdout_json, key: payload.p6.signed_rel_error_median, family: other, direction: none, unit: fraction}
+  - {name: slow_start_signature_rounds, source: stdout_json, key: payload.p7.estimated_extra_rounds_at_64m, family: other, direction: none, unit: count}
+  - {name: calibration_pass, source: stdout_json, key: payload.acceptance.pass, family: correctness, direction: maximize, unit: binary}
+  - {name: raw_detail_sha256, source: stdout_json, key: payload.raw_detail_sha256, family: correctness, kind: string}
+
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 20260917, bootstrap: 20260918, command: 20260919}
+timing: true
+order: randomized_blocks
+
+guard:
+  max_loadavg_1m: 4.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  cpu_affinity: [2]
+  min_cpus: 8
+  requires:
+    - /root/eb-research/target/harness/release/ebr-origin
+    - /root/eb-research/target/harness/release/ebr-netem-proxy
+    - /root/eb-research/target/harness/release/ebr-remote
+    - /root/eb-research/target/harness/release/ebr-tunem
+    - ip
+  timeout_s: 3600
+
+analysis:
+  baseline: proxy-NP-CONT
+  pairing: item_repetition
+  report_metrics: [achieved_rtt_ms_median, achieved_throughput_mbit_median, setup_ms_median, count_mismatches, model_abs_rel_error_median, calibration_pass]

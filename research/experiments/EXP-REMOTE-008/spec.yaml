@@ -1,0 +1,81 @@
+schema: ebr.spec.v1
+experiment_id: EXP-REMOTE-008
+status: designed-needs-tooling
+notes: >
+  Phase C-design pre-registration (remote domain). Candidates are policy sets from
+  policies.json (DEC-ACC-039) crossed inside each sample with the Index-fallback
+  candidates (DEC-ACC-044) and hostile-Index cases (DEC-ACC-019); items are the
+  generated benign, adversarial and hostile-Index archives listed in
+  generated-manifest.jsonl (written by mutate_archive.py before the run; absent at
+  design time). Deterministic metrics; timing false. Needs T1, T4, T5, T6.
+question: >
+  Which random-access policy caps admit every legitimate case while refusing every
+  adversarial archive early, what does remote Index rebuild cost, and how much work
+  can a hostile Index force?
+hypothesis: >
+  Status-quo caps refuse legitimate remote reads of large single files; declaration-
+  scaled caps refuse none of the benign set and all of the adversarial set; Index-less
+  remote opening costs one request per frame and a stale Index forces a full rebuild.
+decision_ids: [DEC-ACC-039, DEC-ACC-044, DEC-ACC-019]
+
+candidates:
+  - {name: status-quo-defaults, params: {policy_set: status-quo-defaults}}
+  - {name: scaled-to-declarations, params: {policy_set: scaled-to-declarations}}
+  - {name: local-vs-remote-profiles, params: {policy_set: local-vs-remote-profiles}}
+  - {name: named-presets-untrusted-remote, params: {policy_set: preset-untrusted-remote}}
+  - {name: named-presets-desktop, params: {policy_set: preset-desktop}}
+  - {name: separate-rebuild-budget, params: {policy_set: separate-rebuild-budget}}
+  - {name: refuse-remote-rebuild-by-default, params: {policy_set: refuse-remote-rebuild}}
+  - {name: coalesced-header-prefetch-1m, params: {policy_set: "status-quo-defaults+readahead:1048576"}}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-008/run_policy_cases.sh
+  --item-path {item_path} --item-id {item_id} --scratch {scratch} --rep {rep} --seed {seed}
+  --policy-set {policy_set}
+  --policies /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-008/policies.json
+  --sources memory,local-file,http-loopback
+  --connection-model /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/connection-model.json
+  --detail-root /root/eb-research/raw-detail/EXP-REMOTE-008
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-REMOTE-008/generated-manifest.jsonl
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: case_set, source: stdout_json, key: payload.case_set, family: correctness, kind: string}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: benign_refused, source: stdout_json, key: payload.benign_refused_count, family: other, direction: minimize, unit: count}
+  - {name: benign_cases, source: stdout_json, key: payload.benign_case_count, family: other, direction: none, unit: count}
+  - {name: adversarial_missed, source: stdout_json, key: payload.adversarial_not_refused_count, family: correctness, direction: minimize, unit: count}
+  - {name: wrong_bytes_reported_verified, source: stdout_json, key: payload.wrong_bytes_reported_verified, family: correctness, direction: minimize, unit: count}
+  - {name: refusal_bytes_read_max, source: stdout_json, key: payload.refusal_bytes_read_max, family: size, direction: minimize, unit: B}
+  - {name: refusal_requests_max, source: stdout_json, key: payload.refusal_http_requests_max, family: other, direction: minimize, unit: count}
+  - {name: refusal_scoped_peak_bytes_max, source: stdout_json, key: payload.refusal_scoped_peak_bytes_max, family: memory_peak, direction: minimize, unit: B}
+  - {name: rebuild_http_requests, source: stdout_json, key: payload.index.rebuild_http_requests, family: other, direction: minimize, unit: count}
+  - {name: rebuild_http_bytes, source: stdout_json, key: payload.index.rebuild_http_bytes, family: size, direction: minimize, unit: B}
+  - {name: remote_first_entry_latency_s__NP_CONT, source: stdout_json, key: payload.index.first_entry_model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_first_entry_latency_s__NP_INTER, source: stdout_json, key: payload.index.first_entry_model.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: amplification_factor_max, source: stdout_json, key: payload.index.amplification_factor_max, family: other, direction: minimize, unit: ratio}
+  - {name: distinct_reason_codes, source: stdout_json, key: payload.reason_code_distinct_count, family: other, direction: none, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20261008, bootstrap: 20261009, command: 20261010}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-remote
+    - /root/eb-research/target/harness/release/ebr-origin
+  timeout_s: 21600
+
+analysis:
+  baseline: status-quo-defaults
+  pairing: item
+  report_metrics: [benign_refused, adversarial_missed, wrong_bytes_reported_verified, rebuild_http_requests, amplification_factor_max]

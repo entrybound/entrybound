@@ -1,0 +1,78 @@
+schema: ebr.spec.v1
+experiment_id: EXP-REMOTE-011
+status: designed-needs-tooling
+notes: >
+  Phase C-design pre-registration (remote domain). Runner arm: production traces of
+  the worst-closure workload (WL-WORST, wl-worst.json) plus WL-FIRST/WL-RAND1/WL-RANDK16
+  over dense, extreme and balanced tuning archives, with per-read dictionary bytes
+  separated and each closure-rule declaration evaluated on the measured closures.
+  Alternative closure rules and topologies are simulated by closuresim.py + fetchsim
+  (protocol.md section 7). Timing false. manifest-tuning-small-medium.jsonl is
+  emitted by EXP-REMOTE-002's make_item_lists.py.
+question: >
+  What decoded bytes, fetched bytes, requests and modelled latency does a random or
+  remote read incur under each dependency-closure rule, lookback and dictionary fetch
+  rule, and which declaration never understates it?
+hypothesis: >
+  Status-quo worst-member granularity grows with group length rather than lookback;
+  bounded closure rules cap it; whole-section dictionary fetch adds unrelated bytes.
+decision_ids: [DEC-ACC-025, DEC-CMP-027, DEC-CMP-020]
+
+candidates:
+  - {name: balanced-plain, params: {config: balanced-plain}}
+  - {name: dense-plain, params: {config: dense-plain}}
+  - {name: extreme-plain, params: {config: extreme-plain}}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-002/run_trace.sh
+  --item-path {item_path} --item-id {item_id} --config {config} --scratch {scratch}
+  --rep {rep} --seed {seed}
+  --workloads /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-002/workloads.json,/mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-011/wl-worst.json
+  --workload-subset WL-WORST,WL-FIRST,WL-RAND1,WL-RANDK16
+  --closure-declaration-models status-quo-declare-max-lookback,declare-transitive-closure
+  --separate-dictionary-bytes true
+  --connection-model /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/connection-model.json
+  --sources http-loopback
+  --detail-root /root/eb-research/raw-detail/EXP-REMOTE-011
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-REMOTE-002/manifest-tuning-small-medium.jsonl
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: roundtrip_ok, source: stdout_json, key: payload.roundtrip_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: trace_sha256, source: stdout_json, key: payload.trace_sha256, family: correctness, kind: string}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: longest_group_chunks, source: stdout_json, key: payload.layout.longest_group_members, family: other, direction: none, unit: count}
+  - {name: access_granularity_bytes, source: stdout_json, key: payload.wl.WL-WORST.decoded_bytes_max, family: size, direction: minimize, unit: B}
+  - {name: dependency_chunk_count_max, source: stdout_json, key: payload.wl.WL-WORST.dependency_chunks_max, family: other, direction: minimize, unit: count}
+  - {name: remote_random_entry_latency_s__WORST__NP_CONT, source: stdout_json, key: payload.wl.WL-WORST.model_max.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_random_entry_latency_s__WORST__NP_INTER, source: stdout_json, key: payload.wl.WL-WORST.model_max.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_random_entry_latency_s__NP_CONT, source: stdout_json, key: payload.wl.WL-RAND1.model_median.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: http_bytes__WORST, source: stdout_json, key: payload.wl.WL-WORST.http_bytes_max, family: size, direction: minimize, unit: B}
+  - {name: dictionary_bytes_first_read, source: stdout_json, key: payload.wl.WL-FIRST.dictionary_bytes, family: size, direction: minimize, unit: B}
+  - {name: dictionary_bytes_referenced_first_read, source: stdout_json, key: payload.wl.WL-FIRST.dictionary_bytes_referenced, family: size, direction: minimize, unit: B}
+  - {name: declared_cost_accuracy__status_quo, source: stdout_json, key: payload.closure_models.status-quo-declare-max-lookback.accuracy_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: declared_cost_accuracy__transitive, source: stdout_json, key: payload.closure_models.declare-transitive-closure.accuracy_ok, family: correctness, direction: maximize, unit: binary}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20261017, bootstrap: 20261018, command: 20261019}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-remote
+    - /root/eb-research/target/harness/release/ebr-origin
+  timeout_s: 14400
+
+analysis:
+  baseline: balanced-plain
+  pairing: item
+  report_metrics: [access_granularity_bytes, dependency_chunk_count_max, remote_random_entry_latency_s__WORST__NP_INTER, dictionary_bytes_first_read, declared_cost_accuracy__status_quo]

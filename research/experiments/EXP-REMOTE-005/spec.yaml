@@ -1,0 +1,83 @@
+schema: ebr.spec.v1
+experiment_id: EXP-REMOTE-005
+status: designed-needs-tooling
+notes: >
+  Phase C-design pre-registration (remote domain). Deterministic arm: production
+  cache bounds and CachePolicySource/persistent-cache wrappers over balanced-plain
+  archives (counts, bytes, hit rates, modelled latency, scoped client memory).
+  Eager, hybrid, STREAM and parallel candidates are composed by fetchsim with local
+  timing inputs from spec-local-timing.yaml (generated). Needs T1-T6.
+question: >
+  Which cache policy and size, and which lazy/eager/hybrid retrieval strategy,
+  minimize time-to-first-byte and time-to-all-bytes with bounded memory; and what
+  does random access into STREAM archives cost by each route?
+hypothesis: >
+  The 128 MiB FIFO is equivalent to alternatives except for oversize Zipf working
+  sets; a read-fraction crossover between lazy and eager exists and moves with RTT.
+decision_ids: [DEC-ACC-045, DEC-ACC-042, DEC-ACC-059]
+
+candidates:
+  - {name: status-quo-128mib-fifo, params: {config: balanced-plain, cache_bytes: 134217728, wrapper: none}}
+  - {name: no-cache, params: {config: balanced-plain, cache_bytes: 0, wrapper: none}}
+  - {name: fifo-8m, params: {config: balanced-plain, cache_bytes: 8388608, wrapper: none}}
+  - {name: fifo-32m, params: {config: balanced-plain, cache_bytes: 33554432, wrapper: none}}
+  - {name: fifo-512m, params: {config: balanced-plain, cache_bytes: 536870912, wrapper: none}}
+  - {name: lru-128m, params: {config: balanced-plain, cache_bytes: 0, wrapper: "cache-lru:134217728"}}
+  - {name: arc-or-2q-128m, params: {config: balanced-plain, cache_bytes: 0, wrapper: "cache-2q:134217728"}}
+  - {name: adjacent-range-merge-128m, params: {config: balanced-plain, cache_bytes: 0, wrapper: "cache-adjacent-lru:134217728"}}
+  - {name: size-scaled, params: {config: balanced-plain, cache_bytes: 0, wrapper: cache-size-scaled}}
+  - {name: persistent-verified-chunk-cache, params: {config: balanced-plain, cache_bytes: 134217728, wrapper: "persistent-chunks:1073741824"}}
+command: >-
+  bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-002/run_trace.sh
+  --item-path {item_path} --item-id {item_id} --config {config} --scratch {scratch}
+  --rep {rep} --seed {seed} --policy-max-cached-bytes {cache_bytes} --source-wrapper {wrapper}
+  --workloads /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-002/workloads.json
+  --workload-subset WL-SUBTREE,WL-RANDK256,WL-ZIPF,WL-SEQALL,WL-REVISIT,WL-FRACTION-0.01,WL-FRACTION-0.1,WL-FRACTION-0.5,WL-FRACTION-1.0
+  --client-gaps batch,interactive
+  --connection-model /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-REMOTE-001/connection-model.json
+  --sources http-loopback --measure-client-session-memory true
+  --detail-root /root/eb-research/raw-detail/EXP-REMOTE-005
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: roundtrip_ok, source: stdout_json, key: payload.roundtrip_ok, family: correctness, direction: maximize, unit: binary}
+  - {name: report_mismatches, source: stdout_json, key: payload.differential.report_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: trace_sha256, source: stdout_json, key: payload.trace_sha256, family: correctness, kind: string}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: remote_task_latency_s__WL_ZIPF__NP_CONT, source: stdout_json, key: payload.wl.WL-ZIPF.model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_ZIPF__NP_INTER, source: stdout_json, key: payload.wl.WL-ZIPF.model.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_SUBTREE__NP_CONT, source: stdout_json, key: payload.wl.WL-SUBTREE.model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_REVISIT_S2__NP_CONT, source: stdout_json, key: payload.wl.WL-REVISIT.session2_model.NP-CONT, family: time_wall, direction: minimize, unit: s}
+  - {name: remote_task_latency_s__WL_FRACTION_0_5__NP_INTER, source: stdout_json, key: payload.wl.WL-FRACTION-0.5.model.NP-INTER, family: time_wall, direction: minimize, unit: s}
+  - {name: refetch_bytes__WL_ZIPF, source: stdout_json, key: payload.wl.WL-ZIPF.refetch_bytes, family: size, direction: minimize, unit: B}
+  - {name: cache_hit_fraction__WL_ZIPF, source: stdout_json, key: payload.wl.WL-ZIPF.cache_hit_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: http_bytes__WL_ZIPF, source: stdout_json, key: payload.wl.WL-ZIPF.http_bytes, family: size, direction: minimize, unit: B}
+  - {name: http_requests__WL_ZIPF, source: stdout_json, key: payload.wl.WL-ZIPF.http_requests, family: other, direction: minimize, unit: count}
+  - {name: client_session_peak_bytes__WL_ZIPF, source: stdout_json, key: payload.wl.WL-ZIPF.scoped_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: client_session_growth_bytes__WL_ZIPF, source: stdout_json, key: payload.wl.WL-ZIPF.scoped_growth_1_to_1024_bytes, family: memory_peak, direction: minimize, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260929, bootstrap: 20260930, command: 20261001}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-remote
+    - /root/eb-research/target/harness/release/ebr-origin
+  timeout_s: 21600
+
+analysis:
+  baseline: status-quo-128mib-fifo
+  pairing: item
+  report_metrics: [remote_task_latency_s__WL_ZIPF__NP_CONT, refetch_bytes__WL_ZIPF, cache_hit_fraction__WL_ZIPF, client_session_peak_bytes__WL_ZIPF]
