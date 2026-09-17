@@ -1,0 +1,183 @@
+{
+  "schema": "ebr.baseline-tool-versions.v1",
+  "probed_at_utc": "2026-09-17T03:12:39+00:00",
+  "probed_on": "WSL Ubuntu 24.04 (root), per research/PROGRESS.md",
+  "tools": {
+    "zip": {
+      "installed": true,
+      "path": "/usr/bin/zip",
+      "version_raw": "Copyright (c) 1990-2008 Info-ZIP - Type 'zip \"-L\"' for software license.\nThis is Zip 3.0 (July 5th 2008), by Info-ZIP.\nCurrently maintained by E. Gordon.  Please send bug reports to\nthe authors using the web page at www.info-zip.org; see README for details.\n\nLatest sources and executables are at ftp://ftp.info-zip.org/pub/infozip,\nas of above date; see http://www.info-zip.org/ for other sites.",
+      "version": "3.0",
+      "dpkg_version": "3.0-13ubuntu0.2",
+      "package": "apt: zip"
+    },
+    "unzip": {
+      "installed": true,
+      "path": "/usr/bin/unzip",
+      "version_raw": "UnZip 6.00 of 20 April 2009, by Debian. Original by Info-ZIP.\n\nLatest sources and executables are at ftp://ftp.info-zip.org/pub/infozip/ ;\nsee ftp://ftp.info-zip.org/pub/infozip/UnZip.html for other sites.\n\nCompiled with gcc 13.2.0 for Unix (Linux ELF).\n\nUnZip special compilation options:",
+      "version": "6.00",
+      "dpkg_version": "6.0-28ubuntu4.1",
+      "package": "apt: unzip"
+    },
+    "7z": {
+      "installed": true,
+      "path": "/usr/bin/7z",
+      "version_raw": "7-Zip 23.01 (x64) : Copyright (c) 1999-2023 Igor Pavlov : 2023-06-20\n 64-bit locale=C.UTF-8 Threads:32 OPEN_MAX:1024\n\nUsage: 7z <command> [<switches>...] <archive_name> [<file_names>...] [@listfile]\n\n<Commands>\n  a : Add files to archive",
+      "version": "23.01",
+      "dpkg_version": "23.01+dfsg-11",
+      "package": "apt: 7zip (7-Zip 23.01+dfsg)"
+    },
+    "tar": {
+      "installed": true,
+      "path": "/usr/bin/tar",
+      "version_raw": "tar (GNU tar) 1.35\nCopyright (C) 2023 Free Software Foundation, Inc.\nLicense GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n\nWritten by John Gilmore and Jay Fenlason.",
+      "version": "1.35",
+      "dpkg_version": "1.35+dfsg-3ubuntu0.4",
+      "package": "apt: tar (GNU tar)"
+    },
+    "gzip": {
+      "installed": true,
+      "path": "/usr/bin/gzip",
+      "version_raw": "gzip 1.12\nCopyright (C) 2018 Free Software Foundation, Inc.\nCopyright (C) 1993 Jean-loup Gailly.\nThis is free software.  You may redistribute copies of it under the terms of\nthe GNU General Public License <https://www.gnu.org/licenses/gpl.html>.\nThere is NO WARRANTY, to the extent permitted by law.\n\nWritten by Jean-loup Gailly.",
+      "version": "1.12",
+      "dpkg_version": "1.12-1ubuntu3.2",
+      "package": "apt: gzip"
+    },
+    "pigz": {
+      "installed": true,
+      "path": "/usr/bin/pigz",
+      "version_raw": "pigz 2.8",
+      "version": "2.8",
+      "dpkg_version": "2.8-1",
+      "package": "apt: pigz"
+    },
+    "zstd": {
+      "installed": true,
+      "path": "/usr/bin/zstd",
+      "version_raw": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+      "version": "1.5.5",
+      "dpkg_version": "1.5.5+dfsg2-2build1.1",
+      "package": "apt: zstd"
+    },
+    "xz": {
+      "installed": true,
+      "path": "/usr/bin/xz",
+      "version_raw": "xz (XZ Utils) 5.4.5\nliblzma 5.4.5",
+      "version": "5.4.5",
+      "dpkg_version": "5.6.1+really5.4.5-1ubuntu0.3",
+      "package": "apt: xz-utils"
+    },
+    "pixz": {
+      "installed": true,
+      "path": "/usr/bin/pixz",
+      "version_raw": "pixz: Parallel Indexing XZ compression, fully compatible with XZ\n\nBasic usage:\n  pixz input output.pxz           # Compress a file in parallel\n  pixz -d input.pxz output        # Decompress\n\nTarballs:\n  pixz input.tar output.tpxz      # Compress and index a tarball",
+      "version": null,
+      "dpkg_version": "1.0.7-2build2",
+      "package": "apt: pixz"
+    },
+    "lz4": {
+      "installed": true,
+      "path": "/usr/bin/lz4",
+      "version_raw": "*** LZ4 command line interface 64-bits v1.9.4, by Yann Collet ***",
+      "version": "1.9.4",
+      "dpkg_version": "1.9.4-1build1.1",
+      "package": "apt: lz4"
+    },
+    "brotli": {
+      "installed": true,
+      "path": "/usr/bin/brotli",
+      "version_raw": "brotli 1.1.0",
+      "version": "1.1.0",
+      "dpkg_version": "1.1.0-2build2",
+      "package": "apt: brotli"
+    },
+    "mksquashfs": {
+      "installed": true,
+      "path": "/usr/bin/mksquashfs",
+      "version_raw": "mksquashfs version 4.6.1 (2023/03/25)\ncopyright (C) 2023 Phillip Lougher <phillip@squashfs.org.uk>\n\nThis program is free software; you can redistribute it and/or\nmodify it under the terms of the GNU General Public License\nas published by the Free Software Foundation; either version 2,\nor (at your option) any later version.",
+      "version": "4.6.1",
+      "dpkg_version": "1:4.6.1-1build1",
+      "package": "apt: squashfs-tools"
+    },
+    "unsquashfs": {
+      "installed": true,
+      "path": "/usr/bin/unsquashfs",
+      "version_raw": "unsquashfs version 4.6.1 (2023/03/25)\ncopyright (C) 2023 Phillip Lougher <phillip@squashfs.org.uk>\n\nThis program is free software; you can redistribute it and/or\nmodify it under the terms of the GNU General Public License\nas published by the Free Software Foundation; either version 2,\nor (at your option) any later version.",
+      "version": "4.6.1",
+      "dpkg_version": "1:4.6.1-1build1",
+      "package": "apt: squashfs-tools"
+    },
+    "wimcapture": {
+      "installed": true,
+      "path": "/usr/bin/wimcapture",
+      "version_raw": "wimlib-imagex 1.14.4-1.1build2 (using wimlib 1.14.4-1.1build2)\nCopyright 2012-2023 Eric Biggers\nLicense GPLv3+; GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n\nReport bugs to https://wimlib.net/forums/.",
+      "version": "1.14.4-1.1build2",
+      "dpkg_version": "1.14.4-1.1build2",
+      "package": "apt: wimtools (wimlib)"
+    },
+    "wimapply": {
+      "installed": true,
+      "path": "/usr/bin/wimapply",
+      "version_raw": "wimlib-imagex 1.14.4-1.1build2 (using wimlib 1.14.4-1.1build2)\nCopyright 2012-2023 Eric Biggers\nLicense GPLv3+; GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n\nReport bugs to https://wimlib.net/forums/.",
+      "version": "1.14.4-1.1build2",
+      "dpkg_version": "1.14.4-1.1build2",
+      "package": "apt: wimtools (wimlib)"
+    },
+    "borg": {
+      "installed": true,
+      "path": "/usr/bin/borg",
+      "version_raw": "borg 1.2.8",
+      "version": "1.2.8",
+      "dpkg_version": "1.2.8-1",
+      "package": "apt: borgbackup"
+    },
+    "restic": {
+      "installed": true,
+      "path": "/usr/bin/restic",
+      "version_raw": "restic 0.16.4 compiled with go1.22.2 on linux/amd64",
+      "version": "0.16.4",
+      "dpkg_version": "0.16.4-2ubuntu0.24.04.3",
+      "package": "apt: restic"
+    },
+    "zpaq": {
+      "installed": true,
+      "path": "/usr/bin/zpaq",
+      "version_raw": "zpaq v7.15 journaling archiver, compiled Jan  5 2021\nUsage: zpaq command archive[.zpaq] files... -options...\nFiles... may be directory trees. Default is the whole archive.\nUse * or ???? in archive name for multi-part or \"\" for empty.\nCommands:\n   a  add         Append files to archive if dates have changed.\n   x  extract     Extract most recent versions of files.\n   l  list        List or compare external files to archive by dates.",
+      "version": "7.15",
+      "dpkg_version": "7.15+repack-1",
+      "package": "apt: zpaq"
+    },
+    "mkdwarfs": {
+      "installed": true,
+      "path": "/root/eb-research/tools/dwarfs/mkdwarfs",
+      "version_raw": "___                  ___ ___\n    |   \\__ __ ____ _ _ _| __/ __|         Deduplicating Warp-speed\n    | |) \\ V  V / _` | '_| _|\\__ \\      Advanced Read-only File System\n    |___/ \\_/\\_/\\__,_|_| |_| |___/         by Marcus Holland-Moritz\n\nmkdwarfs (v0.15.7 [2026-08-19])\nbuilt for x86_64 Linux using Clang 22.1.8",
+      "version": "0.15.7",
+      "dpkg_version": null,
+      "package": "GitHub release mhx/dwarfs v0.15.7 (dwarfs-universal, static x86_64 Linux binary)"
+    },
+    "dwarfsextract": {
+      "installed": true,
+      "path": "/root/eb-research/tools/dwarfs/dwarfsextract",
+      "version_raw": "___                  ___ ___\n    |   \\__ __ ____ _ _ _| __/ __|         Deduplicating Warp-speed\n    | |) \\ V  V / _` | '_| _|\\__ \\      Advanced Read-only File System\n    |___/ \\_/\\_/\\__,_|_| |_| |___/         by Marcus Holland-Moritz\n\ndwarfsextract (v0.15.7 [2026-08-19])\nbuilt for x86_64 Linux using Clang 22.1.8",
+      "version": "0.15.7",
+      "dpkg_version": null,
+      "package": "GitHub release mhx/dwarfs v0.15.7 (dwarfs-universal)"
+    },
+    "python3": {
+      "installed": true,
+      "path": "/usr/bin/python3",
+      "version_raw": "Python 3.12.3",
+      "version": "3.12.3",
+      "dpkg_version": null,
+      "package": "system"
+    },
+    "git": {
+      "installed": true,
+      "path": "/usr/bin/git",
+      "version_raw": "git version 2.43.0",
+      "version": "2.43.0",
+      "dpkg_version": "1:2.43.0-1ubuntu7.3",
+      "package": "apt: git"
+    }
+  }
+}

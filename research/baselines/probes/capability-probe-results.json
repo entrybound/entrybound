@@ -1,0 +1,1163 @@
+{
+  "7z-mx9-solid": {
+    "acl": {
+      "has_entry": false,
+      "present": true
+    },
+    "atime": {
+      "got": 1789615166,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615166,
+    "config": "7z-mx9-solid",
+    "create_exit": 0,
+    "extract_exit": 2,
+    "extract_nonzero_but_continuing": true,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/7z-mx9-solid.dest",
+    "extract_stderr": "ERROR: Dangerous link path was ignored : symlinks/abs-link.txt : /root/eb-research/cache/baselines/fixture/symlinks/target.txt\n",
+    "hardlinks": {
+      "nlink1": 1,
+      "nlink2": 1,
+      "present": true,
+      "same_inode": false
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 0,
+      "match": false,
+      "uid": 0
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 8388608,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": false
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "/root/eb-research/scratch/baselines/capability/7z-mx9-solid.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute"
+    }
+  },
+  "borg": {
+    "acl": {
+      "has_entry": true,
+      "present": true
+    },
+    "atime": {
+      "got": 1700000000,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615169,
+    "config": "borg",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/borg.dest/root/eb-research/cache/baselines/fixture",
+    "hardlinks": {
+      "nlink1": 2,
+      "nlink2": 2,
+      "present": true,
+      "same_inode": true
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 1000,
+      "match": true,
+      "uid": 1000
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 8388608,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": false
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "getfattr: Removing leading '/' from absolute path names\nhello_xattr"
+    }
+  },
+  "dwarfs": {
+    "acl": {
+      "has_entry": false,
+      "present": true
+    },
+    "atime": {
+      "got": 1700000000,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615173,
+    "config": "dwarfs",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/dwarfs.dest",
+    "hardlinks": {
+      "nlink1": 2,
+      "nlink2": 2,
+      "present": true,
+      "same_inode": true
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 1000,
+      "match": true,
+      "uid": 1000
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 4096,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": true
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "/root/eb-research/scratch/baselines/capability/dwarfs.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute"
+    }
+  },
+  "entrybound-ebound": {
+    "acl": {
+      "present": false
+    },
+    "atime": {
+      "got": 1789615174,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615174,
+    "config": "entrybound-ebound",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/entrybound-ebound.dest",
+    "hardlinks": {
+      "nlink1": 1,
+      "nlink2": 1,
+      "present": true,
+      "same_inode": false
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": false,
+    "ownership": {
+      "gid": 0,
+      "match": false,
+      "uid": 0
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o644",
+        "match": false,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o755",
+        "match": false,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 8388608,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": false
+    },
+    "strict_refusal_findings": {
+      "acl_mode_mismatch": {
+        "exit_code": 5,
+        "refused": true,
+        "stderr": "NONCONFORMING EB_EAM_INVALID_ACL: POSIX1E ACL and posix.mode disagree for acl/acl-file.txt"
+      },
+      "nonutf8": {
+        "exit_code": 2,
+        "refused": true,
+        "stderr": "UNSUPPORTED EB_EAM_INVALID_PATH_COMPONENT: filesystem name 'nonutf8-\ufffd\ufffd-name.bin' is not valid UTF-8"
+      },
+      "symlink_export": {
+        "exit_code": 2,
+        "refused": true,
+        "stderr": "UNSUPPORTED EB_LEGACY_EXPORT_REFUSED: ENTRY_KIND_UNSUPPORTED symlinks/abs-link.txt: the frozen target profile has no native symlink representation"
+      }
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "present": false
+      },
+      "symlinks/rel-link.txt": {
+        "present": false
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "/root/eb-research/scratch/baselines/capability/entrybound-ebound.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute"
+    }
+  },
+  "restic": {
+    "acl": {
+      "has_entry": true,
+      "present": true
+    },
+    "atime": {
+      "got": 1700000000,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615173,
+    "config": "restic",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/restic.dest/root/eb-research/cache/baselines/fixture",
+    "hardlinks": {
+      "nlink1": 2,
+      "nlink2": 2,
+      "present": true,
+      "same_inode": true
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 1000,
+      "match": true,
+      "uid": 1000
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 8388608,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": false
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "getfattr: Removing leading '/' from absolute path names\nhello_xattr"
+    }
+  },
+  "squashfs-zstd": {
+    "acl": {
+      "has_entry": false,
+      "present": true
+    },
+    "atime": {
+      "got": 1700000000,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615167,
+    "config": "squashfs-zstd",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/squashfs-zstd.dest",
+    "hardlinks": {
+      "nlink1": 2,
+      "nlink2": 2,
+      "present": true,
+      "same_inode": true
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 1000,
+      "match": true,
+      "uid": 1000
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 131072,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": true
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "getfattr: Removing leading '/' from absolute path names\nhello_xattr"
+    }
+  },
+  "tar-brotli-q11": {
+    "acl": {
+      "has_entry": false,
+      "present": true
+    },
+    "atime": {
+      "got": 1789615167,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615167,
+    "config": "tar-brotli-q11",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/tar-brotli-q11.dest",
+    "hardlinks": {
+      "nlink1": 2,
+      "nlink2": 2,
+      "present": true,
+      "same_inode": true
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 1000,
+      "match": true,
+      "uid": 1000
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 8388608,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": false
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "/root/eb-research/scratch/baselines/capability/tar-brotli-q11.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute"
+    }
+  },
+  "tar-gzip-9": {
+    "acl": {
+      "has_entry": false,
+      "present": true
+    },
+    "atime": {
+      "got": 1789615166,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615166,
+    "config": "tar-gzip-9",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/tar-gzip-9.dest",
+    "hardlinks": {
+      "nlink1": 2,
+      "nlink2": 2,
+      "present": true,
+      "same_inode": true
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 1000,
+      "match": true,
+      "uid": 1000
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 8388608,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": false
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "/root/eb-research/scratch/baselines/capability/tar-gzip-9.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute"
+    }
+  },
+  "tar-lz4": {
+    "acl": {
+      "has_entry": false,
+      "present": true
+    },
+    "atime": {
+      "got": 1789615167,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615167,
+    "config": "tar-lz4",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/tar-lz4.dest",
+    "hardlinks": {
+      "nlink1": 2,
+      "nlink2": 2,
+      "present": true,
+      "same_inode": true
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 1000,
+      "match": true,
+      "uid": 1000
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 8388608,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": false
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "/root/eb-research/scratch/baselines/capability/tar-lz4.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute"
+    }
+  },
+  "tar-xz-9e": {
+    "acl": {
+      "has_entry": false,
+      "present": true
+    },
+    "atime": {
+      "got": 1789615166,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615166,
+    "config": "tar-xz-9e",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/tar-xz-9e.dest",
+    "hardlinks": {
+      "nlink1": 2,
+      "nlink2": 2,
+      "present": true,
+      "same_inode": true
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 1000,
+      "match": true,
+      "uid": 1000
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 8388608,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": false
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "/root/eb-research/scratch/baselines/capability/tar-xz-9e.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute"
+    }
+  },
+  "tar-zstd-19": {
+    "acl": {
+      "has_entry": false,
+      "present": true
+    },
+    "atime": {
+      "got": 1789615166,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615166,
+    "config": "tar-zstd-19",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/tar-zstd-19.dest",
+    "hardlinks": {
+      "nlink1": 2,
+      "nlink2": 2,
+      "present": true,
+      "same_inode": true
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 1000,
+      "match": true,
+      "uid": 1000
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 8388608,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": false
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "/root/eb-research/scratch/baselines/capability/tar-zstd-19.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute"
+    }
+  },
+  "wim-lzms-solid": {
+    "acl": {
+      "has_entry": false,
+      "present": true
+    },
+    "atime": {
+      "got": 1789615165,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615167,
+    "config": "wim-lzms-solid",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/wim-lzms-solid.dest",
+    "hardlinks": {
+      "nlink1": 2,
+      "nlink2": 2,
+      "present": true,
+      "same_inode": true
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": false,
+    "ownership": {
+      "gid": 0,
+      "match": false,
+      "uid": 0
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o644",
+        "match": false,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o755",
+        "match": false,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o644",
+        "match": false,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 4096,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": true
+    },
+    "strict_refusal_findings": {
+      "nonutf8": {
+        "exit_code": 31,
+        "refused": true,
+        "stderr": "[ERROR] \"/root/eb-research/cache/baselines/fixture/nonutf8-\ufffd\ufffd-name.bin\": filename is not valid UTF-8.  This is not supported.\nERROR: Exiting with error code 31:\n       A string was not a valid UTF-8 string."
+      }
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "/root/eb-research/scratch/baselines/capability/wim-lzms-solid.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute"
+    }
+  },
+  "zip-9": {
+    "acl": {
+      "has_entry": false,
+      "present": true
+    },
+    "atime": {
+      "got": 1700000000,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615166,
+    "config": "zip-9",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/zip-9.dest",
+    "hardlinks": {
+      "nlink1": 1,
+      "nlink2": 1,
+      "present": true,
+      "same_inode": false
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 0,
+      "match": false,
+      "uid": 0
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 8388608,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": false
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "does-not-exist.txt",
+        "target_match": true
+      },
+      "symlinks/rel-link.txt": {
+        "is_symlink": true,
+        "present": true,
+        "target": "target.txt",
+        "target_match": true
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "/root/eb-research/scratch/baselines/capability/zip-9.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute"
+    }
+  },
+  "zpaq": {
+    "acl": {
+      "has_entry": false,
+      "present": true
+    },
+    "atime": {
+      "got": 1789615174,
+      "match": false,
+      "want": 1650000000
+    },
+    "birthtime_raw": 1789615174,
+    "config": "zpaq",
+    "create_exit": 0,
+    "extract_exit": 0,
+    "extract_root": "/root/eb-research/scratch/baselines/capability/zpaq.dest/root/eb-research/cache/baselines/fixture",
+    "hardlinks": {
+      "nlink1": 1,
+      "nlink2": 1,
+      "present": true,
+      "same_inode": false
+    },
+    "mtime": {
+      "got": 1700000000,
+      "match": true,
+      "want": 1700000000
+    },
+    "nonutf8_present": true,
+    "ownership": {
+      "gid": 0,
+      "match": false,
+      "uid": 0
+    },
+    "permissions": {
+      "perms/mode600.txt": {
+        "got": "0o600",
+        "match": true,
+        "want": "0o600"
+      },
+      "perms/mode644.txt": {
+        "got": "0o644",
+        "match": true,
+        "want": "0o644"
+      },
+      "perms/mode700dir": {
+        "got": "0o700",
+        "match": true,
+        "want": "0o700"
+      },
+      "perms/mode755.sh": {
+        "got": "0o755",
+        "match": true,
+        "want": "0o755"
+      }
+    },
+    "sparse": {
+      "allocated_bytes": 163840,
+      "apparent_bytes": 8388608,
+      "present": true,
+      "still_sparse": true
+    },
+    "symlinks": {
+      "symlinks/dangling-link.txt": {
+        "present": false
+      },
+      "symlinks/rel-link.txt": {
+        "present": false
+      }
+    },
+    "unicode_dir_present": true,
+    "unicode_file_present": true,
+    "xattr": {
+      "match": false,
+      "present": true,
+      "value": "/root/eb-research/scratch/baselines/capability/zpaq.dest/root/eb-research/cache/baselines/fixture/xattr/xattr-file.txt: user.ebr_probe: No such attribute"
+    }
+  }
+}

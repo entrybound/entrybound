@@ -1,0 +1,7 @@
+# generated-by: python -m ebr normalize --spec research/baselines/specs/EXP-BASE-SIZE-small.yaml --include-incomplete
+# tool: ebr 0.1.0 (research/tools/ebr)
+# tool-git-sha: 54c1727139c8c1c9c7522fc8c0e6a534a5a2f180
+# experiment: EXP-BASE-SIZE
+# input: research/raw/EXP-BASE-SIZE/20260917T031201Z-e86b28.jsonl sha256=None
+# do-not-edit: regenerate with the generated-by command; no number here is hand-entered
+env_id,candidate,baseline,metric,family,unit,pairing,decision_grade,n_pairs,median_ratio,geomean_ratio,ci_lower,ci_upper,ci_confidence,band_kind,band_lower,band_upper,verdict

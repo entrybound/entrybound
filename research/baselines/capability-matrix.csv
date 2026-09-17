@@ -1,0 +1,305 @@
+system_config,capability,support,method,evidence_ref,notes
+7z-mx5-solid,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+7z-mx9-nosolid,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+7z-mx9-solid,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,most incumbents intentionally do not restore atime
+7z-mx9-solid,authentication,NO,DOC,7-Zip format docs,CRC-32 per stream only when present; AES-CBC mode itself provides no integrity (REQ-CRY-0014/0102)
+7z-mx9-solid,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,"raw stat %W=1789615166 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+7z-mx9-solid,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+7z-mx9-solid,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+7z-mx9-solid,encryption,YES,DOC,7-Zip help (7z i / -mhe=on),"AES-256-CBC via -p, optionally -mhe=on to also encrypt filenames; CBC only, no AEAD"
+7z-mx9-solid,hardlinks,NO,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,nlink=1/1
+7z-mx9-solid,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,got=1700000000 want=1700000000
+7z-mx9-solid,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,
+7z-mx9-solid,ownership,NO,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,got=uid:0/gid:0
+7z-mx9-solid,partial_retrieval,PARTIAL,DOC,PROBE: 7z e <archive> <member>,"extracts the named member, but solid blocking still requires decoding other members sharing its block"
+7z-mx9-solid,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,
+7z-mx9-solid,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,
+7z-mx9-solid,random_access,PARTIAL,DOC,7-Zip format docs (solid blocks),"solid mode (used here, mx=9 default) requires decoding a whole solid block to reach one member; -ms=off (a separate config) restores per-file access at a ratio cost"
+7z-mx9-solid,sparse_files,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,"apparent=8388608 allocated=8388608 (materialized as a fully-allocated file: content preserved, sparseness not)"
+7z-mx9-solid,streaming_creation,NO,DOC,7-Zip format docs,"the format's header/folder graph is written after all data, so 7z cannot create output before it has scanned/planned the whole input"
+7z-mx9-solid,streaming_extraction,PARTIAL,DOC,7-Zip format docs,non-solid single-file streams can be decoded in order; the solid mode used here cannot be decoded from a stdin stream member-by-member
+7z-mx9-solid,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,relative and dangling symlink targets preserved
+7z-mx9-solid,symlinks_absolute_target,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,"an absolute-path symlink target was refused/skipped at extract time: ERROR: Dangerous link path was ignored : symlinks/abs-link.txt : /root/eb-research/cache/baselines/fixture/symlinks/target.txt
+"
+7z-mx9-solid,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,
+7z-mx9-solid,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#7z-mx9-solid,/root/eb-research/scratch/baselines/capability/7z-mx9-solid.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute
+7z-zip-9,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+borg,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#borg,most incumbents intentionally do not restore atime
+borg,authentication,YES,DOC,borgbackup documentation (AEAD chunk format),"each chunk is authenticated (HMAC) when encryption is enabled; with --encryption=none (this config) only a checksum, not authentication, is present"
+borg,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#borg,"raw stat %W=1789615169 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+borg,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#borg,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+borg,encryption,YES,DOC,"borgbackup documentation, --encryption",repokey/keyfile modes use AES-CTR with an HMAC-SHA256 authentication tag per chunk (this config uses --encryption=none for the size/determinism pass; see notes)
+borg,hardlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#borg,nlink=2/2
+borg,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#borg,got=1700000000 want=1700000000
+borg,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#borg,
+borg,ownership,YES,PROBE,research/baselines/probes/capability-probe-results.json#borg,got=uid:1000/gid:1000
+borg,partial_retrieval,YES,DOC,PROBE: borg extract <repo>::<archive> <path>,restores one named path from the archive without restoring the rest
+borg,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#borg,
+borg,posix_acls,YES,PROBE,research/baselines/probes/capability-probe-results.json#borg,
+borg,random_access,YES,DOC,borgbackup Internals documentation (chunk index),content-defined chunking with a repository-wide chunk index; any file's chunks are independently locatable
+borg,sparse_files,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#borg,"apparent=8388608 allocated=8388608 (materialized as a fully-allocated file: content preserved, sparseness not)"
+borg,streaming_creation,YES,DOC,borgbackup documentation,borg create chunks and uploads/writes data as it walks the source tree
+borg,streaming_extraction,PARTIAL,DOC,borgbackup documentation,"extract can process files in archive order without a separate random-access pass, but reading the repository's chunk index first is required, so it is not a pure single-pass stream"
+borg,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#borg,relative and dangling symlink targets preserved
+borg,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#borg,
+borg,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#borg,"getfattr: Removing leading '/' from absolute path names
+hello_xattr"
+borg-repo,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+dwarfs,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,most incumbents intentionally do not restore atime
+dwarfs,authentication,PARTIAL,DOC,DwarFS documentation (per-block checksums),block checksums (xxhash/SHA) detect corruption; not a keyed authentication scheme
+dwarfs,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,"raw stat %W=1789615173 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+dwarfs,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+dwarfs,encryption,NO,DOC,DwarFS documentation,no native encryption in the DwarFS image format
+dwarfs,hardlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,nlink=2/2
+dwarfs,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,got=1700000000 want=1700000000
+dwarfs,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,
+dwarfs,ownership,YES,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,got=uid:1000/gid:1000
+dwarfs,partial_retrieval,YES,DOC,PROBE: dwarfsextract -i <archive> -o <dest> --pattern <member>,extracts a matched subset of the image directly
+dwarfs,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,
+dwarfs,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,
+dwarfs,random_access,YES,DOC,DwarFS documentation,designed for FUSE mounting with random file access; per-category codec selection is itself built on independently addressable blocks
+dwarfs,sparse_files,YES,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,apparent=8388608 allocated=4096
+dwarfs,streaming_creation,NO,DOC,DwarFS documentation,mkdwarfs needs the whole input tree to perform its similarity/ordering and deduplication analysis before writing output
+dwarfs,streaming_extraction,PARTIAL,DOC,DwarFS documentation,"dwarfsextract can extract in image order without mounting, but the image itself is a random-access structure, not a forward-only stream"
+dwarfs,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,relative and dangling symlink targets preserved
+dwarfs,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,
+dwarfs,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#dwarfs,/root/eb-research/scratch/baselines/capability/dwarfs.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute
+dwarfs-l7,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+dwarfs-l9,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+entrybound-ebound,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,most incumbents intentionally do not restore atime
+entrybound-ebound,authentication,YES,DOC,"docs/crypto-threat-model-v1.md (unpublished design doc, cited by REQ-CRY-0014/0102 in research/requirement-ledger.csv)","the ledger records Entrybound's encrypted container as authenticated (AEAD), unlike 7z/RAR5/zpaq; not independently re-verified by this probe pass (would need --recipient/--password exercised here)"
+entrybound-ebound,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,"raw stat %W=1789615174 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+entrybound-ebound,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+entrybound-ebound,deterministic_output,YES,PROBE,research/baselines/build_capability_matrix.py:entrybound_determinism_row,two unencrypted ebound pack runs on the same fixture: sha256 match
+entrybound-ebound,encryption,YES,DOC,"`ebound pack --help` (this build, dev HEAD)","--recipient (X-Wing draft-10, repeatable) or --password; encryption is INDEXED-layout-only per the CLI's own help text"
+entrybound-ebound,hardlinks,NO,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,nlink=1/1
+entrybound-ebound,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,got=1700000000 want=1700000000
+entrybound-ebound,non_utf8_paths,NO,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,whole input tree refused: UNSUPPORTED EB_EAM_INVALID_PATH_COMPONENT: filesystem name 'nonutf8-��-name.bin' is not valid UTF-8
+entrybound-ebound,ownership,NO,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,got=uid:0/gid:0
+entrybound-ebound,partial_retrieval,PARTIAL,DOC,this build's CLI surface (pack/convert/publish only),"no direct 'extract one member to a path' subcommand exists yet in this experimental bootstrap CLI; retrieving one file today means exporting to a legacy format (convert --to tar) and extracting from that, which is not single-member-direct"
+entrybound-ebound,permissions,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,"{""perms/mode600.txt"": false, ""perms/mode644.txt"": true, ""perms/mode700dir"": false, ""perms/mode755.sh"": true}"
+entrybound-ebound,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,whole input tree refused: NONCONFORMING EB_EAM_INVALID_ACL: POSIX1E ACL and posix.mode disagree for acl/acl-file.txt
+entrybound-ebound,random_access,YES,DOC,`ebound pack --help` (--layout indexed),the indexed layout is the format's random-access organization; a regular-file output defaults to it
+entrybound-ebound,sparse_files,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,"apparent=8388608 allocated=8388608 (materialized as a fully-allocated file: content preserved, sparseness not)"
+entrybound-ebound,streaming_creation,PARTIAL,DOC,"`ebound pack --help` (--layout stream, --stream-window)",a stream-layout output (writing to `-`) is designed for bounded-lookback streaming creation; the indexed layout used by this probe's default is not
+entrybound-ebound,streaming_extraction,PARTIAL,DOC,`ebound pack --help` (--layout stream),"the stream layout is designed for streaming decode; not exercised by this probe pass, which used the default indexed layout"
+entrybound-ebound,symlinks,NO,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,export refused for the entry kind: UNSUPPORTED EB_LEGACY_EXPORT_REFUSED: ENTRY_KIND_UNSUPPORTED symlinks/abs-link.txt: the frozen target profile has no native symlink representation
+entrybound-ebound,symlinks,NO,DOC,PROBE: ebound pack + convert --to tar on a tree containing a symlink (capability-probe-results.json#entrybound-ebound.strict_refusal_findings.symlink_export),"the tar export path in this dev-HEAD build refuses any symlink entry (""the frozen target profile has no native symlink representation""); unknown whether the native .eb format itself represents symlinks, since there is no direct extract-to-filesystem command yet to test that independently of the tar export path"
+entrybound-ebound,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,
+entrybound-ebound,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#entrybound-ebound,/root/eb-research/scratch/baselines/capability/entrybound-ebound.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute
+restic,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#restic,most incumbents intentionally do not restore atime
+restic,authentication,YES,DOC,restic design documentation,every blob is individually authenticated (Poly1305-AES MAC)
+restic,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#restic,"raw stat %W=1789615173 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+restic,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#restic,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+restic,encryption,YES,DOC,restic design documentation,"always encrypted (AES-256-CTR + Poly1305-AES MAC per pack blob); this config still supplies a password, since restic has no unencrypted mode"
+restic,hardlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#restic,nlink=2/2
+restic,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#restic,got=1700000000 want=1700000000
+restic,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#restic,
+restic,ownership,YES,PROBE,research/baselines/probes/capability-probe-results.json#restic,got=uid:1000/gid:1000
+restic,partial_retrieval,YES,DOC,PROBE: restic restore --include <path> <snapshot>,restores one named path without restoring the rest of the snapshot
+restic,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#restic,
+restic,posix_acls,YES,PROBE,research/baselines/probes/capability-probe-results.json#restic,
+restic,random_access,YES,DOC,restic design documentation (index),content-defined chunking with a repository index mapping blobs to pack files and offsets
+restic,sparse_files,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#restic,"apparent=8388608 allocated=8388608 (materialized as a fully-allocated file: content preserved, sparseness not)"
+restic,streaming_creation,YES,DOC,restic design documentation,restic backup chunks and uploads data as it walks the source tree
+restic,streaming_extraction,PARTIAL,DOC,restic design documentation,"restore reads the repository index before writing files, so it is not a pure single-pass stream, though no full-archive decode is needed to reach one file"
+restic,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#restic,relative and dangling symlink targets preserved
+restic,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#restic,
+restic,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#restic,"getfattr: Removing leading '/' from absolute path names
+hello_xattr"
+restic-repo,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+squashfs-xz,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+squashfs-zstd,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,most incumbents intentionally do not restore atime
+squashfs-zstd,authentication,NO,DOC,kernel Documentation/filesystems/squashfs.txt,no per-block or whole-image cryptographic authentication
+squashfs-zstd,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,"raw stat %W=1789615167 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+squashfs-zstd,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+squashfs-zstd,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+squashfs-zstd,encryption,NO,DOC,squashfs-tools / kernel squashfs.txt,no native encryption (some vendor forks add it; not in mainline squashfs-tools 4.6.1)
+squashfs-zstd,hardlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,nlink=2/2
+squashfs-zstd,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,got=1700000000 want=1700000000
+squashfs-zstd,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,
+squashfs-zstd,ownership,YES,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,got=uid:1000/gid:1000
+squashfs-zstd,partial_retrieval,YES,DOC,PROBE: unsquashfs -f -d <dest> <archive> <member-path>,"extracts one named member directly, without extracting the rest"
+squashfs-zstd,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,
+squashfs-zstd,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,
+squashfs-zstd,random_access,YES,DOC,kernel Documentation/filesystems/squashfs.txt,block-indexed read-only filesystem image; any file is independently locatable and decompressible
+squashfs-zstd,sparse_files,YES,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,apparent=8388608 allocated=131072
+squashfs-zstd,streaming_creation,NO,DOC,squashfs-tools manual,mksquashfs needs to see and sort the whole input tree to build the image and its indexes before writing any output
+squashfs-zstd,streaming_extraction,PARTIAL,DOC,kernel Documentation/filesystems/squashfs.txt,"the on-disk image is randomly seekable (typically loop-mounted or read via unsquashfs), but is not designed to be consumed as a single forward-only stream the way tar is"
+squashfs-zstd,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,relative and dangling symlink targets preserved
+squashfs-zstd,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,
+squashfs-zstd,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#squashfs-zstd,"getfattr: Removing leading '/' from absolute path names
+hello_xattr"
+tar-brotli-q11,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,most incumbents intentionally do not restore atime
+tar-brotli-q11,authentication,NO,DOC,RFC 7932,the brotli stream format has no built-in checksum or MAC at all
+tar-brotli-q11,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,"raw stat %W=1789615167 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+tar-brotli-q11,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+tar-brotli-q11,encryption,NO,DOC,RFC 7932 (Brotli format),no native encryption
+tar-brotli-q11,hardlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,nlink=2/2
+tar-brotli-q11,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,got=1700000000 want=1700000000
+tar-brotli-q11,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,
+tar-brotli-q11,ownership,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,got=uid:1000/gid:1000
+tar-brotli-q11,partial_retrieval,PARTIAL,DOC,PROBE: tar xf <archive> --use-compress-program brotli -d <member>,"tar selects one member, but the brotli stream decodes sequentially up to it"
+tar-brotli-q11,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,
+tar-brotli-q11,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,
+tar-brotli-q11,random_access,NO,DOC,RFC 7932,"sequential format, no index"
+tar-brotli-q11,sparse_files,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,"apparent=8388608 allocated=8388608 (materialized as a fully-allocated file: content preserved, sparseness not)"
+tar-brotli-q11,streaming_creation,YES,DOC,RFC 7932,single-pass streaming format
+tar-brotli-q11,streaming_extraction,YES,DOC,RFC 7932,decodes sequentially with no seeking
+tar-brotli-q11,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,relative and dangling symlink targets preserved
+tar-brotli-q11,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,
+tar-brotli-q11,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-brotli-q11,/root/eb-research/scratch/baselines/capability/tar-brotli-q11.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute
+tar-gzip-9,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,most incumbents intentionally do not restore atime
+tar-gzip-9,authentication,PARTIAL,DOC,"RFC 1952 (gzip format, CRC-32)","gzip's trailer CRC-32 detects accidental corruption of the compressed stream only, not a cryptographic authentication tag"
+tar-gzip-9,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,"raw stat %W=1789615166 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+tar-gzip-9,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+tar-gzip-9,encryption,NO,DOC,GNU tar / gzip manuals,neither tar nor gzip has a native encryption mode; would require piping through a separate cipher
+tar-gzip-9,hardlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,nlink=2/2
+tar-gzip-9,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,got=1700000000 want=1700000000
+tar-gzip-9,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,
+tar-gzip-9,ownership,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,got=uid:1000/gid:1000
+tar-gzip-9,partial_retrieval,PARTIAL,DOC,PROBE: tar xzf <archive> <member>,"tar can select one member by name, but the gzip layer beneath it must still be decompressed sequentially up to that point"
+tar-gzip-9,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,
+tar-gzip-9,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,
+tar-gzip-9,random_access,NO,DOC,GNU tar manual; RFC 1952,both tar and gzip are sequential formats with no index; reaching any member requires decompressing from the start
+tar-gzip-9,sparse_files,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,"apparent=8388608 allocated=8388608 (materialized as a fully-allocated file: content preserved, sparseness not)"
+tar-gzip-9,streaming_creation,YES,DOC,GNU tar manual; RFC 1952,both layers are single-pass streams; this is exactly the tar|gzip pipe used to create the artifact
+tar-gzip-9,streaming_extraction,YES,DOC,GNU tar manual; RFC 1952,both layers decode sequentially from a stream with no seeking
+tar-gzip-9,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,relative and dangling symlink targets preserved
+tar-gzip-9,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,
+tar-gzip-9,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-gzip-9,/root/eb-research/scratch/baselines/capability/tar-gzip-9.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute
+tar-lz4,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,most incumbents intentionally do not restore atime
+tar-lz4,authentication,PARTIAL,DOC,LZ4 Frame Format spec (optional per-block/content checksum),"detects corruption, not a cryptographic MAC"
+tar-lz4,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,"raw stat %W=1789615167 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+tar-lz4,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+tar-lz4,encryption,NO,DOC,LZ4 Frame Format spec,no native encryption
+tar-lz4,hardlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,nlink=2/2
+tar-lz4,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,got=1700000000 want=1700000000
+tar-lz4,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,
+tar-lz4,ownership,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,got=uid:1000/gid:1000
+tar-lz4,partial_retrieval,PARTIAL,DOC,PROBE: tar xf <archive> -I lz4 <member>,"tar selects one member, but the lz4 stream decodes sequentially up to it"
+tar-lz4,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,
+tar-lz4,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,
+tar-lz4,random_access,NO,DOC,LZ4 Frame Format spec,"sequential frame format, no index"
+tar-lz4,sparse_files,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,"apparent=8388608 allocated=8388608 (materialized as a fully-allocated file: content preserved, sparseness not)"
+tar-lz4,streaming_creation,YES,DOC,LZ4 Frame Format spec,single-pass streaming format
+tar-lz4,streaming_extraction,YES,DOC,LZ4 Frame Format spec,decodes sequentially with no seeking
+tar-lz4,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,relative and dangling symlink targets preserved
+tar-lz4,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,
+tar-lz4,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-lz4,/root/eb-research/scratch/baselines/capability/tar-lz4.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute
+tar-xz-9e,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,most incumbents intentionally do not restore atime
+tar-xz-9e,authentication,PARTIAL,DOC,XZ Format spec (per-block/stream CRC),"CRC-32/64 integrity check per block, not a cryptographic MAC"
+tar-xz-9e,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,"raw stat %W=1789615166 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+tar-xz-9e,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+tar-xz-9e,encryption,NO,DOC,XZ Format spec (xz-file-format.txt),no native encryption in the xz container
+tar-xz-9e,hardlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,nlink=2/2
+tar-xz-9e,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,got=1700000000 want=1700000000
+tar-xz-9e,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,
+tar-xz-9e,ownership,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,got=uid:1000/gid:1000
+tar-xz-9e,partial_retrieval,PARTIAL,DOC,PROBE: tar xJf <archive> <member>,"tar selects one member, but the xz stream must still be decompressed sequentially up to it"
+tar-xz-9e,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,
+tar-xz-9e,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,
+tar-xz-9e,random_access,NO,DOC,XZ Format spec,plain xz (this config) has no index; pixz (a separate config in this suite) adds a block index for exactly this reason
+tar-xz-9e,sparse_files,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,"apparent=8388608 allocated=8388608 (materialized as a fully-allocated file: content preserved, sparseness not)"
+tar-xz-9e,streaming_creation,YES,DOC,XZ Format spec,single-pass streaming format; this is exactly the tar|xz pipe used to create the artifact
+tar-xz-9e,streaming_extraction,YES,DOC,XZ Format spec,decodes sequentially with no seeking
+tar-xz-9e,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,relative and dangling symlink targets preserved
+tar-xz-9e,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,
+tar-xz-9e,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-xz-9e,/root/eb-research/scratch/baselines/capability/tar-xz-9e.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute
+tar-zstd-19,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,most incumbents intentionally do not restore atime
+tar-zstd-19,authentication,PARTIAL,DOC,RFC 8878 §3.1.1 (optional content checksum),"an optional 32-bit content checksum (used by the zstd CLI by default) detects corruption, not a cryptographic MAC"
+tar-zstd-19,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,"raw stat %W=1789615166 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+tar-zstd-19,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+tar-zstd-19,encryption,NO,DOC,Zstandard Format RFC 8878,no native encryption in the zstd frame format
+tar-zstd-19,hardlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,nlink=2/2
+tar-zstd-19,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,got=1700000000 want=1700000000
+tar-zstd-19,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,
+tar-zstd-19,ownership,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,got=uid:1000/gid:1000
+tar-zstd-19,partial_retrieval,PARTIAL,DOC,PROBE: tar --zstd -xf <archive> <member>,"tar can select one member, but the zstd frame must still be decompressed sequentially up to it"
+tar-zstd-19,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,
+tar-zstd-19,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,
+tar-zstd-19,random_access,PARTIAL,DOC,RFC 8878 Appendix (seekable format); Facebook seekable-zstd spec,the plain frame used here has no index; the related seekable-zstd container format (not used by this config) adds one -- see tarxz-pixz for the indexed analogue this suite does run
+tar-zstd-19,sparse_files,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,"apparent=8388608 allocated=8388608 (materialized as a fully-allocated file: content preserved, sparseness not)"
+tar-zstd-19,streaming_creation,YES,DOC,RFC 8878,single-pass streaming frame format; this is exactly the tar|zstd pipe used to create the artifact
+tar-zstd-19,streaming_extraction,YES,DOC,RFC 8878,decodes sequentially from a stream with no seeking
+tar-zstd-19,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,relative and dangling symlink targets preserved
+tar-zstd-19,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,
+tar-zstd-19,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#tar-zstd-19,/root/eb-research/scratch/baselines/capability/tar-zstd-19.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute
+tarbrotli-q11,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+targz-gzip-6,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+targz-gzip-9,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+targz-pigz-9-t1,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+targz-pigz-9-tN,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+tarlz4-1,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+tarxz-6,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+tarxz-9e,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+tarxz-pixz,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+tarzstd-19-t1,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+tarzstd-19-tN,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+tarzstd-22-ultra-long27-t1,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+tarzstd-3-t1,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+wim-lzms-solid,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,most incumbents intentionally do not restore atime
+wim-lzms-solid,authentication,PARTIAL,DOC,MS-WIM / wimlib docs (per-chunk SHA-1 and image hash),integrity hashes catch corruption; not a keyed authentication scheme
+wim-lzms-solid,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,"raw stat %W=1789615167 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+wim-lzms-solid,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+wim-lzms-solid,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+wim-lzms-solid,encryption,NO,DOC,wimlib documentation (Encryption),wimlib does not support WIM encryption (Microsoft's own imagex/DISM support EFS-wrapped WIMs in restricted scenarios not exposed by wimlib)
+wim-lzms-solid,hardlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,nlink=2/2
+wim-lzms-solid,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,got=1700000000 want=1700000000
+wim-lzms-solid,non_utf8_paths,NO,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,"whole input tree refused: [ERROR] ""/root/eb-research/cache/baselines/fixture/nonutf8-��-name.bin"": filename is not valid UTF-8.  This is not supported.
+ERROR: Exiting with error code 31:
+       A string was not a valid UTF-8 s"
+wim-lzms-solid,ownership,NO,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,got=uid:0/gid:0
+wim-lzms-solid,partial_retrieval,YES,DOC,PROBE: wimextract <archive> 1 <member-path>,extracts one named file from the image directly
+wim-lzms-solid,permissions,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,"{""perms/mode600.txt"": false, ""perms/mode644.txt"": true, ""perms/mode700dir"": false, ""perms/mode755.sh"": false}"
+wim-lzms-solid,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,
+wim-lzms-solid,random_access,PARTIAL,DOC,MS-WIM specification; wimlib docs,"non-solid WIM resources are independently seekable; --solid (used in this config, matching the task's requested LZMS-solid variant) groups streams into solid resource chunks, reducing per-file random access"
+wim-lzms-solid,sparse_files,YES,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,apparent=8388608 allocated=4096
+wim-lzms-solid,streaming_creation,NO,DOC,wimlib documentation,"wimcapture scans the whole source tree, deduplicates streams and writes the lookup table/XML info after data, so it is not a single forward pass"
+wim-lzms-solid,streaming_extraction,PARTIAL,DOC,wimlib documentation,"wimlib can apply an image from a pipable WIM created for that purpose; the archive created by this config is not built pipable, so ordinary extraction needs random access to the file"
+wim-lzms-solid,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,relative and dangling symlink targets preserved
+wim-lzms-solid,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,
+wim-lzms-solid,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#wim-lzms-solid,/root/eb-research/scratch/baselines/capability/wim-lzms-solid.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute
+wim-lzx,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+zip-6,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+zip-9,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,most incumbents intentionally do not restore atime
+zip-9,authentication,NO,DOC,PKWARE APPNOTE.TXT 4.4.7 (CRC-32 only),"CRC-32 per entry only, not a cryptographic MAC (REQ-CRY-0014/0102)"
+zip-9,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,"raw stat %W=1789615166 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+zip-9,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+zip-9,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"5 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"
+zip-9,encryption,PARTIAL,DOC,"Info-ZIP zip(1) manual, -e/--password","legacy ZipCrypto only (weak, not authenticated); no AES in stock Info-ZIP zip"
+zip-9,hardlinks,NO,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,nlink=1/1
+zip-9,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,got=1700000000 want=1700000000
+zip-9,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,
+zip-9,ownership,NO,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,got=uid:0/gid:0
+zip-9,partial_retrieval,YES,DOC,PROBE: unzip -p <archive> <member>,single named member extracted without extracting the rest
+zip-9,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,
+zip-9,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,
+zip-9,random_access,YES,DOC,PKWARE APPNOTE.TXT central directory,central directory enables listing and per-entry extraction without full decompression
+zip-9,sparse_files,PARTIAL,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,"apparent=8388608 allocated=8388608 (materialized as a fully-allocated file: content preserved, sparseness not)"
+zip-9,streaming_creation,PARTIAL,DOC,PKWARE APPNOTE.TXT data descriptors,"supports streamed writes via data descriptors, but the central directory (needed for random access) is only finalized at the end"
+zip-9,streaming_extraction,YES,DOC,PKWARE APPNOTE.TXT local file headers,a conforming reader can stream-extract via local headers without the central directory
+zip-9,symlinks,YES,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,relative and dangling symlink targets preserved
+zip-9,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,
+zip-9,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#zip-9,/root/eb-research/scratch/baselines/capability/zip-9.dest/xattr/xattr-file.txt: user.ebr_probe: No such attribute
+zpaq,atime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,most incumbents intentionally do not restore atime
+zpaq,authentication,NO,DOC,zpaq documentation,no keyed authentication tag on the archive/journal
+zpaq,birthtime_precision,NO,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,"raw stat %W=1789615174 (the extraction moment, not the original fixture's creation time; no probed tool has a mechanism to declare a birth time on extraction)"
+zpaq,ctime_precision,N/A,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,"ctime is the inode's last-metadata-change time, always set by the extraction operation itself; no format or tool can restore an earlier ctime, so this is not a capability to compare"
+zpaq,encryption,YES,DOC,"zpaq documentation, -key","AES-256-CTR via -key (not used in this config, which is unencrypted for the size/determinism pass)"
+zpaq,hardlinks,NO,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,nlink=1/1
+zpaq,mtime_precision,YES,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,got=1700000000 want=1700000000
+zpaq,non_utf8_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,
+zpaq,ownership,NO,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,got=uid:0/gid:0
+zpaq,partial_retrieval,PARTIAL,DOC,PROBE: zpaq x <archive> <member> -to <dest>,"can extract a named file, but journaling/versioning bookkeeping is read regardless"
+zpaq,permissions,YES,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,
+zpaq,posix_acls,NO,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,
+zpaq,random_access,PARTIAL,DOC,zpaq documentation (block/fragment index),"zpaq indexes fragments for dedup and versioning, but is primarily designed for whole-archive journaled add/extract, not general random access"
+zpaq,sparse_files,YES,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,apparent=8388608 allocated=163840
+zpaq,streaming_creation,NO,DOC,zpaq documentation,"zpaq add computes a journal entry against prior archive state, which is not a pure forward-only stream operation"
+zpaq,streaming_extraction,NO,DOC,zpaq documentation,extraction resolves the most recent version of each file across the journal's update history before writing
+zpaq,symlinks,NO,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,"{""symlinks/dangling-link.txt"": {""present"": false}, ""symlinks/rel-link.txt"": {""present"": false}}"
+zpaq,symlinks,NO,DOC,PROBE: zpaq add/extract on a tree containing a symlink,"confirmed by capability probe: the symlink fixture is silently dropped on add, not merely on extract (zpaq has no symlink entry kind in this version, 7.15)"
+zpaq,unicode_paths,YES,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,
+zpaq,xattrs,NO,PROBE,research/baselines/probes/capability-probe-results.json#zpaq,/root/eb-research/scratch/baselines/capability/zpaq.dest/root/eb-research/cache/baselines/fixture/xattr/xattr-file.txt: user.ebr_probe: No such attribute
+zpaq-m5,deterministic_output,N/A,PROBE,research/raw/EXP-BASE-SIZE/*.jsonl (grouped by candidate+item+rep),"4 (candidate,item) pairs measured so far but none yet has 2+ repetitions in this partial EXP-BASE-SIZE pass; rerun once it has more coverage"

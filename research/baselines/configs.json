@@ -1,0 +1,409 @@
+{
+  "schema": "ebr.baseline-configs.v1",
+  "generated_by": "research/baselines/run_baselines.py (hand-authored source of truth; tool-versions.json is generated from probing these tools)",
+  "notes": [
+    "Every config's `create` and `extract` are exact command templates (candidate.command in the generated ebr spec, or the extraction branch of research/baselines/probes/roundtrip_check.py). {item_path}/{scratch}/{artifact}/{dest} are placeholders filled by the runner.",
+    "`artifact_kind` is 'file' for single-archive-file formats and 'dir' for repository-style incumbents (borg, restic) whose 'artifact' is a repository directory.",
+    "`determinism_expectation` records what the config's own design implies before measurement (e.g. dedup-repo metadata is expected non-deterministic); the actual measured verdict is in the normalized CSV, not here.",
+    "`installed` reflects WSL Ubuntu 24.04 (root) at probe time; exact versions are in tool-versions.json.",
+    "zstd --patch-from (versioned-tree delta) does not fit the single-item create/extract shape of the other configs (it needs a base and a target item from the same independence group/series) and is run by a separate script (patch_from.py), not the main per-item spec."
+  ],
+  "families": [
+    {
+      "family": "zip-deflate",
+      "description": "ZIP with DEFLATE, the ubiquitous baseline container.",
+      "configs": [
+        {
+          "config_id": "zip-6",
+          "tool": "zip (Info-ZIP)",
+          "installed": true,
+          "create": "zip -6 -r -X -q {artifact} .  (run with cwd={item_path})",
+          "extract": "unzip -q -o {artifact} -d {dest}",
+          "format_tag": "zip",
+          "artifact_kind": "file",
+          "params": {"level": 6},
+          "determinism_expectation": "deterministic given -X (no extra attrs) and a fixed traversal order; zip stores mtimes by default, which we do not control per-entry, so byte-identity is measured, not assumed"
+        },
+        {
+          "config_id": "zip-9",
+          "tool": "zip (Info-ZIP)",
+          "installed": true,
+          "create": "zip -9 -r -X -q {artifact} .  (run with cwd={item_path})",
+          "extract": "unzip -q -o {artifact} -d {dest}",
+          "format_tag": "zip",
+          "artifact_kind": "file",
+          "params": {"level": 9},
+          "determinism_expectation": "same as zip-6"
+        },
+        {
+          "config_id": "7z-zip-9",
+          "tool": "7z (p7zip/7-Zip 23.01)",
+          "installed": true,
+          "create": "7z a -tzip -mx=9 -bd -y {artifact} .  (run with cwd={item_path})",
+          "extract": "7z x -y -o{dest} {artifact}",
+          "format_tag": "zip",
+          "artifact_kind": "file",
+          "params": {"level": 9},
+          "determinism_expectation": "deterministic; 7z's zip writer does not multithread the zip container itself"
+        }
+      ]
+    },
+    {
+      "family": "tar-gzip",
+      "description": "tar with gzip/pigz DEFLATE compression of the whole stream.",
+      "configs": [
+        {
+          "config_id": "targz-gzip-6",
+          "tool": "GNU tar 1.35 + gzip 1.12",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | gzip -6 -n > {artifact}",
+          "extract": "tar xzf {artifact} -C {dest}",
+          "format_tag": "tar+gzip",
+          "artifact_kind": "file",
+          "params": {"level": 6, "threads": 1},
+          "determinism_expectation": "deterministic: sorted names, pinned mtime/owner in the tar layer, gzip -n omits the original-name/mtime header field"
+        },
+        {
+          "config_id": "targz-gzip-9",
+          "tool": "GNU tar 1.35 + gzip 1.12",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | gzip -9 -n > {artifact}",
+          "extract": "tar xzf {artifact} -C {dest}",
+          "format_tag": "tar+gzip",
+          "artifact_kind": "file",
+          "params": {"level": 9, "threads": 1},
+          "determinism_expectation": "deterministic, same reasoning as targz-gzip-6"
+        },
+        {
+          "config_id": "targz-pigz-9-t1",
+          "tool": "GNU tar 1.35 + pigz 2.8",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | pigz -9 -n -p1 > {artifact}",
+          "extract": "tar xf {artifact} -I 'pigz -d' -C {dest}",
+          "format_tag": "tar+gzip",
+          "artifact_kind": "file",
+          "params": {"level": 9, "threads": 1},
+          "determinism_expectation": "deterministic single-thread pigz should match plain gzip block-for-block only in ratio, not necessarily identical bytes (different implementation); measured, not assumed"
+        },
+        {
+          "config_id": "targz-pigz-9-tN",
+          "tool": "GNU tar 1.35 + pigz 2.8",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | pigz -9 -n -p$(nproc) > {artifact}",
+          "extract": "tar xf {artifact} -I 'pigz -d' -C {dest}",
+          "format_tag": "tar+gzip",
+          "artifact_kind": "file",
+          "params": {"level": 9, "threads": "nproc"},
+          "determinism_expectation": "pigz splits input into fixed-size blocks assigned to threads deterministically regardless of scheduling, so two multi-thread runs are expected byte-identical for the same input and thread count (REQ-ACC-0017 requires this class of tool to be pinned/disabled when it is not); measured here rather than assumed"
+        }
+      ]
+    },
+    {
+      "family": "tar-zstd",
+      "description": "tar with zstd compression of the whole stream, across the ratio/speed range and single- vs multi-thread.",
+      "configs": [
+        {
+          "config_id": "tarzstd-3-t1",
+          "tool": "zstd 1.5.5",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | zstd -3 -T1 -q > {artifact}",
+          "extract": "tar --zstd -xf {artifact} -C {dest}",
+          "format_tag": "tar+zstd",
+          "artifact_kind": "file",
+          "params": {"level": 3, "threads": 1, "long": null, "ultra": false},
+          "determinism_expectation": "deterministic; single-thread zstd frame content depends only on input"
+        },
+        {
+          "config_id": "tarzstd-19-t1",
+          "tool": "zstd 1.5.5",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | zstd -19 -T1 -q > {artifact}",
+          "extract": "tar --zstd -xf {artifact} -C {dest}",
+          "format_tag": "tar+zstd",
+          "artifact_kind": "file",
+          "params": {"level": 19, "threads": 1, "long": null, "ultra": false},
+          "determinism_expectation": "deterministic single-thread"
+        },
+        {
+          "config_id": "tarzstd-19-tN",
+          "tool": "zstd 1.5.5",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | zstd -19 -T0 -q > {artifact}",
+          "extract": "tar --zstd -xf {artifact} -C {dest}",
+          "format_tag": "tar+zstd",
+          "artifact_kind": "file",
+          "params": {"level": 19, "threads": "nproc(T0)", "long": null, "ultra": false},
+          "determinism_expectation": "multithreaded zstd (-T0) splits into independent jobs whose boundaries can depend on thread-pool timing for some versions; REQ-ACC-0017 flags this class as needing to be pinned/disabled for Entrybound's own deterministic mode -- measuring whether upstream zstd -T0 is itself deterministic here is exactly the baseline evidence that requirement cites"
+        },
+        {
+          "config_id": "tarzstd-22-ultra-long27-t1",
+          "tool": "zstd 1.5.5",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | zstd --ultra -22 --long=27 -T1 -q > {artifact}",
+          "extract": "tar --zstd -xf {artifact} -C {dest}",
+          "format_tag": "tar+zstd",
+          "artifact_kind": "file",
+          "params": {"level": 22, "threads": 1, "long": 27, "ultra": true},
+          "determinism_expectation": "deterministic single-thread; --long=27 raises the window to 128 MiB which only matters for inputs approaching that size"
+        }
+      ]
+    },
+    {
+      "family": "tar-xz",
+      "description": "tar with xz/LZMA2 compression of the whole stream, plus pixz's parallel indexed xz.",
+      "configs": [
+        {
+          "config_id": "tarxz-6",
+          "tool": "xz 5.4.5",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | xz -6 -T1 -q > {artifact}",
+          "extract": "tar xf {artifact} -C {dest}",
+          "format_tag": "tar+xz",
+          "artifact_kind": "file",
+          "params": {"level": 6, "extreme": false, "threads": 1},
+          "determinism_expectation": "deterministic single-thread xz"
+        },
+        {
+          "config_id": "tarxz-9e",
+          "tool": "xz 5.4.5",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | xz -9 -e -T1 -q > {artifact}",
+          "extract": "tar xf {artifact} -C {dest}",
+          "format_tag": "tar+xz",
+          "artifact_kind": "file",
+          "params": {"level": 9, "extreme": true, "threads": 1},
+          "determinism_expectation": "deterministic single-thread xz"
+        },
+        {
+          "config_id": "tarxz-pixz",
+          "tool": "pixz (indexed, parallel xz)",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | pixz -p$(nproc) > {artifact}",
+          "extract": "pixz -d -i {artifact} - | tar xf - -C {dest}",
+          "format_tag": "tar+xz",
+          "artifact_kind": "file",
+          "params": {"threads": "nproc", "indexed": true},
+          "determinism_expectation": "pixz block-splits like pigz but is also indexed (seekable); parallel block assignment is expected deterministic for a fixed thread count, measured not assumed; the index enables single-member random access, unlike plain xz"
+        }
+      ]
+    },
+    {
+      "family": "tar-lz4",
+      "description": "tar with lz4 (very fast, lower ratio) compression of the whole stream.",
+      "configs": [
+        {
+          "config_id": "tarlz4-1",
+          "tool": "lz4 1.9.4",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | lz4 -1 -q > {artifact}",
+          "extract": "tar xf {artifact} -I lz4 -C {dest}",
+          "format_tag": "tar+lz4",
+          "artifact_kind": "file",
+          "params": {"level": 1},
+          "determinism_expectation": "deterministic"
+        }
+      ]
+    },
+    {
+      "family": "tar-brotli",
+      "description": "tar with brotli -q11 (slowest, densest general-purpose entropy coder in this incumbent set).",
+      "configs": [
+        {
+          "config_id": "tarbrotli-q11",
+          "tool": "brotli 1.1.0",
+          "installed": true,
+          "create": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - -C {item_path} . | brotli -q 11 -c > {artifact}",
+          "extract": "tar xf {artifact} -I 'brotli -d' -C {dest}",
+          "format_tag": "tar+brotli",
+          "artifact_kind": "file",
+          "params": {"quality": 11},
+          "determinism_expectation": "deterministic"
+        }
+      ]
+    },
+    {
+      "family": "7z-lzma2",
+      "description": "native 7z container with LZMA2, solid vs non-solid blocking.",
+      "configs": [
+        {
+          "config_id": "7z-mx5-solid",
+          "tool": "7z (p7zip/7-Zip 23.01)",
+          "installed": true,
+          "create": "7z a -t7z -mx=5 -bd -y {artifact} .  (run with cwd={item_path})",
+          "extract": "7z x -y -o{dest} {artifact}",
+          "format_tag": "sevenzip",
+          "artifact_kind": "file",
+          "params": {"level": 5, "solid": true},
+          "determinism_expectation": "deterministic single-thread LZMA2; 7z's default solid blocking is used"
+        },
+        {
+          "config_id": "7z-mx9-solid",
+          "tool": "7z (p7zip/7-Zip 23.01)",
+          "installed": true,
+          "create": "7z a -t7z -mx=9 -bd -y {artifact} .  (run with cwd={item_path})",
+          "extract": "7z x -y -o{dest} {artifact}",
+          "format_tag": "sevenzip",
+          "artifact_kind": "file",
+          "params": {"level": 9, "solid": true},
+          "determinism_expectation": "deterministic; solid archives trade random access for ratio (REQ-CMP-0160)"
+        },
+        {
+          "config_id": "7z-mx9-nosolid",
+          "tool": "7z (p7zip/7-Zip 23.01)",
+          "installed": true,
+          "create": "7z a -t7z -mx=9 -ms=off -bd -y {artifact} .  (run with cwd={item_path})",
+          "extract": "7z x -y -o{dest} {artifact}",
+          "format_tag": "sevenzip",
+          "artifact_kind": "file",
+          "params": {"level": 9, "solid": false},
+          "determinism_expectation": "deterministic; -ms=off gives per-file compression, enabling single-member extraction without decompressing the whole archive, at a ratio cost"
+        }
+      ]
+    },
+    {
+      "family": "squashfs",
+      "description": "mksquashfs read-only filesystem image, block-compressed per the chosen codec.",
+      "configs": [
+        {
+          "config_id": "squashfs-zstd",
+          "tool": "squashfs-tools 4.6.1",
+          "installed": true,
+          "create": "mksquashfs {item_path} {artifact} -comp zstd -Xcompression-level 19 -no-progress -no-exports",
+          "extract": "unsquashfs -f -d {dest} {artifact}",
+          "format_tag": "squashfs",
+          "artifact_kind": "file",
+          "params": {"codec": "zstd", "level": 19},
+          "determinism_expectation": "mksquashfs sorts directory entries and is documented as reproducible given fixed mtimes/uid/gid; not pinned here (default mtimes), so measured"
+        },
+        {
+          "config_id": "squashfs-xz",
+          "tool": "squashfs-tools 4.6.1",
+          "installed": true,
+          "create": "mksquashfs {item_path} {artifact} -comp xz -no-progress -no-exports",
+          "extract": "unsquashfs -f -d {dest} {artifact}",
+          "format_tag": "squashfs",
+          "artifact_kind": "file",
+          "params": {"codec": "xz"},
+          "determinism_expectation": "same reasoning as squashfs-zstd"
+        }
+      ]
+    },
+    {
+      "family": "wim",
+      "description": "Windows Imaging Format container (wimlib), LZX and LZMS codecs, LZMS in solid mode.",
+      "configs": [
+        {
+          "config_id": "wim-lzx",
+          "tool": "wimlib 1.14.4 (wimtools)",
+          "installed": true,
+          "create": "wimcapture {item_path} {artifact} --compress=LZX --no-acls",
+          "extract": "wimapply {artifact} 1 {dest}",
+          "format_tag": "wim",
+          "artifact_kind": "file",
+          "params": {"codec": "LZX", "solid": false},
+          "determinism_expectation": "WIM stores a build timestamp and GUID in its header/XML info by design, so whole-file determinism is expected to fail even if every chunk is identical; measured and reported, not used to penalize the format"
+        },
+        {
+          "config_id": "wim-lzms-solid",
+          "tool": "wimlib 1.14.4 (wimtools)",
+          "installed": true,
+          "create": "wimcapture {item_path} {artifact} --compress=LZMS --solid --no-acls",
+          "extract": "wimapply {artifact} 1 {dest}",
+          "format_tag": "wim",
+          "artifact_kind": "file",
+          "params": {"codec": "LZMS", "solid": true},
+          "determinism_expectation": "same header/GUID caveat as wim-lzx; solid mode additionally removes random access to individual streams"
+        }
+      ]
+    },
+    {
+      "family": "borg-dedup",
+      "description": "borgbackup content-defined-chunking deduplicating repository (one fresh repository per item; encryption disabled for this size/determinism pass, see capability-matrix.csv for the encryption probe).",
+      "configs": [
+        {
+          "config_id": "borg-repo",
+          "tool": "borgbackup 1.2.8",
+          "installed": true,
+          "create": "borg init --encryption=none {artifact} && borg create --compression zstd,19 {artifact}::onlyarchive {item_path}",
+          "extract": "borg extract --restore-attrs {artifact}::onlyarchive --strip-components 0 (run with cwd={dest}, sourced from {item_path}'s absolute path so the arcname matches)",
+          "format_tag": "borg",
+          "artifact_kind": "dir",
+          "params": {"compression": "zstd,19", "encryption": "none"},
+          "determinism_expectation": "the repository directory is expected non-deterministic across runs (chunk-index file order, msgpack timestamps, repo id/segment numbering are generated per-init/per-create); the dedup benefit and round-trip fidelity are the properties under test here, not whole-directory byte-identity"
+        }
+      ]
+    },
+    {
+      "family": "restic-dedup",
+      "description": "restic content-defined-chunking deduplicating repository (one fresh local repository per item; a fixed non-secret research password is required by restic and is not a real credential).",
+      "configs": [
+        {
+          "config_id": "restic-repo",
+          "tool": "restic 0.16.4",
+          "installed": true,
+          "create": "restic init --repo {artifact} -q && restic backup {item_path} --repo {artifact} -q --host ebr-baseline --no-scan",
+          "extract": "restic restore latest --repo {artifact} --target {dest} -q",
+          "format_tag": "restic",
+          "artifact_kind": "dir",
+          "params": {"pack_default": true},
+          "determinism_expectation": "same expectation as borg-repo: snapshot metadata (id, timestamps, hostname) makes the repository directory non-deterministic across runs by design; content-addressed pack/blob bytes for identical file content are the interesting comparison and are recorded via the per-item extracted-content check"
+        }
+      ]
+    },
+    {
+      "family": "dwarfs",
+      "description": "DwarFS deduplicating, per-category-codec read-only filesystem image (official static release binary, v0.15.7).",
+      "configs": [
+        {
+          "config_id": "dwarfs-l7",
+          "tool": "dwarfs (mkdwarfs) 0.15.7",
+          "installed": true,
+          "create": "mkdwarfs -i {item_path} -o {artifact} -l7",
+          "extract": "dwarfsextract -i {artifact} -o {dest}",
+          "format_tag": "dwarfs",
+          "artifact_kind": "file",
+          "params": {"level": 7},
+          "determinism_expectation": "mkdwarfs documents deterministic output for a fixed input tree and options; measured, not assumed (REQ-CMP-0045/0081/0082/0103/0160 cite DwarFS as the dedup+per-category-codec incumbent to beat)"
+        },
+        {
+          "config_id": "dwarfs-l9",
+          "tool": "dwarfs (mkdwarfs) 0.15.7",
+          "installed": true,
+          "create": "mkdwarfs -i {item_path} -o {artifact} -l9",
+          "extract": "dwarfsextract -i {artifact} -o {dest}",
+          "format_tag": "dwarfs",
+          "artifact_kind": "file",
+          "params": {"level": 9},
+          "determinism_expectation": "same as dwarfs-l7"
+        }
+      ]
+    },
+    {
+      "family": "zpaq",
+      "description": "zpaq journaling archiver at its densest packaged method (upper-bound-on-ratio incumbent; not a candidate for Entrybound's own design per REQ-CMP-0080/REQ-CON-0044, which reject in-band decompressor bytecode).",
+      "configs": [
+        {
+          "config_id": "zpaq-m5",
+          "tool": "zpaq 7.15",
+          "installed": true,
+          "create": "zpaq a {artifact} {item_path} -m5 -t1",
+          "extract": "zpaq x {artifact} -to {dest} -f",
+          "format_tag": "zpaq",
+          "artifact_kind": "file",
+          "params": {"method": 5, "threads": 1},
+          "determinism_expectation": "zpaq journals appends and stores its own per-block timestamps by default; measured, not assumed"
+        }
+      ]
+    }
+  ],
+  "not_run_this_pass": [
+    {
+      "config_id": "zstd-patch-from",
+      "tool": "zstd 1.5.5 --patch-from",
+      "installed": true,
+      "reason": "delta-against-a-reference-version does not fit the single-item create/extract shape above; needs a (base, target) pair from the same versioned series",
+      "candidate_series": ["f18-tuning-curl-8-x-release-series (F18)", "f18-validation-cpython-3-12-point-releases (F18)", "f01 git-history items where consecutive commits/tags can serve as base/target"],
+      "planned_script": "research/baselines/patch_from.py (not yet written this pass; tracked in README open items)"
+    }
+  ]
+}
