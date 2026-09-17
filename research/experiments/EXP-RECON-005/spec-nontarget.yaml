@@ -1,0 +1,163 @@
+schema: ebr.spec.v1
+experiment_id: EXP-RECON-005
+status: pre-registered-design
+question: >
+  Non-target items (one per tuning independence group without reconstruction reach): does any
+  reconstruction-related planner variant change pack wall or CPU time (detection cost, decision-method 7.3)?
+hypothesis: >
+  protocol.md section 3 (H1-H6): gating equivalent on encode CPU; reconstruction non-inferior at corpus
+  level but worse on F12; JPEG-region decode and access worse beyond band; subprocess isolation
+  non-inferior at corpus level; research and production v6 pack timings equivalent.
+decision_ids: [DEC-CMP-018, DEC-CMP-026, DEC-CMP-023, DEC-CMP-012, DEC-CMP-037, DEC-CMP-042, DEC-CMP-044]
+notes: >
+  NEEDS_TOOLING plus calibration and runner-addition gates. Items come from select_items.py manifests
+  committed before the first timing run. Checks are untimed and gate samples (common section 8.4).
+
+candidates:
+  - name: pack-gen-v6-ebound-balanced
+    params: {op: pack, variant: gen-v6-ebound, profile: balanced}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebound pack {item_path} {scratch}/a.eb --profile {profile} --layout indexed"
+  - name: pack-gen-v6-research-balanced
+    params: {op: pack, variant: gen-v6-research, profile: balanced}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v6 --archive-out {scratch}/a.eb"
+  - name: pack-gen-v4-balanced
+    params: {op: pack, variant: gen-v4, profile: balanced}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v4 --archive-out {scratch}/a.eb"
+  - name: pack-gen-v5-balanced
+    params: {op: pack, variant: gen-v5, profile: balanced}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v5 --archive-out {scratch}/a.eb"
+  - name: pack-v6-minus-deflate-balanced
+    params: {op: pack, variant: v6-minus-deflate, profile: balanced}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant v6-minus-deflate --archive-out {scratch}/a.eb"
+  - name: pack-v6-minus-jpeg-balanced
+    params: {op: pack, variant: v6-minus-jpeg, profile: balanced}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant v6-minus-jpeg --archive-out {scratch}/a.eb"
+  - name: pack-v6-signature-gated-balanced
+    params: {op: pack, variant: v6-signature-gated, profile: balanced}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant v6-signature-gated --archive-out {scratch}/a.eb"
+  - name: pack-v6-subprocess-isolated-balanced
+    params: {op: pack, variant: v6-subprocess-isolated, profile: balanced}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v6 --isolate-reconstruction subprocess --archive-out {scratch}/a.eb"
+  - name: pack-align-member-cdc-balanced
+    params: {op: pack, variant: align-member-cdc, profile: balanced}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant align-member-cdc --archive-out {scratch}/a.eb"
+  - name: pack-align-single-chunk-recognised-balanced
+    params: {op: pack, variant: align-single-chunk-recognised, profile: balanced}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant align-single-chunk-recognised --archive-out {scratch}/a.eb"
+  - name: pack-gen-v6-ebound-dense
+    params: {op: pack, variant: gen-v6-ebound, profile: dense}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebound pack {item_path} {scratch}/a.eb --profile {profile} --layout indexed"
+  - name: pack-gen-v6-research-dense
+    params: {op: pack, variant: gen-v6-research, profile: dense}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v6 --archive-out {scratch}/a.eb"
+  - name: pack-gen-v4-dense
+    params: {op: pack, variant: gen-v4, profile: dense}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v4 --archive-out {scratch}/a.eb"
+  - name: pack-gen-v5-dense
+    params: {op: pack, variant: gen-v5, profile: dense}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v5 --archive-out {scratch}/a.eb"
+  - name: pack-v6-minus-deflate-dense
+    params: {op: pack, variant: v6-minus-deflate, profile: dense}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant v6-minus-deflate --archive-out {scratch}/a.eb"
+  - name: pack-v6-minus-jpeg-dense
+    params: {op: pack, variant: v6-minus-jpeg, profile: dense}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant v6-minus-jpeg --archive-out {scratch}/a.eb"
+  - name: pack-v6-signature-gated-dense
+    params: {op: pack, variant: v6-signature-gated, profile: dense}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant v6-signature-gated --archive-out {scratch}/a.eb"
+  - name: pack-v6-subprocess-isolated-dense
+    params: {op: pack, variant: v6-subprocess-isolated, profile: dense}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v6 --isolate-reconstruction subprocess --archive-out {scratch}/a.eb"
+  - name: pack-align-member-cdc-dense
+    params: {op: pack, variant: align-member-cdc, profile: dense}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant align-member-cdc --archive-out {scratch}/a.eb"
+  - name: pack-align-single-chunk-recognised-dense
+    params: {op: pack, variant: align-single-chunk-recognised, profile: dense}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant align-single-chunk-recognised --archive-out {scratch}/a.eb"
+  - name: pack-gen-v6-ebound-extreme
+    params: {op: pack, variant: gen-v6-ebound, profile: extreme}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebound pack {item_path} {scratch}/a.eb --profile {profile} --layout indexed"
+  - name: pack-gen-v6-research-extreme
+    params: {op: pack, variant: gen-v6-research, profile: extreme}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v6 --archive-out {scratch}/a.eb"
+  - name: pack-gen-v4-extreme
+    params: {op: pack, variant: gen-v4, profile: extreme}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v4 --archive-out {scratch}/a.eb"
+  - name: pack-gen-v5-extreme
+    params: {op: pack, variant: gen-v5, profile: extreme}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v5 --archive-out {scratch}/a.eb"
+  - name: pack-v6-minus-deflate-extreme
+    params: {op: pack, variant: v6-minus-deflate, profile: extreme}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant v6-minus-deflate --archive-out {scratch}/a.eb"
+  - name: pack-v6-minus-jpeg-extreme
+    params: {op: pack, variant: v6-minus-jpeg, profile: extreme}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant v6-minus-jpeg --archive-out {scratch}/a.eb"
+  - name: pack-v6-signature-gated-extreme
+    params: {op: pack, variant: v6-signature-gated, profile: extreme}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant v6-signature-gated --archive-out {scratch}/a.eb"
+  - name: pack-v6-subprocess-isolated-extreme
+    params: {op: pack, variant: v6-subprocess-isolated, profile: extreme}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant gen-v6 --isolate-reconstruction subprocess --archive-out {scratch}/a.eb"
+  - name: pack-align-member-cdc-extreme
+    params: {op: pack, variant: align-member-cdc, profile: extreme}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant align-member-cdc --archive-out {scratch}/a.eb"
+  - name: pack-align-single-chunk-recognised-extreme
+    params: {op: pack, variant: align-single-chunk-recognised, profile: extreme}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant align-single-chunk-recognised --archive-out {scratch}/a.eb"
+  - name: pack-balanced-jpeg-multichunk
+    params: {op: pack, variant: balanced-jpeg-multichunk, profile: balanced}
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon pack-only --item-path {item_path} --experiment-id EXP-RECON-005 --env-name wsl-ubuntu --profile {profile} --variant jpeg-multichunk --archive-out {scratch}/a.eb"
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-RECON-005/items-nontarget-tuning.jsonl
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: in_process_pack_seconds, source: stdout_json, key: payload.pack_seconds, family: time_wall, direction: minimize, unit: s}
+  - {name: latency_p50_s, source: stdout_json, key: payload.latency_p50_s, family: time_wall, direction: minimize, unit: s}
+  - {name: latency_p95_s, source: stdout_json, key: payload.latency_p95_s, family: time_wall, direction: minimize, unit: s}
+  - {name: verification_cpu_share, source: stdout_json, key: payload.verification_cpu_share, family: other, direction: none, unit: fraction}
+  - name: sample_correct
+    source: check
+    command: "/root/eb-research/tools/EXP-RECON-005/bin/ebr-recon sample-check --op {op} --variant {variant} --profile {profile} --item-id {item_id} --item-path {item_path} --scratch {scratch} --expect-sha256-table /mnt/d/Projects/entrybound/entrybound/research/normalized/EXP-RECON-004/artifact-sha256.csv"
+    family: correctness
+    direction: maximize
+  - {name: throughput_bps, source: derived, op: rate, args: [input_bytes, wall_s], family: throughput, direction: maximize}
+
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 20260923, bootstrap: 20260923, command: 20260923}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 4
+  cpu_affinity: [2]
+  scratch_root: /root/eb-research/scratch/EXP-RECON-005
+  requires:
+    - /root/eb-research/tools/EXP-RECON-005/bin/ebound
+    - /root/eb-research/tools/EXP-RECON-005/bin/ebr-recon
+    - /root/eb-research/tools/EXP-RECON-005/bin/ebr-access
+  timeout_s: 14400
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 600
+
+analysis:
+  baseline: pack-gen-v6-ebound-balanced
+  pairing: item_repetition
+  report_metrics: [wall_s, cpu_s, max_rss_bytes, latency_p50_s, throughput_bps]

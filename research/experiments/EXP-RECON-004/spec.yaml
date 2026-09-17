@@ -1,0 +1,139 @@
+schema: ebr.spec.v1
+experiment_id: EXP-RECON-004
+status: pre-registered-design
+question: >
+  Per tuning item and profile, what artifact bytes, access declarations, required bits, audit bytes
+  and declared decode requirements do real archives of each planner generation (v3-v6), each v6
+  reconstruction filter, gate and activation variant, and each chunk-alignment variant produce, and
+  which reconstruction design survives decision-method R1-R10 against the no-reconstruction reference?
+hypothesis: >
+  protocol.md section 3 (H1-H8): DEFLATE reconstruction equivalent to dropping it in balanced; JPEG
+  regions beyond the T-01 band on F12 but not beyond the T4 minimum-gain band at corpus level; v5+v6
+  savings share under 10 percent of v4's; signature gating non-inferior; minimal activation removes
+  required bits from at least 90 percent of no-reconstruction archives; member-aligned CDC loses on F18;
+  exact cost model admissible with 0 bytes error.
+decision_ids: [DEC-CMP-018, DEC-CMP-026, DEC-CMP-023, DEC-CMP-042, DEC-CMP-012, DEC-CON-010, DEC-CON-005, DEC-CMP-016, DEC-CMP-038, DEC-CON-007]
+notes: >
+  NEEDS_TOOLING (ebr-recon variants/model, research planner and chunker overrides, per-chunk byte
+  accounting). Tuning under this spec; validation look 1 uses an identical copy with splits: [validation]
+  committed in the look-registration commit. Modelled candidates are computed by ebr-recon model after runs.
+
+candidates:
+  - {name: balanced-gen-v3, params: {profile: balanced, variant: gen-v3}}
+  - {name: balanced-gen-v4, params: {profile: balanced, variant: gen-v4}}
+  - {name: balanced-gen-v5, params: {profile: balanced, variant: gen-v5}}
+  - {name: balanced-gen-v6, params: {profile: balanced, variant: gen-v6}}
+  - {name: balanced-v6-minus-deflate, params: {profile: balanced, variant: v6-minus-deflate}}
+  - {name: balanced-v6-minus-jpeg, params: {profile: balanced, variant: v6-minus-jpeg}}
+  - {name: balanced-v6-signature-gated, params: {profile: balanced, variant: v6-signature-gated}}
+  - {name: balanced-v6-entropy-gated-7000, params: {profile: balanced, variant: v6-entropy-gated-7000}}
+  - {name: balanced-v6-entropy-gated-7500, params: {profile: balanced, variant: v6-entropy-gated-7500}}
+  - {name: balanced-v6-entropy-gated-7800, params: {profile: balanced, variant: v6-entropy-gated-7800}}
+  - {name: balanced-v6-no-audits, params: {profile: balanced, variant: v6-no-audits}}
+  - {name: balanced-align-member-cdc, params: {profile: balanced, variant: align-member-cdc}}
+  - {name: balanced-align-single-chunk-recognised, params: {profile: balanced, variant: align-single-chunk-recognised}}
+  - {name: dense-gen-v3, params: {profile: dense, variant: gen-v3}}
+  - {name: dense-gen-v4, params: {profile: dense, variant: gen-v4}}
+  - {name: dense-gen-v5, params: {profile: dense, variant: gen-v5}}
+  - {name: dense-gen-v6, params: {profile: dense, variant: gen-v6}}
+  - {name: dense-v6-minus-deflate, params: {profile: dense, variant: v6-minus-deflate}}
+  - {name: dense-v6-minus-jpeg, params: {profile: dense, variant: v6-minus-jpeg}}
+  - {name: dense-v6-signature-gated, params: {profile: dense, variant: v6-signature-gated}}
+  - {name: dense-v6-entropy-gated-7000, params: {profile: dense, variant: v6-entropy-gated-7000}}
+  - {name: dense-v6-entropy-gated-7500, params: {profile: dense, variant: v6-entropy-gated-7500}}
+  - {name: dense-v6-entropy-gated-7800, params: {profile: dense, variant: v6-entropy-gated-7800}}
+  - {name: dense-v6-no-audits, params: {profile: dense, variant: v6-no-audits}}
+  - {name: dense-align-member-cdc, params: {profile: dense, variant: align-member-cdc}}
+  - {name: dense-align-single-chunk-recognised, params: {profile: dense, variant: align-single-chunk-recognised}}
+  - {name: extreme-gen-v3, params: {profile: extreme, variant: gen-v3}}
+  - {name: extreme-gen-v4, params: {profile: extreme, variant: gen-v4}}
+  - {name: extreme-gen-v5, params: {profile: extreme, variant: gen-v5}}
+  - {name: extreme-gen-v6, params: {profile: extreme, variant: gen-v6}}
+  - {name: extreme-v6-minus-deflate, params: {profile: extreme, variant: v6-minus-deflate}}
+  - {name: extreme-v6-minus-jpeg, params: {profile: extreme, variant: v6-minus-jpeg}}
+  - {name: extreme-v6-signature-gated, params: {profile: extreme, variant: v6-signature-gated}}
+  - {name: extreme-v6-entropy-gated-7000, params: {profile: extreme, variant: v6-entropy-gated-7000}}
+  - {name: extreme-v6-entropy-gated-7500, params: {profile: extreme, variant: v6-entropy-gated-7500}}
+  - {name: extreme-v6-entropy-gated-7800, params: {profile: extreme, variant: v6-entropy-gated-7800}}
+  - {name: extreme-v6-no-audits, params: {profile: extreme, variant: v6-no-audits}}
+  - {name: extreme-align-member-cdc, params: {profile: extreme, variant: align-member-cdc}}
+  - {name: extreme-align-single-chunk-recognised, params: {profile: extreme, variant: align-single-chunk-recognised}}
+  - {name: balanced-jpeg-multichunk, params: {profile: balanced, variant: jpeg-multichunk}}
+  - {name: fast-gen-v4, params: {profile: fast, variant: gen-v4}}
+  - {name: fast-gen-v6, params: {profile: fast, variant: gen-v6}}
+command: >-
+  /root/eb-research/tools/EXP-RECON-004/bin/ebr-recon variants --item-path {item_path}
+  --experiment-id EXP-RECON-004 --env-name wsl-ubuntu --profile {profile} --variant {variant}
+  --census /root/eb-research/results/EXP-RECON-002/detail/{item_id}-rep0.jsonl.zst
+  --trace-cache /root/eb-research/cache/EXP-RECON-004/{item_id}-{profile}-rep{rep}
+  --identity-bin /root/eb-research/tools/EXP-RECON-004/bin/ebound
+  --baseline-bin /root/eb-research/tools/EXP-RECON-004/bin/ebound-9e44608
+  --archive-out {scratch}/a.eb --roundtrip true --access-sample 200 --access-seed 20260922
+  --detail-out /root/eb-research/results/EXP-RECON-004/detail/{item_id}-{candidate}-rep{rep}.json.zst
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+
+metrics:
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: artifact_bytes, source: stdout_json, key: payload.artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+  - {name: identity_control_ok, source: stdout_json, key: payload.identity_control_ok, family: correctness, direction: maximize, unit: flag}
+  - {name: generation_control_ok, source: stdout_json, key: payload.generation_control_ok, family: correctness, direction: maximize, unit: flag}
+  - {name: reconciliation_control_ok, source: stdout_json, key: payload.reconciliation_control_ok, family: correctness, direction: maximize, unit: flag}
+  - {name: roundtrip_mismatches, source: stdout_json, key: payload.roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: roundtrip_evaluated, source: stdout_json, key: payload.roundtrip_evaluated, family: correctness, direction: maximize, unit: flag}
+  - {name: declared_cost_accuracy_violations, source: stdout_json, key: payload.declared_cost_accuracy_violations, family: correctness, direction: minimize, unit: count}
+  - {name: planner_id, source: stdout_json, key: payload.planner_id, family: correctness, kind: string}
+  - {name: chunker_id, source: stdout_json, key: payload.chunker_id, family: correctness, kind: string}
+  - {name: side_data_bytes, source: stdout_json, key: payload.side_data_bytes, family: size, direction: minimize, unit: B}
+  - {name: reconstruction_data_record_bytes, source: stdout_json, key: payload.reconstruction_data_record_bytes, family: size, direction: none, unit: B}
+  - {name: region_record_bytes, source: stdout_json, key: payload.region_record_bytes, family: size, direction: none, unit: B}
+  - {name: audit_and_fallback_record_bytes, source: stdout_json, key: payload.audit_and_fallback_record_bytes, family: size, direction: minimize, unit: B}
+  - {name: metadata_bytes, source: stdout_json, key: payload.metadata_bytes, family: size, direction: minimize, unit: B}
+  - {name: index_bytes, source: stdout_json, key: payload.index_bytes, family: size, direction: minimize, unit: B}
+  - {name: dictionary_bytes, source: stdout_json, key: payload.dictionary_bytes, family: size, direction: minimize, unit: B}
+  - {name: unique_stored_chunk_bytes, source: stdout_json, key: payload.unique_stored_chunk_bytes, family: size, direction: minimize, unit: B}
+  - {name: logical_bytes, source: stdout_json, key: payload.logical_bytes, family: size, direction: none, unit: B}
+  - {name: access_granularity_bytes, source: stdout_json, key: payload.access_granularity_bytes, family: size, direction: minimize, unit: B}
+  - {name: access_amplification_1b, source: stdout_json, key: payload.access_amplification.s1b, family: other, direction: minimize, unit: ratio}
+  - {name: access_amplification_4kib, source: stdout_json, key: payload.access_amplification.s4kib, family: other, direction: minimize, unit: ratio}
+  - {name: access_amplification_1mib, source: stdout_json, key: payload.access_amplification.s1mib, family: other, direction: minimize, unit: ratio}
+  - {name: access_amplification_entry, source: stdout_json, key: payload.access_amplification.entry, family: other, direction: minimize, unit: ratio}
+  - {name: feature_incompat, source: stdout_json, key: payload.feature_incompat, family: other, direction: none, unit: bitmask}
+  - {name: reconstruction_bytes_emitted, source: stdout_json, key: payload.reconstruction_bytes_emitted, family: other, direction: none, unit: flag}
+  - {name: recon_data_objects, source: stdout_json, key: payload.recon_data_objects, family: other, direction: none, unit: count}
+  - {name: jpeg_regions, source: stdout_json, key: payload.jpeg_regions, family: other, direction: none, unit: count}
+  - {name: declared_window_bytes, source: stdout_json, key: payload.declared_window_bytes, family: other, direction: none, unit: B}
+  - {name: declared_working_set_bytes, source: stdout_json, key: payload.declared_working_set_bytes, family: other, direction: none, unit: B}
+  - {name: planning_cpu_s_informational, source: stdout_json, key: payload.planning_cpu_s, family: time_cpu, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: dedup_stored_fraction, source: derived, op: ratio, args: [unique_stored_chunk_bytes, logical_bytes], family: size, direction: minimize}
+  - {name: artifact_ratio, source: derived, op: ratio, args: [artifact_bytes, input_bytes], family: size, direction: minimize}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260922, bootstrap: 20260922, command: 20260922}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  scratch_root: /root/eb-research/scratch/EXP-RECON-004
+  requires:
+    - /root/eb-research/tools/EXP-RECON-004/bin/ebr-recon
+    - /root/eb-research/tools/EXP-RECON-004/bin/ebound
+    - /root/eb-research/tools/EXP-RECON-004/bin/ebound-9e44608
+    - /root/eb-research/tools/EXP-RECON-004/bin/ebr-inspect-bytes
+    - /root/eb-research/tools/EXP-RECON-004/bin/ebr-access
+  timeout_s: 86400
+
+analysis:
+  baseline: balanced-gen-v6
+  pairing: item_repetition
+  report_metrics: [artifact_bytes, artifact_ratio, side_data_bytes, audit_and_fallback_record_bytes, access_granularity_bytes, dedup_stored_fraction, roundtrip_mismatches, declared_working_set_bytes]

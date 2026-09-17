@@ -1,0 +1,142 @@
+schema: ebr.spec.v1
+experiment_id: EXP-RECON-006
+status: pre-registered-design
+question: >
+  What are the exact allocator peaks of DEFLATE and JPEG reconstruction forward and inverse steps versus
+  size, megapixels, mode and producer; are archive DecodeRequirements upper bounds on measured decode
+  memory; which default ceilings admit the most benign archives without admitting over-ceiling decodes;
+  does the planner fall back or fail at validation bounds; and does hostile CPU work scale linearly?
+hypothesis: >
+  protocol.md section 3 (H1-H6): JPEG and DEFLATE declarations understate decode memory for some accepted
+  archives; JPEG forward peak at least twice inverse peak at 12 MP and above; at least one benign case fails
+  pack instead of falling back; failed raw-DEFLATE attempt CPU scales linearly; a 128 MiB ceiling refuses
+  at least 10 percent of balanced archives that would decode within it.
+decision_ids: [DEC-CMP-016, DEC-CON-004, DEC-CON-005, DEC-CMP-037, DEC-CMP-026, DEC-CMP-018, DEC-CMP-012]
+notes: >
+  NEEDS_TOOLING (counting allocator, ebr-recon probe subcommands, case generator, cgroup wrapper). Items are
+  the generated S-RESOURCE cases plus EXP-RECON-004 tuning archives (combined manifest). Cells that do not
+  apply to an item print payload.applicable = false.
+
+candidates:
+  - name: forward-alloc-deflate-v1-mc512
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step forward --backend preflate-rs-0.7.6 --max-chain 512 --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: forward-alloc-deflate-v1-mc2048
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step forward --backend preflate-rs-0.7.6 --max-chain 2048 --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: forward-alloc-deflate-v1-mc4096
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step forward --backend preflate-rs-0.7.6 --max-chain 4096 --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: forward-alloc-jpeg-v1-status-quo
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step forward --backend jixel-0.2.19-status-quo --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: forward-alloc-jixel-latest
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step forward --backend jixel-latest --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: forward-alloc-lepton-jpeg-rust-pinned
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step forward --backend lepton-jpeg-rust-pinned --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: forward-alloc-preflate-rs-latest-mc4096
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step forward --backend preflate-rs-latest-mc4096 --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: forward-rss-libjxl-pinned-e7
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step forward --backend libjxl-pinned-e7 --external-rss-only true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: forward-rss-brunsli-pinned
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step forward --backend brunsli-pinned --external-rss-only true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: forward-rss-preflate-cpp-pinned
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step forward --backend preflate-cpp-pinned --external-rss-only true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: inverse-alloc-deflate-v1-mc512
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step inverse --backend preflate-rs-0.7.6 --max-chain 512 --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: inverse-alloc-deflate-v1-mc2048
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step inverse --backend preflate-rs-0.7.6 --max-chain 2048 --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: inverse-alloc-deflate-v1-mc4096
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step inverse --backend preflate-rs-0.7.6 --max-chain 4096 --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: inverse-alloc-jpeg-v1-status-quo
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step inverse --backend jixel-0.2.19-status-quo --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: inverse-alloc-jixel-latest
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step inverse --backend jixel-latest --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: inverse-alloc-lepton-jpeg-rust-pinned
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step inverse --backend lepton-jpeg-rust-pinned --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: inverse-alloc-preflate-rs-latest-mc4096
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step inverse --backend preflate-rs-latest-mc4096 --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: inverse-rss-libjxl-pinned-e7
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step inverse --backend libjxl-pinned-e7 --external-rss-only true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: inverse-rss-brunsli-pinned
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step inverse --backend brunsli-pinned --external-rss-only true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: inverse-rss-preflate-cpp-pinned
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon probe-alloc --case {item_path} --step inverse --backend preflate-cpp-pinned --external-rss-only true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: decode-probe-C-384
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon decode-probe --item {item_path} --policy-window 8388608 --policy-working-set 402653184 --reconstruction-opt-in false --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: decode-probe-C-128
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon decode-probe --item {item_path} --policy-window 8388608 --policy-working-set 134217728 --reconstruction-opt-in false --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: decode-probe-C-64-optin
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon decode-probe --item {item_path} --policy-window 8388608 --policy-working-set 67108864 --reconstruction-opt-in true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: decode-probe-C-per-feature
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon decode-probe --item {item_path} --policy-window 8388608 --policy-working-set 134217728 --reconstruction-opt-in per-feature --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: pack-outcome-balanced
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon pack-outcome --item-path {item_path} --profile balanced --ebound /root/eb-research/tools/EXP-RECON-006/bin/ebound --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: pack-outcome-dense
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon pack-outcome --item-path {item_path} --profile dense --ebound /root/eb-research/tools/EXP-RECON-006/bin/ebound --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: pack-outcome-extreme
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon pack-outcome --item-path {item_path} --profile extreme --ebound /root/eb-research/tools/EXP-RECON-006/bin/ebound --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: cpu-scale-raw-attempt
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon cpu-scale --case {item_path} --step raw-attempt --runs 3 --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: cpu-scale-jxl-inverse
+    command: "/root/eb-research/tools/EXP-RECON-006/bin/ebr-recon cpu-scale --case {item_path} --step jxl-inverse --runs 3 --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: cgroup-64mib
+    command: "bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-RECON-006/cgroup_run.sh 64 -- /root/eb-research/tools/EXP-RECON-006/bin/ebr-recon decode-probe --item {item_path} --policy-window 8388608 --policy-working-set 67108864 --reconstruction-opt-in true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: cgroup-128mib
+    command: "bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-RECON-006/cgroup_run.sh 128 -- /root/eb-research/tools/EXP-RECON-006/bin/ebr-recon decode-probe --item {item_path} --policy-window 8388608 --policy-working-set 134217728 --reconstruction-opt-in true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: cgroup-256mib
+    command: "bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-RECON-006/cgroup_run.sh 256 -- /root/eb-research/tools/EXP-RECON-006/bin/ebr-recon decode-probe --item {item_path} --policy-window 8388608 --policy-working-set 268435456 --reconstruction-opt-in true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: cgroup-384mib
+    command: "bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-RECON-006/cgroup_run.sh 384 -- /root/eb-research/tools/EXP-RECON-006/bin/ebr-recon decode-probe --item {item_path} --policy-window 8388608 --policy-working-set 402653184 --reconstruction-opt-in true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+  - name: cgroup-512mib
+    command: "bash /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-RECON-006/cgroup_run.sh 512 -- /root/eb-research/tools/EXP-RECON-006/bin/ebr-recon decode-probe --item {item_path} --policy-window 8388608 --policy-working-set 536870912 --reconstruction-opt-in true --experiment-id EXP-RECON-006 --env-name wsl-ubuntu"
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-RECON-006/cases-and-archives-tuning.jsonl
+
+metrics:
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: other, direction: none, unit: flag}
+  - {name: alloc_peak_bytes, source: stdout_json, key: payload.alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: r0_max_bytes, source: stdout_json, key: payload.r0_max_bytes, family: memory_peak, direction: none, unit: B}
+  - {name: declared_working_set_bytes, source: stdout_json, key: payload.declared_working_set_bytes, family: other, direction: none, unit: B}
+  - {name: declared_window_bytes, source: stdout_json, key: payload.declared_window_bytes, family: other, direction: none, unit: B}
+  - {name: declared_tightness_ratio, source: stdout_json, key: payload.declared_tightness_ratio, family: other, direction: minimize, unit: ratio}
+  - {name: bound_exceeded, source: stdout_json, key: payload.bound_exceeded, family: correctness, direction: minimize, unit: flag}
+  - {name: refused, source: stdout_json, key: payload.refused, family: other, direction: none, unit: flag}
+  - {name: admitted_but_exceeds_ceiling, source: stdout_json, key: payload.admitted_but_exceeds_ceiling, family: correctness, direction: minimize, unit: flag}
+  - {name: oom_killed, source: stdout_json, key: payload.oom_killed, family: correctness, direction: minimize, unit: flag}
+  - {name: pack_failed, source: stdout_json, key: payload.pack_failed, family: correctness, direction: minimize, unit: flag}
+  - {name: fell_back, source: stdout_json, key: payload.fell_back, family: other, direction: none, unit: flag}
+  - {name: in_process_cpu_s, source: stdout_json, key: payload.in_process_cpu_s, family: time_cpu, direction: none, unit: s}
+  - {name: scaling_exponent_lower, source: stdout_json, key: payload.scaling_exponent_lower, family: other, direction: none, unit: 1}
+  - {name: scaling_exponent_upper, source: stdout_json, key: payload.scaling_exponent_upper, family: other, direction: none, unit: 1}
+  - {name: refusal_alloc_peak_bytes, source: stdout_json, key: payload.refusal_alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: refusal_bytes_read, source: stdout_json, key: payload.refusal_bytes_read, family: size, direction: minimize, unit: B}
+  - {name: megapixels, source: stdout_json, key: payload.megapixels, family: other, direction: none, unit: MP}
+  - {name: intermediate_bytes, source: stdout_json, key: payload.intermediate_bytes, family: size, direction: none, unit: B}
+  - {name: outcome_class, source: stdout_json, key: payload.outcome_class, family: correctness, kind: string}
+  - {name: reason_code, source: stdout_json, key: payload.reason_code, family: correctness, kind: string}
+  - {name: case_sha256, source: stdout_json, key: payload.case_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260924, bootstrap: 20260924, command: 20260924}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  scratch_root: /root/eb-research/scratch/EXP-RECON-006
+  requires:
+    - /root/eb-research/tools/EXP-RECON-006/bin/ebr-recon
+    - /root/eb-research/tools/EXP-RECON-006/bin/ebound
+  timeout_s: 21600
+
+analysis:
+  baseline: decode-probe-C-384
+  pairing: item
+  report_metrics: [alloc_peak_bytes, declared_tightness_ratio, bound_exceeded, admitted_but_exceeds_ceiling, oom_killed, pack_failed, refused]

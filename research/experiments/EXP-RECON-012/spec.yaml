@@ -1,0 +1,55 @@
+schema: ebr.spec.v1
+experiment_id: EXP-RECON-012
+status: blocked-platform
+question: >
+  On native ARM64 Linux and macOS arm64, do reconstruction vectors and frozen archives decode to exactly the same
+  bytes and outcomes as on x86-64, and are forward reconstruction representations identical across architectures?
+hypothesis: >
+  protocol.md section 3: zero reader disagreements across architectures and operating systems (H1); byte-identical
+  jixel and preflate-rs representations on native ARM64 (H2). Timing (H3) and device (H4) arms are amendments
+  written when the platforms exist.
+decision_ids: [DEC-INT-030, DEC-CMP-016, DEC-CON-005, DEC-CMP-026, DEC-CMP-018, DEC-CON-007]
+notes: >
+  BLOCKED: native ARM64 hardware, macOS on Apple Silicon and physical low-memory ARM devices are unavailable
+  (PLATFORM_BLOCKED; no hosted runners by standing decision). Paths below are placeholders for the future host.
+
+candidates:
+  - name: native-arm64-linux-decode-vectors
+    command: "/root/eb-research/tools/EXP-RECON-012/bin/ebr-recon vectors decode --impl production-reader-archive --vectors {item_path} --experiment-id EXP-RECON-012 --env-name native-arm64-linux"
+  - name: native-arm64-linux-forward
+    command: "/root/eb-research/tools/EXP-RECON-012/bin/ebr-recon vectors forward --impl jixel-0.2.19-status-quo --vectors {item_path} --experiment-id EXP-RECON-012 --env-name native-arm64-linux"
+  - name: native-arm64-linux-archives-unpack
+    command: "/root/eb-research/tools/EXP-RECON-012/bin/ebr-recon sample-check --op unpack-archive-set --item-path {item_path} --scratch {scratch} --experiment-id EXP-RECON-012 --env-name native-arm64-linux"
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-RECON-008/vectors-tuning.jsonl
+
+metrics:
+  - {name: cpu_s, source: resource, family: time_cpu, direction: none, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: none, unit: B}
+  - {name: vectors_decoded, source: stdout_json, key: payload.vectors_decoded, family: other, direction: none, unit: count}
+  - {name: vectors_mismatch, source: stdout_json, key: payload.vectors_mismatch, family: correctness, direction: minimize, unit: count}
+  - {name: reader_disagreements, source: stdout_json, key: payload.reader_disagreements, family: correctness, direction: minimize, unit: count}
+  - {name: roundtrip_mismatches, source: stdout_json, key: payload.roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: output_digest_set_sha256, source: stdout_json, key: payload.output_digest_set_sha256, family: correctness, kind: string}
+  - {name: representation_digest_set_sha256, source: stdout_json, key: payload.representation_digest_set_sha256, family: correctness, kind: string}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 20261002, bootstrap: 20261002, command: 20261002}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux, darwin]
+  arch: [aarch64]
+  emulated: false
+  timeout_s: 43200
+
+analysis:
+  baseline: native-arm64-linux-decode-vectors
+  pairing: item
+  report_metrics: [vectors_decoded, vectors_mismatch, reader_disagreements, roundtrip_mismatches]

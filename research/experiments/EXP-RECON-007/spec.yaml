@@ -1,0 +1,68 @@
+schema: ebr.spec.v1
+experiment_id: EXP-RECON-007
+status: pre-registered-design
+question: >
+  Replay arm: for every minimised fuzz finding and every non-exact, crash, timeout or bound-violation input
+  from EXP-RECON-003/006, does each containment candidate (status quo catch_unwind, panic=abort build,
+  subprocess isolation, encoder allocation caps, latest dependencies) end in a typed refusal with fallback
+  and a surviving process?
+hypothesis: >
+  protocol.md section 3: at least one finding escapes catch_unwind (H2); panic=abort turns at least one
+  typed refusal into an abort (H3); subprocess isolation contains 100 percent (H4); the smallest low-reach-loss
+  encoder cap prevents all forward memory findings (H5).
+decision_ids: [DEC-CMP-037, DEC-CON-007, DEC-CMP-038, DEC-CMP-016]
+notes: >
+  NEEDS_TOOLING. Fuzz campaigns run via run_campaigns.sh (not runner-driven); this spec covers the replay
+  arm over findings-manifest.jsonl, committed after campaigns and before replay.
+
+candidates:
+  - {name: status-quo-catch-unwind, params: {build: release}}
+  - {name: panic-abort-build, params: {build: release-panic-abort}}
+  - {name: subprocess-isolation, params: {build: v6-subprocess-isolated}}
+  - {name: encoder-cap-128, params: {build: encoder-cap-128}}
+  - {name: encoder-cap-256, params: {build: encoder-cap-256}}
+  - {name: encoder-cap-512, params: {build: encoder-cap-512}}
+  - {name: latest-deps, params: {build: latest-deps}}
+command: >-
+  /root/eb-research/tools/EXP-RECON-007/bin/ebr-recon contain-replay --input {item_path}
+  --build-dir /root/eb-research/tools/EXP-RECON-007/builds/{build} --experiment-id EXP-RECON-007
+  --env-name wsl-ubuntu --timeout-s 120 --paths pack,read,unpack
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-RECON-007/findings-manifest.jsonl
+
+metrics:
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: typed_refusal_all_paths, source: stdout_json, key: payload.typed_refusal_all_paths, family: correctness, direction: maximize, unit: flag}
+  - {name: parent_aborted, source: stdout_json, key: payload.parent_aborted, family: correctness, direction: minimize, unit: flag}
+  - {name: hung, source: stdout_json, key: payload.hung, family: correctness, direction: minimize, unit: flag}
+  - {name: bound_exceeded, source: stdout_json, key: payload.bound_exceeded, family: correctness, direction: minimize, unit: flag}
+  - {name: pack_fell_back, source: stdout_json, key: payload.pack_fell_back, family: other, direction: none, unit: flag}
+  - {name: refusal_cpu_s, source: stdout_json, key: payload.refusal_cpu_s, family: time_cpu, direction: minimize, unit: s}
+  - {name: refusal_alloc_peak_bytes, source: stdout_json, key: payload.refusal_alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: outcome_class, source: stdout_json, key: payload.outcome_class, family: correctness, kind: string}
+  - {name: reason_code, source: stdout_json, key: payload.reason_code, family: correctness, kind: string}
+  - {name: finding_stack_hash, source: stdout_json, key: payload.finding_stack_hash, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260927, bootstrap: 20260927, command: 20260927}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  scratch_root: /root/eb-research/scratch/EXP-RECON-007
+  requires: [/root/eb-research/tools/EXP-RECON-007/bin/ebr-recon]
+  timeout_s: 1800
+
+analysis:
+  baseline: status-quo-catch-unwind
+  pairing: item
+  report_metrics: [typed_refusal_all_paths, parent_aborted, hung, bound_exceeded, refusal_cpu_s]

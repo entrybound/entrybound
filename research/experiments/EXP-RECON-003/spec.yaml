@@ -1,0 +1,100 @@
+schema: ebr.spec.v1
+experiment_id: EXP-RECON-003
+status: pre-registered-design
+question: >
+  For every DEFLATE and JPEG stream located by EXP-RECON-002 in a tuning item, does each backend
+  configuration reproduce the exact bytes, which failure class occurs otherwise, and how many
+  representation, side-data and net stream bytes result after the production post-codec lists per
+  profile, by producer, coding mode and container class?
+hypothesis: >
+  protocol.md section 3 (H1-H6): producer-dependent preflate success and correction size; a
+  non-status-quo JPEG backend smaller than jixel 0.2.19 beyond one T-01 band unit on SOF0 in both F12
+  tuning groups; jixel fails on progressive; JPEG XL backends fail on jpegli output; always-try raw
+  attempts never qualify outside target families; lifting DEFLATE bounds adds at least 10 percent of
+  exact stream bytes in F11, F14 or F16.
+decision_ids: [DEC-CMP-018, DEC-CMP-026, DEC-CMP-012, DEC-CMP-038, DEC-CON-007, DEC-CMP-016, DEC-CMP-034]
+notes: >
+  Tuning screen; ebr-recon attempt and pinned external backends are NEEDS_TOOLING. Candidate names
+  are backend configurations defined in protocol.md section 5.
+
+candidates:
+  - {name: preflate-rs-0.7.6-mc512, params: {backend: preflate-rs-0.7.6-mc512}}
+  - {name: preflate-rs-0.7.6-mc2048, params: {backend: preflate-rs-0.7.6-mc2048}}
+  - {name: preflate-rs-0.7.6-mc4096, params: {backend: preflate-rs-0.7.6-mc4096}}
+  - {name: preflate-rs-0.7.6-mc4096-unbounded, params: {backend: preflate-rs-0.7.6-mc4096-unbounded}}
+  - {name: preflate-rs-0.7.6-mc256, params: {backend: preflate-rs-0.7.6-mc256}}
+  - {name: preflate-rs-0.7.6-mc1024, params: {backend: preflate-rs-0.7.6-mc1024}}
+  - {name: preflate-rs-0.7.6-mc8192, params: {backend: preflate-rs-0.7.6-mc8192}}
+  - {name: preflate-rs-0.7.6-mc32768, params: {backend: preflate-rs-0.7.6-mc32768}}
+  - {name: preflate-rs-latest-mc512, params: {backend: preflate-rs-latest-mc512}}
+  - {name: preflate-rs-latest-mc2048, params: {backend: preflate-rs-latest-mc2048}}
+  - {name: preflate-rs-latest-mc4096, params: {backend: preflate-rs-latest-mc4096}}
+  - {name: preflate-cpp-pinned, params: {backend: preflate-cpp-pinned}}
+  - {name: zlib-replay, params: {backend: zlib-replay}}
+  - {name: oracle-chunk-attempts, params: {backend: oracle-chunk-attempts}}
+  - {name: jixel-0.2.19-status-quo, params: {backend: jixel-0.2.19-status-quo}}
+  - {name: jixel-0.2.19-ungated, params: {backend: jixel-0.2.19-ungated}}
+  - {name: jixel-latest-ungated, params: {backend: jixel-latest-ungated}}
+  - {name: libjxl-pinned-e7, params: {backend: libjxl-pinned-e7}}
+  - {name: libjxl-pinned-e9, params: {backend: libjxl-pinned-e9}}
+  - {name: lepton-jpeg-rust-pinned, params: {backend: lepton-jpeg-rust-pinned}}
+  - {name: brunsli-pinned, params: {backend: brunsli-pinned}}
+  - {name: packjpg-pinned, params: {backend: packjpg-pinned}}
+command: >-
+  /root/eb-research/tools/EXP-RECON-003/bin/ebr-recon attempt --item-path {item_path}
+  --experiment-id EXP-RECON-003 --env-name wsl-ubuntu --backend {backend}
+  --stream-index /root/eb-research/results/EXP-RECON-002/detail/{item_id}-rep0.jsonl.zst
+  --post-codec-profiles balanced,dense,extreme --per-stream-timeout-s 600 --isolate child
+  --backend-manifest /mnt/d/Projects/entrybound/entrybound/research/harness/recon-backends/manifest.json
+  --detail-out /root/eb-research/results/EXP-RECON-003/detail/{item_id}-{backend}-rep{rep}.jsonl.zst
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+
+metrics:
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: positive_control_ok, source: stdout_json, key: payload.positive_control_ok, family: correctness, direction: maximize, unit: flag}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: streams_attempted, source: stdout_json, key: payload.streams_attempted, family: other, direction: none, unit: count}
+  - {name: streams_exact, source: stdout_json, key: payload.streams_exact, family: other, direction: maximize, unit: count}
+  - {name: streams_not_recognized, source: stdout_json, key: payload.streams_not_recognized, family: other, direction: none, unit: count}
+  - {name: streams_unsupported, source: stdout_json, key: payload.streams_unsupported, family: other, direction: none, unit: count}
+  - {name: streams_verification_failed, source: stdout_json, key: payload.streams_verification_failed, family: other, direction: none, unit: count}
+  - {name: roundtrip_mismatches, source: stdout_json, key: payload.roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: streams_crashed, source: stdout_json, key: payload.streams_crashed, family: correctness, direction: minimize, unit: count}
+  - {name: streams_timed_out, source: stdout_json, key: payload.streams_timed_out, family: correctness, direction: minimize, unit: count}
+  - {name: streams_resource_excluded, source: stdout_json, key: payload.streams_resource_excluded, family: other, direction: none, unit: count}
+  - {name: attempted_stream_bytes, source: stdout_json, key: payload.attempted_stream_bytes, family: size, direction: none, unit: B}
+  - {name: exact_stream_bytes, source: stdout_json, key: payload.exact_stream_bytes, family: size, direction: maximize, unit: B}
+  - {name: representation_bytes, source: stdout_json, key: payload.representation_bytes, family: size, direction: minimize, unit: B}
+  - {name: side_data_bytes, source: stdout_json, key: payload.side_data_bytes, family: size, direction: minimize, unit: B}
+  - {name: net_saving_bytes_balanced, source: stdout_json, key: payload.net_saving_bytes.balanced, family: size, direction: maximize, unit: B}
+  - {name: net_saving_bytes_dense, source: stdout_json, key: payload.net_saving_bytes.dense, family: size, direction: maximize, unit: B}
+  - {name: net_saving_bytes_extreme, source: stdout_json, key: payload.net_saving_bytes.extreme, family: size, direction: maximize, unit: B}
+  - {name: qualifying_net_saving_bytes_balanced, source: stdout_json, key: payload.qualifying_net_saving_bytes.balanced, family: size, direction: maximize, unit: B}
+  - {name: qualifying_net_saving_bytes_dense, source: stdout_json, key: payload.qualifying_net_saving_bytes.dense, family: size, direction: maximize, unit: B}
+  - {name: qualifying_net_saving_bytes_extreme, source: stdout_json, key: payload.qualifying_net_saving_bytes.extreme, family: size, direction: maximize, unit: B}
+  - {name: attempt_cpu_s_informational, source: stdout_json, key: payload.attempt_cpu_s, family: time_cpu, direction: none, unit: s}
+  - {name: exact_byte_fraction, source: derived, op: ratio, args: [exact_stream_bytes, attempted_stream_bytes], family: other, direction: maximize}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260920, bootstrap: 20260920, command: 20260920}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  scratch_root: /root/eb-research/scratch/EXP-RECON-003
+  requires: [/root/eb-research/tools/EXP-RECON-003/bin/ebr-recon]
+  timeout_s: 86400
+
+analysis:
+  baseline: jixel-0.2.19-status-quo
+  pairing: item
+  report_metrics: [streams_attempted, streams_exact, roundtrip_mismatches, streams_crashed, exact_byte_fraction, side_data_bytes, net_saving_bytes_dense]

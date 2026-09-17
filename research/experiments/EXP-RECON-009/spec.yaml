@@ -1,0 +1,82 @@
+schema: ebr.spec.v1
+experiment_id: EXP-RECON-009
+status: pre-registered-design
+question: >
+  How often does the status-quo v6 rule suppress JPEG regions because of exact-dedup sharing or cohort
+  dictionary/ChunkGroup membership, and what artifact-size, access-cost and audit-accuracy effects do
+  region-first, joint-cost and split-audit-reason variants have on real items and photo libraries?
+hypothesis: >
+  protocol.md section 3 (H1-H4): suppression rare on real items; frequent on edited libraries with joint-cost
+  beyond one T-01 band unit smaller; region-first worsens access beyond T-09; split audit reasons cost under
+  the T-02 floor and reach full accuracy.
+decision_ids: [DEC-CMP-039, DEC-CMP-026, DEC-CON-010]
+notes: >
+  NEEDS_TOOLING (planner and writer overrides shared with EXP-RECON-004; photo-library generator; audit oracle).
+  Items: real F12/F17/F18/F19 tuning items with JPEG bytes plus generated S-PHOTO-LIBRARY libraries.
+
+candidates:
+  - {name: balanced-conflict-status-quo, params: {profile: balanced, variant: conflict-status-quo}}
+  - {name: balanced-conflict-reference-no-regions, params: {profile: balanced, variant: conflict-reference-no-regions}}
+  - {name: balanced-conflict-region-first, params: {profile: balanced, variant: conflict-region-first}}
+  - {name: balanced-conflict-joint-cost, params: {profile: balanced, variant: conflict-joint-cost}}
+  - {name: balanced-conflict-split-audit-reasons, params: {profile: balanced, variant: conflict-split-audit-reasons}}
+  - {name: dense-conflict-status-quo, params: {profile: dense, variant: conflict-status-quo}}
+  - {name: dense-conflict-reference-no-regions, params: {profile: dense, variant: conflict-reference-no-regions}}
+  - {name: dense-conflict-region-first, params: {profile: dense, variant: conflict-region-first}}
+  - {name: dense-conflict-joint-cost, params: {profile: dense, variant: conflict-joint-cost}}
+  - {name: dense-conflict-split-audit-reasons, params: {profile: dense, variant: conflict-split-audit-reasons}}
+  - {name: extreme-conflict-status-quo, params: {profile: extreme, variant: conflict-status-quo}}
+  - {name: extreme-conflict-reference-no-regions, params: {profile: extreme, variant: conflict-reference-no-regions}}
+  - {name: extreme-conflict-region-first, params: {profile: extreme, variant: conflict-region-first}}
+  - {name: extreme-conflict-joint-cost, params: {profile: extreme, variant: conflict-joint-cost}}
+  - {name: extreme-conflict-split-audit-reasons, params: {profile: extreme, variant: conflict-split-audit-reasons}}
+command: >-
+  /root/eb-research/tools/EXP-RECON-009/bin/ebr-recon variants --item-path {item_path} --experiment-id EXP-RECON-009 --env-name wsl-ubuntu
+  --profile {profile} --variant {variant} --archive-out {scratch}/a.eb --roundtrip true --audit-oracle true
+  --trace-cache /root/eb-research/cache/EXP-RECON-009/{item_id}-{profile}-rep{rep}
+  --access-sample 200 --access-seed 20260930
+  --detail-out /root/eb-research/results/EXP-RECON-009/detail/{item_id}-{candidate}-rep{rep}.json.zst
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-RECON-009/items-tuning.jsonl
+
+metrics:
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: artifact_bytes, source: stdout_json, key: payload.artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: access_granularity_bytes, source: stdout_json, key: payload.access_granularity_bytes, family: size, direction: minimize, unit: B}
+  - {name: side_data_bytes, source: stdout_json, key: payload.side_data_bytes, family: size, direction: minimize, unit: B}
+  - {name: audit_and_fallback_record_bytes, source: stdout_json, key: payload.audit_and_fallback_record_bytes, family: size, direction: minimize, unit: B}
+  - {name: roundtrip_mismatches, source: stdout_json, key: payload.roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: declared_cost_accuracy_violations, source: stdout_json, key: payload.declared_cost_accuracy_violations, family: correctness, direction: minimize, unit: count}
+  - {name: jpeg_regions, source: stdout_json, key: payload.jpeg_regions, family: other, direction: none, unit: count}
+  - {name: suppressed_objects_dedup_shared, source: stdout_json, key: payload.suppressed_objects_dedup_shared, family: other, direction: none, unit: count}
+  - {name: suppressed_objects_cohort_dictionary, source: stdout_json, key: payload.suppressed_objects_cohort_dictionary, family: other, direction: none, unit: count}
+  - {name: suppressed_objects_chunk_group, source: stdout_json, key: payload.suppressed_objects_chunk_group, family: other, direction: none, unit: count}
+  - {name: suppressed_jpeg_bytes, source: stdout_json, key: payload.suppressed_jpeg_bytes, family: size, direction: none, unit: B}
+  - {name: audit_reason_accuracy, source: stdout_json, key: payload.audit_reason_accuracy, family: other, direction: maximize, unit: fraction}
+  - {name: access_amplification_4kib, source: stdout_json, key: payload.access_amplification.s4kib, family: other, direction: minimize, unit: ratio}
+  - {name: access_amplification_entry, source: stdout_json, key: payload.access_amplification.entry, family: other, direction: minimize, unit: ratio}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+  - {name: reader_acceptance, source: stdout_json, key: payload.reader_acceptance, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260930, bootstrap: 20260930, command: 20260930}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  scratch_root: /root/eb-research/scratch/EXP-RECON-009
+  requires: [/root/eb-research/tools/EXP-RECON-009/bin/ebr-recon]
+  timeout_s: 43200
+
+analysis:
+  baseline: dense-conflict-status-quo
+  pairing: item_repetition
+  report_metrics: [artifact_bytes, access_granularity_bytes, jpeg_regions, suppressed_jpeg_bytes, audit_reason_accuracy, roundtrip_mismatches]

@@ -1,0 +1,90 @@
+schema: ebr.spec.v1
+experiment_id: EXP-RECON-002
+status: pre-registered-design
+question: >
+  In each tuning item, which byte ranges are DEFLATE streams (by container/placement), JPEG
+  bitstreams (by coding mode, markers, trailers, embedding) or other entropy-coded targets, who
+  produced them, and which fraction is reachable by the status-quo recognisers under production
+  chunking per profile?
+hypothesis: >
+  protocol.md section 3: status-quo DEFLATE reach below 25 percent of DEFLATE stream bytes in F11
+  and F14 (H1); SOF0-at-EOI JPEG at least 80 percent of real-camera F12 JPEG bytes (H2); no other
+  target class meets the prevalence rule (H3); replay oracles attribute at least 50 percent of
+  DEFLATE bytes (H4); under 1 percent of real JPEG objects share chunks with other objects (H5).
+decision_ids: [DEC-CMP-018, DEC-CMP-026, DEC-CMP-042, DEC-CMP-012, DEC-CMP-016, DEC-CMP-039, DEC-CMP-023]
+notes: >
+  Descriptive census; tool ebr-recon (NEEDS_TOOLING). Tuning only under this spec; the validation
+  census is part of the first registered look (common section 5).
+
+candidates:
+  - name: census-v1
+    params: {}
+command: >-
+  /root/eb-research/tools/EXP-RECON-002/bin/ebr-recon census --item-path {item_path}
+  --experiment-id EXP-RECON-002 --env-name wsl-ubuntu --profiles fast,balanced,dense,extreme
+  --replay zlib-1.3,libdeflate-pinned,miniz_oxide-pinned,zlib-ng-pinned
+  --max-replay-plaintext-bytes 67108864 --nest-depth 4 --self-test
+  --detail-out /root/eb-research/results/EXP-RECON-002/detail/{item_id}-rep{rep}.jsonl.zst
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+
+metrics:
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: self_test_exact, source: stdout_json, key: payload.self_test_exact, family: correctness, direction: maximize, unit: flag}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: deflate_stream_count, source: stdout_json, key: payload.deflate_stream_count, family: other, direction: none, unit: count}
+  - {name: deflate_stream_bytes, source: stdout_json, key: payload.deflate_stream_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_gzip_single_file_bytes, source: stdout_json, key: payload.deflate_gzip_single_file_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_gzip_multi_file_bytes, source: stdout_json, key: payload.deflate_gzip_multi_file_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_zlib_file_bytes, source: stdout_json, key: payload.deflate_zlib_file_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_raw_file_bytes, source: stdout_json, key: payload.deflate_raw_file_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_zip_entry_bytes, source: stdout_json, key: payload.deflate_zip_entry_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_png_bytes, source: stdout_json, key: payload.deflate_png_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_pdf_bytes, source: stdout_json, key: payload.deflate_pdf_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_git_bytes, source: stdout_json, key: payload.deflate_git_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_nested_bytes, source: stdout_json, key: payload.deflate_nested_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_malformed_bytes, source: stdout_json, key: payload.deflate_malformed_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_reach_balanced_bytes, source: stdout_json, key: payload.deflate_status_quo_reachable_bytes_balanced, family: size, direction: none, unit: B}
+  - {name: deflate_reach_dense_bytes, source: stdout_json, key: payload.deflate_status_quo_reachable_bytes_dense, family: size, direction: none, unit: B}
+  - {name: deflate_reach_extreme_bytes, source: stdout_json, key: payload.deflate_status_quo_reachable_bytes_extreme, family: size, direction: none, unit: B}
+  - {name: deflate_replay_matched_bytes, source: stdout_json, key: payload.deflate_replay_matched_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_file_count, source: stdout_json, key: payload.jpeg_file_count, family: other, direction: none, unit: count}
+  - {name: jpeg_file_bytes, source: stdout_json, key: payload.jpeg_file_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_sof0_bytes, source: stdout_json, key: payload.jpeg_sof0_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_sof1_bytes, source: stdout_json, key: payload.jpeg_sof1_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_sof2_bytes, source: stdout_json, key: payload.jpeg_sof2_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_arith_or_lossless_bytes, source: stdout_json, key: payload.jpeg_arith_or_lossless_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_trailer_files, source: stdout_json, key: payload.jpeg_trailer_files, family: other, direction: none, unit: count}
+  - {name: jpeg_trailer_bytes, source: stdout_json, key: payload.jpeg_trailer_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_embedded_bytes, source: stdout_json, key: payload.jpeg_embedded_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_reach_balanced_bytes, source: stdout_json, key: payload.jpeg_status_quo_reachable_bytes_balanced, family: size, direction: none, unit: B}
+  - {name: jpeg_reach_dense_bytes, source: stdout_json, key: payload.jpeg_status_quo_reachable_bytes_dense, family: size, direction: none, unit: B}
+  - {name: jpeg_reach_extreme_bytes, source: stdout_json, key: payload.jpeg_status_quo_reachable_bytes_extreme, family: size, direction: none, unit: B}
+  - {name: jpeg_megapixels_max, source: stdout_json, key: payload.jpeg_megapixels_max, family: other, direction: none, unit: MP}
+  - {name: jpeg_shared_chunk_objects_dense, source: stdout_json, key: payload.jpeg_shared_chunk_objects_dense, family: other, direction: none, unit: count}
+  - {name: deflate_plaintext_bytes_max, source: stdout_json, key: payload.deflate_plaintext_bytes_max, family: size, direction: none, unit: B}
+  - {name: deflate_reach_fraction_balanced, source: derived, op: ratio, args: [deflate_reach_balanced_bytes, deflate_stream_bytes], family: other, direction: none}
+  - {name: jpeg_sof0_fraction, source: derived, op: ratio, args: [jpeg_sof0_bytes, jpeg_file_bytes], family: other, direction: none}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260919, bootstrap: 20260919, command: 20260919}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  scratch_root: /root/eb-research/scratch/EXP-RECON-002
+  requires: [/root/eb-research/tools/EXP-RECON-002/bin/ebr-recon]
+  timeout_s: 21600
+
+analysis:
+  baseline: census-v1
+  pairing: item
+  report_metrics: [deflate_stream_bytes, deflate_reach_fraction_balanced, jpeg_file_bytes, jpeg_sof0_fraction, jpeg_trailer_files, deflate_replay_matched_bytes]

@@ -1,0 +1,123 @@
+schema: ebr.spec.v1
+experiment_id: EXP-RECON-001
+status: pre-registered-design
+question: >
+  On every tuning item, what does the status-quo production planner (v6, the only generation
+  `ebound pack` emits) do with DEFLATE and JPEG reconstruction in each profile, layout and
+  encryption cell: which objects it selects or rejects and why, what it declares (feature bits,
+  decode requirements, access cost), what the recorded savings are, and does every cell round-trip
+  exactly and deterministically?
+hypothesis: >
+  See protocol.md section 3 (H1a-H1e). In short: zero round-trip mismatches (HC-02); unencrypted
+  output repeat-hash identical (HC-13); feature bits 0x4 and 0x8 set on at least 90 percent of
+  non-fast unencrypted archives regardless of selections; at least one (profile, layout) cell with
+  fewer than 5 DEFLATE-reconstruction path exercises (MVT-02(e) HC_UNVERIFIED); no reconstruction
+  path exercised in encrypted cells.
+decision_ids: [DEC-CMP-018, DEC-CMP-026, DEC-CMP-023, DEC-CMP-016, DEC-CMP-012, DEC-CON-004, DEC-CON-005, DEC-CON-010]
+notes: >
+  Status quo characterization plus binary HC screens; no candidate comparison, no W/S, no
+  validation look (validation runs of this spec are part of the first registered look of the
+  decisions above, see protocol.md section 6). Run prepare.sh first.
+
+candidates:
+  - {name: fast-indexed-plain, params: {profile: fast, layout: indexed, encrypt: "false"}}
+  - {name: balanced-indexed-plain, params: {profile: balanced, layout: indexed, encrypt: "false"}}
+  - {name: dense-indexed-plain, params: {profile: dense, layout: indexed, encrypt: "false"}}
+  - {name: extreme-indexed-plain, params: {profile: extreme, layout: indexed, encrypt: "false"}}
+  - {name: fast-stream-plain, params: {profile: fast, layout: stream, encrypt: "false"}}
+  - {name: balanced-stream-plain, params: {profile: balanced, layout: stream, encrypt: "false"}}
+  - {name: dense-stream-plain, params: {profile: dense, layout: stream, encrypt: "false"}}
+  - {name: extreme-stream-plain, params: {profile: extreme, layout: stream, encrypt: "false"}}
+  - {name: balanced-indexed-enc, params: {profile: balanced, layout: indexed, encrypt: "true"}}
+  - {name: dense-indexed-enc, params: {profile: dense, layout: indexed, encrypt: "true"}}
+  - {name: extreme-indexed-enc, params: {profile: extreme, layout: indexed, encrypt: "true"}}
+command: >-
+  python3 /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-RECON-001/recon_sample.py
+  --item-path {item_path} --item-id {item_id} --profile {profile} --layout {layout}
+  --encrypt {encrypt} --scratch {scratch}/s --bin-dir /root/eb-research/tools/EXP-RECON-001/bin
+  --detail-dir /root/eb-research/results/EXP-RECON-001/detail --rep {rep}
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+
+metrics:
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: input_files, source: input, family: other, direction: none, unit: count}
+  - {name: artifact_bytes, source: stdout_json, key: artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: determinism_key, source: stdout_json, key: determinism_key, family: correctness, kind: string}
+  - {name: lai, source: stdout_json, key: lai, family: correctness, kind: string}
+  - {name: pcr, source: stdout_json, key: pcr, family: correctness, kind: string}
+  - {name: planner_id, source: stdout_json, key: planner_id, family: correctness, kind: string}
+  - {name: chunker_id, source: stdout_json, key: chunker_id, family: correctness, kind: string}
+  - {name: verification_status, source: stdout_json, key: verification_status, family: correctness, kind: string}
+  - {name: pack_refused, source: stdout_json, key: pack_refused, family: correctness, direction: minimize, unit: count}
+  - {name: pack_crashed, source: stdout_json, key: pack_crashed, family: correctness, direction: minimize, unit: count}
+  - {name: pack_reason_code, source: stdout_json, key: pack_reason_code, family: correctness, kind: string}
+  - {name: roundtrip_evaluated, source: stdout_json, key: roundtrip_evaluated, family: correctness, direction: maximize, unit: count}
+  - {name: roundtrip_files_compared, source: stdout_json, key: roundtrip_files_compared, family: other, direction: none, unit: count}
+  - {name: roundtrip_mismatches, source: stdout_json, key: roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: unpack_crashed, source: stdout_json, key: unpack_crashed, family: correctness, direction: minimize, unit: count}
+  - {name: unpack_reason_code, source: stdout_json, key: unpack_reason_code, family: correctness, kind: string}
+  - {name: feature_incompat, source: stdout_json, key: feature_incompat, family: other, direction: none, unit: bitmask}
+  - {name: feature_0x4_deflate_reconstruction, source: stdout_json, key: feature_0x4_deflate_reconstruction, family: other, direction: none, unit: flag}
+  - {name: feature_0x8_whole_object_reconstruction, source: stdout_json, key: feature_0x8_whole_object_reconstruction, family: other, direction: none, unit: flag}
+  - {name: declared_window_bytes, source: stdout_json, key: declared_window_bytes, family: other, direction: none, unit: B}
+  - {name: declared_working_set_bytes, source: stdout_json, key: declared_working_set_bytes, family: other, direction: none, unit: B}
+  - {name: declared_decode_flags, source: stdout_json, key: declared_decode_flags, family: other, direction: none, unit: bitmask}
+  - {name: reconstruction_section_bytes, source: stdout_json, key: reconstruction_section_bytes, family: size, direction: minimize, unit: B}
+  - {name: metadata_bytes, source: stdout_json, key: metadata_bytes, family: size, direction: minimize, unit: B}
+  - {name: index_bytes, source: stdout_json, key: index_bytes, family: size, direction: minimize, unit: B}
+  - {name: dictionary_bytes, source: stdout_json, key: dictionary_bytes, family: size, direction: minimize, unit: B}
+  - {name: recon_data_objects, source: stdout_json, key: recon_data_objects, family: other, direction: none, unit: count}
+  - {name: recon_data_bytes, source: stdout_json, key: recon_data_bytes, family: size, direction: none, unit: B}
+  - {name: recon_regions, source: stdout_json, key: recon_regions, family: other, direction: none, unit: count}
+  - {name: jpeg_regions, source: stdout_json, key: jpeg_regions, family: other, direction: none, unit: count}
+  - {name: recon_transform_chunk_count, source: stdout_json, key: recon_transform_chunk_count, family: other, direction: none, unit: count}
+  - {name: whole_object_region_count, source: stdout_json, key: whole_object_region_count, family: other, direction: none, unit: count}
+  - {name: access_granularity_bytes, source: stdout_json, key: worst_access_bytes, family: size, direction: minimize, unit: B}
+  - {name: worst_access_chunks, source: stdout_json, key: worst_access_chunks, family: other, direction: minimize, unit: count}
+  - {name: audit_records, source: stdout_json, key: audit_records, family: other, direction: none, unit: count}
+  - {name: deflate_replayed_chunks, source: stdout_json, key: deflate_replayed_chunks, family: other, direction: none, unit: count}
+  - {name: deflate_net_savings_bytes, source: stdout_json, key: deflate_net_savings_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_side_data_overhead_bytes, source: stdout_json, key: deflate_side_data_overhead_bytes, family: size, direction: none, unit: B}
+  - {name: deflate_fallback_unrecognized_or_failed, source: stdout_json, key: deflate_fallback_unrecognized_or_failed, family: other, direction: none, unit: count}
+  - {name: deflate_fallback_cost_rejected, source: stdout_json, key: deflate_fallback_cost_rejected, family: other, direction: none, unit: count}
+  - {name: jpeg_net_savings_bytes, source: stdout_json, key: jpeg_net_savings_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_representation_bytes, source: stdout_json, key: jpeg_representation_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_region_overhead_bytes, source: stdout_json, key: jpeg_region_overhead_bytes, family: size, direction: none, unit: B}
+  - {name: jpeg_fallback_not_recognized, source: stdout_json, key: jpeg_fallback_not_recognized, family: other, direction: none, unit: count}
+  - {name: jpeg_fallback_unsupported, source: stdout_json, key: jpeg_fallback_unsupported, family: other, direction: none, unit: count}
+  - {name: jpeg_fallback_exact_verification_failed, source: stdout_json, key: jpeg_fallback_exact_verification_failed, family: correctness, direction: none, unit: count}
+  - {name: jpeg_fallback_complete_cost_rejected, source: stdout_json, key: jpeg_fallback_complete_cost_rejected, family: other, direction: none, unit: count}
+  - {name: jpeg_fallback_dedup_conflict, source: stdout_json, key: jpeg_fallback_dedup_conflict, family: other, direction: none, unit: count}
+  - {name: jpeg_fallback_resource_policy_excluded, source: stdout_json, key: jpeg_fallback_resource_policy_excluded, family: other, direction: none, unit: count}
+  - {name: detail_sha256, source: stdout_json, key: detail_sha256, family: correctness, kind: string}
+  - {name: ratio, source: derived, op: ratio, args: [artifact_bytes, input_bytes], family: size, direction: minimize}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20260918, bootstrap: 20260918, command: 20260918}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+record_warmups: true
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  scratch_root: /root/eb-research/scratch/EXP-RECON-001
+  requires:
+    - python3
+    - /root/eb-research/tools/EXP-RECON-001/bin/ebound
+    - /root/eb-research/tools/EXP-RECON-001/bin/ebr-pack
+    - /root/eb-research/tools/EXP-RECON-001/bin/ebr-unpack
+    - /root/eb-research/tools/EXP-RECON-001/bin/ebr-inspect-bytes
+  timeout_s: 43200
+
+analysis:
+  baseline: fast-indexed-plain
+  pairing: item_repetition
+  report_metrics: [artifact_bytes, ratio, roundtrip_mismatches, pack_refused, reconstruction_section_bytes, recon_data_objects, jpeg_regions, declared_working_set_bytes, access_granularity_bytes, audit_records]

@@ -1,0 +1,75 @@
+schema: ebr.spec.v1
+experiment_id: EXP-RECON-010
+status: pre-registered-design
+question: >
+  Does the production reader give the expected conforming outcome (class, specific reason code, zero output)
+  identically on INDEXED and STREAM paths for every structural mutation of reconstruction regions, chunk frames,
+  ReconstructionData and feature bits; do alternative plan_ref sentinel rules reject any frozen v6 archive; and
+  does write-time and read-time verification refuse one-bit-wrong reconstructions?
+hypothesis: >
+  protocol.md section 3 (H1-H5): expected outcomes with no layout disagreement; at least one plan_ref/flag case
+  ambiguous under the status quo; explicit-region-flag compatible with every frozen archive while the other two
+  rules reject region archives; fault injection always refused; no unexplained surviving mutants (mutants run
+  outside this spec).
+decision_ids: [DEC-MOD-040, DEC-INT-030, DEC-CON-010, DEC-CON-004, DEC-CMP-016]
+notes: >
+  NEEDS_TOOLING (ebr-recon mutate, research-fault-injection feature, rule readers). Items: generated case
+  archives (cases-tuning.jsonl) and frozen tuning archives from EXP-RECON-001/004 (archives-tuning.jsonl) in one
+  combined manifest; cells not applicable to an item print payload.applicable = false.
+
+candidates:
+  - {name: prod-reader-indexed, params: {cell: prod-reader, layout: indexed}}
+  - {name: prod-reader-stream, params: {cell: prod-reader, layout: stream}}
+  - {name: rule-distinct-sentinel, params: {cell: rule-distinct-sentinel, layout: both}}
+  - {name: rule-explicit-region-flag, params: {cell: rule-explicit-region-flag, layout: both}}
+  - {name: rule-forbid-unplanned-zero, params: {cell: rule-forbid-unplanned-zero, layout: both}}
+  - {name: fault-deflate-forward, params: {cell: fault-deflate-forward, layout: both}}
+  - {name: fault-jpeg-forward, params: {cell: fault-jpeg-forward, layout: both}}
+  - {name: fault-writer-repeat, params: {cell: fault-writer-repeat, layout: both}}
+  - {name: fault-reader-inverse, params: {cell: fault-reader-inverse, layout: both}}
+command: >-
+  /root/eb-research/tools/EXP-RECON-010/bin/ebr-recon conformance-run --item {item_path} --cell {cell}
+  --layout {layout} --experiment-id EXP-RECON-010 --env-name wsl-ubuntu
+  --fault-build /root/eb-research/tools/EXP-RECON-010/builds/fault-injection
+  --expected-from-item true --scratch {scratch}
+shell: bash
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-RECON-010/cases-and-archives-tuning.jsonl
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: other, direction: none, unit: flag}
+  - {name: expected_class, source: stdout_json, key: payload.expected_class, family: correctness, kind: string}
+  - {name: observed_class, source: stdout_json, key: payload.observed_class, family: correctness, kind: string}
+  - {name: observed_reason_code, source: stdout_json, key: payload.observed_reason_code, family: correctness, kind: string}
+  - {name: outcome_matches_expected, source: stdout_json, key: payload.outcome_matches_expected, family: correctness, direction: maximize, unit: flag}
+  - {name: reason_code_specific, source: stdout_json, key: payload.reason_code_specific, family: other, direction: maximize, unit: flag}
+  - {name: output_bytes_released, source: stdout_json, key: payload.output_bytes_released, family: correctness, direction: minimize, unit: B}
+  - {name: archive_written_under_fault, source: stdout_json, key: payload.archive_written_under_fault, family: correctness, direction: minimize, unit: flag}
+  - {name: layout_disagreement, source: stdout_json, key: payload.layout_disagreement, family: correctness, direction: minimize, unit: flag}
+  - {name: frozen_archive_rejected, source: stdout_json, key: payload.frozen_archive_rejected, family: other, direction: none, unit: flag}
+  - {name: refusal_alloc_peak_bytes, source: stdout_json, key: payload.refusal_alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: refusal_bytes_read, source: stdout_json, key: payload.refusal_bytes_read, family: size, direction: minimize, unit: B}
+  - {name: refusal_cpu_s, source: stdout_json, key: payload.refusal_cpu_s, family: time_cpu, direction: minimize, unit: s}
+  - {name: twin_control_ok, source: stdout_json, key: payload.twin_control_ok, family: correctness, direction: maximize, unit: flag}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 20261001, bootstrap: 20261001, command: 20261001}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  scratch_root: /root/eb-research/scratch/EXP-RECON-010
+  requires: [/root/eb-research/tools/EXP-RECON-010/bin/ebr-recon]
+  timeout_s: 3600
+
+analysis:
+  baseline: prod-reader-indexed
+  pairing: item
+  report_metrics: [outcome_matches_expected, reason_code_specific, output_bytes_released, layout_disagreement, archive_written_under_fault, frozen_archive_rejected]

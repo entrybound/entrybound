@@ -1,0 +1,59 @@
+schema: ebr.spec.v1
+experiment_id: EXP-RECON-008
+status: pre-registered-design
+question: >
+  Can reconstruction vectors written under the frozen identifiers be decoded to the exact original bytes by
+  later crate releases, independent implementations and the production reader under platform, CPU-feature,
+  architecture, affinity, locale and time-zone variation, and is forward encoding deterministic across hosts?
+hypothesis: >
+  protocol.md section 3 (H1-H6): JPEG XL reconstruction agrees across jxl-oxide releases and libjxl; libjxl-
+  encoded representations reconstruct in jxl-oxide 0.12.6; preflate-rs corrections are version-bound; zero
+  production reader disagreements under variation; forward determinism within host classes; lzma-rust2
+  estimates stable across releases.
+decision_ids: [DEC-INT-030, DEC-CMP-038, DEC-CON-007, DEC-CMP-023, DEC-CMP-026]
+notes: >
+  NEEDS_TOOLING. Windows host cells; vector paths rewritten to D:/eb-research copies in vectors-tuning-windows.jsonl.
+
+candidates:
+  - name: prod-reader-windows-x86_64
+    command: "D:/eb-research/tools/EXP-RECON-008/bin/ebr-recon.exe vectors decode --impl production-reader-archive --vectors {item_path} --experiment-id EXP-RECON-008 --env-name windows-host"
+  - name: forward-jixel-windows-x86_64
+    command: "D:/eb-research/tools/EXP-RECON-008/bin/ebr-recon.exe vectors forward --impl jixel-0.2.19-status-quo --vectors {item_path} --experiment-id EXP-RECON-008 --env-name windows-host"
+shell: pwsh
+
+corpus:
+  splits: [tuning]
+  manifest: research/experiments/EXP-RECON-008/vectors-tuning-windows.jsonl
+
+metrics:
+  - {name: cpu_s, source: resource, family: time_cpu, direction: none, unit: s}
+  - {name: vectors_decoded, source: stdout_json, key: payload.vectors_decoded, family: other, direction: none, unit: count}
+  - {name: vectors_exact, source: stdout_json, key: payload.vectors_exact, family: other, direction: maximize, unit: count}
+  - {name: vectors_rejected, source: stdout_json, key: payload.vectors_rejected, family: other, direction: none, unit: count}
+  - {name: vectors_mismatch, source: stdout_json, key: payload.vectors_mismatch, family: correctness, direction: minimize, unit: count}
+  - {name: reader_disagreements, source: stdout_json, key: payload.reader_disagreements, family: correctness, direction: minimize, unit: count}
+  - {name: oom_killed, source: stdout_json, key: payload.oom_killed, family: correctness, direction: none, unit: count}
+  - {name: canary_effective, source: stdout_json, key: payload.canary_effective, family: correctness, direction: maximize, unit: flag}
+  - {name: release_count, source: stdout_json, key: payload.release_count, family: other, direction: none, unit: count}
+  - {name: releases_fully_agreeing, source: stdout_json, key: payload.releases_fully_agreeing, family: other, direction: maximize, unit: count}
+  - {name: output_digest_set_sha256, source: stdout_json, key: payload.output_digest_set_sha256, family: correctness, kind: string}
+  - {name: representation_digest_set_sha256, source: stdout_json, key: payload.representation_digest_set_sha256, family: correctness, kind: string}
+  - {name: cpu_model_in_effect, source: stdout_json, key: payload.cpu_model_in_effect, family: correctness, kind: string}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 20260929, bootstrap: 20260929, command: 20260929}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [windows]
+  arch: [x86_64]
+  emulated: false
+  timeout_s: 43200
+
+analysis:
+  baseline: prod-reader-windows-x86_64
+  pairing: item
+  report_metrics: [vectors_decoded, vectors_exact, vectors_mismatch, reader_disagreements]
