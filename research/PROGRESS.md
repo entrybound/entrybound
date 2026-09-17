@@ -230,3 +230,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T11:52Z — PROGRESS.md brought current: closed items marked with commit refs, stale blocker mentions corrected, round-2 critic flagged as the remaining open item for B1.
 - 2026-09-17T12:08Z — Round-2 corpus critic complete: critique-round2.md written with per-gap verdicts, new-leakage finding (F17), and both required verdicts (tuning/validation adequate-with-conditions; held-out not yet adequate). B1e corpus-closure phase's remaining open item is now this critique's own conditions list, not a missing critic.
 - 2026-09-17T12:10Z — Phase B1 DONE WITH CONDITIONS: corpus 300 items (ed28b1b4), critic round 2 adequate for tuning/validation; held-out not yet adequate. Launching Phase C-design next (weekly usage 20%).
+- 2026-09-17T12:10Z — Launched Phase C-design wf_47347bc4-611 (15 domain designers, index, review, revise).
