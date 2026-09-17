@@ -1,0 +1,872 @@
+{
+ "binary": "/root/eb-research/target/scale-prod/release/ebound",
+ "binary_commit": null,
+ "cells": [
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 7516192768,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b1g-cap24",
+   "logical_bytes": 1073741824,
+   "shape_id": "b1g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1301,
+    "shape": "files",
+    "total_bytes": 1073741824
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 20401094656,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b4g-cap24",
+   "logical_bytes": 4294967296,
+   "shape_id": "b4g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1302,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  },
+  {
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 20401094656,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b4g-cap2",
+   "logical_bytes": 4294967296,
+   "shape_id": "b4g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1302,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 71940702208,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b16g-cap24",
+   "logical_bytes": 17179869184,
+   "shape_id": "b16g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1303,
+    "shape": "files",
+    "total_bytes": 17179869184
+   }
+  },
+  {
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 71940702208,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b16g-cap2",
+   "logical_bytes": 17179869184,
+   "shape_id": "b16g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1303,
+    "shape": "files",
+    "total_bytes": 17179869184
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 278032023552,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b64g-cap24",
+   "logical_bytes": 68702699520,
+   "shape_id": "b64g",
+   "stage": 2,
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1304,
+    "shape": "files",
+    "total_bytes": 68702699520
+   }
+  },
+  {
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 278032023552,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b64g-cap2",
+   "logical_bytes": 68702699520,
+   "shape_id": "b64g",
+   "stage": 2,
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1304,
+    "shape": "files",
+    "total_bytes": 68702699520
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 7516192768,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "e1g-cap24",
+   "logical_bytes": 1073741824,
+   "shape_id": "e1g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1311,
+    "shape": "files",
+    "total_bytes": 1073741824
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 20401094656,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "e4g-cap24",
+   "logical_bytes": 4294967296,
+   "shape_id": "e4g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1312,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  },
+  {
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 20401094656,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "e4g-cap2",
+   "logical_bytes": 4294967296,
+   "shape_id": "e4g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1312,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 71873593344,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "e16g-cap24",
+   "logical_bytes": 17163091968,
+   "shape_id": "e16g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1313,
+    "shape": "files",
+    "total_bytes": 17163091968
+   }
+  },
+  {
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 71873593344,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "e16g-cap2",
+   "logical_bytes": 17163091968,
+   "shape_id": "e16g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1313,
+    "shape": "files",
+    "total_bytes": 17163091968
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 3237609472,
+   "entries": 1000,
+   "expected_tree_sha256": null,
+   "item_id": "n1e3-cap24",
+   "logical_bytes": 4096000,
+   "shape_id": "n1e3",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "entries": 1000,
+    "entry_bytes": 4096,
+    "seed": 1321,
+    "shape": "entries"
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 3385065472,
+   "entries": 10000,
+   "expected_tree_sha256": null,
+   "item_id": "n1e4-cap24",
+   "logical_bytes": 40960000,
+   "shape_id": "n1e4",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "entries": 10000,
+    "entry_bytes": 4096,
+    "seed": 1322,
+    "shape": "entries"
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 4859625472,
+   "entries": 100000,
+   "expected_tree_sha256": null,
+   "item_id": "n1e5-cap24",
+   "logical_bytes": 409600000,
+   "shape_id": "n1e5",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "entries": 100000,
+    "entry_bytes": 4096,
+    "seed": 1323,
+    "shape": "entries"
+   }
+  },
+  {
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 4859625472,
+   "entries": 100000,
+   "expected_tree_sha256": null,
+   "item_id": "n1e5-cap2",
+   "logical_bytes": 409600000,
+   "shape_id": "n1e5",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "entries": 100000,
+    "entry_bytes": 4096,
+    "seed": 1323,
+    "shape": "entries"
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 19588841472,
+   "entries": 999000,
+   "expected_tree_sha256": null,
+   "item_id": "n999k-cap24",
+   "logical_bytes": 4091904000,
+   "shape_id": "n999k",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "entries": 999000,
+    "entry_bytes": 4096,
+    "seed": 1324,
+    "shape": "entries"
+   }
+  },
+  {
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 19588841472,
+   "entries": 999000,
+   "expected_tree_sha256": null,
+   "item_id": "n999k-cap2",
+   "logical_bytes": 4091904000,
+   "shape_id": "n999k",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "entries": 999000,
+    "entry_bytes": 4096,
+    "seed": 1324,
+    "shape": "entries"
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 7516192768,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "s1g-cap24",
+   "logical_bytes": 1073741824,
+   "shape_id": "s1g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "island_bytes": 1048576,
+    "island_period": 67108864,
+    "seed": 1331,
+    "shape": "sparse",
+    "total_bytes": 1073741824
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 71873593344,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "s16g-cap24",
+   "logical_bytes": 17163091968,
+   "shape_id": "s16g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "island_bytes": 1048576,
+    "island_period": 67108864,
+    "seed": 1332,
+    "shape": "sparse",
+    "total_bytes": 17163091968
+   }
+  },
+  {
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 71873593344,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "s16g-cap2",
+   "logical_bytes": 17163091968,
+   "shape_id": "s16g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "island_bytes": 1048576,
+    "island_period": 67108864,
+    "seed": 1332,
+    "shape": "sparse",
+    "total_bytes": 17163091968
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 7516192768,
+   "entries": 256,
+   "expected_tree_sha256": null,
+   "item_id": "d1g-cap24",
+   "logical_bytes": 1073741824,
+   "shape_id": "d1g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "file_bytes": 4194304,
+    "files": 256,
+    "seed": 1341,
+    "shape": "dedup",
+    "unique": 16
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 71940702208,
+   "entries": 4096,
+   "expected_tree_sha256": null,
+   "item_id": "d16g-cap24",
+   "logical_bytes": 17179869184,
+   "shape_id": "d16g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "file_bytes": 4194304,
+    "files": 4096,
+    "seed": 1342,
+    "shape": "dedup",
+    "unique": 256
+   }
+  },
+  {
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 71940702208,
+   "entries": 4096,
+   "expected_tree_sha256": null,
+   "item_id": "d16g-cap2",
+   "logical_bytes": 17179869184,
+   "shape_id": "d16g",
+   "stage": 1,
+   "synth": {
+    "content": "half",
+    "file_bytes": 4194304,
+    "files": 4096,
+    "seed": 1342,
+    "shape": "dedup",
+    "unique": 256
+   }
+  },
+  {
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 20401094656,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "i4g-cap24",
+   "logical_bytes": 4294967296,
+   "shape_id": "i4g",
+   "stage": 1,
+   "synth": {
+    "content": "incompressible",
+    "files": 64,
+    "seed": 1351,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  },
+  {
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 20401094656,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "i4g-cap2",
+   "logical_bytes": 4294967296,
+   "shape_id": "i4g",
+   "stage": 1,
+   "synth": {
+    "content": "incompressible",
+    "files": 64,
+    "seed": 1351,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  }
+ ],
+ "env": {
+  "LANG": "C.UTF-8",
+  "TMPDIR": "{tmp}",
+  "TZ": "UTC"
+ },
+ "experiment_id": "EXP-SCALE-001",
+ "operations": {
+  "explain-indexed": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "explain",
+    "{archive_indexed}"
+   ],
+   "prerequisites": [
+    "archive_indexed"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "inc-tar-zstd-create": {
+   "applicable": "all",
+   "argv": [
+    "bash",
+    "-c",
+    "tar -C \"$1\" -cf - . | zstd -T1 -3 -q -o \"$2\"",
+    "sh",
+    "{input}",
+    "{dst}/out.tar.zst"
+   ],
+   "prerequisites": [],
+   "stdin": null,
+   "stdout": null
+  },
+  "inc-tar-zstd-extract": {
+   "applicable": "all",
+   "argv": [
+    "bash",
+    "-c",
+    "mkdir -p \"$2\" && zstd -dc -q \"$1\" | tar -C \"$2\" -xf -",
+    "sh",
+    "{incumbent_tar_zst}",
+    "{dst}/tree"
+   ],
+   "prerequisites": [
+    "incumbent_tar_zst"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "inspect-indexed": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "inspect",
+    "{archive_indexed}",
+    "--json"
+   ],
+   "prerequisites": [
+    "archive_indexed"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "list-indexed": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "list",
+    "{archive_indexed}"
+   ],
+   "prerequisites": [
+    "archive_indexed"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "list-stream-stdin": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "list",
+    "-"
+   ],
+   "prerequisites": [
+    "archive_stream"
+   ],
+   "stdin": "{archive_stream}",
+   "stdout": null
+  },
+  "pack-indexed-balanced": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "pack",
+    "{input}",
+    "{dst}/out.eb",
+    "--profile",
+    "balanced"
+   ],
+   "prerequisites": [],
+   "stdin": null,
+   "stdout": null
+  },
+  "pack-indexed-dense": {
+   "applicable": "logical<=4GiB&entries<=1e5",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "pack",
+    "{input}",
+    "{dst}/out.eb",
+    "--profile",
+    "dense"
+   ],
+   "prerequisites": [],
+   "stdin": null,
+   "stdout": null
+  },
+  "pack-indexed-extreme": {
+   "applicable": "logical<=1GiB&entries<=1e4",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "pack",
+    "{input}",
+    "{dst}/out.eb",
+    "--profile",
+    "extreme"
+   ],
+   "prerequisites": [],
+   "stdin": null,
+   "stdout": null
+  },
+  "pack-indexed-fast": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "pack",
+    "{input}",
+    "{dst}/out.eb",
+    "--profile",
+    "fast"
+   ],
+   "prerequisites": [],
+   "stdin": null,
+   "stdout": null
+  },
+  "pack-indexed-stdout": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "pack",
+    "{input}",
+    "-",
+    "--layout",
+    "indexed",
+    "--profile",
+    "balanced"
+   ],
+   "prerequisites": [],
+   "stdin": null,
+   "stdout": "{dst}/out.eb"
+  },
+  "pack-stream-file": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "pack",
+    "{input}",
+    "{dst}/out.ebs",
+    "--layout",
+    "stream",
+    "--stream-window",
+    "auto",
+    "--profile",
+    "balanced"
+   ],
+   "prerequisites": [],
+   "stdin": null,
+   "stdout": null
+  },
+  "pack-stream-stdout": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "pack",
+    "{input}",
+    "-",
+    "--layout",
+    "stream",
+    "--stream-window",
+    "auto",
+    "--profile",
+    "balanced"
+   ],
+   "prerequisites": [],
+   "stdin": null,
+   "stdout": "{dst}/out.ebs"
+  },
+  "pack-stream-stdout-window0": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "pack",
+    "{input}",
+    "-",
+    "--layout",
+    "stream",
+    "--profile",
+    "balanced"
+   ],
+   "prerequisites": [],
+   "stdin": null,
+   "stdout": "{dst}/out.ebs"
+  },
+  "read-entry-indexed": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "read",
+    "{archive_indexed}",
+    "{entry_path}",
+    "--output",
+    "{dst}/entry"
+   ],
+   "prerequisites": [
+    "archive_indexed"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "repack-replan-fast": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "repack",
+    "{archive_indexed}",
+    "{dst}/out.eb",
+    "--profile",
+    "fast"
+   ],
+   "prerequisites": [
+    "archive_indexed"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "repack-representation": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "repack",
+    "{archive_indexed}",
+    "{dst}/out.eb"
+   ],
+   "prerequisites": [
+    "archive_indexed"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "repack-to-indexed": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "repack",
+    "{archive_stream}",
+    "{dst}/out.eb",
+    "--layout",
+    "indexed"
+   ],
+   "prerequisites": [
+    "archive_stream"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "repack-to-stream": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "repack",
+    "{archive_indexed}",
+    "{dst}/out.ebs",
+    "--layout",
+    "stream",
+    "--stream-window",
+    "auto"
+   ],
+   "prerequisites": [
+    "archive_indexed"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "sign-detached-indexed": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "sign",
+    "{archive_indexed}",
+    "--signing-key",
+    "{signing_key}",
+    "--detached",
+    "{dst}/out.ebsig"
+   ],
+   "prerequisites": [
+    "archive_indexed",
+    "signing_key"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "unpack-indexed": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "unpack",
+    "{archive_indexed}",
+    "{dst}/tree"
+   ],
+   "prerequisites": [
+    "archive_indexed"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "unpack-stream-file": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "unpack",
+    "{archive_stream}",
+    "{dst}/tree"
+   ],
+   "prerequisites": [
+    "archive_stream"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "unpack-stream-stdin": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "unpack",
+    "-",
+    "{dst}/tree"
+   ],
+   "prerequisites": [
+    "archive_stream"
+   ],
+   "stdin": "{archive_stream}",
+   "stdout": null
+  },
+  "verify-indexed": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "verify",
+    "{archive_indexed}"
+   ],
+   "prerequisites": [
+    "archive_indexed"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "verify-stream-stdin": {
+   "applicable": "all",
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "verify",
+    "-"
+   ],
+   "prerequisites": [
+    "archive_stream"
+   ],
+   "stdin": "{archive_stream}",
+   "stdout": null
+  }
+ },
+ "prerequisites": {
+  "archive_indexed": [
+   "/root/eb-research/target/scale-prod/release/ebound",
+   "pack",
+   "{input}",
+   "{cache}/A.eb",
+   "--profile",
+   "balanced"
+  ],
+  "archive_stream": [
+   "/root/eb-research/target/scale-prod/release/ebound",
+   "pack",
+   "{input}",
+   "{cache}/A.ebs",
+   "--layout",
+   "stream",
+   "--stream-window",
+   "auto",
+   "--profile",
+   "balanced"
+  ],
+  "incumbent_tar_zst": [
+   "bash",
+   "-c",
+   "tar -C \"$1\" -cf - . | zstd -T1 -3 -q -o \"$2\"",
+   "sh",
+   "{input}",
+   "{cache}/A.tar.zst"
+  ],
+  "signing_key": [
+   "/root/eb-research/target/scale-prod/release/ebound",
+   "key",
+   "generate-signing",
+   "{cache}/signing.key"
+  ]
+ },
+ "schema": "ebr.scale.cells.v1"
+}

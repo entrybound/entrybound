@@ -1,0 +1,102 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-013
+status: design-draft
+notes: >
+  Template for affinity configuration mt-p-7 (Windows host, one logical CPU per physical P-core). gen_affinity_specs.py derives st-p, mt-p-2, mt-p-4, mt-psmt-14, st-e, mt-e-2/4/8/16 and the WSL st-v/mt-v-n specs (guard max_loadavg_1m = 1.0 + n) from it; all are committed before the campaign. Design draft until gate G-A (decision-method.md section 0.4); NEEDS_TOOLING: the binaries named in requires are built by the tooling listed in protocol.md. Timing gate: runner additions (decision-method section 14 item 3) and calibration (section 4.7).
+question: >
+  What speedup within one core class, efficiency and saturation do identity-passing parallel designs reach for pack, verify and unpack, and at what CPU cost?
+hypothesis: >
+  Parallel hashing plus parallel final encoding reaches S(7) distinguishably above 1 on P-cores for balanced and dense pack on medium and large F01/F05/F07 items; parallel verify is not faster on dense archives with long lookback. Falsified by confirmatory verdicts on validation.
+decision_ids: [DEC-ACC-030, DEC-ACC-031, DEC-ACC-032, DEC-ACC-033, DEC-ACC-034, DEC-ACC-007, DEC-ACC-002]
+
+candidates:
+  - {name: sequential-status-quo-pack}
+  - {name: sequential-status-quo-verify}
+  - {name: sequential-status-quo-unpack}
+  - {name: parallel-chunk-hashing-pack}
+  - {name: parallel-chunk-hashing-verify}
+  - {name: parallel-chunk-hashing-unpack}
+  - {name: per-file-parallel-cdc-pack}
+  - {name: per-file-parallel-cdc-verify}
+  - {name: per-file-parallel-cdc-unpack}
+  - {name: intra-file-parallel-cdc-pack}
+  - {name: intra-file-parallel-cdc-verify}
+  - {name: intra-file-parallel-cdc-unpack}
+  - {name: parallel-candidates-single-thread-codecs-pack}
+  - {name: parallel-candidates-single-thread-codecs-verify}
+  - {name: parallel-candidates-single-thread-codecs-unpack}
+  - {name: parallel-final-encode-only-pack}
+  - {name: parallel-final-encode-only-verify}
+  - {name: parallel-final-encode-only-unpack}
+  - {name: parallel-independent-chunks-pack}
+  - {name: parallel-independent-chunks-verify}
+  - {name: parallel-independent-chunks-unpack}
+  - {name: stream-read-ahead-pipeline-pack}
+  - {name: stream-read-ahead-pipeline-verify}
+  - {name: stream-read-ahead-pipeline-unpack}
+  - {name: parallel-entry-extraction-pack}
+  - {name: parallel-entry-extraction-verify}
+  - {name: parallel-entry-extraction-unpack}
+  - {name: bounded-mpmc-with-reorder-buffer-pack}
+  - {name: bounded-mpmc-with-reorder-buffer-verify}
+  - {name: bounded-mpmc-with-reorder-buffer-unpack}
+  - {name: internal-thread-pools-pack}
+  - {name: internal-thread-pools-verify}
+  - {name: internal-thread-pools-unpack}
+  - {name: async-runtime-pack}
+  - {name: async-runtime-verify}
+  - {name: async-runtime-unpack}
+  - {name: sans-io-core-sync-async-shells-pack}
+  - {name: sans-io-core-sync-async-shells-verify}
+  - {name: sans-io-core-sync-async-shells-unpack}
+  - {name: inc-zstd-t7-compress}
+  - {name: inc-zstd-t7-decompress}
+  - {name: inc-xz-t7-compress}
+  - {name: inc-pixz-p7-decompress}
+  - {name: inc-pigz-p7-decompress}
+command: >-
+  D:/eb-research/target/scale-par-win/release/ebr-par.exe --timed-candidate {candidate} --workers 7 --item-path {item_path}
+  --item-id {item_id} --seed {seed} --scratch {scratch} --experiment-id EXP-SCALE-013 --env-name windows-host
+shell: pwsh
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+
+metrics:
+  - {name: encode_wall_s, source: stdout_json, key: payload.encode_wall_s, family: time_wall, direction: minimize, unit: s}
+  - {name: decode_wall_s, source: stdout_json, key: payload.decode_wall_s, family: time_wall, direction: minimize, unit: s}
+  - {name: verify_wall_s, source: stdout_json, key: payload.verify_wall_s, family: time_wall, direction: minimize, unit: s}
+  - {name: encode_cpu_s, source: stdout_json, key: payload.encode_cpu_s, family: time_cpu, direction: minimize, unit: s}
+  - {name: decode_cpu_s, source: stdout_json, key: payload.decode_cpu_s, family: time_cpu, direction: minimize, unit: s}
+  - {name: encode_throughput_bps, source: stdout_json, key: payload.encode_throughput_bps, family: throughput, direction: maximize, unit: B/s}
+  - {name: decode_throughput_bps, source: stdout_json, key: payload.decode_throughput_bps, family: throughput, direction: maximize, unit: B/s}
+  - {name: peak_commit_bytes, source: stdout_json, key: payload.peak_commit_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: output_sha256, source: stdout_json, key: payload.output_sha256, family: correctness, kind: string}
+  - {name: identity_equal_ref, source: stdout_json, key: payload.identity_equal_ref, family: correctness, direction: none}
+  - {name: workers, source: stdout_json, key: payload.workers, family: other, direction: none, unit: count}
+
+repetitions: 10
+warmups: 2
+seeds: {order: 1313001, bootstrap: 1313002, command: 1313003}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+guard:
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+platform:
+  os: [windows]
+  cpu_affinity: [2, 4, 6, 8, 10, 12, 14]
+  scratch_root: D:/eb-research/scale/scratch
+  requires:
+    - D:/eb-research/target/scale-par-win/release/ebr-par.exe
+  poll_interval_s: 0.05
+  timeout_s: 7200
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [encode_wall_s, decode_wall_s, verify_wall_s]

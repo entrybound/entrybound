@@ -1,0 +1,1150 @@
+{
+ "binary": "/root/eb-research/target/scale-prod/release/ebound",
+ "binary_commit": null,
+ "cells": [
+  {
+   "applicable_ops": [
+    "import-tar",
+    "import-tar-gz",
+    "import-tar-zst",
+    "import-tar-xz",
+    "import-zip",
+    "import-7z",
+    "import-tar-stdin",
+    "export-zip-file",
+    "export-zip-stdout",
+    "export-tar-file",
+    "export-tar-gz-file",
+    "export-tar-zst-file",
+    "export-tar-zst-stdout",
+    "export-zip-dryrun",
+    "publish-three-targets",
+    "inc-bsdtar-zip-create",
+    "inc-7z-extract"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 11811160064,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b1g-cap24",
+   "logical_bytes": 1073741824,
+   "shape_id": "b1g",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1301,
+    "shape": "files",
+    "total_bytes": 1073741824
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar",
+    "import-tar-gz",
+    "import-tar-zst",
+    "import-tar-xz",
+    "import-zip",
+    "import-7z",
+    "import-tar-stdin",
+    "export-zip-file",
+    "export-zip-stdout",
+    "export-tar-file",
+    "export-tar-gz-file",
+    "export-tar-zst-file",
+    "export-tar-zst-stdout",
+    "export-zip-dryrun",
+    "publish-three-targets",
+    "inc-bsdtar-zip-create",
+    "inc-7z-extract"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 37580963840,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b4g-cap24",
+   "logical_bytes": 4294967296,
+   "shape_id": "b4g",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1302,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar",
+    "import-tar-gz",
+    "import-tar-zst",
+    "import-tar-xz",
+    "import-zip",
+    "import-7z",
+    "import-tar-stdin",
+    "export-zip-file",
+    "export-zip-stdout",
+    "export-tar-file",
+    "export-tar-gz-file",
+    "export-tar-zst-file",
+    "export-tar-zst-stdout",
+    "export-zip-dryrun",
+    "publish-three-targets",
+    "inc-bsdtar-zip-create",
+    "inc-7z-extract"
+   ],
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 37580963840,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b4g-cap2",
+   "logical_bytes": 4294967296,
+   "shape_id": "b4g",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1302,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar",
+    "import-tar-gz",
+    "import-tar-zst",
+    "import-tar-xz",
+    "import-zip",
+    "import-7z",
+    "import-tar-stdin",
+    "export-zip-file",
+    "export-zip-stdout",
+    "export-tar-file",
+    "export-tar-gz-file",
+    "export-tar-zst-file",
+    "export-tar-zst-stdout",
+    "export-zip-dryrun",
+    "publish-three-targets",
+    "inc-bsdtar-zip-create",
+    "inc-7z-extract"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 140660178944,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b16g-cap24",
+   "logical_bytes": 17179869184,
+   "shape_id": "b16g",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1303,
+    "shape": "files",
+    "total_bytes": 17179869184
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar",
+    "import-tar-gz",
+    "import-tar-zst",
+    "import-tar-xz",
+    "import-zip",
+    "import-7z",
+    "import-tar-stdin",
+    "export-zip-file",
+    "export-zip-stdout",
+    "export-tar-file",
+    "export-tar-gz-file",
+    "export-tar-zst-file",
+    "export-tar-zst-stdout",
+    "export-zip-dryrun",
+    "publish-three-targets",
+    "inc-bsdtar-zip-create",
+    "inc-7z-extract"
+   ],
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 140660178944,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "b16g-cap2",
+   "logical_bytes": 17179869184,
+   "shape_id": "b16g",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1303,
+    "shape": "files",
+    "total_bytes": 17179869184
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar",
+    "import-tar-gz",
+    "import-tar-zst",
+    "import-tar-xz",
+    "import-zip",
+    "import-7z",
+    "import-tar-stdin",
+    "export-zip-file",
+    "export-zip-stdout",
+    "export-tar-file",
+    "export-tar-gz-file",
+    "export-tar-zst-file",
+    "export-tar-zst-stdout",
+    "export-zip-dryrun",
+    "publish-three-targets",
+    "inc-bsdtar-zip-create",
+    "inc-7z-extract"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 6498025472,
+   "entries": 100000,
+   "expected_tree_sha256": null,
+   "item_id": "n1e5-cap24",
+   "logical_bytes": 409600000,
+   "shape_id": "n1e5",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "entries": 100000,
+    "entry_bytes": 4096,
+    "seed": 1323,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar",
+    "import-tar-gz",
+    "import-tar-zst",
+    "import-tar-xz",
+    "import-zip",
+    "import-7z",
+    "import-tar-stdin",
+    "export-zip-file",
+    "export-zip-stdout",
+    "export-tar-file",
+    "export-tar-gz-file",
+    "export-tar-zst-file",
+    "export-tar-zst-stdout",
+    "export-zip-dryrun",
+    "publish-three-targets",
+    "inc-bsdtar-zip-create",
+    "inc-7z-extract"
+   ],
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 6498025472,
+   "entries": 100000,
+   "expected_tree_sha256": null,
+   "item_id": "n1e5-cap2",
+   "logical_bytes": 409600000,
+   "shape_id": "n1e5",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "entries": 100000,
+    "entry_bytes": 4096,
+    "seed": 1323,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar",
+    "import-tar-gz",
+    "import-tar-zst",
+    "import-tar-xz",
+    "import-zip",
+    "import-7z",
+    "import-tar-stdin",
+    "export-zip-file",
+    "export-zip-stdout",
+    "export-tar-file",
+    "export-tar-gz-file",
+    "export-tar-zst-file",
+    "export-tar-zst-stdout",
+    "export-zip-dryrun",
+    "publish-three-targets",
+    "inc-bsdtar-zip-create",
+    "inc-7z-extract"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 35956457472,
+   "entries": 999000,
+   "expected_tree_sha256": null,
+   "item_id": "n999k-cap24",
+   "logical_bytes": 4091904000,
+   "shape_id": "n999k",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "entries": 999000,
+    "entry_bytes": 4096,
+    "seed": 1324,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar",
+    "import-tar-gz",
+    "import-tar-zst",
+    "import-tar-xz",
+    "import-zip",
+    "import-7z",
+    "import-tar-stdin",
+    "export-zip-file",
+    "export-zip-stdout",
+    "export-tar-file",
+    "export-tar-gz-file",
+    "export-tar-zst-file",
+    "export-tar-zst-stdout",
+    "export-zip-dryrun",
+    "publish-three-targets",
+    "inc-bsdtar-zip-create",
+    "inc-7z-extract"
+   ],
+   "cap_bytes": 2147483648,
+   "declared_disk_peak_bytes": 35956457472,
+   "entries": 999000,
+   "expected_tree_sha256": null,
+   "item_id": "n999k-cap2",
+   "logical_bytes": 4091904000,
+   "shape_id": "n999k",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "entries": 999000,
+    "entry_bytes": 4096,
+    "seed": 1324,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-gzip-member"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 37580963832,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "gz-2p32m1-cap24",
+   "logical_bytes": 4294967295,
+   "shape_id": "gz-2p32m1",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1401,
+    "shape": "files",
+    "total_bytes": 4294967295
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-gzip-member"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 37580963840,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "gz-2p32-cap24",
+   "logical_bytes": 4294967296,
+   "shape_id": "gz-2p32",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1402,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-gzip-member"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 37580963848,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "gz-2p32p1-cap24",
+   "logical_bytes": 4294967297,
+   "shape_id": "gz-2p32p1",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1403,
+    "shape": "files",
+    "total_bytes": 4294967297
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-gzip-member",
+    "export-tar-gz-file"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 46170898432,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "gz-5g-cap24",
+   "logical_bytes": 5368709120,
+   "shape_id": "gz-5g",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1404,
+    "shape": "files",
+    "total_bytes": 5368709120
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-zip",
+    "export-zip-file"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 3254779392,
+   "entries": 65535,
+   "expected_tree_sha256": null,
+   "item_id": "zip-65535-cap24",
+   "logical_bytes": 4194240,
+   "shape_id": "zip-65535",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "entries": 65535,
+    "entry_bytes": 64,
+    "seed": 1411,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-zip",
+    "export-zip-file",
+    "export-zip-stdout"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 3254779904,
+   "entries": 65536,
+   "expected_tree_sha256": null,
+   "item_id": "zip-65536-cap24",
+   "logical_bytes": 4194304,
+   "shape_id": "zip-65536",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "entries": 65536,
+    "entry_bytes": 64,
+    "seed": 1412,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-zip",
+    "export-zip-file"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 37580963848,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "zip64-member-cap24",
+   "logical_bytes": 4294967297,
+   "shape_id": "zip64-member",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1413,
+    "shape": "files",
+    "total_bytes": 4294967297
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar",
+    "import-tar-gnu",
+    "export-tar-file"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 71940702216,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "tar-8g-member-cap24",
+   "logical_bytes": 8589934593,
+   "shape_id": "tar-8g-member",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1414,
+    "shape": "files",
+    "total_bytes": 8589934593
+   }
+  },
+  {
+   "applicable_ops": [
+    "export-zip-file",
+    "export-tar-gz-file"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 11811160064,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "zero-1g-cap24",
+   "logical_bytes": 1073741824,
+   "shape_id": "zero-1g",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "zeros",
+    "files": 1,
+    "seed": 1415,
+    "shape": "files",
+    "total_bytes": 1073741824
+   }
+  },
+  {
+   "applicable_ops": [
+    "export-tar-zst-file",
+    "export-zip-file"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 46170898432,
+   "entries": 1,
+   "expected_tree_sha256": null,
+   "item_id": "member-5g-cap24",
+   "logical_bytes": 5368709120,
+   "shape_id": "member-5g",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1416,
+    "shape": "files",
+    "total_bytes": 5368709120
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 3477225472,
+   "entries": 500000,
+   "expected_tree_sha256": null,
+   "item_id": "tar-500k-cap24",
+   "logical_bytes": 32000000,
+   "shape_id": "tar-500k",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "entries": 500000,
+    "entry_bytes": 64,
+    "seed": 1421,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 3477225472,
+   "entries": 500000,
+   "expected_tree_sha256": null,
+   "item_id": "tar-500k-pax-cap24",
+   "logical_bytes": 32000000,
+   "shape_id": "tar-500k-pax",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "entries": 500000,
+    "entry_bytes": 64,
+    "long_names": true,
+    "seed": 1422,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar",
+    "import-zip",
+    "export-zip-file",
+    "export-tar-file"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 3732713472,
+   "entries": 999000,
+   "expected_tree_sha256": null,
+   "item_id": "tar-999k-cap24",
+   "logical_bytes": 63936000,
+   "shape_id": "tar-999k",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "entries": 999000,
+    "entry_bytes": 64,
+    "seed": 1423,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-7z",
+    "inc-7z-extract"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 37580963840,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "7z-solid-4g-cap24",
+   "logical_bytes": 4294967296,
+   "shape_id": "7z-solid-4g",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1302,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-7z"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 140660178944,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "7z-solid-16g-cap24",
+   "logical_bytes": 17179869184,
+   "shape_id": "7z-solid-16g",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1303,
+    "shape": "files",
+    "total_bytes": 17179869184
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-7z"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 11811160064,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "7z-ultra-1536m-cap24",
+   "logical_bytes": 1073741824,
+   "shape_id": "7z-ultra-1536m",
+   "source_flags": {
+    "A.7z": "-mx=9 -md=1536m -ms=on",
+    "A.tar.zst": "-T1 -3"
+   },
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1301,
+    "shape": "files",
+    "total_bytes": 1073741824
+   }
+  },
+  {
+   "applicable_ops": [
+    "import-tar-zst"
+   ],
+   "cap_bytes": 25769803776,
+   "declared_disk_peak_bytes": 37580963840,
+   "entries": 64,
+   "expected_tree_sha256": null,
+   "item_id": "zst-long31-cap24",
+   "logical_bytes": 4294967296,
+   "shape_id": "zst-long31",
+   "source_flags": {
+    "A.7z": "-mx=5 -ms=on",
+    "A.tar.zst": "--long=31 -19 -T1"
+   },
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1302,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  }
+ ],
+ "env": {
+  "LANG": "C.UTF-8",
+  "TMPDIR": "{tmp}",
+  "TZ": "UTC"
+ },
+ "experiment_id": "EXP-SCALE-002",
+ "operations": {
+  "export-tar-file": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.eb}",
+    "{dst}/out.tar",
+    "--to",
+    "tar",
+    "--allow-lossy"
+   ],
+   "prerequisites": [
+    "A.eb"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "export-tar-gz-file": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.eb}",
+    "{dst}/out.tar.gz",
+    "--to",
+    "tar.gz",
+    "--allow-lossy"
+   ],
+   "prerequisites": [
+    "A.eb"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "export-tar-zst-file": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.eb}",
+    "{dst}/out.tar.zst",
+    "--to",
+    "tar.zst",
+    "--allow-lossy"
+   ],
+   "prerequisites": [
+    "A.eb"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "export-tar-zst-stdout": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.eb}",
+    "-",
+    "--to",
+    "tar.zst",
+    "--allow-lossy"
+   ],
+   "prerequisites": [
+    "A.eb"
+   ],
+   "stdin": null,
+   "stdout": "{dst}/out.tar.zst"
+  },
+  "export-zip-dryrun": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.eb}",
+    "{dst}/out.zip",
+    "--to",
+    "zip",
+    "--allow-lossy",
+    "--dry-run"
+   ],
+   "prerequisites": [
+    "A.eb"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "export-zip-file": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.eb}",
+    "{dst}/out.zip",
+    "--to",
+    "zip",
+    "--allow-lossy",
+    "--receipt",
+    "{dst}/receipt.json"
+   ],
+   "prerequisites": [
+    "A.eb"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "export-zip-stdout": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.eb}",
+    "-",
+    "--to",
+    "zip",
+    "--allow-lossy"
+   ],
+   "prerequisites": [
+    "A.eb"
+   ],
+   "stdin": null,
+   "stdout": "{dst}/out.zip"
+  },
+  "import-7z": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.7z}",
+    "{dst}/out.eb",
+    "--from",
+    "7z"
+   ],
+   "prerequisites": [
+    "A.7z"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "import-gzip-member": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.gz}",
+    "{dst}/out.eb",
+    "--from",
+    "gzip",
+    "--entry-name",
+    "payload.bin"
+   ],
+   "prerequisites": [
+    "A.gz"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "import-tar": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.tar}",
+    "{dst}/out.eb",
+    "--from",
+    "tar"
+   ],
+   "prerequisites": [
+    "A.tar"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "import-tar-gnu": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A-gnu.tar}",
+    "{dst}/out.eb",
+    "--from",
+    "tar"
+   ],
+   "prerequisites": [
+    "A-gnu.tar"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "import-tar-gz": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.tar.gz}",
+    "{dst}/out.eb",
+    "--from",
+    "tar.gz"
+   ],
+   "prerequisites": [
+    "A.tar.gz"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "import-tar-stdin": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "-",
+    "{dst}/out.eb",
+    "--from",
+    "tar"
+   ],
+   "prerequisites": [
+    "A.tar"
+   ],
+   "stdin": "{A.tar}",
+   "stdout": null
+  },
+  "import-tar-xz": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.tar.xz}",
+    "{dst}/out.eb",
+    "--from",
+    "tar.xz"
+   ],
+   "prerequisites": [
+    "A.tar.xz"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "import-tar-zst": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.tar.zst}",
+    "{dst}/out.eb",
+    "--from",
+    "tar.zst"
+   ],
+   "prerequisites": [
+    "A.tar.zst"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "import-zip": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "convert",
+    "{A.zip}",
+    "{dst}/out.eb",
+    "--from",
+    "zip"
+   ],
+   "prerequisites": [
+    "A.zip"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "inc-7z-extract": {
+   "argv": [
+    "7z",
+    "x",
+    "-y",
+    "-o{dst}/tree",
+    "{A.7z}"
+   ],
+   "prerequisites": [
+    "A.7z"
+   ],
+   "stdin": null,
+   "stdout": null
+  },
+  "inc-bsdtar-zip-create": {
+   "argv": [
+    "bsdtar",
+    "-C",
+    "{input}",
+    "--format",
+    "zip",
+    "-cf",
+    "{dst}/out.zip",
+    "."
+   ],
+   "prerequisites": [],
+   "stdin": null,
+   "stdout": null
+  },
+  "publish-three-targets": {
+   "argv": [
+    "/root/eb-research/target/scale-prod/release/ebound",
+    "publish",
+    "{A.eb}",
+    "--output-dir",
+    "{dst}/pub",
+    "--native",
+    "--target",
+    "zip",
+    "--target",
+    "tar.zst",
+    "--base-name",
+    "release",
+    "--allow-lossy",
+    "--report",
+    "{dst}/pub/report.json"
+   ],
+   "prerequisites": [
+    "A.eb"
+   ],
+   "stdin": null,
+   "stdout": null
+  }
+ },
+ "prerequisites": {
+  "A-gnu.tar": [
+   "bash",
+   "-c",
+   "tar -C \"$1\" --format=gnu --sort=name --mtime=@946684800 --owner=0 --group=0 --numeric-owner -cf - . > \"$2\"",
+   "sh",
+   "{input}",
+   "{cache}/A-gnu.tar"
+  ],
+  "A.7z": [
+   "bash",
+   "-c",
+   "cd \"$1\" && 7z a -t7z {flags} \"$2\" ./* > /dev/null",
+   "sh",
+   "{input}",
+   "{cache}/A.7z"
+  ],
+  "A.eb": [
+   "/root/eb-research/target/scale-prod/release/ebound",
+   "pack",
+   "{input}",
+   "{cache}/A.eb",
+   "--profile",
+   "balanced"
+  ],
+  "A.gz": [
+   "bash",
+   "-c",
+   "gzip -6 -n -c \"$(find \"$1\" -type f | head -1)\" > \"$2\"",
+   "sh",
+   "{input}",
+   "{cache}/A.gz"
+  ],
+  "A.tar": [
+   "bash",
+   "-c",
+   "tar -C \"$1\" --format=pax --sort=name --mtime=@946684800 --owner=0 --group=0 --numeric-owner -cf - . > \"$2\"",
+   "sh",
+   "{input}",
+   "{cache}/A.tar"
+  ],
+  "A.tar.gz": [
+   "bash",
+   "-c",
+   "tar -C \"$1\" --format=pax --sort=name --mtime=@946684800 --owner=0 --group=0 --numeric-owner -cf - . | gzip -6 -n > \"$2\"",
+   "sh",
+   "{input}",
+   "{cache}/A.tar.gz"
+  ],
+  "A.tar.xz": [
+   "bash",
+   "-c",
+   "tar -C \"$1\" --format=pax --sort=name --mtime=@946684800 --owner=0 --group=0 --numeric-owner -cf - . | xz -T1 -6 > \"$2\"",
+   "sh",
+   "{input}",
+   "{cache}/A.tar.xz"
+  ],
+  "A.tar.zst": [
+   "bash",
+   "-c",
+   "tar -C \"$1\" --format=pax --sort=name --mtime=@946684800 --owner=0 --group=0 --numeric-owner -cf - . | zstd {flags} -q -o \"$2\"",
+   "sh",
+   "{input}",
+   "{cache}/A.tar.zst"
+  ],
+  "A.zip": [
+   "bash",
+   "-c",
+   "cd \"$1\" && zip -q -r -X \"$2\" .",
+   "sh",
+   "{input}",
+   "{cache}/A.zip"
+  ]
+ },
+ "schema": "ebr.scale.cells.v1"
+}

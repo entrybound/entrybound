@@ -1,0 +1,111 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-008
+status: design-draft
+notes: >
+  Design draft until gate G-A (decision-method.md section 0.4); NEEDS_TOOLING: the binaries named in requires are built by the tooling listed in protocol.md. Phase M (memory, identity, staging outcomes). Phase F (fault scenarios) and phase T (timing) specs are generated from EXP-SCALE-004 scenarios and this template before they run.
+question: >
+  Which read, verify, repack and staging designs bound memory for archives larger than RAM while keeping verification honest, identities exact and crash behaviour safe?
+hypothesis: >
+  Range-reader and two-phase INDEXED verification are M08.3-bounded and detect TOCTOU replacement; streamed repack preserves LAI/AUX/PCR; per-entry verified staging never exposes unverified final objects; cumulative staging accounting falsely refuses a 70 GiB archive.
+decision_ids: [DEC-ACC-062, DEC-ACC-060, DEC-ACC-048, DEC-ACC-004, DEC-ACC-059, DEC-ACC-006, DEC-ACC-053, DEC-ACC-055, DEC-INT-039, DEC-INT-043, DEC-ACC-022, DEC-CON-026]
+
+candidates:
+  - {name: sq-indexed}
+  - {name: range-reader-verify}
+  - {name: per-object-staged-extraction}
+  - {name: mmap-input}
+  - {name: two-phase-verify-then-extract}
+  - {name: declared-ceiling}
+  - {name: level-structure}
+  - {name: level-stored-digest}
+  - {name: level-full}
+  - {name: sq-stream-retain}
+  - {name: metadata-spill}
+  - {name: incremental-sparse-map-validation}
+  - {name: declared-metadata-bound}
+  - {name: sq-repack}
+  - {name: streamed-representation-only-repack}
+  - {name: streamed-replan-with-spill}
+  - {name: verify-output-by-streaming-reader}
+  - {name: chunk-reuse-repack-add}
+  - {name: scan-and-cache-explicit}
+  - {name: sq-resident-plus-spill}
+  - {name: quarantine-dir-per-object}
+  - {name: destination-adjacent-spill}
+  - {name: memory-only}
+  - {name: two-pass-reread}
+  - {name: per-entry-verified-streaming}
+  - {name: temp-tree-then-atomic-move}
+  - {name: opt-in-progressive-unverified}
+  - {name: concurrent-accounting-with-reuse}
+  - {name: ephemeral-key-spill}
+  - {name: unlink-on-create}
+  - {name: bounded-buffer-indexed-stdin}
+  - {name: min-window-on-read}
+  - {name: inc-zstd-tar}
+command: >-
+  /root/eb-research/target/scale-alloc/release/ebr-scale-reader --design {candidate} --cell {item_id}
+  --cells /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-SCALE-008/cells.json --dest {scratch}/dest
+  --isolate true --seed {seed} --experiment-id EXP-SCALE-008 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  generated:
+    - {item_id: b1g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b4g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b4g-cap2, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b16g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b16g-cap2, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b64g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b64g-cap2, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n1e5-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n999k-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n999k-cap2, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n4m-raised, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n10m-raised, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: posix-b4g, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: stream-70g, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: correctness, direction: none}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: reason_code, source: stdout_json, key: payload.reason_code, family: correctness, kind: string}
+  - {name: alloc_peak_bytes, source: stdout_json, key: payload.alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: peak_rss_bytes, source: stdout_json, key: payload.peak_rss_bytes, family: memory_peak, direction: none, unit: B}
+  - {name: scratch_write_bytes, source: stdout_json, key: payload.scratch_write_bytes, family: correctness, direction: none, unit: B}
+  - {name: scratch_peak_bytes, source: stdout_json, key: payload.scratch_peak_bytes, family: scratch_peak, direction: minimize, unit: B}
+  - {name: open_bytes_read, source: stdout_json, key: payload.open_bytes_read, family: size, direction: minimize, unit: B}
+  - {name: verified_fraction, source: stdout_json, key: payload.verified_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: dest_objects_before_verify, source: stdout_json, key: payload.dest_objects_before_verify, family: correctness, direction: none, unit: count}
+  - {name: verified_ok_partial_outputs, source: stdout_json, key: payload.verified_ok_partial_outputs, family: correctness, direction: none, unit: count}
+  - {name: spill_leftover_bytes, source: stdout_json, key: payload.spill_leftover_bytes, family: scratch_peak, direction: none, unit: B}
+  - {name: toctou_detected, source: stdout_json, key: payload.toctou_detected, family: correctness, direction: none}
+  - {name: identity_lai_equal, source: stdout_json, key: payload.identity_lai_equal, family: correctness, direction: none}
+  - {name: identity_aux_equal, source: stdout_json, key: payload.identity_aux_equal, family: correctness, direction: none}
+  - {name: identity_pcr_equal, source: stdout_json, key: payload.identity_pcr_equal, family: correctness, direction: none}
+  - {name: identity_pci_equal, source: stdout_json, key: payload.identity_pci_equal, family: correctness, direction: none}
+  - {name: false_refusal_long_archive, source: stdout_json, key: payload.false_refusal_long_archive, family: correctness, direction: none}
+  - {name: min_window_cpu_s, source: stdout_json, key: payload.min_window_cpu_s, family: time_cpu, direction: minimize, unit: s}
+  - {name: ttff_s, source: stdout_json, key: payload.ttff_s, family: time_wall, direction: none, unit: s}
+  - {name: op_wall_s, source: stdout_json, key: payload.op_wall_s, family: time_wall, direction: none, unit: s}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 1308001, bootstrap: 1308002, command: 1308003}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  min_cpus: 4
+  requires:
+    - /root/eb-research/target/scale-alloc/release/ebr-scale-reader
+    - /root/eb-research/target/scale-prod/release/ebound
+  poll_interval_s: 1.0
+  timeout_s: 43200
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [alloc_peak_bytes, dest_objects_before_verify, identity_pci_equal]

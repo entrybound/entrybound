@@ -1,0 +1,275 @@
+{
+ "binary_commit": null,
+ "binary_linux": "/root/eb-research/target/scale-prod/release/ebound",
+ "binary_windows": "D:/eb-research/target/scale-prod-win/release/ebound.exe",
+ "caps": {
+  "cap2": 2147483648,
+  "default": 25769803776
+ },
+ "cells": [
+  {
+   "applicable_scenarios": [
+    "ttff-unpack-stream-stdin",
+    "ttff-unpack-indexed",
+    "ttff-inc-zstd-tar",
+    "diskfull-tmp",
+    "diskfull-dst",
+    "diskfull-pack",
+    "kill-unpack-stream",
+    "kill-unpack-indexed",
+    "kill-pack-indexed",
+    "kill-pack-stream-stdout",
+    "kill-repack",
+    "kill-export-zip",
+    "kill-publish",
+    "corrupt-last-chunk-stream",
+    "corrupt-last-chunk-indexed",
+    "exclusive-create",
+    "sibling-rename-ext4",
+    "sibling-rename-xfs",
+    "sibling-rename-btrfs",
+    "spill-permissions",
+    "io-fault-eacces",
+    "io-fault-erofs",
+    "io-fault-epipe",
+    "io-fault-emfile",
+    "io-fault-enospc",
+    "nonseekable-census"
+   ],
+   "expected_tree_sha256": null,
+   "hosts": [
+    "linux",
+    "windows"
+   ],
+   "item_id": "b1g",
+   "kill_points_per_rep": 25,
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1301,
+    "shape": "files",
+    "total_bytes": 1073741824
+   }
+  },
+  {
+   "applicable_scenarios": [
+    "ttff-unpack-stream-stdin",
+    "ttff-unpack-indexed",
+    "ttff-inc-zstd-tar",
+    "spill-permissions",
+    "kill-unpack-stream",
+    "diskfull-tmp"
+   ],
+   "expected_tree_sha256": null,
+   "hosts": [
+    "linux",
+    "windows"
+   ],
+   "item_id": "b4g",
+   "kill_points_per_rep": 25,
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1302,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  },
+  {
+   "applicable_scenarios": [
+    "ttff-unpack-stream-stdin",
+    "ttff-unpack-indexed",
+    "ttff-inc-zstd-tar"
+   ],
+   "expected_tree_sha256": null,
+   "hosts": [
+    "linux"
+   ],
+   "item_id": "b16g",
+   "kill_points_per_rep": 25,
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1303,
+    "shape": "files",
+    "total_bytes": 17179869184
+   }
+  },
+  {
+   "applicable_scenarios": [
+    "ttff-unpack-stream-stdin",
+    "ttff-unpack-indexed",
+    "ttff-inc-zstd-tar",
+    "diskfull-tmp",
+    "kill-unpack-stream"
+   ],
+   "expected_tree_sha256": null,
+   "hosts": [
+    "linux"
+   ],
+   "item_id": "e4g",
+   "kill_points_per_rep": 25,
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1312,
+    "shape": "files",
+    "total_bytes": 4294967296
+   }
+  },
+  {
+   "applicable_scenarios": [
+    "ttff-unpack-stream-stdin",
+    "ttff-unpack-indexed",
+    "ttff-inc-zstd-tar",
+    "kill-unpack-stream",
+    "kill-pack-indexed",
+    "nonseekable-census"
+   ],
+   "expected_tree_sha256": null,
+   "hosts": [
+    "linux",
+    "windows"
+   ],
+   "item_id": "n1e5",
+   "kill_points_per_rep": 25,
+   "synth": {
+    "content": "half",
+    "entries": 100000,
+    "entry_bytes": 4096,
+    "seed": 1323,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_scenarios": [
+    "boundary-entries"
+   ],
+   "expected_tree_sha256": null,
+   "hosts": [
+    "linux"
+   ],
+   "item_id": "entries-1000000",
+   "kill_points_per_rep": 25,
+   "synth": {
+    "content": "half",
+    "entries": 1000000,
+    "entry_bytes": 64,
+    "seed": 1431,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_scenarios": [
+    "boundary-entries"
+   ],
+   "expected_tree_sha256": null,
+   "hosts": [
+    "linux"
+   ],
+   "item_id": "entries-1000001",
+   "kill_points_per_rep": 25,
+   "synth": {
+    "content": "half",
+    "entries": 1000001,
+    "entry_bytes": 64,
+    "seed": 1432,
+    "shape": "entries"
+   }
+  },
+  {
+   "applicable_scenarios": [
+    "boundary-single-entry"
+   ],
+   "expected_tree_sha256": null,
+   "hosts": [
+    "linux"
+   ],
+   "item_id": "single-2p34",
+   "kill_points_per_rep": 25,
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1433,
+    "shape": "files",
+    "total_bytes": 17179869184
+   }
+  },
+  {
+   "applicable_scenarios": [
+    "boundary-single-entry"
+   ],
+   "expected_tree_sha256": null,
+   "hosts": [
+    "linux"
+   ],
+   "item_id": "single-2p34p1",
+   "kill_points_per_rep": 25,
+   "synth": {
+    "content": "half",
+    "files": 1,
+    "seed": 1434,
+    "shape": "files",
+    "total_bytes": 17179869185
+   }
+  },
+  {
+   "applicable_scenarios": [
+    "boundary-logical"
+   ],
+   "expected_tree_sha256": null,
+   "hosts": [
+    "linux"
+   ],
+   "item_id": "logical-2p36p2p20",
+   "kill_points_per_rep": 25,
+   "synth": {
+    "content": "half",
+    "files": 64,
+    "seed": 1435,
+    "shape": "files",
+    "total_bytes": 68720525312
+   }
+  }
+ ],
+ "experiment_id": "EXP-SCALE-004",
+ "rename_retry_limit": 5,
+ "scenarios_linux": [
+  "ttff-unpack-stream-stdin",
+  "ttff-unpack-indexed",
+  "ttff-inc-zstd-tar",
+  "diskfull-tmp",
+  "diskfull-dst",
+  "diskfull-pack",
+  "kill-unpack-stream",
+  "kill-unpack-indexed",
+  "kill-pack-indexed",
+  "kill-pack-stream-stdout",
+  "kill-repack",
+  "kill-export-zip",
+  "kill-publish",
+  "corrupt-last-chunk-stream",
+  "corrupt-last-chunk-indexed",
+  "exclusive-create",
+  "boundary-entries",
+  "boundary-single-entry",
+  "boundary-logical",
+  "sibling-rename-ext4",
+  "sibling-rename-xfs",
+  "sibling-rename-btrfs",
+  "spill-permissions",
+  "io-fault-eacces",
+  "io-fault-erofs",
+  "io-fault-epipe",
+  "io-fault-emfile",
+  "io-fault-enospc",
+  "nonseekable-census"
+ ],
+ "scenarios_windows": [
+  "sibling-rename-ntfs",
+  "spill-permissions-windows",
+  "kill-unpack-stream",
+  "exclusive-create"
+ ],
+ "schema": "ebr.scale.faultcells.v1"
+}

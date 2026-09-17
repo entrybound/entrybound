@@ -1,0 +1,114 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-010
+status: design-draft
+notes: >
+  Design draft until gate G-A (decision-method.md section 0.4); NEEDS_TOOLING: the binaries named in requires are built by the tooling listed in protocol.md. Memory and outcome phase; the timing phase (KDF and unlock times) is spec-timing.yaml, generated before it runs.
+question: >
+  How do encrypted operations and key mutations scale in memory, are crypto-v1 resource ceilings safe on constrained hosts, and what do bounded encrypted prototypes change?
+hypothesis: >
+  Encrypted pack/open/verify/unpack are plaintext-proportional; key add is size-independent while remove and change-password are plaintext-proportional; over-ceiling KDF archives are refused with zero Argon2id invocations; streamed segment writing is M08.3-bounded and passes the vector gate.
+decision_ids: [DEC-ACC-009, DEC-ACC-011, DEC-ACC-028, DEC-CON-009, DEC-CRY-013, DEC-CRY-050, DEC-CRY-069]
+
+candidates:
+  - {name: sq-pack-password}
+  - {name: sq-pack-recipients}
+  - {name: sq-open-verify}
+  - {name: sq-unpack}
+  - {name: sq-range-session}
+  - {name: sq-key-add}
+  - {name: sq-key-remove}
+  - {name: sq-change-password}
+  - {name: sq-stream-password-stdout}
+  - {name: kdf-ceiling-open-cap512m-cpu1}
+  - {name: kdf-ceiling-open-cap512m-cpu2}
+  - {name: kdf-ceiling-open-cap512m-cpu16}
+  - {name: kdf-ceiling-open-cap1g-cpu1}
+  - {name: kdf-ceiling-open-cap1g-cpu2}
+  - {name: kdf-ceiling-open-cap1g-cpu16}
+  - {name: kdf-ceiling-open-cap2g-cpu1}
+  - {name: kdf-ceiling-open-cap2g-cpu2}
+  - {name: kdf-ceiling-open-cap2g-cpu16}
+  - {name: kdf-ceiling-open-cap24g-cpu1}
+  - {name: kdf-ceiling-open-cap24g-cpu2}
+  - {name: kdf-ceiling-open-cap24g-cpu16}
+  - {name: kdf-creation-default-open}
+  - {name: kdf-over-policy}
+  - {name: recipients-1}
+  - {name: recipients-16}
+  - {name: recipients-128}
+  - {name: recipients-1024}
+  - {name: ebcs-items-999999}
+  - {name: ebcs-items-1000000}
+  - {name: ebcs-items-1000001}
+  - {name: segment-boundary}
+  - {name: streamed-segment-writer}
+  - {name: plaintext-discarding-open}
+  - {name: bounded-decrypted-frame-cache-64m}
+  - {name: bounded-decrypted-frame-cache-256m}
+  - {name: explicit-spool-to-temp}
+  - {name: boundary-preserving-rotation}
+  - {name: lazy-rotation-on-repack}
+command: >-
+  /root/eb-research/target/scale-alloc/release/ebr-scale-crypto --design {candidate} --cell {item_id}
+  --cells /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-SCALE-010/cells.json --seed {seed} --scratch {scratch}
+  --experiment-id EXP-SCALE-010 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  generated:
+    - {item_id: minimal, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b1g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b4g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b4g-cap2, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b16g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b16g-cap2, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n1e5-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n999k-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: ebcs-999999, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: ebcs-1000000, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: ebcs-1000001, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: segment-1g-plus-1, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: segment-records-2p20, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: kdf-forged, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: correctness, direction: none}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: reason_code, source: stdout_json, key: payload.reason_code, family: correctness, kind: string}
+  - {name: alloc_peak_bytes, source: stdout_json, key: payload.alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: peak_rss_bytes, source: stdout_json, key: payload.peak_rss_bytes, family: memory_peak, direction: none, unit: B}
+  - {name: oom_kill, source: stdout_json, key: payload.oom_kill, family: correctness, direction: none, unit: count}
+  - {name: artifact_bytes, source: stdout_json, key: payload.artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: envelope_bytes, source: stdout_json, key: payload.envelope_bytes, family: size, direction: none, unit: B}
+  - {name: argon2_invocations, source: stdout_json, key: payload.argon2_invocations, family: correctness, direction: none, unit: count}
+  - {name: stdout_bytes_before_refusal, source: stdout_json, key: payload.stdout_bytes_before_refusal, family: correctness, direction: none, unit: B}
+  - {name: lai_equal, source: stdout_json, key: payload.lai_equal, family: correctness, direction: none}
+  - {name: aux_equal, source: stdout_json, key: payload.aux_equal, family: correctness, direction: none}
+  - {name: pcr_equal_after_rotation, source: stdout_json, key: payload.pcr_equal_after_rotation, family: correctness, direction: none}
+  - {name: ciphertext_differs, source: stdout_json, key: payload.ciphertext_differs, family: correctness, direction: none}
+  - {name: vector_gate_pass, source: stdout_json, key: payload.vector_gate_pass, family: correctness, direction: none}
+  - {name: segment_count, source: stdout_json, key: payload.segment_count, family: other, direction: none, unit: count}
+  - {name: op_wall_s, source: stdout_json, key: payload.op_wall_s, family: time_wall, direction: none, unit: s}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 1310001, bootstrap: 1310002, command: 1310003}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  min_cpus: 4
+  requires:
+    - /root/eb-research/target/scale-alloc/release/ebr-scale-crypto
+    - /root/eb-research/target/scale-alloc/release/ebr-pack
+    - /root/eb-research/target/scale-prod/release/ebound
+    - script
+  poll_interval_s: 1.0
+  timeout_s: 43200
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [alloc_peak_bytes, outcome, argon2_invocations]

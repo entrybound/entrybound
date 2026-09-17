@@ -232,3 +232,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T12:10Z — Phase B1 DONE WITH CONDITIONS: corpus 300 items (ed28b1b4), critic round 2 adequate for tuning/validation; held-out not yet adequate. Launching Phase C-design next (weekly usage 20%).
 - 2026-09-17T12:10Z — Launched Phase C-design wf_47347bc4-611 (15 domain designers, index, review, revise).
 - 2026-09-17T12:45Z — Pre-registered EXP-EVAL-001..013 (1 READY, 10 NEEDS_TOOLING, 2 BLOCKED); 13 uncovered decisions routed.
+- 2026-09-17T12:55Z — Scale-domain experiment designs EXP-SCALE-001..016 (5 READY, 9 NEEDS_TOOLING, 2 BLOCKED; 62/63 decisions covered; DEC-CRY-096 uncovered).

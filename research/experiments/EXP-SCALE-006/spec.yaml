@@ -1,0 +1,130 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-006
+status: design-draft
+notes: >
+  Design draft until gate G-A (decision-method.md section 0.4); NEEDS_TOOLING: the binaries named in requires are built by the tooling listed in protocol.md. Items are cell descriptors (1-byte generated placeholders); the probe reads cell parameters from cells.json by item id.
+question: >
+  Which bounded-memory claims of status-quo readers hold under the exact allocator oracle at 1-64 GiB and up to 10M entries, and how do readers behave on adversarial and undeclared-budget archives?
+hypothesis: >
+  STREAM verify/unpack are bounded on the bytes axis but grow with entries; INDEXED verify/list/unpack are not bounded; every lying or over-policy case is refused within R0_max + H. One exceedance or unrefused lie falsifies.
+decision_ids: [DEC-ACC-005, DEC-ACC-028, DEC-ACC-036, DEC-ACC-052, DEC-ACC-057, DEC-ACC-060, DEC-ACC-062, DEC-CMP-017]
+
+candidates:
+  - {name: stream-verify}
+  - {name: stream-unpack}
+  - {name: stream-list}
+  - {name: stream-verify-posix}
+  - {name: indexed-verify}
+  - {name: indexed-list}
+  - {name: indexed-read-one}
+  - {name: indexed-unpack}
+  - {name: inspect-indexed}
+  - {name: pack-dense-dedup-index}
+  - {name: r0-minimal}
+command: >-
+  /root/eb-research/target/scale-alloc/release/ebr-access --mode alloc-probe --operation {candidate}
+  --cell {item_id} --cells /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-SCALE-006/cells.json
+  --isolate true --seed {seed} --scratch {scratch} --experiment-id EXP-SCALE-006 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  generated:
+    - {item_id: minimal, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b1g, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b4g, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b16g, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n1e3, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n1e5, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n999k, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n4m, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n10m, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: posix-b4g, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: chunks1e5, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: chunks1e6, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: chunks4e6, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-declared-entries-over-policy, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-declared-bytes-over-policy, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-declared-below-reality-entries, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-declared-below-reality-chunks, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-declared-below-reality-metadata, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-declared-below-reality-logical, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-declared-below-reality-largest, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-expansion-bomb, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-path-depth-bomb, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-metadata-bytes-bomb, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-long-lookback-chain, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-transitive-lookback, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-kdf-cost-over-ceiling, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-overflowing-arithmetic-fields, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-stream-undeclared-exceeds-entries, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-stream-undeclared-exceeds-bytes, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-stream-undeclared-exceeds-metadata, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-stream-max-window-max-chunk, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-stream-huge-manifest, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-stream-plan-exceeds-working-set, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-stream-max-item, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-stream-max-regions, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-element-count-mismatch-up, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: forge-element-count-mismatch-down, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-declared-entries-over-policy, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-declared-bytes-over-policy, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-declared-below-reality-entries, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-declared-below-reality-chunks, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-declared-below-reality-metadata, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-declared-below-reality-logical, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-declared-below-reality-largest, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-expansion-bomb, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-path-depth-bomb, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-metadata-bytes-bomb, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-long-lookback-chain, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-transitive-lookback, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-kdf-cost-over-ceiling, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-overflowing-arithmetic-fields, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-stream-undeclared-exceeds-entries, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-stream-undeclared-exceeds-bytes, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-stream-undeclared-exceeds-metadata, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-stream-max-window-max-chunk, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-stream-huge-manifest, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-stream-plan-exceeds-working-set, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-stream-max-item, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-stream-max-regions, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-element-count-mismatch-up, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: benign-element-count-mismatch-down, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: correctness, direction: none}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: reason_code, source: stdout_json, key: payload.reason_code, family: correctness, kind: string}
+  - {name: alloc_peak_bytes, source: stdout_json, key: payload.alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: peak_rss_bytes, source: stdout_json, key: payload.peak_rss_bytes, family: memory_peak, direction: none, unit: B}
+  - {name: untrusted_alloc_before_check, source: stdout_json, key: payload.untrusted_alloc_before_check, family: correctness, direction: none, unit: count}
+  - {name: refusal_alloc_peak_bytes, source: stdout_json, key: payload.refusal_alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: refusal_cpu_s, source: stdout_json, key: payload.refusal_cpu_s, family: time_cpu, direction: minimize, unit: s}
+  - {name: refusal_bytes_read, source: stdout_json, key: payload.refusal_bytes_read, family: size, direction: minimize, unit: B}
+  - {name: argon2_invocations, source: stdout_json, key: payload.argon2_invocations, family: correctness, direction: none, unit: count}
+  - {name: declared_working_set_bytes, source: stdout_json, key: payload.declared_working_set_bytes, family: size, direction: none, unit: B}
+  - {name: measured_working_set_bytes, source: stdout_json, key: payload.measured_working_set_bytes, family: size, direction: none, unit: B}
+  - {name: input_logical_bytes, source: stdout_json, key: payload.input_logical_bytes, family: size, direction: none, unit: B}
+  - {name: input_entries, source: stdout_json, key: payload.input_entries, family: other, direction: none, unit: count}
+  - {name: site_top10, source: stdout_json, key: payload.site_top10, family: other, kind: string}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 1306001, bootstrap: 1306002, command: 1306003}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  min_cpus: 4
+  requires:
+    - /root/eb-research/target/scale-alloc/release/ebr-access
+    - /root/eb-research/target/scale-alloc/release/ebr-forge
+  poll_interval_s: 1.0
+  timeout_s: 43200
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [alloc_peak_bytes, outcome, untrusted_alloc_before_check]

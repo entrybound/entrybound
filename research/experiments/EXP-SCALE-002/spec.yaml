@@ -1,0 +1,96 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-002
+status: design-draft
+notes: >
+  Legacy import/export/publish memory scaling and pre-registered size-boundary cases.
+  Design draft until gate G-A; see protocol.md. Driver contract: EXP-SCALE-001 protocol.md.
+  Operations not listed in a cell's applicable_ops report applicable=0.
+question: >
+  How do memory, scratch and completion under a cap scale for legacy import, export and
+  publish, and does the status quo handle legitimate inputs at format size boundaries?
+hypothesis: >
+  All converters are plaintext-proportional; gzip members of 2^32 and 2^32+1 bytes are falsely
+  refused; 500k-entry tars hit the observation cap; 7z with a 1536 MiB dictionary is refused;
+  1 GiB zero-file exports fail strict re-import on the 1000:1 ratio cap.
+decision_ids: [DEC-ACC-013, DEC-ACC-017, DEC-ACC-028, DEC-LEG-002, DEC-LEG-019, DEC-LEG-021, DEC-LEG-022, DEC-LEG-030, DEC-LEG-059, DEC-LEG-108]
+
+candidates:
+  - {name: import-tar}
+  - {name: import-tar-gnu}
+  - {name: import-tar-gz}
+  - {name: import-tar-zst}
+  - {name: import-tar-xz}
+  - {name: import-zip}
+  - {name: import-7z}
+  - {name: import-gzip-member}
+  - {name: import-tar-stdin}
+  - {name: export-zip-file}
+  - {name: export-zip-stdout}
+  - {name: export-tar-file}
+  - {name: export-tar-gz-file}
+  - {name: export-tar-zst-file}
+  - {name: export-tar-zst-stdout}
+  - {name: export-zip-dryrun}
+  - {name: publish-three-targets}
+  - {name: inc-bsdtar-zip-create}
+  - {name: inc-7z-extract}
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/scale/scale_cell.py
+  --experiment EXP-SCALE-002
+  --cells /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-SCALE-002/cells.json
+  --cell {item_id} --op {candidate} --rep {rep} --seed {seed} --scratch {scratch}
+shell: bash
+
+corpus:
+  manifest: research/experiments/EXP-SCALE-002/cells.jsonl
+  splits: [synthetic]
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: correctness, direction: none}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: reason_code, source: stdout_json, key: payload.reason_code, family: correctness, kind: string}
+  - {name: oom_kill, source: stdout_json, key: payload.oom_kill, family: correctness, direction: none, unit: count}
+  - {name: peak_rss_bytes, source: stdout_json, key: payload.peak_rss_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: cgroup_max_usage_bytes, source: stdout_json, key: payload.cgroup_max_usage_bytes, family: memory_peak, direction: none, unit: B}
+  - {name: scratch_write_bytes, source: stdout_json, key: payload.scratch_write_bytes, family: correctness, direction: none, unit: B}
+  - {name: dest_write_bytes, source: stdout_json, key: payload.dest_write_bytes, family: io, direction: none, unit: B}
+  - {name: roundtrip_ok, source: stdout_json, key: payload.roundtrip_ok, family: correctness, direction: none}
+  - {name: import_ok, source: stdout_json, key: payload.import_ok, family: correctness, direction: none}
+  - {name: export_reimport_ok, source: stdout_json, key: payload.export_reimport_ok, family: correctness, direction: none}
+  - {name: side_data_bytes, source: stdout_json, key: payload.side_data_bytes, family: size, direction: none, unit: B}
+  - {name: conflict_count, source: stdout_json, key: payload.conflict_count, family: other, direction: none, unit: count}
+  - {name: resolution_count, source: stdout_json, key: payload.resolution_count, family: other, direction: none, unit: count}
+  - {name: observation_count, source: stdout_json, key: payload.observation_count, family: other, direction: none, unit: count}
+  - {name: output_sha256, source: stdout_json, key: payload.output_sha256, family: correctness, kind: string}
+  - {name: input_logical_bytes, source: stdout_json, key: payload.input_logical_bytes, family: size, direction: none, unit: B}
+  - {name: op_wall_s, source: stdout_json, key: payload.op_wall_s, family: time_wall, direction: none, unit: s}
+  - {name: op_cpu_s, source: stdout_json, key: payload.op_cpu_s, family: time_cpu, direction: none, unit: s}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 1302001, bootstrap: 1302002, command: 1302003}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  min_cpus: 4
+  requires:
+    - /root/eb-research/target/scale-prod/release/ebound
+    - /root/eb-research/venv/bin/python
+    - /usr/bin/time
+    - tar
+    - zstd
+    - xz
+    - gzip
+    - zip
+    - 7z
+    - bsdtar
+  poll_interval_s: 1.0
+  timeout_s: 21600
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [peak_rss_bytes, import_ok, export_reimport_ok, side_data_bytes]

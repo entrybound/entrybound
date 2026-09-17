@@ -1,0 +1,114 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-007
+status: design-draft
+notes: >
+  Design draft until gate G-A (decision-method.md section 0.4); NEEDS_TOOLING: the binaries named in requires are built by the tooling listed in protocol.md. Phase M (memory and identity). Phase S (spec-size.yaml, tuning corpus) and phase T (spec-timing.yaml, timing: true) are generated from this template before they run.
+question: >
+  Which creation architectures bound pack, INDEXED writing and STREAM production memory for inputs larger than RAM while keeping output identical to the in-memory reference where claimed?
+hypothesis: >
+  Streaming CDC with spill and footer-last INDEXED writing are byte-identical to the status quo and M08.3-bounded; windowed planning keeps identities but may change PCI; orphan frames break canonicality. One counterexample falsifies each binary claim.
+decision_ids: [DEC-ACC-029, DEC-ACC-020, DEC-ACC-058, DEC-ACC-061, DEC-CON-027, DEC-MOD-004, DEC-ACC-056, DEC-CMP-017, DEC-CMP-041]
+
+candidates:
+  - {name: status-quo-in-memory}
+  - {name: streaming-cdc-spill}
+  - {name: windowed-planner-64m}
+  - {name: windowed-planner-256m}
+  - {name: windowed-planner-1g}
+  - {name: external-dedup-index}
+  - {name: two-pass-plan-then-encode}
+  - {name: profile-scoped-bound}
+  - {name: declared-ceiling-refusal}
+  - {name: indexed-footer-last}
+  - {name: spill-then-copy}
+  - {name: stream-then-repack}
+  - {name: incremental-stream-producer}
+  - {name: undeclared-budget-pipe}
+  - {name: tar-transcoder}
+  - {name: external-sort-canonical-order-length-first}
+  - {name: external-sort-canonical-order-bytewise}
+  - {name: external-sort-canonical-order-flat-index}
+  - {name: external-sort-canonical-order-encoded-byte}
+  - {name: external-sort-canonical-order-depth-first}
+  - {name: external-sort-canonical-order-hash}
+  - {name: order-digest}
+  - {name: order-path}
+  - {name: order-dedup-aware}
+  - {name: order-group-locality}
+  - {name: mutation-plan-before-emit}
+  - {name: mutation-buffer-whole-file}
+  - {name: mutation-orphan-frames}
+  - {name: mutation-mark-unstable}
+  - {name: mutation-abort}
+  - {name: declare-conservative-superset}
+  - {name: declare-per-item-undeclared-sentinels}
+  - {name: declare-spool-then-emit}
+  - {name: declare-refuse-unknowable}
+  - {name: declare-trailer-amendment}
+command: >-
+  /root/eb-research/target/scale-alloc/release/ebr-scale-writer --design {candidate} --cell {item_id}
+  --cells /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-SCALE-007/cells.json --profile balanced
+  --spill-dir {scratch}/spill --out {scratch}/out --seed {seed} --experiment-id EXP-SCALE-007 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  generated:
+    - {item_id: b1g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b4g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b4g-cap2, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b16g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b16g-cap2, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b64g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: b64g-cap2, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n1e5-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n999k-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n999k-cap2, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: d16g-cap24, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: n4m-raised, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: paths-1e7, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+    - {item_id: paths-1e8, family: SYN-DESCRIPTOR, generator: zeros-v1, bytes: 1, seed: 0, sha256: 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d}
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: correctness, direction: none}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: reason_code, source: stdout_json, key: payload.reason_code, family: correctness, kind: string}
+  - {name: alloc_peak_bytes, source: stdout_json, key: payload.alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: peak_rss_bytes, source: stdout_json, key: payload.peak_rss_bytes, family: memory_peak, direction: none, unit: B}
+  - {name: scratch_write_bytes, source: stdout_json, key: payload.scratch_write_bytes, family: correctness, direction: none, unit: B}
+  - {name: scratch_peak_bytes, source: stdout_json, key: payload.scratch_peak_bytes, family: scratch_peak, direction: minimize, unit: B}
+  - {name: artifact_bytes, source: stdout_json, key: payload.artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: identity_pci_equal, source: stdout_json, key: payload.identity_pci_equal, family: correctness, direction: none}
+  - {name: identity_lai_equal, source: stdout_json, key: payload.identity_lai_equal, family: correctness, direction: none}
+  - {name: identity_pcr_equal, source: stdout_json, key: payload.identity_pcr_equal, family: correctness, direction: none}
+  - {name: identity_aux_equal, source: stdout_json, key: payload.identity_aux_equal, family: correctness, direction: none}
+  - {name: canonical_reencode_equal, source: stdout_json, key: payload.canonical_reencode_equal, family: correctness, direction: none}
+  - {name: unstable_source_declared_ok, source: stdout_json, key: payload.unstable_source_declared_ok, family: correctness, direction: none}
+  - {name: reader_outcome, source: stdout_json, key: payload.reader_outcome, family: correctness, kind: string}
+  - {name: declared_tightness_ratio, source: stdout_json, key: payload.declared_tightness_ratio, family: other, direction: none, unit: ratio}
+  - {name: sort_alloc_peak_bytes, source: stdout_json, key: payload.sort_alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: sort_scratch_bytes, source: stdout_json, key: payload.sort_scratch_bytes, family: scratch_peak, direction: minimize, unit: B}
+  - {name: sort_cpu_s, source: stdout_json, key: payload.sort_cpu_s, family: time_cpu, direction: minimize, unit: s}
+  - {name: required_window, source: stdout_json, key: payload.required_window, family: other, direction: none, unit: chunks}
+  - {name: retention_bound_bytes, source: stdout_json, key: payload.retention_bound_bytes, family: size, direction: none, unit: B}
+  - {name: op_wall_s, source: stdout_json, key: payload.op_wall_s, family: time_wall, direction: none, unit: s}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 1307001, bootstrap: 1307002, command: 1307003}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  min_cpus: 4
+  requires:
+    - /root/eb-research/target/scale-alloc/release/ebr-scale-writer
+    - /root/eb-research/target/scale-prod/release/ebound
+  poll_interval_s: 1.0
+  timeout_s: 43200
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [alloc_peak_bytes, identity_pci_equal, artifact_bytes]

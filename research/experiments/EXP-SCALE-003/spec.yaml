@@ -1,0 +1,84 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-003
+status: design-draft
+notes: >
+  Deterministic census over tuning and validation corpus items (no held-out). Design draft until
+  gate G-A; the candidate-default analysis is provisional pending a non-exposed session (L7 note in
+  protocol.md). Driver: research/tools/scale/census_item.py.
+question: >
+  What stream windows, retention bounds, declared requirements, entry/chunk counts, index and
+  manifest bytes and legacy-archive limit statistics does the status quo produce on real items, how
+  often does default-window STREAM pack fail, and which import-limit defaults refuse legitimate archives?
+hypothesis: >
+  Default window 0 STREAM pack fails exactly on items with duplicate chunks; the writer's auto window
+  is minimal; status-quo import limits refuse legitimate archives only through the tar observation cap
+  and 7z dictionary/folder caps, and the offline predictor agrees with production on every archive.
+decision_ids: [DEC-ACC-054, DEC-ACC-052, DEC-ACC-056, DEC-LEG-022, DEC-LEG-059, DEC-CON-015, DEC-CON-018, DEC-CON-026, DEC-MOD-026]
+
+candidates:
+  - {name: fast-indexed}
+  - {name: balanced-indexed}
+  - {name: dense-indexed}
+  - {name: extreme-indexed}
+  - {name: balanced-stream-auto}
+  - {name: balanced-stream-window0}
+  - {name: dense-stream-auto}
+  - {name: legacy-stats}
+  - {name: legacy-import-default}
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/scale/census_item.py
+  --item {item_path} --item-id {item_id} --split {split} --family {family} --variant {candidate}
+  --scratch {scratch} --manifest /mnt/d/Projects/entrybound/entrybound/research/corpus/manifest.json
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning, validation]
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: correctness, direction: none}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: reason_code, source: stdout_json, key: payload.reason_code, family: correctness, kind: string}
+  - {name: artifact_bytes, source: stdout_json, key: payload.artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: metadata_bytes, source: stdout_json, key: payload.metadata_bytes, family: size, direction: minimize, unit: B}
+  - {name: index_bytes, source: stdout_json, key: payload.index_bytes, family: size, direction: minimize, unit: B}
+  - {name: dictionary_bytes, source: stdout_json, key: payload.dictionary_bytes, family: size, direction: minimize, unit: B}
+  - {name: side_data_bytes, source: stdout_json, key: payload.side_data_bytes, family: size, direction: minimize, unit: B}
+  - {name: metadata_bytes_per_entry, source: stdout_json, key: payload.metadata_bytes_per_entry, family: size, direction: minimize, unit: B/entry}
+  - {name: entry_count, source: stdout_json, key: payload.entry_count, family: other, direction: none, unit: count}
+  - {name: chunk_count, source: stdout_json, key: payload.chunk_count, family: other, direction: none, unit: count}
+  - {name: max_chunk_plaintext_bytes, source: stdout_json, key: payload.max_chunk_plaintext_bytes, family: size, direction: none, unit: B}
+  - {name: declared_window, source: stdout_json, key: payload.declared_window, family: other, direction: none, unit: chunks}
+  - {name: auto_window_minimal, source: stdout_json, key: payload.auto_window_minimal, family: correctness, direction: none}
+  - {name: window0_ok, source: stdout_json, key: payload.window0_ok, family: correctness, direction: none}
+  - {name: retention_bound_bytes, source: stdout_json, key: payload.retention_bound_bytes, family: size, direction: none, unit: B}
+  - {name: declared_working_set_bytes, source: stdout_json, key: payload.declared_working_set_bytes, family: size, direction: none, unit: B}
+  - {name: legacy_archive_count, source: stdout_json, key: payload.legacy_archive_count, family: other, direction: none, unit: count}
+  - {name: legacy_stats_json_sha256, source: stdout_json, key: payload.legacy_stats_json_sha256, family: correctness, kind: string}
+  - {name: legacy_import_refused, source: stdout_json, key: payload.legacy_import_refused, family: other, direction: none, unit: count}
+  - {name: output_sha256, source: stdout_json, key: payload.output_sha256, family: correctness, kind: string}
+  - {name: pack_cpu_s, source: stdout_json, key: payload.pack_cpu_s, family: time_cpu, direction: none, unit: s}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 1303001, bootstrap: 1303002, command: 1303003}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  requires:
+    - /root/eb-research/target/scale-prod/release/ebound
+    - /root/eb-research/target/harness/release/ebr-inspect-bytes
+    - /root/eb-research/venv/bin/python
+    - 7z
+    - zstd
+    - xz
+  poll_interval_s: 1.0
+  timeout_s: 43200
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [artifact_bytes, metadata_bytes_per_entry, declared_window, window0_ok]

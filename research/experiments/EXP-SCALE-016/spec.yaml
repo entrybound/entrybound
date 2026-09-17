@@ -1,0 +1,133 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-016
+status: design-draft
+notes: >
+  BLOCKED: requires HDD, SATA SSD, SMB and NFS storage on a separate host and a bandwidth-limited link (protocol.md). Template validated at design time; storage mount roots come from research/experiments/EXP-SCALE-016/storage-roots.json on the executing host. Design draft until gate G-A.
+question: >
+  How do sequential and identity-passing parallel extraction and verification designs perform across HDD, SATA SSD, SMB, NFS and a bandwidth-limited share?
+hypothesis: >
+  Parallel per-entry extraction is distinguishably slower than sequential on HDD for many-small-file archives; separate CPU and I/O pools are non-inferior to the best fixed setting on every storage class. Falsified by confirmatory verdicts per storage class.
+decision_ids: [DEC-ACC-033, DEC-ACC-034, DEC-ACC-002]
+
+candidates:
+  - {name: hdd-status-quo-serial}
+  - {name: hdd-fixed-default-workers}
+  - {name: hdd-user-flag-w1}
+  - {name: hdd-user-flag-w2}
+  - {name: hdd-user-flag-w4}
+  - {name: hdd-user-flag-w8}
+  - {name: hdd-user-flag-w16}
+  - {name: hdd-io-probe-adaptive}
+  - {name: hdd-separate-cpu-io-pools-io1}
+  - {name: hdd-separate-cpu-io-pools-io2}
+  - {name: hdd-separate-cpu-io-pools-io4}
+  - {name: hdd-inc-ripunzip}
+  - {name: hdd-inc-unzip}
+  - {name: hdd-inc-zstd-tar}
+  - {name: hdd-inc-pigz}
+  - {name: sata-ssd-status-quo-serial}
+  - {name: sata-ssd-fixed-default-workers}
+  - {name: sata-ssd-user-flag-w1}
+  - {name: sata-ssd-user-flag-w2}
+  - {name: sata-ssd-user-flag-w4}
+  - {name: sata-ssd-user-flag-w8}
+  - {name: sata-ssd-user-flag-w16}
+  - {name: sata-ssd-io-probe-adaptive}
+  - {name: sata-ssd-separate-cpu-io-pools-io1}
+  - {name: sata-ssd-separate-cpu-io-pools-io2}
+  - {name: sata-ssd-separate-cpu-io-pools-io4}
+  - {name: sata-ssd-inc-ripunzip}
+  - {name: sata-ssd-inc-unzip}
+  - {name: sata-ssd-inc-zstd-tar}
+  - {name: sata-ssd-inc-pigz}
+  - {name: smb-status-quo-serial}
+  - {name: smb-fixed-default-workers}
+  - {name: smb-user-flag-w1}
+  - {name: smb-user-flag-w2}
+  - {name: smb-user-flag-w4}
+  - {name: smb-user-flag-w8}
+  - {name: smb-user-flag-w16}
+  - {name: smb-io-probe-adaptive}
+  - {name: smb-separate-cpu-io-pools-io1}
+  - {name: smb-separate-cpu-io-pools-io2}
+  - {name: smb-separate-cpu-io-pools-io4}
+  - {name: smb-inc-ripunzip}
+  - {name: smb-inc-unzip}
+  - {name: smb-inc-zstd-tar}
+  - {name: smb-inc-pigz}
+  - {name: nfs-status-quo-serial}
+  - {name: nfs-fixed-default-workers}
+  - {name: nfs-user-flag-w1}
+  - {name: nfs-user-flag-w2}
+  - {name: nfs-user-flag-w4}
+  - {name: nfs-user-flag-w8}
+  - {name: nfs-user-flag-w16}
+  - {name: nfs-io-probe-adaptive}
+  - {name: nfs-separate-cpu-io-pools-io1}
+  - {name: nfs-separate-cpu-io-pools-io2}
+  - {name: nfs-separate-cpu-io-pools-io4}
+  - {name: nfs-inc-ripunzip}
+  - {name: nfs-inc-unzip}
+  - {name: nfs-inc-zstd-tar}
+  - {name: nfs-inc-pigz}
+  - {name: nfs-100mbit-status-quo-serial}
+  - {name: nfs-100mbit-fixed-default-workers}
+  - {name: nfs-100mbit-user-flag-w1}
+  - {name: nfs-100mbit-user-flag-w2}
+  - {name: nfs-100mbit-user-flag-w4}
+  - {name: nfs-100mbit-user-flag-w8}
+  - {name: nfs-100mbit-user-flag-w16}
+  - {name: nfs-100mbit-io-probe-adaptive}
+  - {name: nfs-100mbit-separate-cpu-io-pools-io1}
+  - {name: nfs-100mbit-separate-cpu-io-pools-io2}
+  - {name: nfs-100mbit-separate-cpu-io-pools-io4}
+  - {name: nfs-100mbit-inc-ripunzip}
+  - {name: nfs-100mbit-inc-unzip}
+  - {name: nfs-100mbit-inc-zstd-tar}
+  - {name: nfs-100mbit-inc-pigz}
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/scale/storage_cell.py --candidate {candidate} --item {item_path}
+  --item-id {item_id} --roots /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-SCALE-016/storage-roots.json --seed {seed} --scratch {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F03, F04, F05, F13]
+
+metrics:
+  - {name: decode_wall_s, source: stdout_json, key: payload.decode_wall_s, family: time_wall, direction: minimize, unit: s}
+  - {name: stream_unpack_wall_s, source: stdout_json, key: payload.stream_unpack_wall_s, family: time_wall, direction: minimize, unit: s}
+  - {name: verify_wall_s, source: stdout_json, key: payload.verify_wall_s, family: time_wall, direction: minimize, unit: s}
+  - {name: decode_cpu_s, source: stdout_json, key: payload.decode_cpu_s, family: time_cpu, direction: minimize, unit: s}
+  - {name: fs_write_ops, source: stdout_json, key: payload.fs_write_ops, family: io, direction: minimize, unit: count}
+  - {name: identity_equal_ref, source: stdout_json, key: payload.identity_equal_ref, family: correctness, direction: none}
+  - {name: storage_class, source: stdout_json, key: payload.storage_class, family: other, kind: string}
+
+repetitions: 10
+warmups: 2
+seeds: {order: 1316001, bootstrap: 1316002, command: 1316003}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+guard:
+  max_loadavg_1m: 9.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  min_cpus: 8
+  requires:
+    - /root/eb-research/target/scale-par/release/ebr-par
+    - ripunzip
+    - /root/eb-research/venv/bin/python
+  poll_interval_s: 1.0
+  timeout_s: 14400
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [decode_wall_s, verify_wall_s]

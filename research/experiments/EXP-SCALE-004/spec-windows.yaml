@@ -1,0 +1,74 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-004-WIN
+status: design-draft
+notes: >
+  Windows NTFS arm of EXP-SCALE-004 (sibling rename and ACL divergence, TEMP spill ACLs, kill residue, exclusive create). Design draft until gate G-A.
+question: >
+  What do status-quo staging, extraction failure handling, crash residue, exclusive create, bootstrap
+  limit boundaries, I/O fault codes and non-seekable I/O behaviour cost and produce, compared with
+  incumbent pipelines and a sibling-stage-then-rename emulation?
+hypothesis: >
+  STREAM unpack creates no destination object before full verification (so time to first file grows
+  with size); spill files survive SIGKILL; no interrupted output verifies OK; distinct I/O faults share
+  one reason code; bootstrap caps are enforced only after plaintext-proportional capture. Any single
+  reproducible counterexample falsifies the corresponding part.
+decision_ids: [DEC-ACC-006, DEC-ACC-053, DEC-ACC-055, DEC-INT-039, DEC-PLT-011, DEC-MOD-032, DEC-ACC-022, DEC-ACC-052, DEC-ACC-013]
+
+candidates:
+  - {name: sibling-rename-ntfs}
+  - {name: spill-permissions-windows}
+  - {name: kill-unpack-stream}
+  - {name: exclusive-create}
+command: >-
+  C:/Python313/python.exe D:/Projects/entrybound/entrybound/research/tools/scale/fault_cell.py
+  --experiment EXP-SCALE-004-WIN --cells D:/Projects/entrybound/entrybound/research/experiments/EXP-SCALE-004/cells.json
+  --cell {item_id} --scenario {candidate} --rep {rep} --seed {seed} --scratch {scratch}
+shell: pwsh
+
+corpus:
+  manifest: research/experiments/EXP-SCALE-004/cells-win.jsonl
+  splits: [synthetic]
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: correctness, direction: none}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: reason_code, source: stdout_json, key: payload.reason_code, family: correctness, kind: string}
+  - {name: dest_objects_before_verify, source: stdout_json, key: payload.dest_objects_before_verify, family: correctness, direction: none, unit: count}
+  - {name: verified_ok_partial_outputs, source: stdout_json, key: payload.verified_ok_partial_outputs, family: correctness, direction: none, unit: count}
+  - {name: partial_publish_sets, source: stdout_json, key: payload.partial_publish_sets, family: correctness, direction: none, unit: count}
+  - {name: sentinel_modified, source: stdout_json, key: payload.sentinel_modified, family: correctness, direction: none, unit: count}
+  - {name: stdout_bytes_before_refusal, source: stdout_json, key: payload.stdout_bytes_before_refusal, family: correctness, direction: none, unit: B}
+  - {name: spill_leftover_files, source: stdout_json, key: payload.spill_leftover_files, family: scratch_peak, direction: none, unit: count}
+  - {name: spill_leftover_bytes, source: stdout_json, key: payload.spill_leftover_bytes, family: scratch_peak, direction: none, unit: B}
+  - {name: scratch_write_bytes, source: stdout_json, key: payload.scratch_write_bytes, family: correctness, direction: none, unit: B}
+  - {name: peak_rss_bytes, source: stdout_json, key: payload.peak_rss_bytes, family: memory_peak, direction: none, unit: B}
+  - {name: ttff_s, source: stdout_json, key: payload.ttff_s, family: time_wall, direction: none, unit: s}
+  - {name: op_wall_s, source: stdout_json, key: payload.op_wall_s, family: time_wall, direction: none, unit: s}
+  - {name: extra_write_bytes_vs_direct, source: stdout_json, key: payload.extra_write_bytes_vs_direct, family: io, direction: none, unit: B}
+  - {name: exdev_observed, source: stdout_json, key: payload.exdev_observed, family: other, direction: none}
+  - {name: acl_diff_count, source: stdout_json, key: payload.acl_diff_count, family: other, direction: none, unit: count}
+  - {name: xattr_diff_count, source: stdout_json, key: payload.xattr_diff_count, family: other, direction: none, unit: count}
+  - {name: rename_retries, source: stdout_json, key: payload.rename_retries, family: other, direction: none, unit: count}
+  - {name: spill_mode_octal, source: stdout_json, key: payload.spill_mode_octal, family: other, kind: string}
+  - {name: reason_code_specific, source: stdout_json, key: payload.reason_code_specific, family: other, direction: none}
+  - {name: kills_jsonl_sha256, source: stdout_json, key: payload.kills_jsonl_sha256, family: correctness, kind: string}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 1304001, bootstrap: 1304002, command: 1304003}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [windows]
+  arch: [x86_64, amd64, AMD64]
+  scratch_root: D:/eb-research/scale/scratch
+  requires:
+    - D:/eb-research/target/scale-prod-win/release/ebound.exe
+  poll_interval_s: 1.0
+  timeout_s: 21600
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [dest_objects_before_verify, verified_ok_partial_outputs, spill_leftover_bytes, ttff_s]

@@ -1,0 +1,203 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-012
+status: design-draft
+notes: >
+  Design draft until gate G-A (decision-method.md section 0.4); NEEDS_TOOLING: the binaries named in requires are built by the tooling listed in protocol.md. Each sample runs the design at the named worker count under the schedule seeds and load conditions of its design-matrix cell (protocol.md Replication, matrix.json) and reports conjunctive equality fields; per-schedule rows go to a details file whose SHA-256 is recorded.
+question: >
+  Which parallel designs for hashing, chunk analysis, sketching, candidate evaluation, compression, verification, fetching and queueing reproduce sequential outputs, identities, reports and error selection for every worker count and schedule within a declared queue bound?
+hypothesis: >
+  Ordinal-keyed pools with canonical emission are identical to the sequential reference at every worker count and schedule; intra-file CDC with overlap at least the maximum chunk size reproduces boundaries; reorder buffers stay within their declared bound; collect-in-order does not. One counterexample falsifies each claim.
+decision_ids: [DEC-ACC-030, DEC-ACC-031, DEC-ACC-032, DEC-ACC-033, DEC-ACC-007, DEC-ACC-043, DEC-MOD-013, DEC-CMP-001, DEC-CMP-041]
+
+candidates:
+  - {name: sequential-status-quo}
+  - {name: parallel-chunk-hashing-w1}
+  - {name: parallel-chunk-hashing-w2}
+  - {name: parallel-chunk-hashing-w4}
+  - {name: parallel-chunk-hashing-w8}
+  - {name: parallel-chunk-hashing-w16}
+  - {name: parallel-chunk-hashing-w32}
+  - {name: tree-hash-parallel-w1}
+  - {name: tree-hash-parallel-w2}
+  - {name: tree-hash-parallel-w4}
+  - {name: tree-hash-parallel-w8}
+  - {name: tree-hash-parallel-w16}
+  - {name: tree-hash-parallel-w32}
+  - {name: simd-hash-single-thread-w1}
+  - {name: simd-hash-single-thread-w2}
+  - {name: simd-hash-single-thread-w4}
+  - {name: simd-hash-single-thread-w8}
+  - {name: simd-hash-single-thread-w16}
+  - {name: simd-hash-single-thread-w32}
+  - {name: per-file-parallel-cdc-w1}
+  - {name: per-file-parallel-cdc-w2}
+  - {name: per-file-parallel-cdc-w4}
+  - {name: per-file-parallel-cdc-w8}
+  - {name: per-file-parallel-cdc-w16}
+  - {name: per-file-parallel-cdc-w32}
+  - {name: intra-file-parallel-cdc-w1}
+  - {name: intra-file-parallel-cdc-w2}
+  - {name: intra-file-parallel-cdc-w4}
+  - {name: intra-file-parallel-cdc-w8}
+  - {name: intra-file-parallel-cdc-w16}
+  - {name: intra-file-parallel-cdc-w32}
+  - {name: parallel-sketches-w1}
+  - {name: parallel-sketches-w2}
+  - {name: parallel-sketches-w4}
+  - {name: parallel-sketches-w8}
+  - {name: parallel-sketches-w16}
+  - {name: parallel-sketches-w32}
+  - {name: parallel-candidates-single-thread-codecs-w1}
+  - {name: parallel-candidates-single-thread-codecs-w2}
+  - {name: parallel-candidates-single-thread-codecs-w4}
+  - {name: parallel-candidates-single-thread-codecs-w8}
+  - {name: parallel-candidates-single-thread-codecs-w16}
+  - {name: parallel-candidates-single-thread-codecs-w32}
+  - {name: codec-internal-mt-pinned-w1}
+  - {name: codec-internal-mt-pinned-w2}
+  - {name: codec-internal-mt-pinned-w4}
+  - {name: codec-internal-mt-pinned-w8}
+  - {name: codec-internal-mt-pinned-w16}
+  - {name: codec-internal-mt-pinned-w32}
+  - {name: parallel-final-encode-only-w1}
+  - {name: parallel-final-encode-only-w2}
+  - {name: parallel-final-encode-only-w4}
+  - {name: parallel-final-encode-only-w8}
+  - {name: parallel-final-encode-only-w16}
+  - {name: parallel-final-encode-only-w32}
+  - {name: speculative-pruning-w1}
+  - {name: speculative-pruning-w2}
+  - {name: speculative-pruning-w4}
+  - {name: speculative-pruning-w8}
+  - {name: speculative-pruning-w16}
+  - {name: speculative-pruning-w32}
+  - {name: parallel-independent-chunks-w1}
+  - {name: parallel-independent-chunks-w2}
+  - {name: parallel-independent-chunks-w4}
+  - {name: parallel-independent-chunks-w8}
+  - {name: parallel-independent-chunks-w16}
+  - {name: parallel-independent-chunks-w32}
+  - {name: stream-read-ahead-pipeline-w1}
+  - {name: stream-read-ahead-pipeline-w2}
+  - {name: stream-read-ahead-pipeline-w4}
+  - {name: stream-read-ahead-pipeline-w8}
+  - {name: stream-read-ahead-pipeline-w16}
+  - {name: stream-read-ahead-pipeline-w32}
+  - {name: parallel-entry-extraction-w1}
+  - {name: parallel-entry-extraction-w2}
+  - {name: parallel-entry-extraction-w4}
+  - {name: parallel-entry-extraction-w8}
+  - {name: parallel-entry-extraction-w16}
+  - {name: parallel-entry-extraction-w32}
+  - {name: parallel-closure-decode-w1}
+  - {name: parallel-closure-decode-w2}
+  - {name: parallel-closure-decode-w4}
+  - {name: parallel-closure-decode-w8}
+  - {name: parallel-closure-decode-w16}
+  - {name: parallel-closure-decode-w32}
+  - {name: bounded-mpmc-with-reorder-buffer-w1}
+  - {name: bounded-mpmc-with-reorder-buffer-w2}
+  - {name: bounded-mpmc-with-reorder-buffer-w4}
+  - {name: bounded-mpmc-with-reorder-buffer-w8}
+  - {name: bounded-mpmc-with-reorder-buffer-w16}
+  - {name: bounded-mpmc-with-reorder-buffer-w32}
+  - {name: fork-join-per-object-w1}
+  - {name: fork-join-per-object-w2}
+  - {name: fork-join-per-object-w4}
+  - {name: fork-join-per-object-w8}
+  - {name: fork-join-per-object-w16}
+  - {name: fork-join-per-object-w32}
+  - {name: rayon-style-scoped-w1}
+  - {name: rayon-style-scoped-w2}
+  - {name: rayon-style-scoped-w4}
+  - {name: rayon-style-scoped-w8}
+  - {name: rayon-style-scoped-w16}
+  - {name: rayon-style-scoped-w32}
+  - {name: actor-stages-w1}
+  - {name: actor-stages-w2}
+  - {name: actor-stages-w4}
+  - {name: actor-stages-w8}
+  - {name: actor-stages-w16}
+  - {name: actor-stages-w32}
+  - {name: internal-thread-pools-w1}
+  - {name: internal-thread-pools-w2}
+  - {name: internal-thread-pools-w4}
+  - {name: internal-thread-pools-w8}
+  - {name: internal-thread-pools-w16}
+  - {name: internal-thread-pools-w32}
+  - {name: async-runtime-w1}
+  - {name: async-runtime-w2}
+  - {name: async-runtime-w4}
+  - {name: async-runtime-w8}
+  - {name: async-runtime-w16}
+  - {name: async-runtime-w32}
+  - {name: sans-io-core-sync-async-shells-w1}
+  - {name: sans-io-core-sync-async-shells-w2}
+  - {name: sans-io-core-sync-async-shells-w4}
+  - {name: sans-io-core-sync-async-shells-w8}
+  - {name: sans-io-core-sync-async-shells-w16}
+  - {name: sans-io-core-sync-async-shells-w32}
+  - {name: caller-provided-executor-w1}
+  - {name: caller-provided-executor-w2}
+  - {name: caller-provided-executor-w4}
+  - {name: caller-provided-executor-w8}
+  - {name: caller-provided-executor-w16}
+  - {name: caller-provided-executor-w32}
+  - {name: fixed-n-connections-1}
+  - {name: fixed-n-connections-4}
+  - {name: fixed-n-connections-8}
+  - {name: fixed-n-connections-16}
+command: >-
+  /root/eb-research/target/scale-par/release/ebr-par --candidate {candidate} --item-path {item_path} --item-id {item_id}
+  --matrix /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-SCALE-012/matrix.json --seed {seed} --scratch {scratch}
+  --experiment-id EXP-SCALE-012 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: correctness, direction: none}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: pci_equal_ref, source: stdout_json, key: payload.pci_equal_ref, family: correctness, direction: none}
+  - {name: lai_equal_ref, source: stdout_json, key: payload.lai_equal_ref, family: correctness, direction: none}
+  - {name: pcr_equal_ref, source: stdout_json, key: payload.pcr_equal_ref, family: correctness, direction: none}
+  - {name: aux_equal_ref, source: stdout_json, key: payload.aux_equal_ref, family: correctness, direction: none}
+  - {name: plan_equal_ref, source: stdout_json, key: payload.plan_equal_ref, family: correctness, direction: none}
+  - {name: boundaries_equal_ref, source: stdout_json, key: payload.boundaries_equal_ref, family: correctness, direction: none}
+  - {name: report_equal_ref, source: stdout_json, key: payload.report_equal_ref, family: correctness, direction: none}
+  - {name: first_error_equal_ref, source: stdout_json, key: payload.first_error_equal_ref, family: correctness, direction: none}
+  - {name: queue_peak_bytes, source: stdout_json, key: payload.queue_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: declared_queue_bound_bytes, source: stdout_json, key: payload.declared_queue_bound_bytes, family: memory_peak, direction: none, unit: B}
+  - {name: queue_bound_ok, source: stdout_json, key: payload.queue_bound_ok, family: correctness, direction: none}
+  - {name: alloc_peak_bytes, source: stdout_json, key: payload.alloc_peak_bytes, family: memory_peak, direction: none, unit: B}
+  - {name: decode_path_dependency_count, source: stdout_json, key: payload.decode_path_dependency_count, family: other, direction: minimize, unit: count}
+  - {name: fetch_bytes_equal, source: stdout_json, key: payload.fetch_bytes_equal, family: correctness, direction: none}
+  - {name: fetch_requests_equal, source: stdout_json, key: payload.fetch_requests_equal, family: correctness, direction: none}
+  - {name: trace_order_equal, source: stdout_json, key: payload.trace_order_equal, family: correctness, direction: none}
+  - {name: schedules_checked, source: stdout_json, key: payload.schedules_checked, family: other, direction: none, unit: count}
+  - {name: details_sha256, source: stdout_json, key: payload.details_sha256, family: correctness, kind: string}
+  - {name: op_wall_s, source: stdout_json, key: payload.op_wall_s, family: time_wall, direction: none, unit: s}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 1312001, bootstrap: 1312002, command: 1312003}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  min_cpus: 32
+  requires:
+    - /root/eb-research/target/scale-par/release/ebr-par
+    - /root/eb-research/target/scale-par/release/ebr-origin
+    - /root/eb-research/venv/bin/python
+  poll_interval_s: 1.0
+  timeout_s: 43200
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [pci_equal_ref, report_equal_ref, queue_bound_ok]

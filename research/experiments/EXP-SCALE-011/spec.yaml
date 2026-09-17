@@ -1,0 +1,143 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-011
+status: design-draft
+notes: >
+  Design draft until gate G-A (decision-method.md section 0.4); NEEDS_TOOLING: the binaries named in requires are built by the tooling listed in protocol.md.
+question: >
+  Does compressed output of zstd, xz/LZMA2 and JPEG XL depend on worker counts, single vs multi mode or job size, and does zstd dictionary training change across 1.5.x releases and thread counts?
+hypothesis: >
+  zstd output is invariant across worker counts >= 1 at fixed job size and differs from single-thread mode; xz with fixed block size is invariant for T >= 2; training is invariant across threads but not across all releases. One differing digest in a claimed group falsifies it.
+decision_ids: [DEC-ACC-030, DEC-CMP-021, DEC-MOD-011, DEC-MOD-013]
+
+candidates:
+  - {name: zstd157-l3-st}
+  - {name: zstd157-l19-st}
+  - {name: zstd157-l3-t1}
+  - {name: zstd157-l3-t2}
+  - {name: zstd157-l3-t4}
+  - {name: zstd157-l3-t8}
+  - {name: zstd157-l3-t16}
+  - {name: zstd157-l3-t32}
+  - {name: zstd157-l19-t1}
+  - {name: zstd157-l19-t2}
+  - {name: zstd157-l19-t4}
+  - {name: zstd157-l19-t8}
+  - {name: zstd157-l19-t16}
+  - {name: zstd157-l19-t32}
+  - {name: zstd157-l3-t1-b64m}
+  - {name: zstd157-l3-t2-b64m}
+  - {name: zstd157-l3-t4-b64m}
+  - {name: zstd157-l3-t8-b64m}
+  - {name: zstd157-l3-t16-b64m}
+  - {name: zstd157-l3-t32-b64m}
+  - {name: zstd157-l19-t1-b64m}
+  - {name: zstd157-l19-t2-b64m}
+  - {name: zstd157-l19-t4-b64m}
+  - {name: zstd157-l19-t8-b64m}
+  - {name: zstd157-l19-t16-b64m}
+  - {name: zstd157-l19-t32-b64m}
+  - {name: xz581-t1}
+  - {name: xz581-t1-bs16m}
+  - {name: xz581-t2-bs16m}
+  - {name: xz581-t4-bs16m}
+  - {name: xz581-t8-bs16m}
+  - {name: xz581-t16-bs16m}
+  - {name: xz581-t32-bs16m}
+  - {name: train-150-cover-t1}
+  - {name: train-150-cover-t8}
+  - {name: train-150-cover-t32}
+  - {name: train-150-fastcover-t1}
+  - {name: train-150-fastcover-t8}
+  - {name: train-150-fastcover-t32}
+  - {name: train-152-cover-t1}
+  - {name: train-152-cover-t8}
+  - {name: train-152-cover-t32}
+  - {name: train-152-fastcover-t1}
+  - {name: train-152-fastcover-t8}
+  - {name: train-152-fastcover-t32}
+  - {name: train-154-cover-t1}
+  - {name: train-154-cover-t8}
+  - {name: train-154-cover-t32}
+  - {name: train-154-fastcover-t1}
+  - {name: train-154-fastcover-t8}
+  - {name: train-154-fastcover-t32}
+  - {name: train-155-cover-t1}
+  - {name: train-155-cover-t8}
+  - {name: train-155-cover-t32}
+  - {name: train-155-fastcover-t1}
+  - {name: train-155-fastcover-t8}
+  - {name: train-155-fastcover-t32}
+  - {name: train-156-cover-t1}
+  - {name: train-156-cover-t8}
+  - {name: train-156-cover-t32}
+  - {name: train-156-fastcover-t1}
+  - {name: train-156-fastcover-t8}
+  - {name: train-156-fastcover-t32}
+  - {name: train-157-cover-t1}
+  - {name: train-157-cover-t8}
+  - {name: train-157-cover-t32}
+  - {name: train-157-fastcover-t1}
+  - {name: train-157-fastcover-t8}
+  - {name: train-157-fastcover-t32}
+  - {name: crate-zstd-workers-0}
+  - {name: crate-zstd-workers-1}
+  - {name: crate-zstd-workers-2}
+  - {name: crate-zstd-workers-4}
+  - {name: crate-zstd-workers-8}
+  - {name: crate-zstd-workers-16}
+  - {name: crate-zstd-workers-32}
+  - {name: crate-zstd-dict-t1}
+  - {name: crate-zstd-dict-t8}
+  - {name: crate-zstd-dict-t32}
+  - {name: crate-lzma2-threads-1}
+  - {name: crate-lzma2-threads-8}
+  - {name: crate-lzma2-threads-32}
+  - {name: crate-jxl-threads-1}
+  - {name: crate-jxl-threads-8}
+  - {name: crate-jxl-threads-32}
+  - {name: sys-zstd155-t1}
+  - {name: sys-zstd155-t8}
+  - {name: sys-zstd155-t32}
+  - {name: stress-zstd157-l19-t32-b64m}
+  - {name: stress-xz581-t32-bs16m}
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/scale/codec_invariance.py run
+  --candidate {candidate} --item {item_path} --item-id {item_id} --family {family} --seed {seed} --scratch {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  families: [F01, F03, F05, F06, F07, F09, F10, F12, F17]
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: correctness, direction: none}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: output_sha256, source: stdout_json, key: payload.output_sha256, family: correctness, kind: string}
+  - {name: dict_sha256, source: stdout_json, key: payload.dict_sha256, family: correctness, kind: string}
+  - {name: output_bytes, source: stdout_json, key: payload.output_bytes, family: size, direction: none, unit: B}
+  - {name: distinct_outputs_in_group, source: stdout_json, key: payload.distinct_outputs_in_group, family: correctness, direction: none, unit: count}
+  - {name: threads_exposed, source: stdout_json, key: payload.threads_exposed, family: correctness, direction: none}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 1311001, bootstrap: 1311002, command: 1311003}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  min_cpus: 32
+  requires:
+    - /root/eb-research/tools/zstd-1.5.7/bin/zstd
+    - /root/eb-research/tools/xz-5.8.1/bin/xz
+    - /root/eb-research/target/scale-codec-mt/release/ebr-codec
+    - /root/eb-research/venv/bin/python
+  poll_interval_s: 1.0
+  timeout_s: 43200
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [distinct_outputs_in_group, output_bytes]

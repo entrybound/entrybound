@@ -1,0 +1,80 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-005-WIN
+status: design-draft
+notes: >
+  Windows NTFS arm (small items copied with robocopy /COPY:DT /DCOPY:T). Design draft until gate G-A. Driver: research/tools/scale/det_cell.py.
+question: >
+  Is the single-threaded production writer's output (PCI bytes and LAI/PCR/AUX) invariant under CPU
+  availability, memory limit, TMPDIR, locale/time zone, creation order, background load, toolchain and
+  host, are encrypted packs identity-stable with differing ciphertext, and do repack round trips and
+  same-profile replans reproduce identities and bytes?
+hypothesis: >
+  Within one host class PCI and LAI never differ across variations; across hosts LAI and PCR agree and
+  AUX differences are explained by FidelityReport; encrypted packs share LAI and AUX with different
+  ciphertext; repack round trips and same-profile replans reproduce PCR and PCI. One two-output
+  counterexample falsifies the corresponding claim.
+decision_ids: [DEC-MOD-011, DEC-MOD-012, DEC-MOD-013, DEC-CMP-019, DEC-CMP-021, DEC-CMP-041, DEC-INT-046]
+
+candidates:
+  - {name: base-bi}
+  - {name: base-di}
+  - {name: base-bs}
+  - {name: aff1-bi}
+  - {name: aff1-di}
+  - {name: aff1-bs}
+  - {name: toolchain-1971-bi}
+  - {name: toolchain-1971-di}
+  - {name: toolchain-1971-bs}
+  - {name: stress20-bi}
+  - {name: stress20-di}
+command: >-
+  C:/Python313/python.exe D:/Projects/entrybound/entrybound/research/tools/scale/det_cell.py
+  --item {item_path} --item-id {item_id} --candidate {candidate} --rep {rep} --seed {seed}
+  --scratch {scratch} --manifest D:/Projects/entrybound/entrybound/research/corpus/manifest.json --host windows
+shell: pwsh
+
+corpus:
+  manifest: research/experiments/EXP-SCALE-005/items-win.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: correctness, direction: none}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: reason_code, source: stdout_json, key: payload.reason_code, family: correctness, kind: string}
+  - {name: output_sha256, source: stdout_json, key: payload.output_sha256, family: correctness, kind: string}
+  - {name: lai, source: stdout_json, key: payload.lai, family: correctness, kind: string}
+  - {name: pcr, source: stdout_json, key: payload.pcr, family: correctness, kind: string}
+  - {name: aux, source: stdout_json, key: payload.aux, family: correctness, kind: string}
+  - {name: pci, source: stdout_json, key: payload.pci, family: correctness, kind: string}
+  - {name: distinct_pci, source: stdout_json, key: payload.distinct_pci, family: correctness, direction: none, unit: count}
+  - {name: distinct_lai, source: stdout_json, key: payload.distinct_lai, family: correctness, direction: none, unit: count}
+  - {name: repack_pci_equal_direct, source: stdout_json, key: payload.repack_pci_equal_direct, family: correctness, direction: none}
+  - {name: repack_lai_pcr_aux_equal, source: stdout_json, key: payload.repack_lai_pcr_aux_equal, family: correctness, direction: none}
+  - {name: replan_pcr_equal, source: stdout_json, key: payload.replan_pcr_equal, family: correctness, direction: none}
+  - {name: replan_pci_equal, source: stdout_json, key: payload.replan_pci_equal, family: correctness, direction: none}
+  - {name: enc_lai_equal, source: stdout_json, key: payload.enc_lai_equal, family: correctness, direction: none}
+  - {name: enc_aux_equal, source: stdout_json, key: payload.enc_aux_equal, family: correctness, direction: none}
+  - {name: enc_pcr_equal, source: stdout_json, key: payload.enc_pcr_equal, family: correctness, direction: none}
+  - {name: enc_ciphertext_differs, source: stdout_json, key: payload.enc_ciphertext_differs, family: correctness, direction: none}
+  - {name: replan_wall_s, source: stdout_json, key: payload.replan_wall_s, family: time_wall, direction: none, unit: s}
+  - {name: replan_peak_rss_bytes, source: stdout_json, key: payload.replan_peak_rss_bytes, family: memory_peak, direction: none, unit: B}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 1305101, bootstrap: 1305102, command: 1305103}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [windows]
+  scratch_root: D:/eb-research/scale/scratch
+  requires:
+    - D:/eb-research/target/scale-prod-win/release/ebound.exe
+    - D:/eb-research/target/scale-prod-win-1971/release/ebound.exe
+  poll_interval_s: 1.0
+  timeout_s: 21600
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [distinct_pci, pcr]

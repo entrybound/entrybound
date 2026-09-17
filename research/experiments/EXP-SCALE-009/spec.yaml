@@ -1,0 +1,93 @@
+schema: ebr.spec.v1
+experiment_id: EXP-SCALE-009
+status: design-draft
+notes: >
+  Design draft until gate G-A (decision-method.md section 0.4); NEEDS_TOOLING: the binaries named in requires are built by the tooling listed in protocol.md. Phase M over the EXP-SCALE-002 generated cells; phase T (spec-timing.yaml) generated before it runs.
+question: >
+  Which legacy import, export, publish and ZIP64 emission designs bound memory for inputs larger than RAM while preserving identities, frozen export bytes, declared-loss records and publish atomicity?
+hypothesis: >
+  Streaming decode with spill preserves LAI/AUX; per-entry-buffered ZIP export is byte-identical to zip/portable-v1; aggregated evidence cuts per-entry metadata bytes beyond the T2 minimum gain; streamed publish stays all-or-nothing under kills.
+decision_ids: [DEC-ACC-013, DEC-ACC-017, DEC-LEG-002, DEC-LEG-019, DEC-LEG-022, DEC-LEG-030, DEC-LEG-059, DEC-LEG-108]
+
+candidates:
+  - {name: sq-import}
+  - {name: streaming-decode-spill}
+  - {name: compact-lom-evidence}
+  - {name: import-to-stream-producer}
+  - {name: declared-ceilings}
+  - {name: exclude-structural-absence}
+  - {name: aggregate-resolutions}
+  - {name: external-evidence-object}
+  - {name: add-provenance-byte-bound}
+  - {name: derive-observation-cap}
+  - {name: count-shared-observations}
+  - {name: sq-file-only}
+  - {name: buffer-stdin-under-budget}
+  - {name: stream-tar-only}
+  - {name: spool-to-temp}
+  - {name: sq-export}
+  - {name: streaming-export-sink}
+  - {name: sequential-target-preflight}
+  - {name: streamed-strict-reimport}
+  - {name: source-derived-limits}
+  - {name: typed-target-limit-issue}
+  - {name: skip-reimport-above-threshold}
+  - {name: sq-in-memory-as-needed}
+  - {name: per-entry-buffered-as-needed}
+  - {name: temp-file-staging-as-needed}
+  - {name: always-zip64-streaming-profile}
+  - {name: never-zip64-refuse-before-write}
+  - {name: as-needed-fail-late}
+  - {name: refuse-non-seekable-large-zip}
+  - {name: inc-bsdtar}
+  - {name: inc-7z}
+command: >-
+  /root/eb-research/target/scale-alloc/release/ebr-scale-legacy --design {candidate} --cell {item_id}
+  --cells /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-SCALE-002/cells.json --scratch {scratch}
+  --seed {seed} --experiment-id EXP-SCALE-009 --env-name wsl-ubuntu
+shell: bash
+
+corpus:
+  manifest: research/experiments/EXP-SCALE-002/cells.jsonl
+  splits: [synthetic]
+
+metrics:
+  - {name: applicable, source: stdout_json, key: payload.applicable, family: correctness, direction: none}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: reason_code, source: stdout_json, key: payload.reason_code, family: correctness, kind: string}
+  - {name: alloc_peak_bytes, source: stdout_json, key: payload.alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: peak_rss_bytes, source: stdout_json, key: payload.peak_rss_bytes, family: memory_peak, direction: none, unit: B}
+  - {name: scratch_write_bytes, source: stdout_json, key: payload.scratch_write_bytes, family: correctness, direction: none, unit: B}
+  - {name: scratch_peak_bytes, source: stdout_json, key: payload.scratch_peak_bytes, family: scratch_peak, direction: minimize, unit: B}
+  - {name: side_data_bytes, source: stdout_json, key: payload.side_data_bytes, family: size, direction: minimize, unit: B}
+  - {name: metadata_bytes_per_entry, source: stdout_json, key: payload.metadata_bytes_per_entry, family: size, direction: minimize, unit: B/entry}
+  - {name: identity_lai_equal, source: stdout_json, key: payload.identity_lai_equal, family: correctness, direction: none}
+  - {name: identity_aux_equal, source: stdout_json, key: payload.identity_aux_equal, family: correctness, direction: none}
+  - {name: export_bytes_equal_profile, source: stdout_json, key: payload.export_bytes_equal_profile, family: correctness, direction: none}
+  - {name: import_ok, source: stdout_json, key: payload.import_ok, family: correctness, direction: none}
+  - {name: export_reimport_ok, source: stdout_json, key: payload.export_reimport_ok, family: correctness, direction: none}
+  - {name: partial_publish_sets, source: stdout_json, key: payload.partial_publish_sets, family: correctness, direction: none, unit: count}
+  - {name: op_wall_s, source: stdout_json, key: payload.op_wall_s, family: time_wall, direction: none, unit: s}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 1309001, bootstrap: 1309002, command: 1309003}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  min_cpus: 4
+  requires:
+    - /root/eb-research/target/scale-alloc/release/ebr-scale-legacy
+    - /root/eb-research/target/scale-prod/release/ebound
+    - 7z
+    - bsdtar
+  poll_interval_s: 1.0
+  timeout_s: 43200
+
+analysis:
+  pairing: item_repetition
+  report_metrics: [alloc_peak_bytes, export_bytes_equal_profile, side_data_bytes]
