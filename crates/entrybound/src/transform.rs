@@ -446,6 +446,93 @@ fn length_mismatch(identifier: &str) -> Diagnostic {
     )
 }
 
+/// Read-only research access to the transform registry and pipelines.
+///
+/// Every function forwards to the private production function of the same name.
+#[cfg(feature = "research-internals")]
+pub mod research {
+    use std::collections::BTreeMap;
+
+    use crate::diagnostics::Result;
+    use crate::eam::{Digest, ReconstructionData, TransformStep};
+
+    pub const DELTA8_ID: &str = super::DELTA8_ID;
+    pub const BYTE_SHUFFLE_ID: &str = super::BYTE_SHUFFLE_ID;
+
+    #[must_use]
+    pub fn delta8_step() -> TransformStep {
+        super::delta8_step()
+    }
+
+    pub fn byte_shuffle_step(width: u8) -> Result<TransformStep> {
+        super::byte_shuffle_step(width)
+    }
+
+    pub fn deflate_reconstruct_step(
+        max_chain_length: u32,
+        reconstruction_ref: Digest,
+    ) -> Result<TransformStep> {
+        super::deflate_reconstruct_step(max_chain_length, reconstruction_ref)
+    }
+
+    pub fn jpeg_reconstruct_step() -> Result<TransformStep> {
+        super::jpeg_reconstruct_step()
+    }
+
+    pub fn validate_pipeline(steps: &[TransformStep]) -> Result<()> {
+        super::validate_pipeline(steps)
+    }
+
+    pub fn required_features(steps: &[TransformStep]) -> Result<u64> {
+        super::required_features(steps)
+    }
+
+    pub fn forward_pipeline(steps: &[TransformStep], plaintext: &[u8]) -> Result<Vec<u8>> {
+        super::forward_pipeline(steps, plaintext)
+    }
+
+    pub fn forward_pipeline_with_reconstruction(
+        steps: &[TransformStep],
+        plaintext: &[u8],
+        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
+    ) -> Result<Vec<u8>> {
+        super::forward_pipeline_with_reconstruction(steps, plaintext, reconstruction_data)
+    }
+
+    pub fn inverse_pipeline(steps: &[TransformStep], encoded: &[u8]) -> Result<Vec<u8>> {
+        super::inverse_pipeline(steps, encoded)
+    }
+
+    pub fn inverse_pipeline_with_reconstruction(
+        steps: &[TransformStep],
+        encoded: &[u8],
+        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
+    ) -> Result<Vec<u8>> {
+        super::inverse_pipeline_with_reconstruction(steps, encoded, reconstruction_data)
+    }
+
+    pub fn intermediate_len(
+        steps: &[TransformStep],
+        logical_len: u64,
+        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
+    ) -> Result<u64> {
+        super::intermediate_len(steps, logical_len, reconstruction_data)
+    }
+
+    #[must_use]
+    pub fn display_step(step: &TransformStep) -> String {
+        super::display_step(step)
+    }
+
+    pub fn is_reconstructive(step: &TransformStep) -> Result<bool> {
+        super::is_reconstructive(step)
+    }
+
+    pub fn is_whole_object_reconstructive(step: &TransformStep) -> Result<bool> {
+        super::is_whole_object_reconstructive(step)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

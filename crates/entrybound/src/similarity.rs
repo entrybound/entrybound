@@ -249,6 +249,42 @@ fn cohort_id(leader: Digest, policy: SimilarityPolicy) -> Digest {
     sha256_exact(&input)
 }
 
+/// Read-only research access to the similarity sketch internals.
+///
+/// Every function forwards to the private production function of the same name.
+#[cfg(feature = "research-internals")]
+pub mod research {
+    use crate::eam::Digest;
+
+    use super::SimilarityPolicy;
+
+    pub const SHINGLE_BYTES: usize = super::SHINGLE_BYTES;
+    pub const SHINGLE_STRIDE: usize = super::SHINGLE_STRIDE;
+    pub const MAX_SCANNED_SHINGLES: usize = super::MAX_SCANNED_SHINGLES;
+
+    /// Bottom-k sketch items (ascending FNV-1a shingle hashes) for `bytes`.
+    #[must_use]
+    pub fn fingerprint(bytes: &[u8], sketch_items: usize) -> Box<[u64]> {
+        super::fingerprint(bytes, sketch_items).items
+    }
+
+    /// Shared items between two ascending sketches.
+    #[must_use]
+    pub fn intersection_count(left: &[u64], right: &[u64]) -> usize {
+        super::intersection_count(left, right)
+    }
+
+    #[must_use]
+    pub fn fnv1a(bytes: &[u8]) -> u64 {
+        super::fnv1a(bytes)
+    }
+
+    #[must_use]
+    pub fn cohort_id(leader: Digest, policy: SimilarityPolicy) -> Digest {
+        super::cohort_id(leader, policy)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

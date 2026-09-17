@@ -1224,6 +1224,219 @@ fn decompression(detail: impl Into<String>) -> Diagnostic {
     )
 }
 
+/// Read-only research access to the operational codec registry.
+///
+/// Every function forwards to the private production function of the same name
+/// without altering arguments or results.
+#[cfg(feature = "research-internals")]
+pub mod research {
+    use std::collections::BTreeMap;
+
+    use crate::diagnostics::Result;
+    use crate::eam::{
+        ChunkGroup, DecodeRequirements, Dictionary, Digest, ReconstructionData, TransformPlan,
+        TransformStep,
+    };
+
+    pub const ZSTD_CODEC_IDENTIFIER: &str = super::ZSTD_CODEC_IDENTIFIER;
+    pub const LZ4_CODEC_IDENTIFIER: &str = super::LZ4_CODEC_IDENTIFIER;
+    pub const LZMA2_CODEC_IDENTIFIER: &str = super::LZMA2_CODEC_IDENTIFIER;
+    pub const ZSTD_WINDOW_LOG: u8 = super::ZSTD_WINDOW_LOG;
+    pub const ZSTD_WINDOW_BYTES: u64 = super::ZSTD_WINDOW_BYTES;
+    pub const ZSTD_WORKING_SET_BYTES: u64 = super::ZSTD_WORKING_SET_BYTES;
+    pub const SUPPORTED_LEVELS: [i32; 7] = super::SUPPORTED_LEVELS;
+    pub const SUPPORTED_LOOKBACKS: [u32; 4] = super::SUPPORTED_LOOKBACKS;
+    pub const SUPPORTED_LZMA2_CONFIGURATIONS: [(u8, u32); 3] =
+        super::SUPPORTED_LZMA2_CONFIGURATIONS;
+    pub const ZSTD_DICTIONARY_FORMAT: &str = super::ZSTD_DICTIONARY_FORMAT;
+    pub const ZSTD_DICTIONARY_CONSTRUCTION_PREFIX: &str =
+        super::ZSTD_DICTIONARY_CONSTRUCTION_PREFIX;
+    pub const SUPPORTED_DICTIONARY_CONSTRUCTIONS: [&str; 9] =
+        super::SUPPORTED_DICTIONARY_CONSTRUCTIONS;
+
+    /// Public mirror of the private codec dependency mode.
+    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+    pub enum PlanMode {
+        Independent,
+        Dictionary(Digest),
+        Prefix { lookback: u32 },
+    }
+
+    impl From<super::PlanMode> for PlanMode {
+        fn from(value: super::PlanMode) -> Self {
+            match value {
+                super::PlanMode::Independent => Self::Independent,
+                super::PlanMode::Dictionary(dictionary_id) => Self::Dictionary(dictionary_id),
+                super::PlanMode::Prefix { lookback } => Self::Prefix { lookback },
+            }
+        }
+    }
+
+    #[must_use]
+    pub fn store_plan() -> TransformPlan {
+        super::store_plan()
+    }
+
+    pub fn zstd_plan(level: i32) -> Result<TransformPlan> {
+        super::zstd_plan(level)
+    }
+
+    pub fn zstd_dictionary_plan(level: i32, dictionary_id: Digest) -> Result<TransformPlan> {
+        super::zstd_dictionary_plan(level, dictionary_id)
+    }
+
+    pub fn zstd_prefix_plan(level: i32, lookback: u32) -> Result<TransformPlan> {
+        super::zstd_prefix_plan(level, lookback)
+    }
+
+    pub fn zstd_transformed_plan(
+        level: i32,
+        transforms: Box<[TransformStep]>,
+    ) -> Result<TransformPlan> {
+        super::zstd_transformed_plan(level, transforms)
+    }
+
+    pub fn lz4_plan(transforms: Box<[TransformStep]>) -> Result<TransformPlan> {
+        super::lz4_plan(transforms)
+    }
+
+    pub fn lzma2_plan(
+        preset: u8,
+        dictionary_bytes: u32,
+        transforms: Box<[TransformStep]>,
+    ) -> Result<TransformPlan> {
+        super::lzma2_plan(preset, dictionary_bytes, transforms)
+    }
+
+    pub fn with_pipeline(
+        base: TransformPlan,
+        transforms: Box<[TransformStep]>,
+    ) -> Result<TransformPlan> {
+        super::with_pipeline(base, transforms)
+    }
+
+    pub fn without_transforms(plan: &TransformPlan) -> Result<TransformPlan> {
+        super::without_transforms(plan)
+    }
+
+    pub fn validate_plans(plans: &[TransformPlan]) -> Result<()> {
+        super::validate_plans(plans)
+    }
+
+    pub fn validate_plan(plan: &TransformPlan) -> Result<()> {
+        super::validate_plan(plan)
+    }
+
+    pub fn required_features(plan: &TransformPlan) -> Result<u64> {
+        super::required_features(plan)
+    }
+
+    pub fn plan_mode(plan: &TransformPlan) -> Result<PlanMode> {
+        super::plan_mode(plan).map(PlanMode::from)
+    }
+
+    #[must_use]
+    pub fn aggregate_decode_requirements(plans: &[TransformPlan]) -> DecodeRequirements {
+        super::aggregate_decode_requirements(plans)
+    }
+
+    pub fn aggregate_archive_decode_requirements(
+        plans: &[TransformPlan],
+        dictionaries: &BTreeMap<Digest, Dictionary>,
+        groups: &BTreeMap<Digest, ChunkGroup>,
+    ) -> Result<DecodeRequirements> {
+        super::aggregate_archive_decode_requirements(plans, dictionaries, groups)
+    }
+
+    #[must_use]
+    pub const fn zstd_decode_requirements() -> DecodeRequirements {
+        super::zstd_decode_requirements()
+    }
+
+    pub fn encode_payload(plan: &TransformPlan, plaintext: &[u8]) -> Result<Vec<u8>> {
+        super::encode_payload(plan, plaintext)
+    }
+
+    pub fn encode_transformed_payload(plan: &TransformPlan, transformed: &[u8]) -> Result<Vec<u8>> {
+        super::encode_transformed_payload(plan, transformed)
+    }
+
+    pub fn encode_payload_with_dictionary(
+        plan: &TransformPlan,
+        plaintext: &[u8],
+        dictionary: &Dictionary,
+    ) -> Result<Vec<u8>> {
+        super::encode_payload_with_dictionary(plan, plaintext, dictionary)
+    }
+
+    pub fn encode_payload_with_prefix(
+        plan: &TransformPlan,
+        plaintext: &[u8],
+        prefix: &[u8],
+    ) -> Result<Vec<u8>> {
+        super::encode_payload_with_prefix(plan, plaintext, prefix)
+    }
+
+    pub fn encode_payload_with_reconstruction(
+        plan: &TransformPlan,
+        plaintext: &[u8],
+        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
+    ) -> Result<Vec<u8>> {
+        super::encode_payload_with_reconstruction(plan, plaintext, reconstruction_data)
+    }
+
+    pub fn decode_payload(
+        plan: &TransformPlan,
+        stored: &[u8],
+        logical_len: u64,
+    ) -> Result<Vec<u8>> {
+        super::decode_payload(plan, stored, logical_len)
+    }
+
+    pub fn decode_transformed_payload(
+        plan: &TransformPlan,
+        stored: &[u8],
+        transformed_len: u64,
+    ) -> Result<Vec<u8>> {
+        super::decode_transformed_payload(plan, stored, transformed_len)
+    }
+
+    pub fn decode_payload_with_dictionary(
+        plan: &TransformPlan,
+        stored: &[u8],
+        logical_len: u64,
+        dictionary: &Dictionary,
+    ) -> Result<Vec<u8>> {
+        super::decode_payload_with_dictionary(plan, stored, logical_len, dictionary)
+    }
+
+    pub fn decode_payload_with_prefix(
+        plan: &TransformPlan,
+        stored: &[u8],
+        logical_len: u64,
+        prefix: &[u8],
+    ) -> Result<Vec<u8>> {
+        super::decode_payload_with_prefix(plan, stored, logical_len, prefix)
+    }
+
+    pub fn decode_payload_with_reconstruction(
+        plan: &TransformPlan,
+        stored: &[u8],
+        logical_len: u64,
+        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
+    ) -> Result<Vec<u8>> {
+        super::decode_payload_with_reconstruction(plan, stored, logical_len, reconstruction_data)
+    }
+
+    pub fn validate_dictionary(dictionary: &Dictionary) -> Result<()> {
+        super::validate_dictionary(dictionary)
+    }
+
+    pub fn train_dictionary(samples: &[&[u8]], maximum_size: usize) -> Result<Vec<u8>> {
+        super::train_dictionary(samples, maximum_size)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

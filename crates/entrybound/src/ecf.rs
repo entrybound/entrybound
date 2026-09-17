@@ -261,6 +261,125 @@ impl Default for BootstrapCapabilities {
     }
 }
 
+/// Read-only research access to the exact record-length helpers used by the
+/// planner cost model, lookback prefix construction, and Chunk frame parsing.
+///
+/// Every function forwards to the private production function of the same name.
+#[cfg(feature = "research-internals")]
+pub mod research {
+    use std::collections::BTreeMap;
+
+    use crate::diagnostics::Result;
+    use crate::eam::{
+        ChunkGroup, ConversionProvenance, Dictionary, Digest, LegacyPreservation,
+        ReconstructionData, ReconstructionRegion, TransformPlan,
+    };
+
+    pub fn encoded_transform_plan_len(plan: &TransformPlan) -> Result<u64> {
+        super::encoded_transform_plan_len(plan)
+    }
+
+    pub fn encoded_transform_plan_v2_len(plan: &TransformPlan) -> Result<u64> {
+        super::encoded_transform_plan_v2_len(plan)
+    }
+
+    pub fn encoded_transform_plan_v3_len(plan: &TransformPlan) -> Result<u64> {
+        super::encoded_transform_plan_v3_len(plan)
+    }
+
+    pub fn encoded_reconstruction_region_len(region: &ReconstructionRegion) -> Result<u64> {
+        super::encoded_reconstruction_region_len(region)
+    }
+
+    pub fn encoded_reconstruction_data_len(value: &ReconstructionData) -> Result<u64> {
+        super::encoded_reconstruction_data_len(value)
+    }
+
+    pub fn encoded_dictionary_len(dictionary: &Dictionary) -> Result<u64> {
+        super::encoded_dictionary_len(dictionary)
+    }
+
+    pub fn encoded_chunk_group_len(group: &ChunkGroup) -> Result<u64> {
+        super::encoded_chunk_group_len(group)
+    }
+
+    pub fn encoded_legacy_evidence_len(
+        conversion: &ConversionProvenance,
+        preservation: Option<&LegacyPreservation>,
+    ) -> Result<u64> {
+        super::encoded_legacy_evidence_len(conversion, preservation)
+    }
+
+    /// Bounded-lookback prefix built from already decoded preceding group members.
+    pub fn physical_prefix_from_slices(history: &[&[u8]], lookback: u32) -> Result<Vec<u8>> {
+        super::container::physical_prefix_from_slices(history, lookback)
+    }
+
+    /// Chunk frame header width: 96 bytes when the cross-file feature is set, else 64.
+    #[must_use]
+    pub const fn chunk_frame_header_len(extended: bool) -> u64 {
+        super::container::chunk_frame_header_len(extended)
+    }
+
+    /// Public mirror of the authoritative fields one Chunk frame header declares.
+    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+    pub struct ChunkFrameHeader {
+        pub stored_len: u64,
+        pub chunk_id: Digest,
+        pub logical_len: u64,
+        pub plan_ref: u64,
+        pub group_ref: Option<Digest>,
+        pub region_owned: bool,
+    }
+
+    /// Parses one Chunk frame header. Unlike the internal parser, which relies on
+    /// callers to pass a complete header, this refuses a short slice.
+    pub fn parse_chunk_frame_header(
+        header: &[u8],
+        extended: bool,
+        whole_object: bool,
+    ) -> Result<ChunkFrameHeader> {
+        let required = usize::try_from(chunk_frame_header_len(extended)).unwrap_or(usize::MAX);
+        if header.len() < required {
+            return Err(super::container::structure(
+                "Chunk frame header is truncated",
+            ));
+        }
+        let parsed = super::container::parse_chunk_frame_header(
+            &header[..required],
+            extended,
+            whole_object,
+        )?;
+        Ok(ChunkFrameHeader {
+            stored_len: parsed.stored_len,
+            chunk_id: parsed.chunk_id,
+            logical_len: parsed.logical_len,
+            plan_ref: parsed.plan_ref,
+            group_ref: parsed.group_ref,
+            region_owned: parsed.region_owned,
+        })
+    }
+
+    /// The single frame-payload decode authority shared by both layouts.
+    pub fn decode_frame_payload(
+        plan: &TransformPlan,
+        stored: &[u8],
+        logical_len: u64,
+        dictionaries: &BTreeMap<Digest, Dictionary>,
+        reconstruction_data: &BTreeMap<Digest, ReconstructionData>,
+        prefix: Option<&[u8]>,
+    ) -> Result<Vec<u8>> {
+        super::container::decode_frame_payload(
+            plan,
+            stored,
+            logical_len,
+            dictionaries,
+            reconstruction_data,
+            prefix,
+        )
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::{

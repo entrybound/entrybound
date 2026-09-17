@@ -240,6 +240,78 @@ fn resource(detail: impl Into<String>) -> Diagnostic {
     )
 }
 
+/// Read-only research access to bounded JPEG/JPEG XL whole-object reconstruction.
+///
+/// Every function forwards to the private production function of the same name.
+#[cfg(feature = "research-internals")]
+pub mod research {
+    use crate::diagnostics::Result;
+    use crate::eam::{Digest, ReconstructionRegion};
+
+    pub const JPEG_RECONSTRUCT_ID: &str = super::JPEG_RECONSTRUCT_ID;
+    pub const JPEG_RECONSTRUCT_PARAMETERS: &[u8] = super::JPEG_RECONSTRUCT_PARAMETERS;
+    pub const MAX_JPEG_BYTES: usize = super::MAX_JPEG_BYTES;
+    pub const MAX_JXL_BYTES: usize = super::MAX_JXL_BYTES;
+    pub const MAX_JPEG_PIXELS: u64 = super::MAX_JPEG_PIXELS;
+    pub const JPEG_WORKING_SET_BYTES: u64 = super::JPEG_WORKING_SET_BYTES;
+    pub const MAX_REGION_CHUNKS: u64 = super::MAX_REGION_CHUNKS;
+    pub const MAX_REGION_EXPANSION_RATIO: u64 = super::MAX_REGION_EXPANSION_RATIO;
+    pub const REGION_MEMBER_PLAN_REF: u64 = super::REGION_MEMBER_PLAN_REF;
+
+    /// Public mirror of the private verified JPEG XL representation.
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    pub struct VerifiedJpegRepresentation {
+        pub bytes: Vec<u8>,
+        pub width: u32,
+        pub height: u32,
+    }
+
+    /// Public mirror of the private JPEG attempt failure classes.
+    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+    pub enum JpegAttemptFailure {
+        NotRecognized,
+        Unsupported,
+        VerificationFailed,
+        ResourceExcluded,
+    }
+
+    impl From<super::JpegAttemptFailure> for JpegAttemptFailure {
+        fn from(value: super::JpegAttemptFailure) -> Self {
+            match value {
+                super::JpegAttemptFailure::NotRecognized => Self::NotRecognized,
+                super::JpegAttemptFailure::Unsupported => Self::Unsupported,
+                super::JpegAttemptFailure::VerificationFailed => Self::VerificationFailed,
+                super::JpegAttemptFailure::ResourceExcluded => Self::ResourceExcluded,
+            }
+        }
+    }
+
+    pub fn verified_forward(
+        original: &[u8],
+    ) -> std::result::Result<VerifiedJpegRepresentation, JpegAttemptFailure> {
+        super::verified_forward(original)
+            .map(|verified| VerifiedJpegRepresentation {
+                bytes: verified.bytes,
+                width: verified.width,
+                height: verified.height,
+            })
+            .map_err(JpegAttemptFailure::from)
+    }
+
+    pub fn inverse(representation: &[u8]) -> Result<Vec<u8>> {
+        super::inverse(representation)
+    }
+
+    pub fn validate_parameters(parameters: &[u8]) -> Result<()> {
+        super::validate_parameters(parameters)
+    }
+
+    #[must_use]
+    pub fn region_identity(region: &ReconstructionRegion) -> Digest {
+        super::region_identity(region)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

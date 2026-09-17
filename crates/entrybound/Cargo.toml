@@ -9,6 +9,12 @@ repository.workspace = true
 [lints]
 workspace = true
 
+[features]
+# Research-only, default-off, read-only access to internal planner, codec,
+# transform, and reconstruction entry points. Enabling it must never change
+# archive bytes; see research/harness/research-internals.md.
+research-internals = []
+
 [dependencies]
 aes = "=0.9.3"
 aes-gcm-siv = "=0.12.1"

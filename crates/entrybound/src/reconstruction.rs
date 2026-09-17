@@ -437,6 +437,66 @@ fn failed(detail: impl Into<String>) -> Diagnostic {
     )
 }
 
+/// Read-only research access to bounded DEFLATE reconstruction.
+///
+/// Every function forwards to the private production function of the same name.
+#[cfg(feature = "research-internals")]
+pub mod research {
+    use crate::diagnostics::Result;
+    use crate::eam::ReconstructionData;
+
+    pub const DEFLATE_RECONSTRUCT_ID: &str = super::DEFLATE_RECONSTRUCT_ID;
+    pub const DEFLATE_RECONSTRUCTION_FORMAT: &str = super::DEFLATE_RECONSTRUCTION_FORMAT;
+    pub const MAX_RECONSTRUCTION_INPUT_BYTES: usize = super::MAX_RECONSTRUCTION_INPUT_BYTES;
+    pub const MAX_RECONSTRUCTION_DATA_BYTES: usize = super::MAX_RECONSTRUCTION_DATA_BYTES;
+    pub const MAX_INTERMEDIATE_BYTES: usize = super::MAX_INTERMEDIATE_BYTES;
+    pub const RECONSTRUCTION_WORKING_SET_BYTES: u64 = super::RECONSTRUCTION_WORKING_SET_BYTES;
+    pub const MAX_EXPANSION_RATIO: usize = super::MAX_EXPANSION_RATIO;
+
+    /// Public mirror of the private verified forward result.
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    pub struct ReconstructCandidate {
+        /// Format-neutral intermediate (inflated) bytes.
+        pub intermediate: Vec<u8>,
+        /// Verified side data that recreates the original representation.
+        pub data: ReconstructionData,
+    }
+
+    #[must_use]
+    pub fn parameters(max_chain_length: u32) -> Box<[u8]> {
+        super::parameters(max_chain_length)
+    }
+
+    pub fn validate_parameters(value: &[u8]) -> Result<u32> {
+        super::validate_parameters(value)
+    }
+
+    pub fn try_forward(original: &[u8], max_chain: u32) -> Result<Option<ReconstructCandidate>> {
+        super::try_forward(original, max_chain).map(|candidate| {
+            candidate.map(|candidate| ReconstructCandidate {
+                intermediate: candidate.intermediate,
+                data: candidate.data,
+            })
+        })
+    }
+
+    pub fn verified_forward(
+        original: &[u8],
+        max_chain: u32,
+        expected: &ReconstructionData,
+    ) -> Result<Vec<u8>> {
+        super::verified_forward(original, max_chain, expected)
+    }
+
+    pub fn inverse(intermediate: &[u8], data: &ReconstructionData) -> Result<Vec<u8>> {
+        super::inverse(intermediate, data)
+    }
+
+    pub fn validate_data(data: &ReconstructionData) -> Result<()> {
+        super::validate_data(data)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use flate2::Compression;

@@ -9,7 +9,7 @@ use entrybound::eam::{
     Archive, ArchiveDescriptor, ArchiveRole, ContentRef, ContentStore, DecodeRequirements, Digest,
     DigestAlgorithm, Entry, EntryData, EntryIdentity, EntrySet, FeatureSet, FidelityReport,
     IdentityProfile, Index, Layout, LogicalPath, MetadataSet, ReconstructionAuditReason,
-    ResourceBudget,
+    ReconstructionAuditTarget, ResourceBudget, TransformPlan,
 };
 use entrybound::ecf::{
     FEATURE_CROSS_FILE_COMPRESSION_V1, FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1, WriteOptions,
@@ -19,8 +19,8 @@ use entrybound::identity::build_content;
 use entrybound::planner::{CompressionProfile, UNPLANNED_PLAN_ID};
 use entrybound::research::codec::{self, PlanMode};
 use entrybound::research::planner::{
-    ArchiveTrace, CandidateStage, CohortSelection, ExclusionReason, PlannerVersion, trace_archive,
-    trace_chunk,
+    ArchiveTrace, CandidateStage, ChunkTrace, CohortSelection, ExclusionReason, PlannerVersion,
+    trace_archive, trace_chunk, trace_chunk_stage,
 };
 use entrybound::research::{
     ecf as research_ecf, jpeg_reconstruction, planner, reconstruction, similarity, transform,
@@ -54,6 +54,130 @@ fn enumeration_reproduces_dense_planner_choices() {
 #[test]
 fn enumeration_reproduces_extreme_planner_choices() {
     assert_enumeration_reproduces(CompressionProfile::Extreme);
+}
+
+#[test]
+fn chunk_enumeration_selects_the_plan_real_planners_assign_to_a_lone_chunk() {
+    let gzip = gzip_bytes(4_000);
+    let jpeg = noise_jpeg(256, 192, 85);
+    let kinds = [
+        ("text.txt", text_bytes(20 * 1024)),
+        ("counters.bin", numeric_bytes(20 * 1024)),
+        ("zeros.bin", vec![0; 20 * 1024]),
+        ("random.bin", noise_bytes(20 * 1024, 0x3c6e_f372_fe94_f82b)),
+        ("tiny.bin", b"below the Zstandard input floor".to_vec()),
+        ("rows.csv.gz", gzip),
+        ("photo.jpg", jpeg),
+    ];
+    let mut regions = 0_usize;
+    for (name, bytes) in kinds {
+        let archive = archive_for(&[Input {
+            name,
+            chunk_size: bytes.len(),
+            bytes: bytes.clone(),
+        }]);
+        assert_eq!(archive.content_store.chunks.len(), 1);
+        let chunk_id = *archive.content_store.chunks.keys().next().unwrap();
+        for profile in profiles() {
+            for version in PlannerVersion::ALL {
+                let trace = trace_chunk(profile, version, &bytes).unwrap();
+                assert_eq!(trace.chunk_id, chunk_id);
+                assert_eq!(
+                    trace
+                        .candidates
+                        .iter()
+                        .filter(|candidate| candidate.selected)
+                        .count(),
+                    1
+                );
+                let mut planned = archive.clone();
+                version.plan(&mut planned, profile).unwrap();
+                let planned_chunk = &planned.content_store.chunks[&chunk_id];
+                if version == PlannerVersion::V6 {
+                    regions += assert_object_enumeration_matches(&archive, &planned, profile);
+                }
+                if planned_chunk.plan_ref == jpeg_reconstruction::REGION_MEMBER_PLAN_REF {
+                    assert_eq!(version, PlannerVersion::V6);
+                    continue;
+                }
+                let plan = planned
+                    .transform_plans
+                    .iter()
+                    .find(|plan| plan.plan_id == planned_chunk.plan_ref)
+                    .unwrap();
+                assert_eq!(
+                    trace.selected_plan(),
+                    plan,
+                    "{name} {profile:?} {version:?}: enumeration selected a different plan"
+                );
+                assert_eq!(
+                    planned
+                        .content_store
+                        .reconstruction_fallbacks
+                        .get(&chunk_id)
+                        .copied(),
+                    trace
+                        .reconstruction
+                        .as_ref()
+                        .and_then(|attempt| attempt.fallback)
+                );
+            }
+        }
+    }
+    assert!(regions > 0, "no lone JPEG Chunk selected a region");
+}
+
+/// Checks `trace_jpeg_object` against `plan_archive_v6` for a one-object Archive
+/// and returns the number of selected regions.
+fn assert_object_enumeration_matches(
+    archive: &Archive,
+    planned_v6: &Archive,
+    profile: CompressionProfile,
+) -> usize {
+    let mut v5 = archive.clone();
+    PlannerVersion::V5.plan(&mut v5, profile).unwrap();
+    let plans = v5
+        .transform_plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan.clone()))
+        .collect::<BTreeMap<_, _>>();
+    let object = v5.content_store.objects.values().next().unwrap();
+    let trace = planner::trace_jpeg_object(&v5, object, profile, &plans, false).unwrap();
+    let target = ReconstructionAuditTarget::ContentObject(object.logical_digest);
+    assert_eq!(
+        trace.audit,
+        planned_v6
+            .content_store
+            .reconstruction_audits
+            .get(&target)
+            .map(|audit| audit.reason)
+    );
+    match &trace.region {
+        Some(region) => {
+            assert_eq!(
+                planned_v6
+                    .content_store
+                    .reconstruction_regions
+                    .values()
+                    .collect::<Vec<_>>(),
+                vec![region]
+            );
+            let selected = &trace.candidates[trace.selected.unwrap()];
+            assert!(selected.selected && selected.qualified);
+            assert!(
+                planned_v6
+                    .transform_plans
+                    .iter()
+                    .any(|plan| plan == &selected.plan)
+            );
+            1
+        }
+        None => {
+            assert!(planned_v6.content_store.reconstruction_regions.is_empty());
+            assert!(trace.candidates.iter().all(|candidate| !candidate.selected));
+            0
+        }
+    }
 }
 
 #[test]
@@ -155,6 +279,7 @@ fn wrappers_forward_to_production_internals() {
 fn assert_enumeration_reproduces(profile: CompressionProfile) {
     let archive = archive_for(&inputs());
     let mut coverage = Coverage::default();
+    let mut v5_chunks = Vec::new();
     for version in PlannerVersion::ALL {
         let trace = trace_archive(&archive, profile, version)
             .unwrap_or_else(|error| panic!("{profile:?} {version:?} trace failed: {error:?}"));
@@ -165,7 +290,14 @@ fn assert_enumeration_reproduces(profile: CompressionProfile) {
             differences.is_empty(),
             "{profile:?} {version:?} enumeration differs from the real planner: {differences:#?}"
         );
+        assert_selected_candidates_are_planner_choices(&trace, &planned);
         assert_chunk_traces_are_consistent(&archive, &trace, &mut coverage);
+        if version == PlannerVersion::V5 {
+            v5_chunks = trace.chunks.clone();
+        } else if version == PlannerVersion::V6 {
+            // v6 runs the frozen v5 Chunk stage unchanged.
+            assert_eq!(strip_version(&trace.chunks), strip_version(&v5_chunks));
+        }
         assert_cohort_traces_reproduce_select_cohort_plan(&archive, &trace, &mut coverage);
         for object in &trace.objects {
             match (&object.region, object.audit) {
@@ -215,6 +347,17 @@ fn assert_enumeration_reproduces(profile: CompressionProfile) {
                 coverage.cross_file_cohort,
                 "{profile:?} selected no cross-file cohort plan"
             );
+            if profile == CompressionProfile::Balanced {
+                assert!(
+                    coverage.dictionary_cohort,
+                    "Balanced selected no dictionary"
+                );
+            } else {
+                assert!(
+                    coverage.lookback_cohort,
+                    "{profile:?} selected no lookback group"
+                );
+            }
             assert!(coverage.jpeg_region, "{profile:?} selected no JPEG region");
             for reason in [
                 ReconstructionAuditReason::Unsupported,
@@ -236,8 +379,79 @@ struct Coverage {
     deflate_eligible: bool,
     deflate_reconstruction: bool,
     cross_file_cohort: bool,
+    dictionary_cohort: bool,
+    lookback_cohort: bool,
     jpeg_region: bool,
     audits: BTreeSet<String>,
+}
+
+fn strip_version(chunks: &[ChunkTrace]) -> Vec<ChunkTrace> {
+    chunks
+        .iter()
+        .cloned()
+        .map(|mut chunk| {
+            chunk.version = PlannerVersion::V5;
+            chunk
+        })
+        .collect()
+}
+
+/// Rebuilds each Chunk's final assignment from the selected candidates alone and
+/// checks it against the Archive the real planner produced.
+fn assert_selected_candidates_are_planner_choices(trace: &ArchiveTrace, planned: &Archive) {
+    let planned_plans = planned
+        .transform_plans
+        .iter()
+        .map(|plan| (plan.plan_id, plan))
+        .collect::<BTreeMap<_, _>>();
+    let mut expected = BTreeMap::<Digest, (Option<&TransformPlan>, Option<Digest>)>::new();
+    for chunk in &trace.chunks {
+        expected.insert(chunk.chunk_id, (Some(chunk.selected_plan()), None));
+    }
+    for cohort in &trace.cohorts {
+        let Some(index) = cohort.selected else {
+            continue;
+        };
+        let candidate = &cohort.candidates[index];
+        assert!(candidate.selected);
+        for chunk_id in &cohort.cohort.chunks {
+            expected.insert(
+                *chunk_id,
+                (
+                    Some(&candidate.plan),
+                    candidate.group.as_ref().map(|group| group.group_id),
+                ),
+            );
+        }
+    }
+    for object in &trace.objects {
+        if let (Some(region), Some(index)) = (&object.region, object.selected) {
+            assert_eq!(
+                planned_plans.get(&region.plan_ref).copied(),
+                Some(&object.candidates[index].plan)
+            );
+            for chunk_ref in &planned.content_store.objects[&object.content_object].chunks {
+                expected.insert(chunk_ref.chunk_id, (None, None));
+            }
+        }
+    }
+    assert_eq!(expected.len(), planned.content_store.chunks.len());
+    for (chunk_id, chunk) in &planned.content_store.chunks {
+        let (plan, group_ref) = expected[chunk_id];
+        match plan {
+            Some(plan) => {
+                assert_eq!(
+                    planned_plans.get(&chunk.plan_ref).copied(),
+                    Some(plan),
+                    "{:?} {:?} chunk {chunk_id}",
+                    trace.profile,
+                    trace.version
+                );
+            }
+            None => assert_eq!(chunk.plan_ref, jpeg_reconstruction::REGION_MEMBER_PLAN_REF),
+        }
+        assert_eq!(chunk.group_ref, group_ref);
+    }
 }
 
 fn assert_chunk_traces_are_consistent(
@@ -307,6 +521,30 @@ fn assert_chunk_traces_are_consistent(
             );
         }
 
+        if matches!(
+            version,
+            PlannerVersion::V1 | PlannerVersion::V2 | PlannerVersion::V3
+        ) {
+            let selected = &chunk_trace.candidates[chunk_trace.selected];
+            assert_eq!(
+                usize::try_from(selected.payload_bytes).unwrap(),
+                planner::independent_encoded_len(profile, version.planner_id(profile), plaintext)
+                    .unwrap()
+            );
+            for candidate in &chunk_trace.candidates {
+                if candidate.stage == CandidateStage::IndependentZstandard {
+                    assert_eq!(
+                        candidate.qualified,
+                        entrybound::planner::zstandard_wins(
+                            chunk_trace.logical_len,
+                            usize::try_from(candidate.payload_bytes).unwrap()
+                        )
+                        .unwrap()
+                    );
+                }
+            }
+        }
+
         // Cost components are exactly the production cost functions.
         if version == PlannerVersion::V5 {
             let data = chunk_trace
@@ -362,54 +600,70 @@ fn assert_cohort_traces_reproduce_select_cohort_plan(
     trace: &ArchiveTrace,
     coverage: &mut Coverage,
 ) {
-    if !matches!(trace.version, PlannerVersion::V4 | PlannerVersion::V5) {
+    if matches!(trace.version, PlannerVersion::V1 | PlannerVersion::V2) {
+        assert!(trace.cohorts.is_empty());
         return;
     }
-    // Rebuild the exact state production hands to select_cohort_plan: Chunk-stage
+    // The exact state production hands to select_cohort_plan: Chunk-stage
     // plan_refs, the Chunk-stage plan table, and Chunk-stage ReconstructionData.
-    let mut state = archive.clone();
-    let mut plans = BTreeMap::new();
-    let store = codec::store_plan();
-    plans.insert(store.plan_id, store);
-    for chunk_trace in &trace.chunks {
-        let plan = chunk_trace.selected_plan().clone();
-        state
-            .content_store
-            .chunks
-            .get_mut(&chunk_trace.chunk_id)
-            .unwrap()
-            .plan_ref = plan.plan_id;
-        plans.insert(plan.plan_id, plan);
-        if let Some(attempt) = &chunk_trace.reconstruction
-            && attempt.fallback.is_none()
-        {
-            let data = attempt.data.clone().unwrap();
-            state
-                .content_store
-                .reconstruction_data
-                .insert(data.reconstruction_id, data);
-        }
-    }
+    let stage = trace_chunk_stage(archive, trace.profile, trace.version).unwrap();
+    assert_eq!(stage.chunks, trace.chunks);
     let stage_planner_id = trace.version.stage_planner_id(trace.profile);
     for cohort_trace in &trace.cohorts {
         let production = planner::select_cohort_plan(
-            &state,
+            &stage.archive,
             &cohort_trace.cohort,
             trace.profile,
             stage_planner_id,
-            &plans,
+            &stage.plans,
         )
         .unwrap();
         assert_eq!(production, cohort_trace.selection());
-        if production != CohortSelection::Independent {
-            coverage.cross_file_cohort = true;
-            let selected = &cohort_trace.candidates[cohort_trace.selected.unwrap()];
-            assert!(selected.qualified);
-            assert!(
-                selected.complete_cost + planner::MINIMUM_COHORT_GAIN_BYTES
-                    < cohort_trace.independent.complete_cost
+        if trace.version == PlannerVersion::V5 {
+            assert_eq!(
+                &planner::trace_cohort(
+                    &stage.archive,
+                    &cohort_trace.cohort,
+                    trace.profile,
+                    stage_planner_id,
+                    &stage.plans,
+                )
+                .unwrap(),
+                cohort_trace
             );
         }
+        let independent = cohort_trace.independent;
+        assert_eq!(
+            independent.complete_cost,
+            independent.payload_bytes + independent.plan_record_bytes + independent.side_data_bytes
+        );
+        for (index, candidate) in cohort_trace.candidates.iter().enumerate() {
+            assert_eq!(candidate.selected, cohort_trace.selected == Some(index));
+            assert_eq!(candidate.exclusion.is_none(), candidate.selected);
+            assert_eq!(
+                candidate.complete_cost,
+                candidate.payload_bytes + candidate.plan_record_bytes + candidate.side_data_bytes
+            );
+            assert_eq!(
+                candidate.qualified,
+                planner::qualifies_against_independent(
+                    candidate.complete_cost,
+                    independent.complete_cost
+                )
+                .unwrap()
+            );
+        }
+        match production {
+            CohortSelection::Independent => continue,
+            CohortSelection::Dictionary { .. } => coverage.dictionary_cohort = true,
+            CohortSelection::Lookback { .. } => coverage.lookback_cohort = true,
+        }
+        coverage.cross_file_cohort = true;
+        let selected = &cohort_trace.candidates[cohort_trace.selected.unwrap()];
+        assert!(selected.qualified);
+        assert!(
+            selected.complete_cost + planner::MINIMUM_COHORT_GAIN_BYTES < independent.complete_cost
+        );
     }
 }
 
@@ -643,6 +897,15 @@ fn inputs() -> Vec<Input> {
             bytes,
         });
     }
+    // Incompressible samples sharing one base only a trained dictionary can
+    // exploit, so Balanced (dictionary-only cohorts) also selects a cohort plan.
+    for (index, bytes) in shared_noise_samples(12, 16 * 1024).into_iter().enumerate() {
+        inputs.push(Input {
+            name: Box::leak(format!("sample-{index:02}.bin").into_boxed_str()),
+            chunk_size: bytes.len(),
+            bytes,
+        });
+    }
     inputs
 }
 
@@ -711,7 +974,11 @@ fn text_bytes(len: usize) -> Vec<u8> {
                 "{index:06} {} account={:05} status={}\n",
                 ["alpha", "beta", "gamma", "delta"][(index % 4) as usize],
                 index.wrapping_mul(7919) % 50_000,
-                if index % 3 == 0 { "open" } else { "closed" }
+                if index.is_multiple_of(3) {
+                    "open"
+                } else {
+                    "closed"
+                }
             )
             .into_bytes()
         })
@@ -754,6 +1021,20 @@ fn gzip_bytes(rows: usize) -> Vec<u8> {
     let mut encoder = GzEncoder::new(Vec::new(), Compression::new(6));
     encoder.write_all(&source).unwrap();
     encoder.finish().unwrap()
+}
+
+fn shared_noise_samples(count: usize, len: usize) -> Vec<Vec<u8>> {
+    let base = noise_bytes(len, 0xbb67_ae85_84ca_a73b);
+    (0..count)
+        .map(|index| {
+            let mut bytes = base.clone();
+            let first = 128 + (index * 977) % (len - 512);
+            for (offset, byte) in bytes[first..first + 256].iter_mut().enumerate() {
+                *byte = (index as u8).wrapping_mul(31).wrapping_add(offset as u8);
+            }
+            bytes
+        })
+        .collect()
 }
 
 fn similar_records(count: usize) -> Vec<Vec<u8>> {
