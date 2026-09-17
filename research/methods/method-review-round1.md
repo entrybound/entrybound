@@ -1118,8 +1118,82 @@ Results:
 - Fingerprint files: 212 with 70 held-out names at the first run, 251 with 82 at the second.
 - "heldout" occurrence counts as quoted in G01. Working-tree counts vary while uncommitted corpus work continues. The committed `manifest.json` hash did not change between the two runs.
 
+## Review disposition
+
+| Field | Value |
+|---|---|
+| Date | 2026-09-16 |
+| Revised documents | `research/archetypal-objective.md` and `research/decision-method.md`, round-1 revision, committed with subject "research: pre-register decision method and archetypal objective" |
+| Review text | Unchanged above this section. SHA-256 of this file before the section was added: `6af01821bff38136d53e5033446e9aa819ff51d791028c3076f30e32f41a83f7`. |
+| Per-finding table | `decision-method.md`, Revision history, "Round-1 dispositions" (all 85 findings, with sections). `archetypal-objective.md` has the subset whose fix changes it. |
+| Totals | 84 `FIXED` (two of them, F01 and F08, with a part rejected below), 1 `ACCEPTED_RISK` (C03), 0 wholly `REJECTED`. Every BLOCKER and HIGH finding is `FIXED`. |
+| Revision-session disclosure | While checking repository state, the revision session's `git status --short` displayed untracked fingerprint file names, four of which are held-out item identifiers in three families. No held-out content, listing, statistic or path was opened, and the identifiers are not repeated in any committed file. The exposure is recorded as event L7 in `decision-method.md` §0.1 and §5.8. |
+
+This section argues every rejected part and accepted risk, which round 2 re-reviews, and lists the fixes whose required artifact is an execution gate rather than part of the revision commit.
+
+### RD-1. Partially rejected: F01 acceptance criterion (over-coverage)
+
+- **Adopted.** The percentile cluster bootstrap is withdrawn. The corpus-level interval is the Welch-Satterthwaite t interval on group-level values, with the pooled within-family variance for single-group families (`decision-method.md` §4.10). Its coverage is checked on the actual validation and held-out group structures in committed simulation (Appendix D.1), and the check is a pre-registered admission criterion.
+- **Rejected part.** The required fix asks for nominal coverage "within ±1 percentage point". The revision adopts the lower side only: coverage no more than 1.0 pp **below** nominal at 0.90, 0.95, 0.99 and 0.998. Over-coverage is allowed and reported.
+- **Argument.**
+  1. The BLOCKER is anti-conservatism: under-coverage makes `DISTINGUISHABLE` verdicts, and therefore eliminations and selections, too easy. Over-coverage widens intervals. That lowers power and makes `DISTINGUISHABLE` verdicts rarer; it cannot create a false elimination or a false selection.
+  2. The power cost is controlled separately. The MDE gate (`decision-method.md` §4.12) blocks a confirmatory look whose MDE exceeds 1 band unit, so an over-covering interval shows up as a failed gate, not as a hidden bias.
+  3. A two-sided criterion would leave no admissible procedure. Appendix D.1 shows the Welch-Satterthwaite interval at 0.9233 under heavy tails at nominal 0.90 (+2.3 pp), and the pooled-variance t interval, which is exact only for homoscedastic Gaussian data, at 0.9235 under heteroscedasticity at nominal 0.95 (−2.65 pp). With 1-4 groups in most families, no simple interval is exact across plausible generating models, and the conservative direction is the one a pre-registration should accept.
+- **Round-2 check.** The Appendix D.1 table: the largest shortfall of the admitted interval is 0.27 pp (held-out, heteroscedastic, nominal 0.99).
+
+### RD-2. Partially rejected: F08 non-inferiority at family level
+
+- **Adopted.** The confirmatory set is limited to the provisional winner against each other survivor (§4.12); superiority uses Bonferroni over the declared superiority metrics (Holm's first step); every supporting condition requires `NON_INFERIOR` at corpus level (R4 condition 2, R5 (d)); the program-level false-selection rate comes from the rule simulation, and a Benjamini-Yekutieli listing is reported.
+- **Rejected part.** The fix says supporting conditions require non-inferiority. At **family** level (R4 condition 3, R8 condition 3, R5 (e)) the revision instead requires a harm guard: the family's pooled-variance two-sided 0.90 interval is not `DISTINGUISHABLE_WORSE`, and the family point estimate lies no more than 1 band unit beyond the band on the unfavourable side, per family, tier and evaluation condition.
+- **Argument.**
+  1. Family-level non-inferiority is unreachable with this corpus even when the true effect is zero, which would make every universal default and most scoped winners `INSUFFICIENT_EVIDENCE` by construction. Illustration with the formulas of §4.10: take a between-group standard deviation of 0.03 in log units, a 5% band (ln 1.05 ≈ 0.0488), a 2-group family and pooled degrees of freedom 30. The family standard error is 0.03/√2 ≈ 0.0212. At the non-inferiority confidence of 0.99, t ≈ 2.75, so the upper bound is the estimate plus about 0.058, and non-inferiority needs the estimate below about −0.0095. Under a zero true effect that happens with probability of about one third per family; requiring it in each of about 20 families passes almost never.
+  2. Round 0's absence-of-evidence problem is still closed. The guard's harm test uses 0.90, more sensitive than the corpus tests, and the point bound blocks any observed family regression larger than one band unit beyond the band even when it is not statistically distinguishable.
+  3. The inferential burden sits where the data can carry it: corpus-level non-inferiority over about 50 groups with Welch-Satterthwaite degrees of freedom.
+- **Residual risk**, recorded as a limitation of every scoped claim (`decision-method.md` §4.9): a family regression of up to one band unit beyond the band can pass the guard when it is not distinguishable.
+- **Round-2 check.** Whether the full rule simulation (`decision-method.md` §14 item 9) should compare the guard against a family-level non-inferiority test at a larger band multiple.
+
+### RD-3. Accepted risk: C03 (LOW)
+
+- **Finding.** `objective_screen.py` counts only exact `I<n>` constraint tokens, so objective Appendix C.1 undercounts the decisions citing an invariant.
+- **Why not fixed in the revision commit.** The fix is in `research/tools/ledger/objective_screen.py` and requires regenerating Appendix C; the revision commit is limited to its four documents.
+- **Why the risk is acceptable.** After this revision no rule uses the C.1 counts: the HCs applicable to a decision come from the constraint crosswalk and the ledger `hc_ids` field (`archetypal-objective.md` §2.0 rule 7; `decision-method.md` R1). The undercount affects a descriptive table only. The limitation is stated next to Appendix C, and the pattern fix is `decision-method.md` §14 item 11, tied to the crosswalk gate G-A, so it lands before any decision relies on HC applicability.
+
+### RD-4. Fixes whose required artifact is an execution gate
+
+For these findings the revision fixes the rule in the documents, and the artifact the fix requires lies outside the revision commit's four files. Each artifact is a gate (`decision-method.md` §0.4, §14): until it exists, the rule cannot be exercised and no dependent decision can reach `DECIDED` (§8.4 blocks). All of them are inputs produced before any decision-relevant result, so creating them after the revision commit does not weaken the pre-registration.
+
+| Finding | Rule fixed in | Artifact and gate |
+|---|---|---|
+| B01 (BLOCKER) | R1; objective §2.0 rule 7 | `research/methods/constraint-crosswalk.csv` with sign-off; G-A (§14 item 10) |
+| K01 (BLOCKER) | §14 item 12; §8.2 items 13-15 | Ledger schema v2, reviewed `hc_ids` and `od_ids` assignment, validator; G-A |
+| G01 (BLOCKER) | §5.4 (option (b) adopted; option (a) as the route that lifts the cap) | Transcript audit, role-separation record, removal or encryption of materialized held-out content; optional sealed tranches; G-C (§14 item 15) |
+| A05 (HIGH) | §2.0; §4.9; Appendix B | `research/methods/workload-mix.json` (G-B); DEC-CMP-035 ledger note at the schema-v2 migration (G-A) |
+| G02 (HIGH) | §5.3 | Lineage regrouping and content-overlap audit; G-C |
+| G04 (HIGH) | §5.2 | `research/decisions/validation-looks.jsonl`; G-A |
+| I02 (HIGH) | §7.2 | C1-C3 scripts and C4-C7 assessment template; before the first validation look |
+| B04 (HIGH) | objective MVT-06(a) | Counting allocator and H per candidate; before the candidate's first HC-06 record; HC_UNVERIFIED until then |
+| G07 (MEDIUM) | §5.4 | Materialization change; G-C |
+| K02 (MEDIUM) | Appendix D | The three scenarios the finding names (F01 coverage, H01 ties, J02 null pass) were run before the revision commit and are recorded in Appendix D rather than as separate files under `research/methods/`, because the commit is limited to its four files. The full R0-R10 rule simulation remains §14 item 9, required before the first validation look. |
+
+**Why this meets "fix before the pre-registration commit" for the BLOCKERs B01, K01 and G01.** Each BLOCKER was a rule that was contradictory, could not be executed, or let a decision reach `DECIDED` on invalid grounds. After revision each rule is executable as written, states what it consumes, and blocks `DECIDED` until that input exists. Round 2 should verify that no path to `DECIDED` bypasses these gates.
+
+### RD-5. Round-2 acceptance checklist status at the revision commit
+
+| # | Status | Where |
+|---|---|---|
+| 1 | Met in text and checked by script | `decision-method.md` §2.0, Appendix A.2 and A.3 (no mismatches; every M-number mapped), Appendix C.1, §7.6 |
+| 2 | Met in text | R1, R2, §7.2, §7.4, Appendix B.1; objective HC-11, HC-14, HC-16 |
+| 3 | Rules and schema defined; artifacts pending (G-A) | R1; §14 items 10-12 |
+| 4 | Met in text | objective MVT-01(d), MVT-02(e), MVT-04 items 8-10, MVT-05, MVT-06(a) and (d), MVT-07(d), MVT-10(d)-(f), MVT-11(a), MVT-12(b), MVT-13(a), MVT-14(e)-(j), MVT-15(b), MVT-16(c) and (d), MVT-17(d), HC-18 |
+| 5 | Met, with the one-sided coverage criterion of RD-1 | §4.10 and Appendix D.1; §4.7; §4.2; §4.4 |
+| 6 | Option chosen, single freeze fixed, post-unlock block in place; audits pending (G-C) | §5.3-§5.8 |
+| 7 | Met | §6.2, §6.7; Appendix D.3 |
+| 8 | Met | §8.2 item 13; R5; §8.4; R10 |
+| 9 | Named scenarios committed in Appendix D; full rule simulation pending (§14 item 9) | Appendix D |
+
 ## Revision history
 
 | Date | Change |
 |---|---|
 | 2026-09-16 | Round 1 adversarial method review of `archetypal-objective.md` (`f9aea31e…`) and `decision-method.md` (`ca23c8a2…`): 85 findings (10 BLOCKER, 36 HIGH, 33 MEDIUM, 6 LOW), required fixes, round-2 acceptance checklist, reproduction appendix. |
+| 2026-09-16 | Review disposition added by the round-1 revision session: totals, the partial rejections of F01 and F08 with arguments (RD-1, RD-2), the C03 accepted risk (RD-3), fixes whose artifacts are execution gates (RD-4), and round-2 checklist status (RD-5). The review text above the disposition is unchanged. |

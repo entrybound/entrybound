@@ -1,115 +1,146 @@
 {
   "schema": "ebr.thresholds.v1",
-  "status": "template",
-  "authority": "research/decision-method.md is authoritative. Every non-null value here must be transcribed from it and cite the section in decision_method_section. null = unset; ebr refuses verdicts that need an unset value and never substitutes a default.",
+  "status": "pre-registered",
+  "pre_registration": {
+    "governing_document": "research/decision-method.md",
+    "governing_document_revision": "round-1 revision (Revision history, 2026-09-16)",
+    "commit": "the commit that set status to pre-registered; resolve with: git log --format=%H -S'\"status\": \"pre-registered\"' -- research/methods/thresholds.json",
+    "note": "A file cannot contain the SHA of the commit that adds it; the commit is resolved by the command above (decision-method.md Appendix A.1)."
+  },
+  "authority": "research/decision-method.md is authoritative. Every non-null value here is transcribed from it and cites the section in source / decision_method_section. null = unset or intentionally null; ebr refuses verdicts that need an unset value and never substitutes a default.",
   "semantics": {
-    "practical_significance_band": "kind 'ratio': candidate/baseline paired median ratios inside [lower, upper] are practically equivalent; kind 'absolute': differences (candidate - baseline, metric units) inside [lower, upper]. A difference is distinguishable only if the whole bootstrap CI lies outside the band.",
-    "pareto_epsilon": "kind 'relative': fractional tolerance (a is not worse than b if a <= b*(1+value) for minimised metrics, compared in log space); kind 'absolute': metric units."
+    "practical_significance_band": "kind 'ratio': candidate/baseline paired median ratios inside [lower, upper] are practically equivalent; kind 'absolute': differences (candidate - baseline, metric units) inside [lower, upper]. A difference is distinguishable only if the whole CI lies outside the band.",
+    "pareto_epsilon": "kind 'relative': fractional tolerance (a is not worse than b if a <= b*(1+value) for minimised metrics, compared in log space); kind 'absolute': metric units.",
+    "metric_thresholds": "relative r: band [1/(1+r), 1+r]; absolute a: difference band [-a, +a]; composite rule, floor handling and epsilon = band per decision-method.md §3.1; relative_by_profile overrides relative per profile; absolute_by_tier overrides absolute per scale tier; absolute_rule is evaluated per experiment; minimum-gain band at tier multiplier k is [(1+r)^-k, (1+r)^k] for relative bands and min(k*a, minimum_gain_cap) for absolute-only metrics (§3.1, §7.3). Roles: banded (may be primary), diagnostic (primary only when the decision is about that component), secondary_only, sensitivity_arm (§6.5 only), binary (§3.3; any failure is R1/R2), descriptive (reported; never eliminates or selects), cost_input (feeds §7 cost elements and tiers), heuristic (simulated sessions; no CI verdicts, §4.16)."
   },
   "families": {
     "time_wall": {
       "description": "Wall-clock elapsed time of a sample",
       "practical_significance_band": {
-        "kind": null,
-        "lower": null,
-        "upper": null
+        "kind": "ratio",
+        "lower": 0.9523809524,
+        "upper": 1.05,
+        "source": "research/decision-method.md §3.7 (family reference metric decode_wall_s, §3.2 T-04); ebr verdicts informational per §3.6"
       },
       "pareto_epsilon": {
-        "kind": null,
-        "value": null
+        "kind": "relative",
+        "value": 0.05,
+        "source": "research/decision-method.md §3.7 (family reference metric decode_wall_s, §3.2 T-04); ebr verdicts informational per §3.6"
       },
-      "decision_method_section": null
+      "reference_metric": "decode_wall_s",
+      "decision_method_section": "3.2 T-04; 3.7"
     },
     "time_cpu": {
       "description": "User+system CPU time of a sample (process tree)",
       "practical_significance_band": {
-        "kind": null,
-        "lower": null,
-        "upper": null
+        "kind": "ratio",
+        "lower": 0.9523809524,
+        "upper": 1.05,
+        "source": "research/decision-method.md §3.7 (family reference metric decode_cpu_s, §3.2 T-05); ebr verdicts informational per §3.6"
       },
       "pareto_epsilon": {
-        "kind": null,
-        "value": null
+        "kind": "relative",
+        "value": 0.05,
+        "source": "research/decision-method.md §3.7 (family reference metric decode_cpu_s, §3.2 T-05); ebr verdicts informational per §3.6"
       },
-      "decision_method_section": null
+      "reference_metric": "decode_cpu_s",
+      "decision_method_section": "3.2 T-05; 3.7"
     },
     "memory_peak": {
       "description": "Peak resident set size (Linux) / peak working set (Windows)",
       "practical_significance_band": {
-        "kind": null,
-        "lower": null,
-        "upper": null
+        "kind": "ratio",
+        "lower": 0.9090909091,
+        "upper": 1.1,
+        "source": "research/decision-method.md §3.7 (family reference metric peak_rss_bytes, §3.2 T-06); ebr verdicts informational per §3.6"
       },
       "pareto_epsilon": {
-        "kind": null,
-        "value": null
+        "kind": "relative",
+        "value": 0.1,
+        "source": "research/decision-method.md §3.7 (family reference metric peak_rss_bytes, §3.2 T-06); ebr verdicts informational per §3.6"
       },
-      "decision_method_section": null
+      "reference_metric": "peak_rss_bytes",
+      "decision_method_section": "3.2 T-06; 3.7"
     },
     "scratch_peak": {
       "description": "Peak bytes occupied in the per-sample scratch directory",
       "practical_significance_band": {
-        "kind": null,
-        "lower": null,
-        "upper": null
+        "kind": "ratio",
+        "lower": 0.9090909091,
+        "upper": 1.1,
+        "source": "research/decision-method.md §3.7 (family reference metric scratch_peak_bytes, §3.2 T-07); ebr verdicts informational per §3.6"
       },
       "pareto_epsilon": {
-        "kind": null,
-        "value": null
+        "kind": "relative",
+        "value": 0.1,
+        "source": "research/decision-method.md §3.7 (family reference metric scratch_peak_bytes, §3.2 T-07); ebr verdicts informational per §3.6"
       },
-      "decision_method_section": null
+      "reference_metric": "scratch_peak_bytes",
+      "decision_method_section": "3.2 T-07; 3.7"
     },
     "size": {
       "description": "Output size in bytes and size ratios",
       "practical_significance_band": {
-        "kind": null,
-        "lower": null,
-        "upper": null
+        "kind": "ratio",
+        "lower": 0.9900990099,
+        "upper": 1.01,
+        "source": "research/decision-method.md §3.7 (family reference metric artifact_bytes, §3.2 T-01); ebr verdicts informational per §3.6"
       },
       "pareto_epsilon": {
-        "kind": null,
-        "value": null
+        "kind": "relative",
+        "value": 0.01,
+        "source": "research/decision-method.md §3.7 (family reference metric artifact_bytes, §3.2 T-01); ebr verdicts informational per §3.6"
       },
-      "decision_method_section": null
+      "reference_metric": "artifact_bytes",
+      "decision_method_section": "3.2 T-01; 3.7"
     },
     "throughput": {
       "description": "Derived rates such as input bytes per second",
       "practical_significance_band": {
-        "kind": null,
-        "lower": null,
-        "upper": null
+        "kind": "ratio",
+        "lower": 0.9523809524,
+        "upper": 1.05,
+        "source": "research/decision-method.md §3.7 (family reference metric decode_throughput_bps, §3.2 T-05b); ebr verdicts informational per §3.6"
       },
       "pareto_epsilon": {
-        "kind": null,
-        "value": null
+        "kind": "relative",
+        "value": 0.05,
+        "source": "research/decision-method.md §3.7 (family reference metric decode_throughput_bps, §3.2 T-05b); ebr verdicts informational per §3.6"
       },
-      "decision_method_section": null
+      "reference_metric": "decode_throughput_bps",
+      "decision_method_section": "3.2 T-05b; 3.7"
     },
     "io": {
       "description": "Filesystem block input/output counts",
       "practical_significance_band": {
-        "kind": null,
-        "lower": null,
-        "upper": null
+        "kind": "ratio",
+        "lower": 0.9090909091,
+        "upper": 1.1,
+        "source": "research/decision-method.md §3.7 (family reference metric fs_read_ops, §3.2 T-19); ebr verdicts informational per §3.6"
       },
       "pareto_epsilon": {
-        "kind": null,
-        "value": null
+        "kind": "relative",
+        "value": 0.1,
+        "source": "research/decision-method.md §3.7 (family reference metric fs_read_ops, §3.2 T-19); ebr verdicts informational per §3.6"
       },
-      "decision_method_section": null
+      "reference_metric": "fs_read_ops",
+      "decision_method_section": "3.2 T-19; 3.7",
+      "role": "secondary-only"
     },
     "correctness": {
       "description": "Pass/fail checks such as round-trip equality",
       "practical_significance_band": {
-        "kind": null,
-        "lower": null,
-        "upper": null
+        "kind": "absolute",
+        "lower": 0,
+        "upper": 0,
+        "source": "research/decision-method.md §3.3; §3.7"
       },
       "pareto_epsilon": {
-        "kind": null,
-        "value": null
+        "kind": "absolute",
+        "value": 0,
+        "source": "research/decision-method.md §3.3; §3.7"
       },
-      "decision_method_section": null
+      "decision_method_section": "3.3; 3.7"
     },
     "other": {
       "description": "Custom metrics not covered by another family",
@@ -122,25 +153,1931 @@
         "kind": null,
         "value": null
       },
-      "decision_method_section": null
+      "note": "Intentionally null by pre-registered design: no family-wide band is meaningful for counts, bits, percentage points, fractions and speedups; metric_thresholds governs.",
+      "source": "research/decision-method.md §3.6",
+      "decision_method_section": "3.6"
     }
   },
   "bootstrap": {
-    "confidence": null,
-    "resamples": null,
-    "decision_method_section": null,
-    "note": "ebr enforces resamples >= 10000 regardless of this value."
+    "confidence": 0.99,
+    "resamples": 20000,
+    "source": "research/decision-method.md §4.10, §4.12",
+    "decision_method_section": "4.10; 4.12",
+    "note": "ebr enforces resamples >= 10000 regardless of this value. confidence is the base two-sided per-comparison confidence; resamples applies to every bootstrap interval ebr computes (informational per §3.6).",
+    "resamples_rule": "max(20000, ceil(200 / (1 - confidence)))",
+    "superiority_confidence_rule": "1 - 0.01 / k_sup (k_sup = superiority metrics declared for the pair)",
+    "heldout_noninferiority_confidence": 0.9,
+    "family_harm_guard_confidence": 0.9,
+    "selection_bootstrap_resamples": 2000,
+    "sources": {
+      "confidence": "research/decision-method.md §4.12",
+      "resamples": "research/decision-method.md §4.12",
+      "resamples_rule": "research/decision-method.md §4.12",
+      "superiority_confidence_rule": "research/decision-method.md §4.12",
+      "heldout_noninferiority_confidence": "research/decision-method.md R5, §4.11",
+      "family_harm_guard_confidence": "research/decision-method.md R4, §4.9",
+      "selection_bootstrap_resamples": "research/decision-method.md §6.7"
+    }
+  },
+  "statistics": {
+    "item_interval": "exact_order_statistic_median",
+    "corpus_interval": "welch_satterthwaite_t",
+    "family_interval": "pooled_variance_t",
+    "min_rounds_rule": "smallest n with 1 - 2 * 0.5**n >= confidence",
+    "adaptive_target_halfwidth_fraction_of_log1p_r": 0.5,
+    "mde_max_bands": {
+      "validation_confirmatory": 1.0,
+      "heldout": 2.0
+    },
+    "mde_power": 0.8,
+    "min_support": {
+      "corpus_groups": 10,
+      "corpus_families": 5,
+      "family_groups": 2
+    },
+    "family_guard_max_point_bands": 1.0,
+    "source": "research/decision-method.md §4.6, §4.9-§4.12, R4, R5",
+    "sources": {
+      "item_interval": "research/decision-method.md §4.10",
+      "corpus_interval": "research/decision-method.md §4.10, Appendix D.1",
+      "family_interval": "research/decision-method.md §4.9, §4.10",
+      "min_rounds_rule": "research/decision-method.md §4.6",
+      "adaptive_target_halfwidth_fraction_of_log1p_r": "research/decision-method.md §4.6",
+      "mde_max_bands": "research/decision-method.md §4.12, R5",
+      "mde_power": "research/decision-method.md §4.12",
+      "min_support": "research/decision-method.md §4.9",
+      "family_guard_max_point_bands": "research/decision-method.md R4, §4.9"
+    }
   },
   "quiet_machine_guard": {
-    "max_loadavg_1m": null,
-    "max_other_cpu_percent": null,
-    "decision_method_section": null,
-    "note": "Required before any timing=true run; ebr refuses timing runs while unset."
+    "max_loadavg_1m": 9.0,
+    "max_other_cpu_percent": 3.0,
+    "source": "research/decision-method.md §4.4",
+    "decision_method_section": "4.4",
+    "note": "Required before any timing=true run; ebr refuses timing runs while unset. max_loadavg_1m is the WSL envelope (1.0 + 8 threads); decision specs set guard.max_loadavg_1m = 1.0 + n_threads (§4.4).",
+    "max_loadavg_1m_rule": "1.0 + n_threads_of_affinity_configuration",
+    "max_other_cpu_percent_pinned_set": 2.0,
+    "max_other_cpu_percent_smt_siblings_of_pinned": 2.0,
+    "min_max_wait_s_decision_specs": 300,
+    "covariates": [
+      "MsMpEng_cpu_s",
+      "SearchIndexer_cpu_s",
+      "processor_performance_percent"
+    ],
+    "sources": {
+      "max_loadavg_1m": "research/decision-method.md §4.4",
+      "max_other_cpu_percent": "research/decision-method.md §4.4",
+      "max_loadavg_1m_rule": "research/decision-method.md §4.4",
+      "max_other_cpu_percent_pinned_set": "research/decision-method.md §4.4",
+      "max_other_cpu_percent_smt_siblings_of_pinned": "research/decision-method.md §4.4",
+      "min_max_wait_s_decision_specs": "research/decision-method.md §4.4",
+      "covariates": "research/decision-method.md §4.2, §4.4"
+    }
   },
   "sensitivity": {
-    "min_fraction_preserving_winner": null,
-    "dirichlet_samples": null,
-    "dirichlet_concentration": null,
-    "decision_method_section": null
+    "min_fraction_preserving_winner": 0.9,
+    "medium_fraction_preserving_winner": 0.8,
+    "dirichlet_samples": 10000,
+    "dirichlet_concentration": 4.0,
+    "grid_factors": [
+      0.5,
+      0.75,
+      1.0,
+      1.25,
+      1.5
+    ],
+    "grid_full_max_criteria": 8,
+    "tie_tolerance": 1e-09,
+    "smaa_flat_dirichlet_samples": 10000,
+    "threshold_scale_factors": [
+      0.5,
+      2.0
+    ],
+    "threshold_halving_max_aa_halfwidth_fraction": 0.25,
+    "leave_k_families_out": [
+      1,
+      3
+    ],
+    "leave_k_families_out_max_sets": 1000,
+    "family_dirichlet_samples": 10000,
+    "family_dirichlet_concentration": 4.0,
+    "selection_bootstrap_resamples": 2000,
+    "max_compromise_regret_band_units": 2.0,
+    "max_compromise_regret_per_metric_band_units": 1.0,
+    "source": "research/decision-method.md §6.2-§6.7; R9",
+    "decision_method_section": "6.2-6.7; 2 R9",
+    "sources": {
+      "min_fraction_preserving_winner": "research/decision-method.md §6.6",
+      "medium_fraction_preserving_winner": "research/decision-method.md §6.6",
+      "dirichlet_samples": "research/decision-method.md §6.3",
+      "dirichlet_concentration": "research/decision-method.md §6.3",
+      "grid_factors": "research/decision-method.md §6.3",
+      "grid_full_max_criteria": "research/decision-method.md §6.3",
+      "tie_tolerance": "research/decision-method.md §6.2",
+      "smaa_flat_dirichlet_samples": "research/decision-method.md §6.3",
+      "threshold_scale_factors": "research/decision-method.md §6.4",
+      "threshold_halving_max_aa_halfwidth_fraction": "research/decision-method.md §6.4",
+      "leave_k_families_out": "research/decision-method.md §6.5",
+      "leave_k_families_out_max_sets": "research/decision-method.md §6.5",
+      "family_dirichlet_samples": "research/decision-method.md §6.5",
+      "family_dirichlet_concentration": "research/decision-method.md §6.5",
+      "selection_bootstrap_resamples": "research/decision-method.md §6.7",
+      "max_compromise_regret_band_units": "research/decision-method.md R9",
+      "max_compromise_regret_per_metric_band_units": "research/decision-method.md R9"
+    }
+  },
+  "protocol": {
+    "deterministic_repetitions": 2,
+    "determinism_claim": {
+      "repetitions_per_variation_cell": 3,
+      "stress_repetitions": 20
+    },
+    "timing_rounds": {
+      "small": {
+        "min": 10,
+        "step": 10,
+        "cap": 30
+      },
+      "medium": {
+        "min": 10,
+        "step": 10,
+        "cap": 20
+      },
+      "large": {
+        "min": 10,
+        "step": 5,
+        "cap": 20
+      }
+    },
+    "warmup_rounds": {
+      "small": 2,
+      "medium": 2,
+      "large": 1
+    },
+    "warmup_trend_kendall_tau_limit": 0.3,
+    "min_operations_per_round_for_p95": 40,
+    "cooldown_s": {
+      "min": 2,
+      "max": 60,
+      "rule": "min(max, max(min, previous_sample_wall_s))"
+    },
+    "drift_canary": {
+      "baseline_runs": 3,
+      "every_blocks": 10,
+      "every_s": 300,
+      "max_ratio": 1.025,
+      "pause_s": 120,
+      "affinity": "experiment",
+      "min_duration_rule": "max(1 s, median sample wall), at most 60 s"
+    },
+    "frequency_covariate": {
+      "counter": "\\Processor Information(_Total)\\% Processor Performance",
+      "sample_interval_s": 1.0,
+      "min_fraction_of_session_baseline": 0.975
+    },
+    "invalid_sample_max_fraction_cell": 0.1,
+    "invalid_rate_max_difference_pp": 5,
+    "excluded_items_max_fraction": 0.2,
+    "aa_calibration": {
+      "max_item_distinguishable": 1,
+      "max_invalid_fraction": 0.1,
+      "min_families": 10,
+      "known_effect_multiples_of_r": [
+        0.5,
+        1.0,
+        2.0
+      ],
+      "known_effect_detect_fraction_at_2r": 0.9,
+      "known_effect_sign_fraction_at_1r": 0.8
+    },
+    "validation_looks_per_decision": 2,
+    "content_overlap_max_fraction": 0.01,
+    "network_calibration_tolerance": {
+      "rtt_fraction": 0.1,
+      "throughput_fraction": 0.1,
+      "counts": "exact"
+    },
+    "wsl_decision_grade_threads": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "source": "research/decision-method.md §4.2-§4.9, §4.13, §4.15, §5.2, §5.3; Appendix C",
+    "decision_method_section": "4.2-4.9; 4.13; 4.15; 5.2; 5.3",
+    "sources": {
+      "deterministic_repetitions": "research/decision-method.md §4.6",
+      "determinism_claim": "research/decision-method.md §4.13; objective MVT-13(a)",
+      "timing_rounds": "research/decision-method.md §4.6",
+      "warmup_rounds": "research/decision-method.md §4.5",
+      "warmup_trend_kendall_tau_limit": "research/decision-method.md §4.5",
+      "min_operations_per_round_for_p95": "research/decision-method.md §4.6",
+      "cooldown_s": "research/decision-method.md §4.2",
+      "drift_canary": "research/decision-method.md §4.2",
+      "frequency_covariate": "research/decision-method.md §4.2",
+      "invalid_sample_max_fraction_cell": "research/decision-method.md §4.4",
+      "invalid_rate_max_difference_pp": "research/decision-method.md §4.4",
+      "excluded_items_max_fraction": "research/decision-method.md §4.4",
+      "aa_calibration": "research/decision-method.md §4.7",
+      "validation_looks_per_decision": "research/decision-method.md §5.2",
+      "content_overlap_max_fraction": "research/decision-method.md §5.3",
+      "network_calibration_tolerance": "research/decision-method.md §4.15",
+      "wsl_decision_grade_threads": "research/decision-method.md §4.3"
+    }
+  },
+  "cost_tiers": {
+    "multipliers": {
+      "T0": 1,
+      "T1": 2,
+      "T2": 3,
+      "T3": 5,
+      "T4": 10
+    },
+    "multiplier_semantics": "log-consistent: band half-width k*ln(1+r); absolute-only: min(k*a, minimum_gain_cap)",
+    "maintenance": {
+      "max_months_since_release": 24,
+      "min_publishers": 2,
+      "applies_to": [
+        "reader-path dependencies",
+        "writer-path pinned encoders"
+      ]
+    },
+    "source": "research/decision-method.md §3.1, §7.2, §7.3",
+    "decision_method_section": "3.1; 7.2; 7.3",
+    "sources": {
+      "multipliers": "research/decision-method.md §7.2",
+      "multiplier_semantics": "research/decision-method.md §3.1, §7.3",
+      "maintenance": "research/decision-method.md §7.2"
+    }
+  },
+  "metric_thresholds": {
+    "artifact_bytes": {
+      "id": "T-01",
+      "role": "banded",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M05.1",
+        "M09.2",
+        "M09.4",
+        "M15.3",
+        "M20.3"
+      ],
+      "relative": 0.01,
+      "absolute": null,
+      "absolute_by_tier": {
+        "small": 0,
+        "medium": 64,
+        "large": 64
+      },
+      "source": "research/decision-method.md §3.2 T-01; Appendix A.2"
+    },
+    "total_stored_bytes": {
+      "id": "T-01",
+      "role": "sensitivity_arm",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M05.5"
+      ],
+      "relative": 0.01,
+      "absolute": 64,
+      "source": "research/decision-method.md §3.2 T-01; Appendix A.2"
+    },
+    "dedup_stored_fraction": {
+      "id": "T-01",
+      "role": "diagnostic",
+      "family": "size",
+      "unit": "ratio",
+      "direction": "minimize",
+      "od_metrics": [
+        "M05.4"
+      ],
+      "relative": 0.01,
+      "absolute": null,
+      "source": "research/decision-method.md §3.2 T-01; Appendix A.2"
+    },
+    "fixed_overhead_bytes": {
+      "id": "T-21",
+      "role": "banded",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M05.3"
+      ],
+      "relative": null,
+      "absolute": 16,
+      "minimum_gain_cap": 512,
+      "source": "research/decision-method.md §3.2 T-21; Appendix A.2"
+    },
+    "metadata_bytes": {
+      "id": "T-02",
+      "role": "diagnostic",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M05.2"
+      ],
+      "relative": 0.05,
+      "absolute": 64,
+      "source": "research/decision-method.md §3.2 T-02; Appendix A.2"
+    },
+    "index_bytes": {
+      "id": "T-02",
+      "role": "diagnostic",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M05.2"
+      ],
+      "relative": 0.05,
+      "absolute": 64,
+      "source": "research/decision-method.md §3.2 T-02; Appendix A.2"
+    },
+    "dictionary_bytes": {
+      "id": "T-02",
+      "role": "diagnostic",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M05.2"
+      ],
+      "relative": 0.05,
+      "absolute": 64,
+      "source": "research/decision-method.md §3.2 T-02; Appendix A.2"
+    },
+    "side_data_bytes": {
+      "id": "T-02",
+      "role": "diagnostic",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M05.2"
+      ],
+      "relative": 0.05,
+      "absolute": 64,
+      "source": "research/decision-method.md §3.2 T-02; Appendix A.2"
+    },
+    "refusal_bytes_read": {
+      "id": "T-02",
+      "role": "banded",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M17.2"
+      ],
+      "relative": 0.05,
+      "absolute": 64,
+      "source": "research/decision-method.md §3.2 T-02; Appendix A.2"
+    },
+    "metadata_bytes_per_entry": {
+      "id": "T-02b",
+      "role": "banded",
+      "family": "size",
+      "unit": "B/entry",
+      "direction": "minimize",
+      "od_metrics": [
+        "M05.2"
+      ],
+      "relative": 0.05,
+      "absolute": 0.5,
+      "source": "research/decision-method.md §3.2 T-02b; Appendix A.2"
+    },
+    "encode_wall_s": {
+      "id": "T-03",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M06.1",
+        "M19.5",
+        "M20.3"
+      ],
+      "relative": 0.05,
+      "relative_by_profile": {
+        "fast": 0.05,
+        "balanced": 0.05,
+        "dense": 0.1,
+        "extreme": 0.25
+      },
+      "absolute": {
+        "process": 0.005,
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-03; Appendix A.2"
+    },
+    "decode_wall_s": {
+      "id": "T-04",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M07.1",
+        "M19.5"
+      ],
+      "relative": 0.05,
+      "absolute": {
+        "process": 0.005,
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-04; Appendix A.2"
+    },
+    "verify_wall_s": {
+      "id": "T-04",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M07.2"
+      ],
+      "relative": 0.05,
+      "absolute": {
+        "process": 0.005,
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-04; Appendix A.2"
+    },
+    "stream_unpack_wall_s": {
+      "id": "T-04",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M09.3"
+      ],
+      "relative": 0.05,
+      "absolute": {
+        "process": 0.005,
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-04; Appendix A.2"
+    },
+    "encode_cpu_s": {
+      "id": "T-05",
+      "role": "banded",
+      "family": "time_cpu",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M06.2"
+      ],
+      "relative": 0.05,
+      "relative_by_profile": {
+        "fast": 0.05,
+        "balanced": 0.05,
+        "dense": 0.1,
+        "extreme": 0.25
+      },
+      "absolute": {
+        "process": 0.005,
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-05; Appendix A.2"
+    },
+    "decode_cpu_s": {
+      "id": "T-05",
+      "role": "banded",
+      "family": "time_cpu",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M07.1"
+      ],
+      "relative": 0.05,
+      "absolute": {
+        "process": 0.005,
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-05; Appendix A.2"
+    },
+    "refusal_cpu_s": {
+      "id": "T-05",
+      "role": "banded",
+      "family": "time_cpu",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M17.2"
+      ],
+      "relative": 0.05,
+      "absolute": {
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-05; Appendix A.2"
+    },
+    "encode_throughput_bps": {
+      "id": "T-05b",
+      "role": "banded",
+      "family": "throughput",
+      "unit": "B/s",
+      "direction": "maximize",
+      "od_metrics": [
+        "M06.4"
+      ],
+      "relative": 0.05,
+      "relative_by_profile": {
+        "fast": 0.05,
+        "balanced": 0.05,
+        "dense": 0.1,
+        "extreme": 0.25
+      },
+      "absolute": null,
+      "source": "research/decision-method.md §3.2 T-05b; Appendix A.2"
+    },
+    "decode_throughput_bps": {
+      "id": "T-05b",
+      "role": "banded",
+      "family": "throughput",
+      "unit": "B/s",
+      "direction": "maximize",
+      "od_metrics": [
+        "M07.1"
+      ],
+      "relative": 0.05,
+      "absolute": null,
+      "source": "research/decision-method.md §3.2 T-05b; Appendix A.2"
+    },
+    "verify_throughput_bps": {
+      "id": "T-05b",
+      "role": "banded",
+      "family": "throughput",
+      "unit": "B/s",
+      "direction": "maximize",
+      "od_metrics": [
+        "M07.2"
+      ],
+      "relative": 0.05,
+      "absolute": null,
+      "source": "research/decision-method.md §3.2 T-05b; Appendix A.2"
+    },
+    "peak_rss_bytes": {
+      "id": "T-06",
+      "role": "banded",
+      "family": "memory_peak",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M08.1",
+        "M19.5",
+        "M20.3"
+      ],
+      "relative": 0.1,
+      "absolute": 4194304,
+      "source": "research/decision-method.md §3.2 T-06; Appendix A.2"
+    },
+    "peak_commit_bytes": {
+      "id": "T-06",
+      "role": "banded",
+      "family": "memory_peak",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M08.1"
+      ],
+      "relative": 0.1,
+      "absolute": 4194304,
+      "source": "research/decision-method.md §3.2 T-06; Appendix A.2"
+    },
+    "alloc_peak_bytes": {
+      "id": "T-06",
+      "role": "banded",
+      "family": "memory_peak",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M08.1"
+      ],
+      "relative": 0.1,
+      "absolute": 1048576,
+      "source": "research/decision-method.md §3.2 T-06; Appendix A.2"
+    },
+    "refusal_alloc_peak_bytes": {
+      "id": "T-06",
+      "role": "banded",
+      "family": "memory_peak",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M17.2"
+      ],
+      "relative": 0.1,
+      "absolute": 1048576,
+      "source": "research/decision-method.md §3.2 T-06; Appendix A.2"
+    },
+    "scratch_peak_bytes": {
+      "id": "T-07",
+      "role": "banded",
+      "family": "scratch_peak",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M08.2",
+        "M20.3"
+      ],
+      "relative": 0.1,
+      "absolute": 16777216,
+      "source": "research/decision-method.md §3.2 T-07; Appendix A.2"
+    },
+    "scratch_write_bytes": {
+      "id": "T-07",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "B",
+      "direction": "equal_zero_when_claimed",
+      "od_metrics": [
+        "M08.2"
+      ],
+      "source": "research/decision-method.md §3.2 T-07; Appendix A.2"
+    },
+    "bounded_memory_growth_bytes": {
+      "id": "HC-06",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "B",
+      "direction": "at_most_bound",
+      "od_metrics": [
+        "M08.3"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "first_entry_latency_s": {
+      "id": "T-08",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M07.4"
+      ],
+      "relative": 0.1,
+      "absolute": {
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-08; Appendix A.2"
+    },
+    "random_entry_latency_s": {
+      "id": "T-08",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M10.1"
+      ],
+      "relative": 0.1,
+      "absolute": {
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-08; Appendix A.2"
+    },
+    "encrypted_random_entry_latency_s": {
+      "id": "T-08",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M10.5"
+      ],
+      "relative": 0.1,
+      "absolute": {
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-08; Appendix A.2"
+    },
+    "list_latency_s": {
+      "id": "T-08",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M07.3"
+      ],
+      "relative": 0.1,
+      "absolute": {
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-08; Appendix A.2"
+    },
+    "open_latency_s": {
+      "id": "T-08",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M10.3"
+      ],
+      "relative": 0.1,
+      "absolute": {
+        "in_process": 0.0001
+      },
+      "source": "research/decision-method.md §3.2 T-08; Appendix A.2"
+    },
+    "access_granularity_bytes": {
+      "id": "T-09",
+      "role": "banded",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [],
+      "relative": 0.25,
+      "absolute": 16384,
+      "source": "research/decision-method.md §3.2 T-09; Appendix A.2"
+    },
+    "access_amplification": {
+      "id": "T-22",
+      "role": "banded",
+      "family": "other",
+      "unit": "ratio",
+      "direction": "minimize",
+      "od_metrics": [
+        "M10.2"
+      ],
+      "relative": 0.25,
+      "absolute": null,
+      "absolute_rule": "16384/stratum_bytes",
+      "source": "research/decision-method.md §3.2 T-22; Appendix A.2"
+    },
+    "remote_first_entry_latency_s": {
+      "id": "T-10",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M12.3"
+      ],
+      "relative": 0.1,
+      "absolute": null,
+      "absolute_rule": "max(0.010, 0.5*rtt_s)",
+      "source": "research/decision-method.md §3.2 T-10; Appendix A.2"
+    },
+    "remote_random_entry_latency_s": {
+      "id": "T-10",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M12.3"
+      ],
+      "relative": 0.1,
+      "absolute": null,
+      "absolute_rule": "max(0.010, 0.5*rtt_s)",
+      "source": "research/decision-method.md §3.2 T-10; Appendix A.2"
+    },
+    "remote_task_latency_s": {
+      "id": "T-10",
+      "role": "banded",
+      "family": "time_wall",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M12.3"
+      ],
+      "relative": 0.1,
+      "absolute": null,
+      "absolute_rule": "max(0.010, 0.5*rtt_s)",
+      "source": "research/decision-method.md §3.2 T-10; Appendix A.2"
+    },
+    "http_bytes": {
+      "id": "T-11",
+      "role": "banded",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M12.2"
+      ],
+      "relative": 0.05,
+      "absolute": 16384,
+      "source": "research/decision-method.md §3.2 T-11; Appendix A.2"
+    },
+    "verified_range_fetch_bytes": {
+      "id": "T-11",
+      "role": "banded",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M11.1"
+      ],
+      "relative": 0.05,
+      "absolute": 16384,
+      "source": "research/decision-method.md §3.2 T-11; Appendix A.2"
+    },
+    "open_bytes_read": {
+      "id": "T-11",
+      "role": "banded",
+      "family": "size",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M10.3"
+      ],
+      "relative": 0.05,
+      "absolute": 16384,
+      "source": "research/decision-method.md §3.2 T-11; Appendix A.2"
+    },
+    "http_requests": {
+      "id": "T-12",
+      "role": "banded",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M12.1"
+      ],
+      "relative": 0.1,
+      "absolute": 0.5,
+      "source": "research/decision-method.md §3.2 T-12; Appendix A.2"
+    },
+    "range_length_signatures": {
+      "id": "T-12",
+      "role": "banded",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M16.4"
+      ],
+      "relative": 0.1,
+      "absolute": 0.5,
+      "source": "research/decision-method.md §3.2 T-12; Appendix A.2"
+    },
+    "verification_digest_ops": {
+      "id": "T-12",
+      "role": "diagnostic",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M11.2"
+      ],
+      "relative": 0.1,
+      "absolute": 0.5,
+      "source": "research/decision-method.md §3.2 T-12; Appendix A.2"
+    },
+    "verify_overhead_pp": {
+      "id": "T-13",
+      "role": "banded",
+      "family": "other",
+      "unit": "pp",
+      "direction": "minimize",
+      "od_metrics": [
+        "M11.1"
+      ],
+      "relative": null,
+      "absolute": 5.0,
+      "minimum_gain_cap": 25.0,
+      "source": "research/decision-method.md §3.2 T-13; Appendix A.2"
+    },
+    "parallel_speedup": {
+      "id": "T-14",
+      "role": "banded",
+      "family": "other",
+      "unit": "ratio",
+      "direction": "maximize",
+      "od_metrics": [
+        "M13.1"
+      ],
+      "relative": 0.1,
+      "absolute": 0.2,
+      "source": "research/decision-method.md §3.2 T-14; Appendix A.2"
+    },
+    "parallel_efficiency": {
+      "id": "T-14",
+      "role": "diagnostic",
+      "family": "other",
+      "unit": "ratio",
+      "direction": "maximize",
+      "od_metrics": [
+        "M13.2"
+      ],
+      "relative": 0.1,
+      "absolute": null,
+      "source": "research/decision-method.md §3.2 T-14; Appendix A.2"
+    },
+    "blast_logical_bytes_p95": {
+      "id": "T-15",
+      "role": "banded",
+      "family": "other",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M14.1"
+      ],
+      "relative": 0.5,
+      "absolute": 65536,
+      "source": "research/decision-method.md §3.2 T-15; Appendix A.2"
+    },
+    "blast_logical_bytes_max": {
+      "id": "T-15",
+      "role": "banded",
+      "family": "other",
+      "unit": "B",
+      "direction": "minimize",
+      "od_metrics": [
+        "M14.1"
+      ],
+      "relative": 0.5,
+      "absolute": 65536,
+      "source": "research/decision-method.md §3.2 T-15; Appendix A.2"
+    },
+    "blast_entries_p95": {
+      "id": "T-15",
+      "role": "banded",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M14.1"
+      ],
+      "relative": 0.5,
+      "absolute": 0.5,
+      "source": "research/decision-method.md §3.2 T-15; Appendix A.2"
+    },
+    "padding_overhead_pp": {
+      "id": "T-16",
+      "role": "banded",
+      "family": "other",
+      "unit": "pp",
+      "direction": "minimize",
+      "od_metrics": [
+        "M16.3"
+      ],
+      "relative": null,
+      "absolute": 1.0,
+      "minimum_gain_cap": 5.0,
+      "source": "research/decision-method.md §3.2 T-16; Appendix A.2"
+    },
+    "leak_min_entropy_bits": {
+      "id": "T-17",
+      "role": "banded",
+      "family": "other",
+      "unit": "bits",
+      "direction": "minimize",
+      "od_metrics": [
+        "M16.1"
+      ],
+      "relative": null,
+      "absolute": 1.0,
+      "minimum_gain_cap": 4.0,
+      "source": "research/decision-method.md §3.2 T-17; Appendix A.2"
+    },
+    "leak_shannon_bits": {
+      "id": "T-17",
+      "role": "banded",
+      "family": "other",
+      "unit": "bits",
+      "direction": "minimize",
+      "od_metrics": [
+        "M16.1"
+      ],
+      "relative": null,
+      "absolute": 1.0,
+      "minimum_gain_cap": 4.0,
+      "source": "research/decision-method.md §3.2 T-17; Appendix A.2"
+    },
+    "anonymity_set_median": {
+      "id": "T-17",
+      "role": "banded",
+      "family": "other",
+      "unit": "count",
+      "direction": "maximize",
+      "od_metrics": [
+        "M16.1"
+      ],
+      "relative": 1.0,
+      "absolute": 0.5,
+      "source": "research/decision-method.md §3.2 T-17; Appendix A.2"
+    },
+    "presence_advantage": {
+      "id": "T-17",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "minimize",
+      "od_metrics": [
+        "M16.2"
+      ],
+      "relative": null,
+      "absolute": 0.05,
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-17; Appendix A.2"
+    },
+    "task_success_rate": {
+      "id": "T-18",
+      "role": "heuristic",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M25.1"
+      ],
+      "source": "research/decision-method.md §3.2 T-18; Appendix A.2"
+    },
+    "task_steps": {
+      "id": "T-18",
+      "role": "heuristic",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M25.1"
+      ],
+      "source": "research/decision-method.md §3.2 T-18; Appendix A.2"
+    },
+    "task_errors": {
+      "id": "T-18",
+      "role": "heuristic",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M25.1"
+      ],
+      "source": "research/decision-method.md §3.2 T-18; Appendix A.2"
+    },
+    "task_completion_time_s": {
+      "id": "T-18",
+      "role": "heuristic",
+      "family": "other",
+      "unit": "s",
+      "direction": "minimize",
+      "od_metrics": [
+        "M25.5"
+      ],
+      "source": "research/decision-method.md §3.2 T-18; Appendix A.2"
+    },
+    "fs_read_ops": {
+      "id": "T-19",
+      "role": "secondary_only",
+      "family": "io",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [],
+      "relative": 0.1,
+      "absolute": 64,
+      "source": "research/decision-method.md §3.2 T-19; Appendix A.2"
+    },
+    "fs_write_ops": {
+      "id": "T-19",
+      "role": "secondary_only",
+      "family": "io",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [],
+      "relative": 0.1,
+      "absolute": 64,
+      "source": "research/decision-method.md §3.2 T-19; Appendix A.2"
+    },
+    "capture_fidelity_fraction": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M03.1"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "restore_fidelity_fraction": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M03.2"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "reason_code_specificity_fraction": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M04.2"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "verified_fraction": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M11.3"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "localization_precision": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M14.2"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "truncation_salvage_fraction": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M14.3"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "benign_false_refusal_fraction": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "minimize",
+      "od_metrics": [
+        "M17.3"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "cross_platform_restore_fidelity_fraction": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M18.2"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "import_acceptance_fraction": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M19.1"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "import_agreement_fraction": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M19.2"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "export_acceptance_fraction": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M19.4"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "error_actionability_fraction": {
+      "id": "T-20",
+      "role": "banded",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "maximize",
+      "od_metrics": [
+        "M25.3"
+      ],
+      "relative": null,
+      "absolute": null,
+      "absolute_rule": "0.5/n_cases",
+      "minimum_gain_cap": 0.25,
+      "source": "research/decision-method.md §3.2 T-20; Appendix A.2"
+    },
+    "declared_tightness_ratio": {
+      "id": "T-23",
+      "role": "banded",
+      "family": "other",
+      "unit": "ratio",
+      "direction": "minimize",
+      "od_metrics": [
+        "M17.1"
+      ],
+      "relative": 0.1,
+      "absolute": null,
+      "source": "research/decision-method.md §3.2 T-23; Appendix A.2"
+    },
+    "equivalence_assertion_pass_fraction": {
+      "id": "HC-01/HC-03",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "fraction",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M01.3"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "roundtrip_mismatches": {
+      "id": "HC-02",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "count",
+      "direction": "equal_zero",
+      "od_metrics": [
+        "M02.1"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "reader_disagreements": {
+      "id": "HC-03",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "count",
+      "direction": "equal_zero",
+      "od_metrics": [
+        "M04.1"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "streaming_capability": {
+      "id": "HC-06/F-09",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "binary",
+      "direction": "equal_one_when_claimed",
+      "od_metrics": [
+        "M09.1"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "declared_cost_accuracy": {
+      "id": "HC-09",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "ratio",
+      "direction": "at_most_one",
+      "od_metrics": [
+        "M10.4"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "origin_protocol_safety": {
+      "id": "HC-18",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "binary",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M12.4"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "localization_recall": {
+      "id": "HC-15",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "fraction",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M14.2"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "undetected_tampers": {
+      "id": "HC-14",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "count",
+      "direction": "equal_zero",
+      "od_metrics": [
+        "M15.1"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "authenticated_coverage_fraction": {
+      "id": "HC-14",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "fraction",
+      "direction": "equal_one_per_archive_type_scope",
+      "od_metrics": [
+        "M15.2"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "adversarial_true_refusal_fraction": {
+      "id": "HC-06",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "fraction",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M17.4"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "cross_host_identity_agreement": {
+      "id": "HC-08",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "binary",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M18.1"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "hostile_name_handling_fraction": {
+      "id": "HC-08",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "fraction",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M18.3"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "ambiguity_refusal_fraction": {
+      "id": "HC-07",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "fraction",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M19.3"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "migration_identity_conformance_fraction": {
+      "id": "HC-10",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "fraction",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M20.1"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "migration_determinism_fraction": {
+      "id": "HC-13",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "fraction",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M20.2"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "receipt_completeness_fraction": {
+      "id": "HC-07",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "fraction",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M20.4"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "cleanroom_pass_fraction": {
+      "id": "HC-12",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "fraction",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M21.1"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "normative_rule_coverage_fraction": {
+      "id": "HC-12",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "fraction",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M21.4"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "unspecified_baseline_decode_steps": {
+      "id": "HC-12",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "count",
+      "direction": "equal_zero",
+      "od_metrics": [
+        "M21.5"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "license_compatibility": {
+      "id": "R2",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "binary",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M22.3"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "baseline_codec_public_spec": {
+      "id": "HC-12",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "binary",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M22.5"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "unresolved_fuzz_findings_at_coverage_target": {
+      "id": "HC-03/HC-06",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "count",
+      "direction": "equal_zero",
+      "od_metrics": [
+        "M24.2"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "unsafe_defaults": {
+      "id": "HC-05",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "count",
+      "direction": "equal_zero",
+      "od_metrics": [
+        "M25.4"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "single_file_self_contained": {
+      "id": "HC-09",
+      "role": "binary",
+      "family": "correctness",
+      "unit": "binary",
+      "direction": "equal_one",
+      "od_metrics": [
+        "M26.5"
+      ],
+      "source": "research/decision-method.md §3.3; Appendix A.2"
+    },
+    "validation_obligations_count": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "count",
+      "direction": "report",
+      "od_metrics": [
+        "M01.1"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "conditional_decoding_rules_count": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "count",
+      "direction": "report",
+      "od_metrics": [
+        "M01.2"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "declared_gap_count": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "count",
+      "direction": "report",
+      "od_metrics": [
+        "M03.3"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "decided_class_reach_fraction": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "report",
+      "od_metrics": [
+        "M04.3"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "verification_cpu_share": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "report",
+      "od_metrics": [
+        "M06.3"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "unstable_source_retry_cost_s": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "s",
+      "direction": "report",
+      "od_metrics": [
+        "M06.5"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "assurance_state": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "ordinal",
+      "direction": "report",
+      "od_metrics": [
+        "M15.4"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "declared_security_level_bits": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "bits",
+      "direction": "report",
+      "od_metrics": [
+        "M15.5"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "hostile_cpu_scaling_exponent": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "1",
+      "direction": "report",
+      "od_metrics": [
+        "M17.5"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "scale_limits": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "count; B",
+      "direction": "report",
+      "od_metrics": [
+        "M17.6"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "platform_coverage_count": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "count",
+      "direction": "report",
+      "od_metrics": [
+        "M18.4"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "import_majority_agreement_fraction": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "report",
+      "od_metrics": [
+        "M19.2"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "export_outcome_distribution": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "report",
+      "od_metrics": [
+        "M19.4"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "spec_defects_per_1000_words": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "count/1000 words",
+      "direction": "report",
+      "od_metrics": [
+        "M21.3"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "release_age_years": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "years",
+      "direction": "report",
+      "od_metrics": [
+        "M22.4"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "normative_words_per_rule": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "words/rule",
+      "direction": "report",
+      "od_metrics": [
+        "M23.1"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "superlinear_structure_count": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "count",
+      "direction": "report",
+      "od_metrics": [
+        "M24.5"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "zero_install_scenario_fraction": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "fraction",
+      "direction": "report",
+      "od_metrics": [
+        "M26.1"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "migration_steps_count": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "count",
+      "direction": "report",
+      "od_metrics": [
+        "M26.2"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "build_availability": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "count; s",
+      "direction": "report",
+      "od_metrics": [
+        "M26.3"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "identification_support_count": {
+      "id": "-",
+      "role": "descriptive",
+      "family": "other",
+      "unit": "count",
+      "direction": "report",
+      "od_metrics": [
+        "M26.4"
+      ],
+      "source": "research/decision-method.md Appendix A.2; Appendix A.2"
+    },
+    "independent_reader_loc": {
+      "id": "C2",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "LoC",
+      "direction": "minimize",
+      "od_metrics": [
+        "M21.2"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "reader_fragmentation_count": {
+      "id": "C5",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M21.6"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "decode_path_dependency_count": {
+      "id": "C3",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M22.1"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "decode_path_native_unsafe_count": {
+      "id": "C3/C4",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M22.2"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "rustsec_advisory_count": {
+      "id": "C3",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M22.3"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "maintainer_count": {
+      "id": "C3",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "count",
+      "direction": "maximize",
+      "od_metrics": [
+        "M22.4"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "msrv_gap": {
+      "id": "C3",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "versions",
+      "direction": "minimize",
+      "od_metrics": [
+        "M22.4"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "normative_words_added": {
+      "id": "C1",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "words",
+      "direction": "minimize",
+      "od_metrics": [
+        "M23.1",
+        "M23.3"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "wire_items_added": {
+      "id": "C1",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M23.2",
+        "M23.3"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "untrusted_input_loc": {
+      "id": "C4",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "LoC",
+      "direction": "minimize",
+      "od_metrics": [
+        "M24.1"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "attacker_controlled_parameters": {
+      "id": "C4",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M24.3"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "validated_only_vulnerability_classes": {
+      "id": "C4",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M24.4"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    },
+    "flags_per_task": {
+      "id": "C6",
+      "role": "cost_input",
+      "family": "other",
+      "unit": "count",
+      "direction": "minimize",
+      "od_metrics": [
+        "M25.2"
+      ],
+      "source": "research/decision-method.md §7.1; Appendix A.2"
+    }
   }
 }
