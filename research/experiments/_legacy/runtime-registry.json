@@ -1,0 +1,719 @@
+{
+  "schema": "ebr.legacy.runtime-registry.v1",
+  "note": "Design-time registry for EXP-LEGACY-*. Versions marked 'observed' were read on this host on 2026-09-17 (read-only probes). Versions marked 'pin-at-acquisition' are chosen by acquire_runtimes.py as the named release and recorded with SHA-256 in runtime-lock.json before any run. Drivers are to be written under research/tools/legacy/readers/ unless noted.",
+  "runtimes": [
+    {
+      "runtime_id": "python-zipfile-3.13.5-win",
+      "formats": [
+        "zip"
+      ],
+      "version": "CPython 3.13.5 (observed, C:/Python313/python.exe)",
+      "platform": "windows-host via WSL interop",
+      "acquisition": "installed",
+      "driver": "readers/py_zip.py",
+      "role": [
+        "reference-reader",
+        "frozen-profile-anchor zip/python-zipfile@3.13.5"
+      ]
+    },
+    {
+      "runtime_id": "python-zipfile-3.13.5-linux",
+      "formats": [
+        "zip"
+      ],
+      "version": "CPython 3.13.5 python-build-standalone (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "download release tarball",
+      "driver": "readers/py_zip.py",
+      "role": [
+        "cross-platform reproduction"
+      ]
+    },
+    {
+      "runtime_id": "python-zipfile-3.12.3-linux",
+      "formats": [
+        "zip"
+      ],
+      "version": "Ubuntu python3 3.12.3 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/py_zip.py",
+      "role": [
+        "version-drift"
+      ]
+    },
+    {
+      "runtime_id": "python-zipfile-3.14-linux",
+      "formats": [
+        "zip"
+      ],
+      "version": "latest CPython 3.14.x python-build-standalone (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "download",
+      "driver": "readers/py_zip.py",
+      "role": [
+        "version-drift"
+      ]
+    },
+    {
+      "runtime_id": "python-tarfile-3.13.5-win",
+      "formats": [
+        "tar",
+        "gzip",
+        "bzip2",
+        "xz"
+      ],
+      "version": "CPython 3.13.5 (observed)",
+      "platform": "windows-host via WSL interop",
+      "acquisition": "installed",
+      "driver": "readers/py_tar.py (filters: data, tar, fully_trusted)",
+      "role": [
+        "reference-reader"
+      ]
+    },
+    {
+      "runtime_id": "python-tarfile-3.12.3-linux",
+      "formats": [
+        "tar",
+        "gzip",
+        "bzip2",
+        "xz"
+      ],
+      "version": "3.12.3 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/py_tar.py",
+      "role": [
+        "version-drift"
+      ]
+    },
+    {
+      "runtime_id": "python-tarfile-3.14-linux",
+      "formats": [
+        "tar",
+        "gzip",
+        "bzip2",
+        "xz",
+        "zstd"
+      ],
+      "version": "latest 3.14.x (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "download",
+      "driver": "readers/py_tar.py (compression.zstd)",
+      "role": [
+        "version-drift"
+      ]
+    },
+    {
+      "runtime_id": "java-zipfile-21.0.12.1-win",
+      "formats": [
+        "zip"
+      ],
+      "version": "Eclipse Adoptium 21.0.12.1 (observed)",
+      "platform": "windows-host via WSL interop",
+      "acquisition": "installed",
+      "driver": "readers/ZipReaders.java mode=zipfile",
+      "role": [
+        "reference-reader",
+        "frozen-profile-anchor zip/java-zipfile@21.0.12.1"
+      ]
+    },
+    {
+      "runtime_id": "java-zipinputstream-21.0.12.1-win",
+      "formats": [
+        "zip"
+      ],
+      "version": "Adoptium 21.0.12.1 (observed)",
+      "platform": "windows-host via WSL interop",
+      "acquisition": "installed",
+      "driver": "readers/ZipReaders.java mode=zipinputstream",
+      "role": [
+        "frozen-profile-anchor zip/java-zipinputstream@21.0.12.1"
+      ]
+    },
+    {
+      "runtime_id": "java-zip-21.0.12-linux",
+      "formats": [
+        "zip"
+      ],
+      "version": "Ubuntu openjdk 21.0.12 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/ZipReaders.java both modes",
+      "role": [
+        "cross-platform reproduction"
+      ]
+    },
+    {
+      "runtime_id": "java-zip-17-linux",
+      "formats": [
+        "zip"
+      ],
+      "version": "Ubuntu openjdk 17 (observed present)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/ZipReaders.java both modes",
+      "role": [
+        "version-drift"
+      ]
+    },
+    {
+      "runtime_id": "java-zip-25-linux",
+      "formats": [
+        "zip"
+      ],
+      "version": "Temurin 25.0.x (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "download",
+      "driver": "readers/ZipReaders.java both modes",
+      "role": [
+        "version-drift"
+      ]
+    },
+    {
+      "runtime_id": "commons-compress-1.28.0",
+      "formats": [
+        "zip",
+        "tar",
+        "7z",
+        "ar",
+        "cpio"
+      ],
+      "version": "Apache Commons Compress 1.28.0 jar (pin-at-acquisition; same release as corpus item f20-validation-real-commons-compress-testdata)",
+      "platform": "wsl-ubuntu (JDK 21)",
+      "acquisition": "Maven Central download",
+      "driver": "readers/CommonsReaders.java (ZipFile, ZipArchiveInputStream, TarArchiveInputStream, SevenZFile)",
+      "role": [
+        "candidate-profile-runtime"
+      ]
+    },
+    {
+      "runtime_id": "libarchive-3.8.8-win",
+      "formats": [
+        "zip",
+        "tar",
+        "7z",
+        "cpio",
+        "ar",
+        "iso9660",
+        "cab",
+        "lha",
+        "rar",
+        "rar5",
+        "xar",
+        "gzip",
+        "bzip2",
+        "xz",
+        "zstd",
+        "lz4",
+        "lzip"
+      ],
+      "version": "Windows tar.exe bsdtar 3.8.8 (observed; build 10.0.26100.9278)",
+      "platform": "windows-host via WSL interop",
+      "acquisition": "installed",
+      "driver": "readers/bsdtar.py",
+      "role": [
+        "reference-reader",
+        "frozen-profile-anchor zip/libarchive-bsdtar@3.8.8"
+      ]
+    },
+    {
+      "runtime_id": "libarchive-3.8.8-linux",
+      "formats": [
+        "as libarchive-3.8.8-win"
+      ],
+      "version": "libarchive 3.8.8 built from release tarball (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "source build",
+      "driver": "readers/bsdtar.py",
+      "role": [
+        "cross-platform reproduction"
+      ]
+    },
+    {
+      "runtime_id": "libarchive-3.7.2-linux",
+      "formats": [
+        "as libarchive-3.8.8-win"
+      ],
+      "version": "Ubuntu libarchive-tools 3.7.2-2ubuntu0.8 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/bsdtar.py",
+      "role": [
+        "version-drift"
+      ]
+    },
+    {
+      "runtime_id": "infozip-unzip-6.00-linux",
+      "formats": [
+        "zip"
+      ],
+      "version": "UnZip 6.00 of 20 April 2009, by Debian (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/unzip.py",
+      "role": [
+        "reference-reader",
+        "candidate-profile-runtime"
+      ]
+    },
+    {
+      "runtime_id": "7zip-23.01-linux",
+      "formats": [
+        "zip",
+        "tar",
+        "7z",
+        "cpio",
+        "ar",
+        "iso9660",
+        "cab",
+        "wim",
+        "squashfs",
+        "lzma",
+        "xz",
+        "gzip",
+        "bzip2",
+        "zstd"
+      ],
+      "version": "7-Zip 23.01 (x64), Ubuntu package 7zip 23.01+dfsg-11 (observed); the +dfsg Debian build omits RAR support (RAR/RAR5 reading uses 7zip-26-win, 7zz-26-linux or unrar)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/sevenzip.py",
+      "role": [
+        "reference-reader",
+        "candidate-profile-runtime"
+      ]
+    },
+    {
+      "runtime_id": "7zip-26-win",
+      "formats": [
+        "zip",
+        "tar",
+        "7z",
+        "wim",
+        "rar5",
+        "cab",
+        "iso9660"
+      ],
+      "version": "latest official 7-Zip 26.x 7za/7zr extra package (pin-at-acquisition)",
+      "platform": "windows-host via WSL interop",
+      "acquisition": "download (no installer; extra console package)",
+      "driver": "readers/sevenzip.py",
+      "role": [
+        "version-drift",
+        "candidate-profile-runtime"
+      ]
+    },
+    {
+      "runtime_id": "7zz-26-linux",
+      "formats": [
+        "as 7zip-26-win"
+      ],
+      "version": "official 7-Zip 26.x linux-x64 7zz (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "download",
+      "driver": "readers/sevenzip.py",
+      "role": [
+        "version-drift"
+      ]
+    },
+    {
+      "runtime_id": "p7zip-16.02-linux",
+      "formats": [
+        "7z",
+        "zip"
+      ],
+      "version": "p7zip 16.02 source build (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "source build",
+      "driver": "readers/sevenzip.py",
+      "role": [
+        "7z-writer",
+        "candidate-profile-runtime"
+      ]
+    },
+    {
+      "runtime_id": "7zip-zstd-fork-win",
+      "formats": [
+        "7z"
+      ],
+      "version": "mcmilk 7-Zip-zstd latest release (pin-at-acquisition)",
+      "platform": "windows-host via WSL interop",
+      "acquisition": "download",
+      "driver": "readers/sevenzip.py",
+      "role": [
+        "fork-codec writer and reader"
+      ]
+    },
+    {
+      "runtime_id": "py7zr-pinned-linux",
+      "formats": [
+        "7z"
+      ],
+      "version": "py7zr latest release (pin-at-acquisition) in a dedicated venv",
+      "platform": "wsl-ubuntu",
+      "acquisition": "pip download with hashes",
+      "driver": "readers/py7zr_read.py",
+      "role": [
+        "reference-reader",
+        "7z-writer"
+      ]
+    },
+    {
+      "runtime_id": "gnu-tar-1.35-linux",
+      "formats": [
+        "tar",
+        "gzip",
+        "bzip2",
+        "xz",
+        "zstd",
+        "lzip"
+      ],
+      "version": "tar (GNU tar) 1.35 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/gnutar.py",
+      "role": [
+        "reference-reader",
+        "tar-writer"
+      ]
+    },
+    {
+      "runtime_id": "gnu-tar-1.34-linux",
+      "formats": [
+        "tar"
+      ],
+      "version": "GNU tar 1.34 source build (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "source build",
+      "driver": "readers/gnutar.py",
+      "role": [
+        "version-drift"
+      ]
+    },
+    {
+      "runtime_id": "busybox-tar-linux",
+      "formats": [
+        "tar",
+        "cpio",
+        "gzip",
+        "bzip2",
+        "xz"
+      ],
+      "version": "busybox 1.36.1 static (pin-at-acquisition; Ubuntu busybox-static)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "apt install busybox-static",
+      "driver": "readers/busybox.py",
+      "role": [
+        "candidate-profile-runtime"
+      ]
+    },
+    {
+      "runtime_id": "star-schily-linux",
+      "formats": [
+        "tar"
+      ],
+      "version": "schilytools latest release star (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "source build",
+      "driver": "readers/star.py",
+      "role": [
+        "tar-writer (star/xstar/exustar)",
+        "reader"
+      ]
+    },
+    {
+      "runtime_id": "go-archive-1.22.2-linux",
+      "formats": [
+        "zip",
+        "tar"
+      ],
+      "version": "go1.22.2 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/goread/main.go (archive/zip, archive/tar)",
+      "role": [
+        "candidate-profile-runtime",
+        "version-drift"
+      ]
+    },
+    {
+      "runtime_id": "go-archive-latest-linux",
+      "formats": [
+        "zip",
+        "tar"
+      ],
+      "version": "latest go1.x toolchain tarball (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "download",
+      "driver": "readers/goread/main.go",
+      "role": [
+        "candidate-profile-runtime"
+      ]
+    },
+    {
+      "runtime_id": "dotnet-9-linux",
+      "formats": [
+        "zip",
+        "tar"
+      ],
+      "version": ".NET SDK 9.0.302 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/DotnetRead (System.IO.Compression.ZipArchive, System.Formats.Tar)",
+      "role": [
+        "candidate-profile-runtime"
+      ]
+    },
+    {
+      "runtime_id": "dotnet-10-win",
+      "formats": [
+        "zip",
+        "tar"
+      ],
+      "version": ".NET 10 runtime (observed dotnet.exe 10.0.1226)",
+      "platform": "windows-host via WSL interop",
+      "acquisition": "installed",
+      "driver": "readers/DotnetRead",
+      "role": [
+        "candidate-profile-runtime",
+        "cross-platform"
+      ]
+    },
+    {
+      "runtime_id": "powershell-expand-archive-5.1-win",
+      "formats": [
+        "zip"
+      ],
+      "version": "Windows PowerShell 5.1 Expand-Archive/Compress-Archive (.NET Framework 4.x) (observed present)",
+      "platform": "windows-host via WSL interop",
+      "acquisition": "installed",
+      "driver": "readers/expand_archive.ps1",
+      "role": [
+        "zip-writer (backslash-name producer candidate)",
+        "reader"
+      ]
+    },
+    {
+      "runtime_id": "windows-explorer-zipfldr-win",
+      "formats": [
+        "zip"
+      ],
+      "version": "zipfldr.dll of Windows 11 10.0.26200 (observed OS build)",
+      "platform": "windows-host",
+      "acquisition": "installed",
+      "driver": "readers/explorer_copyhere.ps1 (Shell.Application Namespace().CopyHere with FOF flags)",
+      "role": [
+        "candidate-profile-runtime"
+      ],
+      "risk": "COM shell copy may require an interactive desktop session; a failed feasibility probe marks this column BLOCKED (interactive session) rather than a runtime outcome"
+    },
+    {
+      "runtime_id": "rust-zip2-tar-crates",
+      "formats": [
+        "zip",
+        "tar"
+      ],
+      "version": "zip (zip2) latest, tar 0.4.x latest, astral-tokio-tar pre- and post-CVE-2025-62518-fix releases (pin-at-acquisition in harness Cargo.lock)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "cargo in research/harness/crates/ebr-legacy",
+      "driver": "ebr-legacy-readers",
+      "role": [
+        "candidate-profile-runtime"
+      ]
+    },
+    {
+      "runtime_id": "node-yauzl-tar",
+      "formats": [
+        "zip",
+        "tar"
+      ],
+      "version": "yauzl and node-tar latest (pin-at-acquisition package-lock) on node v22.23.2 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "npm ci with lockfile",
+      "driver": "readers/noderead.mjs",
+      "role": [
+        "candidate-profile-runtime"
+      ]
+    },
+    {
+      "runtime_id": "warehouse-validate-zipfile",
+      "formats": [
+        "zip"
+      ],
+      "version": "pypi/warehouse validate_zipfile at a pinned commit (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "git archive of pinned commit",
+      "driver": "readers/warehouse_check.py",
+      "role": [
+        "registry-ingest acceptance"
+      ]
+    },
+    {
+      "runtime_id": "zstd-cli",
+      "formats": [
+        "zstd"
+      ],
+      "version": "1.5.5 (observed) and 1.5.7 source build",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed + source build",
+      "driver": "readers/stream_cli.py",
+      "role": [
+        "transport reference CLI",
+        "writer"
+      ]
+    },
+    {
+      "runtime_id": "xz-utils",
+      "formats": [
+        "xz",
+        "lzma"
+      ],
+      "version": "5.4.5 (observed) and latest 5.8.x source build",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed + source build",
+      "driver": "readers/stream_cli.py",
+      "role": [
+        "transport reference CLI",
+        "writer"
+      ]
+    },
+    {
+      "runtime_id": "gzip-pigz-bzip2-lzip-lz4-brotli",
+      "formats": [
+        "gzip",
+        "bzip2",
+        "lzip",
+        "lz4",
+        "brotli"
+      ],
+      "version": "gzip 1.12, pigz, bzip2 1.0.8, lzip 1.24.1, lz4 1.9.4, brotli (observed); lbzip2, ncompress (apt)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed / apt",
+      "driver": "readers/stream_cli.py",
+      "role": [
+        "transport reference CLI"
+      ]
+    },
+    {
+      "runtime_id": "gnu-cpio-bsdcpio-ar",
+      "formats": [
+        "cpio",
+        "ar"
+      ],
+      "version": "GNU cpio 2.15, bsdcpio 3.7.2, GNU ar 2.42 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/cpio_ar.py",
+      "role": [
+        "candidate-adapter writer/reader"
+      ]
+    },
+    {
+      "runtime_id": "wimlib-1.14.4",
+      "formats": [
+        "wim"
+      ],
+      "version": "wimlib-imagex 1.14.4 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/wim.py",
+      "role": [
+        "candidate-adapter writer/reader"
+      ]
+    },
+    {
+      "runtime_id": "squashfs-tools-4.6.1",
+      "formats": [
+        "squashfs"
+      ],
+      "version": "mksquashfs/unsquashfs 4.6.1 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed",
+      "driver": "readers/squashfs.py",
+      "role": [
+        "candidate-adapter writer/reader"
+      ]
+    },
+    {
+      "runtime_id": "oci-unpackers",
+      "formats": [
+        "oci-layer"
+      ],
+      "version": "umoci, crane (go-containerregistry), podman (rootless, WSL apt) latest (pin-at-acquisition); skopeo (observed installed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "download static binaries / apt",
+      "driver": "readers/oci_unpack.py",
+      "role": [
+        "layer unpack acceptance"
+      ]
+    },
+    {
+      "runtime_id": "nix-nar",
+      "formats": [
+        "nar"
+      ],
+      "version": "nix static binary latest (pin-at-acquisition), used only for 'nix-store --dump/--restore' and 'nix hash path' without a daemon",
+      "platform": "wsl-ubuntu",
+      "acquisition": "download",
+      "driver": "readers/nar.py",
+      "role": [
+        "candidate-adapter writer/reader"
+      ]
+    },
+    {
+      "runtime_id": "iso-cab-lha-xar-tools",
+      "formats": [
+        "iso9660",
+        "cab",
+        "lha",
+        "xar"
+      ],
+      "version": "xorriso, genisoimage, gcab (observed); lhasa, xar (source build, pin-at-acquisition); cabextract (apt)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "installed / source build / apt",
+      "driver": "readers/longtail.py",
+      "role": [
+        "candidate-adapter writer/reader"
+      ]
+    },
+    {
+      "runtime_id": "android-apksigner-jarsigner",
+      "formats": [
+        "zip"
+      ],
+      "version": "Ubuntu universe packages apksigner and zipalign (pin-at-acquisition); jarsigner/keytool from JDK 21.0.12 (observed)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "apt install apksigner zipalign (no licence click-through); Android SDK build-tools downloads are not used",
+      "driver": "readers/signed_verify.py",
+      "role": [
+        "signed-container writer and verifier"
+      ]
+    },
+    {
+      "runtime_id": "macos-archive-utility-ditto-bsdtar",
+      "formats": [
+        "zip",
+        "tar"
+      ],
+      "version": "macOS current release Archive Utility, ditto, /usr/bin/bsdtar",
+      "platform": "macOS (PLATFORM_BLOCKED)",
+      "acquisition": "none possible on this host",
+      "driver": "readers/macos.sh",
+      "role": [
+        "BLOCKED column"
+      ]
+    },
+    {
+      "runtime_id": "bubblewrap-sandbox",
+      "formats": [],
+      "version": "Ubuntu bubblewrap package (pin-at-acquisition)",
+      "platform": "wsl-ubuntu",
+      "acquisition": "apt install bubblewrap",
+      "driver": "research/tools/legacy/run_matrix.py --sandbox bwrap",
+      "role": [
+        "extraction sandbox (conventions C12)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-004
+status: designed
+question: >
+  For each compressed-transport framing, check type, filter, nesting, magic-collision and memory-policy fixture,
+  which decoders accept it, what they produce, whether corruption is detected, how Entrybound strict transport
+  import classifies it, and does decoder peak memory follow a header-computable bound?
+hypothesis: >
+  H1 checksum-less zstd/xz corruption decodes silently and the status quo marks nothing unverified; H2 lzma-rust2
+  0.20.0 differs from xz 5.8 on at least one BCJ filter; H3 allocator peaks are bounded by k*header_declared+c fitted
+  on tuning and holding on validation; H4 BZh9-named tar is read by libarchive and refused by status-quo detection;
+  H5 gzip of 1 MiB zeros is an empty archive to tar readers and a file to stream decoders; H6 zero padding after gzip
+  members is accepted by all reference readers.
+decision_ids: [DEC-LEG-007, DEC-LEG-037, DEC-LEG-069, DEC-LEG-072, DEC-LEG-074, DEC-LEG-075, DEC-LEG-106,
+  DEC-LEG-107, DEC-INT-022]
+notes: >
+  Design pre-registration. Not runnable until gate G-A and the tooling in protocol.md section 7 exist. Candidates
+  prefixed decmem- run ebr-legacy-decmem (counting allocator, exact peaks).
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+  EB_LEGACY_LOCK: research/experiments/_legacy/runtime-lock.json
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/run_matrix.py
+  --experiment EXP-LEGACY-004 --format stream --runtime {runtime_id}
+  --case-set {item_path} --item-id {item_id} --split {split} --rep {rep} --seed {seed}
+  --scratch {scratch} --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-004
+  --sandbox bwrap --ops read,detect,verify
+
+candidates:
+  - {name: zstd-cli-1.5.5, params: {runtime_id: "zstd-cli:1.5.5"}}
+  - {name: zstd-cli-1.5.7, params: {runtime_id: "zstd-cli:1.5.7-legacy"}}
+  - {name: xz-utils-5.4.5, params: {runtime_id: "xz-utils:5.4.5"}}
+  - {name: xz-utils-5.8, params: {runtime_id: "xz-utils:5.8"}}
+  - {name: gzip-pigz-bzip2-lzip-lz4-brotli, params: {runtime_id: gzip-pigz-bzip2-lzip-lz4-brotli}}
+  - {name: gnu-tar-1.35-auto, params: {runtime_id: "gnu-tar-1.35-linux:auto-detect"}}
+  - {name: libarchive-3.8.8-win, params: {runtime_id: libarchive-3.8.8-win}}
+  - {name: libarchive-3.7.2-linux, params: {runtime_id: libarchive-3.7.2-linux}}
+  - {name: 7zip-23.01-linux, params: {runtime_id: 7zip-23.01-linux}}
+  - {name: python-3.13.5-win-stream, params: {runtime_id: "python-tarfile-3.13.5-win:stream-modules"}}
+  - {name: python-3.14-linux-stream, params: {runtime_id: "python-tarfile-3.14-linux:stream-modules"}}
+  - {name: go-compress-latest, params: {runtime_id: "go-archive-latest-linux:compress"}}
+  - {name: rust-production-crates, params: {runtime_id: "rust-zip2-tar-crates:production-stream-crates"}}
+  - {name: rust-alternative-crates, params: {runtime_id: "rust-zip2-tar-crates:alternative-stream-crates"}}
+  - {name: decmem-production-crates, params: {runtime_id: "ebr-legacy-decmem:production"}}
+  - {name: decmem-alternative-crates, params: {runtime_id: "ebr-legacy-decmem:alternative"}}
+  - {name: ebound-strict, params: {runtime_id: "ebound:legacy-head:strict"}}
+  - {name: ebound-strict-policy-64m, params: {runtime_id: "ebr-legacy-import:legacy-head:strict:max_decode_memory=67108864"}}
+  - {name: ebound-strict-policy-1g, params: {runtime_id: "ebr-legacy-import:legacy-head:strict:max_decode_memory=1073741824"}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-004/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: none, unit: B}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: cases_accepted, source: stdout_json, key: payload.cases_accepted, family: other, direction: none, unit: count}
+  - {name: corruptions_undetected, source: stdout_json, key: payload.corruptions_undetected, family: other, direction: none, unit: count}
+  - {name: alloc_peak_bytes_max, source: stdout_json, key: payload.alloc_peak_bytes_max, family: memory_peak, direction: none, unit: B}
+  - {name: runtime_lock_ok, source: stdout_json, key: payload.runtime_lock_ok, family: correctness, direction: maximize}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2509170411, bootstrap: 2509170412, command: 2509170413}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /usr/bin/bwrap
+    - /usr/bin/time
+    - /root/eb-research/target/harness/release/ebr-legacy-decmem
+    - /root/eb-research/target/legacy-head/release/ebound
+  timeout_s: 14400
+
+analysis:
+  baseline: libarchive-3.8.8-win
+  pairing: item
+  report_metrics: [cases_accepted, corruptions_undetected, alloc_peak_bytes_max]

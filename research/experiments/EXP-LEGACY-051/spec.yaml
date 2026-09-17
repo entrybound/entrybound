@@ -1,0 +1,79 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-051
+status: designed
+question: >
+  What values do legacy adapters write into ConversionProvenance and LOM evidence, are fault outcome classes
+  consistent across adapters, are import identities stable across importer commits, do name declarations and
+  executable derivation give one identity per logical tree across formats and hosts, how exact is 7z evidence, can
+  the LOM represent cpio/OCI constructs, and how do implicit directories, missing 7z MTime, ZIP time extras and mixed
+  precisions affect evidence and diffs?
+hypothesis: >
+  H1 at least one provenance string is undocumented and one fault class maps to different outcome classes in ZIP and
+  7z; H2 no undocumented LAI change across importer commits; H3 identical name bytes get different declarations across
+  adapters; H4 >= 3 executable patterns for one tree across hosts and formats; H5 a compat LAI differs from strict on an
+  ambiguous ZIP; H6 7z evidence is less exact than ZIP; H7 cpio/OCI map onto LOM except whiteouts; H8 ebound diff
+  reports a false change for an equal instant at different precisions.
+decision_ids: [DEC-LEG-003, DEC-LEG-004, DEC-LEG-023, DEC-LEG-033, DEC-LEG-034, DEC-LEG-049, DEC-LEG-053,
+  DEC-LEG-088, DEC-LEG-092, DEC-MOD-019, DEC-MOD-022, DEC-MOD-046, DEC-PLT-051]
+notes: >
+  Design pre-registration. Each candidate is an analysis arm with a build selector; the driver prints one JSON summary
+  per (arm, case set). Not runnable until gate G-A and the tooling in protocol.md section 7 exist.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/provenance_census.py
+  --experiment EXP-LEGACY-051 --arm {arm} --builds {builds} --input {item_path} --item-id {item_id}
+  --split {split} --rep {rep} --seed {seed} --scratch {scratch}
+  --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-051
+
+candidates:
+  - {name: l1-emitted-values, params: {arm: emitted-values, builds: legacy-head}}
+  - {name: l1-outcome-class-consistency, params: {arm: outcome-class-matrix, builds: legacy-head}}
+  - {name: l3-release-stability, params: {arm: release-stability, builds: legacy-history}}
+  - {name: l4-name-declarations, params: {arm: name-declarations, builds: legacy-head}}
+  - {name: l5-executable-derivation, params: {arm: executable-derivation, builds: "legacy-head,legacy-head-win"}}
+  - {name: l6-strict-vs-compat-identity, params: {arm: strict-vs-compat-identity, builds: legacy-head}}
+  - {name: l7-sevenz-exactness, params: {arm: sevenz-evidence-exactness, builds: legacy-research}}
+  - {name: l8-lom-mapping-cpio-oci, params: {arm: lom-mapping-prototypes, builds: legacy-research}}
+  - {name: l9-implicit-directories, params: {arm: implicit-directories, builds: legacy-research}}
+  - {name: l10-precision-diff, params: {arm: precision-diff, builds: legacy-head}}
+  - {name: l11-sevenz-missing-mtime, params: {arm: sevenz-missing-mtime, builds: legacy-research}}
+  - {name: l12-zip-extras-fidelity, params: {arm: zip-extras-fidelity, builds: legacy-head}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-051/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: inputs_total, source: stdout_json, key: payload.inputs_total, family: other, direction: none, unit: count}
+  - {name: distinct_values, source: stdout_json, key: payload.distinct_values, family: other, direction: none, unit: count}
+  - {name: identity_findings, source: stdout_json, key: payload.identity_findings, family: correctness, direction: minimize, unit: count}
+  - {name: declaration_differences, source: stdout_json, key: payload.declaration_differences, family: other, direction: none, unit: count}
+  - {name: diff_false_changes, source: stdout_json, key: payload.diff_false_changes, family: other, direction: none, unit: count}
+  - {name: evidence_bytes, source: stdout_json, key: payload.evidence_bytes, family: size, direction: minimize, unit: B}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2509175111, bootstrap: 2509175112, command: 2509175113}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /root/eb-research/target/legacy-head/release/ebound
+  timeout_s: 14400
+
+analysis:
+  baseline: l1-emitted-values
+  pairing: item
+  report_metrics: [inputs_total, identity_findings, declaration_differences, diff_false_changes, evidence_bytes]

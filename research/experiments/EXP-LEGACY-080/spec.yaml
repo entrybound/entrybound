@@ -1,0 +1,58 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-080
+status: blocked
+question: >
+  Do macOS consumers accept and faithfully restore Entrybound export profiles on APFS, what do macOS producers put
+  into ZIP and tar archives and how does Entrybound import them, and are export bytes identical on native ARM64?
+hypothesis: >
+  H1 Archive Utility restores zip/portable-v1 outputs with core fidelity 1 and ignores pax keys without stray files;
+  H2 ditto --sequesterRsrc ZIPs carry __MACOSX AppleDouble members that strict import keeps as ordinary entries;
+  H3 Archive Utility reads DOS times as local time and prefers 0x5455; H4 native ARM64 export bytes equal x86-64 bytes.
+decision_ids: [DEC-LEG-028, DEC-LEG-068, DEC-LEG-076, DEC-LEG-082, DEC-LEG-091, DEC-PLT-020, DEC-LEG-008]
+notes: >
+  BLOCKED design: macOS/APFS and native ARM64 are PLATFORM_BLOCKED on this program's host (no hosted runners).
+  The spec is complete so the experiment can run unchanged if the owner provides the platforms.
+shell: bash
+env:
+  PYTHONPATH: research/tools
+
+command: >-
+  python3 research/tools/legacy/macos_run.py
+  --experiment EXP-LEGACY-080 --arm {arm} --input {item_path} --item-id {item_id} --split {split}
+  --rep {rep} --seed {seed} --scratch {scratch} --artifacts-root ./raw-artifacts/EXP-LEGACY-080
+
+candidates:
+  - {name: macos-readers-export-profiles, params: {arm: "readers:archive-utility,ditto,unzip,bsdtar"}}
+  - {name: macos-writers-import, params: {arm: "writers:finder-compress,ditto-sequester,zip,bsdtar-mac-metadata"}}
+  - {name: macos-zip-differential-column, params: {arm: "zip-matrix:archive-utility"}}
+  - {name: native-arm64-export-determinism, params: {arm: "determinism:native-arm64"}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-080/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: cells_total, source: stdout_json, key: payload.cells_total, family: other, direction: none, unit: count}
+  - {name: cells_accepted, source: stdout_json, key: payload.cells_accepted, family: other, direction: none, unit: count}
+  - {name: byte_mismatches, source: stdout_json, key: payload.byte_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2509178011, bootstrap: 2509178012, command: 2509178013}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [darwin]
+  arch: [arm64, x86_64]
+  emulated: false
+  requires: [/usr/bin/ditto, /usr/bin/unzip, /usr/bin/tar]
+  timeout_s: 14400
+
+analysis:
+  baseline: macos-readers-export-profiles
+  pairing: item
+  report_metrics: [cells_accepted, byte_mismatches]

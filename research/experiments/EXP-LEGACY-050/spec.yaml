@@ -1,0 +1,88 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-050
+status: designed
+question: >
+  What does legacy preservation cost per storage design, does exact-source recovery hold across layouts, profiles,
+  repacks and signing, is preserved evidence complete, can tar/compressed-tar/7z sources be preserved or recomposed,
+  does re-projection match direct import, how does preservation compose with encryption, and what happens to signed
+  JAR/APK/ZIP containers?
+hypothesis: >
+  H1 raw preservation roughly doubles DEFLATE-dominated ZIP artifacts and dedup-against-decoded helps only STORE-heavy
+  ZIPs; H2 recovery is exact everywhere; H3 preserved LOM contains every observe() field; H4 < 50% of .tar.gz and
+  < 20% of .tar.xz/.tar.zst streams are recomposable by pinned encoders; H5 strict+preserve changes only AUX; H6
+  re-projection equals direct import; H7 signed JARs/APKs fail verification after export but verify after recovery,
+  with no declared signature loss under the status quo.
+decision_ids: [DEC-LEG-096, DEC-LEG-097, DEC-LEG-098, DEC-LEG-060, DEC-LEG-025, DEC-LEG-044, DEC-CRY-024,
+  DEC-CON-010, DEC-CRY-091, DEC-LEG-103]
+notes: >
+  Design pre-registration. Each candidate is an arm (P1-P9) with a design parameter; preserve_run.py prints one JSON
+  summary per (arm, item). Not runnable until gate G-A and the tooling in protocol.md section 7 exist.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/preserve_run.py
+  --experiment EXP-LEGACY-050 --arm {arm} --design {design} --input {item_path} --item-id {item_id}
+  --split {split} --rep {rep} --seed {seed} --scratch {scratch}
+  --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-050
+
+candidates:
+  - {name: p1-raw-record, params: {arm: P1-cost, design: status-quo-raw-record}}
+  - {name: p1-planner-compressed-source, params: {arm: P1-cost, design: planner-compressed-source}}
+  - {name: p1-dedup-against-decoded, params: {arm: P1-cost, design: dedup-against-decoded}}
+  - {name: p1-external-sidecar-source, params: {arm: P1-cost, design: external-sidecar-source}}
+  - {name: p2-recovery-matrix, params: {arm: P2-recovery, design: "layouts+profiles+repack+sign"}}
+  - {name: p2-regenerated-zip, params: {arm: P2-recovery, design: claim-regenerated-roundtrip}}
+  - {name: p3-completeness, params: {arm: P3-completeness, design: observe-vs-preserved}}
+  - {name: p4-tar-split-and-recompose, params: {arm: P4-tar-7z, design: "tar-split-side-data+recompose"}}
+  - {name: p5-strict-preserve, params: {arm: P5-identity, design: strict-preserve}}
+  - {name: p5-evidence-only-sidecar, params: {arm: P5-identity, design: evidence-only-sidecar}}
+  - {name: p6-reproject-from-lom, params: {arm: P6-reprojection, design: reproject-from-lom}}
+  - {name: p7-compose-status-quo, params: {arm: P7-composition, design: status-quo-refuse}}
+  - {name: p7-two-step, params: {arm: P7-composition, design: two-step-convert-then-encrypt}}
+  - {name: p7-detached-encrypted-provenance, params: {arm: P7-composition, design: detached-encrypted-provenance}}
+  - {name: p7-silently-drop-reference, params: {arm: P7-composition, design: silently-drop-provenance}}
+  - {name: p8-feature-bits, params: {arm: P8-feature-bits, design: census}}
+  - {name: p9-signed-containers, params: {arm: P9-signed, design: "detect+import+export+recover+verify"}}
+  - {name: p9-recover-cli, params: {arm: P9-signed, design: cli-recover-command}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-050/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: artifact_bytes, source: stdout_json, key: payload.artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: side_data_bytes, source: stdout_json, key: payload.side_data_bytes, family: size, direction: minimize, unit: B}
+  - {name: recovery_mismatches, source: stdout_json, key: payload.recovery_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: identity_rule_violations, source: stdout_json, key: payload.identity_rule_violations, family: correctness, direction: minimize, unit: count}
+  - {name: reprojection_disagreements, source: stdout_json, key: payload.reprojection_disagreements, family: correctness, direction: minimize, unit: count}
+  - {name: signatures_valid_after_export, source: stdout_json, key: payload.signatures_valid_after_export, family: other, direction: none, unit: count}
+  - {name: recompose_matches, source: stdout_json, key: payload.recompose_matches, family: other, direction: none, unit: count}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2509175011, bootstrap: 2509175012, command: 2509175013}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /root/eb-research/target/legacy-research/release/ebound
+    - /usr/bin/jarsigner
+    - /usr/bin/apksigner
+    - /usr/bin/zipalign
+  timeout_s: 14400
+
+analysis:
+  baseline: p1-raw-record
+  pairing: item
+  report_metrics: [artifact_bytes, side_data_bytes, recovery_mismatches, identity_rule_violations, reprojection_disagreements]

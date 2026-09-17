@@ -1,0 +1,74 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-005
+status: designed
+question: >
+  Do frozen ZIP compatibility profiles generalise beyond their derivation cases under structure-aware fuzzing
+  against their pinned anchors, how often do inputs carry unmatched conflict patterns, and what agreement and effort
+  do first tar and 7z rule-model prototypes achieve?
+hypothesis: >
+  H1 each frozen ZIP profile disagrees with its anchor on at least one retained validation input; H2 at least 5% of
+  retained validation inputs carry signatures absent from the EXP-LEGACY-001 tuning matrix; H3 a new
+  content-selection disagreement class is found; H4 a GNU tar model agrees on >= 0.99 of validation inputs within 40
+  agent-hours while libarchive and 7-Zip models agree less; H5 no Entrybound crash, hang or memory exceedance.
+decision_ids: [DEC-LEG-001, DEC-LEG-063, DEC-LEG-078, DEC-LEG-081, DEC-LEG-082, DEC-LEG-087, DEC-ECO-047]
+notes: >
+  Design pre-registration. Each sample is one 1800 CPU-second campaign shard; 24 shards per (candidate, seed pool).
+  Not runnable until gate G-A, EXP-LEGACY-001..003 tuning matrices and the tooling in protocol.md section 7 exist.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+  EB_LEGACY_LOCK: research/experiments/_legacy/runtime-lock.json
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/fuzz/campaign.py
+  --experiment EXP-LEGACY-005 --arm {arm} --model {model} --anchor {anchor}
+  --seed-pool {item_path} --item-id {item_id} --split {split} --shard {rep} --seed {seed}
+  --budget-cpu-s 1800 --per-input-timeout-s 60 --per-input-memory-bytes 4294967296
+  --scratch {scratch} --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-005 --sandbox bwrap
+
+candidates:
+  - {name: zip-profile-python-zipfile, params: {arm: zip, model: "compat:zip/python-zipfile@3.13.5", anchor: python-zipfile-3.13.5-linux}}
+  - {name: zip-profile-java-zipfile, params: {arm: zip, model: "compat:zip/java-zipfile@21.0.12.1", anchor: "java-zip-21.0.12-linux:zipfile"}}
+  - {name: zip-profile-java-zipinputstream, params: {arm: zip, model: "compat:zip/java-zipinputstream@21.0.12.1", anchor: "java-zip-21.0.12-linux:zipinputstream"}}
+  - {name: zip-profile-libarchive, params: {arm: zip, model: "compat:zip/libarchive-bsdtar@3.8.8", anchor: libarchive-3.8.8-linux}}
+  - {name: tar-model-gnu-tar, params: {arm: tar, model: "research-model:tar_model.gnu-tar-1.35", anchor: gnu-tar-1.35-linux}}
+  - {name: tar-model-libarchive, params: {arm: tar, model: "research-model:tar_model.libarchive-3.8.8", anchor: libarchive-3.8.8-linux}}
+  - {name: sevenz-model-7zip, params: {arm: 7z, model: "research-model:sevenz_model.7zip-23.01", anchor: 7zip-23.01-linux}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-005/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: cpu_s, source: resource, family: time_cpu, direction: none, unit: s}
+  - {name: inputs_executed, source: stdout_json, key: payload.inputs_executed, family: other, direction: none, unit: count}
+  - {name: inputs_retained, source: stdout_json, key: payload.inputs_retained, family: other, direction: none, unit: count}
+  - {name: disagreements, source: stdout_json, key: payload.disagreements, family: other, direction: none, unit: count}
+  - {name: unmatched_signatures, source: stdout_json, key: payload.unmatched_signatures, family: other, direction: none, unit: count}
+  - {name: entrybound_crash_findings, source: stdout_json, key: payload.entrybound_crash_findings, family: correctness, direction: minimize, unit: count}
+  - {name: planted_controls_found, source: stdout_json, key: payload.planted_controls_found, family: correctness, direction: maximize, unit: count}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 24
+warmups: 0
+seeds: {order: 2509170511, bootstrap: 2509170512, command: 2509170513}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 24
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /usr/bin/bwrap
+    - /root/eb-research/target/harness/release/ebr-legacy-import
+  timeout_s: 2400
+
+analysis:
+  baseline: zip-profile-libarchive
+  pairing: item
+  report_metrics: [inputs_executed, inputs_retained, disagreements, unmatched_signatures, entrybound_crash_findings]

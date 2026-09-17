@@ -1,0 +1,150 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-001
+status: designed
+question: >
+  For pre-registered ZIP primitive cases and tuning/validation ZIP-family archives, what do pinned ZIP runtimes
+  (listing, content selection, extraction, errors) and Entrybound import modes (strict, four frozen compat
+  profiles, compat+preserve) observe, where do they diverge, and do frozen compat rules agree with their anchors?
+hypothesis: >
+  H1 Windows anchors reproduce tools/zip-compat/observed-outcomes-v1.json and Linux builds reproduce Windows on C0;
+  H2 each frozen profile agrees with its anchor on 100% of tuning cases; H3 strict refuses or records every
+  ambiguous case; H4 Go, .NET and 7-Zip each add >= 3 distinguishing cases; H5 at least one adjacent-version pair
+  drifts; H6 at least one C14 compat revalidation case is projected unchecked under the status quo.
+  See protocol.md section 2 for falsification conditions.
+decision_ids: [DEC-ECO-047, DEC-LEG-001, DEC-LEG-012, DEC-LEG-031, DEC-LEG-032, DEC-LEG-070, DEC-LEG-077, DEC-LEG-078,
+  DEC-LEG-079, DEC-LEG-080, DEC-LEG-081, DEC-LEG-082, DEC-LEG-083, DEC-LEG-084, DEC-LEG-085, DEC-LEG-086,
+  DEC-LEG-087, DEC-LEG-089, DEC-LEG-090, DEC-LEG-092, DEC-LEG-094, DEC-LEG-095, DEC-LEG-102, DEC-LEG-103,
+  DEC-LEG-104, DEC-LEG-105, DEC-INT-022, DEC-PLT-010]
+notes: >
+  Design pre-registration (Phase C-design). Not runnable until gate G-A holds and the tooling named in protocol.md
+  section 7 exists. Cases and real items come from cases-manifest.jsonl written by materialize_cases.py; it never
+  contains held-out rows. Canonical metrics are computed by research/tools/legacy/matrix.py from the committed
+  observation artifacts; the stdout metrics below are per-sample summaries only.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+  EB_LEGACY_LOCK: research/experiments/_legacy/runtime-lock.json
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/run_matrix.py
+  --experiment EXP-LEGACY-001 --format zip --runtime {runtime_id}
+  --case-set {item_path} --item-id {item_id} --split {split} --rep {rep} --seed {seed}
+  --scratch {scratch} --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-001
+  --sandbox bwrap --ops list,read,extract
+
+candidates:
+  - {name: python-zipfile-3.13.5-win, params: {runtime_id: python-zipfile-3.13.5-win}}
+  - {name: python-zipfile-3.13.5-linux, params: {runtime_id: python-zipfile-3.13.5-linux}}
+  - {name: python-zipfile-3.12.3-linux, params: {runtime_id: python-zipfile-3.12.3-linux}}
+  - {name: python-zipfile-3.14-linux, params: {runtime_id: python-zipfile-3.14-linux}}
+  - {name: java-zipfile-21.0.12.1-win, params: {runtime_id: java-zipfile-21.0.12.1-win}}
+  - {name: java-zipinputstream-21.0.12.1-win, params: {runtime_id: java-zipinputstream-21.0.12.1-win}}
+  - {name: java-zip-21.0.12-linux, params: {runtime_id: java-zip-21.0.12-linux}}
+  - {name: java-zip-17-linux, params: {runtime_id: java-zip-17-linux}}
+  - {name: java-zip-25-linux, params: {runtime_id: java-zip-25-linux}}
+  - {name: commons-compress-1.28.0, params: {runtime_id: commons-compress-1.28.0}}
+  - {name: libarchive-3.8.8-win, params: {runtime_id: libarchive-3.8.8-win}}
+  - {name: libarchive-3.8.8-linux, params: {runtime_id: libarchive-3.8.8-linux}}
+  - {name: libarchive-3.7.2-linux, params: {runtime_id: libarchive-3.7.2-linux}}
+  - {name: infozip-unzip-6.00-linux, params: {runtime_id: infozip-unzip-6.00-linux}}
+  - {name: 7zip-23.01-linux, params: {runtime_id: 7zip-23.01-linux}}
+  - {name: 7zip-26-win, params: {runtime_id: 7zip-26-win}}
+  - {name: go-archive-1.22.2-linux, params: {runtime_id: go-archive-1.22.2-linux}}
+  - {name: go-archive-latest-linux, params: {runtime_id: go-archive-latest-linux}}
+  - {name: dotnet-9-linux, params: {runtime_id: dotnet-9-linux}}
+  - {name: dotnet-10-win, params: {runtime_id: dotnet-10-win}}
+  - {name: powershell-expand-archive-5.1-win, params: {runtime_id: powershell-expand-archive-5.1-win}}
+  - {name: windows-explorer-zipfldr-win, params: {runtime_id: windows-explorer-zipfldr-win}}
+  - {name: rust-zip2, params: {runtime_id: rust-zip2-tar-crates}}
+  - {name: node-yauzl, params: {runtime_id: node-yauzl-tar}}
+  - {name: warehouse-validate-zipfile, params: {runtime_id: warehouse-validate-zipfile}}
+  - name: ebound-strict
+    params: {mode: strict, build: legacy-head}
+    command: >-
+      /root/eb-research/venv/bin/python research/tools/legacy/ebound_import.py
+      --experiment EXP-LEGACY-001 --build /root/eb-research/target/legacy-head/release/ebound --mode {mode}
+      --case-set {item_path} --item-id {item_id} --rep {rep} --scratch {scratch}
+      --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-001
+  - name: ebound-baseline-strict
+    params: {mode: strict, build: legacy-baseline}
+    command: >-
+      /root/eb-research/venv/bin/python research/tools/legacy/ebound_import.py
+      --experiment EXP-LEGACY-001 --build /root/eb-research/target/legacy-baseline/release/ebound --mode {mode}
+      --case-set {item_path} --item-id {item_id} --rep {rep} --scratch {scratch}
+      --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-001
+  - name: ebound-compat-python-zipfile
+    params: {mode: "compat:zip/python-zipfile@3.13.5"}
+    command: >-
+      /root/eb-research/venv/bin/python research/tools/legacy/ebound_import.py
+      --experiment EXP-LEGACY-001 --build /root/eb-research/target/legacy-head/release/ebound --mode {mode}
+      --case-set {item_path} --item-id {item_id} --rep {rep} --scratch {scratch}
+      --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-001
+  - name: ebound-compat-java-zipfile
+    params: {mode: "compat:zip/java-zipfile@21.0.12.1"}
+    command: >-
+      /root/eb-research/venv/bin/python research/tools/legacy/ebound_import.py
+      --experiment EXP-LEGACY-001 --build /root/eb-research/target/legacy-head/release/ebound --mode {mode}
+      --case-set {item_path} --item-id {item_id} --rep {rep} --scratch {scratch}
+      --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-001
+  - name: ebound-compat-java-zipinputstream
+    params: {mode: "compat:zip/java-zipinputstream@21.0.12.1"}
+    command: >-
+      /root/eb-research/venv/bin/python research/tools/legacy/ebound_import.py
+      --experiment EXP-LEGACY-001 --build /root/eb-research/target/legacy-head/release/ebound --mode {mode}
+      --case-set {item_path} --item-id {item_id} --rep {rep} --scratch {scratch}
+      --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-001
+  - name: ebound-compat-libarchive
+    params: {mode: "compat:zip/libarchive-bsdtar@3.8.8"}
+    command: >-
+      /root/eb-research/venv/bin/python research/tools/legacy/ebound_import.py
+      --experiment EXP-LEGACY-001 --build /root/eb-research/target/legacy-head/release/ebound --mode {mode}
+      --case-set {item_path} --item-id {item_id} --rep {rep} --scratch {scratch}
+      --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-001
+  - name: ebound-preserve-all-profiles
+    params: {mode: "preserve:all-zip-profiles"}
+    command: >-
+      /root/eb-research/venv/bin/python research/tools/legacy/ebound_import.py
+      --experiment EXP-LEGACY-001 --build /root/eb-research/target/legacy-head/release/ebound --mode {mode}
+      --case-set {item_path} --item-id {item_id} --rep {rep} --scratch {scratch}
+      --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-001
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-001/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: cases_accepted, source: stdout_json, key: payload.cases_accepted, family: other, direction: none, unit: count}
+  - {name: cases_refused_or_error, source: stdout_json, key: payload.cases_refused_or_error, family: other, direction: none, unit: count}
+  - {name: escape_attempts, source: stdout_json, key: payload.escape_attempts, family: correctness, direction: minimize, unit: count}
+  - {name: unsafe_cells_not_run, source: stdout_json, key: payload.unsafe_cells_not_run, family: other, direction: none, unit: count}
+  - {name: runtime_lock_ok, source: stdout_json, key: payload.runtime_lock_ok, family: correctness, direction: maximize}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+record_warmups: true
+seeds: {order: 2509170111, bootstrap: 2509170112, command: 2509170113}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /usr/bin/bwrap
+    - /root/eb-research/target/legacy-head/release/ebound
+    - /root/eb-research/target/legacy-baseline/release/ebound
+    - /mnt/c/Windows/System32/tar.exe
+    - /mnt/c/Python313/python.exe
+  timeout_s: 7200
+
+analysis:
+  baseline: libarchive-3.8.8-win
+  pairing: item
+  report_metrics: [cases_accepted, cases_refused_or_error, escape_attempts]

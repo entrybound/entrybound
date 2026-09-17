@@ -1,0 +1,76 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-034
+status: designed
+question: >
+  Does export refuse publication whenever its output differs from the source in a way no typed issue predicts, which
+  comparator design guarantees it, do receipts enumerate every degradation, and which derivation-chain and
+  receipt-signing designs detect substitution, replay and modification at what byte cost?
+hypothesis: >
+  H1 the status-quo export refuses every semantic mutant before publication; H2 misattributed and dropped-issue
+  mutants are the likeliest survivors and a field-mask comparator kills both; H3 without a chain an intermediate
+  archive with equal LAI and different AUX is undetectable, chain prototypes detect unsigned substitutions but not
+  forged receipts, and only signed designs detect forgeries; H4 detached signatures add < 1 KiB and DSSE envelopes
+  < 4 KiB per receipt.
+decision_ids: [DEC-INT-023, DEC-LEG-045, DEC-CRY-093, DEC-LEG-018]
+notes: >
+  Design pre-registration. Mutation candidates run ebr-legacy-export with research hooks (identity proof required with
+  hooks off); chain and signing candidates run receipt_chain.py and receipt_sign.py over the same sources.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/export_oracle.py
+  --experiment EXP-LEGACY-034 --arm {arm} --design {design} --source {item_path} --item-id {item_id}
+  --split {split} --rep {rep} --seed {seed} --profiles all-frozen --scratch {scratch}
+  --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-034
+
+candidates:
+  - {name: mutants-status-quo, params: {arm: "mutation:M1-M16", design: status-quo}}
+  - {name: mutants-predicted-issue-diff, params: {arm: "mutation:M1-M16", design: predicted-issue-diff}}
+  - {name: mutants-field-mask, params: {arm: "mutation:M1-M16", design: field-mask-comparison}}
+  - {name: mutants-explicit-diff-gate, params: {arm: "mutation:M1-M16", design: explicit-diff-report-gate}}
+  - {name: mutants-encoder-success-only-reference, params: {arm: "mutation:M1-M16", design: encoder-success-only}}
+  - {name: chain-status-quo, params: {arm: "chain:A1-A7", design: status-quo-no-chain}}
+  - {name: chain-embed-upstream, params: {arm: "chain:A1-A7", design: embed-upstream-provenance}}
+  - {name: chain-command, params: {arm: "chain:A1-A7", design: receipt-chain-command}}
+  - {name: chain-in-toto, params: {arm: "chain:A1-A7", design: in-toto-layout-chain}}
+  - {name: sign-ebsig-detached, params: {arm: "sign:A1-A7", design: detached-ebsig-over-receipt}}
+  - {name: sign-dsse, params: {arm: "sign:A1-A7", design: dsse-in-toto-receipt}}
+  - {name: sign-sidecar-native, params: {arm: "sign:A1-A7", design: signed-sidecar-native}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-034/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: semantic_mutants, source: stdout_json, key: payload.semantic_mutants, family: other, direction: none, unit: count}
+  - {name: semantic_mutants_published, source: stdout_json, key: payload.semantic_mutants_published, family: correctness, direction: minimize, unit: count}
+  - {name: receipt_undeclared_degradations, source: stdout_json, key: payload.receipt_undeclared_degradations, family: correctness, direction: minimize, unit: count}
+  - {name: attacks_undetected, source: stdout_json, key: payload.attacks_undetected, family: correctness, direction: minimize, unit: count}
+  - {name: side_data_bytes, source: stdout_json, key: payload.side_data_bytes, family: size, direction: minimize, unit: B}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2509173411, bootstrap: 2509173412, command: 2509173413}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /root/eb-research/target/harness/release/ebr-legacy-export
+    - /root/eb-research/target/legacy-head/release/ebound
+  timeout_s: 7200
+
+analysis:
+  baseline: mutants-status-quo
+  pairing: item
+  report_metrics: [semantic_mutants_published, receipt_undeclared_degradations, attacks_undetected, side_data_bytes]

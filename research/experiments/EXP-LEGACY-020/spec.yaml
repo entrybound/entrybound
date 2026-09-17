@@ -1,0 +1,82 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-020
+status: designed
+question: >
+  For candidate legacy formats (cpio, ar, OCI layers, NAR, squashfs, WIM, RAR5, ISO9660, CAB, LHA, XAR, lzip, LZ4,
+  lzma-alone, zlib, .Z, brotli, 7z export) what fraction of each metadata class survives the reference writers and
+  readers, how do readers handle format hazards, and are candidate export writers deterministic and accepted?
+hypothesis: >
+  H1 NAR and cpio newc carry fewer metadata classes than OCI pax layers; RAR5, CAB and LHA fail >= 3 POSIX classes;
+  H2 every format has a reader that escapes or silently merges on a hazard fixture; H3 NarHash from EAM inputs equals
+  nix hash path; H4 7-Zip single-thread output is stable but differs across thread settings or versions; H5 OCI
+  unpackers disagree on at least one whiteout, hardlink or duplicate-path case.
+decision_ids: [DEC-LEG-005, DEC-LEG-024, DEC-LEG-029, DEC-LEG-034, DEC-LEG-035, DEC-LEG-037, DEC-LEG-039,
+  DEC-LEG-042, DEC-LEG-047, DEC-LEG-051, DEC-LEG-057, DEC-LEG-073]
+notes: >
+  Design pre-registration. Candidates are format arms; each arm's driver runs its writers, readers and hazard
+  fixtures over a fixture tree or real-tier item. Blocked sub-arms (DISM capture, encrypted ESD) are recorded as
+  not_run_blocked by the driver.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+  EB_LEGACY_LOCK: research/experiments/_legacy/runtime-lock.json
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/adapter_probe.py
+  --experiment EXP-LEGACY-020 --format-arm {arm} --input {item_path} --item-id {item_id} --split {split}
+  --rep {rep} --seed {seed} --scratch {scratch} --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-020
+  --sandbox bwrap
+
+candidates:
+  - {name: cpio, params: {arm: "cpio:newc,odc,bin,crc"}}
+  - {name: ar, params: {arm: "ar:gnu,bsd"}}
+  - {name: oci-layer, params: {arm: "oci-layer:umoci,crane,podman-rootless"}}
+  - {name: nar, params: {arm: "nar:nix-store,python-reference"}}
+  - {name: squashfs, params: {arm: "squashfs:gzip,xz,lz4,zstd"}}
+  - {name: wim, params: {arm: "wim:lzx,xpress,lzms,solid"}}
+  - {name: rar5, params: {arm: "rar5:fixtures-only"}}
+  - {name: iso9660, params: {arm: "iso9660:rr,joliet,udf"}}
+  - {name: cab, params: {arm: "cab:mszip,lzx"}}
+  - {name: lha, params: {arm: "lha:lh0,lh5,lh6,lh7"}}
+  - {name: xar, params: {arm: "xar:gzip,bzip2,none"}}
+  - {name: extra-transports, params: {arm: "streams:lzip,lz4,lzma-alone,zlib,compress,brotli"}}
+  - {name: sevenz-export, params: {arm: "7z-export:7zip-23.01,7zz-26,py7zr"}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-020/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: classes_total, source: stdout_json, key: payload.classes_total, family: other, direction: none, unit: count}
+  - {name: classes_captured_min_reader, source: stdout_json, key: payload.classes_captured_min_reader, family: other, direction: none, unit: count}
+  - {name: hazard_escapes, source: stdout_json, key: payload.hazard_escapes, family: correctness, direction: minimize, unit: count}
+  - {name: writer_nondeterministic_cells, source: stdout_json, key: payload.writer_nondeterministic_cells, family: correctness, direction: minimize, unit: count}
+  - {name: blocked_subarms, source: stdout_json, key: payload.blocked_subarms, family: other, direction: none, unit: count}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2509172011, bootstrap: 2509172012, command: 2509172013}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /usr/bin/bwrap
+    - /usr/bin/cpio
+    - /usr/bin/wimlib-imagex
+    - /usr/bin/mksquashfs
+    - /usr/bin/xorriso
+  timeout_s: 7200
+
+analysis:
+  baseline: oci-layer
+  pairing: item
+  report_metrics: [classes_captured_min_reader, hazard_escapes, writer_nondeterministic_cells]

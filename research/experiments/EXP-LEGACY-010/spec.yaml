@@ -1,0 +1,75 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-010
+status: designed
+question: >
+  In seeded samples of publicly published legacy artifacts, how often does each construct occur, how often does each
+  strict import rule refuse artifacts on which reference readers unanimously agree, how often do reference readers
+  disagree, how concentrated are refusals by producer, and what are the distributions of import-limit quantities?
+hypothesis: >
+  H1 strict accepts >= 99% of unambiguous ZIP- and tar-family artifacts per stratum except producer-concentrated
+  strata; H2 at least one strict ZIP rule lands in a lenient or lint band and at least one has zero hits with
+  n >= 3000; H3 ambiguous artifacts are < 1% per stratum and strict refuses or records all of them; H4 cpio, ar,
+  OCI layers and squashfs exceed 1% of their ecosystem strata while RAR5, LHA, XAR and WIM stay below 1%.
+decision_ids: [DEC-LEG-058, DEC-LEG-043, DEC-LEG-102, DEC-LEG-103, DEC-LEG-104, DEC-LEG-105, DEC-LEG-090,
+  DEC-LEG-092, DEC-LEG-094, DEC-LEG-077, DEC-LEG-070, DEC-LEG-085, DEC-LEG-088, DEC-LEG-089, DEC-LEG-099,
+  DEC-LEG-012, DEC-LEG-031, DEC-LEG-032, DEC-LEG-033, DEC-LEG-095, DEC-LEG-061, DEC-LEG-062, DEC-LEG-064,
+  DEC-LEG-065, DEC-LEG-066, DEC-LEG-067, DEC-LEG-069, DEC-LEG-049, DEC-LEG-050, DEC-LEG-052, DEC-LEG-054,
+  DEC-LEG-055, DEC-LEG-072, DEC-LEG-074, DEC-LEG-075, DEC-LEG-106, DEC-LEG-107, DEC-INT-022, DEC-PLT-021,
+  DEC-PLT-051, DEC-LEG-006, DEC-LEG-076, DEC-LEG-022, DEC-LEG-093, DEC-CON-006, DEC-CRY-091, DEC-LEG-024,
+  DEC-LEG-005, DEC-LEG-035, DEC-LEG-037, DEC-LEG-039, DEC-LEG-042, DEC-LEG-047, DEC-LEG-057, DEC-LEG-073]
+notes: >
+  Design pre-registration. Items are shards of 500 fetched artifacts written by shard.py into cases-manifest.jsonl
+  (tuning and validation rows only; the held-out sample is drawn after Commit A). Fetching happens before ebr run.
+  Not runnable until gate G-A and the tooling in protocol.md section 7 exist.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+  EB_LEGACY_LOCK: research/experiments/_legacy/runtime-lock.json
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/prevalence/scan_artifact.py
+  --experiment EXP-LEGACY-010 --pipeline {pipeline} --shard {item_path} --item-id {item_id} --split {split}
+  --rep {rep} --cache /root/eb-research/prevalence/cache --scratch {scratch}
+  --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-010 --sandbox bwrap --workers 24
+
+candidates:
+  - name: census-entrybound-readers
+    params: {pipeline: "census+ebound:legacy-head:strict,compat-all,preserve-all+reference-readers"}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-010/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: artifacts_total, source: stdout_json, key: payload.artifacts_total, family: other, direction: none, unit: count}
+  - {name: children_total, source: stdout_json, key: payload.children_total, family: other, direction: none, unit: count}
+  - {name: unambiguous, source: stdout_json, key: payload.unambiguous, family: other, direction: none, unit: count}
+  - {name: strict_refused_unambiguous, source: stdout_json, key: payload.strict_refused_unambiguous, family: other, direction: none, unit: count}
+  - {name: ambiguous_imported_without_conflict, source: stdout_json, key: payload.ambiguous_imported_without_conflict, family: correctness, direction: minimize, unit: count}
+  - {name: census_parse_failures, source: stdout_json, key: payload.census_parse_failures, family: other, direction: none, unit: count}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2509171011, bootstrap: 2509171012, command: 2509171013}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 24
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /usr/bin/bwrap
+    - /root/eb-research/target/legacy-head/release/ebound
+  timeout_s: 28800
+
+analysis:
+  baseline: census-entrybound-readers
+  pairing: item
+  report_metrics: [artifacts_total, unambiguous, strict_refused_unambiguous, ambiguous_imported_without_conflict]

@@ -1,0 +1,100 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-033
+status: designed
+question: >
+  For legacy export wrappers (gzip, zstd, xz, bzip2 over tar/pax-v1; per-entry ZIP DEFLATE), how do the frozen
+  parameters compare with fast, maximum-ratio, incumbent-default, multi-block/seekable and BGZF alternatives on output
+  bytes, encode cost, consumer decode time and consumer decoder memory?
+hypothesis: >
+  H1 max-ratio levels beat the T2 minimum-gain band on artifact bytes for tar.xz and tar.zst in >= 3 families while only
+  xz 9e is worse than the T-04 band on consumer decode wall; H2 fast levels are non-inferior on decode wall and worse
+  than the T-01 band on bytes outside F11/F12/F13; H3 multi-block xz and seekable zstd cost <= 2% bytes and enable
+  parallel or random decode in at least one common tool.
+decision_ids: [DEC-LEG-027, DEC-CMP-024]
+notes: >
+  Design pre-registration; timing experiment. Each sample encodes one exported tar (or ZIP entries) with one wrapper
+  configuration via ebr-legacy-wrap and decodes it with the configured consumer decoder; encode and decode stage
+  timings come from the harness row, whole-sample resources from the runner. wrap_parity.py must PASS first.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-legacy-wrap
+  --input {item_path} --codec {codec} --level {level} --variant {variant} --decoder {decoder}
+  --out {scratch}/wrapped.bin --experiment-id EXP-LEGACY-033 --env-name wsl-ubuntu
+
+candidates:
+  - {name: gzip-6-frozen, params: {codec: gzip, level: "6", variant: single-member, decoder: gzip-1.12}}
+  - {name: gzip-1, params: {codec: gzip, level: "1", variant: single-member, decoder: gzip-1.12}}
+  - {name: gzip-9, params: {codec: gzip, level: "9", variant: single-member, decoder: gzip-1.12}}
+  - {name: gzip-6-bgzf, params: {codec: gzip, level: "6", variant: "bgzf:65536", decoder: bgzip}}
+  - {name: zstd-9-check-frozen, params: {codec: zstd, level: "9", variant: "checksum", decoder: zstd-1.5.5}}
+  - {name: zstd-3, params: {codec: zstd, level: "3", variant: "checksum", decoder: zstd-1.5.5}}
+  - {name: zstd-19, params: {codec: zstd, level: "19", variant: "checksum", decoder: zstd-1.5.5}}
+  - {name: zstd-19-long27, params: {codec: zstd, level: "19", variant: "checksum,long=27", decoder: zstd-1.5.5}}
+  - {name: zstd-9-seekable, params: {codec: zstd, level: "9", variant: "seekable:16777216", decoder: zstd-seekable}}
+  - {name: xz-6-frozen, params: {codec: xz, level: "6", variant: "single-block,crc64", decoder: xz-5.4.5}}
+  - {name: xz-1, params: {codec: xz, level: "1", variant: "single-block,crc64", decoder: xz-5.4.5}}
+  - {name: xz-9, params: {codec: xz, level: "9", variant: "single-block,crc64", decoder: xz-5.4.5}}
+  - {name: xz-9e, params: {codec: xz, level: "9e", variant: "single-block,crc64", decoder: xz-5.4.5}}
+  - {name: xz-6-multiblock, params: {codec: xz, level: "6", variant: "block:16777216,crc64", decoder: "xz-5.4.5:T0"}}
+  - {name: bzip2-9-frozen, params: {codec: bzip2, level: "9", variant: single-stream, decoder: bzip2-1.0.8}}
+  - {name: bzip2-1, params: {codec: bzip2, level: "1", variant: single-stream, decoder: bzip2-1.0.8}}
+  - {name: zip-deflate-6-frozen, params: {codec: zip-deflate, level: "6", variant: when-smaller, decoder: infozip-unzip-6.00}}
+  - {name: zip-deflate-1, params: {codec: zip-deflate, level: "1", variant: when-smaller, decoder: infozip-unzip-6.00}}
+  - {name: zip-deflate-9, params: {codec: zip-deflate, level: "9", variant: when-smaller, decoder: infozip-unzip-6.00}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-033/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: artifact_bytes, source: path_size, path: "{scratch}/wrapped.bin", family: size, direction: minimize, unit: B}
+  - {name: encode_wall_s, source: stdout_json, key: payload.stage_wall_s.encode, family: time_wall, direction: minimize, unit: s}
+  - {name: encode_cpu_s, source: stdout_json, key: payload.stage_cpu_s.encode, family: time_cpu, direction: minimize, unit: s}
+  - {name: decode_wall_s, source: stdout_json, key: payload.stage_wall_s.decode, family: time_wall, direction: minimize, unit: s}
+  - {name: decode_cpu_s, source: stdout_json, key: payload.stage_cpu_s.decode, family: time_cpu, direction: minimize, unit: s}
+  - {name: decoder_peak_rss_bytes, source: stdout_json, key: payload.decoder_max_rss_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: ratio, source: derived, op: ratio, args: [artifact_bytes, input_bytes], family: size, direction: minimize}
+  - {name: artifact_sha256, source: path_sha256, path: "{scratch}/wrapped.bin", family: correctness}
+  - {name: roundtrip_ok, source: stdout_json, key: payload.roundtrip_ok, family: correctness, direction: maximize}
+
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 2509173311, bootstrap: 2509173312, command: 2509173313}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  cpu_affinity: [2]
+  requires:
+    - /root/eb-research/target/harness/release/ebr-legacy-wrap
+    - /usr/bin/time
+    - /usr/bin/xz
+    - /usr/bin/zstd
+    - /usr/bin/gzip
+    - /usr/bin/bzip2
+  timeout_s: 7200
+
+analysis:
+  baseline: xz-6-frozen
+  pairing: item_repetition
+  pareto_objectives: [artifact_bytes, encode_wall_s, decode_wall_s, decoder_peak_rss_bytes]
+  report_metrics: [artifact_bytes, ratio, encode_wall_s, decode_wall_s, decoder_peak_rss_bytes]

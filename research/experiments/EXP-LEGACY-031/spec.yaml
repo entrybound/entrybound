@@ -1,0 +1,79 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-031
+status: designed
+question: >
+  Under which variations (repetition, threads, locale, time zone, umask, Windows vs WSL, emulated arm64, source
+  layout/profile/encryption/repack, compression backend, codec crate upgrades) are legacy export bytes identical for
+  the same source EAM and target profile, and can targets be reproduced from receipts?
+hypothesis: >
+  H1 bytes identical within a build across repetitions, threads, locale, time zone and umask including a 20-rep
+  stress cell; H2 identical across source layout, profile, encryption and repack; H3 identical across Windows and WSL
+  for identical EAMs; H4 identical under emulated arm64; H5 at least one compressed profile changes under an
+  alternative flate2 backend or upgraded codec crate while tar/pax-v1 never changes; H6 receipts cannot reproduce
+  compressed targets across a build change.
+decision_ids: [DEC-LEG-008, DEC-CMP-024, DEC-LEG-016, DEC-LEG-014, DEC-LEG-018]
+notes: >
+  Design pre-registration. Each candidate is a (build, variation arm); the driver exports every source with all six
+  frozen profiles under that arm and records per-profile SHA-256. Stress cell: separate run id with 20 repetitions.
+  Not runnable until gate G-A and the tooling in protocol.md section 7 exist.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/export_determinism.py
+  --experiment EXP-LEGACY-031 --build {build} --arm {arm} --source {item_path} --item-id {item_id}
+  --split {split} --rep {rep} --seed {seed} --profiles all-frozen
+  --scratch {scratch} --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-031
+
+candidates:
+  - {name: head-repeat, params: {build: legacy-head, arm: "repeat"}}
+  - {name: head-threads, params: {build: legacy-head, arm: "threads:1,8,32"}}
+  - {name: head-locale-tz-umask, params: {build: legacy-head, arm: "env:locale=C,tr_TR.UTF-8,ja_JP.UTF-8;tz=UTC,Pacific/Chatham;umask=022,077"}}
+  - {name: head-source-structure, params: {build: legacy-head, arm: "source:indexed,stream,fast,balanced,dense,extreme,encrypted,repack-index-absent"}}
+  - {name: head-windows-native, params: {build: legacy-head-win, arm: "host:windows"}}
+  - {name: head-qemu-aarch64, params: {build: legacy-head-aarch64, arm: "host:qemu-aarch64"}}
+  - {name: variant-flate2-zlib-rs, params: {build: legacy-variant-flate2-zlib-rs, arm: "repeat"}}
+  - {name: variant-flate2-zlib-ng, params: {build: legacy-variant-flate2-zlib-ng, arm: "repeat"}}
+  - {name: variant-crates-latest-compatible, params: {build: legacy-variant-crates-latest-compatible, arm: "repeat"}}
+  - {name: variant-crates-latest-major, params: {build: legacy-variant-crates-latest-major, arm: "repeat"}}
+  - {name: baseline-repeat, params: {build: legacy-baseline, arm: "repeat"}}
+  - {name: head-dimension-parity, params: {build: legacy-head, arm: "dimensions:mtime,order,owner,umask,locale,tz,gzip-header,pax-naming,padding"}}
+  - {name: head-receipt-reproduce, params: {build: legacy-head, arm: "receipt-reproduce:baseline,head,variants"}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-031/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: profiles_total, source: stdout_json, key: payload.profiles_total, family: other, direction: none, unit: count}
+  - {name: profiles_identical_to_reference, source: stdout_json, key: payload.profiles_identical_to_reference, family: other, direction: none, unit: count}
+  - {name: within_cell_mismatches, source: stdout_json, key: payload.within_cell_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: locale_canary_ok, source: stdout_json, key: payload.locale_canary_ok, family: correctness, direction: maximize}
+  - {name: export_digest_set_sha256, source: stdout_json, key: payload.export_digest_set_sha256, family: correctness, kind: string}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 3
+warmups: 0
+seeds: {order: 2509173111, bootstrap: 2509173112, command: 2509173113}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /root/eb-research/target/legacy-head/release/ebound
+    - /root/eb-research/target/legacy-baseline/release/ebound
+    - /usr/bin/qemu-aarch64-static
+  timeout_s: 14400
+
+analysis:
+  baseline: head-repeat
+  pairing: item
+  report_metrics: [profiles_identical_to_reference, within_cell_mismatches, locale_canary_ok]

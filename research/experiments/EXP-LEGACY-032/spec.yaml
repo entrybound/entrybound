@@ -1,0 +1,88 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-032
+status: designed
+question: >
+  How do peak memory, scratch writes, wall and CPU time of legacy export and multi-target publish scale with source
+  size and entry count under the status quo and under streaming, staging and alternative ZIP64 strategies, how large
+  are receipts at 1,000,000 lossy entries, and which strategies keep byte identity with the frozen profiles?
+hypothesis: >
+  H1 status-quo export RSS grows with slope >= 0.9 per target byte over 1-16 GiB; H2 stream-sink and temp-staging keep
+  bounded memory over 1-64 GiB with byte-identical file output; H3 always-zip64 costs <= 1% artifact bytes and
+  per-entry buffering is byte-identical with memory bounded by the largest entry; H4 strict re-import exceeds 30% of
+  export wall on large items and default limits refuse a legitimate stress export untyped; H5 per-entry receipts at
+  1M entries exceed 100 MiB while per-class receipts stay under 1 MiB. Crash safety (H6) is run by crash_inject.py.
+decision_ids: [DEC-ACC-013, DEC-LEG-019, DEC-LEG-108, DEC-LEG-018, DEC-LEG-010, DEC-LEG-017]
+notes: >
+  Design pre-registration; timing experiment. Requires calibration EXP-CAL-*-wsl-ubuntu for time_wall, time_cpu,
+  memory_peak and scratch_peak, runner write accounting (decision-method section 14 item 3) and research prototypes
+  with the identity proof. The adaptive rule adds rounds under new run ids up to the section 4.6 cap.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-legacy-export
+  --source {item_path} --target {target} --strategy {strategy} --reimport {reimport} --sink {sink}
+  --receipt-format {receipt_format} --scratch {scratch} --experiment-id EXP-LEGACY-032 --env-name wsl-ubuntu
+
+candidates:
+  - {name: status-quo-cli-zip, params: {target: zip/portable-v1, strategy: cli-status-quo, reimport: default, sink: file, receipt_format: v2}}
+  - {name: status-quo-cli-tar-zst, params: {target: tar.zst/pax-v1, strategy: cli-status-quo, reimport: default, sink: file, receipt_format: v2}}
+  - {name: per-entry-buffered-zip, params: {target: zip/portable-v1, strategy: per-entry-buffered-as-needed, reimport: default, sink: file, receipt_format: v2}}
+  - {name: temp-staging-zip, params: {target: zip/portable-v1, strategy: temp-file-staging-as-needed, reimport: default, sink: file, receipt_format: v2}}
+  - {name: always-zip64-dd-pipe, params: {target: proto-zip-always-zip64-dd, strategy: always-zip64-streaming-profile, reimport: streamed, sink: pipe, receipt_format: v2}}
+  - {name: never-zip64-refuse, params: {target: zip/portable-v1, strategy: never-zip64-refuse-before-write, reimport: default, sink: file, receipt_format: v2}}
+  - {name: fail-late-zip, params: {target: zip/portable-v1, strategy: as-needed-fail-late, reimport: default, sink: pipe, receipt_format: v2}}
+  - {name: stream-sink-tar-zst, params: {target: tar.zst/pax-v1, strategy: streaming-export-sink, reimport: streamed, sink: pipe, receipt_format: v2}}
+  - {name: source-derived-reimport-zip, params: {target: zip/portable-v1, strategy: cli-status-quo, reimport: source-derived-limits, sink: file, receipt_format: v2}}
+  - {name: skip-reimport-reference, params: {target: zip/portable-v1, strategy: cli-status-quo, reimport: skip, sink: file, receipt_format: v2}}
+  - {name: receipt-per-entry, params: {target: tar/pax-v1, strategy: cli-status-quo, reimport: default, sink: "devnull", receipt_format: per-entry-enumeration}}
+  - {name: receipt-per-class-samples, params: {target: tar/pax-v1, strategy: cli-status-quo, reimport: default, sink: "devnull", receipt_format: per-class-counts-with-samples}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-032/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: io_write_bytes, source: resource, family: io, direction: minimize, unit: B}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+  - {name: alloc_peak_bytes, source: stdout_json, key: payload.alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: target_bytes, source: stdout_json, key: payload.target_bytes, family: size, direction: minimize, unit: B}
+  - {name: receipt_bytes, source: stdout_json, key: payload.receipt_bytes, family: size, direction: minimize, unit: B}
+  - {name: reimport_wall_s, source: stdout_json, key: payload.stage_wall_s.reimport, family: time_wall, direction: minimize, unit: s}
+  - {name: target_sha256, source: stdout_json, key: payload.target_sha256, family: correctness, kind: string}
+  - {name: typed_refusal, source: stdout_json, key: payload.typed_refusal, family: correctness, kind: string}
+
+repetitions: 10
+warmups: 1
+record_warmups: true
+seeds: {order: 2509173211, bootstrap: 2509173212, command: 2509173213}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  cpu_affinity: [2]
+  scratch_root: /root/eb-research/scratch/legacy-032-volume
+  requires:
+    - /root/eb-research/target/harness/release/ebr-legacy-export
+    - /usr/bin/time
+  timeout_s: 21600
+
+analysis:
+  baseline: status-quo-cli-zip
+  pairing: item_repetition
+  report_metrics: [wall_s, max_rss_bytes, alloc_peak_bytes, scratch_peak_bytes, target_bytes, receipt_bytes]

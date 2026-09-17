@@ -1,0 +1,92 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-040
+status: designed
+question: >
+  How do peak memory, time, spill and conversion-evidence size of ZIP, tar, compressed-tar and 7z import scale with
+  input size and entry count under the status quo and under streaming, compact-evidence, aggregated-resolution,
+  bounded-provenance and local-header streaming candidates, and do candidates preserve import identities?
+hypothesis: >
+  H1 status-quo import memory grows with slope >= 0.5 per input byte for at least one format over 1-16 GiB; H2 1M-entry
+  descriptor ZIPs exceed the 256 MiB evidence cap under the status quo while structural-absence exclusion plus
+  aggregation stays < 1 MiB with equal LAI; H3 the tar observation cap binds before the entry cap and unknown 7z
+  FilesInfo bytes grow provenance linearly; H4 streaming prototypes keep declared memory bounds with identical
+  identities; H5 LFH-driven projection differs from CD-driven projection on >= 10% of EXP-LEGACY-001 cases.
+decision_ids: [DEC-ACC-017, DEC-LEG-002, DEC-LEG-003, DEC-LEG-022, DEC-LEG-059, DEC-LEG-093, DEC-LEG-101, DEC-LEG-096]
+notes: >
+  Design pre-registration; timing experiment. Requires calibration EXP-CAL-*-wsl-ubuntu (time_wall, time_cpu,
+  memory_peak, scratch_peak), runner write accounting and the research prototypes with identity proof.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-legacy-import
+  --input {item_path} --mode {mode} --strategy {strategy} --evidence {evidence} --policy-file {policy}
+  --out {scratch}/out.eb --scratch {scratch} --experiment-id EXP-LEGACY-040 --env-name wsl-ubuntu
+
+candidates:
+  - {name: status-quo, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: streaming-decode-spill, params: {mode: strict, strategy: streaming-decode-spill, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: compact-lom-evidence, params: {mode: strict, strategy: compact-lom-evidence, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: import-to-stream-producer, params: {mode: strict, strategy: import-to-stream-producer, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: exclude-structural-absence, params: {mode: strict, strategy: status-quo, evidence: exclude-structural-absence, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: aggregate-resolutions, params: {mode: strict, strategy: status-quo, evidence: aggregate-resolutions, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: external-evidence-object, params: {mode: strict, strategy: status-quo, evidence: external-evidence-object, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: provenance-byte-bound, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/add-provenance-byte-bound.json}}
+  - {name: derive-observation-cap, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/derive-observation-cap.json}}
+  - {name: unlimited-when-unset-reference, params: {mode: strict, strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/unlimited-reference.json}}
+  - {name: spool-then-cd, params: {mode: strict, strategy: spool-then-cd, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: lfh-streaming-untrusted, params: {mode: strict, strategy: lfh-streaming-untrusted, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: compat-libarchive, params: {mode: "compat:zip/libarchive-bsdtar@3.8.8", strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+  - {name: preserve-libarchive, params: {mode: "preserve:zip/libarchive-bsdtar@3.8.8", strategy: status-quo, evidence: per-entry, policy: research/experiments/EXP-LEGACY-041/policies/status-quo.json}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-040/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: io_write_bytes, source: resource, family: io, direction: minimize, unit: B}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: alloc_peak_bytes, source: stdout_json, key: payload.alloc_peak_bytes, family: memory_peak, direction: minimize, unit: B}
+  - {name: alloc_peak_evidence_bytes, source: stdout_json, key: payload.alloc_peak_by_site.evidence, family: memory_peak, direction: minimize, unit: B}
+  - {name: provenance_bytes, source: stdout_json, key: payload.provenance_bytes, family: size, direction: minimize, unit: B}
+  - {name: conflicts, source: stdout_json, key: payload.conflicts, family: other, direction: none, unit: count}
+  - {name: observations, source: stdout_json, key: payload.observations, family: other, direction: none, unit: count}
+  - {name: outcome, source: stdout_json, key: payload.outcome, family: correctness, kind: string}
+  - {name: lai, source: stdout_json, key: payload.lai, family: correctness, kind: string}
+  - {name: aux, source: stdout_json, key: payload.aux, family: correctness, kind: string}
+
+repetitions: 10
+warmups: 1
+record_warmups: true
+seeds: {order: 2509174011, bootstrap: 2509174012, command: 2509174013}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  cpu_affinity: [2]
+  scratch_root: /root/eb-research/scratch/legacy-040-volume
+  requires:
+    - /root/eb-research/target/harness/release/ebr-legacy-import
+    - /usr/bin/time
+  timeout_s: 21600
+
+analysis:
+  baseline: status-quo
+  pairing: item_repetition
+  report_metrics: [wall_s, max_rss_bytes, alloc_peak_bytes, alloc_peak_evidence_bytes, provenance_bytes, scratch_peak_bytes]

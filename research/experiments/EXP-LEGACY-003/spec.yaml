@@ -1,0 +1,79 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-003
+status: designed
+question: >
+  How do 7-Zip 23.01/26.x, p7zip 16.02, the 7-Zip-zstd fork, py7zr, libarchive and Commons Compress, and Entrybound
+  strict 7z import, treat pre-registered 7z constructions (backslash names, attribute encodings, missing times,
+  anti items, SFX/trailing/multi-volume, CRC-less streams, coders and filters, AES KDF cost)?
+hypothesis: >
+  H1 strict refuses or records every ambiguous case; H2 literal-backslash names are ambiguous across platforms;
+  H3 a high-word attribute without 0x8000 is read as POSIX mode by some reader and yields executable=true under the
+  ungated status quo; H4 no reader restores the epoch for absent MTime; H5 upstream decodes ARM64/RISCV/BCJ2/PPMd
+  while libarchive and py7zr each fail one and fork codec ids are refused outside the fork; H6 7-Zip source defines
+  2^NumCyclesPower SHA-256 iterations and accepts power 24.
+decision_ids: [DEC-ECO-047, DEC-LEG-012, DEC-LEG-031, DEC-LEG-032, DEC-LEG-049, DEC-LEG-050, DEC-LEG-052,
+  DEC-LEG-054, DEC-LEG-055, DEC-PLT-010, DEC-PLT-021]
+notes: >
+  Design pre-registration. Not runnable until gate G-A and the tooling in protocol.md section 7 exist.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+  EB_LEGACY_LOCK: research/experiments/_legacy/runtime-lock.json
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/run_matrix.py
+  --experiment EXP-LEGACY-003 --format 7z --runtime {runtime_id}
+  --case-set {item_path} --item-id {item_id} --split {split} --rep {rep} --seed {seed}
+  --scratch {scratch} --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-003
+  --sandbox bwrap --ops list,read,extract
+
+candidates:
+  - {name: 7zip-23.01-linux, params: {runtime_id: 7zip-23.01-linux}}
+  - {name: 7zz-26-linux, params: {runtime_id: 7zz-26-linux}}
+  - {name: 7zip-26-win, params: {runtime_id: 7zip-26-win}}
+  - {name: p7zip-16.02-linux, params: {runtime_id: p7zip-16.02-linux}}
+  - {name: 7zip-zstd-fork-win, params: {runtime_id: 7zip-zstd-fork-win}}
+  - {name: py7zr-pinned-linux, params: {runtime_id: py7zr-pinned-linux}}
+  - {name: libarchive-3.8.8-win, params: {runtime_id: libarchive-3.8.8-win}}
+  - {name: libarchive-3.8.8-linux, params: {runtime_id: libarchive-3.8.8-linux}}
+  - {name: libarchive-3.7.2-linux, params: {runtime_id: libarchive-3.7.2-linux}}
+  - {name: commons-compress-1.28.0, params: {runtime_id: commons-compress-1.28.0}}
+  - {name: ebound-strict, params: {runtime_id: "ebound:legacy-head:strict"}}
+  - {name: ebound-baseline-strict, params: {runtime_id: "ebound:legacy-baseline:strict"}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-003/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: cases_accepted, source: stdout_json, key: payload.cases_accepted, family: other, direction: none, unit: count}
+  - {name: cases_refused_or_error, source: stdout_json, key: payload.cases_refused_or_error, family: other, direction: none, unit: count}
+  - {name: escape_attempts, source: stdout_json, key: payload.escape_attempts, family: correctness, direction: minimize, unit: count}
+  - {name: runtime_lock_ok, source: stdout_json, key: payload.runtime_lock_ok, family: correctness, direction: maximize}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2509170311, bootstrap: 2509170312, command: 2509170313}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /usr/bin/bwrap
+    - /usr/bin/7z
+    - /root/eb-research/target/legacy-head/release/ebound
+  timeout_s: 14400
+
+analysis:
+  baseline: 7zip-23.01-linux
+  pairing: item
+  report_metrics: [cases_accepted, cases_refused_or_error, escape_attempts]

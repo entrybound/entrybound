@@ -1,0 +1,71 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-006
+status: designed
+question: >
+  What exactly triggers, and what is the scope of, the three Phase B1 probe refusals: whole-export refusal on any
+  symlink Entry, pack refusal of non-UTF-8 file names, and pack refusal of POSIX ACL/mode disagreement; and is the
+  ACL refusal a false refusal of a POSIX.1e-consistent kernel state?
+hypothesis: >
+  H1 every symlink variant makes every frozen export profile refuse the whole export with and without --allow-lossy
+  while strict tar import projects the same symlinks; H2 every invalid-UTF-8 byte class in any path position makes
+  pack and strict tar import refuse while unflagged ZIP import accepts via CP437; H3 at least one refused ACL
+  variant satisfies the POSIX.1e mask/group-class invariant on independent observation.
+decision_ids: [DEC-LEG-015, DEC-LEG-029, DEC-LEG-032, DEC-LEG-036, DEC-LEG-067, DEC-LEG-068, DEC-LEG-094,
+  DEC-MOD-019, DEC-PLT-021, DEC-MOD-038, DEC-PLT-052]
+notes: >
+  Design pre-registration; status READY (instruments exist). Runs only after gate G-A. The ebound build is selected
+  by candidate; run_findings.py prints one JSON summary line per (build, case set).
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+
+command: >-
+  /root/eb-research/venv/bin/python research/experiments/EXP-LEGACY-006/run_findings.py
+  --build {ebound} --case-set {item_path} --item-id {item_id} --split {split} --rep {rep}
+  --scratch {scratch} --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-006
+
+candidates:
+  - {name: ebound-baseline, params: {ebound: /root/eb-research/target/legacy-baseline/release/ebound}}
+  - {name: ebound-probe-9efbc74, params: {ebound: /root/eb-research/target/baseline/release/ebound}}
+  - {name: ebound-head, params: {ebound: /root/eb-research/target/legacy-head/release/ebound}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-006/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: trees_total, source: stdout_json, key: payload.trees_total, family: other, direction: none, unit: count}
+  - {name: pack_refused, source: stdout_json, key: payload.pack_refused, family: other, direction: none, unit: count}
+  - {name: acl_invariant_holds_but_refused, source: stdout_json, key: payload.acl_invariant_holds_but_refused, family: correctness, direction: minimize, unit: count}
+  - {name: export_refused, source: stdout_json, key: payload.export_refused, family: other, direction: none, unit: count}
+  - {name: export_lossy, source: stdout_json, key: payload.export_lossy, family: other, direction: none, unit: count}
+  - {name: export_lossless, source: stdout_json, key: payload.export_lossless, family: other, direction: none, unit: count}
+  - {name: import_refused, source: stdout_json, key: payload.import_refused, family: other, direction: none, unit: count}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2509170611, bootstrap: 2509170612, command: 2509170613}
+timing: false
+order: randomized_blocks
+raw_compression: none
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /usr/bin/setfacl
+    - /usr/bin/getfattr
+    - /usr/bin/tar
+    - /usr/bin/bsdtar
+    - /usr/bin/zip
+    - /usr/bin/7z
+  timeout_s: 3600
+
+analysis:
+  baseline: ebound-baseline
+  pairing: item
+  report_metrics: [pack_refused, acl_invariant_holds_but_refused, export_refused, export_lossy, import_refused]

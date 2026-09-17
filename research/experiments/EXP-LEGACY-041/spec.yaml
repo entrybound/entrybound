@@ -1,0 +1,102 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-041
+status: designed
+question: >
+  Which default values for adapter-specific import limits refuse every pre-registered bomb within the declared memory
+  at the lowest refusal cost, while (arm A, offline) refusing the fewest benign real artifacts, and do compat
+  profiles need re-validation of profile-selected extents and actual expansion ratios?
+hypothesis: >
+  H2 every candidate default set except the unlimited reference refuses every bomb within its declared memory and at
+  least one candidate fails a bomb class; H3 status-quo constants refuse legitimate 7z -mx9 -md=1536m and zstd
+  --long=31 inputs while ultra-admitting admits them within 2 GiB; H4 header-precheck candidates refuse over-policy
+  streams after < 64 KiB read and < 1 MiB allocated; H5 revalidate-selected-extents plus actual-ratio-cap refuse all
+  C14 cases; H6 record-then-refuse stays within the evidence budget. H1 (false refusals) is arm A, offline.
+decision_ids: [DEC-LEG-022, DEC-LEG-093, DEC-LEG-007, DEC-LEG-083, DEC-LEG-059, DEC-LEG-085, DEC-LEG-095,
+  DEC-CON-006, DEC-CON-001]
+notes: >
+  Design pre-registration; bomb arms with in-process refusal timers (calibration of time_cpu in-process timers
+  required for decision-grade refusal_cpu_s). Each candidate is a policy file plus optional compat-revalidation and
+  refusal-strategy prototypes; each sample runs one bomb set in strict, each ZIP compat profile and preserve modes.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/bomb_run.py
+  --experiment EXP-LEGACY-041 --import-bin /root/eb-research/target/harness/release/ebr-legacy-import
+  --policy research/experiments/EXP-LEGACY-041/policies/{policy}.json --compat-revalidation {revalidation}
+  --refusal-strategy {refusal} --bombs {item_path} --item-id {item_id} --split {split} --rep {rep}
+  --modes strict,compat-all,preserve-all --memory-ceiling-bytes 8589934592 --wall-limit-s 600
+  --scratch {scratch} --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-041
+
+candidates:
+  - {name: status-quo, params: {policy: status-quo, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: corpus-percentile, params: {policy: corpus-percentile, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: memory-envelope-256m, params: {policy: memory-envelope-256m, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: memory-envelope-1g, params: {policy: memory-envelope-1g, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: incumbent-aligned, params: {policy: incumbent-aligned, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: tiered-conservative, params: {policy: tiered-conservative, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: tiered-permissive, params: {policy: tiered-permissive, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: ultra-admitting, params: {policy: ultra-admitting, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: go-extract-style-conservative, params: {policy: go-extract-style-conservative, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: host-resource-derived, params: {policy: host-resource-derived, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: absolute-decoded-budgets, params: {policy: absolute-decoded-budgets, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: per-format-ratio, params: {policy: per-format-ratio, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: harmonised-ratio-per-archive, params: {policy: harmonised-ratio-per-archive, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: header-precheck, params: {policy: header-precheck-policy-refused, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: measured-multipliers, params: {policy: measured-multipliers, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: add-provenance-byte-bound, params: {policy: add-provenance-byte-bound, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: compat-revalidate-extents-ratio, params: {policy: status-quo, revalidation: "revalidate-selected-extents+actual-ratio-cap", refusal: status-quo-fail-fast}}
+  - {name: compat-intersection-extent, params: {policy: status-quo, revalidation: intersection-extent, refusal: status-quo-fail-fast}}
+  - {name: compat-refuse-extent-disagreement, params: {policy: status-quo, revalidation: refuse-extent-disagreement, refusal: status-quo-fail-fast}}
+  - {name: record-then-refuse, params: {policy: status-quo, revalidation: status-quo-central-extents, refusal: record-then-refuse}}
+  - {name: hybrid-safety-first, params: {policy: status-quo, revalidation: status-quo-central-extents, refusal: hybrid-safety-first}}
+  - {name: archive-declaration-raises-limits-reference, params: {policy: archive-declaration-raises-limits, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+  - {name: unlimited-reference, params: {policy: unlimited-reference, revalidation: status-quo-central-extents, refusal: status-quo-fail-fast}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-041/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: none, unit: B}
+  - {name: bombs_total, source: stdout_json, key: payload.bombs_total, family: other, direction: none, unit: count}
+  - {name: bombs_refused, source: stdout_json, key: payload.bombs_refused, family: correctness, direction: maximize, unit: count}
+  - {name: bound_exceedances, source: stdout_json, key: payload.bound_exceedances, family: correctness, direction: minimize, unit: count}
+  - {name: refusal_bytes_read_max, source: stdout_json, key: payload.refusal_bytes_read_max, family: size, direction: minimize, unit: B}
+  - {name: refusal_cpu_s_max, source: stdout_json, key: payload.refusal_cpu_s_max, family: time_cpu, direction: minimize, unit: s}
+  - {name: refusal_alloc_peak_bytes_max, source: stdout_json, key: payload.refusal_alloc_peak_bytes_max, family: memory_peak, direction: minimize, unit: B}
+  - {name: typed_reason_codes, source: stdout_json, key: payload.typed_reason_codes, family: other, direction: none, unit: count}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 2509174111, bootstrap: 2509174112, command: 2509174113}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  cpu_affinity: [2]
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /root/eb-research/target/harness/release/ebr-legacy-import
+    - /usr/bin/bwrap
+  timeout_s: 14400
+
+analysis:
+  baseline: status-quo
+  pairing: item_repetition
+  report_metrics: [bombs_refused, bound_exceedances, refusal_bytes_read_max, refusal_cpu_s_max, refusal_alloc_peak_bytes_max]

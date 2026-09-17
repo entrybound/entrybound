@@ -1,0 +1,94 @@
+schema: ebr.spec.v1
+experiment_id: EXP-LEGACY-030
+status: designed
+question: >
+  Which consuming readers on Linux and Windows open each frozen export profile's output (and candidate profile
+  prototypes) without errors or stray artifacts and restore the EAM-equivalent tree per metadata class, and how do
+  LOSSLESS/LOSSY/REFUSED outcomes distribute over real, stress and round-trip sources?
+hypothesis: >
+  H1 every mainstream reader restores every LOSSLESS frozen-profile output with fidelity 1 on core classes; H2 at
+  least one reader leaves stray pax artifacts or truncated names; H3 readers disagree on pre-1980, post-2107 or
+  negative fractional times; H4 more than half of fresh tuning items export LOSSY to tar/pax-v1 only for
+  construction-equivalent metadata; H5 Always-ZIP64 plus descriptors is refused by at least one of Java
+  ZipInputStream, PowerShell 5.1, Explorer or warehouse; H6 LOSSLESS exports re-import to the source LAI and LOSSY
+  receipts enumerate every degradation.
+decision_ids: [DEC-LEG-028, DEC-LEG-015, DEC-LEG-029, DEC-LEG-033, DEC-LEG-036, DEC-LEG-041, DEC-LEG-068,
+  DEC-LEG-091, DEC-LEG-108, DEC-PLT-020, DEC-CRY-061]
+notes: >
+  Design pre-registration. Each sample exports one source with one profile or prototype and extracts the output with
+  every reader of the reader set on the named platform. Not runnable until gate G-A and the tooling in protocol.md
+  section 7 exist.
+cwd: /mnt/d/Projects/entrybound/entrybound
+shell: bash
+env:
+  PYTHONPATH: research/tools
+  EB_LEGACY_LOCK: research/experiments/_legacy/runtime-lock.json
+
+command: >-
+  /root/eb-research/venv/bin/python research/tools/legacy/export_matrix.py
+  --experiment EXP-LEGACY-030 --build /root/eb-research/target/legacy-head/release/ebound
+  --target {target} --source {item_path} --item-id {item_id} --split {split} --rep {rep} --seed {seed}
+  --readers {readers} --scratch {scratch} --artifacts-root /root/eb-research/raw-artifacts/EXP-LEGACY-030
+  --sandbox bwrap
+
+candidates:
+  - {name: zip-portable-v1, params: {target: "profile:zip/portable-v1", readers: zip-all}}
+  - {name: tar-pax-v1, params: {target: "profile:tar/pax-v1", readers: tar-all}}
+  - {name: tar-gz-pax-v1, params: {target: "profile:tar.gz/pax-v1", readers: tar-all}}
+  - {name: tar-zst-pax-v1, params: {target: "profile:tar.zst/pax-v1", readers: tar-all}}
+  - {name: tar-xz-pax-v1, params: {target: "profile:tar.xz/pax-v1", readers: tar-all}}
+  - {name: tar-bz2-pax-v1, params: {target: "profile:tar.bz2/pax-v1", readers: tar-all}}
+  - {name: proto-tar-ustar-only, params: {target: "proto:tar_ustar_only", readers: tar-all}}
+  - {name: proto-tar-pad-10240, params: {target: "proto:tar_pad_10240", readers: tar-all}}
+  - {name: proto-tar-pax-v2-gnu, params: {target: "proto:tar_pax_v2_variants:gnu", readers: tar-all}}
+  - {name: proto-tar-pax-v2-libarchive, params: {target: "proto:tar_pax_v2_variants:libarchive", readers: tar-all}}
+  - {name: proto-tar-pax-v2-star, params: {target: "proto:tar_pax_v2_variants:star", readers: tar-all}}
+  - {name: proto-tar-pax-v2-oci-windows, params: {target: "proto:tar_pax_v2_variants:oci-windows", readers: tar-all}}
+  - {name: proto-pax-positive-fraction, params: {target: "proto:pax_positive_fraction", readers: tar-all}}
+  - {name: proto-zip-unix-extras, params: {target: "proto:zip_unix_extras", readers: zip-all}}
+  - {name: proto-zip-ntfs-times, params: {target: "proto:zip_ntfs_times", readers: zip-all}}
+  - {name: proto-zip-local-dos, params: {target: "proto:zip_local_dos", readers: zip-all}}
+  - {name: proto-zip-always-zip64-dd, params: {target: "proto:zip_always_zip64_dd", readers: zip-all}}
+  - {name: proto-registry-ingest-zip, params: {target: "proto:registry_ingest_zip", readers: zip-all}}
+  - {name: proto-rename-with-loss, params: {target: "proto:rename_with_loss", readers: zip-and-tar-all}}
+  - {name: proto-standalone-stream, params: {target: "proto:standalone_stream", readers: stream-all}}
+  - {name: proto-oci-layer-pinned, params: {target: "proto:oci_layer_pinned", readers: oci-unpackers}}
+  - {name: tar-pax-v1-as-oci-layer, params: {target: "profile-as-layer:tar/pax-v1", readers: oci-unpackers}}
+
+corpus:
+  manifest: research/experiments/EXP-LEGACY-030/cases-manifest.jsonl
+  splits: [tuning, validation]
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: export_outcome, source: stdout_json, key: payload.export_outcome, family: other, kind: string}
+  - {name: readers_total, source: stdout_json, key: payload.readers_total, family: other, direction: none, unit: count}
+  - {name: readers_accepting, source: stdout_json, key: payload.readers_accepting, family: other, direction: none, unit: count}
+  - {name: stray_artifacts, source: stdout_json, key: payload.stray_artifacts, family: other, direction: none, unit: count}
+  - {name: reimport_lai_mismatches, source: stdout_json, key: payload.reimport_lai_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: receipt_undeclared_degradations, source: stdout_json, key: payload.receipt_undeclared_degradations, family: correctness, direction: minimize, unit: count}
+  - {name: export_sha256, source: stdout_json, key: payload.export_sha256, family: correctness, kind: string}
+  - {name: observations_sha256, source: stdout_json, key: payload.observations_sha256, family: correctness, kind: string}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2509173011, bootstrap: 2509173012, command: 2509173013}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/venv/bin/python
+    - /usr/bin/bwrap
+    - /root/eb-research/target/legacy-head/release/ebound
+    - /mnt/c/Windows/System32/tar.exe
+  timeout_s: 14400
+
+analysis:
+  baseline: tar-pax-v1
+  pairing: item
+  report_metrics: [readers_accepting, stray_artifacts, reimport_lai_mismatches, receipt_undeclared_degradations]
