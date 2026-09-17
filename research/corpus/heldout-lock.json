@@ -2,10 +2,22 @@
   "lock_format": "ebrc-heldout-lock-v1",
   "corpus_version": "ebrc-2026.09-v1",
   "status": "draft",
-  "heldout_set_sha256": "e11053eca229a9300891b571f98d67d44579de07440c7a22a9a824060511aaee",
+  "heldout_set_sha256": "7e34e2dc226b62c9d2d09b4a1477a0c08da39e4ea10394f5185d4c1e2dca63d5",
   "heldout_set_rule": "SHA-256 over lines '<item_id>\\t<logical_tree_sha256>\\n' sorted by item_id",
-  "manifest_sha256": "a71e7ee196520b2813c686b587d135fa1f0f8e5f185cb50b77352eb9fbbfa4ca",
+  "manifest_sha256": "ed28b1b47333c186a8c80781d378b4c149eaaceea09a65098182f4c062380392",
   "items": [
+    {
+      "item_id": "f01-heldout-lua-5-4-8-full-clone",
+      "family": "F01",
+      "scale": "small",
+      "independence_group": "lua",
+      "status": "ok",
+      "logical_tree_sha256": "2e983870dbdddcaa820fd15054dfbfe77be3ec315bf8c1252c711184116fa7f6",
+      "tree_sha256": "cfcdd30f81c9144b872e54e1c03d6f83a729df80a8b92371c50215aa7f4c85aa",
+      "content_tree_sha256": "047a302822abeebf1d6fe924e8091a72f787cb9d969a020112c4da9000145992",
+      "bytes": 15655281,
+      "file_count": 138
+    },
     {
       "item_id": "f01-heldout-musl-1-2-5-src",
       "family": "F01",
@@ -29,6 +41,18 @@
       "content_tree_sha256": "748a752dd63e42ffd469a63aec14f17cd2917a0117f6941357e4cf477ad535a0",
       "bytes": 133758376,
       "file_count": 14476
+    },
+    {
+      "item_id": "f01-heldout-pdfjs-4-10-38-git",
+      "family": "F01",
+      "scale": "medium",
+      "independence_group": "mozilla-pdfjs",
+      "status": "ok",
+      "logical_tree_sha256": "cc09aa5dd829c2d7b7eda0d9fd4d66e7b9a88f44f737e4fcee38454cf7b95251",
+      "tree_sha256": "4ffcc60a4d09cd77d1c2053e742e29763b2787d9c4984ab61e5884964982002e",
+      "content_tree_sha256": "87410f8ead00253276fdc9b9b606997e3d8b8722f192390fdf6b556298079910",
+      "bytes": 110317435,
+      "file_count": 2082
     },
     {
       "item_id": "f01-heldout-linux-6-6-src",
@@ -151,6 +175,18 @@
       "file_count": 12459
     },
     {
+      "item_id": "f04-heldout-real-freebsd-ports",
+      "family": "F04",
+      "scale": "large",
+      "independence_group": "freebsd-ports",
+      "status": "ok",
+      "logical_tree_sha256": "7da33a979cbb169e9bc3e26889825d716e3dcb95639be6c541dde9cb98a62372",
+      "tree_sha256": "c809f7e969fd076217d8a265b24fc6fb4ba44b88224923cefe1dc2de03eb9196",
+      "content_tree_sha256": "51d06eb7a1eb743c1a741c4c994949a72612357cfff87aadf35ea2c4c1bb1b55",
+      "bytes": 585425690,
+      "file_count": 177413
+    },
+    {
       "item_id": "f05-heldout-congressional-record-2024-01",
       "family": "F05",
       "scale": "small",
@@ -161,6 +197,30 @@
       "content_tree_sha256": "06b6d2277a6f830c66f6a1f3e3eadd7b82838196f4085c23547c5afe8b48731c",
       "bytes": 12219752,
       "file_count": 684
+    },
+    {
+      "item_id": "f05-heldout-logrotate-from-maccdc2012",
+      "family": "F05",
+      "scale": "small",
+      "independence_group": "ebrc-gen-logrotate-heldout",
+      "status": "ok",
+      "logical_tree_sha256": "1b2d50c3a54f4a43d07027b1a76373bdfa0a61dbf2721e6022f3c7d16f2245db",
+      "tree_sha256": "8412ec30a733558f978c1f6f5dc321a6ffb8d6e46020e5707e8b9dd1dc853c8b",
+      "content_tree_sha256": "53698a553fdaf36fbfee89960626e0e38790bdcd5641f81a167949ad7d6a3a76",
+      "bytes": 2486044,
+      "file_count": 7
+    },
+    {
+      "item_id": "f05-heldout-evtx-attack-samples",
+      "family": "F05",
+      "scale": "medium",
+      "independence_group": "evtx-attack-samples",
+      "status": "ok",
+      "logical_tree_sha256": "b311e802309fad8c7f9f144ba0ed622025d3204d1964a44190421f6a9e538587",
+      "tree_sha256": "b1eed1ad801671be0511210d241620976967c52f49275dac92f845ecc3942e78",
+      "content_tree_sha256": "799a068b627cb5d80043366eee756a27c6dde5400650a92ca49b864b347063e5",
+      "bytes": 62830650,
+      "file_count": 316
     },
     {
       "item_id": "f05-heldout-gen-logs-c",
@@ -197,6 +257,18 @@
       "content_tree_sha256": "a34b95dcef413968ba534215772a1d121def7e913f2116d51412d7c7922da3d7",
       "bytes": 19737835,
       "file_count": 31
+    },
+    {
+      "item_id": "f05-heldout-backblaze-drive-stats-2025-q1",
+      "family": "F05",
+      "scale": "large",
+      "independence_group": "backblaze-drive-stats",
+      "status": "ok",
+      "logical_tree_sha256": "826d7a812195ea333530b2bc8e049e3606c8297f6404f41aa65285a21b5a514b",
+      "tree_sha256": "8cb2d41cbda02bef2c7a97d191905e42139bce6371e262aea5fa89ebeecc6da6",
+      "content_tree_sha256": "aa5da768f2c4bb6294d9b59114da7d06c5b06ea449beb8c823bd8f7fe683213a",
+      "bytes": 7097027357,
+      "file_count": 60
     },
     {
       "item_id": "f06-heldout-unicode-ucd-16-0-0-text",
@@ -259,6 +331,18 @@
       "file_count": 5
     },
     {
+      "item_id": "f07-heldout-1000genomes-chr22-vcf-bgzf",
+      "family": "F07",
+      "scale": "medium",
+      "independence_group": "igsr-1000genomes",
+      "status": "ok",
+      "logical_tree_sha256": "1567a6fbdaff6e85c1e6279f14b2960e1ea1d32f323a1fb7b64b38aff5bc2eab",
+      "tree_sha256": "433bc3ceccec781a61d08e44aa7345871b867add93318cdcb2440832f8e846c9",
+      "content_tree_sha256": "b8df87e26688a4d10c176e9981cb6370e85495ee23836685e90ec655b6e16a02",
+      "bytes": 205612353,
+      "file_count": 1
+    },
+    {
       "item_id": "f07-heldout-gen-numeric-c",
       "family": "F07",
       "scale": "medium",
@@ -292,6 +376,54 @@
       "tree_sha256": "7aed120e8a059ae67579114e420d719603ea183fac95a6b4e50651ef66719243",
       "content_tree_sha256": "b4a75b19d79858d984321665b09fdfd70e2bb93c0e881c2a952f6739ac72cad6",
       "bytes": 478290125,
+      "file_count": 1
+    },
+    {
+      "item_id": "f07-heldout-1000genomes-chr22-vcf-region-subset",
+      "family": "F07",
+      "scale": "large",
+      "independence_group": "igsr-1000genomes",
+      "status": "ok",
+      "logical_tree_sha256": "8816752031e7d604e7cbdeab015aad2cbcda296a4b3d62cbbe6c82b0abbecae8",
+      "tree_sha256": "6a9a66f197a1998b909eb1551f7e05cae43d83ed68f120944588151c7f5ead96",
+      "content_tree_sha256": "7751b6048203acb763015277cbd1256fd4df47b6ed8ef2a77c1de8f4c254bf06",
+      "bytes": 4000001537,
+      "file_count": 2
+    },
+    {
+      "item_id": "f07-heldout-fineweb-edu-parquet-sample10bt",
+      "family": "F07",
+      "scale": "large",
+      "independence_group": "huggingfacefw-fineweb",
+      "status": "ok",
+      "logical_tree_sha256": "174eba348b4ebf2eff55c8cdeb9d397af530ba21a42f50cbc3f1d15ea661d2aa",
+      "tree_sha256": "6c066e97021e4d5c2d60b9578e28fdcf3f331cbae5a7c4699ff0ffdbe66cf283",
+      "content_tree_sha256": "476c73a531a587f0c7218070b3e01d83d6cf830bd46d32a33c2a51429929bb7e",
+      "bytes": 2152819114,
+      "file_count": 1
+    },
+    {
+      "item_id": "f07-heldout-phi3-mini-safetensors-p1of2",
+      "family": "F07",
+      "scale": "large",
+      "independence_group": "microsoft-phi3",
+      "status": "ok",
+      "logical_tree_sha256": "8724115786a1af59e6070b488a23ad01e938c019db5f987d8340230cd56a5326",
+      "tree_sha256": "1b90d316fde087d4b3377d470fe7a5f13c3da4da99a68997a57876e5c4c26e54",
+      "content_tree_sha256": "5e797113d40280cd98ebade0c0d2fd10e275bfd18a98f0604b094f1c10fbf56e",
+      "bytes": 4972489328,
+      "file_count": 1
+    },
+    {
+      "item_id": "f07-heldout-phi3-mini-safetensors-p2of2",
+      "family": "F07",
+      "scale": "large",
+      "independence_group": "microsoft-phi3",
+      "status": "ok",
+      "logical_tree_sha256": "e72f94fd3f062dd98c100f61d72f6f44d32726a2ac4f21ebf72f5304f434601f",
+      "tree_sha256": "e72e7d3fe74a8f4f82e207ee617befb8eb7e2719cedb4c6b4308d8af7c2eb6f9",
+      "content_tree_sha256": "38cb5bbd5f131014d2fa46abfb0461aaea21d2f43d681d78e8246970053e6416",
+      "bytes": 2669692552,
       "file_count": 1
     },
     {
@@ -329,6 +461,18 @@
       "content_tree_sha256": "f4b19bac9a7a803c6bedd62e8a370093f2521c356b8c0ef7a26495c154676b4d",
       "bytes": 69300224,
       "file_count": 1
+    },
+    {
+      "item_id": "f08-heldout-ebi-rfam-15-0-sql-dump",
+      "family": "F08",
+      "scale": "large",
+      "independence_group": "ebi-rfam",
+      "status": "ok",
+      "logical_tree_sha256": "36d8f8265bbd0d6179f384c35979d56395257578913c641c64eb71e2efb065ef",
+      "tree_sha256": "b8824e85a4536938174c358679f3f29f577b37af70096476ad022d1c205a5313",
+      "content_tree_sha256": "341cf6f5e797fd268f9447719745bc4c1b62096feb00cfb93a1f3fedf74f03ec",
+      "bytes": 2564211859,
+      "file_count": 72
     },
     {
       "item_id": "f08-heldout-natural-earth-vector-gpkg",
@@ -439,6 +583,18 @@
       "file_count": 6
     },
     {
+      "item_id": "f11-heldout-firefox-15501-signing-metadata",
+      "family": "F11",
+      "scale": "small",
+      "independence_group": "mozilla-firefox",
+      "status": "ok",
+      "logical_tree_sha256": "e5e397fcb2b6dbec651ddd9612f32d481ef124378108ca0ddef0284b3775be79",
+      "tree_sha256": "06825ba54cd5e00671614627a1fe7f1c8eb875f046aff5564d7085d9ed2b79bc",
+      "content_tree_sha256": "9a244e1ca40e4177f8f269d9d1658dc11b7394efbe1856d5c632726e8a0c1936",
+      "bytes": 584792,
+      "file_count": 4
+    },
+    {
       "item_id": "f11-heldout-archlinux-pkgs",
       "family": "F11",
       "scale": "medium",
@@ -475,6 +631,18 @@
       "file_count": 235
     },
     {
+      "item_id": "f12-heldout-usgov-photos-small",
+      "family": "F12",
+      "scale": "small",
+      "independence_group": "g5-commons-usgov-photos",
+      "status": "ok",
+      "logical_tree_sha256": "8f960847d4e840ead091f56e90ef52167520ed049d2da04d6c98fe551b5e6a28",
+      "tree_sha256": "15c5dbeeffc5377aebdb2317d7a5797f303415c99587ccccf9685e3a20502260",
+      "content_tree_sha256": "8d7ffc833f39f7549f8e1bb08c50550e81745d9d2712195d234ad4517a13b6ea",
+      "bytes": 15647367,
+      "file_count": 8
+    },
+    {
       "item_id": "f12-heldout-highsmith-jpeg-matrix-medium",
       "family": "F12",
       "scale": "medium",
@@ -487,6 +655,30 @@
       "file_count": 690
     },
     {
+      "item_id": "f12-heldout-usgov-photos-medium",
+      "family": "F12",
+      "scale": "medium",
+      "independence_group": "g5-commons-usgov-photos",
+      "status": "ok",
+      "logical_tree_sha256": "9038695ed0b73bec397c85da3eadbcd9d313d892e228fd5bb25575c4b83c6516",
+      "tree_sha256": "c1119d36c60c4166d4688a0284ab763b84d7477b423990834d00b84f8af415bf",
+      "content_tree_sha256": "b1bba37089dcf9caf38b04e2bf8a4e2fa640c89a7275b76f3a342f72e1e4d7b9",
+      "bytes": 313995507,
+      "file_count": 54
+    },
+    {
+      "item_id": "f12-heldout-usgov-photos-large",
+      "family": "F12",
+      "scale": "large",
+      "independence_group": "g5-commons-usgov-photos",
+      "status": "ok",
+      "logical_tree_sha256": "41e5663cce786aad40dad0e17d1bb08fff751f4d65031e7ca070b0fdff1ad480",
+      "tree_sha256": "dd47815b7c7acd3ef6fd61490ffd3d47f0b5edd1692fe6463dfc0a2d149bad24",
+      "content_tree_sha256": "ce495aba85b548135683277dbaae2df2fbf44d2977511bbb38afc3686dd4bc8b",
+      "bytes": 891276654,
+      "file_count": 198
+    },
+    {
       "item_id": "f13-heldout-highsmith-image-codecs-small",
       "family": "F13",
       "scale": "small",
@@ -497,6 +689,18 @@
       "content_tree_sha256": "036ed7193784d790fa724b4835879c730211d2818922e5924d3751bfe63ef908",
       "bytes": 9774689,
       "file_count": 38
+    },
+    {
+      "item_id": "f13-heldout-phone-matrix-small",
+      "family": "F13",
+      "scale": "small",
+      "independence_group": "g5-loc-highsmith",
+      "status": "ok",
+      "logical_tree_sha256": "9f04c7ab5cc523646fc1fac53c2860ac050643fbeb8936ca79fc31e661aabea3",
+      "tree_sha256": "dd42448b901d77c162af134712d15ad901354c670b34596d848f69324f67fbe8",
+      "content_tree_sha256": "567092d780eb9694f3afc7326d286e87ec6d748df9352e77853a80b8e4f638bb",
+      "bytes": 3124069,
+      "file_count": 8
     },
     {
       "item_id": "f13-heldout-usgs-pdf-small",
@@ -547,6 +751,18 @@
       "file_count": 5
     },
     {
+      "item_id": "f13-heldout-nasa-video-naca-large",
+      "family": "F13",
+      "scale": "large",
+      "independence_group": "g5-nasa-video-naca",
+      "status": "ok",
+      "logical_tree_sha256": "13cf5ce26176ecae5955d26da2114571478d7fe1127751afca0abad4d3a2f65d",
+      "tree_sha256": "9ffd9b55ab3d1f6604c333ba6baa342d68fcb0e919d06926bcaae49307def765",
+      "content_tree_sha256": "80b085e38076f5b7d200c2f5f80e18f55e4463680fd29342790757f56f48faae",
+      "bytes": 2135226142,
+      "file_count": 1
+    },
+    {
       "item_id": "f13-heldout-tos-media-large",
       "family": "F13",
       "scale": "large",
@@ -595,6 +811,18 @@
       "file_count": 1
     },
     {
+      "item_id": "f14-legacy-writer-matrix-heldout",
+      "family": "F14",
+      "scale": "medium",
+      "independence_group": "musl",
+      "status": "ok",
+      "logical_tree_sha256": "4aad16a155c70171ea89489e4a2fbaed2831a5c5decfee30526aabded8a9a272",
+      "tree_sha256": "75b38879bc605fe4031d37394563e10c84b592a16ff089ac4652621ffbb08425",
+      "content_tree_sha256": "a01b40e9c2cd7e8e787aadc27951203e62acdabb2a459ae5a88de8bf8b00b209",
+      "bytes": 136512612,
+      "file_count": 41
+    },
+    {
       "item_id": "f15-heldout-coredump",
       "family": "F15",
       "scale": "medium",
@@ -619,6 +847,18 @@
       "file_count": 14
     },
     {
+      "item_id": "f15-heldout-real-almalinux-genericcloud-raw",
+      "family": "F15",
+      "scale": "large",
+      "independence_group": "almalinux",
+      "status": "ok",
+      "logical_tree_sha256": "806aa7df749203d27d0b536ccf981064238ed5720c68813ac1e5d92d377e291f",
+      "tree_sha256": "880e59570a8cff5d21d2ade0842b7dd384dad10f649e681074d4e4bbb6388dd4",
+      "content_tree_sha256": "d6ad136f40db1f12a6b45ef336a4f3490c4a20905672d6a53f1d16874ff1e2a2",
+      "bytes": 1073742438,
+      "file_count": 2
+    },
+    {
       "item_id": "f16-heldout-almalinux-10-genericcloud-qcow2",
       "family": "F16",
       "scale": "medium",
@@ -640,6 +880,30 @@
       "tree_sha256": "a346d67f434b47ee7597aee7e1aa9a9eaf8b4675525055e3c66d0e13059b7878",
       "content_tree_sha256": "1c769d7913ccb74b5eb57c6781efd3d183b455a5705d7379d027f810880c24db",
       "bytes": 201326592,
+      "file_count": 1
+    },
+    {
+      "item_id": "f16-heldout-oci-almalinux-10-whiteout-derive",
+      "family": "F16",
+      "scale": "medium",
+      "independence_group": "almalinux",
+      "status": "ok",
+      "logical_tree_sha256": "01b92acf3d225bfbc28a84556d08975e619fbcf03a228f8119f4c90b13cc1b97",
+      "tree_sha256": "77c17ca368314aa1b2e2c236c172a7345bc5171b1d77524ff7df9dffbbb0c014",
+      "content_tree_sha256": "5922a461e3b8feba550584e4326b334935a6180dcce7373754766af6010ca24f",
+      "bytes": 68864586,
+      "file_count": 6
+    },
+    {
+      "item_id": "f16-heldout-almalinux-102-boot-iso",
+      "family": "F16",
+      "scale": "large",
+      "independence_group": "almalinux",
+      "status": "ok",
+      "logical_tree_sha256": "968353e9c5b42fabaef75b08f136d96843d744c0bbce5b6323a30cae337a5d0e",
+      "tree_sha256": "c4f76238b6d31b1076c93dead92e464c2cd21e7a171dea1c82928f9cd10e8601",
+      "content_tree_sha256": "4cfc889ad1625647995a4300b750c2964d9f6d22d0d026b7d7065d0dd126ef2c",
+      "bytes": 1056202752,
       "file_count": 1
     },
     {
@@ -679,6 +943,18 @@
       "file_count": 4200
     },
     {
+      "item_id": "f17-heldout-real-almalinux-kernel-devel-2ver",
+      "family": "F17",
+      "scale": "medium",
+      "independence_group": "almalinux-kernel-devel",
+      "status": "ok",
+      "logical_tree_sha256": "51c60818ff55e76fb8bcda1635845d703e6e068a177f45aaaa1b9eeb814c55f2",
+      "tree_sha256": "6d6fd862af415139c115a51dd13b74ba83672332bffb3240c1d0d39b447ae8c7",
+      "content_tree_sha256": "3612f3cc2c5fec144d3e5786ec668b7f12a778d4c1f4cdb3262b6f7ff5aa19fa",
+      "bytes": 156746293,
+      "file_count": 35223
+    },
+    {
       "item_id": "f18-heldout-lua-5-4-releases",
       "family": "F18",
       "scale": "small",
@@ -701,6 +977,18 @@
       "content_tree_sha256": "dfd0944eeda5c06e039d700f259eae51b76f7315b47e87df753d1e05f86a319f",
       "bytes": 20332232,
       "file_count": 15761
+    },
+    {
+      "item_id": "f18-heldout-firefox-155-releases",
+      "family": "F18",
+      "scale": "large",
+      "independence_group": "mozilla-firefox",
+      "status": "ok",
+      "logical_tree_sha256": "941e4bd8c44cefac1103568bc703b94444c1c27379dfd31a0f512153f6a7aa44",
+      "tree_sha256": "97caac7abdfabf7dd3e609a7a49a9a8d0e7e0ccd520b555c0521df43227880fb",
+      "content_tree_sha256": "b28727b2f0d8a2c6556a1ae1bd4983ac0691a3cb2cbac58880f969685b8074ef",
+      "bytes": 660875906,
+      "file_count": 102
     },
     {
       "item_id": "f18-heldout-linux-6-6-stable-subset-series",
@@ -727,6 +1015,18 @@
       "file_count": 13155
     },
     {
+      "item_id": "f19-heldout-real-home-snapshot",
+      "family": "F19",
+      "scale": "small",
+      "independence_group": "jonschlinkert-isnumber-home-snapshot",
+      "status": "ok",
+      "logical_tree_sha256": "b8addfffd537c870b3284cb4e170add0265472051a8a94cca6b36445e7a42442",
+      "tree_sha256": "d0e129259e3d182d3a5c3810503cd7bcf191c7ba901cfa7a53e5d0f62109efd4",
+      "content_tree_sha256": "dd1eb3545e331e88c2d24cd3f9c7fc77ea6042c814982c0e97c2b650fb5d8b88",
+      "bytes": 16718848,
+      "file_count": 192
+    },
+    {
       "item_id": "f19-heldout-linkstore",
       "family": "F19",
       "scale": "medium",
@@ -739,6 +1039,30 @@
       "file_count": 6429
     },
     {
+      "item_id": "f19-heldout-real-btrfs-acl-selinux",
+      "family": "F19",
+      "scale": "medium",
+      "independence_group": "ebrc-g2-f19-btrfs-acl-selinux",
+      "status": "ok",
+      "logical_tree_sha256": "f616a21d526dbde9b41843caee14d5ed12e5e4fd9724b84c91be4b9c07379306",
+      "tree_sha256": "8a643d590efaf69bcb03bb95587e424a7b377ee83ef1d843866d6062e99847dc",
+      "content_tree_sha256": "1a44acaef8b3a194e905eea7ed25a4d21d8889dfa5ec78b881c662cffdd41ace",
+      "bytes": 134219880,
+      "file_count": 2
+    },
+    {
+      "item_id": "f19-heldout-real-ntfs-metadata",
+      "family": "F19",
+      "scale": "medium",
+      "independence_group": "ebrc-g2-f19-ntfs-heldout",
+      "status": "ok",
+      "logical_tree_sha256": "faecfb64e3958c607de561a2022f2f09b20646b1868575f438ad9ddc848f8fa8",
+      "tree_sha256": "b548f52ddea04fe6b0fdb4f7e0e1dd21dbf4e8d92042fa2e15727e99716fde7d",
+      "content_tree_sha256": "906adee358778bfb869dafe5daf1a670ad187133818cb3b618486b4b60abde06",
+      "bytes": 50333275,
+      "file_count": 2
+    },
+    {
       "item_id": "f20-heldout-chacha-files",
       "family": "F20",
       "scale": "small",
@@ -749,6 +1073,54 @@
       "content_tree_sha256": "b053d813266e00c3f239dd390ab77e3757a6e2ae076d6a60d792fa7a62ae47fe",
       "bytes": 11086666,
       "file_count": 210
+    },
+    {
+      "item_id": "f20-heldout-generated-malicious-structures-v2",
+      "family": "F20",
+      "scale": "small",
+      "independence_group": "ebrc-g2-f20-malicious-v2-heldout",
+      "status": "ok",
+      "logical_tree_sha256": "8b52eeb8a66829e5faf269bdbc2967ef21593823e18996b19f20ee31bb9695c6",
+      "tree_sha256": "b23cac4cf9a92d1927b340f667963b5e8aa939555ad519e629141ea27cf2d644",
+      "content_tree_sha256": "8e386e6c954950eccec97176cb8dc74315a6b2421b181648cfa74b9fe9674ad4",
+      "bytes": 11540,
+      "file_count": 6
+    },
+    {
+      "item_id": "f20-heldout-real-fastzip-malo",
+      "family": "F20",
+      "scale": "small",
+      "independence_group": "fastzip-malo",
+      "status": "ok",
+      "logical_tree_sha256": "6eabd2b20b573b02ac6fd9f308e402cee1121c3bbf290dd2014a7b37379c1dfc",
+      "tree_sha256": "c6b4fff7856ae773ff4182cbf67fc3ea56049b6bce2c6ce4a05cf6e2e36029e9",
+      "content_tree_sha256": "62e229380f4b9de34e99522e194fbab09f943b1e65f1f49a4dda31a3b2aad4b6",
+      "bytes": 985434,
+      "file_count": 556
+    },
+    {
+      "item_id": "f20-heldout-real-fifield-zipbomb-regen",
+      "family": "F20",
+      "scale": "small",
+      "independence_group": "fifield-zipbomb",
+      "status": "ok",
+      "logical_tree_sha256": "c0ee4ae0c4836cf91ed6059fa7a901beaeef7f86a2a66e09bbf2bfa2e944fa25",
+      "tree_sha256": "107ad0807e45f254b9dc6409dea684270e84e4cc3c009dbc4411f592b989d1ea",
+      "content_tree_sha256": "a77c5cad277bd7aa46082b8be278d3d61df5893568f267a2a48c4a60387e09b5",
+      "bytes": 96646,
+      "file_count": 4
+    },
+    {
+      "item_id": "f20-heldout-real-go-archive-testdata",
+      "family": "F20",
+      "scale": "small",
+      "independence_group": "golang",
+      "status": "ok",
+      "logical_tree_sha256": "8b6939d43f5fb51cd62bdaf4b778aa7d4a1b0da5579980814036c8d130f89988",
+      "tree_sha256": "6ee5318188a6f4d5df747cfd86fb83ff87a50880a0fbe78f2dfab37c6c98aa59",
+      "content_tree_sha256": "167c79e32d02b20fd79da912fd46e0133cc89b14718ead363eadf02f9478eaaa",
+      "bytes": 157424,
+      "file_count": 78
     },
     {
       "item_id": "f20-heldout-bombvariants",
@@ -785,6 +1157,18 @@
       "content_tree_sha256": "164a5b7e94bc50279a596e4623c91acc469658800681004c2f41678c799286d8",
       "bytes": 172976346,
       "file_count": 22
+    },
+    {
+      "item_id": "f20-heldout-generated-private-vault-v2",
+      "family": "F20",
+      "scale": "medium",
+      "independence_group": "ebrc-g2-f20-private-vault-v2-heldout",
+      "status": "ok",
+      "logical_tree_sha256": "22ec36ab2b379d400d8211684990643aae12cc1e0a38f489537084d1d0d72304",
+      "tree_sha256": "7ee18c085308cac6c53a28de2c4c83e512599b28d3ec6209774d3a172b6fa3c3",
+      "content_tree_sha256": "35b343b6e22b12a272bca08748a613e8793ab8e2c21c336b9a6fbf46c39801cc",
+      "bytes": 50412844,
+      "file_count": 20
     }
   ],
   "history": []
