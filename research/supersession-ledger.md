@@ -7,7 +7,7 @@ the SPEC supersedes Research I-III and the research appendix; PROGRAM rows add r
 only and never govern product semantics. *Governing authority* is the first non-PROGRAM superseding
 authority, or the original authority when only PROGRAM obligations were added.
 
-Rows: 1082 of 1518 requirements.
+Rows: 1082 of 1521 requirements.
 
 ## access (ACC, 104 rows)
 

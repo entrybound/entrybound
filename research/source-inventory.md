@@ -10,7 +10,7 @@ Authority rank (1 = highest): **1** repository docs, code, tests, tools and mani
 `9e44608` (they supersede the SPEC where they freeze or refine it); **2** the SPEC (supersedes Research
 I-III and the appendix); **3** Research I-III, the research appendix and the Research III instrumentation
 (evidence base). PROGRAM (the research program brief) is not a file input: it adds research obligations only
-and is cited by 89 requirement rows.
+and is cited by 92 requirement rows.
 
 *Extraction slice keys* lists the `research/audit/extract` slices whose records cite the source, with record
 counts. *Citing rows* counts requirement-ledger rows that cite the source as primary or additional source.
