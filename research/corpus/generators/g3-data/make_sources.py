@@ -58,13 +58,28 @@ GUTENBERG = lic("Public domain in the USA (Project Gutenberg eBooks; Project Gut
 # helpers
 
 
-def dl(name, url, filename=None, notes=None):
+def dl(name, url, filename=None, notes=None, upstream_digest=None):
     d = {"name": name, "url": url, "sha256": "TOFU"}
     if filename:
         d["filename"] = filename
     if notes:
         d["notes"] = notes
+    if upstream_digest:
+        d["upstream_digest"] = upstream_digest
     return d
+
+
+def wikimedia_dumpstatus(url, algo="sha1"):
+    """upstream_digest spec for a file under a dumps.wikimedia.org dated dump
+    directory: cross-checks the cached blob against the digest the dump directory's
+    own dumpstatus.json publishes (independent of, and not shortcut by, our own
+    content-addressed cache key -- see task_bb8ca4e8's cache-integrity follow-up in
+    PROGRESS.md: the self-consistency check alone cannot catch a blob that was
+    corrupted before we ever computed its sha256, e.g. the all-zero pageviews blob).
+    Not available for the flat https://dumps.wikimedia.org/other/... trees (pageviews
+    etc.), which publish no per-file manifest, only a directory-listing size."""
+    manifest_url = url.rsplit("/", 1)[0] + "/dumpstatus.json"
+    return {"format": "wikimedia-dumpstatus", "manifest_url": manifest_url, "algo": algo}
 
 
 def item(item_id, family, split, scale, kind, rog, recipe, license_, group, description, notes=None, tags=None):
@@ -232,7 +247,9 @@ ITEMS += [
          "U.S. Census Bureau Vintage 2023 population estimates CSVs: county totals and state totals with components of change.",
          notes="Substitute for the BLS hint: Census CSVs are directly downloadable over https without a registered User-Agent."),
     item("f06-tuning-wikimedia-tnwiki-20260901", "F06", "tuning", "medium", "download", "real",
-         {"inputs": [dl("dump", "https://dumps.wikimedia.org/tnwiki/20260901/tnwiki-20260901-pages-meta-current.xml.bz2")],
+         {"inputs": [dl("dump", "https://dumps.wikimedia.org/tnwiki/20260901/tnwiki-20260901-pages-meta-current.xml.bz2",
+                       upstream_digest=wikimedia_dumpstatus(
+                           "https://dumps.wikimedia.org/tnwiki/20260901/tnwiki-20260901-pages-meta-current.xml.bz2"))],
           "steps": [{"op": "decompress", "input": "dump", "dest": "tnwiki-20260901-pages-meta-current.xml", "format": "bz2"}]},
          lic("CC-BY-SA-4.0 AND GFDL-1.3 (Wikipedia text); dump metadata CC0", True,
              "Setswana Wikipedia contributors; Wikimedia Foundation dumps, https://dumps.wikimedia.org",
@@ -736,11 +753,17 @@ ITEMS += [
 
 ITEMS += [
     item("f08-tuning-wikimedia-simplewiki-sql-dump", "F08", "tuning", "large", "download", "real",
-         {"inputs": [dl("page", "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-page.sql.gz"),
+         {"inputs": [dl("page", "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-page.sql.gz",
+                       upstream_digest=wikimedia_dumpstatus(
+                           "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-page.sql.gz")),
                      dl("categorylinks",
-                        "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-categorylinks.sql.gz"),
+                        "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-categorylinks.sql.gz",
+                        upstream_digest=wikimedia_dumpstatus(
+                            "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-categorylinks.sql.gz")),
                      dl("pagelinks",
-                        "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-pagelinks.sql.gz")],
+                        "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-pagelinks.sql.gz",
+                        upstream_digest=wikimedia_dumpstatus(
+                            "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-pagelinks.sql.gz"))],
           "steps": [{"op": "decompress", "input": "page", "dest": "simplewiki-20260901-page.sql", "format": "gz"},
                     {"op": "decompress", "input": "categorylinks",
                      "dest": "simplewiki-20260901-categorylinks.sql", "format": "gz"},

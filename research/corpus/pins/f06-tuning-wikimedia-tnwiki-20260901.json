@@ -11,9 +11,9 @@
     }
   },
   "output": {
-    "materialization_key": "b304fd0be8a858f1c05a78b175d59f93870c9e243204df58bd514d81ddc54efa",
+    "materialization_key": "2328a64992f783e1d38b8790f08a58b5fa05585b692e04e5ea84b6ec740c6c9c",
     "logical_tree_sha256": "bc886452dd69e805af612c4f7db9651e28849b2af88bff6acbd246b9d84e0f44",
-    "pinned_utc": "2026-09-13T02:25:13Z"
+    "pinned_utc": "2026-09-17T09:20:28Z"
   },
   "history": [
     {
@@ -22,6 +22,14 @@
         "materialization_key": "a128bedb5d9f554845056b1638e27c3c31f8e6d571978d0d4ee91c884b6f8b97",
         "logical_tree_sha256": "bc886452dd69e805af612c4f7db9651e28849b2af88bff6acbd246b9d84e0f44",
         "pinned_utc": "2026-09-13T02:16:33Z"
+      }
+    },
+    {
+      "replaced_utc": "2026-09-17T09:20:28Z",
+      "output": {
+        "materialization_key": "b304fd0be8a858f1c05a78b175d59f93870c9e243204df58bd514d81ddc54efa",
+        "logical_tree_sha256": "bc886452dd69e805af612c4f7db9651e28849b2af88bff6acbd246b9d84e0f44",
+        "pinned_utc": "2026-09-13T02:25:13Z"
       }
     }
   ]

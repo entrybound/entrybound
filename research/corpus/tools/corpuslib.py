@@ -122,6 +122,63 @@ def sha256_file(path, chunk: int = MiB) -> tuple[str, int]:
     return h.hexdigest(), n
 
 
+def hash_file_algo(path, algo: str, chunk: int = MiB) -> str:
+    """Digest a local file with an arbitrary hashlib algorithm name (e.g. "sha1",
+    "md5"), for cross-checking against a digest an upstream host publishes in a
+    format other than SHA-256 (see check_upstream_digest usage in provision.py)."""
+    h = hashlib.new(algo)
+    with open(path, "rb") as f:
+        while True:
+            b = f.read(chunk)
+            if not b:
+                break
+            h.update(b)
+    return h.hexdigest()
+
+
+# ---------------------------------------------------------------------------
+# cache-corruption defense: magic-byte sanity check
+#
+# The content-addressed download cache names each blob after its own SHA-256, so a
+# blob that was corrupted *before* that hash was ever taken (e.g. an upstream host or
+# proxy serving all-zero bytes with a 200 status and a plausible Content-Length) will
+# forever "self-verify": the corrupted bytes hash to their own cache filename, and
+# nothing about that check ever compares against content the file itself didn't
+# produce. A magic-byte check breaks that circularity for known container formats: an
+# all-zero ".gz" cannot start with the gzip signature, so this catches it immediately,
+# offline, on every read (including the cheap "trust the .verified.json marker" path),
+# not only during a full --reverify-cache re-hash.
+MAGIC_BYTES = {
+    ".gz": (b"\x1f\x8b",),
+    ".tgz": (b"\x1f\x8b",),
+    ".bz2": (b"BZh",),
+    ".xz": (b"\xfd7zXZ\x00",),
+    ".zip": (b"PK\x03\x04", b"PK\x05\x06", b"PK\x07\x08"),
+    ".jar": (b"PK\x03\x04", b"PK\x05\x06"),
+    ".whl": (b"PK\x03\x04", b"PK\x05\x06"),
+    ".7z": (b"7z\xbc\xaf\x27\x1c",),
+    ".zst": (b"\x28\xb5\x2f\xfd",),
+}
+
+
+def check_magic_bytes(path, filename: str) -> None:
+    """Cheap format sanity check by the filename's extension. A no-op for extensions
+    not in MAGIC_BYTES (most corpus inputs are not a recognized container format, and
+    this is meant as a floor, not a general format validator). Raises HashMismatch if
+    the file does not start with any of its format's known signatures."""
+    name = filename.lower()
+    for ext, sigs in MAGIC_BYTES.items():
+        if name.endswith(ext):
+            with open(path, "rb") as f:
+                head = f.read(max(len(s) for s in sigs))
+            if not any(head.startswith(s) for s in sigs):
+                raise HashMismatch(
+                    f"MAGIC BYTE MISMATCH: {path} is named like {ext} ({filename!r}) but starts "
+                    f"with {head[:8]!r}; the cached blob is corrupt (e.g. all-zero) even though it "
+                    f"matches its own content-derived cache key")
+            return
+
+
 def write_json_atomic(path, obj, pretty: bool = True) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -453,7 +510,7 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
         if not isinstance(inp, dict):
             errors.append(f"{w} must be an object")
             continue
-        extra = set(inp) - {"name", "url", "sha256", "size", "filename", "notes"}
+        extra = set(inp) - {"name", "url", "sha256", "size", "filename", "notes", "upstream_digest"}
         if extra:
             errors.append(f"{w}: unknown keys {sorted(extra)}")
         name = inp.get("name")
@@ -473,6 +530,24 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
             errors.append(f"{w}: size must be a non-negative integer")
         if "filename" in inp and (not isinstance(inp["filename"], str) or not SAFE_BASENAME_RE.match(inp["filename"])):
             errors.append(f"{w}: filename must be a safe basename")
+        ud = inp.get("upstream_digest")
+        if ud is not None:
+            if not isinstance(ud, dict):
+                errors.append(f"{w}: upstream_digest must be an object")
+            else:
+                fmt = ud.get("format")
+                extra_ud = set(ud) - {"format", "manifest_url", "algo", "file"}
+                if extra_ud:
+                    errors.append(f"{w}: upstream_digest unknown keys {sorted(extra_ud)}")
+                if fmt not in ("wikimedia-dumpstatus", "checksum-file"):
+                    errors.append(f"{w}: upstream_digest.format must be \"wikimedia-dumpstatus\" "
+                                  f"or \"checksum-file\"")
+                if not isinstance(ud.get("manifest_url"), str) or not _url_ok(ud["manifest_url"]):
+                    errors.append(f"{w}: upstream_digest.manifest_url must be an https:// URL")
+                if ud.get("algo") not in ("sha1", "md5", "sha256"):
+                    errors.append(f"{w}: upstream_digest.algo must be sha1, md5 or sha256")
+                if "file" in ud and not isinstance(ud["file"], str):
+                    errors.append(f"{w}: upstream_digest.file must be a string")
     git = recipe.get("git")
     if git is not None:
         if not isinstance(git, dict):

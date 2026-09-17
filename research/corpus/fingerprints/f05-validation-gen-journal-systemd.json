@@ -10,8 +10,8 @@
   "independence_group": "ebrc-gen-journal",
   "source_file": "research/corpus/sources/g3-data.json",
   "item_def_sha256": "0544d3ddeea5d89ecd221889168eccbe1110c31cadd63b4ae001a7f0c5c11234",
-  "materialization_key": "2e60e7eaedf1ba75978d938bbc092fbe2624bf6632a4c4b2eb90715ee0bb7ffd",
-  "materialized_utc": "2026-09-16T23:32:01Z",
+  "materialization_key": "30c504f836d4d9f0010221c3cd8171f91d67ab124ae8a8f1041e811c33d1a68b",
+  "materialized_utc": "2026-09-17T09:09:42Z",
   "materialized_relpath": "corpus/validation/f05-validation-gen-journal-systemd",
   "output_pin": {
     "policy": null,
@@ -28,7 +28,7 @@
     "steps": [],
     "generator": {
       "script": "research/corpus/generators/g3-data/build_journal_export.py",
-      "script_sha256": "3fa31f79e2021c7c632d348471480423f3248b74dbe87f042c9e0228bf910e09",
+      "script_sha256": "dbf2b611c2eb1b72ea8a709c52865935bfb6b0be08db59ee34f58993c8524a04",
       "interpreter": "python",
       "interpreter_path": "/root/eb-research/venv/bin/python",
       "seed": 5401,
@@ -54,13 +54,13 @@
   "fingerprint": {
     "format": "ebrc-fp-v1",
     "root_type": "dir",
-    "tree_sha256": "2177e3a85d1cc212610e5dcedd9a4fdf36d767e98fd47164961dbcffb2893c7c",
-    "logical_tree_sha256": "13ed38affc75239bd3ce623b981828d2358a1d1cfb977af40bdaeb2fdd7bbee2",
-    "content_tree_sha256": "6a866d8272170ea1cb1bd86993785fa3d1c0eda0a7882348f13fee6e47623cc7",
-    "extended_tree_sha256": "f73b1d80c9cd7754cd24a1bd57e940da0198b5d3b3e70fb8e1cf3cf9ec9e16f1",
+    "tree_sha256": "708eca7c4cd8ce6926a12b85dc9e2624a3199d70f0adc52bb472197a4f35e9ff",
+    "logical_tree_sha256": "31d2917bb74d38c3ed2795f5427535f67218f3094141ab1e64538900be1b5cff",
+    "content_tree_sha256": "a8c409173d5497a154d0fdf418f0671f4a83a0ab31bf2ce0c601a205fbd6d534",
+    "extended_tree_sha256": "a3ac8a344080e5cfa550a93eb785a28bfb100813a6c0f84c8d06c2a4d2c4020a",
     "bytes": 41943350,
     "bytes_all_paths": 41943350,
-    "allocated_bytes": 41951232,
+    "allocated_bytes": 35647488,
     "counts": {
       "objects": 3,
       "files": 2,

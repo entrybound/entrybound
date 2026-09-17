@@ -1272,6 +1272,11 @@
             "name": "dump",
             "url": "https://dumps.wikimedia.org/tnwiki/20260901/tnwiki-20260901-pages-meta-current.xml.bz2",
             "sha256": "fbe2d3f31cde72ca796fef8b02986c790215ef0441ace136a35876b7e5145db6",
+            "upstream_digest": {
+              "format": "wikimedia-dumpstatus",
+              "manifest_url": "https://dumps.wikimedia.org/tnwiki/20260901/dumpstatus.json",
+              "algo": "sha1"
+            },
             "size": 12928422
           }
         ],
@@ -3391,18 +3396,33 @@
             "name": "page",
             "url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-page.sql.gz",
             "sha256": "8e6e48a2ea20fab45e2478ca08429deaa9185fc9d6e6400b6ef8e6d65923de0b",
+            "upstream_digest": {
+              "format": "wikimedia-dumpstatus",
+              "manifest_url": "https://dumps.wikimedia.org/simplewiki/20260901/dumpstatus.json",
+              "algo": "sha1"
+            },
             "size": 33064269
           },
           {
             "name": "categorylinks",
             "url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-categorylinks.sql.gz",
             "sha256": "1ff87577c208177ead0295134e7fd4d728cd0c257a619a9601d1a96e698712b5",
+            "upstream_digest": {
+              "format": "wikimedia-dumpstatus",
+              "manifest_url": "https://dumps.wikimedia.org/simplewiki/20260901/dumpstatus.json",
+              "algo": "sha1"
+            },
             "size": 28305762
           },
           {
             "name": "pagelinks",
             "url": "https://dumps.wikimedia.org/simplewiki/20260901/simplewiki-20260901-pagelinks.sql.gz",
             "sha256": "26897fe06e9d883684371204f1c431f917258df086e98e1c50297e9c0ba7ed0d",
+            "upstream_digest": {
+              "format": "wikimedia-dumpstatus",
+              "manifest_url": "https://dumps.wikimedia.org/simplewiki/20260901/dumpstatus.json",
+              "algo": "sha1"
+            },
             "size": 82424067
           }
         ],
@@ -5374,122 +5394,146 @@
           {
             "name": "h00",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-000000.gz",
-            "sha256": "TOFU"
+            "sha256": "3ca58de202c1ce930b3d30c4042b8672775288c05cdda767245f635635f36299",
+            "size": 49655864
           },
           {
             "name": "h01",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-010000.gz",
-            "sha256": "TOFU"
+            "sha256": "20c2feb3abdfeb42541a05855eb8e9c86a68b6aa3a71fcf6854d15d7eac3ee3b",
+            "size": 47305306
           },
           {
             "name": "h02",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-020000.gz",
-            "sha256": "TOFU"
+            "sha256": "b8c7597a6b42dd7b7a274ca2db3cdf76163b63b93ba57cffc84665cfd2634aed",
+            "size": 45710200
           },
           {
             "name": "h03",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-030000.gz",
-            "sha256": "TOFU"
+            "sha256": "93430ed833a53b22da98ef7bd8e389a78adfc472c036b1c15fd2fcd6cedf2597",
+            "size": 45803746
           },
           {
             "name": "h04",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-040000.gz",
-            "sha256": "TOFU"
+            "sha256": "59b39134652b8ebef6b75b993a82fcee4dd6e65cc026b366c1db24fb5bafcc64",
+            "size": 45571078
           },
           {
             "name": "h05",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-050000.gz",
-            "sha256": "TOFU"
+            "sha256": "f67a33ad0de5ba8b92f72f80af9abc14fe89bfdcdffdc876f210efb51cf6f7c8",
+            "size": 51149755
           },
           {
             "name": "h06",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-060000.gz",
-            "sha256": "TOFU"
+            "sha256": "48ffde67820c7da5b13527bdba0f29625426002ea7141e29fa39ded5e11d50e5",
+            "size": 48830279
           },
           {
             "name": "h07",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-070000.gz",
-            "sha256": "TOFU"
+            "sha256": "4fda6277a226eeabc9b69f52d02a3afc882c2b2407cc18bfcfcc5c68ecbbac84",
+            "size": 53759289
           },
           {
             "name": "h08",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-080000.gz",
-            "sha256": "TOFU"
+            "sha256": "5a131c52ec624a8e4d59f377eea9c688266c69c3433bab9f724f799f67a9929d",
+            "size": 53096181
           },
           {
             "name": "h09",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-090000.gz",
-            "sha256": "TOFU"
+            "sha256": "66325c8bb9b9dda9ccab378f57653d0c5a0a0e53c8529b482a3692e02bca5e6f",
+            "size": 54584040
           },
           {
             "name": "h10",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-100000.gz",
-            "sha256": "TOFU"
+            "sha256": "37f55d8eb2fd50a8d2beb535309cf79dd45b68e1e5510c12cb70ccaaef9c54cb",
+            "size": 55900456
           },
           {
             "name": "h11",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-110000.gz",
-            "sha256": "TOFU"
+            "sha256": "5b4ed7b1200dfe924eccd62b288de18a8b051f9f39e7635d5537be54c32cb958",
+            "size": 55958877
           },
           {
             "name": "h12",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-120000.gz",
-            "sha256": "TOFU"
+            "sha256": "61d21d899b102f28646e99836ae80cecc47c44e12b76bc34a3e192968480484c",
+            "size": 58896417
           },
           {
             "name": "h13",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-130000.gz",
-            "sha256": "TOFU"
+            "sha256": "356e2473a6f4247c5b8c16ec6836baff3a307fb432612a2548c2503bee86f133",
+            "size": 60028443
           },
           {
             "name": "h14",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-140000.gz",
-            "sha256": "TOFU"
+            "sha256": "537983fabfc12956609edd3b2a1d0685e8f7fc3c77616a7387a71d68f349f12d",
+            "size": 61770978
           },
           {
             "name": "h15",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-150000.gz",
-            "sha256": "TOFU"
+            "sha256": "ed6678a8727d6b2a2d431213f696f80b7099d762333a1835ae9dcf03e8525425",
+            "size": 62408833
           },
           {
             "name": "h16",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-160000.gz",
-            "sha256": "TOFU"
+            "sha256": "5fa587a6fd985755c85dd139a69a43409d07b0a32461158644a20950ac277f22",
+            "size": 62678191
           },
           {
             "name": "h17",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-170000.gz",
-            "sha256": "TOFU"
+            "sha256": "5f5cb094815533d9041d7cb0fde04b4375fe65a3eea8952dea67bf2ab4cbcd47",
+            "size": 61075447
           },
           {
             "name": "h18",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-180000.gz",
-            "sha256": "TOFU"
+            "sha256": "76be068c8061ddb67c8cd07891182ad857906aa9188ae88834a734844156e4a4",
+            "size": 60400902
           },
           {
             "name": "h19",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-190000.gz",
-            "sha256": "TOFU"
+            "sha256": "30d1823a86d26fd96a04952515320eddd11fea1ce6f2ccc286f1756576cfe34a",
+            "size": 59959064
           },
           {
             "name": "h20",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-200000.gz",
-            "sha256": "TOFU"
+            "sha256": "92587b717cf926dcef3349e413d1e4557fb939db1934712eb4b60439b9d8f3ac",
+            "size": 60868544
           },
           {
             "name": "h21",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-210000.gz",
-            "sha256": "TOFU"
+            "sha256": "d7cb155a5c37fd66cbad34960d1bf1401765f2f2f19937189f24db03e59ad1ed",
+            "size": 60105953
           },
           {
             "name": "h22",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-220000.gz",
-            "sha256": "TOFU"
+            "sha256": "d811b40ecb895f4afe27a148f8196561d6c787baeb4f1784b3bef8a3daa6037d",
+            "size": 57663677
           },
           {
             "name": "h23",
             "url": "https://dumps.wikimedia.org/other/pageviews/2026/2026-08/pageviews-20260801-230000.gz",
-            "sha256": "TOFU"
+            "sha256": "f62a806a37f9f49b1d23baeb08eea74be563d4cc1eb22511421fe3ccc1956671",
+            "size": 53810334
           }
         ],
         "steps": [
@@ -5692,8 +5736,9 @@
           {
             "name": "zip",
             "url": "https://f001.backblazeb2.com/file/Backblaze-Hard-Drive-Data/data_Q1_2025.zip",
-            "sha256": "TOFU",
-            "filename": "data_Q1_2025.zip"
+            "sha256": "7a230565f72fdb3882c05fdcfab361c801e9a545ba18543899fc7618174171ec",
+            "filename": "data_Q1_2025.zip",
+            "size": 1020483699
           }
         ],
         "steps": [

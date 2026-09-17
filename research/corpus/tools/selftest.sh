@@ -300,4 +300,65 @@ PY
   pass "docker-export reproducible (TOFU matched on rebuild)"
 fi
 
+# ---- cache-corruption defenses (task_bb8ca4e8 integrity follow-up: "the all-zero Wikimedia
+# blob class" -- a cached blob's own sha256-named cache key can never catch content that was
+# corrupt before that hash was taken) -------------------------------------------------------
+"$PY" - <<'PY' || fail "upstream digest / magic-byte defenses"
+import sys, os, json, tempfile
+sys.path.insert(0, os.environ["HERE"])
+import corpuslib as cl
+import provision as pv
+
+# An all-zero blob claiming to be a .gz must be rejected by the magic-byte check, even
+# though it would trivially "self-verify" against its own content-derived cache key.
+with tempfile.TemporaryDirectory() as d:
+    zero = os.path.join(d, "z")
+    with open(zero, "wb") as f:
+        f.write(b"\x00" * 4096)
+    try:
+        cl.check_magic_bytes(zero, "some-dump-20260901.gz")
+        raise AssertionError("magic-byte check accepted an all-zero .gz")
+    except cl.HashMismatch:
+        pass
+    import gzip
+    real_gz = os.path.join(d, "real.gz")
+    with gzip.open(real_gz, "wb") as f:
+        f.write(b"hello")
+    cl.check_magic_bytes(real_gz, "real.gz")  # must not raise
+    cl.check_magic_bytes(zero, "not-a-known-format.sql")  # unrecognized extension: no-op
+
+    # upstream_digest cross-check: independent of our own sha256, using a digest the
+    # "upstream" side publishes in its own manifest (wikimedia-dumpstatus shape here).
+    blob = os.path.join(d, "blob.sql.gz")
+    with open(blob, "wb") as f:
+        f.write(b"genuine dump bytes\n")
+    real_sha1 = cl.hash_file_algo(blob, "sha1")
+
+    class Args:
+        offline = False
+
+    class Ctx:
+        iid = "selftest-upstream"
+        args = Args()
+
+    good = json.dumps({"jobs": {"j": {"files": {"blob.sql.gz": {"sha1": real_sha1, "size": 19}}}}})
+    bad = json.dumps({"jobs": {"j": {"files": {"blob.sql.gz": {"sha1": "ff" * 20, "size": 19}}}}})
+    from pathlib import Path
+    spec = {"format": "wikimedia-dumpstatus", "manifest_url": "https://example.invalid/dumpstatus.json", "algo": "sha1"}
+
+    pv._fetch_manifest_text = lambda ctx, url, max_bytes=0: good
+    res = pv.verify_upstream_digest(Ctx(), spec, Path(blob), "blob.sql.gz")
+    assert res["checked"] and res["value"] == real_sha1
+
+    pv._fetch_manifest_text = lambda ctx, url, max_bytes=0: bad
+    try:
+        pv.verify_upstream_digest(Ctx(), spec, Path(blob), "blob.sql.gz")
+        raise AssertionError("upstream digest mismatch was not rejected")
+    except cl.HashMismatch:
+        pass
+
+print("cache-corruption defenses: magic-byte sniff + upstream-digest cross-check both catch corruption")
+PY
+pass "cache verification catches a corrupt cached blob independently of its own cache key"
+
 echo "SELFTEST PASS"

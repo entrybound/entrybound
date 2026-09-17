@@ -27,7 +27,9 @@ from __future__ import annotations
 import argparse
 import contextlib
 import hashlib
+import json
 import os
+import re
 import secrets
 import shutil
 import subprocess
@@ -174,7 +176,7 @@ def tail(path, n=30) -> str:
 # acquisition
 
 
-def _verified_blob(blob: Path, expected_size: int | None, reverify: bool) -> bool:
+def _verified_blob(blob: Path, expected_size: int | None, reverify: bool, filename: str | None = None) -> bool:
     if not blob.is_file():
         return False
     marker = blob.with_name(blob.name + ".verified.json")
@@ -190,6 +192,13 @@ def _verified_blob(blob: Path, expected_size: int | None, reverify: bool) -> boo
         ok = True
     if ok and expected_size is not None and st.st_size != expected_size:
         raise cl.HashMismatch(f"SIZE MISMATCH: cached blob {blob} is {st.st_size} bytes, expected {expected_size}")
+    # Cheap and unconditional (runs even on the .verified.json marker fast path above):
+    # the blob's own sha256 filename can never catch a blob that was corrupted before
+    # that hash was taken, e.g. an all-zero download that a flaky upstream/proxy served
+    # once with a plausible size (the historical Wikimedia pageviews blob). A magic-byte
+    # check is independent of the blob's self-derived cache key.
+    if ok and filename:
+        cl.check_magic_bytes(blob, filename)
     return ok
 
 
@@ -228,11 +237,12 @@ def fetch_url(ctx: Ctx, url: str, expected_sha: str | None, expected_size: int |
     for d in (blobs, index, tmpdir):
         d.mkdir(parents=True, exist_ok=True)
     url_key = cl.sha256_bytes(url.encode("utf-8"))
+    sniff_name = os.path.basename(urllib.parse.unquote(urllib.parse.urlparse(url).path))
     with cl.file_lock(ctx.layout.lock_path("download-" + url_key[:32])):
         idx = cl.load_json_if_exists(index / f"{url_key}.json")
         if expected_sha:
             blob = blobs / expected_sha
-            if _verified_blob(blob, expected_size, ctx.args.reverify_cache):
+            if _verified_blob(blob, expected_size, ctx.args.reverify_cache, sniff_name):
                 info = dict(idx) if idx and idx.get("sha256") == expected_sha else {
                     "url": url, "final_url": None, "sha256": expected_sha, "size": blob.stat().st_size,
                     "retrieved_utc": None}
@@ -241,7 +251,7 @@ def fetch_url(ctx: Ctx, url: str, expected_sha: str | None, expected_size: int |
                 return info
         elif idx:
             blob = blobs / idx["sha256"]
-            if _verified_blob(blob, expected_size, ctx.args.reverify_cache):
+            if _verified_blob(blob, expected_size, ctx.args.reverify_cache, sniff_name):
                 info = dict(idx)
                 info["cached"] = True
                 info["path"] = str(blob)
@@ -302,6 +312,11 @@ def fetch_url(ctx: Ctx, url: str, expected_sha: str | None, expected_size: int |
         if expected_sha and digest != expected_sha:
             tmp.unlink()
             raise cl.HashMismatch(f"HASH MISMATCH for {url}: got sha256 {digest}, pinned {expected_sha}")
+        try:
+            cl.check_magic_bytes(tmp, sniff_name)
+        except cl.HashMismatch:
+            tmp.unlink()
+            raise
         blob = blobs / digest
         os.replace(tmp, blob)
         st = blob.stat()
@@ -312,6 +327,104 @@ def fetch_url(ctx: Ctx, url: str, expected_sha: str | None, expected_size: int |
         cl.write_json_atomic(index / f"{url_key}.json", info)
         info = dict(info, cached=False, path=str(blob))
         return info
+
+
+# ---------------------------------------------------------------------------
+# upstream-published digest cross-check (see task_bb8ca4e8 integrity follow-up,
+# PROGRESS.md "the corpus cache's self-consistency check cannot detect a corrupt
+# cached blob that matches its own SHA-256-named path")
+#
+# The download cache's own bookkeeping (blob named after its content's SHA-256, plus
+# TOFU pinning on first retrieval) can never catch a blob that was corrupted before
+# that hash was ever taken: whatever bytes arrived, the cache faithfully remembers
+# them as "correct" forever after. Where the source host independently publishes a
+# digest for the file -- computed by them, at their end, out of band from our
+# download -- cross-checking our cached bytes against it closes that gap, for
+# TOFU and declared inputs alike, on cache hits as well as fresh downloads.
+
+
+def _fetch_manifest_text(ctx: "Ctx", url: str, max_bytes: int = 8 * cl.MiB) -> str:
+    """Fetch a small text manifest (e.g. a checksums file or a dumpstatus.json) with
+    the same polite User-Agent and basic retry as fetch_url, but outside the
+    content-addressed blob cache: the manifest itself is not corpus content, just a
+    control-plane input to the check below, and dump-status pages can be regenerated
+    upstream so are not worth pinning."""
+    if ctx.args.offline:
+        raise cl.CorpusError(f"{ctx.iid}: {url} (upstream digest manifest) not fetchable with --offline")
+    last_err = None
+    for attempt in range(1, 4):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                data = resp.read(max_bytes + 1)
+            if len(data) > max_bytes:
+                raise cl.CorpusError(f"{ctx.iid}: upstream digest manifest {url} exceeds {max_bytes} bytes")
+            return data.decode("utf-8", "replace")
+        except cl.CorpusError:
+            raise
+        except Exception as e:
+            last_err = e
+            time.sleep(2 * attempt)
+    raise cl.CorpusError(f"{ctx.iid}: could not fetch upstream digest manifest {url}: {last_err}")
+
+
+def _parse_wikimedia_dumpstatus(text: str, filename: str) -> dict | None:
+    """dumpstatus.json: {"jobs": {"<job>": {"files": {"<filename>": {"sha1":, "md5":, "size":, ...}}}}}."""
+    data = json.loads(text)
+    for job in (data.get("jobs") or {}).values():
+        entry = (job.get("files") or {}).get(filename)
+        if entry:
+            return entry
+    return None
+
+
+def _parse_checksum_file(text: str, filename: str) -> str | None:
+    """GNU coreutils `sha256sum`/`sha1sum`/`md5sum` output ("<hex>  <filename>" or
+    "<hex> *<filename>" per line) or BSD-style ("SHA256 (<filename>) = <hex>")."""
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        m = re.match(r"^([0-9a-fA-F]{32,64})\s+[* ]?(.+)$", line)
+        if m and os.path.basename(m.group(2).strip()) == filename:
+            return m.group(1).lower()
+        m = re.match(r"^\w+\s*\(([^)]+)\)\s*=\s*([0-9a-fA-F]{32,64})$", line)
+        if m and os.path.basename(m.group(1).strip()) == filename:
+            return m.group(2).lower()
+    return None
+
+
+def verify_upstream_digest(ctx: "Ctx", spec: dict, blob: Path, filename: str) -> dict:
+    """Cross-check a cached/downloaded blob against an independently published
+    digest. Raises cl.HashMismatch on a mismatch; returns a small provenance record
+    on success (or on "not found in manifest", which is reported, not raised, since a
+    manifest can legitimately omit a file the recipe still needs)."""
+    manifest_url = spec["manifest_url"]
+    algo = spec["algo"]
+    want_name = spec.get("file") or filename
+    text = _fetch_manifest_text(ctx, manifest_url)
+    if spec["format"] == "wikimedia-dumpstatus":
+        entry = _parse_wikimedia_dumpstatus(text, want_name)
+        published = entry.get(algo) if entry else None
+        published_size = entry.get("size") if entry else None
+    elif spec["format"] == "checksum-file":
+        published = _parse_checksum_file(text, want_name)
+        published_size = None
+    else:
+        raise cl.CorpusError(f"{ctx.iid}: unknown upstream_digest.format {spec['format']!r}")
+    if published is None:
+        log(f"[{ctx.iid}] WARNING: upstream_digest manifest {manifest_url} has no entry for {want_name}; "
+            f"cannot cross-check (not treated as a failure, since a dump's file list can shrink)")
+        return {"manifest_url": manifest_url, "algo": algo, "checked": False}
+    if published_size is not None and published_size != blob.stat().st_size:
+        raise cl.HashMismatch(f"UPSTREAM SIZE MISMATCH: {ctx.iid} input {want_name}: cached blob is "
+                              f"{blob.stat().st_size} bytes, {manifest_url} publishes {published_size}")
+    got = cl.hash_file_algo(blob, algo)
+    if got != published.lower():
+        raise cl.HashMismatch(f"UPSTREAM DIGEST MISMATCH: {ctx.iid} input {want_name}: cached blob "
+                              f"{algo} is {got}, {manifest_url} publishes {published}; the cached copy "
+                              f"is corrupt even though it matches its own SHA-256-named cache path")
+    return {"manifest_url": manifest_url, "algo": algo, "value": got, "checked": True}
 
 
 def acquire_inputs(ctx: Ctx) -> None:
@@ -345,10 +458,18 @@ def acquire_inputs(ctx: Ctx) -> None:
             filename = name
         ctx.inputs[name] = Path(info["path"])
         ctx.input_filenames[name] = filename
-        prov.append({"name": name, "url": url, "final_url": info.get("final_url"), "sha256": info["sha256"],
+        prov_entry = {"name": name, "url": url, "final_url": info.get("final_url"), "sha256": info["sha256"],
                      "size": info["size"], "retrieved_utc": info.get("retrieved_utc"),
                      "retrieval_date": info.get("retrieval_date"), "pin": pin_status,
-                     "filename": filename})
+                     "filename": filename}
+        upstream = inp.get("upstream_digest")
+        if upstream:
+            # Runs on every acquisition, cache hit or fresh download alike: this is
+            # independent of (and does not shortcut through) the self-consistency
+            # ".verified.json" marker, so a blob that was corrupted before its own
+            # sha256 was ever taken still gets caught here.
+            prov_entry["upstream_digest"] = verify_upstream_digest(ctx, upstream, ctx.inputs[name], filename)
+        prov.append(prov_entry)
     if prov:
         ctx.provenance["inputs"] = prov
 

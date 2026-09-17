@@ -14,6 +14,19 @@ recipe.output_pin: null for this reason (see build_postgres_pgbench.sh / build_m
 for the same pattern with Docker-built database directories).  The *logical* entry content
 (messages, priorities, units, timestamps, boot/machine IDs) is a pure function of --seed/--params.
 
+Extent-map settling (2026-09-17, task_bb8ca4e8 integrity follow-up): on this ext4/WSL2 host,
+system.journal's SEEK_DATA/SEEK_HOLE extent map is not immediately settled when
+systemd-journal-remote exits -- the same allocation-timing defect class already worked around
+in the g4-binary VM-image generators (see PROGRESS.md 2026-09-16T21:30Z), one layer deeper than
+the documented tree_sha256/st_blocks issue. `fallocate --dig-holes` + fsync/sync below are best-
+effort hardening (content_tree_sha256, which excludes the extent map, is unaffected either way),
+but empirically the map can still shift for several seconds after this script returns and
+provision.py takes its first fingerprint. If `provision.py --verify` reports a HASH MISMATCH for
+this item with an unchanged content_tree_sha256, re-fingerprint the materialized directory a few
+times a few seconds apart (research/corpus/tools/fingerprint.py) to find the settled value, then
+correct the recorded fingerprint to that value -- do not assume corruption or re-run --rebuild
+(which would also stamp a new random file ID, changing real content for no reason).
+
 ebrc script contract:
     python build_journal_export.py --out <staging dir> --seed <int> --params <canonical JSON>
 params:
@@ -159,6 +172,29 @@ def main() -> int:
                 "(recipe.output_pin is null for this item).",
     }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     shutil.rmtree(scratch, ignore_errors=True)
+
+    # Settle the extent map before the corpus framework fingerprints the staging directory.
+    # systemd-journal-remote writes system.journal in a way that leaves ext4/WSL2 delayed
+    # allocation not yet flushed for a window after the process exits, so a SEEK_DATA/SEEK_HOLE
+    # scan taken immediately can see a different (still content-identical) extent layout than one
+    # taken moments later -- the same class of allocation-timing defect already worked around for
+    # the g4-binary VM-image generators (fallocate --dig-holes + trailing sync). Force every
+    # regular file's data to be durably allocated on disk, then fsync the directory entries, so
+    # fingerprint.py's logical_tree_sha256 (which includes the extent map) is stable the first
+    # time it is computed.
+    for f in (journal_path, out / "generator_summary.json"):
+        subprocess.run(["fallocate", "--dig-holes", str(f)], check=True)
+        fd = os.open(f, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    dfd = os.open(out, os.O_RDONLY)
+    try:
+        os.fsync(dfd)
+    finally:
+        os.close(dfd)
+    subprocess.run(["sync"], check=True)
     return 0
 
 

@@ -9,15 +9,15 @@
   "real_or_generated": "real",
   "independence_group": "wikimedia-tnwiki",
   "source_file": "research/corpus/sources/g3-data.json",
-  "item_def_sha256": "9b413d4781a88b5a633be2d2e29a9be0a68b012d1ac5b43ac2beccf5bed1b3d4",
-  "materialization_key": "b304fd0be8a858f1c05a78b175d59f93870c9e243204df58bd514d81ddc54efa",
-  "materialized_utc": "2026-09-13T02:25:13Z",
+  "item_def_sha256": "baec367f91e175b20c860032f804f42db2539e87cb6e676f7ee2a9166185e095",
+  "materialization_key": "2328a64992f783e1d38b8790f08a58b5fa05585b692e04e5ea84b6ec740c6c9c",
+  "materialized_utc": "2026-09-17T09:20:28Z",
   "materialized_relpath": "corpus/tuning/f06-tuning-wikimedia-tnwiki-20260901",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
     "logical_tree_sha256": "bc886452dd69e805af612c4f7db9651e28849b2af88bff6acbd246b9d84e0f44",
-    "pinned_utc": "2026-09-13T02:25:13Z"
+    "pinned_utc": "2026-09-17T09:20:28Z"
   },
   "scale_check": {
     "tier": "medium",
@@ -37,7 +37,13 @@
         "retrieved_utc": "2026-09-13T02:16:30Z",
         "retrieval_date": "2026-09-12",
         "pin": "declared",
-        "filename": "tnwiki-20260901-pages-meta-current.xml.bz2"
+        "filename": "tnwiki-20260901-pages-meta-current.xml.bz2",
+        "upstream_digest": {
+          "manifest_url": "https://dumps.wikimedia.org/tnwiki/20260901/dumpstatus.json",
+          "algo": "sha1",
+          "value": "6209661445b89f88ecf1f686be7b0dbf9f3d179e",
+          "checked": true
+        }
       }
     ],
     "steps": [
@@ -54,11 +60,11 @@
     "python_executable": "/root/eb-research/venv/bin/python",
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "tool_sha256": {
-      "corpuslib.py": "3ac4cd050c361821c06de711d4e62d7fa764e92208f7758e971b99617e907221",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "ad292a002c74b980f9c1e5b6091c561a158dc4cd92defa4aa2fcd501ea129215",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
-      "assemble.py": "14546a88c8c9ba177cebe60a985f3c6e3cab11413b75372742e130412f5e5f95"
+      "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
   },
   "fingerprint": {
@@ -67,7 +73,7 @@
     "tree_sha256": "9f696f48801a4e528176a8c51db36dd41cc078c91be0fda94a46f769b41be70e",
     "logical_tree_sha256": "bc886452dd69e805af612c4f7db9651e28849b2af88bff6acbd246b9d84e0f44",
     "content_tree_sha256": "87bdeba1f73ae4ccef08c1057abc8ddfa8c8db7b152c790aad5d9b17abeee75d",
-    "extended_tree_sha256": "b867bc7d3c41d8d06c531e53d2fa257b2ad132c769f2692190fd1e52260ca241",
+    "extended_tree_sha256": "ecccb58aa92cd36f07dc9dfbff2a0ec9f2761b83b3d4f95d6891e459463f6290",
     "bytes": 60753099,
     "bytes_all_paths": 60753099,
     "allocated_bytes": 60755968,

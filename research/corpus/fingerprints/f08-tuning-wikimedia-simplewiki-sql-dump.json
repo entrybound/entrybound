@@ -9,15 +9,15 @@
   "real_or_generated": "real",
   "independence_group": "wikimedia-simplewiki",
   "source_file": "research/corpus/sources/g3-data.json",
-  "item_def_sha256": "7dc21bbac70c7fc11856c1e1ba5eda32ade5ba36ce77be2859024f8c9e249178",
-  "materialization_key": "621bfef6947214949231847c051cc98a44f648a6c7c5f0ee11496da0bb6af779",
-  "materialized_utc": "2026-09-16T23:29:19Z",
+  "item_def_sha256": "806982536c9e319436afca4564d76f8d8d6c8397281c05bf75ca5cf41b56606a",
+  "materialization_key": "cd325fe6aa8259ad4abde99d0f6d99002ad84cbebeb57bb54747d00489022454",
+  "materialized_utc": "2026-09-17T09:20:32Z",
   "materialized_relpath": "corpus/tuning/f08-tuning-wikimedia-simplewiki-sql-dump",
   "output_pin": {
     "policy": "TOFU",
     "status": "tofu-first-pin",
     "logical_tree_sha256": "0dcca62c08876ee8f1c3db8f5fc100659214131d64cb581b1e69e79241a441cc",
-    "pinned_utc": "2026-09-16T23:29:19Z"
+    "pinned_utc": "2026-09-17T09:20:32Z"
   },
   "scale_check": {
     "tier": "large",
@@ -36,8 +36,14 @@
         "size": 33064269,
         "retrieved_utc": "2026-09-16T23:28:23Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
-        "filename": "simplewiki-20260901-page.sql.gz"
+        "pin": "declared",
+        "filename": "simplewiki-20260901-page.sql.gz",
+        "upstream_digest": {
+          "manifest_url": "https://dumps.wikimedia.org/simplewiki/20260901/dumpstatus.json",
+          "algo": "sha1",
+          "value": "c2b88ecbc7e0e440cf541e54f5cf53c1129b9468",
+          "checked": true
+        }
       },
       {
         "name": "categorylinks",
@@ -47,8 +53,14 @@
         "size": 28305762,
         "retrieved_utc": "2026-09-16T23:28:39Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
-        "filename": "simplewiki-20260901-categorylinks.sql.gz"
+        "pin": "declared",
+        "filename": "simplewiki-20260901-categorylinks.sql.gz",
+        "upstream_digest": {
+          "manifest_url": "https://dumps.wikimedia.org/simplewiki/20260901/dumpstatus.json",
+          "algo": "sha1",
+          "value": "3139fe67ba6105ba0829b321bf80f552b4f26466",
+          "checked": true
+        }
       },
       {
         "name": "pagelinks",
@@ -58,8 +70,14 @@
         "size": 82424067,
         "retrieved_utc": "2026-09-16T23:29:08Z",
         "retrieval_date": "2026-09-16",
-        "pin": "tofu-first-retrieval",
-        "filename": "simplewiki-20260901-pagelinks.sql.gz"
+        "pin": "declared",
+        "filename": "simplewiki-20260901-pagelinks.sql.gz",
+        "upstream_digest": {
+          "manifest_url": "https://dumps.wikimedia.org/simplewiki/20260901/dumpstatus.json",
+          "algo": "sha1",
+          "value": "b900518ce197c72f01cdf2f38f8e2514d8e7c6af",
+          "checked": true
+        }
       }
     ],
     "steps": [
@@ -89,9 +107,9 @@
     "kernel": "5.15.167.4-microsoft-standard-WSL2",
     "gzip": "gzip 1.12",
     "tool_sha256": {
-      "corpuslib.py": "e0ce244ae9d5a8ec166aa826e2209996d65ab5a64bddef6100359d3c43e02038",
+      "corpuslib.py": "85e76e2670c313128aef6ab079583db94c62c22ad7aa0fe64dd419c327ea1296",
       "fingerprint.py": "84c9e904d9478953ded65230ee736669951cd9b089788f795104047daf492ff6",
-      "provision.py": "bd5308b61c6f18074813c552b46f49ad673dfd58f3c23685675ff06735021a58",
+      "provision.py": "f8cec8d4c78f37fcac949e022a1ccc92d903c86f65593d4a05abe0576c658e6b",
       "stats.py": "d58c3e76c48105c4e22766e8477792892aa15f3c3893f73fad078d6b1bf9e235",
       "assemble.py": "fdaaa9a5bceec8515b0384082b42a91e109288d51238d60f71d66f921bc8915e"
     }
@@ -102,7 +120,7 @@
     "tree_sha256": "5bcf54558e4c04c32091735d2292875d20cac38f063ac4e8b1b5ff16de9befe4",
     "logical_tree_sha256": "0dcca62c08876ee8f1c3db8f5fc100659214131d64cb581b1e69e79241a441cc",
     "content_tree_sha256": "ffae653d338fbf234c0e4704b4104b1849a5df13d253c15e886ecc58145a933c",
-    "extended_tree_sha256": "8606fa4aeca97d859b908837e89da382764d0c8472b1f7e0f3304b6b01c325d8",
+    "extended_tree_sha256": "06a523789b16331db4f3701a1803d2930cd150fbe7a683273c4c3f23cd60a320",
     "bytes": 783019629,
     "bytes_all_paths": 783019629,
     "allocated_bytes": 783024128,
