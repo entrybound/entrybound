@@ -1,0 +1,73 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-019
+status: blocked
+question: >
+  On macOS APFS and native ARM64, do salvage markers and sidecar naming survive macOS copy tools,
+  do output transaction patterns avoid MVT-18(a) violations, do locator policies stay confined
+  under APFS normalization and case aliases, and do re-planning and reconstruction outputs match
+  x86_64?
+hypothesis: >
+  See research/experiments/EXP-INT-019/protocol.md section 2 (H1-H4).
+notes: >
+  BLOCKED (PLATFORM_BLOCKED): no macOS or native ARM64 host. Runner-driven when a host exists.
+  The driver research/tools/integrity/macos_arms.py composes the EXP-INT-005, 008, 009, 011 and 014
+  drivers with macOS-specific transfers and syscalls.
+decision_ids: [DEC-INT-034, DEC-INT-003, DEC-INT-039, DEC-LEG-056, DEC-INT-013, DEC-INT-046, DEC-INT-030]
+
+candidates:
+  - name: carriers-macos
+    params: {arm: carriers}
+  - name: crash-kill-macos
+    params: {arm: crash-kill}
+  - name: locators-apfs
+    params: {arm: locators}
+  - name: sidecar-concurrency-apfs
+    params: {arm: sidecar-concurrency}
+  - name: replan-and-vectors-arm64
+    params: {arm: replan-vectors}
+
+command: >-
+  python3 research/tools/integrity/macos_arms.py --experiment-id EXP-INT-019 --env-name macos-arm64
+  --arm {arm} --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --ebound target/int-prod-macos/release/ebound
+  --detail-root raw-detail/EXP-INT-019 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f05-tuning-gutenberg-books
+    - f19-tuning-zoo
+    - f14-apache-maven-3916-bin-tarball
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f01-tuning-ripgrep-14-1-1-git
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: carrier_survival_fraction__xattr_marker, source: stdout_json, key: payload.survival.xattr-marker, family: other, direction: maximize, unit: fraction}
+  - {name: mvt18a_violations, source: stdout_json, key: payload.mvt18a_violations, family: correctness, direction: minimize, unit: count}
+  - {name: confinement_escapes, source: stdout_json, key: payload.confinement_escapes, family: correctness, direction: minimize, unit: count}
+  - {name: reader_disagreements, source: stdout_json, key: payload.reader_disagreements, family: correctness, direction: minimize, unit: count}
+  - {name: mixed_version_bindings, source: stdout_json, key: payload.mixed_version_bindings, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091891, bootstrap: 2026091892, command: 2026091893}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [darwin]
+  arch: [arm64]
+  emulated: false
+  requires:
+    - target/int-prod-macos/release/ebound
+  timeout_s: 86400
+
+analysis:
+  baseline: carriers-macos
+  pairing: item
+  report_metrics: [mvt18a_violations, confinement_escapes, reader_disagreements]

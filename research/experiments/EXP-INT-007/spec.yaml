@@ -1,0 +1,116 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-007
+status: design
+question: >
+  If Entrybound adopted Incremental archives with base chains, which base reference, chain
+  rules and deletion representation give correct extraction, bounded cycle-safe resolution,
+  substitution and role-confusion detection, and at what byte, verification and request cost
+  versus Complete archives per version? (MODEL results.)
+hypothesis: >
+  See research/experiments/EXP-INT-007/protocol.md section 2 (H1-H7).
+notes: >
+  One sample = the full scenario matrix for one version-series item under one policy set.
+  Model tool research/tools/integrity/ebr_chain.py (T9) to be written. Version rule:
+  research/experiments/_index/integrity-conventions.md C3. NEEDS_TOOLING.
+decision_ids: [DEC-INT-001, DEC-INT-016, DEC-INT-017, DEC-INT-032, DEC-INT-005, DEC-INT-037, DEC-MOD-001, DEC-MOD-020, DEC-ACC-038]
+
+candidates:
+  - name: complete-per-version
+    params: {policy_set: complete-per-version}
+  - name: single-base-lai-tombstone
+    params: {policy_set: "chain=single-base-only;ref=base-lai;delete=tombstone-entries"}
+  - name: declared-depth-lai-tombstone
+    params: {policy_set: "chain=declared-max-depth;ref=base-lai;delete=tombstone-entries"}
+  - name: caller-depth-lai-tombstone
+    params: {policy_set: "chain=caller-policy-depth;ref=base-lai;delete=tombstone-entries"}
+  - name: dag-cycle-lai-tombstone
+    params: {policy_set: "chain=dag-with-cycle-detection;ref=base-lai;delete=tombstone-entries"}
+  - name: flatten-on-create
+    params: {policy_set: "chain=flatten-on-create;ref=base-lai;delete=tombstone-entries"}
+  - name: unbounded-negative-control
+    params: {policy_set: "chain=unbounded-chains;ref=base-lai;delete=tombstone-entries"}
+  - name: ref-pcr
+    params: {policy_set: "chain=declared-max-depth;ref=base-pcr;delete=tombstone-entries"}
+  - name: ref-pci
+    params: {policy_set: "chain=declared-max-depth;ref=base-pci;delete=tombstone-entries"}
+  - name: ref-archive-id
+    params: {policy_set: "chain=declared-max-depth;ref=base-archive-id;delete=tombstone-entries"}
+  - name: ref-content-digests
+    params: {policy_set: "chain=declared-max-depth;ref=content-digests-only;delete=tombstone-entries"}
+  - name: ref-lai-plus-pci
+    params: {policy_set: "chain=declared-max-depth;ref=lai-plus-pci;delete=tombstone-entries"}
+  - name: ref-signed
+    params: {policy_set: "chain=declared-max-depth;ref=signed-base-reference;delete=tombstone-entries"}
+  - name: del-whiteouts
+    params: {policy_set: "chain=declared-max-depth;ref=base-lai;delete=oci-whiteouts"}
+  - name: del-opaque-dirs
+    params: {policy_set: "chain=declared-max-depth;ref=base-lai;delete=opaque-directory-markers"}
+  - name: del-full-manifest
+    params: {policy_set: "chain=declared-max-depth;ref=base-lai;delete=full-manifest-per-incremental"}
+  - name: del-anti-items
+    params: {policy_set: "chain=declared-max-depth;ref=base-lai;delete=anti-items"}
+  - name: del-additive-only
+    params: {policy_set: "chain=declared-max-depth;ref=base-lai;delete=additive-only"}
+
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/ebr_chain.py campaign
+  --experiment-id EXP-INT-007 --env-name wsl-ubuntu
+  --series-item {item_path} --item-id {item_id} --candidate {candidate} --policy-set {policy_set}
+  --scenarios present,missing,stale-repacked,index-rebuilt,mismatched,truncated,substituted,role-relabel,depth-bomb,fan-in,self-loop,two-cycle,long-cycle
+  --hostile-depth-max-log2 12 --rename-series 0.01,0.10,0.50
+  --network-profiles NP-LAN,NP-METRO,NP-CONT,NP-INTER
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --origin /root/eb-research/target/harness/release/ebr-origin
+  --detail-root /root/eb-research/raw-detail/EXP-INT-007 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-zstd-releases-1-5-x
+    - f18-tuning-sqlite-amalgamation-series
+    - f18-tuning-ripgrep-commit-snapshots
+    - f19-tuning-real-home-snapshot
+    - f19-tuning-rsnapshot-a
+    - f17-tuning-real-ubuntu-kernel-headers-2ver
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: versions, source: stdout_json, key: payload.versions, family: other, direction: none, unit: count}
+  - {name: roundtrip_mismatches, source: stdout_json, key: payload.roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: bounded_memory_growth_violations, source: stdout_json, key: payload.bounded_memory_growth_violations, family: correctness, direction: minimize, unit: count}
+  - {name: declared_cost_accuracy_violations, source: stdout_json, key: payload.declared_cost_accuracy_violations, family: correctness, direction: minimize, unit: count}
+  - {name: adversarial_true_refusal_fraction, source: stdout_json, key: payload.adversarial_true_refusal_fraction, family: correctness, direction: maximize, unit: fraction}
+  - {name: undetected_tampers, source: stdout_json, key: payload.undetected_tampers, family: correctness, direction: minimize, unit: count}
+  - {name: artifact_bytes, source: stdout_json, key: payload.series_artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: metadata_bytes, source: stdout_json, key: payload.series_metadata_bytes, family: size, direction: minimize, unit: B}
+  - {name: http_requests, source: stdout_json, key: payload.first_entry_http_requests_median, family: other, direction: minimize, unit: count}
+  - {name: http_bytes, source: stdout_json, key: payload.first_entry_http_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: rename_detection_fraction, source: stdout_json, key: payload.rename_detection_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: reserved_name_conflicts, source: stdout_json, key: payload.reserved_name_conflicts, family: other, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091763, bootstrap: 2026091764, command: 2026091765}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/ebr_chain.py
+    - /root/eb-research/target/int-prod/release/ebound
+    - /root/eb-research/target/harness/release/ebr-origin
+    - unshare
+  timeout_s: 86400
+
+analysis:
+  baseline: complete-per-version
+  pairing: item
+  report_metrics: [roundtrip_mismatches, bounded_memory_growth_violations, undetected_tampers, artifact_bytes, http_requests]

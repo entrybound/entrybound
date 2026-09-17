@@ -1,0 +1,105 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-002
+status: design
+question: >
+  At every structural boundary, inside headers, at seeded offsets and with appended or
+  concatenated data, which outcome class and code does each Entrybound reader report, how
+  consistent are layouts, and how much intact-prefix information can each candidate
+  reporting mechanism recover after tail truncation?
+hypothesis: >
+  See research/experiments/EXP-INT-002/protocol.md section 2 (H1-H3). Status quo rules are
+  off the MVT-15(b) diagonal for some cut classes and disagree across layouts; no intact
+  entries are reported after tail truncation without a new mechanism.
+notes: >
+  Tuning run. Conventions: research/experiments/_index/integrity-conventions.md. The crypto
+  candidate packs with a generated test recipient written next to the archive in the work dir.
+  NEEDS_TOOLING: ebr-int-campaign truncation classes, STREAM and crypto walkers, check trace hook.
+decision_ids: [DEC-INT-040, DEC-INT-041, DEC-INT-006]
+
+candidates:
+  - name: eb-indexed-balanced
+    params: {layout: indexed, profile: balanced, crypto: none}
+  - name: eb-indexed-dense
+    params: {layout: indexed, profile: dense, crypto: none}
+  - name: eb-stream-balanced
+    params: {layout: stream, profile: balanced, crypto: none}
+  - name: eb-crypto-indexed-balanced
+    params: {layout: indexed, profile: balanced, crypto: xwing-test-recipient}
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-int-campaign
+  --experiment-id EXP-INT-002 --env-name wsl-ubuntu
+  --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --format eb --layout {layout} --profile {profile} --crypto {crypto}
+  --classes D-T1,D-T2,D-T3,D-T4 --modes m_sq_verify,m_sq_read,stream_forward_scan,salvage_intact
+  --record-check-trace true --event-seed-domain ebr-int/v1
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --detail-root /root/eb-research/raw-detail/EXP-INT-002 --rep {rep}
+  --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-curl-8-19-0-git
+    - f03-tuning-fzf-go-mod-vendor
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f05-tuning-loghub-openstack
+    - f06-tuning-census-popest-2023
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-silesia-xray
+    - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+    - f08-tuning-chinook-sqlite
+    - f09-alpine-324-rootfs-binaries
+    - f10-gen-redundant-binary-blobs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f17-tuning-duptree-mixed
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-zstd-releases-1-5-x
+    - f19-tuning-zoo
+    - f19-tuning-real-home-snapshot
+    - f20-tuning-real-libarchive-testsuite
+    - f20-tuning-csprng
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: artifact_bytes, source: stdout_json, key: payload.artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: outcome_vector_sha256, source: stdout_json, key: payload.outcome_vector_sha256, family: correctness, kind: string}
+  - {name: cuts_total, source: stdout_json, key: payload.cuts_total, family: other, direction: none, unit: count}
+  - {name: undetected_injections, source: stdout_json, key: payload.undetected_injections, family: correctness, direction: minimize, unit: count}
+  - {name: mvt15b_offdiagonal_events, source: stdout_json, key: payload.mvt15b_offdiagonal_events, family: correctness, direction: minimize, unit: count}
+  - {name: mvt15b_adjudication_events, source: stdout_json, key: payload.mvt15b_adjudication_events, family: other, direction: none, unit: count}
+  - {name: reason_code_specificity_fraction, source: stdout_json, key: payload.reason_code_specificity_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: truncation_salvage_fraction__m_sq_verify, source: stdout_json, key: payload.m_sq_verify.truncation_salvage_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: truncation_salvage_fraction__stream_forward_scan, source: stdout_json, key: payload.stream_forward_scan.truncation_salvage_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: truncation_salvage_fraction__salvage_intact, source: stdout_json, key: payload.salvage_intact.truncation_salvage_fraction, family: other, direction: maximize, unit: fraction}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091711, bootstrap: 2026091712, command: 2026091713}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-int-campaign
+    - /root/eb-research/target/int-prod/release/ebound
+  timeout_s: 86400
+
+analysis:
+  baseline: eb-indexed-balanced
+  pairing: item
+  report_metrics:
+    - undetected_injections
+    - mvt15b_offdiagonal_events
+    - reason_code_specificity_fraction
+    - truncation_salvage_fraction__m_sq_verify
+    - truncation_salvage_fraction__stream_forward_scan

@@ -1,0 +1,85 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-011
+status: design
+question: >
+  Which out-of-band carriers survive common Windows copy, archive and HTTP download transfers on
+  NTFS, and do their verifications report separation or in-transit modification?
+hypothesis: >
+  See research/experiments/EXP-INT-011/protocol.md section 2 (H1-H3), Windows arm. NTFS ADS
+  markers are lost by archive and HTTP transfers.
+notes: >
+  D: only (never C:). Items mirrored to D:/eb-research/corpus with logical_tree_sha256
+  re-verified; ebr runs with --data-root D:/eb-research. NEEDS_TOOLING.
+decision_ids: [DEC-INT-011, DEC-INT-034, DEC-LEG-056]
+
+candidates:
+  - name: carriers-all
+    params: {carriers: "parity-receipt,detached-ebsig,wrapper-index,suffix-marker,ads-marker,marker-manifest,quarantine-dir,report-file,salvage-new-archive,sidecar-naming,no-marking"}
+
+command:
+  - C:/Python313/python.exe
+  - D:/Projects/entrybound/entrybound/research/tools/integrity/carrier_matrix.py
+  - --experiment-id
+  - EXP-INT-011
+  - --env-name
+  - windows-host
+  - --item-path
+  - "{item_path}"
+  - --item-id
+  - "{item_id}"
+  - --candidate
+  - "{candidate}"
+  - --carriers
+  - "{carriers}"
+  - --transfers
+  - copy-item,move-item-same-volume,robocopy-default,robocopy-copy-dats,xcopy,compress-expand-archive,tar-exe,curl-exe-origin,invoke-webrequest-origin
+  - --modify-in-transit
+  - "true"
+  - --ebound
+  - D:/eb-research/target/int-prod-win/release/ebound.exe
+  - --detail-root
+  - D:/eb-research/raw-detail/EXP-INT-011
+  - --rep
+  - "{rep}"
+  - --work-dir
+  - "{scratch}"
+shell: pwsh
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f05-tuning-gutenberg-books
+    - f19-tuning-zoo
+    - f14-apache-maven-3916-bin-tarball
+    - f12-tuning-kodak-jpeg-edge-cases-small
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: carrier_survival_fraction__suffix_marker, source: stdout_json, key: payload.survival.suffix-marker, family: other, direction: maximize, unit: fraction}
+  - {name: carrier_survival_fraction__ads_marker, source: stdout_json, key: payload.survival.ads-marker, family: other, direction: maximize, unit: fraction}
+  - {name: carrier_survival_fraction__sidecar_naming, source: stdout_json, key: payload.survival.sidecar-naming, family: other, direction: maximize, unit: fraction}
+  - {name: silent_separations, source: stdout_json, key: payload.silent_separations, family: correctness, direction: minimize, unit: count}
+  - {name: undetected_tampers, source: stdout_json, key: payload.undetected_in_transit_modifications_binding_carriers, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091814, bootstrap: 2026091815, command: 2026091816}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [windows]
+  arch: [x86_64]
+  emulated: false
+  scratch_root: D:/eb-research/scratch/int-011
+  requires:
+    - D:/eb-research/target/int-prod-win/release/ebound.exe
+  timeout_s: 21600
+
+analysis:
+  baseline: carriers-all
+  pairing: item
+  report_metrics: [carrier_survival_fraction__suffix_marker, carrier_survival_fraction__ads_marker, silent_separations]

@@ -1,0 +1,113 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-012
+status: design
+question: >
+  On damaged Entrybound and incumbent archives, how much intact logical content can each salvage
+  design recover as verified, does any design report wrong bytes as intact, and how bounded is
+  salvage work on hostile damaged inputs?
+hypothesis: >
+  See research/experiments/EXP-INT-012/protocol.md section 2 (H1-H4).
+notes: >
+  One sample = every salvage candidate over every shared damage event for one item under one
+  archive configuration. Events are regenerated with the EXP-INT-001/002 seed domains.
+  NEEDS_TOOLING: ebr-int-salvage and ebr-int-campaign salvage mode, gzrt build.
+decision_ids: [DEC-INT-035, DEC-INT-041, DEC-INT-015, DEC-INT-031, DEC-INT-034]
+
+candidates:
+  - name: eb-indexed-balanced
+    params: {fmt: eb, layout: indexed, profile: balanced}
+  - name: eb-indexed-dense
+    params: {fmt: eb, layout: indexed, profile: dense}
+  - name: eb-stream-balanced
+    params: {fmt: eb, layout: stream, profile: balanced}
+  - name: inc-zip-deflate-6
+    params: {fmt: zip-deflate-6, layout: na, profile: na}
+  - name: inc-tar-gz-6
+    params: {fmt: tar-gz-6, layout: na, profile: na}
+  - name: inc-tar-zst-3
+    params: {fmt: tar-zst-3, layout: na, profile: na}
+  - name: inc-7z-lzma2-solid
+    params: {fmt: 7z-lzma2-solid, layout: na, profile: na}
+  - name: inc-7z-lzma2-nonsolid
+    params: {fmt: 7z-lzma2-nonsolid, layout: na, profile: na}
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-int-campaign
+  --experiment-id EXP-INT-012 --env-name wsl-ubuntu --mode salvage
+  --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --format {fmt} --layout {layout} --profile {profile}
+  --classes D-P1,D-S2,D-S3,D-S4,D-S6,D-T1:500,D-T2:200 --event-seed-experiments EXP-INT-001,EXP-INT-002
+  --salvage-candidates status-quo-not-implemented,salvage-post-v1,intact-entry-extraction-only,salvage-v1-best-effort-report,chunk-carving-best-effort,legacy-zip-local-header-salvage,repair-then-reencode
+  --incumbent-repair zip-FF,7z-continue,gzrecover,zstd-no-check
+  --hostile-series 10:24 --scaling-runs 3
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --salvage /root/eb-research/target/harness/release/ebr-int-salvage
+  --gzrecover /root/eb-research/tools/gzrt/gzrecover
+  --detail-root /root/eb-research/raw-detail/EXP-INT-012 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-curl-8-19-0-git
+    - f03-tuning-fzf-go-mod-vendor
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f05-tuning-loghub-openstack
+    - f06-tuning-census-popest-2023
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-silesia-xray
+    - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+    - f08-tuning-chinook-sqlite
+    - f09-alpine-324-rootfs-binaries
+    - f10-gen-redundant-binary-blobs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f17-tuning-duptree-mixed
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-zstd-releases-1-5-x
+    - f19-tuning-zoo
+    - f19-tuning-real-home-snapshot
+    - f20-tuning-real-libarchive-testsuite
+    - f20-tuning-csprng
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: events_total, source: stdout_json, key: payload.events_total, family: other, direction: none, unit: count}
+  - {name: salvage_recovered_fraction__intact_entry, source: stdout_json, key: payload.intact_entry_extraction_only.salvage_recovered_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: salvage_recovered_fraction__best_effort, source: stdout_json, key: payload.salvage_v1_best_effort_report.salvage_recovered_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: salvage_recovered_fraction__carving, source: stdout_json, key: payload.chunk_carving_best_effort.salvage_recovered_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: salvage_recovered_fraction__verify_only, source: stdout_json, key: payload.salvage_post_v1.salvage_recovered_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: salvage_recovered_fraction__incumbent_repair, source: stdout_json, key: payload.incumbent_repair.salvage_recovered_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: truncation_salvage_fraction__intact_entry, source: stdout_json, key: payload.intact_entry_extraction_only.truncation_salvage_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: roundtrip_mismatches, source: stdout_json, key: payload.false_recoveries, family: correctness, direction: minimize, unit: count}
+  - {name: mvt15a_overclaim_cells, source: stdout_json, key: payload.mislabelled_verified_fragments, family: correctness, direction: minimize, unit: count}
+  - {name: bounded_memory_growth_violations, source: stdout_json, key: payload.hostile.bounded_memory_growth_violations, family: correctness, direction: minimize, unit: count}
+  - {name: hostile_cpu_scaling_exponent, source: stdout_json, key: payload.hostile.cpu_scaling_exponent, family: other, direction: none, unit: "1"}
+  - {name: receipt_completeness_fraction, source: stdout_json, key: payload.report_completeness_fraction, family: correctness, direction: maximize, unit: fraction}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091821, bootstrap: 2026091822, command: 2026091823}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-int-campaign
+    - /root/eb-research/target/harness/release/ebr-int-salvage
+    - /root/eb-research/target/int-prod/release/ebound
+    - zip
+    - 7z
+  timeout_s: 172800
+
+analysis:
+  baseline: eb-indexed-balanced
+  pairing: item
+  report_metrics: [salvage_recovered_fraction__intact_entry, salvage_recovered_fraction__carving, salvage_recovered_fraction__incumbent_repair, roundtrip_mismatches, mvt15a_overclaim_cells]

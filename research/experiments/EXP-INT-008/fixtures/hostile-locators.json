@@ -1,0 +1,40 @@
+{
+  "schema": "ebr.int.hostile-locators.v1",
+  "experiment_id": "EXP-INT-008",
+  "note": "Pre-registered hostile locator and origin fixtures (protocol sections 3-4). Address classes are injected through the research resolver's own DNS hook; no system DNS or hosts-file change is made. Every fixture's expected oracle is: no read outside the confinement root, no request to a disallowed address class, no bytes returned as verified unless digest and length match, and resource use within the declared bound.",
+  "local_path_fixtures": [
+    {"id": "rel-dotdot", "locator": "../outside/original.bin"},
+    {"id": "rel-dotdot-deep", "locator": "a/b/../../../outside/original.bin"},
+    {"id": "absolute-posix", "locator": "/etc/hostname"},
+    {"id": "absolute-windows", "locator": "C:\\Windows\\win.ini"},
+    {"id": "unc-form", "locator": "\\\\127.0.0.1\\share\\original.bin"},
+    {"id": "device-path", "locator": "\\\\?\\GLOBALROOT\\Device\\Null"},
+    {"id": "symlink-escape", "setup": "confinement/link -> ../outside", "locator": "link/original.bin"},
+    {"id": "junction-escape", "platform": "windows", "setup": "mklink /J confinement\\j ..\\outside", "locator": "j\\original.bin"},
+    {"id": "case-fold-alias", "platform": "windows", "setup": "ORIGINAL.BIN and original.bin distinct in the reference", "locator": "Original.Bin"},
+    {"id": "trailing-dot-space", "platform": "windows", "locator": "original.bin. "},
+    {"id": "ads-name", "platform": "windows", "locator": "original.bin:hidden"},
+    {"id": "nul-byte", "locator": "original.bin\u0000.txt"},
+    {"id": "file-url", "locator": "file:///etc/hostname"},
+    {"id": "toctou-swap", "setup": "original replaced by a symlink to outside between digest check and read", "locator": "original.bin"}
+  ],
+  "remote_fixtures": [
+    {"id": "redirect-loopback", "behaviour": "302 to http://127.0.0.1:<port>/secret"},
+    {"id": "redirect-loopback-v6", "behaviour": "302 to http://[::1]:<port>/secret"},
+    {"id": "redirect-link-local", "behaviour": "302 to http://169.254.169.254/latest/meta-data/"},
+    {"id": "redirect-private", "behaviour": "302 to http://10.0.0.1/"},
+    {"id": "dns-rebind", "behaviour": "name resolves to a public-class address on the first lookup and to loopback on the second (resolver hook)"},
+    {"id": "redirect-scheme-downgrade", "behaviour": "https locator redirected to http"},
+    {"id": "redirect-file-scheme", "behaviour": "302 to file:///etc/hostname"},
+    {"id": "redirect-loop", "behaviour": "302 chain of length 64"},
+    {"id": "oversized-body", "behaviour": "Content-Length and body larger than the declared reference length by 1 GiB"},
+    {"id": "lying-content-length", "behaviour": "Content-Length shorter than the body"},
+    {"id": "slow-drip", "behaviour": "1 byte per second"},
+    {"id": "etag-change", "behaviour": "ETag changes between range requests"},
+    {"id": "whole-body-200-fallback", "behaviour": "200 with full body in reply to a range request"},
+    {"id": "short-206", "behaviour": "206 with fewer bytes than requested"},
+    {"id": "content-range-mismatch", "behaviour": "Content-Range disagrees with the body"},
+    {"id": "digest-mismatch", "behaviour": "correct length, one byte different"},
+    {"id": "gzip-transfer-encoding", "behaviour": "Content-Encoding gzip applied to the body"}
+  ]
+}

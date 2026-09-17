@@ -1,0 +1,95 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-009
+status: design
+question: >
+  Which archive identities and binding carriers survive each benign rewrite operation of the
+  production CLI, which detect a rollback substitution by an older validly signed archive, and
+  does re-planning from extracted content reproduce PCR and PCI?
+hypothesis: >
+  See research/experiments/EXP-INT-009/protocol.md section 2 (H1-H6). LAI and AUX survive every
+  benign operation; PCI-bound carriers break on Index and layout changes; status quo signatures
+  do not detect rollback; re-planning reproduces PCR but not AUX or PCI.
+notes: >
+  WSL arm. Driver research/experiments/EXP-INT-009/run_identity_ops.py (stdlib only). Build
+  B-PROD first: cargo +1.98.1 build --release -p entrybound-cli with
+  CARGO_TARGET_DIR=/root/eb-research/target/int-prod. The rollback arm runs automatically for
+  items whose top level is one directory per version.
+decision_ids: [DEC-INT-016, DEC-INT-011, DEC-INT-028, DEC-CRY-033, DEC-LEG-040, DEC-LEG-046, DEC-INT-046]
+
+candidates:
+  - name: balanced
+    params: {profile: balanced}
+  - name: extreme
+    params: {profile: extreme}
+
+command: >-
+  /root/eb-research/venv/bin/python
+  /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-INT-009/run_identity_ops.py
+  --ebound /root/eb-research/target/int-prod/release/ebound --par2 /usr/bin/par2
+  --item-path {item_path} --item-id {item_id} --profile {profile}
+  --work-dir {scratch} --detail-root /root/eb-research/raw-detail/EXP-INT-009
+  --candidate {candidate} --env-name wsl-ubuntu --rep {rep}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-silesia-xray
+    - f09-alpine-324-rootfs-binaries
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f17-tuning-duptree-mixed
+    - f19-tuning-zoo
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-zstd-releases-1-5-x
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: refused, source: stdout_json, key: payload.refused, family: correctness, kind: string}
+  - {name: ops_total, source: stdout_json, key: payload.ops_total, family: other, direction: none, unit: count}
+  - {name: ops_failed, source: stdout_json, key: payload.ops_failed, family: correctness, direction: minimize, unit: count}
+  - {name: expectation_mismatches, source: stdout_json, key: payload.expectation_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: migration_identity_conformance_fraction, source: stdout_json, key: payload.migration_identity_conformance_fraction, family: correctness, direction: maximize, unit: fraction}
+  - {name: pack_again_pci_same, source: stdout_json, key: payload.pack_again_pci_same, family: correctness, kind: string}
+  - {name: replan_pcr_same, source: stdout_json, key: payload.replan_pcr_same, family: correctness, kind: string}
+  - {name: replan_pci_same, source: stdout_json, key: payload.replan_pci_same, family: correctness, kind: string}
+  - {name: binding_survival_fraction__bind_pci, source: stdout_json, key: payload.binding_survival_fraction.bind-pci, family: other, direction: maximize, unit: fraction}
+  - {name: binding_survival_fraction__bind_lai_plus_signature, source: stdout_json, key: payload.binding_survival_fraction.bind-lai-plus-signature, family: other, direction: maximize, unit: fraction}
+  - {name: binding_survival_fraction__detached_signature, source: stdout_json, key: payload.binding_survival_fraction.receipt-or-detached-signature, family: other, direction: maximize, unit: fraction}
+  - {name: binding_survival_fraction__par2_file_hash, source: stdout_json, key: payload.binding_survival_fraction.par-native-file-hash, family: other, direction: maximize, unit: fraction}
+  - {name: binding_survival_fraction__chunk_digests_proxy, source: stdout_json, key: payload.binding_survival_fraction.bind-section-chunk-digests, family: other, direction: maximize, unit: fraction}
+  - {name: undetected_tampers__status_quo, source: stdout_json, key: payload.rollback_undetected.status-quo-none, family: correctness, direction: minimize, unit: count}
+  - {name: undetected_tampers__expected_pci, source: stdout_json, key: payload.rollback_undetected.expected-pci-option, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091791, bootstrap: 2026091792, command: 2026091793}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/int-prod/release/ebound
+    - /root/eb-research/venv/bin/python
+    - /usr/bin/par2
+  timeout_s: 21600
+
+analysis:
+  baseline: balanced
+  pairing: item
+  report_metrics:
+    - expectation_mismatches
+    - migration_identity_conformance_fraction
+    - binding_survival_fraction__bind_pci
+    - binding_survival_fraction__bind_lai_plus_signature
+    - binding_survival_fraction__par2_file_hash
+    - undetected_tampers__status_quo

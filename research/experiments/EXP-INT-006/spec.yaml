@@ -1,0 +1,112 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-006
+status: design
+question: >
+  For STREAM and crypto-v1 INDEXED extraction, how much staging disk and memory does each
+  materialization policy need as size grows, and how long until the first entry is
+  materialized in the state the policy claims?
+hypothesis: >
+  See research/experiments/EXP-INT-006/protocol.md section 2 (H1, H2). Stage-then-materialize
+  scratch grows with logical size; per-entry verified streaming bounds scratch by the largest
+  entry and reaches the first verified entry sooner.
+notes: >
+  Timing arm, exclusive quiet window, wsl-ubuntu st-v. Archives pre-packed by
+  research/tools/integrity/prepack.py into /root/eb-research/int-archives/EXP-INT-006/<item_id>/.
+  Generated ladder sha256 values are filled in after first generation and before any timing run
+  (a pre-run deviation entry records it). NEEDS_TOOLING: ebr-int-extract; G-B timing gates.
+decision_ids: [DEC-INT-039]
+
+candidates:
+  - name: sq-stream
+    params: {layout: stream, mode: prod}
+    command: >-
+      /root/eb-research/target/int-prod/release/ebound unpack
+      /root/eb-research/int-archives/EXP-INT-006/{item_id}/stream.eb {scratch}/dest
+  - name: proto-stage-stream
+    params: {layout: stream, mode: stage-then-materialize}
+  - name: per-entry-stream
+    params: {layout: stream, mode: per-entry-verified-streaming}
+  - name: temp-tree-stream
+    params: {layout: stream, mode: temp-tree-then-atomic-move}
+  - name: marked-stream
+    params: {layout: stream, mode: streaming-with-unverified-marking}
+  - name: sq-crypto
+    params: {layout: indexed-crypto, mode: prod}
+    command: >-
+      /root/eb-research/target/int-prod/release/ebound unpack
+      /root/eb-research/int-archives/EXP-INT-006/{item_id}/indexed-crypto.eb {scratch}/dest
+      --identity /root/eb-research/int-archives/EXP-INT-006/test-identity.key
+  - name: proto-stage-crypto
+    params: {layout: indexed-crypto, mode: stage-then-materialize}
+  - name: per-entry-crypto
+    params: {layout: indexed-crypto, mode: per-entry-verified-streaming}
+  - name: temp-tree-crypto
+    params: {layout: indexed-crypto, mode: temp-tree-then-atomic-move}
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-int-extract
+  --experiment-id EXP-INT-006 --env-name wsl-ubuntu --item-id {item_id}
+  --archive-path /root/eb-research/int-archives/EXP-INT-006/{item_id}/{layout}.eb
+  --identity /root/eb-research/int-archives/EXP-INT-006/test-identity.key
+  --mode {mode} --dest {scratch}/dest --in-process-timer true
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f18-tuning-curl-8-x-release-series
+    - f05-tuning-loghub-hdfs-v1
+    - f01-tuning-llvm-project-20-1-8-git
+  generated:
+    - {item_id: int006-text-16mib, family: int-ladder, generator: text-v1, bytes: 16777216, seed: 2026091751}
+    - {item_id: int006-text-256mib, family: int-ladder, generator: text-v1, bytes: 268435456, seed: 2026091751}
+    - {item_id: int006-text-1gib, family: int-ladder, generator: text-v1, bytes: 1073741824, seed: 2026091751}
+    - {item_id: int006-text-4gib, family: int-ladder, generator: text-v1, bytes: 4294967296, seed: 2026091751}
+    - {item_id: int006-text-16gib, family: int-ladder, generator: text-v1, bytes: 17179869184, seed: 2026091751}
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: io_write_bytes, source: resource, family: io, direction: minimize, unit: B}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+  - {name: first_entry_latency_s, source: stdout_json, key: payload.first_verified_entry_s, family: time_wall, direction: minimize, unit: s}
+  - {name: staging_spill_peak_bytes, source: stdout_json, key: payload.staging_spill_peak_bytes, family: scratch_peak, direction: minimize, unit: B}
+  - name: dest_matches_source
+    source: check
+    # research/tools/integrity/tree_compare.py (to be written) exits 0 iff content_tree_sha256
+    # of the source item and the extracted tree match (definitions of research/corpus/tools/fingerprint.py).
+    command: "/root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/tree_compare.py {item_path} {scratch}/dest"
+    family: correctness
+    direction: maximize
+
+repetitions: 10
+warmups: 2
+seeds: {order: 2026091753, bootstrap: 2026091754, command: 2026091755}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+record_warmups: true
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  cpu_affinity: [2]
+  scratch_root: /root/eb-research/scratch/int-006
+  requires:
+    - /root/eb-research/target/harness/release/ebr-int-extract
+    - /root/eb-research/target/int-prod/release/ebound
+  timeout_s: 7200
+
+analysis:
+  baseline: proto-stage-stream
+  pairing: item_repetition
+  report_metrics: [wall_s, max_rss_bytes, scratch_peak_bytes, first_entry_latency_s]

@@ -1,0 +1,78 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-011
+status: design
+question: >
+  Which out-of-band carriers (parity sets and bindings, salvage markers, sidecar naming,
+  receipts, wrapper indexes) survive common Linux copy, archive, HTTP and S3-compatible
+  transfers, and do their verifications report separation or in-transit modification?
+hypothesis: >
+  See research/experiments/EXP-INT-011/protocol.md section 2 (H1-H3).
+notes: >
+  Linux arm. One sample = every carrier through every pre-registered transfer for one item.
+  NEEDS_TOOLING: research/tools/integrity/carrier_matrix.py (T13), MinIO and mc downloads.
+decision_ids: [DEC-INT-011, DEC-INT-034, DEC-LEG-056]
+
+candidates:
+  - name: carriers-all
+    params: {carriers: "par2-set,parity-receipt,detached-ebsig,wrapper-index,suffix-marker,xattr-marker,marker-manifest,quarantine-dir,report-file,salvage-new-archive,sidecar-naming,no-marking"}
+
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/carrier_matrix.py
+  --experiment-id EXP-INT-011 --env-name wsl-ubuntu
+  --item-path {item_path} --item-id {item_id} --candidate {candidate} --carriers {carriers}
+  --transfers cp,cp-a,cp-preserve-xattr,mv-same-fs,mv-ext4-to-xfs,rsync-a,rsync-aX,gnutar,gnutar-xattrs,bsdtar,zip-unzip,7z,shutil-copy,shutil-copy2,git-clone,curl-origin,minio-mc-cp,minio-mc-mirror
+  --modify-in-transit true
+  --ebound /root/eb-research/target/int-prod/release/ebound --par2 /usr/bin/par2
+  --origin /root/eb-research/target/harness/release/ebr-origin
+  --minio /root/eb-research/tools/minio/minio --mc /root/eb-research/tools/minio/mc
+  --detail-root /root/eb-research/raw-detail/EXP-INT-011 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f05-tuning-gutenberg-books
+    - f19-tuning-zoo
+    - f14-apache-maven-3916-bin-tarball
+    - f12-tuning-kodak-jpeg-edge-cases-small
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: carrier_survival_fraction__suffix_marker, source: stdout_json, key: payload.survival.suffix-marker, family: other, direction: maximize, unit: fraction}
+  - {name: carrier_survival_fraction__xattr_marker, source: stdout_json, key: payload.survival.xattr-marker, family: other, direction: maximize, unit: fraction}
+  - {name: carrier_survival_fraction__marker_manifest, source: stdout_json, key: payload.survival.marker-manifest, family: other, direction: maximize, unit: fraction}
+  - {name: carrier_survival_fraction__par2_set, source: stdout_json, key: payload.survival.par2-set, family: other, direction: maximize, unit: fraction}
+  - {name: carrier_survival_fraction__sidecar_naming, source: stdout_json, key: payload.survival.sidecar-naming, family: other, direction: maximize, unit: fraction}
+  - {name: silent_separations, source: stdout_json, key: payload.silent_separations, family: correctness, direction: minimize, unit: count}
+  - {name: undetected_tampers, source: stdout_json, key: payload.undetected_in_transit_modifications_binding_carriers, family: correctness, direction: minimize, unit: count}
+  - {name: unsafe_defaults, source: stdout_json, key: payload.salvaged_output_appears_verified, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091811, bootstrap: 2026091812, command: 2026091813}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/carrier_matrix.py
+    - /root/eb-research/target/int-prod/release/ebound
+    - /root/eb-research/tools/minio/minio
+    - rsync
+    - zip
+    - 7z
+    - git
+    - curl
+  timeout_s: 21600
+
+analysis:
+  baseline: carriers-all
+  pairing: item
+  report_metrics: [carrier_survival_fraction__suffix_marker, carrier_survival_fraction__xattr_marker, carrier_survival_fraction__par2_set, silent_separations, undetected_tampers]

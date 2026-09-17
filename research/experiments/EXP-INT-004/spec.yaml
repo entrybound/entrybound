@@ -1,0 +1,118 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-004
+status: design
+question: >
+  What do candidate verification levels and modes cost in wall time, CPU and peak memory on
+  benign archives, relative to the status quo full-decode verify (timing arm)?
+hypothesis: >
+  See research/experiments/EXP-INT-004/protocol.md section 2 (H1, H2, H4). Section-digest
+  and container-digest levels are distinguishably faster than full decode on medium and large
+  items; stored-bytes-digest sits between them.
+notes: >
+  Timing arm in an exclusive quiet window on wsl-ubuntu, affinity st-v (vCPU 2). Archives are
+  pre-packed once per item by research/tools/integrity/prepack.py into
+  /root/eb-research/int-archives/EXP-INT-004/<item_id>/indexed-balanced.eb so every candidate
+  reads identical bytes. Deterministic coverage and hostile arms are in spec-coverage.yaml.
+  Adaptive rounds: re-invoke run with a new --run-id per step (protocol section 7).
+  NEEDS_TOOLING: ebr-int-verify-levels; runner additions and EXP-CAL-* calibration (G-B timing).
+decision_ids: [DEC-INT-043, DEC-INT-007, DEC-INT-028]
+
+candidates:
+  - name: status-quo-full
+    params: {level: prod-verify}
+    command: >-
+      /root/eb-research/target/int-prod/release/ebound verify
+      /root/eb-research/int-archives/EXP-INT-004/{item_id}/indexed-balanced.eb
+  - name: t5-full-decode
+    params: {level: full-decode}
+  - name: t5-structure
+    params: {level: structure}
+  - name: t5-section-digest
+    params: {level: section-digest}
+  - name: t5-stored-bytes-digest
+    params: {level: stored-bytes-digest}
+  - name: t5-container-digest
+    params: {level: container-digest}
+  - name: t5-continue-collect
+    params: {level: full-decode-continue-collect}
+  - name: t5-unpack-discard
+    params: {level: unpack-discard}
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-int-verify-levels
+  --experiment-id EXP-INT-004 --env-name wsl-ubuntu --item-id {item_id}
+  --archive-path /root/eb-research/int-archives/EXP-INT-004/{item_id}/indexed-balanced.eb
+  --level {level} --expected-digest-file /root/eb-research/int-archives/EXP-INT-004/{item_id}/indexed-balanced.eb.sha256
+  --in-process-timer true
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-curl-8-19-0-git
+    - f03-tuning-fzf-go-mod-vendor
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f05-tuning-loghub-openstack
+    - f06-tuning-census-popest-2023
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-silesia-xray
+    - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+    - f08-tuning-chinook-sqlite
+    - f09-alpine-324-rootfs-binaries
+    - f10-gen-redundant-binary-blobs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f17-tuning-duptree-mixed
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-zstd-releases-1-5-x
+    - f19-tuning-zoo
+    - f19-tuning-real-home-snapshot
+    - f20-tuning-real-libarchive-testsuite
+    - f20-tuning-csprng
+    - f05-tuning-loghub-hdfs-v1
+    - f01-tuning-llvm-project-20-1-8-git
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: fs_inputs, source: resource, family: io, direction: minimize, unit: blocks}
+  # Correctness gating: every candidate exits non-zero unless its level reports the pristine
+  # archive verified at that level (T5 prints and checks its own result), so a sample whose
+  # verification fails is recorded as failed by the runner and excluded from timing analysis.
+  - name: archive_digest_unchanged
+    source: check
+    command: "cd /root/eb-research/int-archives/EXP-INT-004/{item_id} && sha256sum -c --status indexed-balanced.eb.sha256"
+    family: correctness
+    direction: maximize
+
+repetitions: 10
+warmups: 2
+seeds: {order: 2026091734, bootstrap: 2026091735, command: 2026091736}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+record_warmups: true
+
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  sample_interval_s: 1.0
+  max_wait_s: 300
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  cpu_affinity: [2]
+  requires:
+    - /root/eb-research/target/harness/release/ebr-int-verify-levels
+    - /root/eb-research/target/int-prod/release/ebound
+  timeout_s: 3600
+
+analysis:
+  baseline: status-quo-full
+  pairing: item_repetition
+  report_metrics: [wall_s, cpu_s, max_rss_bytes]

@@ -1,0 +1,90 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-010
+status: design
+question: >
+  For each external parity format and redundancy level, what share of damage trials is fully
+  repaired and re-verified, what does the parity cost, does any repair path report success for
+  bytes that fail verification, and how does chunk-aligned in-format parity compare at equal
+  overhead under separate-medium and same-medium damage?
+hypothesis: >
+  See research/experiments/EXP-INT-010/protocol.md section 2 (H1-H4).
+notes: >
+  One sample = the full damage-trial grid for one archive (packed from the item with B-PROD
+  balanced; crypto variant for one item) under one parity format. Conventions:
+  research/experiments/_index/integrity-conventions.md. NEEDS_TOOLING: ebr-int-parity,
+  par2cmdline-turbo and par3cmdline builds, analytic recovery model.
+decision_ids: [DEC-INT-012, DEC-INT-027, DEC-INT-015, DEC-INT-031]
+
+candidates:
+  - name: par2cmdline-0-8-1
+    params: {fmt: par2, tool: /usr/bin/par2}
+  - name: par2cmdline-turbo
+    params: {fmt: par2, tool: /root/eb-research/tools/par2cmdline-turbo/par2}
+  - name: par3cmdline
+    params: {fmt: par3-draft, tool: /root/eb-research/tools/par3cmdline/par3}
+  - name: raptorq-rfc6330
+    params: {fmt: raptorq, tool: /root/eb-research/target/harness/release/ebr-int-parity}
+  - name: reed-solomon-fixed-blocks
+    params: {fmt: rs-fixed, tool: /root/eb-research/target/harness/release/ebr-int-parity}
+  - name: reed-solomon-chunk-aligned
+    params: {fmt: rs-chunk-aligned, tool: /root/eb-research/target/harness/release/ebr-int-parity}
+  - name: in-format-prototype
+    params: {fmt: in-format-rs, tool: /root/eb-research/target/harness/release/ebr-int-parity}
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-int-parity campaign
+  --experiment-id EXP-INT-010 --env-name wsl-ubuntu
+  --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --format {fmt} --tool {tool} --tool-threads 1
+  --levels 0.005,0.01,0.02,0.05,0.10,0.20,0.30 --block-sizes default,4096,65536,1048576
+  --damage-models scattered-1,scattered-16,scattered-256,scattered-4096,sector512-1,sector512-8,sector512-64,sector512-512,sector4096-1,sector4096-8,sector4096-64,sector4096-512,burst-64k,burst-1m,burst-16m,trunc-1pct,trunc-10pct,lose-1-volume,lose-half-volumes,damage-parity-scattered-16,correlated-sector4096-64,correlated-burst-1m
+  --trials 200 --measured-subsample 20 --malicious-sets 20
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --detail-root /root/eb-research/raw-detail/EXP-INT-010 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f06-tuning-census-popest-2023
+    - f07-tuning-silesia-xray
+    - f05-tuning-enwik8
+    - f07-tuning-pythia-160m-safetensors-main
+    - f05-tuning-loghub-hdfs-v1
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: trials_total, source: stdout_json, key: payload.trials_total, family: other, direction: none, unit: count}
+  - {name: analytic_model_disagreements, source: stdout_json, key: payload.analytic_model_disagreements, family: correctness, direction: minimize, unit: count}
+  - {name: parity_repair_success_fraction__worst_model_at_5pct, source: stdout_json, key: payload.success_fraction_worst_model_at_0_05, family: other, direction: maximize, unit: fraction}
+  - {name: overhead_for_99pct__worst_model, source: stdout_json, key: payload.min_overhead_for_0_99_worst_model, family: other, direction: minimize, unit: fraction}
+  - {name: roundtrip_mismatches, source: stdout_json, key: payload.roundtrip_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: mvt15a_overclaim_cells, source: stdout_json, key: payload.trust_parity_output_overclaims, family: correctness, direction: minimize, unit: count}
+  - {name: artifact_bytes__5pct, source: stdout_json, key: payload.archive_plus_parity_bytes_at_0_05, family: size, direction: minimize, unit: B}
+  - {name: side_data_bytes__5pct, source: stdout_json, key: payload.parity_bytes_at_0_05, family: size, direction: minimize, unit: B}
+  - {name: dry_run_prediction_accuracy, source: stdout_json, key: payload.dry_run_prediction_accuracy, family: other, direction: maximize, unit: fraction}
+  - {name: tool_failed_cells, source: stdout_json, key: payload.tool_failed_cells, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091801, bootstrap: 2026091802, command: 2026091803}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-int-parity
+    - /root/eb-research/target/int-prod/release/ebound
+    - /usr/bin/par2
+  timeout_s: 259200
+
+analysis:
+  baseline: par2cmdline-0-8-1
+  pairing: item
+  report_metrics: [analytic_model_disagreements, parity_repair_success_fraction__worst_model_at_5pct, overhead_for_99pct__worst_model, roundtrip_mismatches, mvt15a_overclaim_cells]

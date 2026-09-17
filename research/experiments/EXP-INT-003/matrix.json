@@ -1,0 +1,46 @@
+{
+  "schema": "ebr.int.statematrix.v1",
+  "experiment_id": "EXP-INT-003",
+  "note": "Pre-registered matrix axes for EXP-INT-003 (protocol section 4). A cell is (operation, source, archive_type, fault); inapplicable cells are skipped by rule and counted.",
+  "operations": [
+    {"id": "lib-open", "surface": "library"},
+    {"id": "lib-list", "surface": "library"},
+    {"id": "lib-read-entry", "surface": "library"},
+    {"id": "lib-range-read", "surface": "library", "ranges": ["1B", "4KiB", "1MiB", "whole-entry"]},
+    {"id": "lib-verify", "surface": "library"},
+    {"id": "lib-unpack", "surface": "library"},
+    {"id": "cli-list", "surface": "cli", "argv": ["list", "{archive}"]},
+    {"id": "cli-inspect-json", "surface": "cli", "argv": ["inspect", "{archive}", "--json"]},
+    {"id": "cli-inspect-access", "surface": "cli", "argv": ["inspect", "{archive}", "--json", "--access"]},
+    {"id": "cli-inspect-security", "surface": "cli", "argv": ["inspect", "{archive}", "--json", "--security"]},
+    {"id": "cli-inspect-entries", "surface": "cli", "argv": ["inspect", "{archive}", "--json", "--entries"]},
+    {"id": "cli-read", "surface": "cli", "argv": ["read", "{archive}", "{entry}", "--output", "{out}", "--access-report"]},
+    {"id": "cli-verify", "surface": "cli", "argv": ["verify", "{archive}"]},
+    {"id": "cli-verify-signatures", "surface": "cli", "argv": ["verify", "{archive}", "--signatures"]},
+    {"id": "cli-verify-detached", "surface": "cli", "argv": ["verify", "{archive}", "--signature", "{ebsig}"]},
+    {"id": "cli-unpack", "surface": "cli", "argv": ["unpack", "{archive}", "{dest}"]},
+    {"id": "cli-diff-json", "surface": "cli", "argv": ["diff", "{archive}", "{pristine}", "--json"]},
+    {"id": "cli-diff-public", "surface": "cli", "argv": ["diff", "{archive}", "{pristine}", "--json", "--public"]},
+    {"id": "cli-explain", "surface": "cli", "argv": ["explain", "{archive}", "{entry}"]},
+    {"id": "cli-salvage", "surface": "cli", "argv": ["salvage", "{archive}", "{dest}"], "expected_status_quo": "EB_CLI_NOT_IMPLEMENTED"}
+  ],
+  "sources": ["memory", "local-file", "http-range-origin", "stream-pipe"],
+  "archive_types": ["unsigned-indexed", "unsigned-stream", "signed-content", "signed-content-physical-addressing", "signed-then-stale", "detached-ebsig", "crypto-with-key", "crypto-keyless", "crypto-signed"],
+  "stale_operations": ["repack --index absent", "repack --layout stream", "key add"],
+  "faults": ["none", "requested-chunk-byte", "unrequested-chunk-byte", "index-payload", "index-header", "fidelity-section", "used-dictionary-or-group", "unused-dictionary-or-group", "footer-truncation", "signature-record-byte", "stale-binding"],
+  "applicability_rules": [
+    "stream-pipe applies only to unsigned-stream and to lib-verify, lib-unpack, lib-list, cli-verify, cli-unpack, cli-list, cli-inspect-json",
+    "http-range-origin applies to INDEXED archive types and to operations that accept a URL (list, inspect, read, diff, lib-open, lib-read-entry, lib-range-read)",
+    "index faults apply only to INDEXED archive types",
+    "dictionary or group faults apply only to archives packed with the dense profile",
+    "signature faults apply only to signed archive types; stale-binding applies only to signed-then-stale",
+    "crypto-keyless omits operations that need plaintext and records the refusal cell"
+  ],
+  "entries_per_cell": 40,
+  "oracle_state_lattice": {
+    "content": ["none", "structural", "requested-chunk-digests", "content-object", "manifest-and-entry-identity", "signed-pcr-slice", "whole-archive-pcr-pci"],
+    "metadata_scope": ["none", "entry-record", "aux-fidelity"],
+    "signature": {"cryptographic": ["absent", "valid", "invalid", "unsupported"], "binding": ["valid", "stale", "invalid", "not-bound", "absent", "not-verifiable"]},
+    "encrypted": ["keyless-public-framing", "authenticated-objects", "archive-final-bound"]
+  }
+}

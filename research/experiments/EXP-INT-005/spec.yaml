@@ -1,0 +1,104 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-005
+status: design
+question: >
+  When Entrybound output paths are killed at seeded points, lose unsynced writes, or hit I/O
+  errors, a full disk or a rename failure on ext4, XFS and btrfs, does any destination verify
+  as OK while incomplete, is any publish partial, is any pre-existing object changed, and
+  which output transaction pattern removes every violation?
+hypothesis: >
+  See research/experiments/EXP-INT-005/protocol.md section 2 (H1-H6).
+notes: >
+  Linux arms (root inside WSL, loop filesystems). One sample = all kill points and fault cases
+  for one (operation, pattern, filesystem) on one item. Conventions:
+  research/experiments/_index/integrity-conventions.md. NEEDS_TOOLING: ebr-int-kill,
+  ebr-int-fsfault, ebr-int-txn.
+decision_ids: [DEC-INT-003, DEC-INT-031, DEC-INT-039, DEC-LEG-038, DEC-INT-047]
+
+candidates:
+  - name: sq-cli-ext4
+    params: {pattern: status-quo-cli, fs: ext4}
+  - name: sq-cli-xfs
+    params: {pattern: status-quo-cli, fs: xfs}
+  - name: sq-cli-btrfs
+    params: {pattern: status-quo-cli, fs: btrfs}
+  - name: temp-sync-hardlink-ext4
+    params: {pattern: temp-sync-hardlink-everywhere, fs: ext4}
+  - name: temp-sync-hardlink-xfs
+    params: {pattern: temp-sync-hardlink-everywhere, fs: xfs}
+  - name: temp-rename-over-ext4
+    params: {pattern: temp-rename-over, fs: ext4}
+  - name: temp-rename-over-xfs
+    params: {pattern: temp-rename-over, fs: xfs}
+  - name: atomic-replace-ext4
+    params: {pattern: platform-atomic-replace, fs: ext4}
+  - name: cleanup-on-start-ext4
+    params: {pattern: leftover-cleanup-on-start, fs: ext4}
+  - name: journal-recovery-ext4
+    params: {pattern: journal-file-recovery, fs: ext4}
+  - name: zpaq-append-ext4
+    params: {pattern: zpaq-append-reference, fs: ext4}
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-int-kill campaign
+  --experiment-id EXP-INT-005 --env-name wsl-ubuntu
+  --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --pattern {pattern} --fs {fs} --loop-root /root/eb-research/scratch/int-005
+  --operations pack-indexed,pack-stream-file,pack-stream-stdout,repack,convert-to-zip,convert-to-tar-zst,publish-native,publish-multi,sidecar,key-add,key-remove,key-change-password,sign-embed,unpack-indexed,unpack-stream,read-output,repair-out,repair-in-place
+  --arms kill-boundaries,kill-interior-200,crash-states-2000,eio-5,disk-full,rename-failure,preexisting-destination,late-corruption
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --txn-shim /root/eb-research/target/harness/release/ebr-int-txn
+  --zpaq /usr/bin/zpaq
+  --detail-root /root/eb-research/raw-detail/EXP-INT-005 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f19-tuning-zoo
+    - f01-tuning-curl-8-19-0-git
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: mvt18a_violations, source: stdout_json, key: payload.mvt18a_violations, family: correctness, direction: minimize, unit: count}
+  - {name: durability_losses, source: stdout_json, key: payload.durability_losses, family: other, direction: minimize, unit: count}
+  - {name: leftover_files, source: stdout_json, key: payload.leftover_files, family: other, direction: minimize, unit: count}
+  - {name: leftover_bytes, source: stdout_json, key: payload.leftover_bytes, family: other, direction: minimize, unit: B}
+  - {name: receipt_completeness_fraction, source: stdout_json, key: payload.receipt_completeness_fraction, family: correctness, direction: maximize, unit: fraction}
+  - {name: unsafe_defaults, source: stdout_json, key: payload.unverified_unmarked_final_files, family: correctness, direction: minimize, unit: count}
+  - {name: scratch_final_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091741, bootstrap: 2026091742, command: 2026091743}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-int-kill
+    - /root/eb-research/target/harness/release/ebr-int-txn
+    - /root/eb-research/target/int-prod/release/ebound
+    - mkfs.xfs
+    - mkfs.btrfs
+    - dmsetup
+    - losetup
+    - strace
+    - zpaq
+  timeout_s: 172800
+
+analysis:
+  baseline: sq-cli-ext4
+  pairing: item
+  report_metrics: [mvt18a_violations, durability_losses, leftover_files, receipt_completeness_fraction, unsafe_defaults]

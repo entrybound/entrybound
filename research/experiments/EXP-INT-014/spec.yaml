@@ -1,0 +1,114 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-014
+status: design
+question: >
+  (A) Which writer verification scope catches injected encoder and transform faults before an
+  archive is published? (B) Do independent decoders and other builds reproduce byte-identical
+  originals from reconstructive-transform side data?
+hypothesis: >
+  See research/experiments/EXP-INT-014/protocol.md section 2 (H1, H3, H4). The status quo misses
+  codec encoder-output faults at pack time; DEFLATE reconstruction side data is not independently
+  decodable while JPEG reconstruction is.
+notes: >
+  Deterministic arms; arm A timing is a separate quiet-window sub-spec. Candidates are arms and
+  scopes; arm-b candidates run only on the arm B items (driver prints payload.skipped = true
+  otherwise, pre-registered). NEEDS_TOOLING: encoder fault hook, independent decoders,
+  research/tools/integrity/writer_scope_and_vectors.py driver.
+decision_ids: [DEC-CMP-044, DEC-INT-030]
+
+candidates:
+  - name: arm-a-status-quo
+    params: {arm: writer-scope, scope: status-quo-reconstructive-only}
+  - name: arm-a-verify-all-transformed
+    params: {arm: writer-scope, scope: verify-all-transformed}
+  - name: arm-a-verify-all-chunks
+    params: {arm: writer-scope, scope: verify-all-chunks}
+  - name: arm-a-sampled-1pct
+    params: {arm: writer-scope, scope: sampled-verification-0.01}
+  - name: arm-a-sampled-10pct
+    params: {arm: writer-scope, scope: sampled-verification-0.10}
+  - name: arm-a-post-write-full
+    params: {arm: writer-scope, scope: post-write-full-verify}
+  - name: arm-a-no-verify-negative-control
+    params: {arm: writer-scope, scope: trust-encoder-no-verify}
+  - name: arm-b-independent-decoders
+    params: {arm: reconstruction-vectors, scope: independent-decoders}
+
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/writer_scope_and_vectors.py
+  --experiment-id EXP-INT-014 --env-name wsl-ubuntu --arm {arm} --scope {scope}
+  --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --profiles fast,balanced,dense,extreme
+  --fault-classes codec-bitflip,codec-truncated-frame,wrong-dictionary-id,decoded-byte-changed,structural-permutation,reconstruction-side-data
+  --arm-b-items f12-tuning-kodak-jpeg-edge-cases-small,f12-tuning-kodak-jpeg-matrix-medium,f12-tuning-nasa-ivl-photos-small,f13-tuning-kodak-image-codecs-small,f11-pypi-binary-wheels-cp312,f11-alpine-324-apks,f14-apache-maven-3916-bin-tarball,f14-jenkins-25683-war
+  --research-pack /root/eb-research/target/harness/release/ebr-pack
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --preflate-ref /root/eb-research/tools/preflate-ref/preflate_demo --djxl /root/eb-research/tools/libjxl/djxl
+  --detail-root /root/eb-research/raw-detail/EXP-INT-014 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-curl-8-19-0-git
+    - f03-tuning-fzf-go-mod-vendor
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f05-tuning-loghub-openstack
+    - f06-tuning-census-popest-2023
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-silesia-xray
+    - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+    - f08-tuning-chinook-sqlite
+    - f09-alpine-324-rootfs-binaries
+    - f10-gen-redundant-binary-blobs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f17-tuning-duptree-mixed
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-zstd-releases-1-5-x
+    - f19-tuning-zoo
+    - f19-tuning-real-home-snapshot
+    - f20-tuning-real-libarchive-testsuite
+    - f20-tuning-csprng
+    - f12-tuning-kodak-jpeg-matrix-medium
+    - f12-tuning-nasa-ivl-photos-small
+    - f13-tuning-kodak-image-codecs-small
+    - f11-pypi-binary-wheels-cp312
+    - f11-alpine-324-apks
+    - f14-apache-maven-3916-bin-tarball
+    - f14-jenkins-25683-war
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: skipped, source: stdout_json, key: payload.skipped, family: correctness, kind: string}
+  - {name: faults_injected, source: stdout_json, key: payload.faults_injected, family: other, direction: none, unit: count}
+  - {name: roundtrip_mismatches, source: stdout_json, key: payload.published_faulty_archives, family: correctness, direction: minimize, unit: count}
+  - {name: damage_detection_fraction, source: stdout_json, key: payload.pack_time_detection_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: reader_disagreements, source: stdout_json, key: payload.reader_disagreements, family: correctness, direction: minimize, unit: count}
+  - {name: vectors_total, source: stdout_json, key: payload.vectors_total, family: other, direction: none, unit: count}
+  - {name: unspecified_baseline_decode_steps, source: stdout_json, key: payload.unspecified_baseline_decode_steps, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091841, bootstrap: 2026091842, command: 2026091843}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/writer_scope_and_vectors.py
+    - /root/eb-research/target/harness/release/ebr-pack
+    - /root/eb-research/target/int-prod/release/ebound
+  timeout_s: 86400
+
+analysis:
+  baseline: arm-a-status-quo
+  pairing: item
+  report_metrics: [roundtrip_mismatches, damage_detection_fraction, reader_disagreements, unspecified_baseline_decode_steps]

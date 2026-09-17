@@ -1,0 +1,94 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-004
+status: design
+question: >
+  What share of the pre-registered damage case set does each verification level detect
+  (without overclaiming), and do continue-and-collect and parse-first refusal stay within
+  declared bounds on hostile multi-fault archives (deterministic arm)?
+hypothesis: >
+  See research/experiments/EXP-INT-004/protocol.md section 2 (H1, H3, H4). Section-digest
+  detects all D-P1 events in plaintext INDEXED; continue-and-collect is bounded and linear;
+  digest-first refusal allocates nothing beyond baseline.
+notes: >
+  Deterministic coverage arm; same experiment id as spec.yaml, distinct run ids. Events use
+  the EXP-INT-001 seed domain so that the case set is identical. NEEDS_TOOLING.
+decision_ids: [DEC-INT-043, DEC-INT-007, DEC-INT-028]
+
+candidates:
+  - name: eb-indexed-balanced
+    params: {layout: indexed}
+  - name: eb-stream-balanced
+    params: {layout: stream}
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-int-verify-levels
+  --experiment-id EXP-INT-004 --env-name wsl-ubuntu --mode coverage
+  --item-path {item_path} --item-id {item_id} --layout {layout} --profile balanced
+  --levels prod-verify,structure,section-digest,stored-bytes-digest,full-decode,container-digest,full-decode-continue-collect
+  --case-classes D-P1,D-S2,D-S4,D-S6,D-S7,D-T1 --event-seed-experiment EXP-INT-001
+  --hostile-series 0:20 --scaling-runs 3
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --detail-root /root/eb-research/raw-detail/EXP-INT-004 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-curl-8-19-0-git
+    - f03-tuning-fzf-go-mod-vendor
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f05-tuning-loghub-openstack
+    - f06-tuning-census-popest-2023
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-silesia-xray
+    - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+    - f08-tuning-chinook-sqlite
+    - f09-alpine-324-rootfs-binaries
+    - f10-gen-redundant-binary-blobs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f17-tuning-duptree-mixed
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-zstd-releases-1-5-x
+    - f19-tuning-zoo
+    - f19-tuning-real-home-snapshot
+    - f20-tuning-real-libarchive-testsuite
+    - f20-tuning-csprng
+    - f20-tuning-generated-malicious-structures
+    - f20-tuning-bombs-dense
+    - f20-tuning-gear-extremes
+
+metrics:
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: mvt15a_overclaim_cells, source: stdout_json, key: payload.mvt15a_overclaim_cells, family: correctness, direction: minimize, unit: count}
+  - {name: damage_detection_fraction__section_digest, source: stdout_json, key: payload.section_digest.damage_detection_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: damage_detection_fraction__stored_bytes_digest, source: stdout_json, key: payload.stored_bytes_digest.damage_detection_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: damage_detection_fraction__full_decode, source: stdout_json, key: payload.full_decode.damage_detection_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: damage_detection_fraction__structure, source: stdout_json, key: payload.structure.damage_detection_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: bounded_memory_growth_violations, source: stdout_json, key: payload.continue_collect.bounded_memory_growth_violations, family: correctness, direction: minimize, unit: count}
+  - {name: hostile_cpu_scaling_exponent, source: stdout_json, key: payload.continue_collect.hostile_cpu_scaling_exponent, family: other, direction: none, unit: "1"}
+  - {name: refusal_alloc_peak_bytes__parse_first, source: stdout_json, key: payload.parse_first.refusal_alloc_peak_bytes_median, family: memory_peak, direction: minimize, unit: B}
+  - {name: refusal_alloc_peak_bytes__digest_first, source: stdout_json, key: payload.digest_first.refusal_alloc_peak_bytes_median, family: memory_peak, direction: minimize, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091731, bootstrap: 2026091732, command: 2026091733}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-int-verify-levels
+    - /root/eb-research/target/int-prod/release/ebound
+  timeout_s: 86400
+
+analysis:
+  baseline: eb-indexed-balanced
+  pairing: item
+  report_metrics: [mvt15a_overclaim_cells, damage_detection_fraction__section_digest, damage_detection_fraction__full_decode, bounded_memory_growth_violations]

@@ -1,0 +1,104 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-005
+status: design
+question: >
+  On Windows NTFS (non-admin), do Entrybound output paths killed by job-object termination at
+  seeded delays and on destination file-system events, or hitting a rename failure, leave a
+  destination that verifies as OK while incomplete, a partial publish, or a changed
+  pre-existing object?
+hypothesis: >
+  See research/experiments/EXP-INT-005/protocol.md section 2 (H1-H4, H6), Windows arm.
+notes: >
+  Windows arm on D: only (never C:). Kills are time- and event-based (regression evidence).
+  Disk-full and ReFS arms are BLOCKED without admin rights. Items are mirrored from the WSL
+  corpus to D:/eb-research/corpus (logical_tree_sha256 re-verified by
+  research/corpus/tools/provision.py --check before the run) and ebr runs with
+  --data-root D:/eb-research. NEEDS_TOOLING: ebr-int-kill
+  Windows job-object launcher, ebr-int-txn Windows build.
+decision_ids: [DEC-INT-003, DEC-INT-031, DEC-INT-039, DEC-LEG-038]
+
+candidates:
+  - name: sq-cli-ntfs
+    params: {pattern: status-quo-cli}
+  - name: temp-sync-hardlink-ntfs
+    params: {pattern: temp-sync-hardlink-everywhere}
+  - name: temp-rename-over-ntfs
+    params: {pattern: temp-rename-over}
+  - name: atomic-replace-ntfs
+    params: {pattern: platform-atomic-replace}
+  - name: cleanup-on-start-ntfs
+    params: {pattern: leftover-cleanup-on-start}
+
+command:
+  - D:/eb-research/target/harness/release/ebr-int-kill.exe
+  - campaign
+  - --experiment-id
+  - EXP-INT-005
+  - --env-name
+  - windows-host
+  - --item-path
+  - "{item_path}"
+  - --item-id
+  - "{item_id}"
+  - --candidate
+  - "{candidate}"
+  - --pattern
+  - "{pattern}"
+  - --fs
+  - ntfs
+  - --operations
+  - pack-indexed,pack-stream-file,repack,convert-to-zip,publish-native,publish-multi,sidecar,key-add,key-remove,key-change-password,unpack-indexed,unpack-stream,read-output,repair-out,repair-in-place
+  - --arms
+  - kill-delays-200,kill-on-dest-event,rename-failure-dir,rename-failure-open-handle,preexisting-destination,late-corruption
+  - --ebound
+  - D:/eb-research/target/int-prod-win/release/ebound.exe
+  - --txn-shim
+  - D:/eb-research/target/harness/release/ebr-int-txn.exe
+  - --detail-root
+  - D:/eb-research/raw-detail/EXP-INT-005
+  - --rep
+  - "{rep}"
+  - --work-dir
+  - "{scratch}"
+shell: pwsh
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f19-tuning-zoo
+    - f14-apache-maven-3916-bin-tarball
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: mvt18a_violations, source: stdout_json, key: payload.mvt18a_violations, family: correctness, direction: minimize, unit: count}
+  - {name: leftover_files, source: stdout_json, key: payload.leftover_files, family: other, direction: minimize, unit: count}
+  - {name: leftover_bytes, source: stdout_json, key: payload.leftover_bytes, family: other, direction: minimize, unit: B}
+  - {name: receipt_completeness_fraction, source: stdout_json, key: payload.receipt_completeness_fraction, family: correctness, direction: maximize, unit: fraction}
+  - {name: unsafe_defaults, source: stdout_json, key: payload.unverified_unmarked_final_files, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091744, bootstrap: 2026091745, command: 2026091746}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [windows]
+  arch: [x86_64]
+  emulated: false
+  scratch_root: D:/eb-research/scratch/int-005
+  requires:
+    - D:/eb-research/target/harness/release/ebr-int-kill.exe
+    - D:/eb-research/target/int-prod-win/release/ebound.exe
+  timeout_s: 172800
+
+analysis:
+  baseline: sq-cli-ntfs
+  pairing: item
+  report_metrics: [mvt18a_violations, leftover_files, receipt_completeness_fraction, unsafe_defaults]

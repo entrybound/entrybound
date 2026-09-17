@@ -1,0 +1,89 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-016
+status: design
+question: >
+  For crypto-v1 encrypted INDEXED archives, which tampering of unread segments and records can
+  make partial reads overclaim or release plaintext, how much can be salvaged with keys without
+  misleading output, and what do remote signature and whole-archive verification cost, including
+  under origin substitution over plain HTTP?
+hypothesis: >
+  See research/experiments/EXP-INT-016/protocol.md section 2 (H1-H5).
+notes: >
+  One sample = the full tamper, salvage and remote matrix for one item under one padding mode.
+  Recipient identities are generated per repetition in the work dir. NEEDS_TOOLING: crypto
+  framing walker, segment and stanza tamper operations, research decrypt and verification-log
+  hooks, remote verification prototype (research/tools/integrity/crypto_integrity.py driver).
+decision_ids: [DEC-INT-010, DEC-INT-033, DEC-CRY-080, DEC-CRY-073, DEC-CRY-033]
+
+candidates:
+  - name: pad-bucketed
+    params: {pad: bucketed}
+  - name: pad-none
+    params: {pad: none}
+  - name: pad-max
+    params: {pad: max}
+
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/crypto_integrity.py
+  --experiment-id EXP-INT-016 --env-name wsl-ubuntu --pad {pad}
+  --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --tamper-classes truncate-record-boundaries,swap-adjacent-records,permute-1000,splice-sibling-archive,stanza-insert,stanza-remove,stanza-reorder,framing-bitflip-exhaustive,ciphertext-bitflip-10000,delete-unread-segment,duplicate-unread-segment
+  --salvage-candidates fail-closed-no-salvage,authenticated-record-recovery,require-intact-envelope,public-framing-recovery-only
+  --remote-candidates status-quo-no-signatures-remote,verify-signatures-on-range-open,require-pin-for-plain-http,https-only-default,expected-pci-before-parse,remote-streaming-whole-verify,full-download-only
+  --network-profiles NP-LAN,NP-METRO,NP-CONT,NP-INTER
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --research-pack /root/eb-research/target/harness/release/ebr-pack
+  --origin /root/eb-research/target/harness/release/ebr-origin
+  --detail-root /root/eb-research/raw-detail/EXP-INT-016 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f05-tuning-gutenberg-books
+    - f07-tuning-silesia-xray
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f19-tuning-zoo
+    - f18-tuning-lz4-releases-1-9-to-1-10
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: outcome_vector_sha256, source: stdout_json, key: payload.outcome_vector_sha256, family: correctness, kind: string}
+  - {name: tamper_cases, source: stdout_json, key: payload.tamper_cases, family: other, direction: none, unit: count}
+  - {name: undetected_tampers, source: stdout_json, key: payload.undetected_tampers, family: correctness, direction: minimize, unit: count}
+  - {name: plaintext_released_on_tamper, source: stdout_json, key: payload.plaintext_released_on_tamper, family: correctness, direction: minimize, unit: count}
+  - {name: authenticated_coverage_fraction, source: stdout_json, key: payload.authenticated_coverage_fraction, family: correctness, direction: maximize, unit: fraction}
+  - {name: mvt15a_overclaim_cells, source: stdout_json, key: payload.mvt15a_overclaim_cells, family: correctness, direction: minimize, unit: count}
+  - {name: verified_fraction, source: stdout_json, key: payload.partial_read_verified_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: salvage_recovered_fraction__authenticated_record_recovery, source: stdout_json, key: payload.salvage.authenticated_record_recovery.salvage_recovered_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: misleading_salvage_outputs, source: stdout_json, key: payload.salvage.misleading_outputs, family: correctness, direction: minimize, unit: count}
+  - {name: http_requests__first_open_status_quo, source: stdout_json, key: payload.remote.status_quo_no_signatures_remote.first_open_http_requests, family: other, direction: minimize, unit: count}
+  - {name: http_requests__first_open_verify_signatures, source: stdout_json, key: payload.remote.verify_signatures_on_range_open.first_open_http_requests, family: other, direction: minimize, unit: count}
+  - {name: substitutions_accepted__status_quo, source: stdout_json, key: payload.remote.status_quo_no_signatures_remote.substitutions_accepted, family: correctness, direction: minimize, unit: count}
+  - {name: bounded_memory_growth_violations, source: stdout_json, key: payload.remote.remote_streaming_whole_verify.bounded_memory_growth_violations, family: correctness, direction: minimize, unit: count}
+  - {name: origin_protocol_safety_failures, source: stdout_json, key: payload.remote.origin_protocol_safety_failures, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091861, bootstrap: 2026091862, command: 2026091863}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/crypto_integrity.py
+    - /root/eb-research/target/int-prod/release/ebound
+    - /root/eb-research/target/harness/release/ebr-pack
+    - /root/eb-research/target/harness/release/ebr-origin
+  timeout_s: 172800
+
+analysis:
+  baseline: pad-bucketed
+  pairing: item
+  report_metrics: [undetected_tampers, plaintext_released_on_tamper, mvt15a_overclaim_cells, verified_fraction, substitutions_accepted__status_quo]

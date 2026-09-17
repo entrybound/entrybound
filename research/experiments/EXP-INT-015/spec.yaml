@@ -1,0 +1,88 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-015
+status: design
+question: >
+  Is the named-domain SHA-256 tree free of known Merkle pitfalls, can range readers under each
+  chunk-root binding be made to accept truncated or extended leaf lists, and what proof bytes,
+  requests and hash operations does each range-verification structure need from 10^3 to 10^9
+  chunks?
+hypothesis: >
+  See research/experiments/EXP-INT-015/protocol.md section 2 (H1-H4).
+notes: >
+  Candidates are arms. arm-a runs on INT-SMALL-T items plus generated leaf lists; arm-b runs on
+  its validation-scale items (driver prints payload.skipped = true for items outside its list,
+  pre-registered); arm-c runs on INT-SMALL-T items. NEEDS_TOOLING: research/tools/integrity/
+  ebr_int_merkle.py (T14), prototype outboards, ebr-int-reseal.
+decision_ids: [DEC-INT-024, DEC-MOD-007, DEC-INT-029, DEC-CON-020]
+
+candidates:
+  - name: arm-a-vectors-and-search
+    params: {arm: vectors-search}
+  - name: arm-b-cost-model
+    params: {arm: cost-model}
+  - name: arm-c-disagreement-corpus
+    params: {arm: disagreement}
+
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/ebr_int_merkle.py
+  --experiment-id EXP-INT-015 --env-name wsl-ubuntu --arm {arm}
+  --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --search-protocol /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-INT-015/adversarial-search/protocol.md
+  --arm-b-items f04-tuning-real-netbsd-pkgsrc,f01-tuning-llvm-project-20-1-8-git,f18-tuning-curl-8-x-release-series,f07-tuning-qwen2-5-1-5b-safetensors-bf16
+  --chunk-count-rungs 1e3,1e4,1e5,1e6,1e7,1e8,1e9 --chunk-sizes 65536,262144,1048576
+  --structures status-quo-flat-plus-leaf-lists,merkle-outboard-balanced,per-object-outboard-large,sister-list-dag,two-stage-index-then-chunk,blake3-bao,hash-chain,level-order-array,bab-rfc9162-shape,paged-subtree-blocks,fs-verity-bottom-up-levels,combined-interleaved-encoding
+  --readers status-quo-bare-root-via-pcr,object-descriptor-root,length-in-root-node,manifest-carried-counts,merkle-outboard-with-signed-count
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --origin /root/eb-research/target/harness/release/ebr-origin
+  --reseal /root/eb-research/target/harness/release/ebr-int-reseal
+  --detail-root /root/eb-research/raw-detail/EXP-INT-015 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f19-tuning-zoo
+    - f01-tuning-ripgrep-14-1-1-git
+    - f06-tuning-census-popest-2023
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f09-alpine-324-rootfs-binaries
+    - f05-tuning-gutenberg-books
+    - f04-tuning-real-netbsd-pkgsrc
+    - f01-tuning-llvm-project-20-1-8-git
+    - f18-tuning-curl-8-x-release-series
+    - f07-tuning-qwen2-5-1-5b-safetensors-bf16
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: skipped, source: stdout_json, key: payload.skipped, family: correctness, kind: string}
+  - {name: reader_disagreements, source: stdout_json, key: payload.reader_disagreements, family: correctness, direction: minimize, unit: count}
+  - {name: counterexamples_found, source: stdout_json, key: payload.counterexamples_found, family: correctness, direction: minimize, unit: count}
+  - {name: model_measurement_mismatches, source: stdout_json, key: payload.model_measurement_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: verified_range_fetch_bytes__status_quo_4kib, source: stdout_json, key: payload.cost.status-quo-flat-plus-leaf-lists.range_4096.verified_range_fetch_bytes, family: size, direction: minimize, unit: B}
+  - {name: verified_range_fetch_bytes__balanced_outboard_4kib, source: stdout_json, key: payload.cost.merkle-outboard-balanced.range_4096.verified_range_fetch_bytes, family: size, direction: minimize, unit: B}
+  - {name: http_requests__status_quo_4kib, source: stdout_json, key: payload.cost.status-quo-flat-plus-leaf-lists.range_4096.http_requests, family: other, direction: minimize, unit: count}
+  - {name: disagreement_archives_accepted, source: stdout_json, key: payload.disagreement_archives_accepted, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091851, bootstrap: 2026091852, command: 2026091853}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/ebr_int_merkle.py
+    - /root/eb-research/target/int-prod/release/ebound
+    - /root/eb-research/target/harness/release/ebr-origin
+  timeout_s: 172800
+
+analysis:
+  baseline: arm-a-vectors-and-search
+  pairing: item
+  report_metrics: [reader_disagreements, counterexamples_found, model_measurement_mismatches, disagreement_archives_accepted]

@@ -1,0 +1,99 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-003
+status: design
+question: >
+  For every read API and CLI command, source kind, archive type and injected fault location,
+  does any reported verification state claim more than the bytes actually verified support,
+  which state combinations are reachable, and which candidate representation expresses every
+  reachable oracle state without overclaiming?
+hypothesis: >
+  See research/experiments/EXP-INT-003/protocol.md section 2 (H1-H5). The status quo has
+  overclaim cells in random-read reports; binding statuses after signature failure do not
+  conform to the suite table; keyless verify exits 0.
+notes: >
+  One sample covers the whole pre-registered matrix for one item and archive type.
+  Conventions: research/experiments/_index/integrity-conventions.md. NEEDS_TOOLING:
+  ebr-int-statematrix, byte-verification log hook, origin wrapper.
+decision_ids: [DEC-INT-042, DEC-INT-044, DEC-ACC-035, DEC-INT-021, DEC-INT-038, DEC-CRY-090, DEC-INT-020, DEC-MOD-014]
+
+candidates:
+  - name: unsigned-indexed
+    params: {archive_type: unsigned-indexed, profile: balanced}
+  - name: unsigned-stream
+    params: {archive_type: unsigned-stream, profile: balanced}
+  - name: unsigned-indexed-dense
+    params: {archive_type: unsigned-indexed, profile: dense}
+  - name: signed-content
+    params: {archive_type: signed-content, profile: balanced}
+  - name: signed-all-bindings
+    params: {archive_type: signed-content-physical-addressing, profile: balanced}
+  - name: signed-then-stale
+    params: {archive_type: signed-then-stale, profile: balanced}
+  - name: detached-signature
+    params: {archive_type: detached-ebsig, profile: balanced}
+  - name: crypto-with-key
+    params: {archive_type: crypto-with-key, profile: balanced}
+  - name: crypto-keyless
+    params: {archive_type: crypto-keyless, profile: balanced}
+  - name: crypto-signed
+    params: {archive_type: crypto-signed, profile: balanced}
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-int-statematrix
+  --experiment-id EXP-INT-003 --env-name wsl-ubuntu
+  --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --archive-type {archive_type} --profile {profile}
+  --matrix /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-INT-003/matrix.json
+  --entries-per-cell 40 --event-seed-domain ebr-int/v1
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --origin /root/eb-research/target/harness/release/ebr-origin
+  --detail-root /root/eb-research/raw-detail/EXP-INT-003 --rep {rep}
+  --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f19-tuning-zoo
+    - f01-tuning-ripgrep-14-1-1-git
+    - f06-tuning-census-popest-2023
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f09-alpine-324-rootfs-binaries
+    - f05-tuning-gutenberg-books
+    - f17-tuning-duptree-mixed
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: cells_total, source: stdout_json, key: payload.cells_total, family: other, direction: none, unit: count}
+  - {name: mvt15a_overclaim_cells, source: stdout_json, key: payload.mvt15a_overclaim_cells, family: correctness, direction: minimize, unit: count}
+  - {name: verified_fraction, source: stdout_json, key: payload.verified_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: verified_range_fetch_bytes, source: stdout_json, key: payload.verified_range_fetch_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: http_requests, source: stdout_json, key: payload.http_requests_median, family: other, direction: minimize, unit: count}
+  - {name: reason_code_specificity_fraction, source: stdout_json, key: payload.reason_code_specificity_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: unsafe_defaults, source: stdout_json, key: payload.unsafe_defaults, family: correctness, direction: minimize, unit: count}
+  - {name: reachable_state_combinations, source: stdout_json, key: payload.reachable_state_combinations, family: other, direction: none, unit: count}
+  - {name: binding_status_mismatches, source: stdout_json, key: payload.binding_status_mismatches, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091721, bootstrap: 2026091722, command: 2026091723}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-int-statematrix
+    - /root/eb-research/target/harness/release/ebr-origin
+    - /root/eb-research/target/int-prod/release/ebound
+  timeout_s: 43200
+
+analysis:
+  baseline: unsigned-indexed
+  pairing: item
+  report_metrics: [mvt15a_overclaim_cells, verified_fraction, unsafe_defaults, binding_status_mismatches, reachable_state_combinations]

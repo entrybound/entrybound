@@ -1,0 +1,104 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-008
+status: design
+question: >
+  For legacy artifacts with sidecars and archives referencing external originals, how reliably
+  does each design detect and report missing, renamed, truncated, modified, re-encoded and
+  concurrently changing originals, do locator policies stay confined under hostile locators and
+  origins, and what does each sidecar content model cost?
+hypothesis: >
+  See research/experiments/EXP-INT-008/protocol.md section 2 (H1-H8).
+notes: >
+  Linux arm. One sample = the full mutation, verification-candidate and resolver matrix for one
+  legacy item under one design family. Content-free sidecars, External references and resolvers
+  are MODEL (T9, T10). NEEDS_TOOLING: research/tools/integrity/sidecar_matrix.py,
+  ebr-int-resolver-suite, tar-split build.
+decision_ids: [DEC-INT-013, DEC-INT-014, DEC-INT-026, DEC-INT-036, DEC-INT-045, DEC-LEG-056, DEC-MOD-046, DEC-CRY-093, DEC-LEG-025, DEC-INT-005, DEC-INT-037, DEC-MOD-001]
+
+candidates:
+  - name: sq-content-bearing-sidecar
+    params: {design: status-quo-content-bearing}
+  - name: content-free-sidecar
+    params: {design: content-free-sidecar-role}
+  - name: detached-digest-manifest
+    params: {design: detached-digest-manifest}
+  - name: receipts-only
+    params: {design: receipts-only}
+  - name: signed-sidecar-native
+    params: {design: signed-sidecar-native}
+  - name: tar-split-side-data
+    params: {design: tar-split-side-data}
+  - name: external-refs-policy-matrix
+    params: {design: external-reference-resolvers}
+
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/sidecar_matrix.py
+  --experiment-id EXP-INT-008 --env-name wsl-ubuntu
+  --item-path {item_path} --item-id {item_id} --candidate {candidate} --design {design}
+  --mutations none,renamed,moved,truncated-1,truncated-half,member-byte,member-added,touch-only,reencoded,deleted,toctou-swap
+  --verifiers refuse-whole-operation,per-entry-status-partial,digest-search-paths,locator-fallback,sidecar-exact-source-digest,sidecar-reimport-lai,fold-into-diff,extract-mismatched-as-verified
+  --hostile-fixtures /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-INT-008/fixtures/hostile-locators.json
+  --concurrency-delays 200
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --resolver-suite /root/eb-research/target/harness/release/ebr-int-resolver-suite
+  --tar-split /root/eb-research/tools/tar-split/tar-split
+  --detail-root /root/eb-research/raw-detail/EXP-INT-008 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f14-legacy-writer-matrix-tuning
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f14-jenkins-25683-war
+    - f11-pypi-binary-wheels-cp312
+    - f11-ubuntu-noble-debs
+    - f11-alpine-324-apks
+    - f16-oci-ubuntu-noble-multiarch-index
+    - f20-tuning-real-libarchive-testsuite
+    - f20-tuning-generated-malicious-structures
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: localization_recall, source: stdout_json, key: payload.localization_recall_min, family: correctness, direction: maximize, unit: fraction}
+  - {name: localization_precision, source: stdout_json, key: payload.localization_precision_mean, family: other, direction: maximize, unit: fraction}
+  - {name: mvt15a_overclaim_cells, source: stdout_json, key: payload.mvt15a_overclaim_cells, family: correctness, direction: minimize, unit: count}
+  - {name: confinement_escapes, source: stdout_json, key: payload.confinement_escapes, family: correctness, direction: minimize, unit: count}
+  - {name: origin_protocol_safety_failures, source: stdout_json, key: payload.origin_protocol_safety_failures, family: correctness, direction: minimize, unit: count}
+  - {name: adversarial_true_refusal_fraction, source: stdout_json, key: payload.adversarial_true_refusal_fraction, family: correctness, direction: maximize, unit: fraction}
+  - {name: artifact_bytes, source: stdout_json, key: payload.design_artifact_bytes_total, family: size, direction: minimize, unit: B}
+  - {name: side_data_bytes, source: stdout_json, key: payload.side_data_bytes_total, family: size, direction: minimize, unit: B}
+  - {name: http_requests, source: stdout_json, key: payload.fetch_http_requests_median, family: other, direction: minimize, unit: count}
+  - {name: http_bytes, source: stdout_json, key: payload.fetch_http_bytes_median, family: size, direction: minimize, unit: B}
+  - {name: undetected_tampers, source: stdout_json, key: payload.undetected_substitutions, family: correctness, direction: minimize, unit: count}
+  - {name: import_agreement_fraction, source: stdout_json, key: payload.strict_compat_lai_agreement_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: mixed_version_bindings, source: stdout_json, key: payload.mixed_version_bindings, family: correctness, direction: minimize, unit: count}
+  - {name: recomposition_exact_cases, source: stdout_json, key: payload.recomposition_exact_cases, family: other, direction: none, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091771, bootstrap: 2026091772, command: 2026091773}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/sidecar_matrix.py
+    - /root/eb-research/target/int-prod/release/ebound
+    - /root/eb-research/target/harness/release/ebr-int-resolver-suite
+    - /root/eb-research/tools/tar-split/tar-split
+    - unshare
+  timeout_s: 86400
+
+analysis:
+  baseline: sq-content-bearing-sidecar
+  pairing: item
+  report_metrics: [localization_recall, localization_precision, confinement_escapes, artifact_bytes, undetected_tampers, mixed_version_bindings]

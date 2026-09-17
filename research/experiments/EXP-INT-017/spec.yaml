@@ -1,0 +1,80 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-017
+status: design
+question: >
+  Can a consumer holding an .eb archive verify that a legacy artifact was produced from it by
+  deterministic re-export, strict re-import comparison or a signed receipt, and does the LOSSY
+  export gate refuse artifacts with unpredicted differences?
+hypothesis: >
+  See research/experiments/EXP-INT-017/protocol.md section 2 (H1-H3).
+notes: >
+  Candidates are arms; one sample = one arm over one item. WSL arm; the Windows arm A spec is
+  generated with Windows paths. NEEDS_TOOLING: export mutation hook, EAM diff tool,
+  research/tools/integrity/export_provenance.py driver.
+decision_ids: [DEC-LEG-009, DEC-INT-023, DEC-INT-045]
+
+candidates:
+  - name: arm-a-reexport-reproducibility
+    params: {arm: reexport}
+  - name: arm-b-provenance-verification
+    params: {arm: verification}
+  - name: arm-c-lossy-gate-mutation
+    params: {arm: lossy-gate}
+
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/export_provenance.py
+  --experiment-id EXP-INT-017 --env-name wsl-ubuntu --arm {arm}
+  --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --targets /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-INT-017/targets.json
+  --source-layouts indexed,stream,indexed-crypto
+  --artifact-mutations member-byte,member-added,member-removed,metadata-only,recompressed
+  --gate-mutations drop-xattr,mode-bit,mtime-precision,rename-entry,content-byte,omit-entry,symlink-target,reorder-entries
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --research-export /root/eb-research/target/harness/release/ebr-int-export-hook
+  --detail-root /root/eb-research/raw-detail/EXP-INT-017 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f09-alpine-324-rootfs-binaries
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f19-tuning-zoo
+    - f19-tuning-real-home-snapshot
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: outcome_vector_sha256, source: stdout_json, key: payload.outcome_vector_sha256, family: correctness, kind: string}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: migration_determinism_fraction, source: stdout_json, key: payload.reexport.migration_determinism_fraction, family: correctness, direction: maximize, unit: fraction}
+  - {name: cross_layout_artifact_mismatches, source: stdout_json, key: payload.reexport.cross_layout_artifact_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: undetected_tampers__reexport_byte_compare, source: stdout_json, key: payload.verification.reexport_byte_compare.undetected, family: correctness, direction: minimize, unit: count}
+  - {name: undetected_tampers__strict_import_lai_compare, source: stdout_json, key: payload.verification.strict_import_lai_compare.undetected, family: correctness, direction: minimize, unit: count}
+  - {name: receipt_completeness_fraction__status_quo_gate, source: stdout_json, key: payload.lossy_gate.status_quo_undescribed.receipt_completeness_fraction, family: correctness, direction: maximize, unit: fraction}
+  - {name: receipt_completeness_fraction__predicted_issue_diff, source: stdout_json, key: payload.lossy_gate.predicted_issue_diff.receipt_completeness_fraction, family: correctness, direction: maximize, unit: fraction}
+  - {name: false_refusals__predicted_issue_diff, source: stdout_json, key: payload.lossy_gate.predicted_issue_diff.false_refusals, family: other, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091871, bootstrap: 2026091872, command: 2026091873}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/export_provenance.py
+    - /root/eb-research/target/int-prod/release/ebound
+  timeout_s: 86400
+
+analysis:
+  baseline: arm-a-reexport-reproducibility
+  pairing: item
+  report_metrics: [migration_determinism_fraction, undetected_tampers__strict_import_lai_compare, receipt_completeness_fraction__status_quo_gate, receipt_completeness_fraction__predicted_issue_diff]

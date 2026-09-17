@@ -1,0 +1,95 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-009
+status: design
+question: >
+  On Windows NTFS, which identities and binding carriers survive benign rewrite operations, and
+  do PCR, LAI and AUX agree with the WSL arm for the same items and profiles?
+hypothesis: >
+  See research/experiments/EXP-INT-009/protocol.md section 2 (H1, H2, H4, H6), Windows arm. PCR
+  agrees across hosts; LAI and AUX differ where host metadata differ (F-0001, F-0002).
+notes: >
+  D: only (never C:). Items mirrored to D:/eb-research/corpus with logical_tree_sha256
+  re-verified before the run; ebr runs with --data-root D:/eb-research. par2 is skipped unless a
+  par2cmdline build is installed (the driver records its absence). Build B-PROD with
+  CARGO_TARGET_DIR=D:/eb-research/target/int-prod-win.
+decision_ids: [DEC-INT-016, DEC-INT-011, DEC-INT-028, DEC-CRY-033, DEC-INT-046]
+
+candidates:
+  - name: balanced
+    params: {profile: balanced}
+  - name: extreme
+    params: {profile: extreme}
+
+command:
+  - C:/Python313/python.exe
+  - D:/Projects/entrybound/entrybound/research/experiments/EXP-INT-009/run_identity_ops.py
+  - --ebound
+  - D:/eb-research/target/int-prod-win/release/ebound.exe
+  - --par2
+  - ""
+  - --item-path
+  - "{item_path}"
+  - --item-id
+  - "{item_id}"
+  - --profile
+  - "{profile}"
+  - --work-dir
+  - "{scratch}"
+  - --detail-root
+  - D:/eb-research/raw-detail/EXP-INT-009
+  - --candidate
+  - "{candidate}"
+  - --env-name
+  - windows-host
+  - --rep
+  - "{rep}"
+shell: pwsh
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-silesia-xray
+    - f09-alpine-324-rootfs-binaries
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f17-tuning-duptree-mixed
+    - f19-tuning-zoo
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-zstd-releases-1-5-x
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: refused, source: stdout_json, key: payload.refused, family: correctness, kind: string}
+  - {name: expectation_mismatches, source: stdout_json, key: payload.expectation_mismatches, family: correctness, direction: minimize, unit: count}
+  - {name: migration_identity_conformance_fraction, source: stdout_json, key: payload.migration_identity_conformance_fraction, family: correctness, direction: maximize, unit: fraction}
+  - {name: replan_pcr_same, source: stdout_json, key: payload.replan_pcr_same, family: correctness, kind: string}
+  - {name: binding_survival_fraction__bind_pci, source: stdout_json, key: payload.binding_survival_fraction.bind-pci, family: other, direction: maximize, unit: fraction}
+  - {name: binding_survival_fraction__bind_lai_plus_signature, source: stdout_json, key: payload.binding_survival_fraction.bind-lai-plus-signature, family: other, direction: maximize, unit: fraction}
+  - {name: undetected_tampers__status_quo, source: stdout_json, key: payload.rollback_undetected.status-quo-none, family: correctness, direction: minimize, unit: count}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091794, bootstrap: 2026091795, command: 2026091796}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [windows]
+  arch: [x86_64]
+  emulated: false
+  scratch_root: D:/eb-research/scratch/int-009
+  requires:
+    - D:/eb-research/target/int-prod-win/release/ebound.exe
+    - C:/Python313/python.exe
+  timeout_s: 21600
+
+analysis:
+  baseline: balanced
+  pairing: item
+  report_metrics: [expectation_mismatches, migration_identity_conformance_fraction, binding_survival_fraction__bind_pci, undetected_tampers__status_quo]

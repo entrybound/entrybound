@@ -1,0 +1,101 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-013
+status: design
+question: >
+  Does the status quo accept non-canonical stored payloads, how much work precedes rejection of
+  crafted or damaged payloads, and which optional legacy integrity checks should strict and
+  compatibility import profiles require, at what benign false-refusal rate?
+hypothesis: >
+  See research/experiments/EXP-INT-013/protocol.md section 2 (H1-H5).
+notes: >
+  Candidates are experiment arms; one sample = one arm over one item. Pre-registered applicability
+  (the driver prints payload.skipped = true and exits 0 otherwise): arm-a-native runs on the six
+  INT-SMALL-T items; arm-b-legacy-fixtures and arm-b-prevalence run on the nine INT-LEGACY-T items
+  (fixtures are generated once per repetition and reused); arm-isize runs only for item
+  f05-tuning-gutenberg-books as a carrier and uses generated streams. NEEDS_TOOLING:
+  ebr-int-reseal, ebr-int-fixtures, reader options,
+  prevalence scanner (research/tools/integrity/payload_arms.py driver).
+decision_ids: [DEC-INT-008, DEC-INT-022, DEC-LEG-078, DEC-LEG-021]
+
+candidates:
+  - name: arm-a-native
+    params: {arm: native-payloads}
+  - name: arm-b-legacy-fixtures
+    params: {arm: legacy-fixtures}
+  - name: arm-b-prevalence
+    params: {arm: prevalence-scan}
+  - name: arm-isize
+    params: {arm: gzip-isize-4gib}
+
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/payload_arms.py
+  --experiment-id EXP-INT-013 --env-name wsl-ubuntu --arm {arm}
+  --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --profiles balanced,dense,extreme --layouts indexed,stream --frames-per-archive 200
+  --fixture-seed 2026091831
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --reseal /root/eb-research/target/harness/release/ebr-int-reseal
+  --reader-options /root/eb-research/target/harness/release/ebr-int-verify-levels
+  --zstd /usr/bin/zstd --xz /usr/bin/xz --gzip /usr/bin/gzip
+  --detail-root /root/eb-research/raw-detail/EXP-INT-013 --rep {rep} --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f19-tuning-zoo
+    - f01-tuning-ripgrep-14-1-1-git
+    - f06-tuning-census-popest-2023
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f09-alpine-324-rootfs-binaries
+    - f05-tuning-gutenberg-books
+    - f14-legacy-writer-matrix-tuning
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f14-jenkins-25683-war
+    - f11-pypi-binary-wheels-cp312
+    - f11-ubuntu-noble-debs
+    - f11-alpine-324-apks
+    - f16-oci-ubuntu-noble-multiarch-index
+    - f20-tuning-real-libarchive-testsuite
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: cases_total, source: stdout_json, key: payload.cases_total, family: other, direction: none, unit: count}
+  - {name: accepted_noncanonical_payloads, source: stdout_json, key: payload.accepted_noncanonical_payloads, family: correctness, direction: minimize, unit: count}
+  - {name: reader_disagreements, source: stdout_json, key: payload.reader_disagreements, family: correctness, direction: minimize, unit: count}
+  - {name: refusal_alloc_peak_bytes, source: stdout_json, key: payload.refusal_alloc_peak_bytes_median, family: memory_peak, direction: minimize, unit: B}
+  - {name: refusal_cpu_s, source: stdout_json, key: payload.refusal_cpu_s_median, family: time_cpu, direction: minimize, unit: s}
+  - {name: roundtrip_mismatches, source: stdout_json, key: payload.silent_wrong_bytes_imports, family: correctness, direction: minimize, unit: count}
+  - {name: benign_false_refusal_fraction__strict_require_checksums, source: stdout_json, key: payload.prevalence.strict_require_checksums.benign_false_refusal_fraction, family: other, direction: minimize, unit: fraction}
+  - {name: checksumless_zstd_frames, source: stdout_json, key: payload.prevalence.checksumless_zstd_frames, family: other, direction: none, unit: count}
+  - {name: xz_check_none_streams, source: stdout_json, key: payload.prevalence.xz_check_none_streams, family: other, direction: none, unit: count}
+  - {name: ambiguity_refusal_fraction, source: stdout_json, key: payload.crc_size.ambiguity_refusal_fraction, family: correctness, direction: maximize, unit: fraction}
+  - {name: import_acceptance_fraction, source: stdout_json, key: payload.import_acceptance_fraction, family: other, direction: maximize, unit: fraction}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091831, bootstrap: 2026091832, command: 2026091833}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /mnt/d/Projects/entrybound/entrybound/research/tools/integrity/payload_arms.py
+    - /root/eb-research/target/harness/release/ebr-int-reseal
+    - /root/eb-research/target/int-prod/release/ebound
+    - zstd
+    - xz
+    - gzip
+  timeout_s: 86400
+
+analysis:
+  baseline: arm-a-native
+  pairing: item
+  report_metrics: [accepted_noncanonical_payloads, roundtrip_mismatches, benign_false_refusal_fraction__strict_require_checksums, ambiguity_refusal_fraction]

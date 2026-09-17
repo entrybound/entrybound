@@ -1,0 +1,145 @@
+schema: ebr.spec.v1
+experiment_id: EXP-INT-001
+status: design
+question: >
+  For one injected damage event of each pre-registered class and region stratum, how
+  completely does each Entrybound configuration and candidate reporting design detect,
+  classify and localize the damage, and how many logical bytes and entries become
+  unverifiable per event, compared with incumbent formats?
+hypothesis: >
+  See research/experiments/EXP-INT-001/protocol.md section 2 (H1-H7). Entrybound detects
+  100% of events; per-entry localization requires a damage-map mode; blast radius grows
+  with lookback; STREAM localizes worse than per-entry incumbents.
+notes: >
+  Tuning run. Conventions: research/experiments/_index/integrity-conventions.md (C2 tools,
+  C3 corpus sets, C4 strata, C5 oracle, C6 classes, C7 modes, C8 seeds, C9 detail store).
+  NEEDS_TOOLING: ebr-int-campaign and the ebr-integrity crate do not exist yet.
+decision_ids: [DEC-INT-002, DEC-INT-006, DEC-INT-007, DEC-INT-018, DEC-INT-019, DEC-INT-020, DEC-CMP-027, DEC-MOD-014]
+
+candidates:
+  - name: eb-indexed-balanced
+    params: {fmt: eb, layout: indexed, profile: balanced}
+  - name: eb-indexed-fast
+    params: {fmt: eb, layout: indexed, profile: fast}
+  - name: eb-indexed-dense
+    params: {fmt: eb, layout: indexed, profile: dense}
+  - name: eb-indexed-extreme
+    params: {fmt: eb, layout: indexed, profile: extreme}
+  - name: eb-stream-balanced
+    params: {fmt: eb, layout: stream, profile: balanced}
+  - name: eb-stream-extreme
+    params: {fmt: eb, layout: stream, profile: extreme}
+  - name: inc-zip-deflate-6
+    params: {fmt: zip-deflate-6, layout: na, profile: na}
+  - name: inc-tar-gz-6
+    params: {fmt: tar-gz-6, layout: na, profile: na}
+  - name: inc-tar-zst-3
+    params: {fmt: tar-zst-3, layout: na, profile: na}
+  - name: inc-tar-xz-6
+    params: {fmt: tar-xz-6, layout: na, profile: na}
+  - name: inc-7z-lzma2-solid
+    params: {fmt: 7z-lzma2-solid, layout: na, profile: na}
+  - name: inc-7z-lzma2-nonsolid
+    params: {fmt: 7z-lzma2-nonsolid, layout: na, profile: na}
+
+command: >-
+  /root/eb-research/target/harness/release/ebr-int-campaign
+  --experiment-id EXP-INT-001 --env-name wsl-ubuntu
+  --item-path {item_path} --item-id {item_id} --candidate {candidate}
+  --format {fmt} --layout {layout} --profile {profile}
+  --classes D-P1,D-S1,D-S2,D-S3,D-S4,D-S5,D-S6,D-S7,D-S8
+  --modes auto --event-seed-domain ebr-int/v1
+  --ebound /root/eb-research/target/int-prod/release/ebound
+  --incumbent-configs /mnt/d/Projects/entrybound/entrybound/research/baselines/configs.json
+  --detail-root /root/eb-research/raw-detail/EXP-INT-001 --rep {rep}
+  --work-dir {scratch}
+shell: bash
+
+corpus:
+  manifest: research/corpus/manifest.json
+  splits: [tuning]
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-curl-8-19-0-git
+    - f03-tuning-fzf-go-mod-vendor
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f05-tuning-loghub-openstack
+    - f06-tuning-census-popest-2023
+    - f06-tuning-wikimedia-tnwiki-20260901
+    - f07-tuning-silesia-xray
+    - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+    - f08-tuning-chinook-sqlite
+    - f09-alpine-324-rootfs-binaries
+    - f10-gen-redundant-binary-blobs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f17-tuning-duptree-mixed
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-zstd-releases-1-5-x
+    - f19-tuning-zoo
+    - f19-tuning-real-home-snapshot
+    - f20-tuning-real-libarchive-testsuite
+    - f20-tuning-csprng
+
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: none, unit: s}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: artifact_bytes, source: stdout_json, key: payload.artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: artifact_sha256, source: stdout_json, key: payload.artifact_sha256, family: correctness, kind: string}
+  - {name: detail_sha256, source: stdout_json, key: payload.detail_sha256, family: correctness, kind: string}
+  - {name: events_total, source: stdout_json, key: payload.events_total, family: other, direction: none, unit: count}
+  - {name: undetected_injections, source: stdout_json, key: payload.undetected_injections, family: correctness, direction: minimize, unit: count}
+  - {name: mvt15b_offdiagonal_events, source: stdout_json, key: payload.mvt15b_offdiagonal_events, family: correctness, direction: minimize, unit: count}
+  - {name: mvt15b_adjudication_events, source: stdout_json, key: payload.mvt15b_adjudication_events, family: other, direction: none, unit: count}
+  - {name: localization_recall__m_sq_read, source: stdout_json, key: payload.m_sq_read.localization_recall, family: correctness, direction: maximize, unit: fraction}
+  - {name: localization_recall__m_map, source: stdout_json, key: payload.m_map.localization_recall, family: correctness, direction: maximize, unit: fraction}
+  - {name: localization_precision__m_sq_verify, source: stdout_json, key: payload.m_sq_verify.localization_precision, family: other, direction: maximize, unit: fraction}
+  - {name: localization_precision__m_sq_read, source: stdout_json, key: payload.m_sq_read.localization_precision, family: other, direction: maximize, unit: fraction}
+  - {name: localization_precision__m_cont, source: stdout_json, key: payload.m_cont.localization_precision, family: other, direction: maximize, unit: fraction}
+  - {name: localization_precision__m_map, source: stdout_json, key: payload.m_map.localization_precision, family: other, direction: maximize, unit: fraction}
+  - {name: localization_precision__m_idxguide, source: stdout_json, key: payload.m_idxguide.localization_precision, family: other, direction: maximize, unit: fraction}
+  - {name: blast_logical_bytes_p95__m_sq_read, source: stdout_json, key: payload.m_sq_read.blast_logical_bytes_p95, family: other, direction: minimize, unit: B}
+  - {name: blast_logical_bytes_p95__m_sq_read__worst_stratum, source: stdout_json, key: payload.m_sq_read.blast_logical_bytes_p95_worst_stratum, family: other, direction: minimize, unit: B}
+  - {name: blast_logical_bytes_max__m_sq_read, source: stdout_json, key: payload.m_sq_read.blast_logical_bytes_max, family: other, direction: minimize, unit: B}
+  - {name: blast_entries_p95__m_sq_read, source: stdout_json, key: payload.m_sq_read.blast_entries_p95, family: other, direction: minimize, unit: count}
+  - {name: blast_logical_bytes_p95__m_map, source: stdout_json, key: payload.m_map.blast_logical_bytes_p95, family: other, direction: minimize, unit: B}
+  - {name: blast_entries_p95__m_map, source: stdout_json, key: payload.m_map.blast_entries_p95, family: other, direction: minimize, unit: count}
+  - {name: reason_code_specificity_fraction, source: stdout_json, key: payload.reason_code_specificity_fraction, family: other, direction: maximize, unit: fraction}
+  - {name: index_bytes, source: stdout_json, key: payload.index_bytes, family: size, direction: none, unit: B}
+  - {name: metadata_bytes, source: stdout_json, key: payload.metadata_bytes, family: size, direction: none, unit: B}
+
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091701, bootstrap: 2026091702, command: 2026091703}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires:
+    - /root/eb-research/target/harness/release/ebr-int-campaign
+    - /root/eb-research/target/int-prod/release/ebound
+    - zip
+    - unzip
+    - tar
+    - gzip
+    - zstd
+    - xz
+    - 7z
+  timeout_s: 172800
+
+analysis:
+  baseline: eb-indexed-balanced
+  pairing: item
+  report_metrics:
+    - artifact_bytes
+    - undetected_injections
+    - mvt15b_offdiagonal_events
+    - localization_precision__m_sq_verify
+    - localization_precision__m_map
+    - blast_logical_bytes_p95__m_sq_read
+    - blast_logical_bytes_p95__m_map
+    - reason_code_specificity_fraction
