@@ -1,0 +1,82 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-018
+status: design
+question: >
+  For each pre-registered first-use task (T01-T28), how many commands, options, concepts and decision points
+  does each runnable CLI (status quo, REF-PROD, incumbents) need to meet the task's mechanical completion
+  criterion with its defaults? (protocol.md sections 1, 5, 9)
+hypothesis: >
+  H1 T01 and T02 need one command and zero options with the status quo; H2 restoration (T15) needs at least three
+  options with the status quo; H3 authorized-signer verification (T11) needs more than one command with the
+  status quo; H4 CI password encryption (T17) is impossible with the status quo. Falsification in protocol.md
+  section 2.
+notes: >
+  Design-stage spec. Items are task fixture directories (tuning task set T01-T28) listed in the ad-hoc manifest
+  written by fixtures.py. run_task.py executes the committed script for (tool, task), checks completion and prints
+  counts; tools without a script for a task print applicable=0. Synopsis-only candidates are counted by
+  count_synopsis.py outside the runner.
+decision_ids: [DEC-ECO-011, DEC-ECO-023, DEC-ECO-049, DEC-ECO-005, DEC-ECO-007, DEC-ECO-066, DEC-ECO-062, DEC-ECO-009, DEC-ECO-055, DEC-ECO-063, DEC-ECO-044, DEC-ECO-083, DEC-CMP-013, DEC-ACC-051, DEC-ACC-008, DEC-INT-043, DEC-INT-004, DEC-CRY-040, DEC-CRY-086, DEC-CRY-101, DEC-CRY-063, DEC-CRY-082, DEC-CRY-009, DEC-LEG-013, DEC-PLT-022, DEC-PLT-004, DEC-PLT-007, DEC-PLT-012]
+candidates:
+  - name: ebound-dev-head
+    params: {tool: ebound-head}
+  - name: ebound-ref-9e44608
+    params: {tool: ebound-ref}
+  - name: gnu-tar
+    params: {tool: gnutar}
+  - name: bsdtar
+    params: {tool: bsdtar}
+  - name: infozip
+    params: {tool: infozip}
+  - name: sevenzip
+    params: {tool: sevenzip}
+  - name: age
+    params: {tool: age}
+  - name: minisign
+    params: {tool: minisign}
+  - name: signify
+    params: {tool: signify}
+  - name: gpg
+    params: {tool: gpg}
+  - name: ssh-keygen-y
+    params: {tool: ssh-keygen}
+  - name: cosign
+    params: {tool: cosign}
+  - name: openssl-ts-curl
+    params: {tool: openssl-ts}
+  - name: diff-r
+    params: {tool: diff}
+command: >-
+  /root/eb-research/venv/bin/python
+  /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/tasks/run_task.py
+  --tool {tool} --task {item_id} --fixture {item_path}
+  --scripts /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-ECO-018/scripts
+  --scratch {scratch}
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: /root/eb-research/cache/eco018/tasks-tuning-manifest.jsonl
+metrics:
+  - {name: applicable, source: stdout_json, key: applicable, family: other, direction: none, unit: bool}
+  - {name: task_completed, source: stdout_json, key: task_completed, family: correctness, direction: maximize, unit: bool}
+  - {name: commands, source: stdout_json, key: commands, family: other, direction: minimize, unit: count}
+  - {name: flags_per_task, source: stdout_json, key: flags_per_task, family: other, direction: minimize, unit: count}
+  - {name: concepts, source: stdout_json, key: concepts, family: other, direction: minimize, unit: count}
+  - {name: decision_points, source: stdout_json, key: decision_points, family: other, direction: minimize, unit: count}
+  - {name: keystrokes, source: stdout_json, key: keystrokes, family: other, direction: minimize, unit: count}
+  - {name: script_sha256, source: stdout_json, key: script_sha256, family: correctness, kind: string}
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091718, bootstrap: 2026091718, command: 2026091718}
+timing: false
+order: randomized_blocks
+raw_compression: none
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/eco-head/release/ebound, tar, bsdtar, zip, unzip, 7z, age, minisign, gpg, ssh-keygen, openssl, curl]
+  timeout_s: 900
+analysis:
+  baseline: ebound-dev-head
+  pairing: item
+  report_metrics: [task_completed, commands, flags_per_task, concepts, decision_points]

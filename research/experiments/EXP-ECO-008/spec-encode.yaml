@@ -1,0 +1,78 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-008-ENCODE
+status: design
+question: >
+  Is ebound pack (fast or balanced, STREAM or INDEXED) non-inferior to the CI cache pipeline tar plus
+  zstd -3 --long=30 on encode_wall_s, artifact_bytes and peak_rss_bytes for CI hand-off trees? (protocol.md H1)
+hypothesis: >
+  H1 ebound pack --profile fast is DISTINGUISHABLE_WORSE on encode_wall_s (1-4 band units of the T-03 fast band)
+  and NON_INFERIOR or better on artifact_bytes. Falsified if encode is NON_INFERIOR or artifact_bytes is
+  DISTINGUISHABLE_WORSE.
+notes: >
+  Design-stage timing spec (st-v, vCPU 2, all candidates single-threaded). Run with --timing in an exclusive
+  window after G-B and EXP-CAL-*-wsl-ubuntu. The taskset pinning is applied by platform.cpu_affinity.
+decision_ids: [DEC-ECO-004]
+candidates:
+  - name: inc-tar-zstd3-long30-t1
+    command: >-
+      tar --posix -cf - -C {item_path} . | zstd -3 -T1 --long=30 -q -o {scratch}/artifact.bin
+  - name: inc-tar-lz4-t1
+    command: >-
+      tar --posix -cf - -C {item_path} . | lz4 -1 -q - {scratch}/artifact.bin
+  - name: ebound-fast-stream
+    command: >-
+      /root/eb-research/target/eco-head/release/ebound pack {item_path} {scratch}/artifact.bin --profile fast --layout stream
+  - name: ebound-fast-indexed
+    command: >-
+      /root/eb-research/target/eco-head/release/ebound pack {item_path} {scratch}/artifact.bin --profile fast --layout indexed
+  - name: ebound-balanced-indexed
+    command: >-
+      /root/eb-research/target/eco-head/release/ebound pack {item_path} {scratch}/artifact.bin --profile balanced --layout indexed
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-curl-8-19-0-git
+    - f01-tuning-zstd-v1-5-7-full-clone
+    - f02-tuning-lz4-intree-make-build
+    - f02-tuning-zstd-cmake-build
+    - f03-tuning-fzf-go-mod-vendor
+    - f03-tuning-ripgrep-cargo-vendor
+    - f03-tuning-typescript-npm-node-modules
+    - f04-tuning-sourcelike
+    - f04-tuning-maildir
+    - f04-tuning-real-netbsd-pkgsrc
+    - f18-tuning-ripgrep-commit-snapshots
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+  - {name: io_write_bytes, source: resource, family: io, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: artifact_bytes, source: path_size, path: '{scratch}/artifact.bin', family: size, direction: minimize, unit: B}
+  - {name: artifact_sha256, source: path_sha256, path: '{scratch}/artifact.bin', family: correctness}
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 2026091708, bootstrap: 2026091708, command: 2026091708}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 8
+  cpu_affinity: [2]
+  requires: [/root/eb-research/target/eco-head/release/ebound, tar, zstd, lz4, taskset, sha256sum]
+  timeout_s: 3600
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  max_wait_s: 300
+analysis:
+  baseline: inc-tar-zstd3-long30-t1
+  pairing: item_repetition
+  report_metrics: [wall_s, cpu_s, max_rss_bytes, artifact_bytes]

@@ -1,0 +1,126 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-006
+status: design
+question: >
+  Do directory-input adoption workflows (W02, W04-W07, W09, W10, W12, W13) complete under their mechanical
+  criteria, with how many commands and flags versus incumbent pipelines, and with correct handling of the
+  pre-registered fault cases? (protocol.md sections 1, 4, 7)
+hypothesis: >
+  H1 status-quo variants complete W02, W04, W06, W12 and fail W09 directory diff and W10 add by design;
+  H2 ebound publish needs fewer flags than the reproducible tar plus zip incantation; H4 every injected
+  fault gives a non-zero class-mapped exit, an actionable message and no final-name partial output;
+  H5 publish on vfat or 9P completes or refuses before writing. Falsification in protocol.md section 2.
+notes: >
+  Design-stage spec. Step files research/tools/ecosystem/workflows/steps/<W>/<variant>.sh are the counted
+  command sequences and are committed before any run. Variants not applicable to an item print applicable=0.
+  W03 reader checks run inside W02 samples; W14 is derived by derive_w14.py.
+decision_ids: [DEC-ECO-002, DEC-ECO-004, DEC-ECO-019, DEC-ECO-043, DEC-ECO-057, DEC-ECO-065, DEC-ECO-075, DEC-CON-022, DEC-ACC-008, DEC-INT-037, DEC-LEG-010, DEC-LEG-017, DEC-LEG-018, DEC-LEG-029, DEC-LEG-036, DEC-LEG-038, DEC-MOD-043, DEC-PLT-037]
+candidates:
+  - name: W02-ebound-publish
+    params: {wf: W02, variant: ebound-publish}
+  - name: W02-ebound-per-target-convert
+    params: {wf: W02, variant: ebound-per-target-convert}
+  - name: W02-ebound-legacy-only-publish
+    params: {wf: W02, variant: ebound-legacy-only-publish}
+  - name: W02-ebound-publish-plus-sidecar
+    params: {wf: W02, variant: ebound-publish-plus-sidecar}
+  - name: W02-incumbent-gnutar-infozip
+    params: {wf: W02, variant: incumbent-gnutar-infozip}
+  - name: W04-ebound-remote-read
+    params: {wf: W04, variant: ebound-remote-read}
+  - name: W05-fallback-script
+    params: {wf: W05, variant: fallback-script}
+  - name: W06-ebound-stream-pipe
+    params: {wf: W06, variant: ebound-stream-pipe}
+  - name: W06-ebound-indexed-partial
+    params: {wf: W06, variant: ebound-indexed-partial}
+  - name: W06-incumbent-tar-zstd
+    params: {wf: W06, variant: incumbent-tar-zstd}
+  - name: W07-incumbent-git-archive-gzip
+    params: {wf: W07, variant: incumbent-git-archive-gzip}
+  - name: W07-incumbent-git-archive-xz
+    params: {wf: W07, variant: incumbent-git-archive-xz}
+  - name: W07-ebound-publish-targz
+    params: {wf: W07, variant: ebound-publish-targz}
+  - name: W07-ebound-sidecar-tarball
+    params: {wf: W07, variant: ebound-sidecar-tarball}
+  - name: W09-ebound-diff-json
+    params: {wf: W09, variant: ebound-diff-json}
+  - name: W09-ebound-diff-dir-attempt
+    params: {wf: W09, variant: ebound-diff-dir-attempt}
+  - name: W09-incumbent-diff-r
+    params: {wf: W09, variant: incumbent-diff-r}
+  - name: W10-ebound-repack-from-dir
+    params: {wf: W10, variant: ebound-repack-from-dir}
+  - name: W10-incumbent-tar-append
+    params: {wf: W10, variant: incumbent-tar-append}
+  - name: W10-incumbent-zip-u
+    params: {wf: W10, variant: incumbent-zip-u}
+  - name: W10-incumbent-7z-u
+    params: {wf: W10, variant: incumbent-7z-u}
+  - name: W12-ebound-export-dryrun
+    params: {wf: W12, variant: ebound-export-dryrun}
+  - name: W13-ebound-publish-ext4
+    params: {wf: W13, variant: ebound-publish-ext4}
+  - name: W13-ebound-publish-vfat
+    params: {wf: W13, variant: ebound-publish-vfat}
+  - name: W13-ebound-publish-exfat
+    params: {wf: W13, variant: ebound-publish-exfat}
+  - name: W13-ebound-publish-tmpfs
+    params: {wf: W13, variant: ebound-publish-tmpfs}
+  - name: W13-ebound-publish-drvfs
+    params: {wf: W13, variant: ebound-publish-drvfs}
+  - name: W13-ebound-publish-cifs
+    params: {wf: W13, variant: ebound-publish-cifs}
+command: >-
+  /root/eb-research/venv/bin/python
+  /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/workflows/run_workflow.py
+  --workflow {wf} --variant {variant} --item {item_path} --item-id {item_id}
+  --ebound /root/eb-research/target/eco-head/release/ebound --scratch {scratch} --seed {seed}
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-zstd-v1-5-7-full-clone
+    - f02-tuning-lz4-intree-make-build
+    - f02-tuning-zstd-cmake-build
+    - f04-tuning-sourcelike
+    - f10-gen-redundant-binary-blobs
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f18-tuning-zstd-releases-1-5-x
+    - f19-tuning-zoo
+    - f19-tuning-real-home-snapshot
+metrics:
+  - {name: applicable, source: stdout_json, key: applicable, family: other, direction: none, unit: bool}
+  - {name: workflow_completed, source: stdout_json, key: workflow_completed, family: correctness, direction: maximize, unit: bool}
+  - {name: migration_steps_count, source: stdout_json, key: migration_steps_count, family: other, direction: minimize, unit: count}
+  - {name: flags_per_task, source: stdout_json, key: flags_per_task, family: other, direction: minimize, unit: count}
+  - {name: fault_cases, source: stdout_json, key: fault_cases, family: other, direction: none, unit: count}
+  - {name: fault_expected_outcomes, source: stdout_json, key: fault_expected_outcomes, family: correctness, direction: maximize, unit: count}
+  - {name: actionable_fault_messages, source: stdout_json, key: actionable_fault_messages, family: other, direction: maximize, unit: count}
+  - {name: residual_final_name_outputs, source: stdout_json, key: residual_final_name_outputs, family: correctness, direction: minimize, unit: count}
+  - {name: export_cases, source: stdout_json, key: export_cases, family: other, direction: none, unit: count}
+  - {name: export_accepted_cases, source: stdout_json, key: export_accepted_cases, family: other, direction: maximize, unit: count}
+  - {name: rebuild_identical, source: stdout_json, key: rebuild_identical, family: correctness, direction: maximize, unit: bool}
+  - {name: artifact_bytes, source: stdout_json, key: artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: needs_capabilities, source: stdout_json, key: needs_capabilities, family: other, kind: string}
+  - {name: outcome_sha256, source: stdout_json, key: outcome_sha256, family: correctness, kind: string}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091706, bootstrap: 2026091706, command: 2026091706}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/eco-head/release/ebound, tar, zip, unzip, bsdtar, 7z, zstd, xz, git, nginx, strip-nondeterminism, mkfs.vfat]
+  timeout_s: 7200
+analysis:
+  baseline: W02-ebound-publish
+  pairing: item
+  report_metrics: [workflow_completed, migration_steps_count, flags_per_task, fault_expected_outcomes, residual_final_name_outputs]

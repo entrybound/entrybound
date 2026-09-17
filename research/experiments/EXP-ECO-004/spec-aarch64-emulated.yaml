@@ -1,0 +1,66 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-004-A64EMU
+status: design
+question: >
+  Are pack outputs (8 profile x layout cells), identity roots (LAI, PCR, AUX) and the six frozen export
+  profiles byte-identical across toolchains and between x86-64 and emulated aarch64 (user-mode QEMU)? (protocol.md H2-H4)
+hypothesis: >
+  H2 pack SHA-256 identical across toolchains on one host; H3 PCR identical across hosts with only
+  F-0001/F-0002-explained LAI/AUX differences; H4 frozen export profile bytes identical across
+  toolchains and hosts. Any unexplained difference falsifies the corresponding hypothesis.
+notes: >
+  Design-stage spec, EMULATED aarch64 arm (correctness and determinism only, never timing). Compared with
+  the tc-1.98.1 WSL x86-64 rows of spec.yaml by identity_matrix.py.
+decision_ids: [DEC-ECO-073, DEC-MOD-011, DEC-LEG-008, DEC-ECO-071, DEC-ECO-003]
+candidates:
+  - name: tc-1.98.1-aarch64-qemu
+    params: {tc: 1.98.1}
+command: >-
+  /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/release/pack_matrix.py
+  --ebound-runner 'qemu-aarch64 -L /usr/aarch64-linux-gnu' --ebound /root/eb-research/target/eco004-a64/{tc}/aarch64-unknown-linux-gnu/release/ebound
+  --item {item_path} --item-id {item_id} --scratch {scratch}
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f02-tuning-lz4-intree-make-build
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f06-tuning-gen-structured-a-small
+    - f07-tuning-silesia-mr
+    - f08-tuning-chinook-sqlite
+    - f10-gen-redundant-binary-blobs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f13-tuning-nasa-ntrs-pdf-small
+    - f14-gen-nested-archives-py
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f19-tuning-zoo
+    - f19-tuning-real-home-snapshot
+    - f20-tuning-real-libarchive-testsuite
+metrics:
+  - {name: pack_cells_sha256, source: stdout_json, key: pack_cells_sha256, family: correctness, kind: string}
+  - {name: lai_set_sha256, source: stdout_json, key: lai_set_sha256, family: correctness, kind: string}
+  - {name: pcr_set_sha256, source: stdout_json, key: pcr_set_sha256, family: correctness, kind: string}
+  - {name: aux_set_sha256, source: stdout_json, key: aux_set_sha256, family: correctness, kind: string}
+  - {name: export_profiles_sha256, source: stdout_json, key: export_profiles_sha256, family: correctness, kind: string}
+  - {name: pack_failures, source: stdout_json, key: pack_failures, family: correctness, direction: minimize, unit: count}
+  - {name: export_failures, source: stdout_json, key: export_failures, family: correctness, direction: minimize, unit: count}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091704, bootstrap: 2026091704, command: 2026091704}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: true
+  requires: [qemu-aarch64]
+  timeout_s: 7200
+analysis:
+  baseline: tc-1.98.1-aarch64-qemu
+  pairing: item
+  report_metrics: [pack_failures, export_failures]

@@ -1,0 +1,81 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-011
+status: design
+question: >
+  Across the seeded tuning sample of published registry artifacts, how often does each strict import rule fire,
+  how often do reference readers disagree, does strict import ever silently accept an ambiguous artifact, how
+  many benign artifacts do default budgets refuse, and how do verdicts compare with incumbent checkers?
+  (protocol.md sections 1, 4, 5)
+hypothesis: >
+  H1 at least one rule's tail rate interval lies above its head rate interval; H2 refusals are producer-
+  concentrated; H3 ambiguity_refusal_fraction is 1 under strict; H4 dot-slash prefixes exceed 1% in some
+  stratum; H5 default-budget benign refusals stay below 0.001. Falsification in protocol.md section 2.
+notes: >
+  Design-stage spec. Items are sampled registry artifacts listed in an ad-hoc manifest written by
+  fetch_scan.py (split tuning, family = stratum); they are not corpus items (conventions section 6). Each
+  checker prints one normalized JSON line; checkers that do not apply to a format print applicable=0.
+decision_ids: [DEC-ECO-001, DEC-ECO-035, DEC-ECO-075, DEC-ECO-050, DEC-LEG-006, DEC-LEG-043, DEC-LEG-065, DEC-LEG-042, DEC-LEG-024, DEC-LEG-037, DEC-LEG-075, DEC-LEG-085]
+candidates:
+  - name: ebound-strict-dry-run
+    params: {checker: ebound-strict}
+  - name: ebound-compat-dry-run
+    params: {checker: ebound-compat}
+  - name: ebound-default-budget
+    params: {checker: ebound-budget}
+  - name: warehouse-validate
+    params: {checker: warehouse}
+  - name: zipdetails-parse
+    params: {checker: zipdetails}
+  - name: python-zipfile
+    params: {checker: py-zipfile}
+  - name: python-tarfile
+    params: {checker: py-tarfile}
+  - name: bsdtar-list
+    params: {checker: bsdtar}
+  - name: gnutar-list
+    params: {checker: gnutar}
+  - name: sevenzip-list
+    params: {checker: sevenzip}
+  - name: go-archive
+    params: {checker: go-archive}
+  - name: java-zip
+    params: {checker: java-zip}
+  - name: repo-zip-compat
+    params: {checker: zip-compat}
+  - name: repo-tar-strict
+    params: {checker: tar-strict}
+command: >-
+  /root/eb-research/venv/bin/python
+  /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/registry/check_artifact.py
+  --checker {checker} --artifact {item_path} --artifact-id {item_id} --stratum {family}
+  --ebound /root/eb-research/target/eco-head/release/ebound --scratch {scratch}
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: /root/eb-research/cache/eco011/manifest-tuning.jsonl
+metrics:
+  - {name: applicable, source: stdout_json, key: applicable, family: other, direction: none, unit: bool}
+  - {name: accepted, source: stdout_json, key: accepted, family: other, direction: none, unit: bool}
+  - {name: reason_codes, source: stdout_json, key: reason_codes, family: other, kind: string}
+  - {name: rule_ids, source: stdout_json, key: rule_ids, family: other, kind: string}
+  - {name: listing_sha256, source: stdout_json, key: listing_sha256, family: correctness, kind: string}
+  - {name: features, source: stdout_json, key: features, family: other, kind: string}
+  - {name: producer, source: stdout_json, key: producer, family: other, kind: string}
+  - {name: checker_exit_status, source: stdout_json, key: exit_status, family: other, direction: none, unit: code}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091711, bootstrap: 2026091711, command: 2026091711}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/eco-head/release/ebound, zipdetails, bsdtar, tar, 7z, java, /root/eb-research/tools/go/bin/go]
+  timeout_s: 600
+analysis:
+  baseline: ebound-strict-dry-run
+  pairing: item
+  report_metrics: [accepted, checker_exit_status]

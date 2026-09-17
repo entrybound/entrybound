@@ -1,0 +1,70 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-008-PARTIAL
+status: design
+question: >
+  Is restoring one pre-registered subtree (1-5% of logical bytes) from an INDEXED archive faster than a full
+  zstd plus tar decode followed by selection? (protocol.md H3)
+hypothesis: >
+  H3 ebound-indexed-read-subtree is DISTINGUISHABLE_BETTER on decode_wall_s. Falsified otherwise.
+notes: >
+  Design-stage timing spec (st-v). Subtrees are fixed by pick_subtree.py before timing; the ebound script calls
+  ebound read once per entry (process per entry; overstates API cost).
+decision_ids: [DEC-ECO-004]
+candidates:
+  - name: inc-full-decode-then-select
+    command: >-
+      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/restore_subtree_incumbent.sh /root/eb-research/cache/eco008/inc-tar-zstd3-long30-t1/{item_id}.bin /root/eb-research/cache/eco008/subtrees/{item_id}.txt {scratch}/out
+  - name: ebound-indexed-read-subtree
+    command: >-
+      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/restore_subtree_ebound.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/ebound-fast-indexed/{item_id}.bin /root/eb-research/cache/eco008/subtrees/{item_id}.txt {scratch}/out
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-curl-8-19-0-git
+    - f01-tuning-zstd-v1-5-7-full-clone
+    - f02-tuning-lz4-intree-make-build
+    - f02-tuning-zstd-cmake-build
+    - f03-tuning-fzf-go-mod-vendor
+    - f03-tuning-ripgrep-cargo-vendor
+    - f03-tuning-typescript-npm-node-modules
+    - f04-tuning-sourcelike
+    - f04-tuning-maildir
+    - f04-tuning-real-netbsd-pkgsrc
+    - f18-tuning-ripgrep-commit-snapshots
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+  - {name: io_write_bytes, source: resource, family: io, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - name: subtree_ok
+    source: check
+    command: /root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/subtree_equal.py {item_path} /root/eb-research/cache/eco008/subtrees/{item_id}.txt {scratch}/out
+    family: correctness
+    direction: maximize
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 2026091728, bootstrap: 2026091728, command: 2026091728}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 8
+  cpu_affinity: [2]
+  requires: [/root/eb-research/target/eco-head/release/ebound, tar, zstd, lz4, taskset, sha256sum]
+  timeout_s: 3600
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  max_wait_s: 300
+analysis:
+  baseline: inc-full-decode-then-select
+  pairing: item_repetition
+  report_metrics: [wall_s, cpu_s, max_rss_bytes]

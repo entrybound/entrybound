@@ -1,0 +1,103 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-007
+status: design
+question: >
+  For each association and binding variant (detached signatures, sidecars, receipts, parity, external
+  attestations), does the consumer check detect the pre-registered tamper cases, survive the copy channels,
+  and follow the SPEC 8.1 identity-change table under benign operations? (protocol.md sections 1, 4, 7)
+hypothesis: >
+  H1 identity and binding change patterns match SPEC 8.1 cell for cell; H2 unsigned receipts and filename
+  conventions miss replay and valid-substitute cases; H3 signed variants with pinned keys detect every
+  tamper case; H4 at least one copy channel silently separates companion files. Falsification in
+  protocol.md section 2.
+notes: >
+  Design-stage spec. One sample = one variant family on one item; the benign-operation, tamper and
+  copy-channel matrices run inside the sample and are summarized as counts. Keys are generated in scratch
+  and deleted. Nothing is uploaded; cosign runs with --tlog-upload=false.
+decision_ids: [DEC-ECO-072, DEC-CRY-003, DEC-CRY-018, DEC-CRY-019, DEC-INT-011, DEC-INT-028, DEC-INT-045, DEC-LEG-009, DEC-LEG-045, DEC-LEG-018, DEC-ECO-062]
+candidates:
+  - name: signatures-status-quo-detached
+    params: {family_id: sig-status-quo}
+  - name: signatures-per-signer-suffix
+    params: {family_id: sig-per-signer}
+  - name: signatures-sigstore-bundle
+    params: {family_id: sig-sigstore}
+  - name: signatures-minisign
+    params: {family_id: sig-minisign}
+  - name: signatures-openpgp
+    params: {family_id: sig-openpgp}
+  - name: attest-in-toto-subjects
+    params: {family_id: att-in-toto}
+  - name: attest-cose-sign1-lai
+    params: {family_id: att-cose}
+  - name: attest-dsse-lai
+    params: {family_id: att-dsse}
+  - name: binding-filename-convention
+    params: {family_id: bind-filename}
+  - name: binding-pci-manifest
+    params: {family_id: bind-pci}
+  - name: binding-par2
+    params: {family_id: bind-par2}
+  - name: verify-expected-pci
+    params: {family_id: verify-expected-pci}
+  - name: sidecar-exact-source-digest
+    params: {family_id: sidecar-digest}
+  - name: sidecar-reimport-lai
+    params: {family_id: sidecar-reimport}
+  - name: receipt-unsigned
+    params: {family_id: receipt-unsigned}
+  - name: receipt-reexport-compare
+    params: {family_id: receipt-reexport}
+  - name: receipt-strict-import-lai
+    params: {family_id: receipt-import-lai}
+  - name: receipt-signed-minisign
+    params: {family_id: receipt-signed}
+  - name: chain-assemble-prototype
+    params: {family_id: chain-assemble}
+  - name: chain-in-toto-layout
+    params: {family_id: chain-in-toto}
+command: >-
+  /root/eb-research/venv/bin/python
+  /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/verification/run_scenario.py
+  --family {family_id} --item {item_path} --item-id {item_id}
+  --ebound /root/eb-research/target/eco-head/release/ebound
+  --expected /mnt/d/Projects/entrybound/entrybound/research/experiments/EXP-ECO-007/spec-8-1-expected.yaml
+  --scratch {scratch} --seed {seed}
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f19-tuning-real-home-snapshot
+    - f14-apache-maven-3916-bin-tarball
+    - f14-jenkins-25683-war
+metrics:
+  - {name: identity_cells_total, source: stdout_json, key: identity_cells_total, family: other, direction: none, unit: count}
+  - {name: identity_cells_conforming, source: stdout_json, key: identity_cells_conforming, family: correctness, direction: maximize, unit: count}
+  - {name: tamper_cases_total, source: stdout_json, key: tamper_cases_total, family: other, direction: none, unit: count}
+  - {name: undetected_tampers, source: stdout_json, key: undetected_tampers, family: correctness, direction: minimize, unit: count}
+  - {name: false_alarms, source: stdout_json, key: false_alarms, family: correctness, direction: minimize, unit: count}
+  - {name: channels_total, source: stdout_json, key: channels_total, family: other, direction: none, unit: count}
+  - {name: channels_silent_separation, source: stdout_json, key: channels_silent_separation, family: correctness, direction: minimize, unit: count}
+  - {name: migration_steps_count, source: stdout_json, key: migration_steps_count, family: other, direction: minimize, unit: count}
+  - {name: flags_per_task, source: stdout_json, key: flags_per_task, family: other, direction: minimize, unit: count}
+  - {name: companion_bytes, source: stdout_json, key: companion_bytes, family: size, direction: minimize, unit: B}
+  - {name: outcome_table_sha256, source: stdout_json, key: outcome_table_sha256, family: correctness, kind: string}
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091707, bootstrap: 2026091707, command: 2026091707}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/eco-head/release/ebound, minisign, gpg, par2, rsync, nginx, /root/eb-research/tools/cosign/cosign, /root/eb-research/tools/minio/mc]
+  timeout_s: 7200
+analysis:
+  baseline: signatures-status-quo-detached
+  pairing: item
+  report_metrics: [identity_cells_conforming, undetected_tampers, false_alarms, channels_silent_separation, flags_per_task, companion_bytes]

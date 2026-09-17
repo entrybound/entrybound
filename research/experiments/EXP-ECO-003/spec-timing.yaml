@@ -1,0 +1,75 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-003-TIMING
+status: design
+question: >
+  Is the read-baseline partition's decode with the pure-Rust Zstandard decoder (ruzstd) non-inferior
+  to the same partition with libzstd on decode_throughput_bps (T-05b) and peak_rss_bytes (T-06) at
+  corpus level? (protocol.md H4; tuning split: forms W and S)
+hypothesis: >
+  H4: ruzstd decode is DISTINGUISHABLE_WORSE on decode_throughput_bps (predicted 1 to 5 band units).
+  Falsified if the validation confirmatory comparison is NON_INFERIOR or EQUIVALENT.
+notes: >
+  Design-stage spec. Timing requires a quiet window, G-B gates and EXP-CAL-*-wsl-ubuntu calibration.
+  Archives are the stored balanced INDEXED P0 outputs. Decode writes to per-sample scratch on WSL ext4.
+  decode_throughput_bps is derived in the decision tooling from the item's logical bytes and wall_s.
+decision_ids: [DEC-ECO-041, DEC-CMP-007]
+candidates:
+  - name: read-baseline-libzstd
+    params: {build: P1-read-baseline}
+  - name: read-baseline-ruzstd
+    params: {build: P1-read-baseline-ruzstd}
+command: >-
+  taskset -c 2 /root/eb-research/target/eco003/{build}/release/ebound-read unpack
+  /root/eb-research/cache/eco003/p0/{item_id}/balanced-indexed.eb {scratch}/out
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-curl-8-19-0-git
+    - f02-tuning-zstd-cmake-build
+    - f04-tuning-maildir
+    - f05-tuning-loghub-openstack
+    - f06-tuning-gharchive-2015-01-01-h15-h16
+    - f07-tuning-noaa-ncep-reanalysis-air-sig995-2020
+    - f08-tuning-gen-sqlite-tpch-small
+    - f10-rust-fd-find-1050-multiprofile
+    - f13-tuning-nasa-ntrs-pdf-small
+    - f18-tuning-zstd-releases-1-5-x
+    - f19-tuning-real-home-snapshot
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+  - {name: decode_throughput_bps, source: derived, op: rate, args: [input_bytes, wall_s], family: throughput, direction: maximize, unit: B/s}
+  - name: roundtrip_ok
+    source: check
+    command: "/root/eb-research/venv/bin/python /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/partition/tree_equal.py {item_path} {scratch}/out"
+    family: correctness
+    direction: maximize
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 2026091713, bootstrap: 2026091713, command: 2026091713}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 4
+  cpu_affinity: [2]
+  requires: [taskset, /root/eb-research/target/eco003/P1-read-baseline/release/ebound-read]
+  timeout_s: 1800
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  max_wait_s: 300
+analysis:
+  baseline: read-baseline-libzstd
+  pairing: item_repetition
+  report_metrics: [wall_s, cpu_s, max_rss_bytes, decode_throughput_bps]

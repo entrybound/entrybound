@@ -240,3 +240,4 @@ Legend: DONE / RUNNING / NEXT / PLANNED / BLOCKED.
 - 2026-09-17T12:58Z — C-design conformance: EXP-CONF-001..014 designed (12 NEEDS_TOOLING, 2 BLOCKED), 138/174 decisions informed, 36 uncovered with routes; L7 exposure disclosed
 - 2026-09-17T12:59Z — Codecs-domain C-design: 9 experiments (8 NEEDS_TOOLING, 1 BLOCKED), 11 decisions covered, 9 routed to other domains.
 - 2026-09-17T13:01Z — Integrity designs EXP-INT-001..020 committed (1 READY, 16 NEEDS_TOOLING, 3 BLOCKED; 4 uncovered decisions).
+- 2026-09-17T13:02Z — Ecosystem C-design: 22 EXP-ECO designs (14 READY, 4 NEEDS_TOOLING, 4 BLOCKED); 174/204 section 31-33 decisions addressed, 30 uncovered with routes.

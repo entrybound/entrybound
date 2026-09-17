@@ -1,0 +1,78 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-008-VERIFY
+status: design
+question: >
+  What verification time do the DEC-INT-028, DEC-INT-045 and DEC-LEG-009 verification designs cost on medium
+  artifacts: digest before parse versus full verify, digest versus strict re-import, re-export versus
+  strict-import LAI comparison? (protocol.md H4, H5)
+hypothesis: >
+  H4 sha256sum-expected-digest is DISTINGUISHABLE_BETTER than ebound-verify on verify_wall_s; H5 digest comparison
+  beats strict re-import and strict-import LAI comparison is DISTINGUISHABLE_WORSE than re-export byte
+  comparison. Falsified by the opposite verdicts.
+notes: >
+  Design-stage timing spec (st-v). Candidates that do not apply to an item (legacy checks on non-legacy items)
+  exit 0 after writing an applicability marker and are excluded by the analysis. Every check must also report the
+  correct outcome on the stored untampered inputs (correctness gate).
+decision_ids: [DEC-INT-028, DEC-INT-045, DEC-LEG-009]
+candidates:
+  - name: ebound-verify
+    command: >-
+      /root/eb-research/target/eco-head/release/ebound verify /root/eb-research/cache/eco008/verify/{item_id}/release.eb
+  - name: sha256sum-expected-digest
+    command: >-
+      cd /root/eb-research/cache/eco008/verify/{item_id} && sha256sum -c --status release.eb.sha256
+  - name: sidecar-digest-compare
+    command: >-
+      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/sidecar_digest_compare.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id}
+  - name: sidecar-strict-reimport
+    command: >-
+      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/sidecar_strict_reimport.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id} {scratch}
+  - name: reexport-byte-compare
+    command: >-
+      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/reexport_byte_compare.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id} {scratch}
+  - name: strict-import-lai-compare
+    command: >-
+      bash /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/ci/strict_import_lai_compare.sh /root/eb-research/target/eco-head/release/ebound /root/eb-research/cache/eco008/verify/{item_id} {scratch}
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-curl-8-19-0-git
+    - f02-tuning-zstd-cmake-build
+    - f03-tuning-ripgrep-cargo-vendor
+    - f04-tuning-maildir
+    - f04-tuning-real-netbsd-pkgsrc
+    - f18-tuning-ripgrep-commit-snapshots
+    - f14-jenkins-25683-war
+    - f14-legacy-writer-matrix-tuning
+metrics:
+  - {name: wall_s, source: resource, family: time_wall, direction: minimize, unit: s}
+  - {name: cpu_s, source: resource, family: time_cpu, direction: minimize, unit: s}
+  - {name: max_rss_bytes, source: resource, family: memory_peak, direction: minimize, unit: B}
+  - {name: scratch_peak_bytes, source: scratch, family: scratch_peak, direction: minimize, unit: B}
+  - {name: io_write_bytes, source: resource, family: io, direction: minimize, unit: B}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 10
+warmups: 2
+record_warmups: true
+seeds: {order: 2026091738, bootstrap: 2026091738, command: 2026091738}
+timing: true
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  min_cpus: 8
+  cpu_affinity: [2]
+  requires: [/root/eb-research/target/eco-head/release/ebound, tar, zstd, lz4, taskset, sha256sum]
+  timeout_s: 3600
+guard:
+  max_loadavg_1m: 2.0
+  max_other_cpu_percent: 3.0
+  max_wait_s: 300
+analysis:
+  baseline: ebound-verify
+  pairing: item_repetition
+  report_metrics: [wall_s, cpu_s, max_rss_bytes]

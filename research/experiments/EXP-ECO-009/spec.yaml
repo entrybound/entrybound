@@ -1,0 +1,99 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-009
+status: design
+question: >
+  For each local server, CDN-like or object-store configuration, does the status-quo remote reader list,
+  inspect and read entries correctly or refuse safely, and how do the DEC-ACC-015 client policies behave on
+  the recorded transcripts, including mixed-revision cases? (protocol.md sections 1, 4)
+hypothesis: >
+  H1 the strict status quo refuses at least one configuration that serves correct ranges; H2 relaxed
+  validators are safe against mixed revisions only with content verification; H4 no HTTP/3 request is used
+  at runtime. Falsification in protocol.md section 2.
+notes: >
+  Design-stage spec. Servers bind to 127.0.0.1. Policy replay runs inside the sample
+  (range_policy_probe.py) and is summarized as counts; the public read-only arm is script-driven.
+decision_ids: [DEC-ACC-015, DEC-ECO-057, DEC-ACC-016]
+candidates:
+  - name: S01-nginx-default
+    params: {server: S01}
+  - name: S02-nginx-gzip-all
+    params: {server: S02}
+  - name: S03-nginx-etag-off
+    params: {server: S03}
+  - name: S04-apache-default
+    params: {server: S04}
+  - name: S05-apache-deflate-all
+    params: {server: S05}
+  - name: S06-caddy-default
+    params: {server: S06}
+  - name: S07-caddy-http3
+    params: {server: S07}
+  - name: S08-lighttpd-default
+    params: {server: S08}
+  - name: S09-python-http-server
+    params: {server: S09}
+  - name: S10-minio-public
+    params: {server: S10}
+  - name: S11-minio-presigned
+    params: {server: S11}
+  - name: S12-azurite-sas
+    params: {server: S12}
+  - name: S13-fake-gcs-public
+    params: {server: S13}
+  - name: S14-origin-strict
+    params: {server: S14}
+  - name: S15-origin-weak-etag
+    params: {server: S15}
+  - name: S16-origin-no-head
+    params: {server: S16}
+  - name: S17-origin-200-whole-body
+    params: {server: S17}
+  - name: S18-origin-etag-churn
+    params: {server: S18}
+  - name: S19-origin-redirect
+    params: {server: S19}
+  - name: S20-origin-no-multipart
+    params: {server: S20}
+  - name: S21-origin-head-length-mismatch
+    params: {server: S21}
+command: >-
+  /root/eb-research/venv/bin/python
+  /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/hosting/live_run.py
+  --server {server} --item {item_path} --item-id {item_id}
+  --ebound /root/eb-research/target/eco-head/release/ebound --policies all --scratch {scratch}
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f04-tuning-sourcelike
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f07-tuning-silesia-mr
+metrics:
+  - {name: operations_total, source: stdout_json, key: operations_total, family: other, direction: none, unit: count}
+  - {name: operations_correct, source: stdout_json, key: operations_correct, family: correctness, direction: maximize, unit: count}
+  - {name: operations_refused, source: stdout_json, key: operations_refused, family: other, direction: none, unit: count}
+  - {name: unverified_bytes_reported_verified, source: stdout_json, key: unverified_bytes_reported_verified, family: correctness, direction: minimize, unit: count}
+  - {name: http_requests, source: stdout_json, key: http_requests, family: other, direction: minimize, unit: count}
+  - {name: http_bytes, source: stdout_json, key: http_bytes, family: size, direction: minimize, unit: B}
+  - {name: policy_unsafe_count, source: stdout_json, key: policy_unsafe_count, family: correctness, direction: minimize, unit: count}
+  - {name: actionable_refusals, source: stdout_json, key: actionable_refusals, family: other, direction: maximize, unit: count}
+  - {name: http_protocol_used, source: stdout_json, key: http_protocol_used, family: other, kind: string}
+  - {name: transcript_sha256, source: stdout_json, key: transcript_sha256, family: correctness, kind: string}
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091709, bootstrap: 2026091709, command: 2026091709}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/eco-head/release/ebound, nginx, apache2, lighttpd, /root/eb-research/tools/caddy/caddy, /root/eb-research/tools/minio/minio]
+  timeout_s: 1800
+analysis:
+  baseline: S01-nginx-default
+  pairing: item
+  report_metrics: [operations_correct, operations_refused, unverified_bytes_reported_verified, http_requests, http_bytes, policy_unsafe_count]

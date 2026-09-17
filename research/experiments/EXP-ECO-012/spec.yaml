@@ -1,0 +1,64 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-012
+status: design
+question: >
+  Do identification systems (libmagic, shared-mime-info, Apache Tika, DROID, TrID) misidentify files that
+  start with each candidate magic, and do they identify transport-corrupted status-quo archives as valid
+  Entrybound files? (protocol.md H1, H2 dynamic arm)
+hypothesis: >
+  H1 no identification system maps the candidate-prefixed test files to an existing foreign format; H2 no
+  transport-corrupted header is identified as a valid Entrybound file by the draft rule or opened by the
+  reader. Falsification in protocol.md section 2.
+notes: >
+  Design-stage spec. Items are test-file sets (one directory per magic candidate or transformation) listed in
+  the ad-hoc manifest written by make_test_sets.py (split tuning); identify.py runs one identifier over every
+  file of the set and prints counts. TrID runs only if its terms permit research use without acceptance.
+decision_ids: [DEC-CON-017, DEC-CON-019, DEC-CON-021, DEC-ECO-025]
+candidates:
+  - name: libmagic-5.45-installed
+    params: {identifier: file-installed}
+  - name: libmagic-upstream-head
+    params: {identifier: file-head}
+  - name: shared-mime-info-latest
+    params: {identifier: xdg-mime}
+  - name: tika-app-latest
+    params: {identifier: tika}
+  - name: droid-latest-signatures
+    params: {identifier: droid}
+  - name: trid-definitions
+    params: {identifier: trid}
+  - name: ebound-reader
+    params: {identifier: ebound}
+command: >-
+  /root/eb-research/venv/bin/python
+  /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/identification/identify.py
+  --identifier {identifier} --set {item_path} --set-id {item_id}
+  --db-root /root/eb-research/cache/eco012/dbs --scratch {scratch}
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: /root/eb-research/cache/eco012/test-sets-manifest.jsonl
+metrics:
+  - {name: files_total, source: stdout_json, key: files_total, family: other, direction: none, unit: count}
+  - {name: identified_as_foreign, source: stdout_json, key: identified_as_foreign, family: other, direction: minimize, unit: count}
+  - {name: identified_as_entrybound, source: stdout_json, key: identified_as_entrybound, family: other, direction: none, unit: count}
+  - {name: unidentified, source: stdout_json, key: unidentified, family: other, direction: none, unit: count}
+  - {name: opened_as_valid, source: stdout_json, key: opened_as_valid, family: correctness, direction: minimize, unit: count}
+  - {name: foreign_types, source: stdout_json, key: foreign_types, family: other, kind: string}
+  - {name: result_sha256, source: stdout_json, key: result_sha256, family: correctness, kind: string}
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091712, bootstrap: 2026091712, command: 2026091712}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [file, java, update-mime-database, /root/eb-research/target/eco-head/release/ebound]
+  timeout_s: 3600
+analysis:
+  baseline: libmagic-5.45-installed
+  pairing: item
+  report_metrics: [identified_as_foreign, identified_as_entrybound, opened_as_valid]

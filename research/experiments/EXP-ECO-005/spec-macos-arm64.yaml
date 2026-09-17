@@ -1,0 +1,70 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-005-MACOS-ARM64
+status: blocked
+question: >
+  On aarch64-apple-darwin, are pack outputs, identity roots (LAI, PCR, AUX) and the six frozen export
+  profiles byte-identical across toolchains, and is PCR equal to the x86-64 results of EXP-ECO-004?
+  (protocol.md H1-H3)
+hypothesis: >
+  H2 PCR equals the x86-64 PCR for every tuning cell with only documented macOS metadata-class LAI/AUX
+  differences; H3 frozen export profile bytes equal the x86-64 bytes. Any unexplained difference
+  falsifies the hypothesis.
+notes: >
+  BLOCKED design spec: no macOS host (PLATFORM_BLOCKED). Items are APFS materializations under
+  /Users/Shared/eb-research/corpus-mac/<item_id> made from WSL pax tarballs; the manifest selects ids only.
+decision_ids: [DEC-ECO-073, DEC-MOD-011, DEC-LEG-008, DEC-ECO-003, DEC-ECO-041]
+candidates:
+  - name: tc-1.98.1
+    params: {tc: 1.98.1}
+  - name: tc-1.94
+    params: {tc: '1.94'}
+  - name: tc-stable-latest
+    params: {tc: stable-latest}
+command: >-
+  python3 /Users/Shared/eb-research/entrybound/research/tools/ecosystem/release/pack_matrix.py
+  --ebound /Users/Shared/eb-research/target/eco005/{tc}/release/ebound
+  --item /Users/Shared/eb-research/corpus-mac/{item_id} --item-id {item_id} --scratch {scratch}
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f02-tuning-lz4-intree-make-build
+    - f04-tuning-sourcelike
+    - f05-tuning-gutenberg-books
+    - f06-tuning-gen-structured-a-small
+    - f07-tuning-silesia-mr
+    - f08-tuning-chinook-sqlite
+    - f10-gen-redundant-binary-blobs
+    - f12-tuning-kodak-jpeg-edge-cases-small
+    - f13-tuning-nasa-ntrs-pdf-small
+    - f14-gen-nested-archives-py
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f19-tuning-zoo
+    - f19-tuning-real-home-snapshot
+    - f20-tuning-real-libarchive-testsuite
+metrics:
+  - {name: pack_cells_sha256, source: stdout_json, key: pack_cells_sha256, family: correctness, kind: string}
+  - {name: lai_set_sha256, source: stdout_json, key: lai_set_sha256, family: correctness, kind: string}
+  - {name: pcr_set_sha256, source: stdout_json, key: pcr_set_sha256, family: correctness, kind: string}
+  - {name: aux_set_sha256, source: stdout_json, key: aux_set_sha256, family: correctness, kind: string}
+  - {name: export_profiles_sha256, source: stdout_json, key: export_profiles_sha256, family: correctness, kind: string}
+  - {name: pack_failures, source: stdout_json, key: pack_failures, family: correctness, direction: minimize, unit: count}
+  - {name: export_failures, source: stdout_json, key: export_failures, family: correctness, direction: minimize, unit: count}
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091705, bootstrap: 2026091705, command: 2026091705}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [darwin]
+  arch: [arm64]
+  emulated: false
+  requires: [python3]
+  timeout_s: 3600
+analysis:
+  baseline: tc-1.98.1
+  pairing: item
+  report_metrics: [pack_failures, export_failures]

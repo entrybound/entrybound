@@ -1,0 +1,70 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-014
+status: design
+question: >
+  For each tuning tree and its pre-registered rebuild-like variants, which ecosystem digests (dirhash Hash1,
+  Git tree, NAR hash, SWHID, canonical-tar SHA-256) and Entrybound identities (LAI, AUX) change, and does LAI
+  equality agree with the expected reproducible-build verdicts? (protocol.md sections 1, 5, H1-H3)
+hypothesis: >
+  H1 LAI and at least one ecosystem digest disagree on at least three perturbations; H2 no ecosystem digest has
+  LAI's exact sensitivity set; H3 LAI equality agrees with the expected reproducible-build verdict in at least
+  90% of cases. Falsification in protocol.md section 2.
+notes: >
+  Design-stage spec. Each sample computes one producer's digests over the item and its RB1-RB6 variants
+  (generated inside scratch on ext4) and prints equality flags; the full perturbation matrix P01-P25 is
+  perturb_matrix.py. Wall times are descriptive only (timing false).
+decision_ids: [DEC-MOD-017, DEC-MOD-005, DEC-ECO-072, DEC-LEG-014, DEC-ECO-065]
+candidates:
+  - name: entrybound-lai-aux
+    params: {producer: entrybound}
+  - name: go-dirhash-h1
+    params: {producer: dirhash1}
+  - name: git-tree
+    params: {producer: gittree}
+  - name: nix-nar-sha256
+    params: {producer: narhash}
+  - name: swhid-directory
+    params: {producer: swhid}
+  - name: canonical-tar-sha256
+    params: {producer: canonical-tar}
+command: >-
+  /root/eb-research/venv/bin/python
+  /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/digests/rb_usecases.py
+  --producer {producer} --item {item_path} --item-id {item_id}
+  --ebound /root/eb-research/target/eco-head/release/ebound --scratch {scratch} --seed {seed}
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f01-tuning-ripgrep-14-1-1-git
+    - f01-tuning-zstd-v1-5-7-git
+    - f02-tuning-lz4-intree-make-build
+    - f04-tuning-sourcelike
+    - f18-tuning-lz4-releases-1-9-to-1-10
+    - f19-tuning-zoo
+    - f19-tuning-real-home-snapshot
+    - f19-tuning-real-ext4-acl-selinux
+metrics:
+  - {name: rb_cases, source: stdout_json, key: rb_cases, family: other, direction: none, unit: count}
+  - {name: rb_cases_agreeing, source: stdout_json, key: rb_cases_agreeing, family: other, direction: maximize, unit: count}
+  - {name: producer_errors, source: stdout_json, key: producer_errors, family: correctness, direction: minimize, unit: count}
+  - {name: digest_set_sha256, source: stdout_json, key: digest_set_sha256, family: correctness, kind: string}
+  - {name: digest_wall_s, source: stdout_json, key: digest_wall_s, family: other, direction: none, unit: s}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091714, bootstrap: 2026091714, command: 2026091714}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [git, /root/eb-research/tools/go/bin/go, /root/eb-research/tools/nix/nix, /root/eb-research/target/eco-head/release/ebound]
+  timeout_s: 3600
+analysis:
+  baseline: entrybound-lai-aux
+  pairing: item
+  report_metrics: [rb_cases_agreeing, producer_errors]

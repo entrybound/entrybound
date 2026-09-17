@@ -1,0 +1,94 @@
+schema: ebr.spec.v1
+experiment_id: EXP-ECO-006-LEGACY
+status: design
+question: >
+  Do legacy-artifact workflows (W01 legacy audit, W08 sidecars, W11 pipe conversion) complete under their
+  mechanical criteria, how do verdicts compare with incumbent checkers, and are the pre-registered fault
+  cases handled correctly? (protocol.md sections 1, 4, 7)
+hypothesis: >
+  H1 W01 and W08 complete on every applicable artifact and W11 stdin conversion is refused with a specific
+  diagnostic; H4 every injected fault gives a non-zero class-mapped exit and an actionable message; W08
+  detects every modified, truncated, appended or substituted artifact. Falsification in protocol.md section 2.
+notes: >
+  Design-stage spec. Each legacy item is a directory of one or more legacy artifacts; run_workflow.py iterates
+  artifacts inside the item and reports per-item totals. The warehouse validation function is vendored at a pinned commit.
+decision_ids: [DEC-ECO-002, DEC-ECO-035, DEC-ECO-062, DEC-ECO-075, DEC-INT-036, DEC-LEG-003, DEC-LEG-030, DEC-LEG-056, DEC-LEG-060]
+candidates:
+  - name: W01-ebound-strict-dry-run
+    params: {wf: W01, variant: ebound-strict-dry-run}
+  - name: W01-ebound-compat-dry-run
+    params: {wf: W01, variant: ebound-compat-dry-run}
+  - name: W01-ebound-convert-inspect
+    params: {wf: W01, variant: ebound-convert-inspect}
+  - name: W01-incumbent-zipdetails
+    params: {wf: W01, variant: incumbent-zipdetails}
+  - name: W01-incumbent-python-zipfile-test
+    params: {wf: W01, variant: incumbent-python-zipfile-test}
+  - name: W01-incumbent-bsdtar-list
+    params: {wf: W01, variant: incumbent-bsdtar-list}
+  - name: W01-incumbent-gnutar-list
+    params: {wf: W01, variant: incumbent-gnutar-list}
+  - name: W01-incumbent-7z-test
+    params: {wf: W01, variant: incumbent-7z-test}
+  - name: W01-incumbent-warehouse-validate
+    params: {wf: W01, variant: incumbent-warehouse-validate}
+  - name: W08-ebound-sidecar-default
+    params: {wf: W08, variant: ebound-sidecar-default}
+  - name: W08-ebound-sidecar-preserve-compat
+    params: {wf: W08, variant: ebound-sidecar-preserve-compat}
+  - name: W11-ebound-convert-stdin
+    params: {wf: W11, variant: ebound-convert-stdin}
+  - name: W11-ebound-spool-to-temp
+    params: {wf: W11, variant: ebound-spool-to-temp}
+  - name: W11-incumbent-curl-tar
+    params: {wf: W11, variant: incumbent-curl-tar}
+  - name: W11-incumbent-curl-bsdtar
+    params: {wf: W11, variant: incumbent-curl-bsdtar}
+command: >-
+  /root/eb-research/venv/bin/python
+  /mnt/d/Projects/entrybound/entrybound/research/tools/ecosystem/workflows/run_workflow.py
+  --workflow {wf} --variant {variant} --item {item_path} --item-id {item_id}
+  --ebound /root/eb-research/target/eco-head/release/ebound --scratch {scratch} --seed {seed}
+shell: bash
+corpus:
+  splits: [tuning]
+  manifest: research/corpus/manifest.json
+  item_ids:
+    - f14-apache-maven-3916-bin-tarball
+    - f14-gen-nested-archives-py
+    - f14-jenkins-25683-war
+    - f14-legacy-writer-matrix-tuning
+    - f20-tuning-real-libarchive-testsuite
+    - f20-tuning-generated-malicious-structures
+metrics:
+  - {name: applicable, source: stdout_json, key: applicable, family: other, direction: none, unit: bool}
+  - {name: workflow_completed, source: stdout_json, key: workflow_completed, family: correctness, direction: maximize, unit: bool}
+  - {name: migration_steps_count, source: stdout_json, key: migration_steps_count, family: other, direction: minimize, unit: count}
+  - {name: flags_per_task, source: stdout_json, key: flags_per_task, family: other, direction: minimize, unit: count}
+  - {name: fault_cases, source: stdout_json, key: fault_cases, family: other, direction: none, unit: count}
+  - {name: fault_expected_outcomes, source: stdout_json, key: fault_expected_outcomes, family: correctness, direction: maximize, unit: count}
+  - {name: actionable_fault_messages, source: stdout_json, key: actionable_fault_messages, family: other, direction: maximize, unit: count}
+  - {name: residual_final_name_outputs, source: stdout_json, key: residual_final_name_outputs, family: correctness, direction: minimize, unit: count}
+  - {name: export_cases, source: stdout_json, key: export_cases, family: other, direction: none, unit: count}
+  - {name: export_accepted_cases, source: stdout_json, key: export_accepted_cases, family: other, direction: maximize, unit: count}
+  - {name: rebuild_identical, source: stdout_json, key: rebuild_identical, family: correctness, direction: maximize, unit: bool}
+  - {name: artifact_bytes, source: stdout_json, key: artifact_bytes, family: size, direction: minimize, unit: B}
+  - {name: needs_capabilities, source: stdout_json, key: needs_capabilities, family: other, kind: string}
+  - {name: outcome_sha256, source: stdout_json, key: outcome_sha256, family: correctness, kind: string}
+  - {name: input_bytes, source: input, family: size, direction: none, unit: B}
+repetitions: 2
+warmups: 0
+seeds: {order: 2026091706, bootstrap: 2026091706, command: 2026091706}
+timing: false
+order: randomized_blocks
+raw_compression: gzip
+platform:
+  os: [linux]
+  arch: [x86_64]
+  emulated: false
+  requires: [/root/eb-research/target/eco-head/release/ebound, zipdetails, python3, bsdtar, tar, 7z, curl]
+  timeout_s: 7200
+analysis:
+  baseline: W01-ebound-strict-dry-run
+  pairing: item
+  report_metrics: [workflow_completed, migration_steps_count, flags_per_task, fault_expected_outcomes, residual_final_name_outputs]
