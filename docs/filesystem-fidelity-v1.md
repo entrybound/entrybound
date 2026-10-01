@@ -94,16 +94,17 @@ No symlink metadata setter re-resolves an ambient destination pathname.
 Created parent directories and hardlink representatives retain their handles;
 metadata operations use the opened object rather than reopening its name.
 Linux hardlink creation uses the held representative's procfs fd link; missing
-procfs or a changed representative fails safely. Other supported platforms
-verify representative and alias identity; Windows holds extraction handles
-without delete sharing. A detected race refuses extraction and preserves
+procfs or a changed representative fails safely. Windows holds extraction handles
+without delete sharing and verifies representative and alias identity. On other
+platforms this build has no safe held-source hardlink operation: archives with
+hardlink groups are refused before destination materialization. A detected race
+refuses extraction and preserves
 names that may now belong to another actor.
 
 Two concurrent destination cases remain unqualified: substituting an ordinary
 directory between directory creation and opening, and moving a held Unix
 descendant outside the destination before a later write. Retaining a handle
-does not prevent those relocations. A non-Linux Unix hardlink source-name race
-can also create an incorrect alias before its post-creation check refuses.
+does not prevent those relocations.
 These are open implementation defects against the kernel-confinement contract;
 the existing handle and identity checks do not qualify those cases as safe.
 The current extractor therefore returns `ConfinementMode::WeakerReported`,

@@ -595,6 +595,7 @@ fn materialize(
             "the bootstrap extractor supports only collision refusal",
         ));
     }
+    validate_hardlink_creation_support(archive, hardlink_creation_supported())?;
 
     for entry in archive.entry_set.entries() {
         if let EntryData::Symlink { target } = entry.data() {
@@ -2033,6 +2034,27 @@ fn same_object(left: &Metadata, right: &Metadata) -> bool {
     }
 }
 
+fn hardlink_creation_supported() -> bool {
+    cfg!(any(target_os = "linux", windows))
+}
+
+fn validate_hardlink_creation_support(archive: &Archive, supported: bool) -> Result<()> {
+    if !supported
+        && archive
+            .entry_set
+            .entries()
+            .iter()
+            .any(|entry| entry.metadata().hardlink_group().is_some())
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedEntryKind,
+            "this build has no safe held-source hardlink operation",
+        ));
+    }
+    Ok(())
+}
+
 fn create_verified_hardlink(
     held: &cap_std::fs::File,
     source_parent: &Dir,
@@ -2058,6 +2080,32 @@ fn create_verified_hardlink_with_probe(
     destination_name: &OsStr,
     after_identity_check: impl FnOnce(),
 ) -> std::io::Result<()> {
+    create_verified_hardlink_with_support(
+        held,
+        source_parent,
+        source_name,
+        destination_parent,
+        destination_name,
+        hardlink_creation_supported(),
+        after_identity_check,
+    )
+}
+
+fn create_verified_hardlink_with_support(
+    held: &cap_std::fs::File,
+    source_parent: &Dir,
+    source_name: &OsStr,
+    destination_parent: &Dir,
+    destination_name: &OsStr,
+    supported: bool,
+    after_identity_check: impl FnOnce(),
+) -> std::io::Result<()> {
+    if !supported {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::Unsupported,
+            "this build has no safe held-source hardlink operation",
+        ));
+    }
     let expected = held.metadata()?;
     let observed = regular_metadata_nofollow(source_parent, source_name)?;
     if !expected.is_file() || !same_object(&expected, &observed) {
@@ -2067,7 +2115,7 @@ fn create_verified_hardlink_with_probe(
     }
     after_identity_check();
     #[cfg(target_os = "linux")]
-    {
+    let creation = {
         use std::os::fd::AsRawFd as _;
         // Linux documents procfs fd links as the unprivileged alternative to
         // linkat(AT_EMPTY_PATH). The source is this held fd, never an archive path.
@@ -2077,10 +2125,21 @@ fn create_verified_hardlink_with_probe(
             destination_parent,
             destination_name,
             rustix::fs::AtFlags::SYMLINK_FOLLOW,
-        )?;
-    }
-    #[cfg(not(target_os = "linux"))]
-    source_parent.hard_link(source_name, destination_parent, destination_name)?;
+        )
+        .map_err(std::io::Error::from)
+    };
+    #[cfg(windows)]
+    let creation = source_parent.hard_link(source_name, destination_parent, destination_name);
+    #[cfg(not(any(target_os = "linux", windows)))]
+    let creation: std::io::Result<()> = {
+        // No pathname fallback: even a failed post-check could leave a foreign
+        // alias behind. Preflight and the support guard refuse this platform.
+        Err(std::io::Error::new(
+            std::io::ErrorKind::Unsupported,
+            "this build has no safe held-source hardlink operation",
+        ))
+    };
+    creation?;
     let alias = regular_metadata_nofollow(destination_parent, destination_name)?;
     if !same_object(&expected, &alias)
         || !same_object(
@@ -2933,9 +2992,42 @@ mod tests {
             OsStr::new("alias"),
         )
         .unwrap_err();
-        assert!(error.to_string().contains("identity changed"));
+        if hardlink_creation_supported() {
+            assert!(error.to_string().contains("identity changed"));
+        } else {
+            assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+        }
         assert_eq!(root.read("source").unwrap(), b"foreign inert bytes");
         assert!(root.symlink_metadata("alias").is_err());
+    }
+
+    #[test]
+    fn unavailable_hardlink_operation_refuses_before_probe_or_alias_write() {
+        use std::cell::Cell;
+        let fixture = SafetyFixture::new("hardlink-unavailable");
+        let root = Dir::open_ambient_dir(&fixture.0, ambient_authority()).unwrap();
+        root.write("source", b"verified inert bytes").unwrap();
+        let held = root.open("source").unwrap();
+        let probed = Cell::new(false);
+        let error = create_verified_hardlink_with_support(
+            &held,
+            &root,
+            OsStr::new("source"),
+            &root,
+            OsStr::new("alias"),
+            false,
+            || {
+                probed.set(true);
+                root.rename("source", &root, "original").unwrap();
+                root.write("source", b"foreign inert bytes").unwrap();
+            },
+        )
+        .unwrap_err();
+        assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+        assert!(!probed.get());
+        assert_eq!(root.read("source").unwrap(), b"verified inert bytes");
+        assert!(root.symlink_metadata("alias").is_err());
+        assert!(root.symlink_metadata("original").is_err());
     }
 
     #[cfg(target_os = "linux")]
@@ -3412,7 +3504,7 @@ mod tests {
 
     #[cfg(unix)]
     #[test]
-    fn unix_posix_capture_and_policy_restoration_round_trip() {
+    fn unix_posix_capture_and_hardlink_restoration_policy() {
         use std::os::unix::ffi::OsStrExt as _;
         use std::os::unix::fs::{MetadataExt as _, PermissionsExt as _, symlink};
 
@@ -3468,6 +3560,9 @@ mod tests {
             alias_entry.metadata().hardlink_group()
         );
         assert!(file_entry.metadata().hardlink_group().is_some());
+        let unsupported = validate_hardlink_creation_support(&opened.archive, false).unwrap_err();
+        assert_eq!(unsupported.class(), OutcomeClass::Unsupported);
+        assert_eq!(unsupported.code(), ReasonCode::UnsupportedEntryKind);
         assert_eq!(file_entry.metadata().posix_mode(), Some(0o6750));
         if xattr_written {
             assert_eq!(
@@ -3479,6 +3574,15 @@ mod tests {
                     .map(XAttr::value),
                 Some(b"opaque\0value".as_slice())
             );
+        }
+
+        if !hardlink_creation_supported() {
+            let error =
+                unpack(&encoded.bytes, &destination, ExtractionPolicy::default()).unwrap_err();
+            assert_eq!(error.class(), OutcomeClass::Unsupported);
+            assert!(!destination.exists());
+            std::fs::remove_dir_all(source).unwrap();
+            return;
         }
 
         unpack(

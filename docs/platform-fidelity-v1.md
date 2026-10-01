@@ -69,6 +69,13 @@ reported unavailable when requested; no result claims full fidelity for a
 subset. SACL absence caused by capture privilege is represented by
 FidelityReport rather than guessed.
 
+Hardlink extraction is available on Linux through the held source descriptor
+and on Windows through source handles held without delete sharing. Other
+platforms refuse archives containing hardlink groups before creating the
+destination. A pathname hardlink followed by an identity check can create an
+incorrect alias before detecting substitution; this build does not use that
+fallback. Hardlink facts remain readable, capturable and preserved by repack.
+
 ## Tooling and portability
 
 INDEXED, STREAM, encrypted private manifests, random metadata reads, and repack
