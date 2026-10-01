@@ -5,6 +5,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use sha2::{Digest as _, Sha256};
 use subtle::ConstantTimeEq as _;
 
+use super::working::CryptoWorkContext;
 use super::{
     BoundaryMode, EncryptedOpenOptions, KeyHierarchy, PaddingMode, aead_open,
     public_crypto_context, wire,
@@ -160,7 +161,7 @@ pub struct EncryptedRandomAccessArchive {
     envelope: wire::CryptoEnvelope,
     keys: KeyHierarchy,
     padding: PaddingMode,
-    crypto_policy: super::CryptoPolicy,
+    work: CryptoWorkContext,
     legacy_whole_archive_verified: bool,
     segments: Vec<SegmentLocator>,
     index: BTreeMap<Digest, EncryptedChunkLocator>,
@@ -187,8 +188,8 @@ pub fn inspect_indexed_random_encrypted_public(
     policy: RandomAccessPolicy,
     crypto_limits: super::CryptoPolicy,
 ) -> Result<EncryptedRandomPublicInspection> {
-    let budget = super::working::WorkBudget::new(crypto_limits.max_working_memory_bytes);
-    let mut session = RangeSession::new_crypto(Box::new(source), policy, budget)?;
+    let work = CryptoWorkContext::new(crypto_limits);
+    let mut session = RangeSession::new_crypto(Box::new(source), policy, work.budget().clone())?;
     if session.policy().max_section_count < 2 {
         return Err(access_policy(
             "encrypted INDEXED framing requires two physical sections",
@@ -297,9 +298,8 @@ impl EncryptedRandomAccessArchive {
         );
         options.resource_policy = policy.resource_policy;
         options.decode_policy = policy.decode_policy;
-        let budget =
-            super::working::WorkBudget::new(options.crypto_policy.max_working_memory_bytes);
-        let mut session = RangeSession::new_crypto(source, policy, budget)?;
+        let work = CryptoWorkContext::new(options.crypto_policy);
+        let mut session = RangeSession::new_crypto(source, policy, work.budget().clone())?;
         if session.policy().max_section_count < 2 {
             return Err(access_policy(
                 "encrypted INDEXED framing requires two physical sections",
@@ -389,7 +389,7 @@ impl EncryptedRandomAccessArchive {
             &envelope,
             preamble.features.incompat,
             unlock,
-            options.crypto_policy,
+            &work,
         )?;
         drop(afk);
         let segments = walk_segments(&mut session, &footer, options)?;
@@ -535,7 +535,7 @@ impl EncryptedRandomAccessArchive {
             let length = session.len();
             let bytes = session.read_crypto(0, length, AccessPurpose::EncryptedPayload)?;
             let fully_opened = super::container::open_encrypted_with_unlocked_keys(
-                &bytes, options, &envelope, &keys,
+                &bytes, options, &envelope, &keys, &work,
             )?;
             budget = fully_opened.archive.descriptor.budget;
             decode = fully_opened.archive.descriptor.decode;
@@ -601,7 +601,7 @@ impl EncryptedRandomAccessArchive {
             envelope,
             keys,
             padding,
-            crypto_policy: options.crypto_policy,
+            work,
             legacy_whole_archive_verified,
             segments,
             index,
@@ -871,7 +871,7 @@ impl EncryptedRandomAccessArchive {
                 self.padding,
                 EncryptedOpenOptions {
                     unlock: None,
-                    crypto_policy: self.crypto_policy,
+                    crypto_policy: self.work.policy(),
                     resource_policy,
                     decode_policy,
                 },
@@ -914,7 +914,7 @@ impl EncryptedRandomAccessArchive {
                     retained_private_bytes = retained_private_bytes
                         .checked_add(u64::try_from(payload.len()).unwrap_or(u64::MAX))
                         .ok_or_else(|| crypto_policy("PAYLOAD support byte total overflow"))?;
-                    if retained_private_bytes > self.crypto_policy.max_working_memory_bytes {
+                    if retained_private_bytes > self.work.policy().max_working_memory_bytes {
                         return Err(crypto_policy(
                             "retained PAYLOAD support exceeds caller crypto memory policy",
                         ));
@@ -1021,7 +1021,7 @@ impl EncryptedRandomAccessArchive {
             self.padding,
             EncryptedOpenOptions {
                 unlock: None,
-                crypto_policy: self.crypto_policy,
+                crypto_policy: self.work.policy(),
                 resource_policy,
                 decode_policy,
             },
@@ -2247,7 +2247,10 @@ mod tests {
     #[test]
     fn record_policy_refuses_before_fetching_a_whole_segment() {
         let directory = TestDir::new();
-        std::fs::write(directory.path().join("file"), vec![17_u8; 16 * 1024]).unwrap();
+        let file = (0_u32..512)
+            .flat_map(|value| *super::sha256_exact(&value.to_be_bytes()).as_bytes())
+            .collect::<Vec<_>>();
+        std::fs::write(directory.path().join("file"), file).unwrap();
         let archive = plan_directory(directory.path(), PackOptions::default()).unwrap();
         let (identity, recipient) = XWingIdentity::generate().unwrap();
         for include_index in [true, false] {
@@ -2262,24 +2265,46 @@ mod tests {
             )
             .unwrap();
             let reads = Arc::new(Mutex::new(Vec::new()));
+            let mut options = EncryptedOpenOptions::new(Some(Unlock::Identity(&identity)));
+            // Admit the small CONTROL records while refusing the larger PAYLOAD
+            // record under the original immutable caller policy.
+            options.crypto_policy.max_ciphertext_record_bytes = 4096;
             let mut opened = open_indexed_random_encrypted(
                 CountingSource {
                     source: MemoryRandomReadSource::new(encrypted.bytes),
                     reads: Arc::clone(&reads),
                 },
                 RandomAccessPolicy::default(),
-                EncryptedOpenOptions::new(Some(Unlock::Identity(&identity))),
+                options,
             )
             .unwrap();
+            let refused = opened
+                .segments
+                .iter()
+                .filter(|segment| segment.class == super::SEGMENT_PAYLOAD)
+                .max_by_key(|segment| segment.extent)
+                .expect("fixture has a PAYLOAD segment")
+                .clone();
+            assert!(refused.extent > 4096 + SEGMENT_HEADER_LEN + PROTECTED_HEADER_LEN);
             reads.lock().unwrap().clear();
-            opened.crypto_policy.max_ciphertext_record_bytes = 16;
             let error = opened
                 .read_entry(&LogicalPath::from_utf8(["file"]).unwrap())
                 .unwrap_err();
             assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
             let requests = reads.lock().unwrap();
-            assert!(!requests.is_empty());
-            assert!(requests.iter().all(|(_, len)| *len == PROTECTED_HEADER_LEN));
+            let protected_header = (refused.offset + SEGMENT_HEADER_LEN, PROTECTED_HEADER_LEN);
+            assert!(requests.contains(&protected_header));
+            // Unrelated small PAYLOAD support objects can be admitted. For the
+            // refused large segment, only its public protected header is read.
+            assert!(
+                requests
+                    .iter()
+                    .filter(|(offset, len)| {
+                        *offset < refused.offset + refused.extent && *offset + *len > refused.offset
+                    })
+                    .all(|request| *request == protected_header),
+                "requests intersecting refused segment: {requests:?}"
+            );
         }
     }
 
@@ -2336,7 +2361,7 @@ mod tests {
             // The immutable source-buffer cap leaves room for trace storage.
             // Refetching proves that plaintext frames are not cached; this
             // assertion does not qualify aggregate decrypted allocations.
-            assert!(largest_payload < opened.crypto_policy.max_working_memory_bytes);
+            assert!(largest_payload < opened.work.policy().max_working_memory_bytes);
             for (name, expected) in [("first", &first), ("second", &second)] {
                 let read = opened
                     .read_entry(&LogicalPath::from_utf8([name]).unwrap())
@@ -2491,6 +2516,16 @@ mod tests {
             },
         )
         .unwrap();
+        let mut matrix_only = EncryptedOpenOptions::new(Some(Unlock::Password(password)));
+        matrix_only.crypto_policy.max_working_memory_bytes = 262_144 * 1024;
+        let error = open_indexed_random_encrypted(
+            MemoryRandomReadSource::new(encrypted.bytes.clone()),
+            RandomAccessPolicy::default(),
+            matrix_only,
+        )
+        .err()
+        .expect("live range buffers and Argon2 must share the same budget");
+        assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
         let mut opened = open_indexed_random_encrypted(
             MemoryRandomReadSource::new(encrypted.bytes),
             RandomAccessPolicy::default(),

@@ -63,7 +63,8 @@ transcripts and temporary ordinary-container materialization also coexist.
 Aggregate-memory qualification for this fallback remains open. Encrypted range
 sources fill a library-owned destination whose capacity carries a shared crypto
 reservation; sources providing only an allocating callback are refused. This
-accounts for adopted source buffers and retained trace/revision storage, while
+accounts for adopted source buffers, retained trace/revision storage and the
+caller-owned Argon2 block matrix sharing the original crypto context, while
 source callback internals remain outside the managed counter. Allocation-request
 behavior, parser/model copies and nested full-reader work still require their
 own qualification. No hard aggregate working-memory guarantee is claimed for

@@ -2,6 +2,7 @@
 
 use std::collections::BTreeSet;
 
+use super::working::{CryptoWorkContext, WorkBlocks};
 use sha2::{Digest as _, Sha256};
 use subtle::ConstantTimeEq as _;
 use x_wing::{
@@ -206,18 +207,19 @@ pub(super) fn encrypt_with_file_key(
     archive_id: [u8; 32],
     options: EncryptedWriteOptions<'_>,
 ) -> Result<EncryptedArchive> {
-    encrypt_with_file_key_policy(parts, afk, archive_id, options, CryptoPolicy::default())
+    let work = CryptoWorkContext::new(CryptoPolicy::default());
+    encrypt_with_file_key_context(parts, afk, archive_id, options, &work)
 }
 
-fn encrypt_with_file_key_policy(
+fn encrypt_with_file_key_context(
     parts: EncryptedPlainParts,
     afk: &[u8; 32],
     archive_id: [u8; 32],
     options: EncryptedWriteOptions<'_>,
-    crypto_policy: CryptoPolicy,
+    work: &CryptoWorkContext,
 ) -> Result<EncryptedArchive> {
     validate_write_options(&options)?;
-    let (policy, stanzas, directory) = build_recipients(afk, &archive_id, &options, crypto_policy)?;
+    let (policy, stanzas, directory) = build_recipients(afk, &archive_id, &options, work)?;
     encrypt_with_material(
         parts, afk, archive_id, options, policy, stanzas, directory, None,
     )
@@ -563,9 +565,9 @@ fn build_recipients(
     afk: &[u8; 32],
     archive_id: &[u8; 32],
     options: &EncryptedWriteOptions<'_>,
-    crypto_policy: CryptoPolicy,
+    work: &CryptoWorkContext,
 ) -> Result<(ProtectionPolicy, Vec<wire::RecipientStanza>, Vec<Vec<u8>>)> {
-    validate_recipient_creation_policy(options.recipients, options.password, crypto_policy)?;
+    validate_recipient_creation_policy(options.recipients, options.password, work)?;
     if let Some(password) = options.password {
         let parameters = a2id(
             &random()?,
@@ -573,7 +575,7 @@ fn build_recipients(
             PASSWORD_CREATION_PASSES,
             PASSWORD_CREATION_PARALLELISM,
         );
-        let secret = password_secret(password, &parameters, crypto_policy)?;
+        let secret = password_secret(password, &parameters, work)?;
         let mut stanza = wire::RecipientStanza {
             stanza_type: 2,
             protection_class: 2,
@@ -624,8 +626,9 @@ fn build_recipients(
 fn validate_recipient_creation_policy(
     recipients: &[XWingRecipient],
     password: Option<&[u8]>,
-    policy: CryptoPolicy,
+    work: &CryptoWorkContext,
 ) -> Result<()> {
+    let policy = work.policy();
     let count = if password.is_some() {
         1
     } else {
@@ -639,7 +642,7 @@ fn validate_recipient_creation_policy(
     if password.is_some() {
         // Salt does not affect admission. Check the frozen creation profile
         // before allocating replacement planning state or invoking the KDF.
-        super::parse_a2id(
+        let (_, params) = super::parse_a2id(
             &a2id(
                 &[0; 16],
                 PASSWORD_CREATION_MEMORY_KIB,
@@ -648,6 +651,7 @@ fn validate_recipient_creation_policy(
             ),
             policy,
         )?;
+        WorkBlocks::check_fit(work.budget(), params.block_count())?;
     }
     Ok(())
 }
@@ -663,14 +667,19 @@ pub fn open_encrypted_authenticated(
     bytes: &[u8],
     options: EncryptedOpenOptions<'_>,
 ) -> Result<AuthenticatedEncryptedArchive> {
+    let work = CryptoWorkContext::new(options.crypto_policy);
+    open_encrypted_authenticated_with_context(bytes, options, &work)
+}
+
+fn open_encrypted_authenticated_with_context(
+    bytes: &[u8],
+    mut options: EncryptedOpenOptions<'_>,
+    work: &CryptoWorkContext,
+) -> Result<AuthenticatedEncryptedArchive> {
+    options.crypto_policy = work.policy();
     let parsed = parse_public(bytes, options.crypto_policy)?;
     let unlock = options.unlock.ok_or_else(no_recipient)?;
-    let (afk, keys) = unlock_envelope(
-        &parsed.envelope,
-        parsed.features,
-        unlock,
-        options.crypto_policy,
-    )?;
+    let (afk, keys) = unlock_envelope(&parsed.envelope, parsed.features, unlock, work)?;
     let pci = physical_container_identity(bytes);
     let decoded = decrypt_segments(
         parsed.segments,
@@ -713,10 +722,12 @@ pub fn verify_encrypted(
 /// verification. PAYLOAD ciphertext copies are unnecessary in this path.
 pub(super) fn open_encrypted_with_unlocked_keys(
     bytes: &[u8],
-    options: EncryptedOpenOptions<'_>,
+    mut options: EncryptedOpenOptions<'_>,
     expected_envelope: &wire::CryptoEnvelope,
     keys: &KeyHierarchy,
+    work: &CryptoWorkContext,
 ) -> Result<OpenedArchive> {
+    options.crypto_policy = work.policy();
     let parsed = parse_public(bytes, options.crypto_policy)?;
     if parsed.envelope.encode()? != expected_envelope.encode()? {
         return Err(segment_invalid(
@@ -749,6 +760,7 @@ pub(super) fn open_encrypted_with_unlocked_keys(
 }
 
 struct MutationState {
+    work: CryptoWorkContext,
     opened: OpenedArchive,
     afk: super::Secret32,
     archive_id: [u8; 32],
@@ -760,14 +772,10 @@ struct MutationState {
 }
 
 fn open_for_mutation(bytes: &[u8], options: EncryptedOpenOptions<'_>) -> Result<MutationState> {
+    let work = CryptoWorkContext::new(options.crypto_policy);
     let parsed = parse_public(bytes, options.crypto_policy)?;
     let unlock = options.unlock.ok_or_else(no_recipient)?;
-    let (afk, keys) = unlock_envelope(
-        &parsed.envelope,
-        parsed.features,
-        unlock,
-        options.crypto_policy,
-    )?;
+    let (afk, keys) = unlock_envelope(&parsed.envelope, parsed.features, unlock, &work)?;
     let pci = physical_container_identity(bytes);
     let decoded = decrypt_segments(
         parsed.segments,
@@ -786,6 +794,7 @@ fn open_for_mutation(bytes: &[u8], options: EncryptedOpenOptions<'_>) -> Result<
         pci,
     )?;
     Ok(MutationState {
+        work,
         opened,
         afk,
         archive_id: parsed.envelope.archive_id,
@@ -845,7 +854,7 @@ pub fn embed_signature(
         directory,
         Some(&state.payload_segments),
     )?;
-    verify_mutation_output(&output.bytes, &state.afk.0, options)?;
+    verify_mutation_output(&output.bytes, &state.afk.0, options, &state.work)?;
     Ok(output)
 }
 
@@ -893,12 +902,8 @@ pub fn add_recipient(
         include_index: state.include_index,
         embedded_signatures: &[],
     };
-    let (_, new_stanzas, new_directory) = build_recipients(
-        &state.afk.0,
-        &state.archive_id,
-        &temporary,
-        options.crypto_policy,
-    )?;
+    let (_, new_stanzas, new_directory) =
+        build_recipients(&state.afk.0, &state.archive_id, &temporary, &state.work)?;
     state.envelope.stanzas.extend(new_stanzas);
     let mut directory = state
         .recipient_directory
@@ -926,7 +931,7 @@ pub fn add_recipient(
         directory,
         Some(&state.payload_segments),
     )?;
-    verify_mutation_output(&output.bytes, &state.afk.0, options)?;
+    verify_mutation_output(&output.bytes, &state.afk.0, options, &state.work)?;
     Ok(output)
 }
 
@@ -993,7 +998,7 @@ fn rotate_encryption_epoch(
     password: Option<&[u8]>,
     options: EncryptedOpenOptions<'_>,
 ) -> Result<EncryptedArchive> {
-    validate_recipient_creation_policy(recipients, password, options.crypto_policy)?;
+    validate_recipient_creation_policy(recipients, password, &state.work)?;
     let afk = super::Secret32(random::<32>()?);
     let archive_id = random::<32>()?;
     let keys = KeyHierarchy::derive(&afk.0, &archive_id)?;
@@ -1014,7 +1019,7 @@ fn rotate_encryption_epoch(
     }
     .to_owned();
     let parts = prepare_encrypted_plain_parts(&archive)?;
-    let output = encrypt_with_file_key_policy(
+    let output = encrypt_with_file_key_context(
         parts,
         &afk.0,
         archive_id,
@@ -1026,9 +1031,9 @@ fn rotate_encryption_epoch(
             include_index: state.include_index,
             embedded_signatures: &state.signatures,
         },
-        options.crypto_policy,
+        &state.work,
     )?;
-    verify_mutation_output(&output.bytes, &afk.0, options)?;
+    verify_mutation_output(&output.bytes, &afk.0, options, &state.work)?;
     Ok(output)
 }
 
@@ -1039,8 +1044,10 @@ fn rotate_encryption_epoch(
 fn verify_mutation_output(
     bytes: &[u8],
     afk: &[u8; 32],
-    options: EncryptedOpenOptions<'_>,
+    mut options: EncryptedOpenOptions<'_>,
+    work: &CryptoWorkContext,
 ) -> Result<()> {
+    options.crypto_policy = work.policy();
     let parsed = parse_public(bytes, options.crypto_policy)?;
     let keys = KeyHierarchy::derive(afk, &parsed.envelope.archive_id)?;
     let padding = PaddingMode::try_from(parsed.envelope.padding_mode)?;
@@ -1122,7 +1129,8 @@ pub fn inspect_encrypted(
     let authenticated = if let Some(unlock) = unlock {
         let mut options = EncryptedOpenOptions::new(Some(unlock));
         options.crypto_policy = policy;
-        let opened = open_encrypted(bytes, options)?;
+        let work = CryptoWorkContext::new(policy);
+        let opened = open_encrypted_authenticated_with_context(bytes, options, &work)?.opened;
         Some(inspect(&opened)?)
     } else {
         None
@@ -1306,8 +1314,9 @@ pub(super) fn unlock_envelope(
     envelope: &wire::CryptoEnvelope,
     features: u64,
     unlock: Unlock<'_>,
-    policy: CryptoPolicy,
+    work: &CryptoWorkContext,
 ) -> Result<(super::Secret32, KeyHierarchy)> {
+    let policy = work.policy();
     let padding = PaddingMode::try_from(envelope.padding_mode)?;
     let boundary = BoundaryMode::try_from(envelope.boundary_mode)?;
     let context = public_crypto_context(&envelope.archive_id, features, padding, boundary)?;
@@ -1352,11 +1361,9 @@ pub(super) fn unlock_envelope(
                         .expect("X-Wing shared secret length"),
                 ))
             }
-            (Unlock::Password(password), 2) => Some(password_secret(
-                password,
-                &stanza.method_parameters,
-                policy,
-            )?),
+            (Unlock::Password(password), 2) => {
+                Some(password_secret(password, &stanza.method_parameters, work)?)
+            }
             _ => None,
         };
         let Some(method_secret) = method_secret else {
@@ -3121,7 +3128,12 @@ mod tests {
             max_identity_attempts: 0,
             ..CryptoPolicy::default()
         };
-        let error = match unlock_envelope(&envelope, 0, Unlock::Password(b"local"), policy) {
+        let error = match unlock_envelope(
+            &envelope,
+            0,
+            Unlock::Password(b"local"),
+            &CryptoWorkContext::new(policy),
+        ) {
             Err(error) => error,
             Ok(_) => panic!("zero matching-attempt budget unlocked an envelope"),
         };
@@ -3131,7 +3143,12 @@ mod tests {
             max_identity_attempts: 1,
             ..CryptoPolicy::default()
         };
-        let error = match unlock_envelope(&envelope, 0, Unlock::Password(b"local"), policy) {
+        let error = match unlock_envelope(
+            &envelope,
+            0,
+            Unlock::Password(b"local"),
+            &CryptoWorkContext::new(policy),
+        ) {
             Err(error) => error,
             Ok(_) => panic!("malformed password parameters unlocked an envelope"),
         };
@@ -3458,7 +3475,12 @@ mod tests {
         let mut options = EncryptedOpenOptions::new(Some(Unlock::Password(b"old password")));
         options.crypto_policy.max_argon2_memory_kib = 65_536;
         let parameters = a2id(&[0x63; 16], 65_536, 3, 4);
-        let secret = password_secret(b"old password", &parameters, options.crypto_policy).unwrap();
+        let secret = password_secret(
+            b"old password",
+            &parameters,
+            &CryptoWorkContext::new(options.crypto_policy),
+        )
+        .unwrap();
         let mut stanza = wire::RecipientStanza {
             stanza_type: 2,
             protection_class: 2,
@@ -3488,6 +3510,11 @@ mod tests {
         let error = change_password(&initial.bytes, options, b"new password").unwrap_err();
         assert_eq!(error.code(), ReasonCode::CryptoPasswordKdfPolicyRefused);
         assert!(open_encrypted(&initial.bytes, options).is_ok());
+        let mut matrix_limited = options;
+        matrix_limited.crypto_policy.max_argon2_memory_kib = 262_144;
+        matrix_limited.crypto_policy.max_working_memory_bytes = 128 * 1024 * 1024;
+        let error = change_password(&initial.bytes, matrix_limited, b"new password").unwrap_err();
+        assert_eq!(error.code(), ReasonCode::CryptoResourcePolicyRefused);
     }
 
     #[test]

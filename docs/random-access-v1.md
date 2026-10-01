@@ -35,7 +35,9 @@ the bounded fill method, encrypted reads return `PolicyRefused` with
 adapter that allocates through the older method and copies its result.
 
 Encrypted fetched buffers and retained access trace storage share a managed
-working-capacity budget and remain charged for their ownership lifetime. Their
+working-capacity budget with password Argon2 block storage and remain charged
+for their ownership lifetime. Unlock cannot create a separate default budget:
+the complete block layout must fit alongside retained range work. Their
 optional ciphertext cache has sixteen fixed bookkeeping slots; each retained
 buffer and every returned cache-hit copy is charged separately. Cached byte
 capacity cannot exceed `max_cached_bytes`, and zero disables retention. Optional

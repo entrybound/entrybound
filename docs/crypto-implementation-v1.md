@@ -170,6 +170,22 @@ checks happen before the corresponding KDF, allocation, or segment work where
 the public framing permits it. After authentication, the ordinary caller-owned
 ResourceBudget and DecodeRequirements are enforced before codec decoding.
 
+One immutable crypto work context carries the original caller policy through
+slice and range unlocks, the legacy already-unlocked verifier, and mutation
+stanza creation and replacement verification. Argon2 uses caller-owned,
+fully initialized block storage: its complete checked block layout is reserved
+before allocation against the same counter as retained range buffers and
+cache entries. The block words are wiped, backing freed, and reservation
+released after each KDF call, including error and unwind paths. The pinned
+Argon2 `zeroize` feature is enabled; the frozen KDF profile is unchanged.
+Writer-only creation retains its existing public API and default policy.
+
+This covers the managed block allocation rather than every heap or stack
+allocation or process RSS. Fixed budget/error controls are outside that
+counter. Complete accounting of other crypto buffers, legacy/mutation state
+and allocator-request behavior remains required before aggregate memory
+qualification can pass.
+
 Encrypted extraction calls the same capability-relative, exclusive-create
 materializer only after envelope, all AEAD records, segment finality, private
 canonical structure, EAM semantics, codec/transforms/reconstruction, and all

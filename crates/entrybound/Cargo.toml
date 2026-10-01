@@ -18,7 +18,7 @@ research-internals = []
 [dependencies]
 aes = "=0.9.3"
 aes-gcm-siv = "=0.12.1"
-argon2 = "=0.6.0"
+argon2 = { version = "=0.6.0", features = ["zeroize"] }
 bzip2 = "=0.6.1"
 cap-std = "4.0.3"
 cap-fs-ext = "=4.0.3"

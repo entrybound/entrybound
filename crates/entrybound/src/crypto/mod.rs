@@ -20,6 +20,7 @@ use argon2::{Algorithm, Argon2, Params, Version};
 use hkdf::Hkdf;
 use hmac::{Hmac, KeyInit as HmacKeyInit, Mac};
 use sha2::{Digest as _, Sha256};
+use working::{CryptoWorkContext, WorkBlocks};
 use x_wing::{
     DecapsulationKey, EncapsulationKey, XWingKem,
     kem::{Decapsulator as _, Kem as _, KeyExport as _},
@@ -725,13 +726,22 @@ fn parse_a2id(bytes: &[u8], policy: CryptoPolicy) -> Result<([u8; 16], Params)> 
     Ok((salt, params))
 }
 
-fn password_secret(password: &[u8], parameters: &[u8], policy: CryptoPolicy) -> Result<Secret32> {
-    let (salt, params) = parse_a2id(parameters, policy)?;
-    let mut output = [0; 32];
+fn password_secret(
+    password: &[u8],
+    parameters: &[u8],
+    work: &CryptoWorkContext,
+) -> Result<Secret32> {
+    let (salt, params) = parse_a2id(parameters, work.policy())?;
+    if password.len() > argon2::MAX_PWD_LEN {
+        return Err(no_recipient());
+    }
+    let mut memory = WorkBlocks::zeroed(work.budget(), params.block_count())?;
+    let mut output = Secret32([0; 32]);
     Argon2::new(Algorithm::Argon2id, Version::V0x13, params)
-        .hash_password_into(password, &salt, &mut output)
+        .hash_password_into_with_memory(password, &salt, &mut output.0, memory.as_mut_slice())
         .map_err(|_| no_recipient())?;
-    Ok(Secret32(output))
+    drop(memory);
+    Ok(output)
 }
 
 fn random<const N: usize>() -> Result<[u8; N]> {
@@ -912,7 +922,7 @@ mod tests {
         let secret = password_secret(
             b"correct horse battery staple",
             &parameters,
-            CryptoPolicy::default(),
+            &CryptoWorkContext::new(CryptoPolicy::default()),
         )
         .unwrap();
         assert_eq!(hex(&secret.0), vector("V6_ARGON2ID_OUTPUT"));
@@ -1126,16 +1136,50 @@ mod tests {
             max_argon2_memory_kib: 65_536,
             ..CryptoPolicy::default()
         };
-        let Err(error) = password_secret(b"not evaluated", &parameters, policy) else {
+        let Err(error) = password_secret(
+            b"not evaluated",
+            &parameters,
+            &CryptoWorkContext::new(policy),
+        ) else {
             panic!("over-policy Argon2 parameters were accepted")
         };
         assert_eq!(error.code(), ReasonCode::CryptoPasswordKdfPolicyRefused);
 
         let malformed = a2id(&[0x60; 16], 32_768, 3, 4);
-        let Err(error) = password_secret(b"not evaluated", &malformed, CryptoPolicy::default())
-        else {
+        let Err(error) = password_secret(
+            b"not evaluated",
+            &malformed,
+            &CryptoWorkContext::new(CryptoPolicy::default()),
+        ) else {
             panic!("malformed Argon2 parameters were accepted")
         };
         assert_eq!(error.code(), ReasonCode::CryptoRecipientStanzaInvalid);
+    }
+
+    #[test]
+    fn argon2_matrix_refuses_before_allocation_when_original_work_is_retained() {
+        let parameters = a2id(&[0x60; 16], 65_536, 3, 4);
+        let (_, params) = parse_a2id(&parameters, CryptoPolicy::default()).unwrap();
+        let matrix_bytes = u64::try_from(
+            std::alloc::Layout::array::<argon2::Block>(params.block_count())
+                .unwrap()
+                .size(),
+        )
+        .unwrap();
+        assert_eq!(matrix_bytes, 65_536 * 1024);
+        for retained_bytes in [0, 1] {
+            let work = CryptoWorkContext::new(CryptoPolicy {
+                max_working_memory_bytes: matrix_bytes - u64::from(retained_bytes == 0),
+                ..CryptoPolicy::default()
+            });
+            let retained = working::WorkBytes::zeroed(work.budget(), retained_bytes).unwrap();
+            let Err(error) = password_secret(b"not evaluated", &parameters, &work) else {
+                panic!("a matrix exceeding the shared caller budget was admitted")
+            };
+            assert_eq!(error.code(), ReasonCode::CryptoResourcePolicyRefused);
+            assert_eq!(work.budget().live_bytes(), retained_bytes as u64);
+            drop(retained);
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
     }
 }

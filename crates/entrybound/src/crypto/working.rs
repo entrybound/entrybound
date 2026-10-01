@@ -11,7 +11,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 use zeroize::Zeroize as _;
 
-use super::resource_refused;
+use super::{CryptoPolicy, resource_refused};
 use crate::diagnostics::Result;
 
 struct BudgetState {
@@ -74,6 +74,31 @@ impl WorkBudget {
     }
 }
 
+/// The original caller policy and one counter for the complete crypto operation.
+/// Clones share the counter; nested helpers never construct a new default budget.
+#[derive(Clone)]
+pub(crate) struct CryptoWorkContext {
+    policy: CryptoPolicy,
+    budget: WorkBudget,
+}
+
+impl CryptoWorkContext {
+    pub(crate) fn new(policy: CryptoPolicy) -> Self {
+        Self {
+            policy,
+            budget: WorkBudget::new(policy.max_working_memory_bytes),
+        }
+    }
+
+    pub(crate) fn policy(&self) -> CryptoPolicy {
+        self.policy
+    }
+
+    pub(crate) fn budget(&self) -> &WorkBudget {
+        &self.budget
+    }
+}
+
 /// A reservation is not Clone. Allocation owners retain it until backing free.
 pub(crate) struct WorkLease {
     budget: WorkBudget,
@@ -112,6 +137,57 @@ fn allocate<T>(budget: &WorkBudget, capacity: usize) -> Result<(Vec<T>, WorkLeas
         ));
     }
     Ok((storage, lease))
+}
+
+/// A fixed-capacity, fully initialized secret Argon2 matrix.
+/// Only a borrowed block slice is exposed, with no growth or Vec conversion.
+pub(crate) struct WorkBlocks {
+    storage: Vec<argon2::Block>,
+    lease: Option<WorkLease>,
+    #[cfg(test)]
+    before_free: Option<fn(&[argon2::Block], &WorkBudget)>,
+}
+
+impl WorkBlocks {
+    /// Early creation preflight only. The actual owner reserves again before
+    /// allocation; this check cannot admit later work against a stale counter.
+    pub(crate) fn check_fit(budget: &WorkBudget, count: usize) -> Result<()> {
+        drop(budget.reserve(requested_bytes::<argon2::Block>(count)?)?);
+        Ok(())
+    }
+
+    pub(crate) fn zeroed(budget: &WorkBudget, count: usize) -> Result<Self> {
+        let (mut storage, lease) = allocate(budget, count)?;
+        storage.resize_with(count, argon2::Block::new);
+        Ok(Self {
+            storage,
+            lease: Some(lease),
+            #[cfg(test)]
+            before_free: None,
+        })
+    }
+
+    pub(crate) fn as_mut_slice(&mut self) -> &mut [argon2::Block] {
+        &mut self.storage
+    }
+}
+
+impl Drop for WorkBlocks {
+    fn drop(&mut self) {
+        for block in &mut self.storage {
+            block.zeroize();
+        }
+        #[cfg(test)]
+        if let Some(observer) = self.before_free {
+            observer(
+                &self.storage,
+                &self.lease.as_ref().expect("live matrix lease").budget,
+            );
+        }
+        // Secret words are wiped and backing freed before the lease releases.
+        drop(std::mem::take(&mut self.storage));
+        drop(self.lease.take());
+    }
 }
 
 /// A fixed-capacity, fully initialized secret-capable byte allocation.
@@ -268,7 +344,70 @@ impl<T: Copy> Drop for WorkVec<T> {
 
 #[cfg(test)]
 mod tests {
-    use super::{WorkBudget, WorkBytes, WorkVec, requested_bytes};
+    use super::{CryptoWorkContext, WorkBlocks, WorkBudget, WorkBytes, WorkVec, requested_bytes};
+    use crate::crypto::CryptoPolicy;
+
+    #[test]
+    fn argon2_blocks_share_the_original_context_and_charge_complete_layout() {
+        assert_eq!(std::mem::size_of::<argon2::Block>(), argon2::Block::SIZE);
+        assert_eq!(std::mem::align_of::<argon2::Block>(), 64);
+        let mut policy = CryptoPolicy {
+            max_working_memory_bytes: 2 * 1024,
+            ..CryptoPolicy::default()
+        };
+        let work = CryptoWorkContext::new(policy);
+        let shared = work.clone();
+        policy.max_working_memory_bytes = 1;
+        assert_eq!(policy.max_working_memory_bytes, 1);
+        assert_eq!(work.policy().max_working_memory_bytes, 2048);
+        let retained = WorkBytes::zeroed(work.budget(), 1).unwrap();
+        assert!(WorkBlocks::zeroed(shared.budget(), 2).is_err());
+        assert_eq!(shared.budget().live_bytes(), 1);
+        drop(retained);
+        let mut blocks = WorkBlocks::zeroed(shared.budget(), 2).unwrap();
+        assert_eq!(work.budget().live_bytes(), 2048);
+        assert!(
+            blocks
+                .as_mut_slice()
+                .iter()
+                .all(|block| block.as_ref().iter().all(|word| *word == 0))
+        );
+        drop(blocks);
+        assert_eq!(work.budget().live_bytes(), 0);
+        assert!(WorkBlocks::zeroed(work.budget(), usize::MAX).is_err());
+    }
+
+    #[test]
+    fn argon2_blocks_wipe_before_free_and_release_on_error_and_unwind() {
+        fn before_free(blocks: &[argon2::Block], budget: &WorkBudget) {
+            assert_eq!(blocks.len(), 2);
+            assert!(
+                blocks
+                    .iter()
+                    .all(|block| block.as_ref().iter().all(|word| *word == 0))
+            );
+            assert_eq!(budget.live_bytes(), 2048);
+        }
+        for unwind in [false, true] {
+            let budget = WorkBudget::new(2048);
+            let result = std::panic::catch_unwind(|| -> crate::diagnostics::Result<()> {
+                let mut blocks = WorkBlocks::zeroed(&budget, 2)?;
+                blocks.before_free = Some(before_free);
+                for block in blocks.as_mut_slice() {
+                    block.as_mut().fill(0xDEAD_BEEF);
+                }
+                if unwind {
+                    panic!("synthetic KDF unwind");
+                }
+                Err(super::resource_refused("synthetic KDF error"))
+            });
+            assert_eq!(result.is_err(), unwind);
+            if !unwind {
+                assert!(result.unwrap().is_err());
+            }
+            assert_eq!(budget.live_bytes(), 0);
+        }
+    }
 
     #[test]
     fn checked_reservations_are_shared_and_released() {
