@@ -18,6 +18,22 @@ usage() { echo "usage: run.sh {provision|stats|assemble|fingerprint|selftest} [a
 [[ $# -ge 1 ]] || usage
 tool=$1; shift
 
+# Help, definition checks and metadata lists need only the stdlib. Dispatch them before
+# data-root setup, including the unambiguous abbreviations accepted by argparse.
+if [[ "$tool" == "provision" ]]; then
+  for arg in "$@"; do
+    case "$arg" in
+      -h|--he|--hel|--help|--ch|--che|--chec|--check|--l|--li|--lis|--list)
+        export PYTHONDONTWRITEBYTECODE=1
+        if [[ -x "$VENV/bin/python" ]]; then
+          exec "$VENV/bin/python" -B "$HERE/provision.py" "$@"
+        fi
+        exec python3 -B "$HERE/provision.py" "$@"
+        ;;
+    esac
+  done
+fi
+
 umask 022
 mkdir -p "$SHARED/cache" "$DATA/corpus/tuning" "$DATA/corpus/validation" "$DATA/heldout" "$DATA/cache" "$DATA/locks"
 chmod 700 "$DATA/heldout"

@@ -463,14 +463,14 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
     iid = item.get("item_id")
     if not isinstance(iid, str) or not KEBAB_RE.match(iid) or len(iid) > 80:
         errors.append(f"{where}: item_id must be kebab-case [a-z0-9-], <=80 chars (got {iid!r})")
-    if item.get("family") not in FAMILIES:
+    if not isinstance(item.get("family"), str) or item["family"] not in FAMILIES:
         errors.append(f"{where}: family must be one of F01..F20")
     if item.get("split") not in SPLITS:
         errors.append(f"{where}: split must be one of {SPLITS}")
-    if item.get("scale") not in SCALES:
+    if not isinstance(item.get("scale"), str) or item["scale"] not in SCALES:
         errors.append(f"{where}: scale must be one of {tuple(SCALES)}")
     kind = item.get("kind")
-    if kind not in KINDS:
+    if not isinstance(kind, str) or kind not in KINDS:
         errors.append(f"{where}: kind must be one of {KINDS}")
     rog = item.get("real_or_generated")
     if rog not in REAL_OR_GENERATED:
@@ -505,7 +505,11 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
     if extra:
         errors.append(f"{where}: recipe has unknown keys {sorted(extra)}")
     input_names = set()
-    for i, inp in enumerate(recipe.get("inputs", []) or []):
+    inputs = recipe.get("inputs", [])
+    if not isinstance(inputs, list):
+        errors.append(f"{where}: recipe.inputs must be a list")
+        inputs = []
+    for i, inp in enumerate(inputs):
         w = f"{where}: recipe.inputs[{i}]"
         if not isinstance(inp, dict):
             errors.append(f"{w} must be an object")
@@ -560,7 +564,11 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
                 errors.append(f"{where}: recipe.git.repo must be an https:// URL")
             if not isinstance(git.get("commit"), str) or not HEX40_RE.match(git["commit"]):
                 errors.append(f"{where}: recipe.git.commit must be a full 40-hex commit id")
-            for sp in git.get("subpaths", []) or []:
+            subpaths = git.get("subpaths", [])
+            if not isinstance(subpaths, list):
+                errors.append(f"{where}: recipe.git.subpaths must be a list")
+                subpaths = []
+            for sp in subpaths:
                 if not isinstance(sp, str) or not safe_relpath(sp, allow_empty=False):
                     errors.append(f"{where}: recipe.git.subpaths entries must be safe relative paths")
             history = git.get("history", "archive")
@@ -572,7 +580,7 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
                                   f"(a full clone carries the whole repository)")
                 # a full clone's .git/index and working-tree stat metadata are not
                 # reproducible across clones/machines, so the output must be unpinned.
-                pin = recipe.get("output_pin", DEFAULT_OUTPUT_PIN.get(kind))
+                pin = recipe.get("output_pin", DEFAULT_OUTPUT_PIN.get(kind) if isinstance(kind, str) else None)
                 if pin is not None:
                     errors.append(f"{where}: recipe.git.history=full requires recipe.output_pin: null "
                                   f"(.git/index stat data is not reproducible)")
@@ -588,7 +596,7 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
                 errors.append(f"{where}: recipe.docker.image must be pinned by digest: name[:tag]@sha256:<64hex>")
             if docker.get("platform", "linux/amd64") not in ("linux/amd64", "linux/arm64", "linux/arm/v7", "linux/386"):
                 errors.append(f"{where}: recipe.docker.platform unsupported")
-    from_items = recipe.get("from_items", []) or []
+    from_items = recipe.get("from_items", [])
     if not isinstance(from_items, list) or not all(isinstance(x, str) and KEBAB_RE.match(x) for x in from_items):
         errors.append(f"{where}: recipe.from_items must be a list of item ids")
         from_items = []
@@ -598,7 +606,7 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
             errors.append(f"{where}: recipe.generator must be an object")
         else:
             _check_script(gen, f"{where}: recipe.generator", errors, need_seed=True)
-    steps = recipe.get("steps", []) or []
+    steps = recipe.get("steps", [])
     if not isinstance(steps, list):
         errors.append(f"{where}: recipe.steps must be a list")
         steps = []
@@ -629,7 +637,7 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
                 valid_inputs.add("git-archive")
             if docker is not None:
                 valid_inputs.add("docker-rootfs")
-            if inp not in valid_inputs:
+            if not isinstance(inp, str) or inp not in valid_inputs:
                 errors.append(f"{w}: input {inp!r} is not a declared input")
         if "dest" in st and (not isinstance(st["dest"], str) or not safe_relpath(st["dest"])):
             errors.append(f"{w}: dest must be a safe relative path")
@@ -655,7 +663,7 @@ def validate_item(item: dict, where: str, errors: list, warnings: list) -> None:
             paths = st.get("paths")
             if not isinstance(paths, list) or not paths or not all(isinstance(p, str) and safe_relpath(p, allow_empty=False) for p in paths):
                 errors.append(f"{w}: paths must be a non-empty list of safe relative paths")
-    pin = recipe.get("output_pin", DEFAULT_OUTPUT_PIN.get(kind))
+    pin = recipe.get("output_pin", DEFAULT_OUTPUT_PIN.get(kind) if isinstance(kind, str) else None)
     if not (pin is None or pin == "TOFU" or (isinstance(pin, str) and HEX64_RE.match(pin))):
         errors.append(f"{where}: recipe.output_pin must be null, \"TOFU\" or 64 hex")
 
@@ -753,6 +761,11 @@ def load_sources(layout: Layout):
             it = dict(item)
             it["_source_file"] = rel
             items[iid] = it
+
+    # Graph checks require validated item/recipe types. Keep item diagnostics
+    # available to callers, but never process invalid definitions as a graph.
+    if errors:
+        return items, errors, warnings
 
     # cross-item checks -----------------------------------------------------
     for iid, it in items.items():

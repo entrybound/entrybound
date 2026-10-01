@@ -16,8 +16,14 @@ Rerunnable: an item whose materialization key (recipe + script hashes + dependen
 hashes) is unchanged and whose on-disk tree still matches its recorded fingerprint is
 skipped.  Any pinned/recorded hash mismatch fails loudly (exit 1).
 
-Usage (inside WSL, via research/corpus/tools/run.sh):
-  run.sh provision --check                 validate definitions only
+Metadata-only usage (inside WSL, directly with Python):
+  python3 -B research/corpus/tools/provision.py --check
+  python3 -B research/corpus/tools/provision.py --list --family F04
+  --check validates all definitions and reports counts only; it takes precedence
+  over --list. --list defaults to tuning/validation and checks selected record files
+  only. Neither mode inspects payload directories.
+
+Materialization usage (inside WSL, via research/corpus/tools/run.sh):
   run.sh provision --family F04 --jobs 4   materialize one family
   run.sh provision --item my-item --rebuild
 """
@@ -32,6 +38,7 @@ import os
 import re
 import secrets
 import shutil
+import stat
 import subprocess
 import sys
 import threading
@@ -1046,8 +1053,9 @@ def main(argv=None) -> int:
                     help="check of already-materialized items: full re-fingerprint, quick lstat digest, "
                          "auto = full up to 512 MiB else quick")
     ap.add_argument("--rebuild", action="store_true", help="rematerialize selected items even if up to date")
-    ap.add_argument("--check", action="store_true", help="validate source definitions and exit")
-    ap.add_argument("--list", action="store_true", help="list items with materialization status and exit")
+    ap.add_argument("--check", action="store_true", help="validate all source definitions; report counts only and exit")
+    ap.add_argument("--list", action="store_true", help="list selected definition/record metadata and exit "
+                    "(default splits: tuning,validation; no payload checks)")
     ap.add_argument("--dry-run", action="store_true", help="report what would be materialized")
     ap.add_argument("--offline", action="store_true", help="never touch the network (cache only)")
     ap.add_argument("--reverify-cache", action="store_true", help="rehash cached download blobs")
@@ -1058,32 +1066,65 @@ def main(argv=None) -> int:
     os.umask(0o022)
     layout = cl.Layout(args.corpus_dir, args.data_root)
     items, errors, warnings = cl.load_sources(layout)
-    for w in warnings:
-        log(f"WARNING: {w}")
+    metadata_only = args.check or args.list
+    if metadata_only:
+        # Source diagnostics can identify unrelated held-out items, groups and
+        # upstreams. Keep the CLI summary aggregate; curator diagnostics remain
+        # available through load_sources under the existing custody rules.
+        if warnings:
+            log(f"WARNING: {len(warnings)} source definition warning(s)")
+    else:
+        for w in warnings:
+            log(f"WARNING: {w}")
     if errors:
-        for e in errors:
-            log(f"ERROR: {e}")
+        if not metadata_only:
+            for e in errors:
+                log(f"ERROR: {e}")
         log(f"{len(errors)} source definition error(s)")
         return 2
-    if args.check or args.list:
-        for iid in sorted(items, key=lambda k: (items[k]["family"], items[k]["split"], k)):
-            it = items[iid]
-            rec = cl.load_json_if_exists(layout.record_path(iid))
-            status = "recorded" if rec else "not-materialized"
-            log(f"{it['family']} {it['split']:<10} {it['scale']:<6} {it['kind']:<13} {iid}  [{status}]")
-        for o in find_orphans(layout, items):
-            log(f"WARNING: orphan directory not defined by any source (or split changed): {o}")
+    if args.check:
         log(f"OK: {len(items)} item(s) in {len(list(layout.sources_dir.glob('*.json')))} source file(s)")
         return 0
 
     fams, groups, ids, splits = split_csv(args.family), split_csv(args.group), split_csv(args.item), split_csv(args.split)
     unknown = ids - set(items)
     if unknown:
-        log(f"ERROR: unknown item(s): {sorted(unknown)}")
+        if args.list:
+            log(f"ERROR: {len(unknown)} unknown item(s)")
+        else:
+            log(f"ERROR: unknown item(s): {sorted(unknown)}")
         return 2
+    if args.list and not splits:
+        splits = {"tuning", "validation"}
     selected = {iid for iid, it in items.items()
                 if (not fams or it["family"] in fams) and (not groups or it["independence_group"] in groups)
                 and (not ids or iid in ids) and (not splits or it["split"] in splits)}
+    if args.list:
+        rows, record_errors = [], 0
+        for iid in sorted(selected, key=lambda k: (items[k]["family"], items[k]["split"], k)):
+            it = items[iid]
+            # Presence is metadata only: do not parse records or follow links to
+            # their targets, which could be payload paths.
+            try:
+                mode = layout.record_path(iid).lstat().st_mode
+            except FileNotFoundError:
+                status = "not-recorded"
+            except OSError:
+                record_errors += 1
+                continue
+            else:
+                if not stat.S_ISREG(mode):
+                    record_errors += 1
+                    continue
+                status = "recorded"
+            rows.append(f"{it['family']} {it['split']:<10} {it['scale']:<6} {it['kind']:<13} {iid}  [{status}]")
+        if record_errors:
+            log(f"ERROR: {record_errors} selected metadata record(s) could not be inspected")
+            return 2
+        for row in rows:
+            log(row)
+        log(f"OK: {len(selected)} item(s) selected")
+        return 0
     frontier = list(selected)
     while frontier:
         n = frontier.pop()
