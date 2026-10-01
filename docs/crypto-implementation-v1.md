@@ -132,6 +132,12 @@ checks encoded bounds and caller limits before invoking Argon2. Passwords are
 read from a controlling terminal and creation requires confirmation; argv never
 contains a password.
 
+Recipient mutations retain the caller's crypto, resource, and decode limits
+when verifying the replacement. Password rotation also applies the original
+Argon2 limits to the newly created stanza; the frozen creation defaults may
+therefore exceed a caller limit even when the old stanza was permitted.
+Such refusal leaves the original bytes usable with the original unlock.
+
 ## Segments, padding, and chunk boundaries
 
 CONTROL and PAYLOAD segments use their own derived roots, random salts, global

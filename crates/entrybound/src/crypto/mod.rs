@@ -8,6 +8,7 @@ mod random;
 mod signature;
 mod timestamp;
 mod wire;
+pub(crate) mod working;
 
 use std::path::Path;
 

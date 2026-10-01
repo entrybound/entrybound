@@ -187,7 +187,8 @@ pub fn inspect_indexed_random_encrypted_public(
     policy: RandomAccessPolicy,
     crypto_limits: super::CryptoPolicy,
 ) -> Result<EncryptedRandomPublicInspection> {
-    let mut session = RangeSession::new(Box::new(source), policy)?;
+    let budget = super::working::WorkBudget::new(crypto_limits.max_working_memory_bytes);
+    let mut session = RangeSession::new_crypto(Box::new(source), policy, budget)?;
     if session.policy().max_section_count < 2 {
         return Err(access_policy(
             "encrypted INDEXED framing requires two physical sections",
@@ -197,9 +198,11 @@ pub fn inspect_indexed_random_encrypted_public(
         return Err(truncated("encrypted INDEXED footer is missing"));
     }
     let footer_offset = session.len() - ENCRYPTED_FOOTER_LEN;
-    let footer_bytes = session.read(footer_offset, ENCRYPTED_FOOTER_LEN, AccessPurpose::Footer)?;
+    let footer_bytes =
+        session.read_crypto(footer_offset, ENCRYPTED_FOOTER_LEN, AccessPurpose::Footer)?;
     let footer = parse_footer(&footer_bytes, session.len())?;
-    let preamble_bytes = session.read(0, crate::ecf::PREAMBLE_LEN, AccessPurpose::Preamble)?;
+    let preamble_bytes =
+        session.read_crypto(0, crate::ecf::PREAMBLE_LEN, AccessPurpose::Preamble)?;
     let preamble = decode_preamble(&preamble_bytes)?;
     if preamble.layout != Layout::Indexed
         || preamble.features.incompat & super::FEATURE_ENCRYPTED_INDEXED_V1 == 0
@@ -294,7 +297,9 @@ impl EncryptedRandomAccessArchive {
         );
         options.resource_policy = policy.resource_policy;
         options.decode_policy = policy.decode_policy;
-        let mut session = RangeSession::new(source, policy)?;
+        let budget =
+            super::working::WorkBudget::new(options.crypto_policy.max_working_memory_bytes);
+        let mut session = RangeSession::new_crypto(source, policy, budget)?;
         if session.policy().max_section_count < 2 {
             return Err(access_policy(
                 "encrypted INDEXED framing requires two physical sections",
@@ -305,9 +310,10 @@ impl EncryptedRandomAccessArchive {
         }
         let footer_offset = session.len() - ENCRYPTED_FOOTER_LEN;
         let footer_bytes =
-            session.read(footer_offset, ENCRYPTED_FOOTER_LEN, AccessPurpose::Footer)?;
+            session.read_crypto(footer_offset, ENCRYPTED_FOOTER_LEN, AccessPurpose::Footer)?;
         let footer = parse_footer(&footer_bytes, session.len())?;
-        let preamble_bytes = session.read(0, crate::ecf::PREAMBLE_LEN, AccessPurpose::Preamble)?;
+        let preamble_bytes =
+            session.read_crypto(0, crate::ecf::PREAMBLE_LEN, AccessPurpose::Preamble)?;
         let preamble = decode_preamble(&preamble_bytes)?;
         if preamble.layout != Layout::Indexed
             || preamble.features.incompat & super::FEATURE_ENCRYPTED_INDEXED_V1 == 0
@@ -525,9 +531,9 @@ impl EncryptedRandomAccessArchive {
         if legacy_whole_archive_verified {
             // Descriptor v1 lacks authoritative bounds for unread payloads.
             // Verify the complete source under all caller-owned range limits,
-            // with one uncached source buffer and the existing unlocked keys.
+            // with one charged source buffer and the existing unlocked keys.
             let length = session.len();
-            let bytes = session.read_uncached(0, length, AccessPurpose::EncryptedPayload)?;
+            let bytes = session.read_crypto(0, length, AccessPurpose::EncryptedPayload)?;
             let fully_opened = super::container::open_encrypted_with_unlocked_keys(
                 &bytes, options, &envelope, &keys,
             )?;
@@ -1255,7 +1261,7 @@ fn read_envelope(
     {
         return Err(crypto_policy("CryptoEnvelope extent exceeds caller policy"));
     }
-    let header = session.read(offset, SECTION_HEADER_LEN, AccessPurpose::SectionHeader)?;
+    let header = session.read_crypto(offset, SECTION_HEADER_LEN, AccessPurpose::SectionHeader)?;
     validate_section_header(&header, 32)?;
     let payload_len = be_u64(&header[16..24])?;
     if SECTION_HEADER_LEN.checked_add(payload_len) != Some(extent) {
@@ -1263,7 +1269,7 @@ fn read_envelope(
             "CryptoEnvelope footer/header extent mismatch",
         ));
     }
-    let payload = session.read(
+    let payload = session.read_crypto(
         offset + SECTION_HEADER_LEN,
         payload_len,
         AccessPurpose::EncryptedControl,
@@ -1282,7 +1288,7 @@ fn walk_segments(
     footer: &Footer,
     options: EncryptedOpenOptions<'_>,
 ) -> Result<Vec<SegmentLocator>> {
-    let section = session.read(
+    let section = session.read_crypto(
         footer.segments_offset,
         SECTION_HEADER_LEN,
         AccessPurpose::SectionHeader,
@@ -1308,8 +1314,10 @@ fn walk_segments(
                 "encrypted SegmentHeader walk exceeds caller policy",
             ));
         }
-        let bytes = session.read(cursor, SEGMENT_HEADER_LEN, AccessPurpose::SectionHeader)?;
+        let bytes =
+            session.read_crypto(cursor, SEGMENT_HEADER_LEN, AccessPurpose::SectionHeader)?;
         let header: [u8; 64] = bytes
+            .as_slice()
             .try_into()
             .map_err(|_| truncated("SegmentHeader is truncated"))?;
         let (class, salt, count, extent) = parse_segment_header(&header, ordinal)?;
@@ -1393,9 +1401,10 @@ fn decrypt_segment(
     purpose: AccessPurpose,
 ) -> Result<DecryptedObject> {
     preflight_protected_records(session, locator, ordinal, options)?;
-    // Ciphertext caching remains bounded by RandomAccessPolicy. Decrypted
-    // frames are never retained between entry reads.
-    let bytes = session.read(locator.offset, locator.extent, purpose)?;
+    // Crypto source buffers carry their allocation lease and bypass the
+    // ordinary ciphertext cache. Decrypted frames are not retained between
+    // entry reads; their aggregate allocation accounting remains separate.
+    let bytes = session.read_crypto(locator.offset, locator.extent, purpose)?;
     if bytes.get(..64) != Some(locator.header.as_slice()) {
         return Err(segment_invalid(
             "fetched SegmentHeader changed within the session",
@@ -1857,7 +1866,8 @@ fn preflight_protected_records(
             .checked_add(PROTECTED_HEADER_LEN)
             .filter(|value| *value <= end)
             .ok_or_else(|| truncated("protected header exceeds segment extent"))?;
-        let header = session.read(cursor, PROTECTED_HEADER_LEN, AccessPurpose::SectionHeader)?;
+        let header =
+            session.read_crypto(cursor, PROTECTED_HEADER_LEN, AccessPurpose::SectionHeader)?;
         let class = if counter == u64::from(locator.count) {
             RECORD_END
         } else {
@@ -2168,6 +2178,70 @@ mod tests {
             self.reads.lock().unwrap().push((offset, len));
             self.source.read_exact_at(offset, len)
         }
+
+        fn read_exact_at_into(
+            &self,
+            offset: u64,
+            dst: &mut [u8],
+        ) -> crate::diagnostics::Result<()> {
+            self.reads
+                .lock()
+                .unwrap()
+                .push((offset, u64::try_from(dst.len()).unwrap()));
+            self.source.read_exact_at_into(offset, dst)
+        }
+    }
+
+    #[test]
+    fn encrypted_callers_refuse_sources_without_a_bounded_fill_capability() {
+        struct AllocatingOnlySource(MemoryRandomReadSource);
+        impl RandomReadSource for AllocatingOnlySource {
+            fn len(&self) -> crate::diagnostics::Result<u64> {
+                self.0.len()
+            }
+            fn revision(&self) -> crate::diagnostics::Result<SourceRevision> {
+                self.0.revision()
+            }
+            fn read_exact_at(&self, _: u64, _: u64) -> crate::diagnostics::Result<Vec<u8>> {
+                panic!("encrypted callers must never invoke the allocating source callback")
+            }
+        }
+        let directory = TestDir::new();
+        std::fs::write(directory.path().join("file"), b"bounded fill fixture").unwrap();
+        let archive = plan_directory(directory.path(), PackOptions::default()).unwrap();
+        let (identity, recipient) = XWingIdentity::generate().unwrap();
+        let encrypted = encrypt_archive(
+            &archive,
+            EncryptedWriteOptions {
+                recipients: std::slice::from_ref(&recipient),
+                ..EncryptedWriteOptions::default()
+            },
+        )
+        .unwrap();
+        let public_error = super::inspect_indexed_random_encrypted_public(
+            Box::new(AllocatingOnlySource(MemoryRandomReadSource::new(
+                encrypted.bytes.clone(),
+            ))),
+            RandomAccessPolicy::default(),
+            crate::crypto::CryptoPolicy::default(),
+        )
+        .unwrap_err();
+        let open_error = open_indexed_random_encrypted(
+            Box::new(AllocatingOnlySource(MemoryRandomReadSource::new(
+                encrypted.bytes,
+            ))),
+            RandomAccessPolicy::default(),
+            EncryptedOpenOptions::new(Some(Unlock::Identity(&identity))),
+        )
+        .err()
+        .expect("missing bounded capability must refuse encrypted open");
+        for error in [public_error, open_error] {
+            assert_eq!(
+                error.class(),
+                crate::diagnostics::OutcomeClass::PolicyRefused
+            );
+            assert_eq!(error.code(), super::ReasonCode::RandomAccessPolicyRefused);
+        }
     }
 
     #[test]
@@ -2244,7 +2318,12 @@ mod tests {
                     reads: Arc::clone(&reads),
                 },
                 policy.clone(),
-                EncryptedOpenOptions::new(Some(Unlock::Identity(&identity))),
+                {
+                    let mut options = EncryptedOpenOptions::new(Some(Unlock::Identity(&identity)));
+                    options.crypto_policy.max_working_memory_bytes =
+                        u64::try_from(first.len() + second.len()).unwrap() - 1;
+                    options
+                },
             )
             .unwrap();
             let largest_payload = opened
@@ -2254,10 +2333,10 @@ mod tests {
                 .map(|value| value.extent)
                 .max()
                 .unwrap();
-            // Each encrypted object fits, but retaining both plaintext frames
-            // would exceed this cap. This includes the index-fallback scan.
-            opened.crypto_policy.max_working_memory_bytes = largest_payload;
-            assert!(u64::try_from(first.len() + second.len()).unwrap() > largest_payload);
+            // The immutable source-buffer cap leaves room for trace storage.
+            // Refetching proves that plaintext frames are not cached; this
+            // assertion does not qualify aggregate decrypted allocations.
+            assert!(largest_payload < opened.crypto_policy.max_working_memory_bytes);
             for (name, expected) in [("first", &first), ("second", &second)] {
                 let read = opened
                     .read_entry(&LogicalPath::from_utf8([name]).unwrap())

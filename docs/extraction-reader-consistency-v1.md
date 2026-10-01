@@ -60,10 +60,14 @@ The legacy range implementation currently screens physical source size at
 64 times its length against the crypto working-memory limit. That screen is
 not an aggregate allocation proof: retained controls, container capacity,
 transcripts and temporary ordinary-container materialization also coexist.
-Aggregate-memory qualification for this fallback remains open. A caller-owned
-random source can also return a vector with excess capacity; exact returned
-length alone does not bound that allocation. No hard working-memory guarantee
-is claimed for the legacy fallback until those allocations are accounted for.
+Aggregate-memory qualification for this fallback remains open. Encrypted range
+sources fill a library-owned destination whose capacity carries a shared crypto
+reservation; sources providing only an allocating callback are refused. This
+accounts for adopted source buffers and retained trace/revision storage, while
+source callback internals remain outside the managed counter. Allocation-request
+behavior, parser/model copies and nested full-reader work still require their
+own qualification. No hard aggregate working-memory guarantee is claimed for
+the legacy fallback until those allocations are accounted for.
 
 Corrected encrypted range reads retain authenticated Chunk locators instead
 of decrypted Chunk frames between requests, including when rebuilding an

@@ -14,6 +14,7 @@ use reqwest::header::{
 };
 use reqwest::{StatusCode, Url};
 
+use crate::crypto::working::{WorkBudget, WorkBytes, WorkLease, WorkVec};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::identity::sha256_exact;
 
@@ -41,6 +42,14 @@ pub trait RandomReadSource: Send + Sync {
         Ok(self.len()? == 0)
     }
     fn read_exact_at(&self, offset: u64, len: u64) -> Result<Vec<u8>>;
+    /// Fills caller-owned backing without allocating an intermediate range.
+    /// Crypto sessions require this capability; old custom sources keep
+    /// compiling but refuse until they implement a direct bounded fill.
+    fn read_exact_at_into(&self, _offset: u64, _dst: &mut [u8]) -> Result<()> {
+        Err(policy(
+            "source does not implement caller-buffer bounded reads required by crypto policy",
+        ))
+    }
     fn revision(&self) -> Result<SourceRevision>;
 }
 
@@ -51,6 +60,10 @@ impl<T: RandomReadSource + ?Sized> RandomReadSource for Box<T> {
 
     fn read_exact_at(&self, offset: u64, len: u64) -> Result<Vec<u8>> {
         (**self).read_exact_at(offset, len)
+    }
+
+    fn read_exact_at_into(&self, offset: u64, dst: &mut [u8]) -> Result<()> {
+        (**self).read_exact_at_into(offset, dst)
     }
 
     fn revision(&self) -> Result<SourceRevision> {
@@ -103,6 +116,22 @@ impl RandomReadSource for MemoryRandomReadSource {
 
     fn revision(&self) -> Result<SourceRevision> {
         Ok(self.revision.clone())
+    }
+
+    fn read_exact_at_into(&self, offset: u64, dst: &mut [u8]) -> Result<()> {
+        let start = usize::try_from(offset).map_err(|_| policy("range offset exceeds usize"))?;
+        let end = start
+            .checked_add(dst.len())
+            .ok_or_else(|| policy("range end exceeds usize"))?;
+        let source = self.bytes.get(start..end).ok_or_else(|| {
+            Diagnostic::new(
+                OutcomeClass::Truncated,
+                ReasonCode::TruncatedStream,
+                "requested range extends beyond the memory source",
+            )
+        })?;
+        dst.copy_from_slice(source);
+        Ok(())
     }
 }
 
@@ -167,6 +196,28 @@ impl RandomReadSource for LocalFileRandomReadSource {
             .metadata()
             .map_err(|error| io("reinspect local range source", error))?;
         local_revision(&metadata)
+    }
+
+    fn read_exact_at_into(&self, offset: u64, dst: &mut [u8]) -> Result<()> {
+        let length = u64::try_from(dst.len()).map_err(|_| policy("range length exceeds u64"))?;
+        let end = offset
+            .checked_add(length)
+            .ok_or_else(|| policy("range extent overflows u64"))?;
+        if end > self.len()? {
+            return Err(Diagnostic::new(
+                OutcomeClass::Truncated,
+                ReasonCode::TruncatedStream,
+                "requested range extends beyond the local source",
+            ));
+        }
+        let mut file = self
+            .file
+            .lock()
+            .map_err(|_| unstable("local range-source lock was poisoned"))?;
+        file.seek(SeekFrom::Start(offset))
+            .map_err(|error| io("seek local range source", error))?;
+        file.read_exact(dst)
+            .map_err(|error| io("read local range source", error))
     }
 }
 
@@ -259,18 +310,8 @@ impl HttpRangeSource {
     }
 }
 
-impl RandomReadSource for HttpRangeSource {
-    fn len(&self) -> Result<u64> {
-        match &self.revision {
-            SourceRevision::Http { length, .. } => Ok(*length),
-            _ => unreachable!("HTTP source always has an HTTP revision"),
-        }
-    }
-
-    fn read_exact_at(&self, offset: u64, len: u64) -> Result<Vec<u8>> {
-        if len == 0 {
-            return Ok(Vec::new());
-        }
+impl HttpRangeSource {
+    fn range_response(&self, offset: u64, len: u64) -> Result<reqwest::blocking::Response> {
         let end_exclusive = offset
             .checked_add(len)
             .ok_or_else(|| policy("HTTP range extent overflows u64"))?;
@@ -329,30 +370,66 @@ impl RandomReadSource for HttpRangeSource {
                 "Content-Range {actual_range:?} does not equal {expected_range:?}"
             )));
         }
-        let length = usize::try_from(len).map_err(|_| policy("HTTP range exceeds usize"))?;
-        let mut output = Vec::with_capacity(length);
-        response
-            .take(
-                len.checked_add(1)
-                    .ok_or_else(|| policy("range read limit overflow"))?,
-            )
-            .read_to_end(&mut output)
-            .map_err(|error| invalid_http(format!("cannot read exact HTTP range body: {error}")))?;
-        if output.len() != length {
-            return Err(Diagnostic::new(
-                OutcomeClass::Truncated,
-                ReasonCode::TruncatedStream,
-                format!(
-                    "HTTP range body has {} bytes, expected {length}",
-                    output.len()
-                ),
-            ));
+        Ok(response)
+    }
+}
+
+impl RandomReadSource for HttpRangeSource {
+    fn len(&self) -> Result<u64> {
+        match &self.revision {
+            SourceRevision::Http { length, .. } => Ok(*length),
+            _ => unreachable!("HTTP source always has an HTTP revision"),
         }
+    }
+
+    fn read_exact_at(&self, offset: u64, len: u64) -> Result<Vec<u8>> {
+        if len == 0 {
+            return Ok(Vec::new());
+        }
+        let mut response = self.range_response(offset, len)?;
+        let length = usize::try_from(len).map_err(|_| policy("HTTP range exceeds usize"))?;
+        let mut output = vec![0_u8; length];
+        read_http_body_into(&mut response, &mut output)?;
         Ok(output)
+    }
+
+    fn read_exact_at_into(&self, offset: u64, dst: &mut [u8]) -> Result<()> {
+        let len = u64::try_from(dst.len()).map_err(|_| policy("HTTP range exceeds u64"))?;
+        if len == 0 {
+            return Ok(());
+        }
+        let mut response = self.range_response(offset, len)?;
+        read_http_body_into(&mut response, dst)
     }
 
     fn revision(&self) -> Result<SourceRevision> {
         self.http_revision()
+    }
+}
+
+// Exact body fill never grows destination storage; the overrun probe is fixed.
+fn read_http_body_into(reader: &mut impl Read, dst: &mut [u8]) -> Result<()> {
+    reader
+        .read_exact(dst)
+        .map_err(|error| invalid_http(format!("cannot read exact HTTP range body: {error}")))?;
+    let mut probe = [0_u8; 1];
+    loop {
+        match reader.read(&mut probe) {
+            Ok(0) => return Ok(()),
+            Ok(_) => {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Truncated,
+                    ReasonCode::TruncatedStream,
+                    "HTTP range body exceeds the exact requested length",
+                ));
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::Interrupted => {}
+            Err(error) => {
+                return Err(invalid_http(format!(
+                    "cannot finish exact HTTP range body: {error}"
+                )));
+            }
+        }
     }
 }
 
@@ -375,7 +452,7 @@ pub enum AccessPurpose {
 }
 
 /// One bounded diagnostic access event.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct AccessTraceEntry {
     pub offset: u64,
     pub length: u64,
@@ -428,6 +505,98 @@ struct CacheEntry {
     bytes: Vec<u8>,
 }
 
+struct CryptoRangeState {
+    budget: WorkBudget,
+    trace: WorkVec<AccessTraceEntry>,
+    _revision_lease: WorkLease,
+    cache: [Option<CryptoCacheEntry>; 16],
+    cache_next: usize,
+    cache_bytes: u64,
+}
+
+struct CryptoCacheEntry {
+    offset: u64,
+    bytes: WorkBytes,
+}
+
+impl CryptoRangeState {
+    fn cached_range(&self, offset: u64, end: u64) -> Option<usize> {
+        self.cache.iter().position(|slot| {
+            slot.as_ref().is_some_and(|entry| {
+                entry.offset <= offset
+                    && entry
+                        .offset
+                        .checked_add(entry.bytes.len() as u64)
+                        .is_some_and(|cached_end| end <= cached_end)
+            })
+        })
+    }
+
+    fn evict(&mut self, slot: usize) {
+        if let Some(entry) = self.cache[slot].take() {
+            self.cache_bytes = self
+                .cache_bytes
+                .checked_sub(entry.bytes.len() as u64)
+                .expect("owned cache capacity is in the cache ledger");
+            drop(entry); // WorkBytes wipes/frees before releasing its lease.
+        }
+    }
+
+    fn evict_oldest(&mut self, keep: Option<usize>) -> bool {
+        for step in 0..self.cache.len() {
+            let slot = (self.cache_next + step) % self.cache.len();
+            if Some(slot) != keep && self.cache[slot].is_some() {
+                self.evict(slot);
+                return true;
+            }
+        }
+        false
+    }
+
+    fn make_room(&mut self, required: u64, keep: Option<usize>) -> bool {
+        while self.budget.available_bytes() < required && self.evict_oldest(keep) {}
+        self.budget.available_bytes() >= required
+    }
+
+    fn retain(&mut self, offset: u64, bytes: &[u8], max_cached: u64, revision_headroom: u64) {
+        let length = bytes.len() as u64;
+        if length == 0 || length > max_cached {
+            return;
+        }
+        while !self
+            .cache_bytes
+            .checked_add(length)
+            .is_some_and(|sum| sum <= max_cached)
+        {
+            if !self.evict_oldest(None) {
+                return;
+            }
+        }
+        let slot = self.cache_next;
+        self.evict(slot);
+        let Some(required) = length.checked_add(revision_headroom) else {
+            return;
+        };
+        if !self.make_room(required, None) {
+            return;
+        }
+        // Optional cache admission must not fail an otherwise successful read.
+        let Ok(mut backing) = WorkBytes::zeroed(&self.budget, bytes.len()) else {
+            return;
+        };
+        backing.as_mut_slice().copy_from_slice(bytes);
+        self.cache[slot] = Some(CryptoCacheEntry {
+            offset,
+            bytes: backing,
+        });
+        self.cache_bytes = self
+            .cache_bytes
+            .checked_add(length)
+            .expect("cache sum checked before admission");
+        self.cache_next = (slot + 1) % self.cache.len();
+    }
+}
+
 /// One revision-pinned, policy-accounted read session.
 pub(crate) struct RangeSession {
     source: Box<dyn RandomReadSource>,
@@ -440,6 +609,7 @@ pub(crate) struct RangeSession {
     range_requests: u64,
     metadata_bytes: u64,
     trace: Vec<AccessTraceEntry>,
+    crypto: Option<CryptoRangeState>,
 }
 
 impl RangeSession {
@@ -462,7 +632,30 @@ impl RangeSession {
             range_requests: 0,
             metadata_bytes: 0,
             trace: Vec::new(),
+            crypto: None,
         })
+    }
+
+    /// Uses caller-filled, lease-carrying buffers and a separately charged cache.
+    /// The budget is shared with every nested crypto operation by the caller.
+    pub(crate) fn new_crypto(
+        source: Box<dyn RandomReadSource>,
+        policy: RandomAccessPolicy,
+        budget: WorkBudget,
+    ) -> Result<Self> {
+        let mut session = Self::new(source, policy)?;
+        // The callback owns revision construction; charge its retained backing
+        // before adopting it into the returned crypto session.
+        let revision_lease = budget.reserve(revision_capacity(&session.initial_revision)?)?;
+        session.crypto = Some(CryptoRangeState {
+            trace: WorkVec::new(&budget),
+            budget,
+            _revision_lease: revision_lease,
+            cache: std::array::from_fn(|_| None),
+            cache_next: 0,
+            cache_bytes: 0,
+        });
+        Ok(session)
     }
 
     pub(crate) fn len(&self) -> u64 {
@@ -491,6 +684,7 @@ impl RangeSession {
         len: u64,
         purpose: AccessPurpose,
     ) -> Result<Vec<u8>> {
+        self.require_ordinary()?;
         self.check_stable()?;
         self.cache.clear();
         self.cache_order.clear();
@@ -507,6 +701,7 @@ impl RangeSession {
         purpose: AccessPurpose,
         use_cache: bool,
     ) -> Result<Vec<u8>> {
+        self.require_ordinary()?;
         let end = offset
             .checked_add(len)
             .ok_or_else(|| policy("range extent overflows u64"))?;
@@ -574,7 +769,129 @@ impl RangeSession {
         Ok(bytes)
     }
 
+    /// Reserves the full destination and a trace slot before invoking a source.
+    /// Returned backing remains charged until its owner wipes and frees it.
+    pub(crate) fn read_crypto(
+        &mut self,
+        offset: u64,
+        len: u64,
+        purpose: AccessPurpose,
+    ) -> Result<WorkBytes> {
+        if self.crypto.is_none() {
+            return Err(policy(
+                "caller-buffer crypto read requires a shared working budget",
+            ));
+        }
+        let end = offset
+            .checked_add(len)
+            .ok_or_else(|| policy("range extent overflows u64"))?;
+        if end > self.len() {
+            return Err(Diagnostic::new(
+                OutcomeClass::Truncated,
+                ReasonCode::TruncatedStream,
+                "requested range exceeds the declared source length",
+            ));
+        }
+        if u64::try_from(self.trace().len()).unwrap_or(u64::MAX) >= self.policy.max_trace_entries {
+            return Err(policy("access trace entry limit exceeded"));
+        }
+        if len > self.policy.max_individual_range_bytes {
+            return Err(policy("range length exceeds caller limit"));
+        }
+        let length = usize::try_from(len).map_err(|_| policy("range length exceeds usize"))?;
+        let revision_headroom = revision_capacity(&self.initial_revision)?;
+        let headroom = len
+            .checked_add(revision_headroom)
+            .ok_or_else(|| policy("crypto read headroom overflows"))?;
+        let state = self.crypto.as_mut().expect("crypto mode checked above");
+        let mut hit = if len == 0 {
+            None
+        } else {
+            state.cached_range(offset, end)
+        };
+        let required = state
+            .trace
+            .minimum_reservation_bytes(1)?
+            .checked_add(headroom)
+            .ok_or_else(|| policy("crypto trace and destination capacity overflows"))?;
+        if !state.make_room(required, hit)
+            && let Some(slot) = hit.take()
+        {
+            // If cache-plus-copy overlap cannot fit, free the cached backing
+            // before allocating a direct source destination instead.
+            state.evict(slot);
+            state.make_room(required, None);
+        }
+        self.check_stable()?;
+        let next_requests = self
+            .range_requests
+            .checked_add(u64::from(len != 0 && hit.is_none()))
+            .ok_or_else(|| policy("range request count overflow"))?;
+        let next_bytes = if hit.is_some() {
+            self.bytes_fetched
+        } else {
+            self.bytes_fetched
+                .checked_add(len)
+                .ok_or_else(|| policy("fetched byte count overflow"))?
+        };
+        let next_metadata = if hit.is_none() && is_metadata(purpose) {
+            self.metadata_bytes
+                .checked_add(len)
+                .ok_or_else(|| policy("metadata byte count overflow"))?
+        } else {
+            self.metadata_bytes
+        };
+        if next_requests > self.policy.max_range_requests
+            || next_bytes > self.policy.max_total_bytes_fetched
+        {
+            return Err(policy("random-access transfer budget would be exceeded"));
+        }
+        if next_metadata > self.policy.max_metadata_bytes {
+            return Err(policy("random-access metadata budget would be exceeded"));
+        }
+        let state = self.crypto.as_mut().expect("crypto mode checked above");
+        state.trace.reserve_with_headroom(1, headroom)?;
+        let mut bytes = WorkBytes::zeroed(&state.budget, length)?;
+        if let Some(slot) = hit {
+            let entry = state.cache[slot]
+                .as_ref()
+                .expect("hit slot was preserved while making room");
+            let start = usize::try_from(offset - entry.offset)
+                .map_err(|_| policy("cached range offset exceeds usize"))?;
+            let cached_end = start
+                .checked_add(length)
+                .ok_or_else(|| policy("cached range end exceeds usize"))?;
+            let cached = entry
+                .bytes
+                .as_slice()
+                .get(start..cached_end)
+                .ok_or_else(|| policy("cached range does not contain the requested extent"))?;
+            bytes.as_mut_slice().copy_from_slice(cached);
+        } else if len != 0 {
+            self.source
+                .read_exact_at_into(offset, bytes.as_mut_slice())?;
+        }
+        self.check_stable()?;
+        self.range_requests = next_requests;
+        self.bytes_fetched = next_bytes;
+        self.metadata_bytes = next_metadata;
+        self.push_trace(offset, len, purpose, hit.is_some())?;
+        if hit.is_none() {
+            self.crypto
+                .as_mut()
+                .expect("crypto mode checked above")
+                .retain(
+                    offset,
+                    bytes.as_slice(),
+                    self.policy.max_cached_bytes,
+                    revision_headroom,
+                );
+        }
+        Ok(bytes)
+    }
+
     pub(crate) fn prefetch(&mut self, ranges: &[(u64, u64, AccessPurpose)]) -> Result<()> {
+        self.require_ordinary()?;
         let mut ranges = ranges
             .iter()
             .copied()
@@ -614,7 +931,15 @@ impl RangeSession {
 
     pub(crate) fn check_stable(&self) -> Result<()> {
         let final_revision = self.source.revision()?;
-        if final_revision != self.initial_revision {
+        let lease = self
+            .crypto
+            .as_ref()
+            .map(|state| state.budget.reserve(revision_capacity(&final_revision)?))
+            .transpose()?;
+        let stable = final_revision == self.initial_revision;
+        drop(final_revision);
+        drop(lease);
+        if !stable {
             return Err(unstable("source revision changed during random access"));
         }
         Ok(())
@@ -633,7 +958,19 @@ impl RangeSession {
     }
 
     pub(crate) fn trace(&self) -> &[AccessTraceEntry] {
-        &self.trace
+        self.crypto
+            .as_ref()
+            .map_or(&self.trace, |state| state.trace.as_slice())
+    }
+
+    fn require_ordinary(&self) -> Result<()> {
+        if self.crypto.is_some() {
+            Err(policy(
+                "crypto sessions require lease-carrying caller-buffer reads",
+            ))
+        } else {
+            Ok(())
+        }
     }
 
     fn cached_slice(&self, offset: u64, end: u64) -> Option<Vec<u8>> {
@@ -683,16 +1020,29 @@ impl RangeSession {
         purpose: AccessPurpose,
         cache_hit: bool,
     ) -> Result<()> {
-        if u64::try_from(self.trace.len()).unwrap_or(u64::MAX) >= self.policy.max_trace_entries {
+        if u64::try_from(self.trace().len()).unwrap_or(u64::MAX) >= self.policy.max_trace_entries {
             return Err(policy("access trace entry limit exceeded"));
         }
-        self.trace.push(AccessTraceEntry {
+        let entry = AccessTraceEntry {
             offset,
             length,
             purpose,
             cache_hit,
-        });
+        };
+        if let Some(state) = &mut self.crypto {
+            state.trace.push(entry)?;
+        } else {
+            self.trace.push(entry);
+        }
         Ok(())
+    }
+}
+
+fn revision_capacity(revision: &SourceRevision) -> Result<u64> {
+    match revision {
+        SourceRevision::Http { strong_etag, .. } => u64::try_from(strong_etag.capacity())
+            .map_err(|_| policy("source revision capacity exceeds u64")),
+        _ => Ok(0),
     }
 }
 
@@ -829,12 +1179,382 @@ fn io(context: &str, error: std::io::Error) -> Diagnostic {
 mod tests {
     use std::io::{Read as _, Write as _};
     use std::net::TcpListener;
+    use std::sync::atomic::{AtomicUsize, Ordering};
     use std::sync::{Arc, Mutex};
+
+    use crate::crypto::working::WorkBudget;
 
     use super::{
         AccessPurpose, HttpRangeSource, MemoryRandomReadSource, RandomAccessPolicy,
         RandomReadSource, RangeSession, SourceRevision,
     };
+
+    struct BoundedProbe {
+        calls: Arc<AtomicUsize>,
+        changes_revision: bool,
+        fails_read: bool,
+    }
+
+    impl RandomReadSource for BoundedProbe {
+        fn len(&self) -> crate::diagnostics::Result<u64> {
+            Ok(64)
+        }
+
+        fn read_exact_at(&self, _: u64, _: u64) -> crate::diagnostics::Result<Vec<u8>> {
+            panic!("crypto must never invoke the allocating source callback")
+        }
+
+        fn read_exact_at_into(
+            &self,
+            offset: u64,
+            dst: &mut [u8],
+        ) -> crate::diagnostics::Result<()> {
+            self.calls.fetch_add(1, Ordering::SeqCst);
+            if self.fails_read {
+                return Err(super::policy("synthetic bounded source failure"));
+            }
+            for (index, byte) in dst.iter_mut().enumerate() {
+                *byte = (offset as usize + index) as u8;
+            }
+            Ok(())
+        }
+
+        fn revision(&self) -> crate::diagnostics::Result<SourceRevision> {
+            Ok(SourceRevision::Memory {
+                length: 64,
+                sha256: [if self.changes_revision {
+                    self.calls.load(Ordering::SeqCst) as u8
+                } else {
+                    0
+                }; 32],
+            })
+        }
+    }
+
+    #[test]
+    fn bounded_crypto_counts_simultaneous_buffers_and_retained_trace_without_cache() {
+        let budget = WorkBudget::new(512);
+        let calls = Arc::new(AtomicUsize::new(0));
+        let source = BoundedProbe {
+            calls: calls.clone(),
+            changes_revision: false,
+            fails_read: false,
+        };
+        let mut session = RangeSession::new_crypto(
+            Box::new(source),
+            RandomAccessPolicy {
+                max_cached_bytes: 0,
+                ..RandomAccessPolicy::default()
+            },
+            budget.clone(),
+        )
+        .unwrap();
+        let first = session
+            .read_crypto(0, 16, AccessPurpose::EncryptedPayload)
+            .unwrap();
+        let second = session
+            .read_crypto(0, 16, AccessPurpose::EncryptedPayload)
+            .unwrap();
+        assert_eq!(first.as_slice(), second.as_slice());
+        assert_eq!(calls.load(Ordering::SeqCst), 2);
+        assert!(session.cache.is_empty());
+        assert!(session.cache_order.is_empty());
+        assert_eq!(session.cache_bytes, 0);
+        assert_eq!(session.bytes_fetched(), 32);
+        assert_eq!(session.range_requests(), 2);
+        assert!(session.trace().iter().all(|entry| !entry.cache_hit));
+        let trace_bytes = (2 * std::mem::size_of::<super::AccessTraceEntry>()) as u64;
+        assert_eq!(budget.live_bytes(), trace_bytes + 32);
+        assert!(session.read(0, 1, AccessPurpose::EncryptedPayload).is_err());
+        assert!(
+            session
+                .prefetch(&[(0, 1, AccessPurpose::EncryptedPayload)])
+                .is_err()
+        );
+        drop(first);
+        assert_eq!(budget.live_bytes(), trace_bytes + 16);
+        drop(second);
+        assert_eq!(budget.live_bytes(), trace_bytes);
+        drop(session);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn bounded_crypto_refuses_destination_and_transfer_before_callback() {
+        let trace_bytes = std::mem::size_of::<super::AccessTraceEntry>() as u64;
+        for limits in [
+            RandomAccessPolicy::default(),
+            RandomAccessPolicy {
+                max_total_bytes_fetched: 15,
+                ..RandomAccessPolicy::default()
+            },
+        ] {
+            let budget = WorkBudget::new(trace_bytes + 15);
+            let calls = Arc::new(AtomicUsize::new(0));
+            let source = BoundedProbe {
+                calls: calls.clone(),
+                changes_revision: false,
+                fails_read: false,
+            };
+            let mut session =
+                RangeSession::new_crypto(Box::new(source), limits, budget.clone()).unwrap();
+            assert!(
+                session
+                    .read_crypto(0, 16, AccessPurpose::EncryptedPayload)
+                    .is_err()
+            );
+            assert_eq!(calls.load(Ordering::SeqCst), 0);
+            assert_eq!(session.range_requests(), 0);
+            assert_eq!(session.bytes_fetched(), 0);
+            drop(session);
+            assert_eq!(budget.live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn bounded_crypto_callback_error_and_revision_change_release_destination() {
+        for (fails_read, changes_revision) in [(true, false), (false, true)] {
+            let budget = WorkBudget::new(512);
+            let calls = Arc::new(AtomicUsize::new(0));
+            let source = BoundedProbe {
+                calls: calls.clone(),
+                changes_revision,
+                fails_read,
+            };
+            let mut session = RangeSession::new_crypto(
+                Box::new(source),
+                RandomAccessPolicy::default(),
+                budget.clone(),
+            )
+            .unwrap();
+            let error = session
+                .read_crypto(0, 16, AccessPurpose::EncryptedPayload)
+                .unwrap_err();
+            if changes_revision {
+                assert_eq!(error.code(), crate::diagnostics::ReasonCode::SourceUnstable);
+            }
+            assert_eq!(calls.load(Ordering::SeqCst), 1);
+            assert!(session.trace().is_empty());
+            assert_eq!(
+                budget.live_bytes(),
+                std::mem::size_of::<super::AccessTraceEntry>() as u64
+            );
+            drop(session);
+            assert_eq!(budget.live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn bounded_crypto_default_capability_refuses_without_allocating_adapter() {
+        struct OldSource;
+        impl RandomReadSource for OldSource {
+            fn len(&self) -> crate::diagnostics::Result<u64> {
+                Ok(1)
+            }
+            fn read_exact_at(&self, _: u64, _: u64) -> crate::diagnostics::Result<Vec<u8>> {
+                panic!("default bounded method must not allocate through the old callback")
+            }
+            fn revision(&self) -> crate::diagnostics::Result<SourceRevision> {
+                Ok(SourceRevision::Memory {
+                    length: 1,
+                    sha256: [0; 32],
+                })
+            }
+        }
+        let budget = WorkBudget::new(512);
+        let mut session = RangeSession::new_crypto(
+            Box::new(OldSource),
+            RandomAccessPolicy::default(),
+            budget.clone(),
+        )
+        .unwrap();
+        let error = session
+            .read_crypto(0, 1, AccessPurpose::EncryptedPayload)
+            .unwrap_err();
+        assert_eq!(
+            error.class(),
+            crate::diagnostics::OutcomeClass::PolicyRefused
+        );
+        assert_eq!(
+            error.code(),
+            crate::diagnostics::ReasonCode::RandomAccessPolicyRefused
+        );
+        drop(session);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn bounded_boxed_memory_and_local_sources_fill_exact_destination() {
+        let memory: Box<dyn RandomReadSource> =
+            Box::new(MemoryRandomReadSource::new(Vec::from(&b"0123456789"[..])));
+        let mut dst = [0; 4];
+        memory.read_exact_at_into(2, &mut dst).unwrap();
+        assert_eq!(&dst, b"2345");
+        assert!(memory.read_exact_at_into(8, &mut dst).is_err());
+        let mut suffix = [0; 8];
+        getrandom::fill(&mut suffix).unwrap();
+        let name = suffix
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        let path = std::env::temp_dir().join(format!("entrybound-bounded-source-{name}"));
+        let mut file = std::fs::File::create_new(&path).unwrap();
+        file.write_all(b"0123456789").unwrap();
+        drop(file);
+        let local: Box<dyn RandomReadSource> =
+            Box::new(super::LocalFileRandomReadSource::open(&path).unwrap());
+        local.read_exact_at_into(2, &mut dst).unwrap();
+        assert_eq!(&dst, b"2345");
+        assert!(local.read_exact_at_into(8, &mut dst).is_err());
+        drop(local);
+        std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn bounded_http_body_fill_rejects_short_and_overlong_without_growth() {
+        let mut dst = [0; 4];
+        super::read_http_body_into(&mut std::io::Cursor::new(b"2345"), &mut dst).unwrap();
+        assert_eq!(&dst, b"2345");
+        assert!(super::read_http_body_into(&mut std::io::Cursor::new(b"234"), &mut dst).is_err());
+        assert!(super::read_http_body_into(&mut std::io::Cursor::new(b"23456"), &mut dst).is_err());
+    }
+
+    #[test]
+    fn bounded_crypto_cache_hit_keeps_separate_copy_charged_and_transfer_counts_unchanged() {
+        let budget = WorkBudget::new(512);
+        let calls = Arc::new(AtomicUsize::new(0));
+        let source = BoundedProbe {
+            calls: calls.clone(),
+            changes_revision: false,
+            fails_read: false,
+        };
+        let limits = RandomAccessPolicy {
+            max_cached_bytes: 16,
+            max_range_requests: 1,
+            max_total_bytes_fetched: 16,
+            max_metadata_bytes: 16,
+            ..RandomAccessPolicy::default()
+        };
+        let mut session =
+            RangeSession::new_crypto(Box::new(source), limits, budget.clone()).unwrap();
+        let first = session
+            .read_crypto(0, 16, AccessPurpose::Descriptor)
+            .unwrap();
+        let item_bytes = std::mem::size_of::<super::AccessTraceEntry>() as u64;
+        assert_eq!(budget.live_bytes(), item_bytes + 16 + 16);
+        drop(first);
+        let hit = session
+            .read_crypto(4, 8, AccessPurpose::Descriptor)
+            .unwrap();
+        assert_eq!(hit.as_slice(), [4, 5, 6, 7, 8, 9, 10, 11]);
+        assert_eq!(budget.live_bytes(), 2 * item_bytes + 16 + 8);
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert_eq!(session.range_requests(), 1);
+        assert_eq!(session.bytes_fetched(), 16);
+        assert_eq!(session.metadata_bytes, 16);
+        assert!(session.trace()[1].cache_hit);
+        assert_eq!(session.crypto.as_ref().unwrap().cache_bytes, 16);
+        drop(hit);
+        assert_eq!(budget.live_bytes(), 2 * item_bytes + 16);
+        drop(session);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn bounded_crypto_tight_hit_overlap_evicts_then_fetches_instead_of_unmetered_copy() {
+        let item_bytes = std::mem::size_of::<super::AccessTraceEntry>() as u64;
+        // A trace replacement plus destination fits after freeing the hit;
+        // retaining that hit during the same replacement does not fit.
+        let budget = WorkBudget::new(3 * item_bytes + 16);
+        let calls = Arc::new(AtomicUsize::new(0));
+        let source = BoundedProbe {
+            calls: calls.clone(),
+            changes_revision: false,
+            fails_read: false,
+        };
+        let mut session = RangeSession::new_crypto(
+            Box::new(source),
+            RandomAccessPolicy::default(),
+            budget.clone(),
+        )
+        .unwrap();
+        drop(
+            session
+                .read_crypto(0, 16, AccessPurpose::EncryptedPayload)
+                .unwrap(),
+        );
+        assert_eq!(session.crypto.as_ref().unwrap().cache_bytes, 16);
+        let second = session
+            .read_crypto(0, 16, AccessPurpose::EncryptedPayload)
+            .unwrap();
+        assert_eq!(second.as_slice(), (0..16).collect::<Vec<_>>());
+        assert_eq!(calls.load(Ordering::SeqCst), 2);
+        assert!(!session.trace()[1].cache_hit);
+        assert_eq!(session.range_requests(), 2);
+        assert_eq!(session.bytes_fetched(), 32);
+        assert!(budget.live_bytes() <= 3 * item_bytes + 16);
+        drop(second);
+        drop(session);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn bounded_crypto_cache_byte_limit_zero_and_eviction_are_enforced() {
+        for max_cached_bytes in [0, 8] {
+            let budget = WorkBudget::new(512);
+            let calls = Arc::new(AtomicUsize::new(0));
+            let source = BoundedProbe {
+                calls: calls.clone(),
+                changes_revision: false,
+                fails_read: false,
+            };
+            let limits = RandomAccessPolicy {
+                max_cached_bytes,
+                ..RandomAccessPolicy::default()
+            };
+            let mut session =
+                RangeSession::new_crypto(Box::new(source), limits, budget.clone()).unwrap();
+            for offset in [0, 16, 0] {
+                drop(
+                    session
+                        .read_crypto(offset, 8, AccessPurpose::EncryptedPayload)
+                        .unwrap(),
+                );
+                assert!(session.crypto.as_ref().unwrap().cache_bytes <= max_cached_bytes);
+            }
+            assert_eq!(calls.load(Ordering::SeqCst), 3);
+            assert!(session.trace().iter().all(|entry| !entry.cache_hit));
+            drop(session);
+            assert_eq!(budget.live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn bounded_crypto_optional_cache_never_refuses_required_read_under_tight_budget() {
+        let item_bytes = std::mem::size_of::<super::AccessTraceEntry>() as u64;
+        let budget = WorkBudget::new(item_bytes + 16);
+        let calls = Arc::new(AtomicUsize::new(0));
+        let source = BoundedProbe {
+            calls: calls.clone(),
+            changes_revision: false,
+            fails_read: false,
+        };
+        let mut session = RangeSession::new_crypto(
+            Box::new(source),
+            RandomAccessPolicy::default(),
+            budget.clone(),
+        )
+        .unwrap();
+        let bytes = session
+            .read_crypto(0, 16, AccessPurpose::EncryptedPayload)
+            .unwrap();
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert_eq!(budget.live_bytes(), item_bytes + 16);
+        assert_eq!(session.crypto.as_ref().unwrap().cache_bytes, 0);
+        drop(bytes);
+        drop(session);
+        assert_eq!(budget.live_bytes(), 0);
+    }
 
     fn test_server(
         responses: Vec<&'static str>,

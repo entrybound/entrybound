@@ -43,6 +43,9 @@ const MAX_DATA_MESSAGES: usize = (1 << 20) - 1;
 const MAX_SEGMENT_PRIVATE: u64 = 1 << 30;
 const MAX_CONTROL_PRIVATE: usize = 1 << 20;
 const MAX_PAYLOAD_PRIVATE: usize = 64 << 20;
+const PASSWORD_CREATION_MEMORY_KIB: u32 = 262_144;
+const PASSWORD_CREATION_PASSES: u32 = 3;
+const PASSWORD_CREATION_PARALLELISM: u32 = 4;
 
 #[derive(Clone, Eq, PartialEq)]
 pub struct EncryptedWriteOptions<'a> {
@@ -203,8 +206,18 @@ pub(super) fn encrypt_with_file_key(
     archive_id: [u8; 32],
     options: EncryptedWriteOptions<'_>,
 ) -> Result<EncryptedArchive> {
+    encrypt_with_file_key_policy(parts, afk, archive_id, options, CryptoPolicy::default())
+}
+
+fn encrypt_with_file_key_policy(
+    parts: EncryptedPlainParts,
+    afk: &[u8; 32],
+    archive_id: [u8; 32],
+    options: EncryptedWriteOptions<'_>,
+    crypto_policy: CryptoPolicy,
+) -> Result<EncryptedArchive> {
     validate_write_options(&options)?;
-    let (policy, stanzas, directory) = build_recipients(afk, &archive_id, &options)?;
+    let (policy, stanzas, directory) = build_recipients(afk, &archive_id, &options, crypto_policy)?;
     encrypt_with_material(
         parts, afk, archive_id, options, policy, stanzas, directory, None,
     )
@@ -550,10 +563,17 @@ fn build_recipients(
     afk: &[u8; 32],
     archive_id: &[u8; 32],
     options: &EncryptedWriteOptions<'_>,
+    crypto_policy: CryptoPolicy,
 ) -> Result<(ProtectionPolicy, Vec<wire::RecipientStanza>, Vec<Vec<u8>>)> {
+    validate_recipient_creation_policy(options.recipients, options.password, crypto_policy)?;
     if let Some(password) = options.password {
-        let parameters = a2id(&random()?, 262_144, 3, 4);
-        let secret = password_secret(password, &parameters, CryptoPolicy::default())?;
+        let parameters = a2id(
+            &random()?,
+            PASSWORD_CREATION_MEMORY_KIB,
+            PASSWORD_CREATION_PASSES,
+            PASSWORD_CREATION_PARALLELISM,
+        );
+        let secret = password_secret(password, &parameters, crypto_policy)?;
         let mut stanza = wire::RecipientStanza {
             stanza_type: 2,
             protection_class: 2,
@@ -599,6 +619,37 @@ fn build_recipients(
     }
     directory.sort_by(|left, right| left[28..44].cmp(&right[28..44]));
     Ok((ProtectionPolicy::HybridOnly, stanzas, directory))
+}
+
+fn validate_recipient_creation_policy(
+    recipients: &[XWingRecipient],
+    password: Option<&[u8]>,
+    policy: CryptoPolicy,
+) -> Result<()> {
+    let count = if password.is_some() {
+        1
+    } else {
+        recipients.len()
+    };
+    if u64::try_from(count).unwrap_or(u64::MAX) > u64::from(policy.max_stanzas) {
+        return Err(resource_refused(
+            "replacement recipient count exceeds caller policy",
+        ));
+    }
+    if password.is_some() {
+        // Salt does not affect admission. Check the frozen creation profile
+        // before allocating replacement planning state or invoking the KDF.
+        super::parse_a2id(
+            &a2id(
+                &[0; 16],
+                PASSWORD_CREATION_MEMORY_KIB,
+                PASSWORD_CREATION_PASSES,
+                PASSWORD_CREATION_PARALLELISM,
+            ),
+            policy,
+        )?;
+    }
+    Ok(())
 }
 
 /// Opens and fully authenticates/decrypts an encrypted INDEXED archive.
@@ -794,7 +845,7 @@ pub fn embed_signature(
         directory,
         Some(&state.payload_segments),
     )?;
-    verify_mutation_output(&output.bytes, &state.afk.0)?;
+    verify_mutation_output(&output.bytes, &state.afk.0, options)?;
     Ok(output)
 }
 
@@ -824,6 +875,15 @@ pub fn add_recipient(
             "recipient public key is already present",
         ));
     }
+    if u64::try_from(state.envelope.stanzas.len())
+        .unwrap_or(u64::MAX)
+        .checked_add(1)
+        .is_none_or(|count| count > u64::from(options.crypto_policy.max_stanzas))
+    {
+        return Err(resource_refused(
+            "replacement recipient count exceeds caller policy",
+        ));
+    }
     let singleton = [recipient.clone()];
     let temporary = EncryptedWriteOptions {
         recipients: &singleton,
@@ -833,8 +893,12 @@ pub fn add_recipient(
         include_index: state.include_index,
         embedded_signatures: &[],
     };
-    let (_, new_stanzas, new_directory) =
-        build_recipients(&state.afk.0, &state.archive_id, &temporary)?;
+    let (_, new_stanzas, new_directory) = build_recipients(
+        &state.afk.0,
+        &state.archive_id,
+        &temporary,
+        options.crypto_policy,
+    )?;
     state.envelope.stanzas.extend(new_stanzas);
     let mut directory = state
         .recipient_directory
@@ -862,7 +926,7 @@ pub fn add_recipient(
         directory,
         Some(&state.payload_segments),
     )?;
-    verify_mutation_output(&output.bytes, &state.afk.0)?;
+    verify_mutation_output(&output.bytes, &state.afk.0, options)?;
     Ok(output)
 }
 
@@ -901,7 +965,7 @@ pub fn reencrypt_recipients(
             "retained public keys must be a unique proper subset of the authenticated directory",
         ));
     }
-    rotate_encryption_epoch(state, retained, None)
+    rotate_encryption_epoch(state, retained, None, options)
 }
 
 /// Replaces a password through fresh-AFK/archive-ID full re-encryption.
@@ -920,14 +984,16 @@ pub fn change_password(
             "password rotation requires a PASSWORD_ONLY archive and a nonempty new password",
         ));
     }
-    rotate_encryption_epoch(state, &[], Some(new_password))
+    rotate_encryption_epoch(state, &[], Some(new_password), options)
 }
 
 fn rotate_encryption_epoch(
     state: MutationState,
     recipients: &[XWingRecipient],
     password: Option<&[u8]>,
+    options: EncryptedOpenOptions<'_>,
 ) -> Result<EncryptedArchive> {
+    validate_recipient_creation_policy(recipients, password, options.crypto_policy)?;
     let afk = super::Secret32(random::<32>()?);
     let archive_id = random::<32>()?;
     let keys = KeyHierarchy::derive(&afk.0, &archive_id)?;
@@ -948,7 +1014,7 @@ fn rotate_encryption_epoch(
     }
     .to_owned();
     let parts = prepare_encrypted_plain_parts(&archive)?;
-    let output = encrypt_with_file_key(
+    let output = encrypt_with_file_key_policy(
         parts,
         &afk.0,
         archive_id,
@@ -960,8 +1026,9 @@ fn rotate_encryption_epoch(
             include_index: state.include_index,
             embedded_signatures: &state.signatures,
         },
+        options.crypto_policy,
     )?;
-    verify_mutation_output(&output.bytes, &afk.0)?;
+    verify_mutation_output(&output.bytes, &afk.0, options)?;
     Ok(output)
 }
 
@@ -969,8 +1036,11 @@ fn rotate_encryption_epoch(
 /// structurally verify the complete replacement before the caller replaces a
 /// filesystem object—even when the retained recipients' private identities
 /// are intentionally unavailable to the mutating caller.
-fn verify_mutation_output(bytes: &[u8], afk: &[u8; 32]) -> Result<()> {
-    let options = EncryptedOpenOptions::new(None);
+fn verify_mutation_output(
+    bytes: &[u8],
+    afk: &[u8; 32],
+    options: EncryptedOpenOptions<'_>,
+) -> Result<()> {
     let parsed = parse_public(bytes, options.crypto_policy)?;
     let keys = KeyHierarchy::derive(afk, &parsed.envelope.archive_id)?;
     let padding = PaddingMode::try_from(parsed.envelope.padding_mode)?;
@@ -3211,6 +3281,13 @@ mod tests {
                     .fetch_max(len, std::sync::atomic::Ordering::SeqCst);
                 self.inner.read_exact_at(offset, len)
             }
+            fn read_exact_at_into(&self, offset: u64, dst: &mut [u8]) -> Result<()> {
+                self.largest_read.fetch_max(
+                    u64::try_from(dst.len()).unwrap(),
+                    std::sync::atomic::Ordering::SeqCst,
+                );
+                self.inner.read_exact_at_into(offset, dst)
+            }
             fn revision(&self) -> Result<crate::random_access::SourceRevision> {
                 self.inner.revision()
             }
@@ -3352,6 +3429,65 @@ mod tests {
                 .code(),
             ReasonCode::ResourceLimit
         );
+    }
+
+    #[test]
+    fn recipient_mutation_verifies_with_the_original_caller_limits() {
+        let fixture = Fixture::new("recipient-mutation-caller-policy");
+        std::fs::write(fixture.source.join("data.bin"), b"bounded mutation fixture").unwrap();
+        let archive = fixture.archive();
+        let (identity, recipient) = super::super::XWingIdentity::generate().unwrap();
+        let (_, added_recipient) = super::super::XWingIdentity::generate().unwrap();
+        let initial =
+            encrypted_from_parts(prepare_encrypted_plain_parts(&archive).unwrap(), &recipient);
+        let mut options = EncryptedOpenOptions::new(Some(Unlock::Identity(&identity)));
+        options.crypto_policy.max_stanzas = 1;
+        assert!(open_encrypted(&initial.bytes, options).is_ok());
+        let error = add_recipient(&initial.bytes, options, &added_recipient).unwrap_err();
+        assert_eq!(error.code(), ReasonCode::CryptoResourcePolicyRefused);
+        assert!(open_encrypted(&initial.bytes, options).is_ok());
+    }
+
+    #[test]
+    fn password_rotation_obeys_the_original_caller_kdf_limits() {
+        let fixture = Fixture::new("password-rotation-caller-policy");
+        std::fs::write(fixture.source.join("data.bin"), b"bounded password fixture").unwrap();
+        let archive = fixture.archive();
+        let afk = [0x41; 32];
+        let archive_id = [0x52; 32];
+        let mut options = EncryptedOpenOptions::new(Some(Unlock::Password(b"old password")));
+        options.crypto_policy.max_argon2_memory_kib = 65_536;
+        let parameters = a2id(&[0x63; 16], 65_536, 3, 4);
+        let secret = password_secret(b"old password", &parameters, options.crypto_policy).unwrap();
+        let mut stanza = wire::RecipientStanza {
+            stanza_type: 2,
+            protection_class: 2,
+            stanza_id: [0x74; 16],
+            recipient_hint: [0; 16],
+            method_parameters: parameters,
+            encapsulation: Vec::new(),
+            wrap_nonce: [0x85; 12],
+            wrapped_afk: [0; 48],
+        };
+        stanza.wrapped_afk = seal_afk(&archive_id, &secret.0, &stanza, &afk).unwrap();
+        let initial = encrypt_with_material(
+            prepare_encrypted_plain_parts(&archive).unwrap(),
+            &afk,
+            archive_id,
+            EncryptedWriteOptions {
+                password: Some(b"old password"),
+                padding: PaddingMode::None,
+                ..EncryptedWriteOptions::default()
+            },
+            ProtectionPolicy::PasswordOnly,
+            vec![stanza],
+            Vec::new(),
+            None,
+        )
+        .unwrap();
+        let error = change_password(&initial.bytes, options, b"new password").unwrap_err();
+        assert_eq!(error.code(), ReasonCode::CryptoPasswordKdfPolicyRefused);
+        assert!(open_encrypted(&initial.bytes, options).is_ok());
     }
 
     #[test]

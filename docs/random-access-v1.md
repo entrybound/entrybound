@@ -26,6 +26,27 @@ A session pins its initial revision, maintains a bounded range cache, accounts
 all reads, and rechecks detectable revision state before returning metadata or
 file content.
 
+Encrypted sessions require `RandomReadSource::read_exact_at_into`, which fills
+caller-owned storage. Memory, local-file and HTTP(S) sources implement it. The
+older allocating `read_exact_at` method remains available for ordinary readers.
+Existing custom source implementations continue to compile; until they provide
+the bounded fill method, encrypted reads return `PolicyRefused` with
+`EB_RANDOM_ACCESS_POLICY_REFUSED` naming the missing capability. There is no
+adapter that allocates through the older method and copies its result.
+
+Encrypted fetched buffers and retained access trace storage share a managed
+working-capacity budget and remain charged for their ownership lifetime. Their
+optional ciphertext cache has sixteen fixed bookkeeping slots; each retained
+buffer and every returned cache-hit copy is charged separately. Cached byte
+capacity cannot exceed `max_cached_bytes`, and zero disables retention. Optional
+entries are evicted before required read work would exceed the managed limit;
+if a cache-hit copy cannot fit alongside its source backing, the session frees
+that entry and performs a policy-checked source fetch. Fixed budget/error controls and source
+callback internals are outside that managed counter; it is not an all-heap or
+RSS bound. Parser, report, mutation and legacy full-verification allocations
+still require complete aggregate accounting and allocator qualification before
+the crypto memory gate can pass.
+
 The default caller-owned `RandomAccessPolicy` permits at most:
 
 - 64 MiB in one range, 512 MiB fetched, and 100,000 source range requests;
