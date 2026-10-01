@@ -178,8 +178,10 @@ ebound convert private.eb portable.zip --to zip \
   --identity identity.ebk --allow-lossy
 ```
 
-One source can be published to a native artifact and several deterministic
-legacy targets as one failure-atomic, no-overwrite transaction:
+One source can be staged and published to a native artifact and several
+deterministic legacy targets with exclusive final names and no overwrite.
+The [migration workflow](docs/migration-workflows-v1.md#transaction) explains
+failure recovery and the limits of multi-file publication:
 
 ```sh
 ebound publish ./release --output-dir ./dist --base-name release \
@@ -347,7 +349,11 @@ cargo fmt --all --check
 cargo check -p entrybound -p entrybound-cli
 cargo clippy -p entrybound -p entrybound-cli --all-targets -- -D warnings
 cargo test -p entrybound -p entrybound-cli
+git diff --check
 ```
+
+See [release qualification](docs/release-qualification.md) for source-bound
+evidence, platform and research checks, and the current hosted-check policy.
 
 See [the bootstrap format note](docs/format-v0.md) for the canonical encoding
 and identity choices, [the filesystem bootstrap note](docs/filesystem-bootstrap.md)

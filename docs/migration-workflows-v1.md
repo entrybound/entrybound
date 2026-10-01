@@ -60,15 +60,31 @@ not rewrite it.
 
 Every prepared artifact is written and synced to a private temporary sibling.
 Only after all artifacts validate are exclusive hard links created at final
-names. An existing final name always refuses the transaction. A failure during
-the commit removes every final name created by the transaction and every
-temporary. The canonical MigrationReport, when requested, is a member of the
-same transaction.
+names, one at a time. An existing final name refuses the transaction. On a
+reported write, link, or temporary-cleanup failure, the current experimental
+implementation attempts cleanup of tracked pathnames. Cleanup can fail, and
+the implementation does not recheck ownership before removing a pathname;
+failed temporary creation can also reach pathname cleanup. Use a destination
+directory controlled by the publisher and keep its entries stable during
+publication and recovery. The required v1 transaction and cleanup criteria
+remain open until cleanup preserves foreign paths and removes only artifacts
+created by the invocation. The canonical MigrationReport, when requested, is
+staged and published with the other artifacts.
 
 Ordinary filesystems do not provide a portable single syscall that makes
-several sibling names visible simultaneously. Entrybound guarantees failure
-atomicity and no overwrite: after a reported failure it leaves no new final
-artifact, and it never alters a pre-existing destination.
+several sibling names visible simultaneously. A concurrent observer can see a
+partially published set while the final names are created. A crash, power loss,
+or cleanup I/O failure can leave final names or temporary siblings behind;
+syncing each file does not make the whole set durably atomic. Exclusive
+final-name creation avoids intentionally replacing an existing destination.
+
+After an interrupted or failed publish, inspect the expected final names and
+the matching `.entrybound-tmp-` siblings before retrying. Compare any remaining
+bytes with the source and the planned output hashes, using a MigrationReport
+only if its own bytes and relation to the source verify. Retain pre-existing
+destinations and the source. Remove only paths proven to belong to the failed
+invocation, then preflight the complete target set again. An absent report or
+partial set is not evidence of a successful publication.
 
 ## MigrationReport v1
 

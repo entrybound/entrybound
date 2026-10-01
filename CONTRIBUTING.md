@@ -15,9 +15,26 @@ transcode dependency.
 cargo fmt --all --check
 cargo check -p entrybound -p entrybound-cli
 cargo clippy -p entrybound -p entrybound-cli --all-targets -- -D warnings
-cargo test -p entrybound
+cargo test -p entrybound -p entrybound-cli
 cargo run -p entrybound-cli --bin ebound -- --help
+git diff --check
 ```
+
+Run focused checks for the behavior changed before these workspace checks.
+When research tooling changes, also run its applicable workspace validators.
+Record the full source commit, exact `rustc --version --verbose` output,
+commands, exit codes, skipped cases, and hashes of retained evidence. The
+`stable` channel in `rust-toolchain.toml` can move; the declared MSRV is a
+separate compatibility floor. See [release qualification](docs/release-qualification.md)
+for the current local and release gates.
+
+On the current Windows research host, keep large research inputs, build output,
+and durable evidence on approved D:-backed storage. Check the research disk
+guard before a long-running job; other hosts need an equivalent storage check.
+Stage explicit paths, inspect `git diff --cached --name-only`, and check staged
+and package file lists for private execution records, credentials, and
+unpublished source documents before committing or distributing. Keep those
+records outside the product checkout; they are never release artifacts.
 
 The core crate uses RustCrypto's `sha2` for SHA-256, `cap-std` for
 capability-relative filesystem traversal, and `zstd` 0.13.3 for the operational
@@ -242,6 +259,9 @@ report/output bytes. See docs/compressed-tar-export-v1.md.
 Multi-target publishing must operate on one verified/planned EAM, finish every
 target preflight before output creation, reject the entire requested set on one
 REFUSED or unapproved LOSSY target, and publish only synced temporary siblings
-with exclusive final names and rollback. Sidecars reuse existing import
-policies and must verify ConversionProvenance against the exact source digest
-before their final name appears. See docs/migration-workflows-v1.md.
+with exclusive final names and attempted rollback on failure. Several final
+names cannot be made visible as one indivisible filesystem operation; a crash
+or cleanup failure requires inspection and recovery of the actual paths.
+Sidecars reuse existing import policies and must verify ConversionProvenance
+against the exact source digest before their final name appears. See
+docs/migration-workflows-v1.md.
