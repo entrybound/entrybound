@@ -678,6 +678,7 @@ impl RangeSession {
     /// Fetches one full-verification range without retaining a second copy in
     /// the random-access cache. Existing cached metadata is released first.
     /// Transfer, request, trace, and revision limits remain in force.
+    #[cfg(test)]
     pub(crate) fn read_uncached(
         &mut self,
         offset: u64,

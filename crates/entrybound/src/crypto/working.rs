@@ -308,6 +308,10 @@ mod tests {
     fn tight_budget_uses_exact_required_capacity_and_never_calls_clone() {
         #[derive(Copy)]
         struct Plain(u8);
+        #[expect(
+            clippy::non_canonical_clone_impl,
+            reason = "Deliberate Clone panic verifies Copy transfer never invokes Clone"
+        )]
         impl Clone for Plain {
             fn clone(&self) -> Self {
                 panic!("Copy transfer must not call Clone")
