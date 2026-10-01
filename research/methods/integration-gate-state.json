@@ -2,24 +2,240 @@
   "schema": "entrybound.method-gates.v1",
   "method_sha256": "880e319c8d16e778f856cdbc738ecda088865c4d5e2499665fe058228a29426b",
   "items": [
-    {"number": 1, "timing": "G-B", "owner_scope": "thresholds and ebr", "status": "OPEN", "open_reason": "Threshold transcription exists; ebr loading and the updated exact-value test have not been accepted together.", "evidence": null},
-    {"number": 2, "timing": "G-B", "owner_scope": "decision analysis", "status": "OPEN", "open_reason": "Decision-analysis implementation, golden cases, and independent review are pending.", "evidence": null},
-    {"number": 3, "timing": "G-B for timing", "owner_scope": "experiment runner", "status": "OPEN", "open_reason": "Runner additions and their timing qualification are pending.", "evidence": null},
-    {"number": 4, "timing": "G-B for timing and memory", "owner_scope": "calibration", "status": "OPEN", "open_reason": "Per-environment and per-family calibration outcomes are pending.", "evidence": null},
-    {"number": 5, "timing": "G-B; G-C", "owner_scope": "held-out custody", "status": "OPEN", "open_reason": "Frozen lock and design-freeze/unlock consistency evidence have not been accepted.", "evidence": null},
-    {"number": 6, "timing": "G-D", "owner_scope": "decision ledger validation", "status": "OPEN", "open_reason": "DECIDED validator and blocks/caps have no accepted exact-source gate evidence.", "evidence": null},
-    {"number": 7, "timing": "before the first validation look", "owner_scope": "cost accounting", "status": "OPEN", "open_reason": "Cost scripts and assessment template exist in draft form; exact tested acceptance is pending.", "evidence": null},
-    {"number": 8, "timing": "every experiment", "owner_scope": "outcome records", "status": "OPEN", "open_reason": "Outcome record and negative-results register contract has no accepted per-experiment evidence.", "evidence": null},
-    {"number": 9, "timing": "before the first validation look; G-D for DEC-ECO-078", "owner_scope": "rule simulation", "status": "OPEN", "open_reason": "Full R0-R10 synthetic and pilot simulation, including false-selection checks, is pending.", "evidence": null},
-    {"number": 10, "timing": "G-A", "owner_scope": "constraint classification", "status": "OPEN", "open_reason": "All exact crosswalk rows have independent classification sign-off; committed exact-source receipt and live admission are pending.", "evidence": null},
-    {"number": 11, "timing": "with item 10", "owner_scope": "objective screen", "status": "OPEN", "open_reason": "Pattern fix and generated Appendix C await accepted exact-source review.", "evidence": null},
-    {"number": 12, "timing": "G-A", "owner_scope": "decision ledger assignments", "status": "OPEN", "open_reason": "Schema and validator are in development; reviewed live v2 assignments and required history notes are pending.", "evidence": null},
-    {"number": 13, "timing": "G-B", "owner_scope": "workload mix", "status": "OPEN", "open_reason": "Cited workload-mix artifact and independent review are pending.", "evidence": null},
-    {"number": 14, "timing": "G-A", "owner_scope": "validation look registry", "status": "OPEN", "open_reason": "Empty registry and validator exist; tested and reviewed gate acceptance is pending.", "evidence": null},
-    {"number": 15, "timing": "G-C", "owner_scope": "held-out custody and role separation", "status": "OPEN", "open_reason": "Lineage, overlap, transcript, materialization, and exposure evidence require eligible independent review.", "evidence": null},
-    {"number": 16, "timing": "before any OD-16 result", "owner_scope": "privacy attack evaluation", "status": "OPEN", "open_reason": "Adaptive attack suite and observer model are pending.", "evidence": null},
-    {"number": 17, "timing": "before a candidate's first HC-06 record", "owner_scope": "allocation measurement", "status": "OPEN", "open_reason": "Attributed counting allocator and per-candidate pre-validation H are pending.", "evidence": null},
-    {"number": 18, "timing": "before any remote result", "owner_scope": "remote calibration", "status": "OPEN", "open_reason": "EXP-NETEM-CAL acceptance and profile connection models are pending.", "evidence": null},
-    {"number": 19, "timing": "before any CC outcome", "owner_scope": "specialist baselines", "status": "OPEN", "open_reason": "Specialist configurations and exact-source comparison evidence are pending.", "evidence": null}
+    {
+      "number": 1,
+      "timing": "G-B",
+      "owner_scope": "thresholds and ebr",
+      "status": "OPEN",
+      "open_reason": "Threshold transcription exists; ebr loading and the updated exact-value test have not been accepted together.",
+      "evidence": null
+    },
+    {
+      "number": 2,
+      "timing": "G-B",
+      "owner_scope": "decision analysis",
+      "status": "OPEN",
+      "open_reason": "Decision-analysis implementation, golden cases, and independent review are pending.",
+      "evidence": null
+    },
+    {
+      "number": 3,
+      "timing": "G-B for timing",
+      "owner_scope": "experiment runner",
+      "status": "OPEN",
+      "open_reason": "Runner additions and their timing qualification are pending.",
+      "evidence": null
+    },
+    {
+      "number": 4,
+      "timing": "G-B for timing and memory",
+      "owner_scope": "calibration",
+      "status": "OPEN",
+      "open_reason": "Per-environment and per-family calibration outcomes are pending.",
+      "evidence": null
+    },
+    {
+      "number": 5,
+      "timing": "G-B; G-C",
+      "owner_scope": "held-out custody",
+      "status": "OPEN",
+      "open_reason": "Frozen lock and design-freeze/unlock consistency evidence have not been accepted.",
+      "evidence": null
+    },
+    {
+      "number": 6,
+      "timing": "G-D",
+      "owner_scope": "decision ledger validation",
+      "status": "OPEN",
+      "open_reason": "DECIDED validator and blocks/caps have no accepted exact-source gate evidence.",
+      "evidence": null
+    },
+    {
+      "number": 7,
+      "timing": "before the first validation look",
+      "owner_scope": "cost accounting",
+      "status": "OPEN",
+      "open_reason": "Cost scripts and assessment template exist in draft form; exact tested acceptance is pending.",
+      "evidence": null
+    },
+    {
+      "number": 8,
+      "timing": "every experiment",
+      "owner_scope": "outcome records",
+      "status": "OPEN",
+      "open_reason": "Outcome record and negative-results register contract has no accepted per-experiment evidence.",
+      "evidence": null
+    },
+    {
+      "number": 9,
+      "timing": "before the first validation look; G-D for DEC-ECO-078",
+      "owner_scope": "rule simulation",
+      "status": "OPEN",
+      "open_reason": "Full R0-R10 synthetic and pilot simulation, including false-selection checks, is pending.",
+      "evidence": null
+    },
+    {
+      "number": 10,
+      "timing": "G-A",
+      "owner_scope": "constraint classification",
+      "status": "PASS",
+      "open_reason": "",
+      "evidence": {
+        "item": 10,
+        "method_sha256": "880e319c8d16e778f856cdbc738ecda088865c4d5e2499665fe058228a29426b",
+        "source_commit": "373d6cd810a7890a607fb4e50c6447832cb8488a",
+        "artifact_sha256_by_path": {
+          "research/archetypal-objective.md": "4fda4ca4b1b946a442d4dd72efae9944bde7f617d2a3b4cb5640fa895f308e53",
+          "research/decision-method.md": "880e319c8d16e778f856cdbc738ecda088865c4d5e2499665fe058228a29426b",
+          "research/methods/constraint-crosswalk.csv": "13ecfe0811e964432f2ceaba2d13bb9f36ca5b5935dfe08bb7e719c2cfbb9224",
+          "research/tools/ledger/constraint_crosswalk.py": "8dfeba4a973c1d37b69a07f05a6dc0370ff2689d071598e338261a56018085a6",
+          "research/tools/ledger/tests/test_constraint_crosswalk.py": "26c7129b65e9251eb833f9f68683ab48d5a695e6d044aca4c29541d4f403d0fe"
+        },
+        "check_output_sha256": {
+          "crosswalk_exact": "298adc63d9cbf331849a2681ac806d1989fc9d4df641daced5110b27fb5266cb",
+          "crosswalk_signed": "e48e32e3776481d4cb6813c0544b6dbe3ea183b06c725afe321bcda4bc218604",
+          "crosswalk_test": "d3de929d3d84f45c5601ff0ca787d962d4b7e8b4d56506562982ad4d9feb65f5"
+        },
+        "review_ref": "research/methods/gate-a-item-10-independent-review.md",
+        "review_sha256": "1e7dbcc5b72eede8a63841af8ca8abce88154aeb4705ca139c93b8cf9d9312fc",
+        "producer_session": "root/2026-10-01",
+        "reviewer_session": "policy_review/2026-10-01"
+      }
+    },
+    {
+      "number": 11,
+      "timing": "with item 10",
+      "owner_scope": "objective screen",
+      "status": "PASS",
+      "open_reason": "",
+      "evidence": {
+        "item": 11,
+        "method_sha256": "880e319c8d16e778f856cdbc738ecda088865c4d5e2499665fe058228a29426b",
+        "source_commit": "373d6cd810a7890a607fb4e50c6447832cb8488a",
+        "artifact_sha256_by_path": {
+          "research/archetypal-objective.md": "4fda4ca4b1b946a442d4dd72efae9944bde7f617d2a3b4cb5640fa895f308e53",
+          "research/decision-ledger.jsonl": "ea6a7e4f5810e399cfd10ed86d3393ae054248e5cafaf770f245ee0cb6fae727",
+          "research/decision-method.md": "880e319c8d16e778f856cdbc738ecda088865c4d5e2499665fe058228a29426b",
+          "research/requirement-ledger.csv": "14ea66685680d18a58bfda5689be5698013f3f1b03b5df343c2badaf138d3d82",
+          "research/tools/ledger/objective_screen.py": "3e035d700aee7abe769072ecf037c05f422c81f839df9b33b98a6610f845d566",
+          "research/tools/ledger/tests/test_objective_screen.py": "5350e3258d7dc8ce530580b74b686ec01fb21736a6ee890713ab549617569cda"
+        },
+        "check_output_sha256": {
+          "objective_generated": "3a469699802f0afdd017fba66032e25646b75e3d1dbb5fdd7ed735cdbadfcfb6",
+          "objective_test": "b9f3084ee11b9993db4a3a82b9a377e73e6ce6c053f64c2ea9d721dc821f99dd"
+        },
+        "review_ref": "research/methods/gate-a-item-11-independent-review.md",
+        "review_sha256": "07594c8e860e37f10262ea711d13e089db56705c230cabc7e40558b331d57d7b",
+        "producer_session": "root/2026-10-01",
+        "reviewer_session": "policy_review/2026-10-01"
+      }
+    },
+    {
+      "number": 12,
+      "timing": "G-A",
+      "owner_scope": "decision ledger assignments",
+      "status": "PASS",
+      "open_reason": "",
+      "evidence": {
+        "item": 12,
+        "method_sha256": "880e319c8d16e778f856cdbc738ecda088865c4d5e2499665fe058228a29426b",
+        "source_commit": "373d6cd810a7890a607fb4e50c6447832cb8488a",
+        "artifact_sha256_by_path": {
+          "research/decision-ledger.jsonl": "ea6a7e4f5810e399cfd10ed86d3393ae054248e5cafaf770f245ee0cb6fae727",
+          "research/decision-method.md": "880e319c8d16e778f856cdbc738ecda088865c4d5e2499665fe058228a29426b",
+          "research/methods/constraint-crosswalk.csv": "13ecfe0811e964432f2ceaba2d13bb9f36ca5b5935dfe08bb7e719c2cfbb9224",
+          "research/methods/thresholds.json": "9cd4b5be3486ae671c54987df2c5ee4f8650e77f464145fe48fe829fe93ddc90",
+          "research/tools/experiments/validation_looks.py": "ebdd8c46030788808f4fcd332c73fedb3df922e5844f6806579d10caff26a29e",
+          "research/tools/ledger/assemble.py": "ddae63c0e3ecb8df3f8a7a469b0ce2c8caa4877906e494b2aaabcf97fe39e3f4",
+          "research/tools/ledger/decision-ledger.schema.json": "bce3c615e1d1affd9b8c35c5fa95e9dee6769a91769cc0eacf55d752e1acec0a",
+          "research/tools/ledger/validate_decisions.py": "d4ea286b93c2e795f3a205d1c09ee7d05c2b731936f0f898319de8687bb2f48e",
+          "research/tools/tests/test_decision_method_schema.py": "919cd6e46e06f6febde9e3324ca7fbce3e0add0a6ca7f65ff6020aa7810cc8e2"
+        },
+        "check_output_sha256": {
+          "ledger_gate_a": "cecce0853992221d727214592025c002cabe154c30fc70195793b4261d55e5a1",
+          "ledger_schema_test": "29b17033248b7ac086649b3c2ec1e4be65a2d4bd6ed45cbfa86395a0f1fa966c"
+        },
+        "review_ref": "research/methods/gate-a-item-12-independent-review.md",
+        "review_sha256": "e8ea90710d31e9c4f61d6b31b1ceb190dcff2562b6ccaba5e9ea8a141c4eccde",
+        "producer_session": "root/2026-10-01",
+        "reviewer_session": "policy_review/2026-10-01"
+      }
+    },
+    {
+      "number": 13,
+      "timing": "G-B",
+      "owner_scope": "workload mix",
+      "status": "OPEN",
+      "open_reason": "Cited workload-mix artifact and independent review are pending.",
+      "evidence": null
+    },
+    {
+      "number": 14,
+      "timing": "G-A",
+      "owner_scope": "validation look registry",
+      "status": "PASS",
+      "open_reason": "",
+      "evidence": {
+        "item": 14,
+        "method_sha256": "880e319c8d16e778f856cdbc738ecda088865c4d5e2499665fe058228a29426b",
+        "source_commit": "373d6cd810a7890a607fb4e50c6447832cb8488a",
+        "artifact_sha256_by_path": {
+          "research/decision-ledger.jsonl": "ea6a7e4f5810e399cfd10ed86d3393ae054248e5cafaf770f245ee0cb6fae727",
+          "research/decision-method.md": "880e319c8d16e778f856cdbc738ecda088865c4d5e2499665fe058228a29426b",
+          "research/decisions/validation-looks.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "research/experiments/_program/look-plan.csv": "b57c06fb848f0dd6f7e1ea3790e4ec18a04cc66db4ec1da18e0c31bbb535708b",
+          "research/tools/experiments/validation_looks.py": "ebdd8c46030788808f4fcd332c73fedb3df922e5844f6806579d10caff26a29e",
+          "research/tools/tests/test_validation_looks.py": "3ee3f2df5c05511826b8ca40ad3d46adaf7666557d823cbb5f6602149840aff3"
+        },
+        "check_output_sha256": {
+          "look_registry": "942ce8d0dd86e9ee5b3a2d740f5b9e3c7686960412df7637f054513df71cf178",
+          "look_registry_test": "4643374efcfd1da6cc31ae854600f20d84609a9de53b469f5aa556a91ace3e68"
+        },
+        "review_ref": "research/methods/gate-a-item-14-independent-review.md",
+        "review_sha256": "8ef57ddb85c1c4c1cc18466b69d6b1b0e50e47268b5f2d7c1826397b99285fd6",
+        "producer_session": "root/2026-10-01",
+        "reviewer_session": "policy_review/2026-10-01"
+      }
+    },
+    {
+      "number": 15,
+      "timing": "G-C",
+      "owner_scope": "held-out custody and role separation",
+      "status": "OPEN",
+      "open_reason": "Lineage, overlap, transcript, materialization, and exposure evidence require eligible independent review.",
+      "evidence": null
+    },
+    {
+      "number": 16,
+      "timing": "before any OD-16 result",
+      "owner_scope": "privacy attack evaluation",
+      "status": "OPEN",
+      "open_reason": "Adaptive attack suite and observer model are pending.",
+      "evidence": null
+    },
+    {
+      "number": 17,
+      "timing": "before a candidate's first HC-06 record",
+      "owner_scope": "allocation measurement",
+      "status": "OPEN",
+      "open_reason": "Attributed counting allocator and per-candidate pre-validation H are pending.",
+      "evidence": null
+    },
+    {
+      "number": 18,
+      "timing": "before any remote result",
+      "owner_scope": "remote calibration",
+      "status": "OPEN",
+      "open_reason": "EXP-NETEM-CAL acceptance and profile connection models are pending.",
+      "evidence": null
+    },
+    {
+      "number": 19,
+      "timing": "before any CC outcome",
+      "owner_scope": "specialist baselines",
+      "status": "OPEN",
+      "open_reason": "Specialist configurations and exact-source comparison evidence are pending.",
+      "evidence": null
+    }
   ]
 }

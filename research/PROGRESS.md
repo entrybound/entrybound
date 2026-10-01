@@ -24,11 +24,15 @@ those decisions' experiments or results. See the
 [round-2 review](methods/method-review-round2.md) and
 [integration gate state](methods/integration-gate-state.md).
 
-Live v2 integration, regenerated objective screening and independently reviewed
-exact-source gate receipts are being qualified. The validation-look registry
-contains no registered or executed looks. Later simulation, calibration, cost,
-HC, corpus custody, experiment and decision gates remain open. No new experiment
-result or DECIDED status is claimed by this checkpoint.
+Commit `373d6cd810a7890a607fb4e50c6447832cb8488a` integrates all 596 reviewed
+v2 assignments, preserves every original field and history prefix, regenerates
+objective Appendix C and contains independent item-specific source reviews.
+Items 10, 11, 12 and 14 have receipts against that actual committed source;
+their fresh live acceptance and exact-head qualification are the next checks.
+The validation-look registry contains no registered or executed looks. Later
+simulation, calibration, cost, HC, corpus custody, experiment and decision
+gates remain open. No new experiment result or DECIDED status is claimed by
+this checkpoint.
 
 ## Pause state and remaining work (2026-09-17)
 
