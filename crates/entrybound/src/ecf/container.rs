@@ -97,8 +97,78 @@ pub struct VerificationReport {
 /// An opened, verified archive.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OpenedArchive {
-    pub archive: Archive,
+    pub archive: VerifiedArchive,
     pub report: VerificationReport,
+    /// Reader-owned snapshot; callers cannot forge extraction verification by
+    /// constructing or changing the public inspection model or report.
+    pub(crate) extraction_authority: (
+        crate::identity::NativeRoots,
+        ResourceBudget,
+        DecodeRequirements,
+    ),
+}
+
+/// Read-only EAM returned by a successful reader.
+///
+/// Inspection uses ordinary field access through `Deref`. To edit a model for
+/// a new archive, consume this value with `into_inner`; the edited model must
+/// pass a reader again before it can authorize extraction.
+///
+/// ```compile_fail
+/// fn change_verified_model(mut opened: entrybound::ecf::OpenedArchive) {
+///     opened.archive.descriptor.budget.entry_count = 0;
+/// }
+/// ```
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct VerifiedArchive {
+    model: Archive,
+    authority: (
+        crate::identity::NativeRoots,
+        ResourceBudget,
+        DecodeRequirements,
+    ),
+}
+
+impl VerifiedArchive {
+    pub(crate) fn new(model: Archive, roots: crate::identity::NativeRoots) -> Self {
+        let authority = (roots, model.descriptor.budget, model.descriptor.decode);
+        Self { model, authority }
+    }
+
+    #[must_use]
+    pub fn into_inner(self) -> Archive {
+        self.model
+    }
+
+    pub(crate) fn authority(
+        &self,
+    ) -> (
+        crate::identity::NativeRoots,
+        ResourceBudget,
+        DecodeRequirements,
+    ) {
+        self.authority
+    }
+}
+
+impl std::ops::Deref for VerifiedArchive {
+    type Target = Archive;
+
+    fn deref(&self) -> &Archive {
+        &self.model
+    }
+}
+
+impl PartialEq<Archive> for VerifiedArchive {
+    fn eq(&self, other: &Archive) -> bool {
+        self.model == *other
+    }
+}
+
+impl PartialEq<VerifiedArchive> for Archive {
+    fn eq(&self, other: &VerifiedArchive) -> bool {
+        *self == other.model
+    }
 }
 
 /// Serializes a validated EAM as canonical unencrypted Complete INDEXED ECF.
@@ -733,10 +803,15 @@ pub(crate) fn open_encrypted_plain_parts(
     let exact_budget = derived_budget(&opened.archive, &opened.archive.index.chunks)?;
     enforce_caller_policy(exact_budget, policy)?;
     if declarations.is_none() {
-        opened.archive.descriptor.budget_declared = false;
-        opened.archive.descriptor.budget = exact_budget;
+        opened.archive.model.descriptor.budget_declared = false;
+        opened.archive.model.descriptor.budget = exact_budget;
     }
-    opened.archive.descriptor.pci = Some(encrypted_pci.0);
+    // Legacy Descriptor v1 derives verified actual bounds after the temporary
+    // plain reader returns; bind extraction authority to those final bounds.
+    opened.extraction_authority.1 = opened.archive.descriptor.budget;
+    opened.extraction_authority.2 = opened.archive.descriptor.decode;
+    opened.archive.model.descriptor.pci = Some(encrypted_pci.0);
+    opened.archive.authority = opened.extraction_authority;
     opened.report.identities.pci = encrypted_pci;
     Ok(opened)
 }
@@ -1046,7 +1121,12 @@ fn open_with_limits_internal(
     canonical.index = archive.index;
     let identities = roots.with_pci(pci);
     Ok(OpenedArchive {
-        archive: canonical,
+        extraction_authority: (
+            roots,
+            canonical.descriptor.budget,
+            canonical.descriptor.decode,
+        ),
+        archive: VerifiedArchive::new(canonical, roots),
         report: VerificationReport {
             canonical_encoding: true,
             container_structure: true,
@@ -1099,6 +1179,32 @@ pub fn verify_with_limits(
     decode_policy: DecodeRequirements,
 ) -> Result<VerificationReport> {
     Ok(open_with_limits(bytes, policy, decode_policy)?.report)
+}
+
+pub(crate) fn intersect_resource_policies(a: ResourceBudget, b: ResourceBudget) -> ResourceBudget {
+    ResourceBudget {
+        entry_count: a.entry_count.min(b.entry_count),
+        total_logical_bytes: a.total_logical_bytes.min(b.total_logical_bytes),
+        max_single_entry_logical_bytes: a
+            .max_single_entry_logical_bytes
+            .min(b.max_single_entry_logical_bytes),
+        max_expansion_ratio_milli: a.max_expansion_ratio_milli.min(b.max_expansion_ratio_milli),
+        chunk_count: a.chunk_count.min(b.chunk_count),
+        max_path_depth: a.max_path_depth.min(b.max_path_depth),
+        max_metadata_bytes: a.max_metadata_bytes.min(b.max_metadata_bytes),
+        max_key_derivation_cost: a.max_key_derivation_cost.min(b.max_key_derivation_cost),
+    }
+}
+
+pub(crate) fn intersect_decode_policies(
+    a: DecodeRequirements,
+    b: DecodeRequirements,
+) -> DecodeRequirements {
+    DecodeRequirements {
+        window_bytes: a.window_bytes.min(b.window_bytes),
+        working_set_bytes: a.working_set_bytes.min(b.working_set_bytes),
+        flags: a.flags & b.flags,
+    }
 }
 
 pub(crate) fn enforce_caller_policy(

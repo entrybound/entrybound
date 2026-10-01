@@ -1,10 +1,11 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::ffi::{OsStr, OsString};
 use std::fs::FileTimes;
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
+use cap_fs_ext::{OpenOptionsFollowExt as _, OpenOptionsMaybeDirExt as _};
 use cap_std::ambient_authority;
 #[cfg(windows)]
 use cap_std::fs::MetadataExt;
@@ -13,10 +14,10 @@ use cap_std::fs::{Dir, DirEntry, Metadata, OpenOptions};
 use cap_std::fs::{MetadataExt, PermissionsExt};
 
 #[cfg(unix)]
-use super::{AclPolicy, OwnershipPolicy, XAttrPolicy};
+use super::{AclPolicy, OwnershipPolicy, PrivilegedXAttrPolicy, SpecialPermissionsPolicy};
 use super::{
     CollisionPolicy, ConfinementMode, ExtractionPolicy, PlatformMetadataPolicy, ReparsePolicy,
-    SparsePolicy, SymlinkPolicy, WindowsSecurityPolicy, bootstrap_resource_policy,
+    SparsePolicy, SymlinkPolicy, WindowsSecurityPolicy, XAttrPolicy, bootstrap_resource_policy,
 };
 use crate::chunker::{
     EncryptedBoundaryKey, chunk_ranges, chunk_ranges_encrypted, select_parameters,
@@ -493,10 +494,11 @@ pub fn unpack(
     policy: ExtractionPolicy,
 ) -> Result<ExtractionReport> {
     let opened = open_with_limits(bytes, policy.budget(), policy.decode())?;
-    let chunks = opened.archive.content_store.chunks.clone();
     materialize(
         &opened.archive,
-        &mut RetainedChunks { chunks: &chunks },
+        &mut RetainedChunks {
+            chunks: &opened.archive.content_store.chunks,
+        },
         destination,
         policy,
     )
@@ -512,10 +514,19 @@ pub fn unpack_opened(
     destination: &Path,
     policy: ExtractionPolicy,
 ) -> Result<ExtractionReport> {
-    let chunks = opened.archive.content_store.chunks.clone();
+    let (_, verified_budget, verified_decode) = opened.extraction_authority;
+    crate::ecf::enforce_caller_policy(verified_budget, policy.budget())?;
+    crate::ecf::enforce_decode_policy(verified_decode, policy.decode())?;
+    if opened.archive.authority() != opened.extraction_authority {
+        return Err(containment(
+            "opened archive model was replaced after verification",
+        ));
+    }
     materialize(
         &opened.archive,
-        &mut RetainedChunks { chunks: &chunks },
+        &mut RetainedChunks {
+            chunks: &opened.archive.content_store.chunks,
+        },
         destination,
         policy,
     )
@@ -539,8 +550,14 @@ pub fn unpack_stream<R: std::io::Read>(
     let mut sequential = open_stream_with_limits(
         source,
         SequentialLimits {
-            budget: policy.budget(),
-            decode: policy.decode(),
+            budget: crate::ecf::container::intersect_resource_policies(
+                policy.budget(),
+                limits.budget,
+            ),
+            decode: crate::ecf::container::intersect_decode_policies(
+                policy.decode(),
+                limits.decode,
+            ),
             content: StreamContentPolicy::Stage,
             ..limits
         },
@@ -582,6 +599,8 @@ fn materialize(
     for entry in archive.entry_set.entries() {
         if let EntryData::Symlink { target } = entry.data() {
             validate_symlink_policy(entry.path(), target, policy.symlinks())?;
+            #[cfg(windows)]
+            windows_symlink_is_directory(archive, entry, target)?;
         }
         if matches!(entry.data(), EntryData::ReparsePoint { .. }) {
             let detail = match policy.reparse() {
@@ -600,8 +619,18 @@ fn materialize(
             ));
         }
     }
+    let safe_targets = validate_effective_symlinks(archive, policy.symlinks())?;
 
-    match std::fs::create_dir(destination) {
+    #[cfg(unix)]
+    let mut root_builder = std::fs::DirBuilder::new();
+    #[cfg(not(unix))]
+    let root_builder = std::fs::DirBuilder::new();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::DirBuilderExt as _;
+        root_builder.mode(0o700);
+    }
+    match root_builder.create(destination) {
         Ok(()) => {}
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
             if !destination.is_dir() {
@@ -613,17 +642,24 @@ fn materialize(
         }
         Err(error) => return Err(io("create destination root", error)),
     }
-    let root = Dir::open_ambient_dir(destination, ambient_authority())
+    let root = open_extraction_root(destination)
         .map_err(|error| containment(format!("cannot hold destination root: {error}")))?;
+    for target in &safe_targets {
+        refuse_existing_link_chain(&root, target)?;
+    }
 
     let mut report = ExtractionReport {
         entries_created: 0,
         logical_bytes_written: 0,
-        confinement: ConfinementMode::KernelEnforced,
+        // Capability-relative lookup does not yet establish the full root
+        // boundary during ordinary-directory substitution or held relocation.
+        confinement: ConfinementMode::WeakerReported,
         metadata_not_restored: Vec::new(),
     };
 
     let mut hardlink_representatives = BTreeMap::<Digest, LogicalPath>::new();
+    let mut held_directories = BTreeMap::<PathBuf, Dir>::new();
+    let mut held_representatives = BTreeMap::<Digest, cap_std::fs::File>::new();
     for entry in archive.entry_set.entries() {
         if let Some(group) = entry.metadata().hardlink_group() {
             hardlink_representatives
@@ -634,11 +670,20 @@ fn materialize(
 
     // Directories and representative regular files are created before any link.
     for entry in archive.entry_set.entries() {
-        let (parent, name) = resolve_parent(&root, entry.path())?;
+        let (parent, name) = held_parent(&root, &held_directories, entry.path())?;
         match entry.data() {
             EntryData::Directory => {
                 ensure_absent(&parent, name, entry.path())?;
-                parent.create_dir(name).map_err(|error| {
+                #[cfg(unix)]
+                let mut builder = cap_std::fs::DirBuilder::new();
+                #[cfg(not(unix))]
+                let builder = cap_std::fs::DirBuilder::new();
+                #[cfg(unix)]
+                {
+                    use cap_std::fs::DirBuilderExt as _;
+                    builder.mode(0o700);
+                }
+                parent.create_dir_with(name, &builder).map_err(|error| {
                     if error.kind() == std::io::ErrorKind::AlreadyExists
                         || parent.symlink_metadata(name).is_ok()
                     {
@@ -647,6 +692,20 @@ fn materialize(
                         io(format!("create directory {}", entry.path()), error)
                     }
                 })?;
+                let directory = open_created_directory(&parent, name).map_err(|error| {
+                    containment(format!(
+                        "cannot hold new directory {}: {error}",
+                        entry.path()
+                    ))
+                })?;
+                prepare_created_object(
+                    &directory
+                        .try_clone()
+                        .map_err(|error| io("clone new directory", error))?
+                        .into_std_file(),
+                    true,
+                )?;
+                held_directories.insert(logical_os_path(entry.path())?, directory);
             }
             EntryData::File {
                 content: ContentRef::Internal(digest),
@@ -661,6 +720,16 @@ fn materialize(
                 ensure_absent(&parent, name, entry.path())?;
                 let mut options = OpenOptions::new();
                 options.write(true).create_new(true);
+                #[cfg(unix)]
+                {
+                    use cap_std::fs::OpenOptionsExt as _;
+                    options.mode(0o600);
+                }
+                #[cfg(windows)]
+                {
+                    use cap_std::fs::OpenOptionsExt as _;
+                    options.share_mode(0x3);
+                }
                 let mut file = parent.open_with(name, &options).map_err(|error| {
                     if error.kind() == std::io::ErrorKind::AlreadyExists
                         || parent.symlink_metadata(name).is_ok()
@@ -670,6 +739,13 @@ fn materialize(
                         io(format!("create file {}", entry.path()), error)
                     }
                 })?;
+                prepare_created_object(
+                    &file
+                        .try_clone()
+                        .map_err(|error| io("clone new file", error))?
+                        .into_std(),
+                    false,
+                )?;
                 let object = archive.content_store.objects.get(digest).ok_or_else(|| {
                     Diagnostic::new(
                         OutcomeClass::Nonconforming,
@@ -705,13 +781,22 @@ fn materialize(
                     .logical_bytes_written
                     .checked_add(logical_len)
                     .ok_or_else(|| resource("extracted byte count exceeds u64"))?;
-                apply_file_metadata(
-                    file.into_std(),
-                    entry.path().to_string(),
-                    entry.metadata(),
-                    policy,
-                    &mut report,
-                );
+                if let Some(group) = entry.metadata().hardlink_group() {
+                    held_representatives.insert(
+                        group,
+                        file.try_clone()
+                            .map_err(|error| io("hold hardlink representative", error))?,
+                    );
+                }
+                if entry.metadata().hardlink_group().is_none() {
+                    apply_file_metadata(
+                        file.into_std(),
+                        entry.path().to_string(),
+                        entry.metadata(),
+                        policy,
+                        &mut report,
+                    );
+                }
             }
             EntryData::Symlink { .. } | EntryData::ReparsePoint { .. } => continue,
         }
@@ -730,19 +815,70 @@ fn materialize(
         if representative == entry.path() {
             continue;
         }
-        let (parent, name) = resolve_parent(&root, entry.path())?;
+        let (parent, name) = held_parent(&root, &held_directories, entry.path())?;
         ensure_absent(&parent, name, entry.path())?;
-        root.hard_link(logical_os_path(representative)?, &parent, name)
-            .map_err(|error| io(format!("create hardlink {}", entry.path()), error))?;
+        let held = &held_representatives[&group];
+        let (representative_parent, representative_name) =
+            held_parent(&root, &held_directories, representative)?;
+        create_verified_hardlink(
+            held,
+            &representative_parent,
+            representative_name,
+            &parent,
+            name,
+        )
+        .map_err(|error| {
+            containment(format!(
+                "cannot create verified hardlink {}: {error}",
+                entry.path()
+            ))
+        })?;
         report.entries_created = report
             .entries_created
             .checked_add(1)
             .ok_or_else(|| resource("extracted entry count exceeds u64"))?;
     }
 
+    // Link objects are last; final directory metadata uses already held handles.
+    for (group, file) in held_representatives {
+        let representative = &hardlink_representatives[&group];
+        let entry = archive
+            .entry_set
+            .entries()
+            .iter()
+            .find(|entry| entry.path() == representative)
+            .ok_or_else(|| containment("hardlink representative Entry is missing"))?;
+        apply_file_metadata(
+            file.into_std(),
+            representative.to_string(),
+            entry.metadata(),
+            policy,
+            &mut report,
+        );
+    }
+    for entry in archive.entry_set.entries() {
+        let EntryData::Symlink { target } = entry.data() else {
+            continue;
+        };
+        let (parent, name) = held_parent(&root, &held_directories, entry.path())?;
+        ensure_absent(&parent, name, entry.path())?;
+        #[cfg(windows)]
+        let target_is_directory = windows_symlink_is_directory(archive, entry, target)?;
+        #[cfg(not(windows))]
+        let target_is_directory = false;
+        create_symlink(&parent, name, target, target_is_directory)
+            .map_err(|error| io(format!("create symlink {}", entry.path()), error))?;
+        restore_symlink_metadata(entry, policy, &mut report.metadata_not_restored);
+        report.entries_created = report
+            .entries_created
+            .checked_add(1)
+            .ok_or_else(|| resource("extracted entry count exceeds u64"))?;
+    }
     for entry in archive.entry_set.entries().iter().rev() {
         if matches!(entry.data(), EntryData::Directory) {
-            let directory = resolve_directory(&root, entry.path())?;
+            let directory = held_directories
+                .remove(&logical_os_path(entry.path())?)
+                .ok_or_else(|| containment("created directory handle is missing"))?;
             apply_file_metadata(
                 directory.into_std_file(),
                 entry.path().to_string(),
@@ -751,27 +887,6 @@ fn materialize(
                 &mut report,
             );
         }
-    }
-
-    // Symlinks are deliberately last, so no later extraction write can traverse one.
-    for entry in archive.entry_set.entries() {
-        let EntryData::Symlink { target } = entry.data() else {
-            continue;
-        };
-        let (parent, name) = resolve_parent(&root, entry.path())?;
-        ensure_absent(&parent, name, entry.path())?;
-        create_symlink(&parent, name, target)
-            .map_err(|error| io(format!("create symlink {}", entry.path()), error))?;
-        restore_symlink_metadata(
-            destination,
-            entry,
-            policy,
-            &mut report.metadata_not_restored,
-        );
-        report.entries_created = report
-            .entries_created
-            .checked_add(1)
-            .ok_or_else(|| resource("extracted entry count exceeds u64"))?;
     }
     Ok(report)
 }
@@ -1775,32 +1890,220 @@ fn bootstrap_fidelity() -> FidelityReport {
     }
 }
 
-fn resolve_parent<'a>(root: &Dir, path: &'a LogicalPath) -> Result<(Dir, &'a OsStr)> {
+fn held_parent<'a>(
+    root: &Dir,
+    directories: &BTreeMap<PathBuf, Dir>,
+    path: &'a LogicalPath,
+) -> Result<(Dir, &'a OsStr)> {
     let (name, parents) = path
         .components()
         .split_last()
         .ok_or_else(|| containment("LogicalPath unexpectedly had no components"))?;
-    let mut directory = root
-        .try_clone()
-        .map_err(|error| containment(format!("cannot clone destination root: {error}")))?;
+    let mut parent_path = PathBuf::new();
     for component in parents {
-        directory = directory
-            .open_dir(component_os(component.bytes())?)
-            .map_err(|error| containment(format!("cannot resolve parent of {path}: {error}")))?;
+        parent_path.push(component_os(component.bytes())?);
     }
+    let directory = if parent_path.as_os_str().is_empty() {
+        root
+    } else {
+        directories
+            .get(&parent_path)
+            .ok_or_else(|| containment(format!("no created parent handle for {path}")))?
+    }
+    .try_clone()
+    .map_err(|error| containment(format!("cannot clone parent of {path}: {error}")))?;
     Ok((directory, component_os(name.bytes())?))
 }
 
-fn resolve_directory(root: &Dir, path: &LogicalPath) -> Result<Dir> {
-    let mut directory = root
-        .try_clone()
-        .map_err(|error| containment(format!("cannot clone destination root: {error}")))?;
-    for component in path.components() {
-        directory = directory
-            .open_dir(component_os(component.bytes())?)
-            .map_err(|error| containment(format!("cannot reopen directory {path}: {error}")))?;
+fn open_extraction_root(path: &Path) -> std::io::Result<Dir> {
+    let mut options = std::fs::OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt as _;
+        options.custom_flags(
+            (rustix::fs::OFlags::DIRECTORY | rustix::fs::OFlags::NOFOLLOW).bits() as i32,
+        );
     }
-    Ok(directory)
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt as _;
+        // FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT.
+        options.custom_flags(0x0220_0000);
+        // Keep the held root stable by denying rename/delete sharing.
+        options.share_mode(0x3);
+    }
+    let file = options.open(path)?;
+    let metadata = file.metadata()?;
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::MetadataExt as _;
+        if metadata.file_attributes() & 0x400 != 0 {
+            return Err(std::io::Error::other("extraction root is a reparse point"));
+        }
+    }
+    if !metadata.is_dir() || metadata.is_symlink() {
+        return Err(std::io::Error::other(
+            "extraction root is not a no-follow directory",
+        ));
+    }
+    Ok(Dir::from_std_file(file))
+}
+
+fn open_created_directory(parent: &Dir, name: &OsStr) -> std::io::Result<Dir> {
+    let mut options = OpenOptions::new();
+    options
+        .read(true)
+        .maybe_dir(true)
+        .follow(cap_fs_ext::FollowSymlinks::No);
+    #[cfg(windows)]
+    {
+        use cap_std::fs::OpenOptionsExt as _;
+        options.share_mode(0x3);
+    }
+    let file = parent.open_with(name, &options)?;
+    let metadata = file.metadata()?;
+    #[cfg(windows)]
+    if metadata.file_attributes() & 0x400 != 0 {
+        return Err(std::io::Error::other("directory name is a reparse point"));
+    }
+    if !metadata.is_dir() {
+        return Err(std::io::Error::other("new directory name was substituted"));
+    }
+    Ok(Dir::from_std_file(file.into_std()))
+}
+
+fn prepare_created_object(file: &std::fs::File, directory: bool) -> Result<()> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt as _;
+        file.set_permissions(std::fs::Permissions::from_mode(if directory {
+            0o700
+        } else {
+            0o600
+        }))
+        .map_err(|error| io("restrict new extraction object", error))?;
+    }
+    #[cfg(target_os = "linux")]
+    {
+        use xattr::FileExt as _;
+        for name in ["system.posix_acl_access", "system.posix_acl_default"] {
+            if file
+                .get_xattr(name)
+                .map_err(|error| io("inspect inherited ACL", error))?
+                .is_some()
+            {
+                file.remove_xattr(name)
+                    .map_err(|error| io("remove inherited ACL", error))?;
+                if file
+                    .get_xattr(name)
+                    .map_err(|error| io("verify inherited ACL removal", error))?
+                    .is_some()
+                {
+                    return Err(containment(
+                        "inherited ACL remained on a created extraction object",
+                    ));
+                }
+            }
+        }
+    }
+    #[cfg(not(unix))]
+    let _ = (file, directory);
+    Ok(())
+}
+
+fn same_object(left: &Metadata, right: &Metadata) -> bool {
+    #[cfg(unix)]
+    {
+        left.dev() == right.dev()
+            && left.ino() == right.ino()
+            && left.file_type() == right.file_type()
+    }
+    #[cfg(windows)]
+    {
+        use cap_fs_ext::MetadataExt as _;
+        left.dev() == right.dev()
+            && left.ino() == right.ino()
+            && left.file_type() == right.file_type()
+    }
+    #[cfg(not(any(unix, windows)))]
+    {
+        let _ = (left, right);
+        false
+    }
+}
+
+fn create_verified_hardlink(
+    held: &cap_std::fs::File,
+    source_parent: &Dir,
+    source_name: &OsStr,
+    destination_parent: &Dir,
+    destination_name: &OsStr,
+) -> std::io::Result<()> {
+    create_verified_hardlink_with_probe(
+        held,
+        source_parent,
+        source_name,
+        destination_parent,
+        destination_name,
+        || {},
+    )
+}
+
+fn create_verified_hardlink_with_probe(
+    held: &cap_std::fs::File,
+    source_parent: &Dir,
+    source_name: &OsStr,
+    destination_parent: &Dir,
+    destination_name: &OsStr,
+    after_identity_check: impl FnOnce(),
+) -> std::io::Result<()> {
+    let expected = held.metadata()?;
+    let observed = regular_metadata_nofollow(source_parent, source_name)?;
+    if !expected.is_file() || !same_object(&expected, &observed) {
+        return Err(std::io::Error::other(
+            "hardlink representative identity changed",
+        ));
+    }
+    after_identity_check();
+    #[cfg(target_os = "linux")]
+    {
+        use std::os::fd::AsRawFd as _;
+        // Linux documents procfs fd links as the unprivileged alternative to
+        // linkat(AT_EMPTY_PATH). The source is this held fd, never an archive path.
+        rustix::fs::linkat(
+            rustix::fs::CWD,
+            format!("/proc/self/fd/{}", held.as_raw_fd()),
+            destination_parent,
+            destination_name,
+            rustix::fs::AtFlags::SYMLINK_FOLLOW,
+        )?;
+    }
+    #[cfg(not(target_os = "linux"))]
+    source_parent.hard_link(source_name, destination_parent, destination_name)?;
+    let alias = regular_metadata_nofollow(destination_parent, destination_name)?;
+    if !same_object(&expected, &alias)
+        || !same_object(
+            &expected,
+            &regular_metadata_nofollow(source_parent, source_name)?,
+        )
+    {
+        // A changed name is never removed: it may now belong to another actor.
+        return Err(std::io::Error::other(
+            "hardlink identity changed during creation; extraction refused",
+        ));
+    }
+    Ok(())
+}
+
+fn regular_metadata_nofollow(parent: &Dir, name: &OsStr) -> std::io::Result<Metadata> {
+    let mut options = OpenOptions::new();
+    options.read(true).follow(cap_fs_ext::FollowSymlinks::No);
+    let metadata = parent.open_with(name, &options)?.metadata()?;
+    if !metadata.is_file() {
+        return Err(std::io::Error::other("hardlink name is not a regular file"));
+    }
+    Ok(metadata)
 }
 
 fn ensure_absent(parent: &Dir, name: &OsStr, path: &LogicalPath) -> Result<()> {
@@ -1827,6 +2130,127 @@ fn logical_os_path(path: &LogicalPath) -> Result<PathBuf> {
         result.push(component_os(component.bytes())?);
     }
     Ok(result)
+}
+
+fn validate_effective_symlinks(
+    archive: &Archive,
+    policy: SymlinkPolicy,
+) -> Result<Vec<Vec<Vec<u8>>>> {
+    if policy != SymlinkPolicy::Safe {
+        return Ok(Vec::new());
+    }
+    let links = archive
+        .entry_set
+        .entries()
+        .iter()
+        .filter_map(|entry| {
+            if let EntryData::Symlink { target } = entry.data() {
+                Some((
+                    entry
+                        .path()
+                        .components()
+                        .iter()
+                        .map(|component| component.bytes().to_vec())
+                        .collect::<Vec<_>>(),
+                    target,
+                ))
+            } else {
+                None
+            }
+        })
+        .collect::<BTreeMap<_, _>>();
+    links
+        .iter()
+        .map(|(path, target)| effective_link_target(path, target, &links))
+        .collect()
+}
+
+fn effective_link_target(
+    path: &[Vec<u8>],
+    target: &LinkTarget,
+    links: &BTreeMap<Vec<Vec<u8>>, &LinkTarget>,
+) -> Result<Vec<Vec<u8>>> {
+    let mut resolved = path[..path.len().saturating_sub(1)].to_vec();
+    let mut pending = target
+        .bytes()
+        .split(|byte| *byte == b'/')
+        .map(<[u8]>::to_vec)
+        .collect::<VecDeque<_>>();
+    let mut expansions = 0_u32;
+    while let Some(component) = pending.pop_front() {
+        match component.as_slice() {
+            b"" | b"." => continue,
+            b".." => {
+                if resolved.pop().is_none() {
+                    return Err(Diagnostic::new(
+                        OutcomeClass::PolicyRefused,
+                        ReasonCode::ExtractionUnsafeSymlink,
+                        "effective symlink chain escapes the extraction root",
+                    ));
+                }
+            }
+            _ => {
+                resolved.push(component);
+                if let Some(next) = links.get(&resolved) {
+                    expansions += 1;
+                    if expansions > 40 {
+                        return Err(Diagnostic::new(
+                            OutcomeClass::PolicyRefused,
+                            ReasonCode::ExtractionUnsafeSymlink,
+                            "effective symlink chain cycles or exceeds 40 expansions",
+                        ));
+                    }
+                    resolved.pop();
+                    for component in next.bytes().split(|byte| *byte == b'/').rev() {
+                        pending.push_front(component.to_vec());
+                    }
+                }
+            }
+        }
+    }
+    Ok(resolved)
+}
+
+fn refuse_existing_link_chain(root: &Dir, target: &[Vec<u8>]) -> Result<()> {
+    let mut current = root
+        .try_clone()
+        .map_err(|error| io("hold symlink target root", error))?;
+    for component in target {
+        #[cfg(unix)]
+        let name = {
+            use std::os::unix::ffi::OsStrExt as _;
+            OsStr::from_bytes(component)
+        };
+        #[cfg(not(unix))]
+        let name = component_os(component)?;
+        let metadata = match current.symlink_metadata(name) {
+            Ok(metadata) => metadata,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+            Err(error) => {
+                return Err(containment(format!(
+                    "cannot inspect existing symlink target: {error}"
+                )));
+            }
+        };
+        #[cfg(windows)]
+        let link_like = metadata.file_attributes() & 0x400 != 0;
+        #[cfg(not(windows))]
+        let link_like = metadata.is_symlink();
+        if link_like {
+            return Err(Diagnostic::new(
+                OutcomeClass::PolicyRefused,
+                ReasonCode::ExtractionUnsafeSymlink,
+                "safe symlink target traverses a pre-existing link or reparse point",
+            ));
+        }
+        if !metadata.is_dir() {
+            return Ok(());
+        }
+        current = open_created_directory(&current, name).map_err(|error| {
+            containment(format!("existing symlink target parent changed: {error}"))
+        })?;
+    }
+    Ok(())
 }
 
 fn validate_symlink_policy(
@@ -1876,20 +2300,126 @@ fn validate_symlink_policy(
 }
 
 #[cfg(unix)]
-fn create_symlink(parent: &Dir, name: &OsStr, target: &LinkTarget) -> std::io::Result<()> {
+fn create_symlink(
+    parent: &Dir,
+    name: &OsStr,
+    target: &LinkTarget,
+    _target_is_directory: bool,
+) -> std::io::Result<()> {
     use std::os::unix::ffi::OsStrExt as _;
     parent.symlink_contents(OsStr::from_bytes(target.bytes()), name)
 }
 
 #[cfg(windows)]
-fn create_symlink(parent: &Dir, name: &OsStr, target: &LinkTarget) -> std::io::Result<()> {
+fn windows_symlink_is_directory(
+    archive: &Archive,
+    entry: &Entry,
+    target: &LinkTarget,
+) -> Result<bool> {
+    std::str::from_utf8(target.bytes()).map_err(|_| {
+        Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::InvalidPathComponent,
+            format!("{}: Windows symlink target is not UTF-8", entry.path()),
+        )
+    })?;
+    let bytes = target.bytes();
+    if bytes.starts_with(b"/")
+        || bytes.starts_with(b"\\")
+        || bytes.get(1) == Some(&b':')
+        || bytes.contains(&b'\\')
+    {
+        return Err(Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedEntryKind,
+            format!(
+                "{}: Windows rooted symlink target kind is unavailable in the current archive model",
+                entry.path()
+            ),
+        ));
+    }
+    let links = archive
+        .entry_set
+        .entries()
+        .iter()
+        .filter_map(|item| match item.data() {
+            EntryData::Symlink { target } => Some((
+                item.path()
+                    .components()
+                    .iter()
+                    .map(|part| part.bytes().to_vec())
+                    .collect::<Vec<_>>(),
+                target,
+            )),
+            _ => None,
+        })
+        .collect::<BTreeMap<_, _>>();
+    let path = entry
+        .path()
+        .components()
+        .iter()
+        .map(|part| part.bytes().to_vec())
+        .collect::<Vec<_>>();
+    let resolved = effective_link_target(&path, target, &links).map_err(|_| {
+        Diagnostic::new(
+            OutcomeClass::Unsupported,
+            ReasonCode::UnsupportedEntryKind,
+            format!(
+                "{}: Windows symlink target kind cannot be determined from the archive",
+                entry.path()
+            ),
+        )
+    })?;
+    if resolved.is_empty() {
+        return Ok(true);
+    }
+    if let Some(target_entry) = archive.entry_set.entries().iter().find(|candidate| {
+        candidate
+            .path()
+            .components()
+            .iter()
+            .map(|part| part.bytes())
+            .eq(resolved.iter().map(Vec::as_slice))
+    }) {
+        match target_entry.data() {
+            EntryData::Directory => return Ok(true),
+            EntryData::File { .. } => return Ok(false),
+            _ => {}
+        }
+    }
+    Err(Diagnostic::new(
+        OutcomeClass::Unsupported,
+        ReasonCode::UnsupportedEntryKind,
+        format!(
+            "{}: Windows symlink target kind cannot be determined by the archive",
+            entry.path()
+        ),
+    ))
+}
+
+#[cfg(windows)]
+fn create_symlink(
+    parent: &Dir,
+    name: &OsStr,
+    target: &LinkTarget,
+    target_is_directory: bool,
+) -> std::io::Result<()> {
     let target = std::str::from_utf8(target.bytes())
         .map_err(|_| std::io::Error::new(std::io::ErrorKind::InvalidInput, "non-UTF8 target"))?;
-    parent.symlink_file(target, name)
+    if target_is_directory {
+        parent.symlink_dir(target, name)
+    } else {
+        parent.symlink_file(target, name)
+    }
 }
 
 #[cfg(not(any(unix, windows)))]
-fn create_symlink(_parent: &Dir, _name: &OsStr, _target: &LinkTarget) -> std::io::Result<()> {
+fn create_symlink(
+    _parent: &Dir,
+    _name: &OsStr,
+    _target: &LinkTarget,
+    _target_is_directory: bool,
+) -> std::io::Result<()> {
     Err(std::io::Error::new(
         std::io::ErrorKind::Unsupported,
         "symbolic links are unsupported on this platform",
@@ -1960,6 +2490,23 @@ fn apply_file_metadata(
             use std::os::unix::ffi::OsStrExt as _;
             use xattr::FileExt as _;
             for attribute in metadata.xattrs() {
+                // Unknown and platform security namespaces require separate authorization.
+                // ACL xattrs always belong to the dedicated ACL policy and decoder.
+                if attribute.name().starts_with(b"system.posix_acl_") {
+                    report.metadata_not_restored.push(format!(
+                        "{path}: ACL xattr must use security.acls restoration"
+                    ));
+                    continue;
+                }
+                if !attribute.name().starts_with(b"user.")
+                    && policy.privileged_xattrs() != PrivilegedXAttrPolicy::Restore
+                {
+                    report.metadata_not_restored.push(format!(
+                        "{path}: privileged xattr {} skipped by policy",
+                        String::from_utf8_lossy(attribute.name())
+                    ));
+                    continue;
+                }
                 if let Err(error) =
                     file.set_xattr(OsStr::from_bytes(attribute.name()), attribute.value())
                 {
@@ -1974,6 +2521,45 @@ fn apply_file_metadata(
                 .metadata_not_restored
                 .push(format!("{path}: posix.xattrs skipped by policy"));
         }
+        let mut requested_mode = None;
+        match file.metadata() {
+            Ok(file_metadata) => {
+                let mut permissions = file_metadata.permissions();
+                let mut mode = metadata.posix_mode().unwrap_or_else(|| {
+                    let mut mode = permissions.mode();
+                    // core.executable is a file-execution flag. A directory
+                    // from a host without POSIX modes still needs its initial
+                    // owner search permission; false must not remove it.
+                    if !file_metadata.is_dir() {
+                        if metadata.executable() {
+                            mode |= 0o100;
+                        } else {
+                            mode &= !0o111;
+                        }
+                    }
+                    mode
+                });
+                if policy.special_permissions() != SpecialPermissionsPolicy::Restore {
+                    if mode & 0o7000 != 0 {
+                        report
+                            .metadata_not_restored
+                            .push(format!("{path}: special permission bits skipped by policy"));
+                    }
+                    mode &= !0o7000;
+                }
+                permissions.set_mode(mode);
+                requested_mode = Some(mode & 0o7777);
+                if let Err(error) = file.set_permissions(permissions) {
+                    report
+                        .metadata_not_restored
+                        .push(format!("{path}: core.executable ({error})"));
+                }
+            }
+            Err(error) => report
+                .metadata_not_restored
+                .push(format!("{path}: core.executable ({error})")),
+        }
+        // POSIX chmod changes the ACL mask, so ACLs must be restored last.
         if !metadata.acls().is_empty() {
             if policy.acls() == AclPolicy::Restore {
                 #[cfg(target_os = "linux")]
@@ -1988,28 +2574,15 @@ fn apply_file_metadata(
                     .push(format!("{path}: security.acls skipped by policy"));
             }
         }
-        match file.metadata() {
-            Ok(file_metadata) => {
-                let mut permissions = file_metadata.permissions();
-                let mode = metadata.posix_mode().unwrap_or_else(|| {
-                    let mut mode = permissions.mode();
-                    if metadata.executable() {
-                        mode |= 0o100;
-                    } else {
-                        mode &= !0o111;
-                    }
-                    mode
-                });
-                permissions.set_mode(mode);
-                if let Err(error) = file.set_permissions(permissions) {
-                    report
-                        .metadata_not_restored
-                        .push(format!("{path}: core.executable ({error})"));
-                }
+        if let Some(requested) = requested_mode {
+            match file.metadata() {
+                Ok(actual) if actual.permissions().mode() & 0o7777 == requested => {}
+                Ok(actual) => report.metadata_not_restored.push(format!(
+                    "{path}: final posix.mode/ACL mismatch (requested {requested:o}, observed {:o})",
+                    actual.permissions().mode() & 0o7777
+                )),
+                Err(error) => report.metadata_not_restored.push(format!("{path}: final posix.mode verification ({error})")),
             }
-            Err(error) => report
-                .metadata_not_restored
-                .push(format!("{path}: core.executable ({error})")),
         }
     }
     #[cfg(not(unix))]
@@ -2100,18 +2673,47 @@ fn restore_linux_acls(
                 "{path}: {} ({error})",
                 String::from_utf8_lossy(name)
             ));
+            continue;
+        }
+        match file.get_xattr(OsStr::from_bytes(name)) {
+            Ok(Some(actual)) if actual == value => {}
+            // Linux may canonicalize a base-only ACL into mode bits.
+            Ok(None) if acl.entries().len() == 3 && acl.scope() == AclScope::Access => {}
+            Ok(_) => report.metadata_not_restored.push(format!(
+                "{path}: final ACL readback differs from requested {}",
+                String::from_utf8_lossy(name)
+            )),
+            Err(error) => report
+                .metadata_not_restored
+                .push(format!("{path}: final ACL verification ({error})")),
         }
     }
 }
 
-fn restore_symlink_metadata(
-    destination: &Path,
-    entry: &Entry,
-    policy: ExtractionPolicy,
-    report: &mut Vec<String>,
-) {
-    #[cfg(not(unix))]
-    let _ = (destination, policy);
+fn restore_symlink_metadata(entry: &Entry, policy: ExtractionPolicy, report: &mut Vec<String>) {
+    if entry.metadata().posix_mode().is_some() {
+        report.push(format!(
+            "{}: held-handle symlink mode restoration is unavailable",
+            entry.path()
+        ));
+    }
+    if !entry.metadata().acls().is_empty() {
+        report.push(format!(
+            "{}: held-handle symlink ACL restoration is unavailable",
+            entry.path()
+        ));
+    }
+    if entry.metadata().windows_security_descriptor().is_some()
+        || entry.metadata().windows_file_attributes().is_some()
+        || entry.metadata().windows_creation_time().is_some()
+        || entry.metadata().macos_flags().is_some()
+        || entry.metadata().macos_birthtime().is_some()
+    {
+        report.push(format!(
+            "{}: held-handle symlink platform metadata restoration is unavailable",
+            entry.path()
+        ));
+    }
     if entry.metadata().posix_uid().is_some() || entry.metadata().posix_gid().is_some() {
         report.push(format!(
             "{}: symlink ownership is capture-only in this implementation",
@@ -2119,23 +2721,11 @@ fn restore_symlink_metadata(
         ));
     }
     if !entry.metadata().xattrs().is_empty() {
-        #[cfg(unix)]
         if policy.xattrs() == XAttrPolicy::Restore {
-            use std::os::unix::ffi::OsStrExt as _;
-            let path = destination.join(logical_os_path(entry.path()).unwrap_or_default());
-            for attribute in entry.metadata().xattrs() {
-                if let Err(error) = xattr::set(
-                    &path,
-                    OsStr::from_bytes(attribute.name()),
-                    attribute.value(),
-                ) {
-                    report.push(format!(
-                        "{}: symlink xattr {} ({error})",
-                        entry.path(),
-                        String::from_utf8_lossy(attribute.name())
-                    ));
-                }
-            }
+            report.push(format!(
+                "{}: held-handle symlink xattr restoration is unavailable",
+                entry.path()
+            ));
         } else {
             report.push(format!("{}: posix.xattrs skipped by policy", entry.path()));
         }
@@ -2231,6 +2821,506 @@ mod tests {
     use std::sync::atomic::{AtomicU64, Ordering};
 
     static NEXT: AtomicU64 = AtomicU64::new(0);
+
+    struct SafetyFixture(PathBuf);
+
+    impl SafetyFixture {
+        fn new(name: &str) -> Self {
+            let path = std::env::temp_dir().join(format!(
+                "entrybound-safety-{name}-{}-{}",
+                std::process::id(),
+                NEXT.fetch_add(1, Ordering::Relaxed)
+            ));
+            std::fs::create_dir(&path).unwrap();
+            Self(path)
+        }
+    }
+
+    impl Drop for SafetyFixture {
+        fn drop(&mut self) {
+            if let Err(error) = std::fs::remove_dir_all(&self.0) {
+                // The native runner retains the failure and removes only its
+                // owned fixture tree after the test process has exited.
+                eprintln!("fixture cleanup {}: {error}", self.0.display());
+            }
+        }
+    }
+
+    #[test]
+    fn effective_symlink_chain_is_checked_before_parent_traversals() {
+        let first = LinkTarget::canonical(b"..".to_vec().into_boxed_slice()).unwrap();
+        let target = LinkTarget::canonical(b"dir/up/..".to_vec().into_boxed_slice()).unwrap();
+        let links = BTreeMap::from([(vec![b"dir".to_vec(), b"up".to_vec()], &first)]);
+        let error = effective_link_target(&[b"alias".to_vec()], &target, &links).unwrap_err();
+        assert_eq!(error.code(), ReasonCode::ExtractionUnsafeSymlink);
+        let safe = LinkTarget::canonical(b"dir/up/file".to_vec().into_boxed_slice()).unwrap();
+        assert_eq!(
+            effective_link_target(&[b"alias".to_vec()], &safe, &links).unwrap(),
+            vec![b"file".to_vec()]
+        );
+    }
+
+    #[test]
+    fn effective_symlink_cycles_are_refused() {
+        let target = LinkTarget::canonical(b"loop".to_vec().into_boxed_slice()).unwrap();
+        let links = BTreeMap::from([(vec![b"loop".to_vec()], &target)]);
+        assert_eq!(
+            effective_link_target(&[b"loop".to_vec()], &target, &links)
+                .unwrap_err()
+                .code(),
+            ReasonCode::ExtractionUnsafeSymlink
+        );
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn windows_symlink_kind_uses_archive_directory_and_refuses_unknown_targets() {
+        let fixture = SafetyFixture::new("windows-link-kind");
+        let source = fixture.0.join("source");
+        std::fs::create_dir_all(source.join("directory")).unwrap();
+        let mut archive = plan_directory(&source, PackOptions::default()).unwrap();
+        let link = |target: &[u8]| {
+            Entry::new(
+                LogicalPath::from_utf8(["link"]).unwrap(),
+                EntryData::Symlink {
+                    target: LinkTarget::canonical(target.to_vec().into_boxed_slice()).unwrap(),
+                },
+                // The canonical Windows attributes mask excludes the directory
+                // type bit; a permitted attribute cannot determine link kind.
+                MetadataSet::new(vec![MetadataItem::windows_file_attributes(0x20).unwrap()])
+                    .unwrap(),
+                EntryIdentity::default(),
+            )
+        };
+        let known = link(b"directory");
+        let EntryData::Symlink { target } = known.data() else {
+            unreachable!()
+        };
+        assert!(windows_symlink_is_directory(&archive, &known, target).unwrap());
+        let unknown = link(b"missing");
+        let EntryData::Symlink { target } = unknown.data() else {
+            unreachable!()
+        };
+        assert_eq!(
+            windows_symlink_is_directory(&archive, &unknown, target)
+                .unwrap_err()
+                .class(),
+            OutcomeClass::Unsupported
+        );
+        let mut entries = archive.entry_set.entries().to_vec();
+        entries.push(unknown);
+        archive.entry_set = EntrySet::new(entries).unwrap();
+        let encoded = encode(&archive, WriteOptions::default()).unwrap();
+        let destination = fixture.0.join("output");
+        let error = unpack(&encoded.bytes, &destination, ExtractionPolicy::default()).unwrap_err();
+        assert_eq!(error.class(), OutcomeClass::Unsupported);
+        assert!(!destination.exists());
+    }
+
+    #[test]
+    fn substituted_hardlink_representative_is_refused_without_deleting_foreign_data() {
+        let fixture = SafetyFixture::new("hardlink-substitution");
+        let root = Dir::open_ambient_dir(&fixture.0, ambient_authority()).unwrap();
+        root.write("source", b"verified inert bytes").unwrap();
+        let held = root.open("source").unwrap();
+        root.rename("source", &root, "original").unwrap();
+        root.write("source", b"foreign inert bytes").unwrap();
+        let error = create_verified_hardlink(
+            &held,
+            &root,
+            OsStr::new("source"),
+            &root,
+            OsStr::new("alias"),
+        )
+        .unwrap_err();
+        assert!(error.to_string().contains("identity changed"));
+        assert_eq!(root.read("source").unwrap(), b"foreign inert bytes");
+        assert!(root.symlink_metadata("alias").is_err());
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn hardlink_race_never_links_the_substituted_representative() {
+        let fixture = SafetyFixture::new("hardlink-interleaving");
+        let root = Dir::open_ambient_dir(&fixture.0, ambient_authority()).unwrap();
+        root.write("source", b"verified inert bytes").unwrap();
+        let held = root.open("source").unwrap();
+        let result = create_verified_hardlink_with_probe(
+            &held,
+            &root,
+            OsStr::new("source"),
+            &root,
+            OsStr::new("alias"),
+            || {
+                root.rename("source", &root, "original").unwrap();
+                root.write("source", b"foreign inert bytes").unwrap();
+            },
+        );
+        assert!(result.is_err());
+        assert_eq!(root.read("alias").unwrap(), b"verified inert bytes");
+        assert_eq!(root.read("source").unwrap(), b"foreign inert bytes");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn held_parent_does_not_follow_a_substituted_directory() {
+        use std::os::unix::fs::symlink;
+        let fixture = SafetyFixture::new("held-parent");
+        let destination = fixture.0.join("output");
+        let foreign = fixture.0.join("foreign");
+        std::fs::create_dir(&destination).unwrap();
+        std::fs::create_dir(&foreign).unwrap();
+        let root = open_extraction_root(&destination).unwrap();
+        root.create_dir("parent").unwrap();
+        let directory = open_created_directory(&root, OsStr::new("parent")).unwrap();
+        let held = BTreeMap::from([(PathBuf::from("parent"), directory)]);
+        root.rename("parent", &root, "original-parent").unwrap();
+        symlink(&foreign, destination.join("parent")).unwrap();
+        let logical = LogicalPath::from_utf8(["parent", "file"]).unwrap();
+        let (parent, name) = held_parent(&root, &held, &logical).unwrap();
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true);
+        parent
+            .open_with(name, &options)
+            .unwrap()
+            .write_all(b"owned payload")
+            .unwrap();
+        assert_eq!(
+            std::fs::read(destination.join("original-parent/file")).unwrap(),
+            b"owned payload"
+        );
+        assert!(!foreign.join("file").exists());
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn symlink_metadata_does_not_write_through_a_substituted_parent() {
+        use std::os::unix::fs::symlink;
+
+        let outer = std::env::temp_dir().join(format!(
+            "entrybound-symlink-metadata-race-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        let destination = outer.join("destination");
+        let foreign = outer.join("foreign");
+        std::fs::create_dir_all(destination.join("parent")).unwrap();
+        std::fs::create_dir(&foreign).unwrap();
+        std::fs::write(foreign.join("link"), b"foreign inert payload").unwrap();
+        xattr::set(
+            foreign.join("link"),
+            "user.entrybound-race",
+            b"foreign value",
+        )
+        .unwrap();
+        symlink("target", destination.join("parent/link")).unwrap();
+        let entry = Entry::new(
+            LogicalPath::from_utf8(["parent", "link"]).unwrap(),
+            EntryData::Symlink {
+                target: LinkTarget::canonical(b"target".to_vec().into_boxed_slice()).unwrap(),
+            },
+            MetadataSet::new(vec![
+                MetadataItem::xattrs(vec![
+                    XAttr::new(b"user.entrybound-race".to_vec(), b"archive value".to_vec())
+                        .unwrap(),
+                ])
+                .unwrap(),
+            ])
+            .unwrap(),
+            EntryIdentity::default(),
+        );
+        // Deterministic interleaving after link creation, before metadata restoration.
+        std::fs::rename(
+            destination.join("parent"),
+            destination.join("original-parent"),
+        )
+        .unwrap();
+        symlink(&foreign, destination.join("parent")).unwrap();
+        let mut report = Vec::new();
+        restore_symlink_metadata(
+            &entry,
+            ExtractionPolicy::default().with_xattrs(XAttrPolicy::Restore),
+            &mut report,
+        );
+        let observed = xattr::get(foreign.join("link"), "user.entrybound-race").unwrap();
+        let foreign_bytes = std::fs::read(foreign.join("link")).unwrap();
+        std::fs::remove_dir_all(&outer).unwrap();
+        assert_eq!(
+            observed,
+            Some(b"foreign value".to_vec()),
+            "symlink metadata must not re-resolve a substituted parent"
+        );
+        assert_eq!(foreign_bytes, b"foreign inert payload");
+        assert!(
+            report
+                .iter()
+                .any(|issue| issue.contains("symlink") && issue.contains("unavailable"))
+        );
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn directory_without_posix_mode_keeps_search_permission() {
+        use std::os::unix::fs::PermissionsExt as _;
+        let fixture = SafetyFixture::new("directory-search-permission");
+        let directory = fixture.0.join("directory");
+        std::fs::create_dir(&directory).unwrap();
+        std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o700)).unwrap();
+        let metadata = MetadataSet::new(vec![MetadataItem::executable(false)]).unwrap();
+        let mut report = ExtractionReport {
+            entries_created: 0,
+            logical_bytes_written: 0,
+            confinement: ConfinementMode::WeakerReported,
+            metadata_not_restored: Vec::new(),
+        };
+        apply_file_metadata(
+            std::fs::File::open(&directory).unwrap(),
+            "directory".into(),
+            &metadata,
+            ExtractionPolicy::default(),
+            &mut report,
+        );
+        assert_eq!(
+            std::fs::metadata(&directory).unwrap().permissions().mode() & 0o777,
+            0o700,
+            "non-POSIX executable=false must not clear directory search bits"
+        );
+        std::fs::write(directory.join("child"), b"traversable payload").unwrap();
+        assert_eq!(
+            std::fs::read(directory.join("child")).unwrap(),
+            b"traversable payload"
+        );
+
+        // A declared POSIX directory mode is still restored exactly.
+        let explicit = MetadataSet::new(vec![
+            MetadataItem::executable(false),
+            MetadataItem::posix_mode(0o500),
+        ])
+        .unwrap();
+        apply_file_metadata(
+            std::fs::File::open(&directory).unwrap(),
+            "directory".into(),
+            &explicit,
+            ExtractionPolicy::default(),
+            &mut report,
+        );
+        let observed = std::fs::metadata(&directory).unwrap().permissions().mode() & 0o777;
+        std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o700)).unwrap();
+        assert_eq!(observed, 0o500);
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn ownership_and_ordinary_xattrs_do_not_authorize_privileged_metadata() {
+        use std::os::unix::fs::{MetadataExt as _, PermissionsExt as _};
+        let fixture = SafetyFixture::new("privileged-metadata");
+        let path = fixture.0.join("file");
+        std::fs::write(&path, b"inert payload").unwrap();
+        let original = std::fs::metadata(&path).unwrap();
+        let metadata = MetadataSet::new(vec![
+            MetadataItem::executable(true),
+            MetadataItem::posix_mode(0o6750),
+            MetadataItem::posix_uid(original.uid()),
+            MetadataItem::posix_gid(original.gid()),
+            MetadataItem::xattrs(vec![
+                XAttr::new(b"security.capability".to_vec(), vec![0; 20]).unwrap(),
+                XAttr::new(b"user.entrybound".to_vec(), b"ordinary value".to_vec()).unwrap(),
+            ])
+            .unwrap(),
+        ])
+        .unwrap();
+        let mut report = ExtractionReport {
+            entries_created: 0,
+            logical_bytes_written: 0,
+            confinement: ConfinementMode::KernelEnforced,
+            metadata_not_restored: Vec::new(),
+        };
+        apply_file_metadata(
+            std::fs::OpenOptions::new().write(true).open(&path).unwrap(),
+            "file".into(),
+            &metadata,
+            ExtractionPolicy::default()
+                .with_ownership(OwnershipPolicy::Restore)
+                .with_xattrs(XAttrPolicy::Restore),
+            &mut report,
+        );
+        assert_eq!(
+            std::fs::metadata(&path).unwrap().permissions().mode() & 0o7777,
+            0o750
+        );
+        assert_eq!(xattr::get(&path, "security.capability").unwrap(), None);
+        assert_eq!(
+            xattr::get(&path, "user.entrybound").unwrap(),
+            Some(b"ordinary value".to_vec())
+        );
+        assert!(
+            report
+                .metadata_not_restored
+                .iter()
+                .any(|issue| issue
+                    .contains("privileged xattr security.capability skipped by policy"))
+        );
+    }
+
+    #[cfg(target_os = "linux")]
+    fn named_linux_acl(scope: AclScope) -> Acl {
+        Acl::new(
+            AclDialect::Posix1e,
+            scope,
+            vec![
+                AclEntry::new(
+                    AclEntryType::Allow,
+                    AclPrincipal::UserObj,
+                    if scope == AclScope::Default { 7 } else { 3 },
+                    0,
+                )
+                .unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::User(65533), 1, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::GroupObj, 0, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::Mask, 1, 0).unwrap(),
+                AclEntry::new(AclEntryType::Allow, AclPrincipal::Other, 0, 0).unwrap(),
+            ],
+        )
+        .unwrap()
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn final_acl_and_mode_are_read_back_and_conflicts_are_reported() {
+        use std::os::unix::fs::PermissionsExt as _;
+        let fixture = SafetyFixture::new("acl-mode");
+        let acl = named_linux_acl(AclScope::Access);
+        for mode in [0o640, 0o600] {
+            let path = fixture.0.join(format!("file-{mode:o}"));
+            std::fs::write(&path, b"inert payload").unwrap();
+            let metadata = MetadataSet::new(vec![
+                MetadataItem::posix_mode(mode),
+                MetadataItem::acls(vec![acl.clone()]).unwrap(),
+            ])
+            .unwrap();
+            let mut report = ExtractionReport {
+                entries_created: 0,
+                logical_bytes_written: 0,
+                confinement: ConfinementMode::KernelEnforced,
+                metadata_not_restored: Vec::new(),
+            };
+            apply_file_metadata(
+                std::fs::OpenOptions::new().write(true).open(&path).unwrap(),
+                "file".into(),
+                &metadata,
+                ExtractionPolicy::default().with_acls(AclPolicy::Restore),
+                &mut report,
+            );
+            assert_eq!(
+                xattr::get(&path, "system.posix_acl_access").unwrap(),
+                Some(encode_linux_posix_acl(&acl))
+            );
+            assert_eq!(
+                std::fs::metadata(&path).unwrap().permissions().mode() & 0o7777,
+                0o640
+            );
+            assert_eq!(
+                report
+                    .metadata_not_restored
+                    .iter()
+                    .any(|issue| issue.contains("final posix.mode/ACL mismatch")),
+                mode == 0o600
+            );
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn inherited_acls_are_removed_from_owned_outputs_without_changing_the_root() {
+        let fixture = SafetyFixture::new("inherited-acl");
+        let source = fixture.0.join("source");
+        let destination = fixture.0.join("output");
+        std::fs::create_dir_all(source.join("nested")).unwrap();
+        std::fs::write(source.join("nested/file"), b"inert payload").unwrap();
+        let encoded = pack_directory(&source, PackOptions::default()).unwrap();
+        std::fs::create_dir(&destination).unwrap();
+        let inherited = encode_linux_posix_acl(&named_linux_acl(AclScope::Default));
+        xattr::set(&destination, "system.posix_acl_default", &inherited).unwrap();
+        unpack(&encoded.bytes, &destination, ExtractionPolicy::default()).unwrap();
+        assert_eq!(
+            xattr::get(&destination, "system.posix_acl_default").unwrap(),
+            Some(inherited)
+        );
+        for path in [destination.join("nested"), destination.join("nested/file")] {
+            assert_eq!(xattr::get(&path, "system.posix_acl_access").unwrap(), None);
+            assert_eq!(xattr::get(&path, "system.posix_acl_default").unwrap(), None);
+        }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn restrictive_directory_metadata_is_applied_after_child_links() {
+        use std::os::unix::fs::{PermissionsExt as _, symlink};
+        let fixture = SafetyFixture::new("directory-lockout");
+        let source = fixture.0.join("source");
+        let destination = fixture.0.join("output");
+        std::fs::create_dir_all(source.join("restricted")).unwrap();
+        std::fs::write(source.join("file"), b"inert payload").unwrap();
+        symlink("../file", source.join("restricted/link")).unwrap();
+        let mut archive =
+            build_archive_with_boundary(&source, PackOptions::default(), None).unwrap();
+        archive.entry_set = EntrySet::new(
+            archive
+                .entry_set
+                .entries()
+                .iter()
+                .map(|entry| {
+                    if matches!(entry.data(), EntryData::Directory) {
+                        let mut items = entry
+                            .metadata()
+                            .items()
+                            .iter()
+                            .filter(|item| {
+                                !matches!(
+                                    item.name(),
+                                    crate::eam::MetadataName::PosixMode
+                                        | crate::eam::MetadataName::CoreExecutable
+                                )
+                            })
+                            .cloned()
+                            .collect::<Vec<_>>();
+                        items
+                            .extend([MetadataItem::posix_mode(0), MetadataItem::executable(false)]);
+                        Entry::new(
+                            entry.path().clone(),
+                            entry.data().clone(),
+                            MetadataSet::new(items).unwrap(),
+                            EntryIdentity::default(),
+                        )
+                    } else {
+                        entry.clone()
+                    }
+                })
+                .collect(),
+        )
+        .unwrap();
+        let encoded = encode(&archive, WriteOptions::default()).unwrap();
+        let result = unpack(&encoded.bytes, &destination, ExtractionPolicy::default());
+        let final_mode = std::fs::metadata(destination.join("restricted"))
+            .unwrap()
+            .permissions()
+            .mode()
+            & 0o7777;
+        std::fs::set_permissions(
+            destination.join("restricted"),
+            std::fs::Permissions::from_mode(0o700),
+        )
+        .unwrap();
+        assert!(
+            result.is_ok(),
+            "child symlink must be created before restrictive final directory mode: {result:?}"
+        );
+        assert_eq!(final_mode, 0);
+        assert_eq!(
+            std::fs::read_link(destination.join("restricted/link")).unwrap(),
+            Path::new("../file")
+        );
+    }
 
     #[test]
     fn unstable_source_has_a_deterministic_bounded_failure() {
@@ -2396,6 +3486,7 @@ mod tests {
             &destination,
             ExtractionPolicy::default()
                 .with_ownership(OwnershipPolicy::Restore)
+                .with_special_permissions(SpecialPermissionsPolicy::Restore)
                 .with_xattrs(XAttrPolicy::Restore)
                 .with_sparse(SparsePolicy::Restore),
         )

@@ -383,8 +383,18 @@ fn decode_sequence(value: &[u8]) -> Result<Vec<&[u8]>> {
             "sequence item count exceeds bootstrap policy",
         ));
     }
+    // Even empty items require an eight-byte length. Establish a bound from
+    // actual bytes before reserving attacker-declared item capacity.
+    if count > u64::try_from((value.len() - 8) / 8).unwrap_or(u64::MAX) {
+        return Err(structure(
+            "sequence count cannot fit its enclosing field framing",
+        ));
+    }
     let capacity = to_usize(count)?;
-    let mut items = Vec::with_capacity(capacity);
+    let mut items = Vec::new();
+    items
+        .try_reserve_exact(capacity)
+        .map_err(|_| resource_limit("sequence item allocation exceeds available memory"))?;
     let mut cursor = 8;
     for _ in 0..count {
         if value.len() - cursor < 8 {
@@ -459,7 +469,10 @@ fn resource_limit(detail: impl Into<String>) -> Diagnostic {
 
 #[cfg(test)]
 mod tests {
-    use super::{FieldType, RECORD_HEADER_LEN, RecordBuilder, decode_record};
+    use super::{
+        FieldType, MAX_SEQUENCE_ITEMS, RECORD_HEADER_LEN, RecordBuilder, decode_record,
+        decode_sequence,
+    };
     use crate::diagnostics::ReasonCode;
 
     #[test]
@@ -549,6 +562,20 @@ mod tests {
         bytes[8..16].copy_from_slice(&u64::MAX.to_be_bytes());
         let error = decode_record(&bytes).unwrap_err();
         assert_eq!(error.code(), ReasonCode::SectionStructure);
+    }
+
+    #[test]
+    fn sequence_declared_capacity_is_bounded_by_actual_framing() {
+        let impossible = MAX_SEQUENCE_ITEMS.to_be_bytes();
+        let error = decode_sequence(&impossible).unwrap_err();
+        assert_eq!(error.code(), ReasonCode::SectionStructure);
+        assert!(error.detail().contains("cannot fit"));
+
+        // Empty elements remain a canonical sequence value.
+        let mut empty_item = 1_u64.to_be_bytes().to_vec();
+        empty_item.extend_from_slice(&0_u64.to_be_bytes());
+        assert_eq!(decode_sequence(&empty_item).unwrap(), vec![&[][..]]);
+        assert!(decode_sequence(&0_u64.to_be_bytes()).unwrap().is_empty());
     }
 
     #[test]

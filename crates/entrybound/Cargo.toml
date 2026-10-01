@@ -21,6 +21,7 @@ aes-gcm-siv = "=0.12.1"
 argon2 = "=0.6.0"
 bzip2 = "=0.6.1"
 cap-std = "4.0.3"
+cap-fs-ext = "=4.0.3"
 cms = { version = "=0.3.0-pre.2", default-features = false, features = ["std"] }
 crc32fast = "=1.5.0"
 der = { version = "=0.8.1", default-features = false, features = ["alloc", "derive", "oid", "pem", "std"] }

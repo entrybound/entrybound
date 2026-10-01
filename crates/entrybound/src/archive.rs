@@ -71,7 +71,8 @@ pub enum CollisionPolicy {
 pub enum SymlinkPolicy {
     /// Refuse every symbolic link.
     Refuse,
-    /// Permit only relative targets whose lexical resolution stays beneath the extraction root.
+    /// Permit relative targets whose effective archived link chain stays beneath
+    /// the extraction root, without traversing preexisting link-like targets.
     #[default]
     Safe,
     /// Restore exact targets, including absolute and escaping targets.
@@ -89,6 +90,23 @@ pub enum OwnershipPolicy {
 /// Caller-owned extended-attribute restoration policy.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum XAttrPolicy {
+    #[default]
+    Ignore,
+    Restore,
+}
+
+/// Authorization for archived setuid, setgid and sticky permission bits.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum SpecialPermissionsPolicy {
+    #[default]
+    Ignore,
+    Restore,
+}
+
+/// Additional authorization for extended attributes outside the user namespace.
+/// Restoring ordinary xattrs or ownership does not grant this authorization.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum PrivilegedXAttrPolicy {
     #[default]
     Ignore,
     Restore,
@@ -138,7 +156,7 @@ pub enum PlatformMetadataPolicy {
 pub enum ConfinementMode {
     /// Component resolution is confined by the operating-system kernel.
     KernelEnforced,
-    /// A weaker platform fallback was used and must be reported.
+    /// The output boundary is weaker than full kernel confinement and is reported.
     WeakerReported,
 }
 
@@ -151,6 +169,8 @@ pub struct ExtractionPolicy {
     symlinks: SymlinkPolicy,
     ownership: OwnershipPolicy,
     xattrs: XAttrPolicy,
+    special_permissions: SpecialPermissionsPolicy,
+    privileged_xattrs: PrivilegedXAttrPolicy,
     sparse: SparsePolicy,
     acls: AclPolicy,
     windows_security: WindowsSecurityPolicy,
@@ -169,6 +189,8 @@ impl ExtractionPolicy {
             symlinks: SymlinkPolicy::Safe,
             ownership: OwnershipPolicy::Ignore,
             xattrs: XAttrPolicy::Ignore,
+            special_permissions: SpecialPermissionsPolicy::Ignore,
+            privileged_xattrs: PrivilegedXAttrPolicy::Ignore,
             sparse: SparsePolicy::Logical,
             acls: AclPolicy::Ignore,
             windows_security: WindowsSecurityPolicy::Ignore,
@@ -191,6 +213,8 @@ impl ExtractionPolicy {
             symlinks: SymlinkPolicy::Safe,
             ownership: OwnershipPolicy::Ignore,
             xattrs: XAttrPolicy::Ignore,
+            special_permissions: SpecialPermissionsPolicy::Ignore,
+            privileged_xattrs: PrivilegedXAttrPolicy::Ignore,
             sparse: SparsePolicy::Logical,
             acls: AclPolicy::Ignore,
             windows_security: WindowsSecurityPolicy::Ignore,
@@ -229,6 +253,18 @@ impl ExtractionPolicy {
     #[must_use]
     pub const fn with_xattrs(mut self, value: XAttrPolicy) -> Self {
         self.xattrs = value;
+        self
+    }
+
+    #[must_use]
+    pub const fn with_special_permissions(mut self, value: SpecialPermissionsPolicy) -> Self {
+        self.special_permissions = value;
+        self
+    }
+
+    #[must_use]
+    pub const fn with_privileged_xattrs(mut self, value: PrivilegedXAttrPolicy) -> Self {
+        self.privileged_xattrs = value;
         self
     }
 
@@ -275,6 +311,16 @@ impl ExtractionPolicy {
     #[must_use]
     pub const fn xattrs(self) -> XAttrPolicy {
         self.xattrs
+    }
+
+    #[must_use]
+    pub const fn special_permissions(self) -> SpecialPermissionsPolicy {
+        self.special_permissions
+    }
+
+    #[must_use]
+    pub const fn privileged_xattrs(self) -> PrivilegedXAttrPolicy {
+        self.privileged_xattrs
     }
 
     #[must_use]

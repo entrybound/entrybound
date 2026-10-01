@@ -2127,7 +2127,12 @@ impl<R: Read> Scanner<R> {
         };
         Ok(SequentialArchive {
             opened: OpenedArchive {
-                archive: canonical,
+                extraction_authority: (
+                    roots,
+                    canonical.descriptor.budget,
+                    canonical.descriptor.decode,
+                ),
+                archive: super::container::VerifiedArchive::new(canonical, roots),
                 report: VerificationReport {
                     canonical_encoding: true,
                     container_structure: true,

@@ -14,8 +14,8 @@ mod staging;
 mod stream;
 
 pub use container::{
-    EncodedArchive, IndexStatus, OpenedArchive, VerificationReport, WriteOptions, encode, open,
-    open_with_limits, open_with_policy, peek_layout, verify, verify_with_limits,
+    EncodedArchive, IndexStatus, OpenedArchive, VerificationReport, VerifiedArchive, WriteOptions,
+    encode, open, open_with_limits, open_with_policy, peek_layout, verify, verify_with_limits,
     verify_with_policy,
 };
 pub use random::{

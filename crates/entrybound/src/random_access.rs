@@ -479,6 +479,34 @@ impl RangeSession {
         len: u64,
         purpose: AccessPurpose,
     ) -> Result<Vec<u8>> {
+        self.read_internal(offset, len, purpose, true)
+    }
+
+    /// Fetches one full-verification range without retaining a second copy in
+    /// the random-access cache. Existing cached metadata is released first.
+    /// Transfer, request, trace, and revision limits remain in force.
+    pub(crate) fn read_uncached(
+        &mut self,
+        offset: u64,
+        len: u64,
+        purpose: AccessPurpose,
+    ) -> Result<Vec<u8>> {
+        self.check_stable()?;
+        self.cache.clear();
+        self.cache_order.clear();
+        self.cache_bytes = 0;
+        let bytes = self.read_internal(offset, len, purpose, false)?;
+        self.check_stable()?;
+        Ok(bytes)
+    }
+
+    fn read_internal(
+        &mut self,
+        offset: u64,
+        len: u64,
+        purpose: AccessPurpose,
+        use_cache: bool,
+    ) -> Result<Vec<u8>> {
         let end = offset
             .checked_add(len)
             .ok_or_else(|| policy("range extent overflows u64"))?;
@@ -489,8 +517,11 @@ impl RangeSession {
                 "requested range exceeds the declared source length",
             ));
         }
+        if u64::try_from(self.trace.len()).unwrap_or(u64::MAX) >= self.policy.max_trace_entries {
+            return Err(policy("access trace entry limit exceeded"));
+        }
         if len == 0 {
-            self.push_trace(offset, 0, purpose, true)?;
+            self.push_trace(offset, 0, purpose, use_cache)?;
             return Ok(Vec::new());
         }
         if len > self.policy.max_individual_range_bytes {
@@ -499,7 +530,7 @@ impl RangeSession {
                 self.policy.max_individual_range_bytes
             )));
         }
-        if let Some(bytes) = self.cached_slice(offset, end) {
+        if use_cache && let Some(bytes) = self.cached_slice(offset, end) {
             self.push_trace(offset, len, purpose, true)?;
             return Ok(bytes);
         }
@@ -537,7 +568,9 @@ impl RangeSession {
         self.range_requests = next_requests;
         self.bytes_fetched = next_bytes;
         self.push_trace(offset, len, purpose, false)?;
-        self.insert_cache(offset, bytes.clone())?;
+        if use_cache {
+            self.insert_cache(offset, bytes.clone())?;
+        }
         Ok(bytes)
     }
 
@@ -851,6 +884,49 @@ mod tests {
             SourceRevision::Memory { length: 10, .. }
         ));
         session.check_stable().unwrap();
+    }
+
+    #[test]
+    fn uncached_full_read_drops_cache_and_keeps_range_limits() {
+        let source = MemoryRandomReadSource::new(Vec::from(&b"0123456789"[..]));
+        let policy = RandomAccessPolicy {
+            max_individual_range_bytes: 10,
+            max_total_bytes_fetched: 12,
+            ..RandomAccessPolicy::default()
+        };
+        let mut session = RangeSession::new(Box::new(source), policy).unwrap();
+        assert_eq!(session.read(0, 2, AccessPurpose::Preamble).unwrap(), b"01");
+        assert_eq!(session.cache_bytes, 2);
+        assert_eq!(
+            session
+                .read_uncached(0, 10, AccessPurpose::EncryptedPayload)
+                .unwrap(),
+            b"0123456789"
+        );
+        assert_eq!(session.cache_bytes, 0);
+        assert!(session.cache.is_empty());
+        assert_eq!(session.range_requests(), 2);
+        assert_eq!(session.bytes_fetched(), 12);
+        assert!(!session.trace().last().unwrap().cache_hit);
+        assert!(
+            session
+                .read_uncached(0, 1, AccessPurpose::EncryptedPayload)
+                .is_err()
+        );
+        assert_eq!(session.range_requests(), 2);
+
+        let source = MemoryRandomReadSource::new(Vec::from(&b"0123456789"[..]));
+        let policy = RandomAccessPolicy {
+            max_trace_entries: 0,
+            ..RandomAccessPolicy::default()
+        };
+        let mut no_trace = RangeSession::new(Box::new(source), policy).unwrap();
+        assert!(
+            no_trace
+                .read_uncached(0, 10, AccessPurpose::EncryptedPayload)
+                .is_err()
+        );
+        assert_eq!(no_trace.bytes_fetched(), 0);
     }
 
     #[test]

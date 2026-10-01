@@ -332,7 +332,7 @@ pub fn prepare_sidecar(
     }
     Ok(PreparedSidecar {
         bytes,
-        verified_archive,
+        verified_archive: verified_archive.into_inner(),
         source_digest,
     })
 }

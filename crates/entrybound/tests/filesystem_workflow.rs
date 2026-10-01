@@ -6,8 +6,8 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, UNIX_EPOCH};
 
 use entrybound::archive::{
-    CollisionPolicy, ExtractionPolicy, PackOptions, bootstrap_resource_policy, inspect, list,
-    pack_directory, unpack,
+    CollisionPolicy, ConfinementMode, ExtractionPolicy, PackOptions, bootstrap_resource_policy,
+    inspect, list, pack_directory, unpack,
 };
 use entrybound::chunker::BALANCED_V2;
 use entrybound::diagnostics::{OutcomeClass, ReasonCode};
@@ -16,6 +16,43 @@ use entrybound::ecf::{FOOTER_LEN, PREAMBLE_LEN, SECTION_HEADER_LEN, open, verify
 use entrybound::identity::{BOOTSTRAP_CHUNK_SIZE, sha256_exact};
 
 static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
+
+#[cfg(unix)]
+#[test]
+fn default_extraction_does_not_restore_special_permission_bits() {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let fixture = Fixture::new("special-permission-policy");
+    let source = fixture.path.join("source");
+    fs::create_dir(&source).unwrap();
+    fs::write(source.join("file"), b"ordinary inert payload").unwrap();
+    fs::set_permissions(source.join("file"), fs::Permissions::from_mode(0o7777)).unwrap();
+    let encoded = pack_directory(&source, PackOptions::default()).unwrap();
+    let opened = open(&encoded.bytes).unwrap();
+    assert_eq!(
+        opened.archive.entry_set.entries()[0]
+            .metadata()
+            .posix_mode(),
+        Some(0o7777)
+    );
+    let destination = fixture.path.join("output");
+    let report = unpack(&encoded.bytes, &destination, ExtractionPolicy::default()).unwrap();
+    let restored_mode = fs::metadata(destination.join("file"))
+        .unwrap()
+        .permissions()
+        .mode()
+        & 0o7777;
+    assert_eq!(
+        restored_mode, 0o777,
+        "archive mode must not authorize special permissions"
+    );
+    assert!(
+        report
+            .metadata_not_restored
+            .iter()
+            .any(|issue| issue.contains("special permission"))
+    );
+}
 
 #[test]
 fn filesystem_round_trip_is_deterministic_and_complete() {
@@ -77,6 +114,7 @@ fn filesystem_round_trip_is_deterministic_and_complete() {
 
     let destination = fixture.path.join("restored");
     let report = unpack(&first.bytes, &destination, ExtractionPolicy::default()).unwrap();
+    assert_eq!(report.confinement, ConfinementMode::WeakerReported);
     assert_eq!(report.entries_created as usize, listed.len());
     assert_trees_equal(&source, &destination);
     assert!(destination.join("nested/empty-dir").is_dir());

@@ -53,9 +53,11 @@ CLI spellings are `--acls`, `--windows-security`, `--reparse`, and
 restored classes are always included in ExtractionReport.
 
 Materialization remains verified-before-write. Ordinary directories and files
-are created first, then hardlinks. Ownership and ordinary xattrs precede ACLs;
-ACLs precede final mode; timestamps are last. Directory metadata is applied
-deepest-first after descendants exist. Symlinks remain last. Reparse objects
+are created first, then hardlinks and symlinks. Ownership and ordinary xattrs
+precede final mode; ACLs follow mode so chmod cannot silently change their mask.
+Mode and ACL readback expose incoherent requests or incomplete restoration;
+timestamps are last. Directory metadata is applied through retained handles
+deepest-first after all descendants and links exist. Reparse objects
 would also be last, but exact reparse restoration is refused in this build
 because there is no audited safe exact-set API. Thus archive-created namespace
 objects cannot redirect later extraction writes.

@@ -83,7 +83,14 @@ pub(crate) fn decode_t1<'a>(
     if count != expected_fields {
         return Err(private_invalid("T1 field count is not canonical"));
     }
-    let mut fields = Vec::with_capacity(count);
+    // A field may be empty, but still needs its tag and length (ten bytes).
+    if count > input.len().saturating_sub(cursor) / 10 {
+        return Err(private_invalid("T1 field count exceeds its encoded extent"));
+    }
+    let mut fields = Vec::new();
+    fields
+        .try_reserve_exact(count)
+        .map_err(|_| super::resource_refused("cannot reserve T1 field list"))?;
     for expected in 1..=count {
         if take_u16(input, &mut cursor)? as usize != expected {
             return Err(private_invalid("T1 tags must be contiguous and increasing"));
@@ -192,7 +199,15 @@ pub(crate) fn encode_stanza_sequence(stanzas: &[RecipientStanza]) -> Result<Vec<
     Ok(encoded)
 }
 
+#[cfg(test)]
 pub(crate) fn decode_stanza_sequence(input: &[u8]) -> Result<Vec<RecipientStanza>> {
+    decode_stanza_sequence_with_limits(input, None)
+}
+
+fn decode_stanza_sequence_with_limits(
+    input: &[u8],
+    caller_limits: Option<(u32, u64)>,
+) -> Result<Vec<RecipientStanza>> {
     if input.len() > 16 << 20 {
         return Err(stanza_invalid("recipient sequence exceeds 16 MiB"));
     }
@@ -203,7 +218,22 @@ pub(crate) fn decode_stanza_sequence(input: &[u8]) -> Result<Vec<RecipientStanza
             "recipient stanza count is outside v1 bounds",
         ));
     }
-    let mut values = Vec::with_capacity(count);
+    // Every stanza occupies at least an eight-byte length and one data byte.
+    // Check the physical encoding before reserving from an untrusted count.
+    if count > input.len().saturating_sub(cursor) / 9 {
+        return Err(stanza_invalid(
+            "recipient stanza count exceeds its encoded extent",
+        ));
+    }
+    if caller_limits.is_some_and(|(max_stanzas, _)| count as u64 > u64::from(max_stanzas)) {
+        return Err(super::resource_refused(
+            "recipient stanza count exceeds caller policy",
+        ));
+    }
+    let mut values = Vec::new();
+    values
+        .try_reserve_exact(count)
+        .map_err(|_| super::resource_refused("cannot reserve recipient stanza list"))?;
     for _ in 0..count {
         let len = to_usize(take_u64(input, &mut cursor)?)?;
         if len == 0 || len > 65_536 {
@@ -211,7 +241,13 @@ pub(crate) fn decode_stanza_sequence(input: &[u8]) -> Result<Vec<RecipientStanza
                 "recipient stanza length is outside v1 bounds",
             ));
         }
-        values.push(RecipientStanza::decode(take(input, &mut cursor, len)?)?);
+        let stanza_bytes = take(input, &mut cursor, len)?;
+        if caller_limits.is_some_and(|(_, max_stanza_bytes)| len as u64 > max_stanza_bytes) {
+            return Err(super::resource_refused(
+                "recipient stanza exceeds caller policy",
+            ));
+        }
+        values.push(RecipientStanza::decode(stanza_bytes)?);
     }
     if cursor != input.len() || encode_stanza_sequence(&values)? != input {
         return Err(stanza_invalid("recipient stanza sequence is not canonical"));
@@ -247,7 +283,21 @@ impl CryptoEnvelope {
         record.finish()
     }
 
+    #[cfg(test)]
     pub(crate) fn decode(input: &[u8]) -> Result<Self> {
+        Self::decode_inner(input, None)
+    }
+
+    pub(crate) fn decode_with_policy(input: &[u8], policy: super::CryptoPolicy) -> Result<Self> {
+        if u64::try_from(input.len()).unwrap_or(u64::MAX) > policy.max_envelope_bytes {
+            return Err(super::resource_refused(
+                "CryptoEnvelope exceeds caller policy",
+            ));
+        }
+        Self::decode_inner(input, Some((policy.max_stanzas, policy.max_stanza_bytes)))
+    }
+
+    fn decode_inner(input: &[u8], caller_limits: Option<(u32, u64)>) -> Result<Self> {
         let (record, consumed) = decode_record(input)?;
         if consumed != input.len() || record.kind != RECORD_CRYPTO_ENVELOPE {
             return Err(stanza_invalid(
@@ -270,7 +320,10 @@ impl CryptoEnvelope {
             protection_policy: record.field(5)?.as_u8()?,
             padding_mode: record.field(6)?.as_u8()?,
             boundary_mode: record.field(7)?.as_u8()?,
-            stanzas: decode_stanza_sequence(record.field(8)?.as_bytes()?)?,
+            stanzas: decode_stanza_sequence_with_limits(
+                record.field(8)?.as_bytes()?,
+                caller_limits,
+            )?,
             envelope_mac: exact(record.field(9)?.as_bytes()?)?,
         };
         if value.encode()? != input {
@@ -355,8 +408,18 @@ pub(crate) fn decode_sequence_container(input: &[u8]) -> Result<(u16, Vec<Vec<u8
     if count > MAX_SEQUENCE_ITEMS {
         return Err(private_invalid("EBCS item count exceeds v1 limit"));
     }
+    // A nonempty item needs an eight-byte length followed by at least one
+    // byte. The fixed EBCS header was already checked above.
+    if count > (input.len() - 20) / 9 {
+        return Err(private_invalid(
+            "EBCS item count exceeds its encoded extent",
+        ));
+    }
     let mut cursor = 20usize;
-    let mut items = Vec::with_capacity(count);
+    let mut items = Vec::new();
+    items
+        .try_reserve_exact(count)
+        .map_err(|_| super::resource_refused("cannot reserve EBCS item list"))?;
     for _ in 0..count {
         let len = to_usize(take_u64(input, &mut cursor)?)?;
         if len == 0 || len > MAX_SEQUENCE_ITEM_BYTES {
@@ -606,6 +669,86 @@ mod tests {
             decode_sequence_container(&empty).unwrap(),
             (COLLECTION_MANIFEST, vec![])
         );
+    }
+
+    #[test]
+    fn counted_collections_refuse_impossible_extent_before_reserving() {
+        let mut transcript = 1_u16.to_be_bytes().to_vec();
+        transcript.push(b'x');
+        transcript.extend_from_slice(&u16::MAX.to_be_bytes());
+        assert_eq!(
+            decode_t1(&transcript, "x", usize::from(u16::MAX))
+                .unwrap_err()
+                .code(),
+            ReasonCode::CryptoPrivateObjectInvalid
+        );
+
+        let stanzas = 1_024_u64.to_be_bytes().to_vec();
+        assert_eq!(
+            decode_stanza_sequence(&stanzas).unwrap_err().code(),
+            ReasonCode::CryptoRecipientStanzaInvalid
+        );
+        let mut one_invalid_stanza = 1_u64.to_be_bytes().to_vec();
+        one_invalid_stanza.extend_from_slice(&1_u64.to_be_bytes());
+        one_invalid_stanza.push(0);
+        assert!(decode_stanza_sequence(&one_invalid_stanza).is_err());
+
+        let mut sequence = b"EBCS".to_vec();
+        sequence.extend_from_slice(&1_u16.to_be_bytes());
+        sequence.extend_from_slice(&COLLECTION_MANIFEST.to_be_bytes());
+        sequence.extend_from_slice(&0_u32.to_be_bytes());
+        sequence.extend_from_slice(&1_000_000_u64.to_be_bytes());
+        assert_eq!(sequence.len(), 20);
+        assert_eq!(
+            decode_sequence_container(&sequence).unwrap_err().code(),
+            ReasonCode::CryptoPrivateObjectInvalid
+        );
+    }
+
+    #[test]
+    fn envelope_caller_limits_apply_to_public_stanza_framing() {
+        let stanza = RecipientStanza {
+            stanza_type: 2,
+            protection_class: 2,
+            stanza_id: [1; 16],
+            recipient_hint: [0; 16],
+            method_parameters: vec![0; PASSWORD_METHOD_LEN],
+            encapsulation: Vec::new(),
+            wrap_nonce: [2; 12],
+            wrapped_afk: [3; 48],
+        };
+        let encoded_stanza_len = stanza.encode().unwrap().len() as u64;
+        let envelope = CryptoEnvelope {
+            archive_id: [4; 32],
+            commitment: [5; 32],
+            protection_policy: 2,
+            padding_mode: 0,
+            boundary_mode: 1,
+            stanzas: vec![stanza],
+            envelope_mac: [6; 32],
+        };
+        let encoded = envelope.encode().unwrap();
+        assert_eq!(CryptoEnvelope::decode(&encoded).unwrap(), envelope);
+        assert_eq!(
+            CryptoEnvelope::decode_with_policy(&encoded, super::super::CryptoPolicy::default())
+                .unwrap(),
+            envelope
+        );
+
+        for limited in [
+            super::super::CryptoPolicy {
+                max_stanzas: 0,
+                ..super::super::CryptoPolicy::default()
+            },
+            super::super::CryptoPolicy {
+                max_stanza_bytes: encoded_stanza_len - 1,
+                ..super::super::CryptoPolicy::default()
+            },
+        ] {
+            let error = CryptoEnvelope::decode_with_policy(&encoded, limited).unwrap_err();
+            assert_eq!(error.class(), OutcomeClass::PolicyRefused);
+            assert_eq!(error.code(), ReasonCode::CryptoResourcePolicyRefused);
+        }
     }
 
     #[test]

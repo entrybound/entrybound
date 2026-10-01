@@ -628,6 +628,7 @@ pub fn open_encrypted_authenticated(
         &parsed.footer,
         parsed.features,
         options,
+        false,
     )?;
     drop(afk);
     let addressing = AddressingBinding {
@@ -655,6 +656,45 @@ pub fn verify_encrypted(
     options: EncryptedOpenOptions<'_>,
 ) -> Result<VerificationReport> {
     Ok(open_encrypted(bytes, options)?.report)
+}
+
+/// Reuses a range reader's authenticated recipient keys for legacy whole
+/// verification. PAYLOAD ciphertext copies are unnecessary in this path.
+pub(super) fn open_encrypted_with_unlocked_keys(
+    bytes: &[u8],
+    options: EncryptedOpenOptions<'_>,
+    expected_envelope: &wire::CryptoEnvelope,
+    keys: &KeyHierarchy,
+) -> Result<OpenedArchive> {
+    let parsed = parse_public(bytes, options.crypto_policy)?;
+    if parsed.envelope.encode()? != expected_envelope.encode()? {
+        return Err(segment_invalid(
+            "legacy fallback envelope changed after unlock",
+        ));
+    }
+    let decoded = decrypt_segments(
+        parsed.segments,
+        &parsed.envelope,
+        keys,
+        &parsed.footer,
+        parsed.features,
+        options,
+        false,
+    )?;
+    let DecryptedPrivate {
+        parts,
+        signatures,
+        recipient_directory,
+        payload_segments,
+        ..
+    } = decoded;
+    drop((signatures, recipient_directory, payload_segments));
+    crate::ecf::open_encrypted_plain_parts(
+        parts,
+        options.resource_policy,
+        options.decode_policy,
+        physical_container_identity(bytes),
+    )
 }
 
 struct MutationState {
@@ -685,6 +725,7 @@ fn open_for_mutation(bytes: &[u8], options: EncryptedOpenOptions<'_>) -> Result<
         &parsed.footer,
         parsed.features,
         options,
+        true,
     )?;
     let include_index = decoded.index_present;
     let opened = crate::ecf::open_encrypted_plain_parts(
@@ -968,6 +1009,7 @@ fn verify_mutation_output(bytes: &[u8], afk: &[u8; 32]) -> Result<()> {
         &parsed.footer,
         parsed.features,
         options,
+        false,
     )?;
     crate::ecf::open_encrypted_plain_parts(
         decoded.parts,
@@ -1132,15 +1174,7 @@ fn parse_public(bytes: &[u8], policy: CryptoPolicy) -> Result<PublicParsed<'_>> 
             "CryptoEnvelope extent exceeds policy or footer",
         ));
     }
-    let envelope = wire::CryptoEnvelope::decode(envelope_payload)?;
-    if envelope.stanzas.len() as u32 > policy.max_stanzas {
-        return Err(resource_refused("recipient count exceeds caller policy"));
-    }
-    for stanza in &envelope.stanzas {
-        if stanza.encode()?.len() as u64 > policy.max_stanza_bytes {
-            return Err(resource_refused("recipient stanza exceeds caller policy"));
-        }
-    }
+    let envelope = wire::CryptoEnvelope::decode_with_policy(envelope_payload, policy)?;
     let (segments, segments_complete) =
         parse_section(bytes, footer.segments_offset, SECTION_SEGMENTS)?;
     if segments_complete != footer.segments_len
@@ -1220,6 +1254,19 @@ pub(super) fn unlock_envelope(
     };
     let mut attempts = 0u32;
     for stanza in &envelope.stanzas {
+        if matches!(
+            (&unlock, stanza.stanza_type),
+            (Unlock::Identity(_), 1) | (Unlock::Password(_), 2)
+        ) {
+            attempts = attempts
+                .checked_add(1)
+                .ok_or_else(|| resource_refused("recipient identity attempt count overflow"))?;
+            if attempts > policy.max_identity_attempts {
+                return Err(resource_refused(
+                    "recipient identity attempt limit exceeded",
+                ));
+            }
+        }
         let method_secret = match (&unlock, stanza.stanza_type) {
             (Unlock::Identity(identity), 1) => {
                 let mut ciphertext = Ciphertext::default();
@@ -1245,12 +1292,6 @@ pub(super) fn unlock_envelope(
         let Some(method_secret) = method_secret else {
             continue;
         };
-        attempts += 1;
-        if attempts > policy.max_identity_attempts {
-            return Err(resource_refused(
-                "recipient identity attempt limit exceeded",
-            ));
-        }
         let candidate = match open_afk(&envelope.archive_id, &method_secret.0, stanza) {
             Ok(value) => value,
             Err(_) => continue,
@@ -1296,6 +1337,7 @@ fn decrypt_segments(
     footer: &ParsedFooter,
     features: u64,
     options: EncryptedOpenOptions<'_>,
+    retain_payload_segments: bool,
 ) -> Result<DecryptedPrivate> {
     let policy = options.crypto_policy;
     let resource_policy = options.resource_policy;
@@ -1366,7 +1408,12 @@ fn decrypt_segments(
                 .ok_or_else(|| segment_invalid("ciphertext total overflow"))?;
             exact_data.extend_from_slice(protected);
             exact_data.extend_from_slice(ciphertext);
-            if let Some(object) = collector.push(wire::decode_private_fragment(&private)?)? {
+            if let Some(object) = collector.push(
+                wire::decode_private_fragment(&private)?,
+                policy
+                    .max_working_memory_bytes
+                    .min(u64::try_from(bytes.len()).unwrap_or(u64::MAX)),
+            )? {
                 completed_objects += 1;
                 if let Some(final_value) =
                     collector.dispatch(object, features, resource_policy, decode_policy)?
@@ -1409,7 +1456,7 @@ fn decrypt_segments(
         )?)
         .into();
         completed.push(digest);
-        if class == SEGMENT_PAYLOAD {
+        if class == SEGMENT_PAYLOAD && retain_payload_segments {
             payload_segments.insert(
                 ordinal,
                 ReusableSegment {
@@ -1541,6 +1588,7 @@ fn decrypt_segments(
 #[derive(Default)]
 struct ObjectCollector {
     partial: Option<PartialObject>,
+    reserved_private_bytes: u64,
     descriptor: Option<Vec<u8>>,
     descriptor_id: Option<[u8; 32]>,
     descriptor_version: Option<u16>,
@@ -1568,22 +1616,46 @@ struct PartialObject {
 }
 
 impl ObjectCollector {
-    fn push(&mut self, fragment: wire::PrivateFragment) -> Result<Option<Vec<u8>>> {
+    fn push(
+        &mut self,
+        fragment: wire::PrivateFragment,
+        max_private_bytes: u64,
+    ) -> Result<Option<Vec<u8>>> {
         if fragment.index == 0 {
             if self.partial.is_some() || fragment.offset != 0 {
                 return Err(wire::private_invalid(
                     "fragment sequence overlaps or starts late",
                 ));
             }
+            if fragment.total_len < fragment.bytes.len() as u64
+                || u64::from(fragment.count) > fragment.total_len
+            {
+                return Err(wire::private_invalid(
+                    "fragment total cannot contain its declared bytes and count",
+                ));
+            }
+            let next_reserved = self
+                .reserved_private_bytes
+                .checked_add(fragment.total_len)
+                .ok_or_else(|| resource_refused("encrypted private object reservation overflow"))?;
+            if next_reserved > max_private_bytes {
+                return Err(resource_refused(
+                    "encrypted private object reservations exceed crypto working-memory policy",
+                ));
+            }
+            let capacity = usize::try_from(fragment.total_len)
+                .map_err(|_| resource_refused("encrypted object exceeds usize"))?;
+            let mut bytes = Vec::new();
+            bytes.try_reserve_exact(capacity).map_err(|_| {
+                resource_refused("cannot reserve encrypted private object within caller policy")
+            })?;
+            self.reserved_private_bytes = next_reserved;
             self.partial = Some(PartialObject {
                 id: fragment.object_id,
                 total: fragment.total_len,
                 count: fragment.count,
                 next_index: 0,
-                bytes: Vec::with_capacity(
-                    usize::try_from(fragment.total_len)
-                        .map_err(|_| resource_refused("encrypted object exceeds usize"))?,
-                ),
+                bytes,
             });
         }
         let partial = self
@@ -2917,6 +2989,86 @@ mod tests {
     }
 
     #[test]
+    fn private_object_reservations_refuse_before_allocation() {
+        let mut collector = ObjectCollector::default();
+        let huge = wire::PrivateFragment {
+            object_id: [0; 32],
+            total_len: u64::MAX,
+            index: 0,
+            count: 1,
+            offset: 0,
+            bytes: vec![1],
+        };
+        let error = collector.push(huge, 1024).unwrap_err();
+        assert_eq!(error.code(), ReasonCode::CryptoResourcePolicyRefused);
+        assert_eq!(collector.reserved_private_bytes, 0);
+
+        let first = vec![0x41; 8];
+        let fragment = wire::PrivateFragment {
+            object_id: wire::encrypted_object_id(&first).unwrap(),
+            total_len: first.len() as u64,
+            index: 0,
+            count: 1,
+            offset: 0,
+            bytes: first.clone(),
+        };
+        assert_eq!(collector.push(fragment, 15).unwrap(), Some(first));
+        let second = wire::PrivateFragment {
+            object_id: [0; 32],
+            total_len: 8,
+            index: 0,
+            count: 1,
+            offset: 0,
+            bytes: vec![2; 8],
+        };
+        let error = collector.push(second, 15).unwrap_err();
+        assert_eq!(error.code(), ReasonCode::CryptoResourcePolicyRefused);
+        assert_eq!(collector.reserved_private_bytes, 8);
+    }
+
+    #[test]
+    fn matching_attempt_cap_refuses_before_password_kdf() {
+        let stanza = wire::RecipientStanza {
+            stanza_type: 2,
+            protection_class: 2,
+            stanza_id: [1; 16],
+            recipient_hint: [0; 16],
+            method_parameters: Vec::new(), // Would fail A2ID parsing if KDF path ran.
+            encapsulation: Vec::new(),
+            wrap_nonce: [0; 12],
+            wrapped_afk: [0; 48],
+        };
+        let envelope = wire::CryptoEnvelope {
+            archive_id: [0; 32],
+            commitment: [0; 32],
+            protection_policy: ProtectionPolicy::PasswordOnly as u8,
+            padding_mode: PaddingMode::None as u8,
+            boundary_mode: BoundaryMode::SecretGearTable as u8,
+            stanzas: vec![stanza],
+            envelope_mac: [0; 32],
+        };
+        let policy = CryptoPolicy {
+            max_identity_attempts: 0,
+            ..CryptoPolicy::default()
+        };
+        let error = match unlock_envelope(&envelope, 0, Unlock::Password(b"local"), policy) {
+            Err(error) => error,
+            Ok(_) => panic!("zero matching-attempt budget unlocked an envelope"),
+        };
+        assert_eq!(error.code(), ReasonCode::CryptoResourcePolicyRefused);
+
+        let policy = CryptoPolicy {
+            max_identity_attempts: 1,
+            ..CryptoPolicy::default()
+        };
+        let error = match unlock_envelope(&envelope, 0, Unlock::Password(b"local"), policy) {
+            Err(error) => error,
+            Ok(_) => panic!("malformed password parameters unlocked an envelope"),
+        };
+        assert_eq!(error.code(), ReasonCode::CryptoRecipientStanzaInvalid);
+    }
+
+    #[test]
     fn padding_and_nonce_rules_are_frozen() {
         assert_eq!(
             padded_len(256, SEGMENT_CONTROL, PaddingMode::Bucketed).unwrap(),
@@ -2969,6 +3121,23 @@ mod tests {
         assert!(corrected_inspection.producer_declaration_present);
         assert!(corrected_inspection.independently_validated);
 
+        for limited in [
+            CryptoPolicy {
+                max_stanzas: 0,
+                ..CryptoPolicy::default()
+            },
+            CryptoPolicy {
+                max_stanza_bytes: 0,
+                ..CryptoPolicy::default()
+            },
+        ] {
+            let error = match inspect_encrypted(&corrected.bytes, None, limited) {
+                Err(error) => error,
+                Ok(_) => panic!("public inspection accepted a denied stanza limit"),
+            };
+            assert_eq!(error.code(), ReasonCode::CryptoResourcePolicyRefused);
+        }
+
         let mut resource_refusal = EncryptedOpenOptions::new(Some(Unlock::Identity(&identity)));
         resource_refusal.resource_policy.entry_count = 0;
         let error = open_encrypted(&corrected.bytes, resource_refusal).unwrap_err();
@@ -2992,6 +3161,89 @@ mod tests {
         );
         let legacy_open = open_identity(&legacy.bytes, &identity).unwrap();
         assert!(!legacy_open.archive.descriptor.budget_declared);
+        let destination = fixture.root.join("legacy-output");
+        crate::archive::unpack_opened(
+            &legacy_open,
+            &destination,
+            crate::archive::ExtractionPolicy::default(),
+        )
+        .unwrap();
+        assert_eq!(
+            std::fs::read(destination.join("data.bin")).unwrap(),
+            std::fs::read(fixture.source.join("data.bin")).unwrap()
+        );
+        let mut legacy_range = crate::crypto::open_indexed_random_encrypted(
+            Box::new(crate::random_access::MemoryRandomReadSource::new(
+                legacy.bytes.clone(),
+            )),
+            crate::random_access::RandomAccessPolicy::default(),
+            EncryptedOpenOptions::new(Some(Unlock::Identity(&identity))),
+        )
+        .unwrap();
+        assert!(
+            legacy_range
+                .metadata_report()
+                .unwrap()
+                .whole_archive_verified
+        );
+        let ranged = legacy_range
+            .read_entry(&crate::eam::LogicalPath::from_utf8(["data.bin"]).unwrap())
+            .unwrap();
+        assert_eq!(
+            ranged.bytes,
+            std::fs::read(fixture.source.join("data.bin"))
+                .unwrap()
+                .into_boxed_slice()
+        );
+        let mut bounded_options = EncryptedOpenOptions::new(Some(Unlock::Identity(&identity)));
+        bounded_options.crypto_policy.max_working_memory_bytes =
+            u64::try_from(legacy.bytes.len()).unwrap() * 64 - 1;
+        struct ObservedSource {
+            inner: crate::random_access::MemoryRandomReadSource,
+            largest_read: std::sync::Arc<std::sync::atomic::AtomicU64>,
+        }
+        impl crate::random_access::RandomReadSource for ObservedSource {
+            fn len(&self) -> Result<u64> {
+                self.inner.len()
+            }
+            fn read_exact_at(&self, offset: u64, len: u64) -> Result<Vec<u8>> {
+                self.largest_read
+                    .fetch_max(len, std::sync::atomic::Ordering::SeqCst);
+                self.inner.read_exact_at(offset, len)
+            }
+            fn revision(&self) -> Result<crate::random_access::SourceRevision> {
+                self.inner.revision()
+            }
+        }
+        let largest_read = std::sync::Arc::new(std::sync::atomic::AtomicU64::new(0));
+        let bounded_error = crate::crypto::open_indexed_random_encrypted(
+            Box::new(ObservedSource {
+                inner: crate::random_access::MemoryRandomReadSource::new(legacy.bytes.clone()),
+                largest_read: std::sync::Arc::clone(&largest_read),
+            }),
+            crate::random_access::RandomAccessPolicy::default(),
+            bounded_options,
+        )
+        .err()
+        .expect("legacy range must reserve aggregate crypto memory before a full read");
+        assert_eq!(
+            bounded_error.code(),
+            ReasonCode::CryptoResourcePolicyRefused
+        );
+        assert!(
+            largest_read.load(std::sync::atomic::Ordering::SeqCst)
+                < u64::try_from(legacy.bytes.len()).unwrap(),
+            "aggregate refusal must precede the full-source read"
+        );
+
+        let mut restrictive_options = EncryptedOpenOptions::new(Some(Unlock::Identity(&identity)));
+        restrictive_options.resource_policy.entry_count = 0;
+        let error = open_encrypted(&legacy.bytes, restrictive_options).unwrap_err();
+        assert_eq!(error.code(), ReasonCode::ResourceLimit);
+        let mut restrictive_options = EncryptedOpenOptions::new(Some(Unlock::Identity(&identity)));
+        restrictive_options.decode_policy.window_bytes = 0;
+        let error = open_encrypted(&legacy.bytes, restrictive_options).unwrap_err();
+        assert_eq!(error.code(), ReasonCode::ResourceLimit);
         let legacy_inspection = inspect_encrypted(
             &legacy.bytes,
             Some(Unlock::Identity(&identity)),

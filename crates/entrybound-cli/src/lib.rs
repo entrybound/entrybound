@@ -8,11 +8,12 @@ use std::process::ExitCode;
 use entrybound::archive::{
     AclPolicy, ArchiveDiffReport, ConfinementMode, DiffChange, DiffIdentityStatus, DiffTier,
     ExtractionPolicy, IndexPolicy, InspectionSecurity, InspectionViews, OwnershipPolicy,
-    PackOptions, PlatformMetadataPolicy, RepackMode, RepackOptions, ReparsePolicy, SparsePolicy,
-    SymlinkPolicy, WindowsSecurityPolicy, XAttrPolicy, archive_diff, archive_metadata_diff,
-    default_pack_output, default_unpack_destination, explain as compression_explain, inspect,
-    inspection_json, inspection_json_with_security, list, plan_directory, prepare_repack,
-    random_inspection_json, structured_explain, unpack, unpack_opened, unpack_stream,
+    PackOptions, PlatformMetadataPolicy, PrivilegedXAttrPolicy, RepackMode, RepackOptions,
+    ReparsePolicy, SparsePolicy, SpecialPermissionsPolicy, SymlinkPolicy, WindowsSecurityPolicy,
+    XAttrPolicy, archive_diff, archive_metadata_diff, default_pack_output,
+    default_unpack_destination, explain as compression_explain, inspect, inspection_json,
+    inspection_json_with_security, list, plan_directory, prepare_repack, random_inspection_json,
+    structured_explain, unpack, unpack_opened, unpack_stream,
 };
 use entrybound::crypto::{
     BindingStatus, BoundaryMode, CryptoPolicy, CryptographicStatus, EncryptedOpenOptions,
@@ -87,7 +88,8 @@ Usage:\n\
                          [--report <file>]\n\
   ebound unpack <archive.eb|-> [destination] [--identity <file>|--password]\n\
                 [--symlinks refuse|safe|all] [--restore-owner]\n\
-                [--xattrs ignore|restore] [--sparse logical|restore]\n\
+                [--xattrs ignore|restore] [--restore-privileged-xattrs]\n\
+                [--restore-special-permissions] [--sparse logical|restore]\n\
                 [--acls ignore|restore] [--windows-security ignore|restore]\n\
                 [--reparse refuse|known-safe|all] [--platform-metadata ignore|restore]\n\
   ebound read <archive.eb|URL> <logical-path> [--output <file|->]\n\
@@ -2455,6 +2457,10 @@ fn parse_unpack_arguments(arguments: Vec<OsString>) -> Result<(ReadArguments, Ex
             );
         } else if value == "--restore-owner" {
             policy = policy.with_ownership(OwnershipPolicy::Restore);
+        } else if value == "--restore-special-permissions" {
+            policy = policy.with_special_permissions(SpecialPermissionsPolicy::Restore);
+        } else if value == "--restore-privileged-xattrs" {
+            policy = policy.with_privileged_xattrs(PrivilegedXAttrPolicy::Restore);
         } else if value == "--xattrs" {
             cursor += 1;
             policy = policy.with_xattrs(
@@ -4994,8 +5000,8 @@ pub fn main_entry() -> ExitCode {
 mod tests {
     use super::{parse_unpack_arguments, run};
     use entrybound::archive::{
-        AclPolicy, OwnershipPolicy, PlatformMetadataPolicy, ReparsePolicy, SparsePolicy,
-        SymlinkPolicy, WindowsSecurityPolicy, XAttrPolicy,
+        AclPolicy, OwnershipPolicy, PlatformMetadataPolicy, PrivilegedXAttrPolicy, ReparsePolicy,
+        SparsePolicy, SpecialPermissionsPolicy, SymlinkPolicy, WindowsSecurityPolicy, XAttrPolicy,
     };
     use entrybound::diagnostics::ReasonCode;
     use std::ffi::OsString;
@@ -5015,6 +5021,8 @@ mod tests {
             "--symlinks",
             "all",
             "--restore-owner",
+            "--restore-special-permissions",
+            "--restore-privileged-xattrs",
             "--xattrs",
             "restore",
             "--sparse",
@@ -5034,6 +5042,11 @@ mod tests {
         assert_eq!(policy.symlinks(), SymlinkPolicy::All);
         assert_eq!(policy.ownership(), OwnershipPolicy::Restore);
         assert_eq!(policy.xattrs(), XAttrPolicy::Restore);
+        assert_eq!(
+            policy.special_permissions(),
+            SpecialPermissionsPolicy::Restore
+        );
+        assert_eq!(policy.privileged_xattrs(), PrivilegedXAttrPolicy::Restore);
         assert_eq!(policy.sparse(), SparsePolicy::Restore);
         assert_eq!(policy.acls(), AclPolicy::Restore);
         assert_eq!(policy.windows_security(), WindowsSecurityPolicy::Restore);

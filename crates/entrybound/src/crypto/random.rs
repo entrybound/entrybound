@@ -40,6 +40,27 @@ use crate::random_access::{
     SourceRevision,
 };
 
+/// A conservative source-size screen for the slice-based legacy full verifier.
+/// This is not a proved aggregate live-allocation reservation: container growth,
+/// source-return capacity and overlapping transient buffers still need a
+/// checked allocation ledger. Ordinary ECF model/decode allocations remain
+/// independently governed by ResourceBudget and DecodeRequirements.
+fn legacy_crypto_reservation(source_len: u64, policy: super::CryptoPolicy) -> Result<()> {
+    // Refuse large legacy full-source materialization before fetching it.
+    // Qualification must not interpret this provisional factor as a bound on
+    // all coexisting capacities or allocator/container overhead.
+    const CRYPTO_RESERVATION_MULTIPLIER: u64 = 64;
+    let reserved = source_len
+        .checked_mul(CRYPTO_RESERVATION_MULTIPLIER)
+        .ok_or_else(|| crypto_policy("legacy full verification reservation overflows u64"))?;
+    if reserved > policy.max_working_memory_bytes {
+        return Err(crypto_policy(
+            "legacy full verification exceeds aggregate crypto working-memory policy",
+        ));
+    }
+    Ok(())
+}
+
 const ENCRYPTED_FOOTER_LEN: u64 = 192;
 const SECTION_HEADER_LEN: u64 = 64;
 const SEGMENT_HEADER_LEN: u64 = 64;
@@ -140,13 +161,13 @@ pub struct EncryptedRandomAccessArchive {
     keys: KeyHierarchy,
     padding: PaddingMode,
     crypto_policy: super::CryptoPolicy,
+    legacy_whole_archive_verified: bool,
     segments: Vec<SegmentLocator>,
     index: BTreeMap<Digest, EncryptedChunkLocator>,
     index_status: RandomAccessIndexStatus,
     plans: Box<[TransformPlan]>,
     groups: BTreeMap<Digest, ChunkGroup>,
     support: Option<SupportObjects>,
-    chunk_frames: BTreeMap<Digest, Vec<u8>>,
     extended: bool,
     whole_object: bool,
 }
@@ -209,7 +230,12 @@ pub fn inspect_indexed_random_encrypted_public(
     if footer.envelope_len > crypto_limits.max_envelope_bytes {
         return Err(crypto_policy("public CryptoEnvelope exceeds caller policy"));
     }
-    let envelope = read_envelope(&mut session, footer.envelope_offset, footer.envelope_len)?;
+    let envelope = read_envelope(
+        &mut session,
+        footer.envelope_offset,
+        footer.envelope_len,
+        crypto_limits,
+    )?;
     if envelope.stanzas.len() as u32 > crypto_limits.max_stanzas {
         return Err(crypto_policy("public CryptoEnvelope exceeds caller policy"));
     }
@@ -254,9 +280,20 @@ pub fn inspect_indexed_random_encrypted_public(
 impl EncryptedRandomAccessArchive {
     fn open(
         source: Box<dyn RandomReadSource>,
-        policy: RandomAccessPolicy,
-        options: EncryptedOpenOptions<'_>,
+        mut policy: RandomAccessPolicy,
+        mut options: EncryptedOpenOptions<'_>,
     ) -> Result<Self> {
+        // Neither caller-owned policy can grant permission denied by the other.
+        policy.resource_policy = crate::ecf::container::intersect_resource_policies(
+            policy.resource_policy,
+            options.resource_policy,
+        );
+        policy.decode_policy = crate::ecf::container::intersect_decode_policies(
+            policy.decode_policy,
+            options.decode_policy,
+        );
+        options.resource_policy = policy.resource_policy;
+        options.decode_policy = policy.decode_policy;
         let mut session = RangeSession::new(source, policy)?;
         if session.policy().max_section_count < 2 {
             return Err(access_policy(
@@ -282,6 +319,12 @@ impl EncryptedRandomAccessArchive {
                 "source is not a crypto-v1 INDEXED archive",
             ));
         }
+        if preamble.features.incompat & super::FEATURE_PRIVATE_RESOURCE_DECLARATION_V1 == 0 {
+            // The missing feature is the public Descriptor-v1 signal. Charge
+            // the complete fallback before envelope/control parsing and any
+            // variable-size crypto allocation in this session.
+            legacy_crypto_reservation(session.len(), options.crypto_policy)?;
+        }
         if footer.total_len != session.len()
             || footer.preamble_digest != *sha256_exact(&preamble_bytes).as_bytes()
         {
@@ -302,7 +345,12 @@ impl EncryptedRandomAccessArchive {
         if footer.envelope_len > options.crypto_policy.max_envelope_bytes {
             return Err(crypto_policy("CryptoEnvelope exceeds caller policy"));
         }
-        let envelope = read_envelope(&mut session, footer.envelope_offset, footer.envelope_len)?;
+        let envelope = read_envelope(
+            &mut session,
+            footer.envelope_offset,
+            footer.envelope_len,
+            options.crypto_policy,
+        )?;
         if envelope.stanzas.len() as u32 > options.crypto_policy.max_stanzas {
             return Err(crypto_policy(
                 "recipient stanza count exceeds caller policy",
@@ -384,6 +432,14 @@ impl EncryptedRandomAccessArchive {
                         options.resource_policy,
                     )?;
                     crate::ecf::enforce_decode_policy(declarations.decode, options.decode_policy)?;
+                    crate::ecf::enforce_caller_policy(
+                        declarations.budget,
+                        session.policy().resource_policy,
+                    )?;
+                    crate::ecf::enforce_decode_policy(
+                        declarations.decode,
+                        session.policy().decode_policy,
+                    )?;
                 }
             }
         }
@@ -457,7 +513,7 @@ impl EncryptedRandomAccessArchive {
             || Ok(BTreeMap::new()),
             |items| decode_chunk_groups(&concatenate(items)),
         )?;
-        let (budget_declared, budget, decode) = descriptor_body.declarations.map_or(
+        let (budget_declared, mut budget, mut decode) = descriptor_body.declarations.map_or(
             (
                 false,
                 ResourceBudget::default(),
@@ -465,6 +521,20 @@ impl EncryptedRandomAccessArchive {
             ),
             |value| (true, value.budget, value.decode),
         );
+        let legacy_whole_archive_verified = descriptor_body.declarations.is_none();
+        if legacy_whole_archive_verified {
+            // Descriptor v1 lacks authoritative bounds for unread payloads.
+            // Verify the complete source under all caller-owned range limits,
+            // with one uncached source buffer and the existing unlocked keys.
+            let length = session.len();
+            let bytes = session.read_uncached(0, length, AccessPurpose::EncryptedPayload)?;
+            let fully_opened = super::container::open_encrypted_with_unlocked_keys(
+                &bytes, options, &envelope, &keys,
+            )?;
+            budget = fully_opened.archive.descriptor.budget;
+            decode = fully_opened.archive.descriptor.decode;
+            session.check_stable()?;
+        }
         let descriptor = ArchiveDescriptor {
             format_major: preamble.version.major,
             format_minor: preamble.version.minor,
@@ -526,13 +596,13 @@ impl EncryptedRandomAccessArchive {
             keys,
             padding,
             crypto_policy: options.crypto_policy,
+            legacy_whole_archive_verified,
             segments,
             index,
             index_status,
             plans,
             groups,
             support: None,
-            chunk_frames: BTreeMap::new(),
             extended,
             whole_object,
         })
@@ -801,14 +871,6 @@ impl EncryptedRandomAccessArchive {
                 },
                 AccessPurpose::EncryptedPayload,
             )?;
-            retained_private_bytes = retained_private_bytes
-                .checked_add(u64::try_from(object.bytes.len()).unwrap_or(u64::MAX))
-                .ok_or_else(|| crypto_policy("PAYLOAD private byte total overflow"))?;
-            if retained_private_bytes > self.crypto_policy.max_working_memory_bytes {
-                return Err(crypto_policy(
-                    "retained PAYLOAD objects exceed caller crypto memory policy",
-                ));
-            }
             let (kind, payload) = wire::decode_private_object(&object.bytes)?;
             match kind {
                 wire::PRIVATE_OBJECT_CHUNK => {
@@ -835,12 +897,22 @@ impl EncryptedRandomAccessArchive {
                             fragment_count: locator.count,
                         },
                     );
-                    self.chunk_frames.insert(header.chunk_id, payload.to_vec());
+                    // Retain the authenticated locator, not decrypted Chunk
+                    // bytes. A fallback scan must not create a plaintext cache
+                    // that grows across otherwise bounded range reads.
                     if self.index_status == RandomAccessIndexStatus::PresentValid {
                         self.index_status = RandomAccessIndexStatus::RebuiltInvalid;
                     }
                 }
                 wire::PRIVATE_OBJECT_SEQUENCE => {
+                    retained_private_bytes = retained_private_bytes
+                        .checked_add(u64::try_from(payload.len()).unwrap_or(u64::MAX))
+                        .ok_or_else(|| crypto_policy("PAYLOAD support byte total overflow"))?;
+                    if retained_private_bytes > self.crypto_policy.max_working_memory_bytes {
+                        return Err(crypto_policy(
+                            "retained PAYLOAD support exceeds caller crypto memory policy",
+                        ));
+                    }
                     let (collection, items) = wire::decode_sequence_container(payload)?;
                     match collection {
                         wire::COLLECTION_DICTIONARIES => {
@@ -898,9 +970,25 @@ impl EncryptedRandomAccessArchive {
     }
 
     fn chunk_frame(&mut self, chunk_id: Digest) -> Result<Vec<u8>> {
-        if let Some(frame) = self.chunk_frames.get(&chunk_id) {
-            return Ok(frame.clone());
+        // A rebuilt Index gets one retry. Decrypted frames are caller-owned
+        // temporaries and never retained by this archive between requests.
+        for attempt in 0..2 {
+            if let Some(frame) = self.indexed_chunk_frame(chunk_id)? {
+                return Ok(frame);
+            }
+            if attempt == 1 {
+                break;
+            }
+            self.index_status = RandomAccessIndexStatus::RebuiltInvalid;
+            self.support = None;
+            self.load_support_and_index_fallback()?;
         }
+        Err(dependency(format!(
+            "rebuilt Index lacks valid Chunk {chunk_id}"
+        )))
+    }
+
+    fn indexed_chunk_frame(&mut self, chunk_id: Digest) -> Result<Option<Vec<u8>>> {
         let locator = self
             .index
             .get(&chunk_id)
@@ -914,14 +1002,7 @@ impl EncryptedRandomAccessArchive {
             .cloned()
             .ok_or_else(|| dependency("encrypted Index references absent segment"))?;
         if segment.class != SEGMENT_PAYLOAD || segment.count != locator.fragment_count {
-            self.index_status = RandomAccessIndexStatus::RebuiltInvalid;
-            self.support = None;
-            self.load_support_and_index_fallback()?;
-            return self
-                .chunk_frames
-                .get(&chunk_id)
-                .cloned()
-                .ok_or_else(|| dependency(format!("unknown Chunk {chunk_id}")));
+            return Ok(None);
         }
         let resource_policy = self.session.policy().resource_policy;
         let decode_policy = self.session.policy().decode_policy;
@@ -942,14 +1023,7 @@ impl EncryptedRandomAccessArchive {
         )?;
         let (kind, payload) = wire::decode_private_object(&object.bytes)?;
         if kind != wire::PRIVATE_OBJECT_CHUNK {
-            self.index_status = RandomAccessIndexStatus::RebuiltInvalid;
-            self.support = None;
-            self.load_support_and_index_fallback()?;
-            return self
-                .chunk_frames
-                .get(&chunk_id)
-                .cloned()
-                .ok_or_else(|| dependency(format!("unknown Chunk {chunk_id}")));
+            return Ok(None);
         }
         let header_len = usize::try_from(chunk_frame_header_len(self.extended))
             .map_err(|_| access_policy("Chunk header exceeds usize"))?;
@@ -961,18 +1035,9 @@ impl EncryptedRandomAccessArchive {
             self.whole_object,
         )?;
         if header.chunk_id != chunk_id {
-            self.index_status = RandomAccessIndexStatus::RebuiltInvalid;
-            self.support = None;
-            self.load_support_and_index_fallback()?;
-            return self
-                .chunk_frames
-                .get(&chunk_id)
-                .cloned()
-                .ok_or_else(|| dependency(format!("unknown Chunk {chunk_id}")));
+            return Ok(None);
         }
-        let frame = payload.to_vec();
-        self.chunk_frames.insert(chunk_id, frame.clone());
-        Ok(frame)
+        Ok(Some(payload.to_vec()))
     }
 
     fn chunk_header(&mut self, chunk_id: Digest) -> Result<ChunkFrameHeader> {
@@ -1162,9 +1227,17 @@ impl EncryptedRandomAccessArchive {
             range_request_count: self.session.range_requests(),
             lai: IdentityVerificationStatus::Verified,
             aux: IdentityVerificationStatus::Verified,
-            pcr: IdentityVerificationStatus::DeclaredNotFullyVerified,
-            pci: IdentityVerificationStatus::NotComputed,
-            whole_archive_verified: false,
+            pcr: if self.legacy_whole_archive_verified {
+                IdentityVerificationStatus::Verified
+            } else {
+                IdentityVerificationStatus::DeclaredNotFullyVerified
+            },
+            pci: if self.legacy_whole_archive_verified {
+                IdentityVerificationStatus::Verified
+            } else {
+                IdentityVerificationStatus::NotComputed
+            },
+            whole_archive_verified: self.legacy_whole_archive_verified,
             access_trace: self.session.trace().to_vec().into_boxed_slice(),
         }
     }
@@ -1174,8 +1247,12 @@ fn read_envelope(
     session: &mut RangeSession,
     offset: u64,
     extent: u64,
+    crypto_limits: super::CryptoPolicy,
 ) -> Result<wire::CryptoEnvelope> {
-    if extent < SECTION_HEADER_LEN || extent > session.policy().max_metadata_bytes {
+    if extent < SECTION_HEADER_LEN
+        || extent > session.policy().max_metadata_bytes
+        || extent > crypto_limits.max_envelope_bytes
+    {
         return Err(crypto_policy("CryptoEnvelope extent exceeds caller policy"));
     }
     let header = session.read(offset, SECTION_HEADER_LEN, AccessPurpose::SectionHeader)?;
@@ -1197,7 +1274,7 @@ fn read_envelope(
             "CryptoEnvelope section digest mismatch",
         ));
     }
-    wire::CryptoEnvelope::decode(&payload)
+    wire::CryptoEnvelope::decode_with_policy(&payload, crypto_limits)
 }
 
 fn walk_segments(
@@ -1278,6 +1355,32 @@ fn walk_segments(
     Ok(locators)
 }
 
+fn reserve_segment_object(
+    object: &mut Vec<u8>,
+    fragment: &wire::PrivateFragment,
+    segment_extent: u64,
+    max_working_memory_bytes: u64,
+) -> Result<()> {
+    if fragment.total_len < u64::try_from(fragment.bytes.len()).unwrap_or(u64::MAX)
+        || u64::from(fragment.count) > fragment.total_len
+    {
+        return Err(private_invalid(
+            "fragment total cannot contain its declared bytes and count",
+        ));
+    }
+    if fragment.total_len > segment_extent || fragment.total_len > max_working_memory_bytes {
+        return Err(crypto_policy(
+            "encrypted object exceeds physical extent or caller crypto memory policy",
+        ));
+    }
+    object
+        .try_reserve_exact(
+            usize::try_from(fragment.total_len)
+                .map_err(|_| crypto_policy("encrypted object exceeds usize"))?,
+        )
+        .map_err(|_| crypto_policy("cannot reserve encrypted object within caller policy"))
+}
+
 #[allow(clippy::too_many_arguments)]
 fn decrypt_segment(
     session: &mut RangeSession,
@@ -1289,6 +1392,9 @@ fn decrypt_segment(
     options: EncryptedOpenOptions<'_>,
     purpose: AccessPurpose,
 ) -> Result<DecryptedObject> {
+    preflight_protected_records(session, locator, ordinal, options)?;
+    // Ciphertext caching remains bounded by RandomAccessPolicy. Decrypted
+    // frames are never retained between entry reads.
     let bytes = session.read(locator.offset, locator.extent, purpose)?;
     if bytes.get(..64) != Some(locator.header.as_slice()) {
         return Err(segment_invalid(
@@ -1353,15 +1459,12 @@ fn decrypt_segment(
             partial_id = Some(fragment.object_id);
             partial_total = fragment.total_len;
             partial_count = fragment.count;
-            if fragment.total_len > options.crypto_policy.max_working_memory_bytes {
-                return Err(crypto_policy(
-                    "encrypted object exceeds caller crypto memory policy",
-                ));
-            }
-            object.reserve(
-                usize::try_from(fragment.total_len)
-                    .map_err(|_| crypto_policy("encrypted object exceeds usize"))?,
-            );
+            reserve_segment_object(
+                &mut object,
+                &fragment,
+                locator.extent,
+                options.crypto_policy.max_working_memory_bytes,
+            )?;
         }
         if Some(fragment.object_id) != partial_id
             || fragment.total_len != partial_total
@@ -1697,7 +1800,25 @@ fn parse_protected<'a>(
     let header = segment
         .get(cursor..header_end)
         .ok_or_else(|| truncated("protected header is truncated"))?;
-    if &header[..4] != b"EBC1"
+    let len = protected_ciphertext_len(header, class, ordinal, counter, options)?;
+    let end = header_end
+        .checked_add(usize::try_from(len).map_err(|_| crypto_policy("ciphertext exceeds usize"))?)
+        .ok_or_else(|| segment_invalid("ciphertext extent overflow"))?;
+    let ciphertext = segment
+        .get(header_end..end)
+        .ok_or_else(|| truncated("protected ciphertext is truncated"))?;
+    Ok((header, ciphertext, end))
+}
+
+fn protected_ciphertext_len(
+    header: &[u8],
+    class: u8,
+    ordinal: u64,
+    counter: u64,
+    options: EncryptedOpenOptions<'_>,
+) -> Result<u64> {
+    if header.len() != PROTECTED_HEADER_LEN as usize
+        || &header[..4] != b"EBC1"
         || be_u16(&header[4..6])? != 1
         || header[6] != class
         || header[7] != 0
@@ -1712,13 +1833,46 @@ fn parse_protected<'a>(
     if len < 16 || len > options.crypto_policy.max_ciphertext_record_bytes {
         return Err(crypto_policy("protected ciphertext exceeds caller policy"));
     }
-    let end = header_end
-        .checked_add(usize::try_from(len).map_err(|_| crypto_policy("ciphertext exceeds usize"))?)
-        .ok_or_else(|| segment_invalid("ciphertext extent overflow"))?;
-    let ciphertext = segment
-        .get(header_end..end)
-        .ok_or_else(|| truncated("protected ciphertext is truncated"))?;
-    Ok((header, ciphertext, end))
+    Ok(len)
+}
+
+/// Validate caller-lowerable record extents using only the public headers.
+/// This must precede the whole-segment fetch, allocation, and AEAD work.
+fn preflight_protected_records(
+    session: &mut RangeSession,
+    locator: &SegmentLocator,
+    ordinal: u64,
+    options: EncryptedOpenOptions<'_>,
+) -> Result<()> {
+    let end = locator
+        .offset
+        .checked_add(locator.extent)
+        .ok_or_else(|| segment_invalid("segment extent overflow"))?;
+    let mut cursor = locator
+        .offset
+        .checked_add(SEGMENT_HEADER_LEN)
+        .ok_or_else(|| segment_invalid("protected record offset overflow"))?;
+    for counter in 0..=u64::from(locator.count) {
+        let header_end = cursor
+            .checked_add(PROTECTED_HEADER_LEN)
+            .filter(|value| *value <= end)
+            .ok_or_else(|| truncated("protected header exceeds segment extent"))?;
+        let header = session.read(cursor, PROTECTED_HEADER_LEN, AccessPurpose::SectionHeader)?;
+        let class = if counter == u64::from(locator.count) {
+            RECORD_END
+        } else {
+            RECORD_DATA
+        };
+        let len = protected_ciphertext_len(&header, class, ordinal, counter, options)?;
+        cursor = header_end
+            .checked_add(len)
+            .filter(|value| *value <= end)
+            .ok_or_else(|| truncated("protected ciphertext exceeds segment extent"))?;
+    }
+    if cursor != end {
+        return Err(segment_invalid("bytes follow segment END record"));
+    }
+    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1982,26 +2136,182 @@ fn truncated(detail: impl Into<String>) -> Diagnostic {
 #[cfg(test)]
 mod tests {
     use std::path::{Path, PathBuf};
+    use std::sync::atomic::{AtomicU64, Ordering};
+    use std::sync::{Arc, Mutex};
 
     use super::{PROTECTED_HEADER_LEN, SEGMENT_HEADER_LEN, open_indexed_random_encrypted};
     use crate::archive::{PackOptions, plan_directory};
     use crate::crypto::{
-        EncryptedOpenOptions, EncryptedWriteOptions, Unlock, XWingIdentity, encrypt_archive,
+        EncryptedOpenOptions, EncryptedWriteOptions, PaddingMode, Unlock, XWingIdentity,
+        encrypt_archive,
     };
     use crate::eam::{ContentRef, EntryData, LogicalPath};
-    use crate::random_access::{MemoryRandomReadSource, RandomAccessPolicy};
+    use crate::random_access::{
+        MemoryRandomReadSource, RandomAccessPolicy, RandomReadSource, SourceRevision,
+    };
+
+    struct CountingSource {
+        source: MemoryRandomReadSource,
+        reads: Arc<Mutex<Vec<(u64, u64)>>>,
+    }
+
+    impl RandomReadSource for CountingSource {
+        fn len(&self) -> crate::diagnostics::Result<u64> {
+            self.source.len()
+        }
+
+        fn revision(&self) -> crate::diagnostics::Result<SourceRevision> {
+            self.source.revision()
+        }
+
+        fn read_exact_at(&self, offset: u64, len: u64) -> crate::diagnostics::Result<Vec<u8>> {
+            self.reads.lock().unwrap().push((offset, len));
+            self.source.read_exact_at(offset, len)
+        }
+    }
+
+    #[test]
+    fn record_policy_refuses_before_fetching_a_whole_segment() {
+        let directory = TestDir::new();
+        std::fs::write(directory.path().join("file"), vec![17_u8; 16 * 1024]).unwrap();
+        let archive = plan_directory(directory.path(), PackOptions::default()).unwrap();
+        let (identity, recipient) = XWingIdentity::generate().unwrap();
+        for include_index in [true, false] {
+            let encrypted = encrypt_archive(
+                &archive,
+                EncryptedWriteOptions {
+                    recipients: std::slice::from_ref(&recipient),
+                    padding: PaddingMode::None,
+                    include_index,
+                    ..EncryptedWriteOptions::default()
+                },
+            )
+            .unwrap();
+            let reads = Arc::new(Mutex::new(Vec::new()));
+            let mut opened = open_indexed_random_encrypted(
+                CountingSource {
+                    source: MemoryRandomReadSource::new(encrypted.bytes),
+                    reads: Arc::clone(&reads),
+                },
+                RandomAccessPolicy::default(),
+                EncryptedOpenOptions::new(Some(Unlock::Identity(&identity))),
+            )
+            .unwrap();
+            reads.lock().unwrap().clear();
+            opened.crypto_policy.max_ciphertext_record_bytes = 16;
+            let error = opened
+                .read_entry(&LogicalPath::from_utf8(["file"]).unwrap())
+                .unwrap_err();
+            assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+            let requests = reads.lock().unwrap();
+            assert!(!requests.is_empty());
+            assert!(requests.iter().all(|(_, len)| *len == PROTECTED_HEADER_LEN));
+        }
+    }
+
+    #[test]
+    fn decrypted_frames_are_not_retained_across_bounded_entry_reads() {
+        let directory = TestDir::new();
+        let first = (0_u32..512)
+            .flat_map(|value| *super::sha256_exact(&value.to_be_bytes()).as_bytes())
+            .collect::<Vec<_>>();
+        let second = (512_u32..1024)
+            .flat_map(|value| *super::sha256_exact(&value.to_be_bytes()).as_bytes())
+            .collect::<Vec<_>>();
+        std::fs::write(directory.path().join("first"), &first).unwrap();
+        std::fs::write(directory.path().join("second"), &second).unwrap();
+        let archive = plan_directory(directory.path(), PackOptions::default()).unwrap();
+        let (identity, recipient) = XWingIdentity::generate().unwrap();
+        let policy = RandomAccessPolicy {
+            max_cached_bytes: 0,
+            ..RandomAccessPolicy::default()
+        };
+        for include_index in [true, false] {
+            let encrypted = encrypt_archive(
+                &archive,
+                EncryptedWriteOptions {
+                    recipients: std::slice::from_ref(&recipient),
+                    padding: PaddingMode::None,
+                    include_index,
+                    ..EncryptedWriteOptions::default()
+                },
+            )
+            .unwrap();
+            let reads = Arc::new(Mutex::new(Vec::new()));
+            let mut opened = open_indexed_random_encrypted(
+                CountingSource {
+                    source: MemoryRandomReadSource::new(encrypted.bytes),
+                    reads: Arc::clone(&reads),
+                },
+                policy.clone(),
+                EncryptedOpenOptions::new(Some(Unlock::Identity(&identity))),
+            )
+            .unwrap();
+            let largest_payload = opened
+                .segments
+                .iter()
+                .filter(|value| value.class == super::SEGMENT_PAYLOAD)
+                .map(|value| value.extent)
+                .max()
+                .unwrap();
+            // Each encrypted object fits, but retaining both plaintext frames
+            // would exceed this cap. This includes the index-fallback scan.
+            opened.crypto_policy.max_working_memory_bytes = largest_payload;
+            assert!(u64::try_from(first.len() + second.len()).unwrap() > largest_payload);
+            for (name, expected) in [("first", &first), ("second", &second)] {
+                let read = opened
+                    .read_entry(&LogicalPath::from_utf8([name]).unwrap())
+                    .unwrap();
+                assert_eq!(&*read.bytes, expected);
+            }
+            reads.lock().unwrap().clear();
+            let _ = opened
+                .read_entry(&LogicalPath::from_utf8(["first"]).unwrap())
+                .unwrap();
+            assert!(
+                reads
+                    .lock()
+                    .unwrap()
+                    .iter()
+                    .any(|(offset, len)| opened.segments.iter().any(|segment| {
+                        segment.class == super::SEGMENT_PAYLOAD
+                            && segment.offset == *offset
+                            && segment.extent == *len
+                    }))
+            );
+        }
+    }
+
+    #[test]
+    fn forged_segment_object_total_is_refused_before_reserve() {
+        let mut object = Vec::new();
+        let fragment = super::wire::PrivateFragment {
+            object_id: [0; 32],
+            total_len: u64::MAX,
+            index: 0,
+            count: 1,
+            offset: 0,
+            bytes: vec![1],
+        };
+        let error =
+            super::reserve_segment_object(&mut object, &fragment, 256, 1 << 30).unwrap_err();
+        assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        assert_eq!(object.capacity(), 0);
+    }
 
     struct TestDir(PathBuf);
+    static NEXT_DIRECTORY: AtomicU64 = AtomicU64::new(0);
 
     impl TestDir {
         fn new() -> Self {
             let path = std::env::temp_dir().join(format!(
-                "entrybound-crypto-random-{}-{}",
+                "entrybound-crypto-random-{}-{}-{}",
                 std::process::id(),
                 std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)
                     .unwrap()
-                    .as_nanos()
+                    .as_nanos(),
+                NEXT_DIRECTORY.fetch_add(1, Ordering::Relaxed)
             ));
             std::fs::create_dir(&path).unwrap();
             Self(path)

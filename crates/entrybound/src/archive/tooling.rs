@@ -100,7 +100,7 @@ pub fn prepare_repack(source: &OpenedArchive, options: RepackOptions) -> Result<
         ));
     }
     let mut target = match options.mode {
-        RepackMode::RepresentationOnly => source.archive.clone(),
+        RepackMode::RepresentationOnly => source.archive.clone().into_inner(),
         RepackMode::Replan(profile) => replan_archive(&source.archive, profile)?,
     };
     target.descriptor.pci = None;
@@ -2599,7 +2599,7 @@ mod tests {
     #[test]
     fn diff_keeps_conversion_evidence_in_auxiliary_tier() {
         let source = opened_fixture(CompressionProfile::Balanced);
-        let mut changed = source.archive.clone();
+        let mut changed = source.archive.clone().into_inner();
         changed
             .conversion
             .as_mut()
