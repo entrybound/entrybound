@@ -19,6 +19,32 @@
     "candidate_set",
     "candidate_exclusion_reasons",
     "required_evidence",
+    "ledger_schema_version",
+    "hc_ids",
+    "hc_assessments",
+    "hc_applicability_rationale",
+    "od_ids",
+    "od_applicability_rationale",
+    "decision_type",
+    "evidence_route_types",
+    "primary_metrics_by_od",
+    "primary_metric_justifications",
+    "no_primary_metric_reason_by_od",
+    "metric_registration_blockers_by_od",
+    "assigning_session",
+    "assignment_reviewer_session",
+    "assignment_review_ref",
+    "assignment_review_sha256",
+    "cost_tier",
+    "cost_assessment_ref",
+    "validation_look_refs",
+    "freeze_ref",
+    "method_commit_sha",
+    "gate_audit_refs",
+    "evidence_sha256",
+    "adversarial_search_ref",
+    "raw_verification_refs",
+    "analysis_trace_refs",
     "experiment_ids",
     "raw_result_refs",
     "normalized_result_refs",
@@ -198,12 +224,178 @@
           },
           "invariant_violated": {
             "type": "string"
+          },
+          "rule_id": {
+            "type": "string"
+          },
+          "evidence_ref": {
+            "type": "string"
+          },
+          "mechanical_test_ref": {
+            "type": "string"
           }
         }
       }
     },
     "required_evidence": {
       "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ledger_schema_version": {
+      "const": 2
+    },
+    "hc_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^HC-(0[1-9]|1[0-8])$"
+      }
+    },
+    "hc_assessments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/hc_assessment"
+      }
+    },
+    "hc_applicability_rationale": {
+      "type": "string"
+    },
+    "od_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^OD-(0[1-9]|[12][0-9])$"
+      }
+    },
+    "od_applicability_rationale": {
+      "type": "string"
+    },
+    "decision_type": {
+      "type": "string",
+      "enum": [
+        "UNASSIGNED",
+        "EMPIRICAL",
+        "FORMAL",
+        "EXTERNAL",
+        "HUMAN-FACING"
+      ]
+    },
+    "evidence_route_types": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "EMPIRICAL",
+          "FORMAL",
+          "EXTERNAL",
+          "HUMAN-FACING"
+        ]
+      }
+    },
+    "primary_metrics_by_od": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "primary_metric_justifications": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "no_primary_metric_reason_by_od": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "metric_registration_blockers_by_od": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "assigning_session": {
+      "type": "string"
+    },
+    "assignment_reviewer_session": {
+      "type": "string"
+    },
+    "assignment_review_ref": {
+      "type": "string"
+    },
+    "assignment_review_sha256": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{64})?$"
+    },
+    "cost_tier": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        null,
+        "T0",
+        "T1",
+        "T2",
+        "T3",
+        "T4"
+      ]
+    },
+    "cost_assessment_ref": {
+      "type": "string"
+    },
+    "validation_look_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "freeze_ref": {
+      "type": "string"
+    },
+    "method_commit_sha": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{40})?$"
+    },
+    "gate_audit_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_sha256": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "adversarial_search_ref": {
+      "type": "string"
+    },
+    "raw_verification_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "analysis_trace_refs": {
+      "type": "array",
+      "uniqueItems": true,
       "items": {
         "type": "string"
       }
@@ -289,7 +481,104 @@
           "change": {
             "type": "string",
             "minLength": 1
+          },
+          "method_commit_sha": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "rule_outcomes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "deviations": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "completeness_critic_ref": {
+            "type": "string"
+          },
+          "formal_search_ref": {
+            "type": "string"
+          },
+          "formal_reviewer_ref": {
+            "type": "string"
+          },
+          "owner_acceptance_ref": {
+            "type": "string"
           }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "hc_assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hc_id",
+        "conformance",
+        "tuning",
+        "validation",
+        "heldout"
+      ],
+      "properties": {
+        "hc_id": {
+          "type": "string",
+          "pattern": "^HC-(0[1-9]|1[0-8])$"
+        },
+        "conformance": {
+          "$ref": "#/$defs/hc_split_assessment"
+        },
+        "tuning": {
+          "$ref": "#/$defs/hc_split_assessment"
+        },
+        "validation": {
+          "$ref": "#/$defs/hc_split_assessment"
+        },
+        "heldout": {
+          "$ref": "#/$defs/hc_split_assessment"
+        }
+      }
+    },
+    "hc_split_assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidence_refs"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "UNVERIFIED",
+            "PASS",
+            "FAIL",
+            "EXCLUDED_PLATFORM"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "platform_exclusion": {
+          "type": "string"
         }
       }
     }

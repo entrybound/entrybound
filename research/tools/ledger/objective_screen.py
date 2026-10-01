@@ -112,6 +112,7 @@ EXCLUDE = {("REQ-CRY-0111", "HC-02"), ("REQ-CRY-0111", "HC-08"), ("REQ-MOD-0034"
            ("REQ-CRY-0126", "HC-05"), ("REQ-PLT-0099", "HC-05"), ("REQ-MOD-0111", "HC-02")}
 
 WEAK_EVIDENCE = ("CONTRADICTED", "INSUFFICIENT")
+DECISION_INVARIANT_REF = re.compile(r"\bI([1-9]|[12][0-9]|3[01])\b")
 
 
 def sha256(path):
@@ -126,6 +127,19 @@ def explicit_invariants(text):
     for m in re.finditer(r"(?<![A-Za-z0-9_\-])(P[1-8]|C[12]|E[123])(?![0-9A-Za-z])", text):
         refs.update(int(i[1:]) for i in ALIAS[m.group(1)])
     return refs
+
+
+def decision_invariant_counts(decisions):
+    """Count each invariant once per decision, including embedded references."""
+    counts = collections.Counter()
+    for decision in decisions:
+        refs = {
+            int(match.group(1))
+            for constraint in decision.get("hard_constraints", [])
+            for match in DECISION_INVARIANT_REF.finditer(constraint)
+        }
+        counts.update(refs)
+    return counts
 
 
 def main():
@@ -155,18 +169,15 @@ def main():
             tags.update(o for o, pat in OD_KW.items() if re.search(pat, text, re.I))
         mapping[rid] = (r, sorted(tags))
 
-    inv_decisions = collections.Counter()
-    for d in decisions:
-        for h in d.get("hard_constraints", []):
-            if re.fullmatch(r"I([1-9]|[12][0-9]|3[01])", h):
-                inv_decisions[int(h[1:])] += 1
+    inv_decisions = decision_invariant_counts(decisions)
 
     out = []
     out.append(f"Inputs: `research/requirement-ledger.csv` SHA-256 `{sha256(req_path)}`; "
                f"`research/decision-ledger.jsonl` SHA-256 `{sha256(dec_path)}`.")
     out.append("")
     out.append("C.1 Explicit invariant references (rows whose text names the invariant or its SPEC alias) "
-               "and decision-ledger rows listing the invariant in `hard_constraints`.")
+               "and decision-ledger rows naming the invariant within `hard_constraints` "
+               "(each invariant counted once per decision).")
     out.append("")
     out.append("| Invariant | Ledger rows naming it | Decisions citing it | HCs (Appendix A) |")
     out.append("|---|---|---|---|")

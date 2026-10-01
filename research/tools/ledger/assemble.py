@@ -128,9 +128,26 @@ DECISION_EVIDENCE_FIELDS = ["experiment_ids", "raw_result_refs", "normalized_res
                             "security_cost", "wire_cost", "selected_decision", "decision_scope", "confidence",
                             "known_limitations", "reopen_trigger", "remaining_unknowns_ref"]
 DECISION_LIST_EVIDENCE_FIELDS = {"experiment_ids", "raw_result_refs", "normalized_result_refs", "heldout_result_refs"}
+DECISION_METHOD_DEFAULTS = collections.OrderedDict([
+    ("ledger_schema_version", 2), ("hc_ids", []), ("hc_assessments", []),
+    ("hc_applicability_rationale", ""),
+    ("od_ids", []), ("od_applicability_rationale", ""),
+    ("decision_type", "UNASSIGNED"), ("evidence_route_types", []),
+    ("primary_metrics_by_od", {}), ("primary_metric_justifications", {}),
+    ("no_primary_metric_reason_by_od", {}),
+    ("metric_registration_blockers_by_od", {}),
+    ("assigning_session", ""), ("assignment_reviewer_session", ""),
+    ("assignment_review_ref", ""), ("assignment_review_sha256", ""),
+    ("cost_tier", None), ("cost_assessment_ref", ""),
+    ("validation_look_refs", []), ("freeze_ref", ""),
+    ("method_commit_sha", ""), ("gate_audit_refs", []),
+    ("evidence_sha256", {}), ("adversarial_search_ref", ""),
+    ("raw_verification_refs", []), ("analysis_trace_refs", []),
+])
 DECISION_COLUMNS = (["decision_id", "status", "blocker_class", "cluster", "question", "requirement_ids",
                      "program_sections", "release_relevance", "archetypal_objective", "hard_constraints",
                      "candidate_set", "candidate_exclusion_reasons", "required_evidence"]
+                    + list(DECISION_METHOD_DEFAULTS)
                     + DECISION_EVIDENCE_FIELDS[:15]
                     + ["external_review_requirement", "remaining_unknowns_ref", "history"])
 CREATION_CHANGE = "created by Phase A audit"
@@ -460,8 +477,40 @@ def build_schemas():
             "candidate_exclusion_reasons": {"type": "array", "items": {
                 "type": "object", "required": ["candidate_id", "reason"],
                 "properties": {"candidate_id": {"type": "string", "minLength": 1}, "reason": string,
-                               "invariant_violated": string}}},
+                               "invariant_violated": string, "rule_id": string,
+                               "evidence_ref": string, "mechanical_test_ref": string}}},
             "required_evidence": {"type": "array", "items": string},
+            "ledger_schema_version": {"const": 2},
+            "hc_ids": {"type": "array", "uniqueItems": True,
+                       "items": {"type": "string", "pattern": r"^HC-(0[1-9]|1[0-8])$"}},
+            "hc_assessments": {"type": "array", "items": {"$ref": "#/$defs/hc_assessment"}},
+            "hc_applicability_rationale": string,
+            "od_ids": {"type": "array", "uniqueItems": True,
+                       "items": {"type": "string", "pattern": r"^OD-(0[1-9]|[12][0-9])$"}},
+            "od_applicability_rationale": string,
+            "decision_type": {"type": "string", "enum": ["UNASSIGNED", "EMPIRICAL", "FORMAL", "EXTERNAL", "HUMAN-FACING"]},
+            "evidence_route_types": {"type": "array", "uniqueItems": True,
+                                     "items": {"type": "string", "enum": ["EMPIRICAL", "FORMAL", "EXTERNAL", "HUMAN-FACING"]}},
+            "primary_metrics_by_od": {"type": "object", "additionalProperties": {"type": "string", "minLength": 1}},
+            "primary_metric_justifications": {"type": "object", "additionalProperties": {"type": "string", "minLength": 1}},
+            "no_primary_metric_reason_by_od": {"type": "object", "additionalProperties": {"type": "string", "minLength": 1}},
+            "metric_registration_blockers_by_od": {
+                "type": "object",
+                "additionalProperties": {"type": "string", "minLength": 1}},
+            "assigning_session": string,
+            "assignment_reviewer_session": string,
+            "assignment_review_ref": string,
+            "assignment_review_sha256": {"type": "string", "pattern": r"^([0-9a-f]{64})?$"},
+            "cost_tier": {"type": ["string", "null"], "enum": [None, "T0", "T1", "T2", "T3", "T4"]},
+            "cost_assessment_ref": string,
+            "validation_look_refs": {"type": "array", "uniqueItems": True, "items": string},
+            "freeze_ref": string,
+            "method_commit_sha": {"type": "string", "pattern": r"^([0-9a-f]{40})?$"},
+            "gate_audit_refs": {"type": "array", "uniqueItems": True, "items": string},
+            "evidence_sha256": {"type": "object", "additionalProperties": {"type": "string", "pattern": r"^[0-9a-f]{64}$"}},
+            "adversarial_search_ref": string,
+            "raw_verification_refs": {"type": "array", "uniqueItems": True, "items": string},
+            "analysis_trace_refs": {"type": "array", "uniqueItems": True, "items": string},
             "experiment_ids": {"type": "array", "items": string},
             "raw_result_refs": {"type": "array", "items": string},
             "normalized_result_refs": {"type": "array", "items": string},
@@ -482,10 +531,38 @@ def build_schemas():
             "history": {"type": "array", "minItems": 1, "items": {
                 "type": "object", "additionalProperties": False, "required": ["date", "change"],
                 "properties": {"date": {"type": "string", "pattern": r"^\d{4}-\d{2}-\d{2}$"},
-                               "change": {"type": "string", "minLength": 1}}}},
+                               "change": {"type": "string", "minLength": 1},
+                               "method_commit_sha": {"type": "string", "pattern": r"^[0-9a-f]{40}$"},
+                               "rule_outcomes": {"type": "object", "additionalProperties": {"type": "string", "minLength": 1}},
+                               "deviations": {"type": "array", "items": {"type": "string", "minLength": 1}},
+                               "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+                               "completeness_critic_ref": string,
+                               "formal_search_ref": string,
+                               "formal_reviewer_ref": string,
+                               "owner_acceptance_ref": string}}},
+        },
+        "$defs": {
+            "hc_assessment": {"type": "object", "additionalProperties": False,
+                              "required": ["hc_id", "conformance", "tuning", "validation", "heldout"],
+                              "properties": {
+                                  "hc_id": {"type": "string", "pattern": r"^HC-(0[1-9]|1[0-8])$"},
+                                  **{split: {"$ref": "#/$defs/hc_split_assessment"}
+                                     for split in ("conformance", "tuning", "validation", "heldout")}}},
+            "hc_split_assessment": {"type": "object", "additionalProperties": False,
+                                    "required": ["status", "evidence_refs"],
+                                    "properties": {"status": {"type": "string", "enum": ["UNVERIFIED", "PASS", "FAIL", "EXCLUDED_PLATFORM"]},
+                                                   "evidence_refs": {"type": "array", "uniqueItems": True, "items": string},
+                                                   "platform_exclusion": string}},
         },
     }
     return req_schema, dec_schema
+
+
+def preserve_method_fields(row, previous):
+    """Carry reviewed v2 assignments through deterministic ledger reassembly."""
+    for field in DECISION_METHOD_DEFAULTS:
+        if field in previous:
+            row[field] = previous[field]
 
 
 # --------------------------------------------------------------------------- assembler state
@@ -1357,6 +1434,8 @@ class Assembler:
             row["candidate_set"] = dec["candidate_set"]
             row["candidate_exclusion_reasons"] = dec["candidate_exclusion_reasons"]
             row["required_evidence"] = [ws(x) for x in dec["required_evidence"]]
+            for field, default in DECISION_METHOD_DEFAULTS.items():
+                row[field] = json.loads(json.dumps(default))
             for field in DECISION_EVIDENCE_FIELDS[:15]:
                 row[field] = [] if field in DECISION_LIST_EVIDENCE_FIELDS else ""
             row["external_review_requirement"] = ws(dec["external_review_requirement"])
@@ -1369,6 +1448,7 @@ class Assembler:
                 for field in DECISION_EVIDENCE_FIELDS:
                     if nonempty(prev.get(field)):
                         row[field] = prev[field]
+                preserve_method_fields(row, prev)
                 row["history"] = list(history)
                 if audit_owned:
                     new_blocker = self.derive_blocker(node, derived_status)

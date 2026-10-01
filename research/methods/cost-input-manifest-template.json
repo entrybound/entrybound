@@ -1,0 +1,18 @@
+{
+  "schema": "entrybound.cost-input-manifest.v1",
+  "candidate_id": "REPLACE_WITH_CANDIDATE_ID",
+  "baseline_commit_sha": "0000000000000000000000000000000000000000",
+  "candidate_commit_sha": "0000000000000000000000000000000000000000",
+  "normative_files": ["docs/REPLACE_WITH_NORMATIVE_SPEC.md"],
+  "registry_census_ref": "research/methods/candidate-registry-census.json",
+  "source_roles": {
+    "writer": ["crates/entrybound/src/REPLACE_WRITER.rs"],
+    "full_reader": ["crates/entrybound/src/REPLACE_FULL_READER.rs"],
+    "minimal_reader": ["crates/entrybound/src/REPLACE_MINIMAL_READER.rs"],
+    "tests": ["crates/entrybound/tests/REPLACE_TEST.rs"]
+  },
+  "retained_decode_paths": ["crates/entrybound/src/REPLACE_RETAINED_DECODE.rs"],
+  "cargo_tree_ref": "research/methods/candidate-cargo-tree-normal-target-all.txt",
+  "cargo_metadata_ref": "research/methods/candidate-cargo-metadata.json",
+  "dependency_audit_ref": "research/methods/candidate-dependency-audit.json"
+}

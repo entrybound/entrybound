@@ -1,0 +1,44 @@
+[
+  {
+    "name": "future_result_without_analysis_tooling",
+    "event": "first_result",
+    "measurement": "other",
+    "decision_id": "",
+    "routes": [],
+    "has_validation_looks": false,
+    "open_items": [2],
+    "expected_blocked": [2]
+  },
+  {
+    "name": "first_validation_without_full_rule_simulation",
+    "event": "first_validation",
+    "measurement": "other",
+    "decision_id": "",
+    "routes": [],
+    "has_validation_looks": false,
+    "open_items": [9],
+    "expected_blocked": [9]
+  },
+  {
+    "name": "decided_status_cannot_bypass_unmet_gd",
+    "event": "decided",
+    "measurement": "other",
+    "decision_id": "DEC-CMP-008",
+    "ledger_status": "DECIDED",
+    "routes": ["FORMAL"],
+    "has_validation_looks": false,
+    "open_items": [6],
+    "expected_blocked": [6]
+  },
+  {
+    "name": "method_decision_requires_rule_simulation_at_gd",
+    "event": "decided",
+    "measurement": "other",
+    "decision_id": "DEC-ECO-078",
+    "ledger_status": "DECIDED",
+    "routes": ["FORMAL"],
+    "has_validation_looks": false,
+    "open_items": [9],
+    "expected_blocked": [9]
+  }
+]

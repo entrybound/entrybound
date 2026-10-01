@@ -1,0 +1,25 @@
+{
+  "schema": "entrybound.method-gates.v1",
+  "method_sha256": "880e319c8d16e778f856cdbc738ecda088865c4d5e2499665fe058228a29426b",
+  "items": [
+    {"number": 1, "timing": "G-B", "owner_scope": "thresholds and ebr", "status": "OPEN", "open_reason": "Threshold transcription exists; ebr loading and the updated exact-value test have not been accepted together.", "evidence": null},
+    {"number": 2, "timing": "G-B", "owner_scope": "decision analysis", "status": "OPEN", "open_reason": "Decision-analysis implementation, golden cases, and independent review are pending.", "evidence": null},
+    {"number": 3, "timing": "G-B for timing", "owner_scope": "experiment runner", "status": "OPEN", "open_reason": "Runner additions and their timing qualification are pending.", "evidence": null},
+    {"number": 4, "timing": "G-B for timing and memory", "owner_scope": "calibration", "status": "OPEN", "open_reason": "Per-environment and per-family calibration outcomes are pending.", "evidence": null},
+    {"number": 5, "timing": "G-B; G-C", "owner_scope": "held-out custody", "status": "OPEN", "open_reason": "Frozen lock and design-freeze/unlock consistency evidence have not been accepted.", "evidence": null},
+    {"number": 6, "timing": "G-D", "owner_scope": "decision ledger validation", "status": "OPEN", "open_reason": "DECIDED validator and blocks/caps have no accepted exact-source gate evidence.", "evidence": null},
+    {"number": 7, "timing": "before the first validation look", "owner_scope": "cost accounting", "status": "OPEN", "open_reason": "Cost scripts and assessment template exist in draft form; exact tested acceptance is pending.", "evidence": null},
+    {"number": 8, "timing": "every experiment", "owner_scope": "outcome records", "status": "OPEN", "open_reason": "Outcome record and negative-results register contract has no accepted per-experiment evidence.", "evidence": null},
+    {"number": 9, "timing": "before the first validation look; G-D for DEC-ECO-078", "owner_scope": "rule simulation", "status": "OPEN", "open_reason": "Full R0-R10 synthetic and pilot simulation, including false-selection checks, is pending.", "evidence": null},
+    {"number": 10, "timing": "G-A", "owner_scope": "constraint classification", "status": "OPEN", "open_reason": "All exact crosswalk rows have independent classification sign-off; committed exact-source receipt and live admission are pending.", "evidence": null},
+    {"number": 11, "timing": "with item 10", "owner_scope": "objective screen", "status": "OPEN", "open_reason": "Pattern fix and generated Appendix C await accepted exact-source review.", "evidence": null},
+    {"number": 12, "timing": "G-A", "owner_scope": "decision ledger assignments", "status": "OPEN", "open_reason": "Schema and validator are in development; reviewed live v2 assignments and required history notes are pending.", "evidence": null},
+    {"number": 13, "timing": "G-B", "owner_scope": "workload mix", "status": "OPEN", "open_reason": "Cited workload-mix artifact and independent review are pending.", "evidence": null},
+    {"number": 14, "timing": "G-A", "owner_scope": "validation look registry", "status": "OPEN", "open_reason": "Empty registry and validator exist; tested and reviewed gate acceptance is pending.", "evidence": null},
+    {"number": 15, "timing": "G-C", "owner_scope": "held-out custody and role separation", "status": "OPEN", "open_reason": "Lineage, overlap, transcript, materialization, and exposure evidence require eligible independent review.", "evidence": null},
+    {"number": 16, "timing": "before any OD-16 result", "owner_scope": "privacy attack evaluation", "status": "OPEN", "open_reason": "Adaptive attack suite and observer model are pending.", "evidence": null},
+    {"number": 17, "timing": "before a candidate's first HC-06 record", "owner_scope": "allocation measurement", "status": "OPEN", "open_reason": "Attributed counting allocator and per-candidate pre-validation H are pending.", "evidence": null},
+    {"number": 18, "timing": "before any remote result", "owner_scope": "remote calibration", "status": "OPEN", "open_reason": "EXP-NETEM-CAL acceptance and profile connection models are pending.", "evidence": null},
+    {"number": 19, "timing": "before any CC outcome", "owner_scope": "specialist baselines", "status": "OPEN", "open_reason": "Specialist configurations and exact-source comparison evidence are pending.", "evidence": null}
+  ]
+}

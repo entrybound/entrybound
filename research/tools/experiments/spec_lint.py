@@ -18,6 +18,9 @@ the runner-side spec lint; these rules are its design-side counterpart until the
   W-VALSTATUS  a spec selects validation with only binary, descriptive or non-canonical metrics and its status is
                not hc-screen, census or look-N (label it so the look registry can tell screens from looks)
   E-HELDOUT    a spec selects the heldout split (held-out specs are generated only by EXP-EVAL-012 at Commit A)
+  E-ASSIGNMENT a decision-bearing spec lacks an exact independently reviewed live v2 assignment or retains
+               an unresolved canonical metric-registration blocker. This design-side lint is not a runner
+               receipt or a substitute for the committed preregistration/result verifier at G-D item 6.
 
 Usage:  python research/tools/experiments/spec_lint.py [--json] [EXP-ID ...]
 Exit 1 if any E-* finding. Requires PyYAML.
@@ -36,6 +39,11 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[3]
+TOOLS = ROOT / "research" / "tools"
+if str(TOOLS) not in sys.path:
+    sys.path.insert(0, str(TOOLS))
+from ledger import assemble, validate_decisions
+
 EXP = ROOT / "research" / "experiments"
 THRESHOLDS = ROOT / "research" / "methods" / "thresholds.json"
 REPO_RELATIVE_RX = re.compile(r"(?<![\w/.-])research/")
@@ -107,12 +115,68 @@ def lint_doc(path, d, roles):
     return [(rel, d.get("experiment_id"), c, m) for c, m in f]
 
 
+def assignment_findings(path, d, ledger, schema, registry, root=ROOT):
+    """Refuse prospective decision-bearing specs with unsigned or blocked assignments.
+
+    The exact-source runner and G-D item 6 must still bind the committed spec,
+    registered metric-use record and result before any decision-relevant result.
+    """
+    rel = os.path.relpath(path, root).replace(os.sep, "/")
+    experiment_id = d.get("experiment_id")
+    ids = d.get("decision_ids") or []
+    if not ids:
+        return []
+    if not isinstance(ids, list) or any(not isinstance(value, str) for value in ids):
+        return [(rel, experiment_id, "E-ASSIGNMENT", "decision_ids must be a list of decision IDs")]
+    findings = []
+    for decision_id in ids:
+        row = ledger.get(decision_id)
+        if row is None:
+            findings.append((rel, experiment_id, "E-ASSIGNMENT",
+                             f"{decision_id}: live decision assignment missing"))
+            continue
+        structural = assemble.schema_validate(row, schema)
+        if structural:
+            findings.append((rel, experiment_id, "E-ASSIGNMENT",
+                             f"{decision_id}: live v2 assignment invalid: {structural[0]}"))
+            continue
+        if row["decision_type"] == "UNASSIGNED" or not row["evidence_route_types"]:
+            findings.append((rel, experiment_id, "E-ASSIGNMENT",
+                             f"{decision_id}: method assignment is unassigned"))
+            continue
+        errors = []
+        validate_decisions.metric_check(row, registry, errors, decision_id, require_every_od=True)
+        validate_decisions.checked_assignment_review(root, row, errors, decision_id)
+        if errors:
+            findings.append((rel, experiment_id, "E-ASSIGNMENT",
+                             f"{decision_id}: exact reviewed assignment invalid: {errors[0]}"))
+            continue
+        blockers = row["metric_registration_blockers_by_od"]
+        if blockers:
+            findings.append((rel, experiment_id, "E-ASSIGNMENT",
+                             f"{decision_id}: unresolved canonical metric registration for {sorted(blockers)}"))
+    return findings
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("ids", nargs="*")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
     roles = canonical_roles()
+    registry = json.loads(THRESHOLDS.read_text(encoding="utf-8"))["metric_thresholds"]
+    _, schema = assemble.build_schemas()
+    try:
+        ledger_rows = [json.loads(line) for line in (ROOT / "research/decision-ledger.jsonl").read_text(
+            encoding="utf-8").splitlines() if line.strip()]
+        ledger = {row["decision_id"]: row for row in ledger_rows}
+        if len(ledger) != len(ledger_rows):
+            raise ValueError("duplicate decision_id in live ledger")
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        ledger = {}
+        ledger_error = str(exc)
+    else:
+        ledger_error = ""
     findings = []
     for p in spec_files(args.ids):
         try:
@@ -124,6 +188,12 @@ def main():
         for d in docs:
             if d.get("schema") == "ebr.spec.v1":
                 findings.extend(lint_doc(p, d, roles))
+                if ledger_error and d.get("decision_ids"):
+                    rel = os.path.relpath(p, ROOT).replace(os.sep, "/")
+                    findings.append((rel, d.get("experiment_id"), "E-ASSIGNMENT",
+                                     f"live ledger unreadable: {ledger_error}"))
+                else:
+                    findings.extend(assignment_findings(p, d, ledger, schema, registry))
     if args.json:
         print(json.dumps([dict(zip(("spec", "experiment_id", "code", "detail"), x)) for x in findings], indent=2))
     else:

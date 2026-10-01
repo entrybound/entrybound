@@ -7,7 +7,7 @@
 | Companion | `research/decision-method.md` fixes the decision procedure, thresholds, statistics, split discipline, sensitivity, cost and status rules. This document fixes what is forbidden (hard constraints), what is optimized (optimization dimensions), how each is measured and aggregated, and how the two relate. Precedence when the two appear to conflict: **procedure and rule order**, thresholds, statistical procedures, canonical parameter values (network profiles, affinity and thread configurations, repetition counts) and canonical metric names and roles: `decision-method.md` governs (its §2, §3, §4 and Appendices A and C). What counts as a violation and what a metric measures: this document governs. |
 | Inputs (by hash, never copied) | SPEC `design/2026-08-29-entrybound-product-architecture.md` SHA-256 `1f881c7b13f193b41353b90066d33ca6abcb7d4c3dcd4f58e22834801f0fe29c` (§1-§3.9, §6.5, §8, §11, §12, §23, Appendix A read in full; §20.5 and §24 consulted for outcome classes and non-goals); `CONTRIBUTING.md` SHA-256 `ab28c1ce8e2ae114603304643167537a90ce32366506a48967caa4efa32f16cc`; `research/requirement-ledger.csv` SHA-256 `306bf48bb72a22d3de757005e25f388e237f54e8c0b82950ed85e8c3aa69b833` (157 INVARIANT and 432 REQUIREMENT rows screened by script); `research/decision-ledger.jsonl` SHA-256 `98b5401d79c621fab8db2a72e4825dcef9d74dc60de042fdb3990c46daa4068b`; repository HEAD `f56dd3d` at drafting. |
 | Result state at drafting | `research/raw/` and `research/normalized/` contain only `EXP-SMOKE-000`, a pipeline smoke test with `decision_ids: []`. No decision-relevant experiment result exists at drafting. [FORMALLY_DERIVED] |
-| Generated content | Appendix C is the verbatim output of `C:/Python313/python.exe research/tools/ledger/objective_screen.py --repo .` at the ledger hashes above. No count in Appendix C was typed by hand. |
+| Generated content | Appendix C is the verbatim output of `python research/tools/ledger/objective_screen.py --repo .` at the current input digests stated in Appendix C. The drafting input hashes above remain historical. No count in Appendix C was typed by hand. |
 
 ## 0. Evidence tags
 
@@ -144,8 +144,8 @@ The CC outcome table is a reporting obligation of program synthesis (§1.2); it 
 | HC-08 | Archive semantics independent of host filesystem interpretation | I4, I5, I27; I26 | F-17, F-27 | Identical (class, LAI, AUX, PCR, entry digests) on every host; hostile names are refused or renamed with a report, never silently merged | UNRESOLVED (13 weak rows) |
 | HC-09 | Bounded dependency chains | I29; I30, I10 | F-03, F-06, F-10, F-25 | Every chunk's closure is acyclic, backward-only and within its declaration; Complete archives decode offline | UNRESOLVED (REQ-ACC-0001 CONTRADICTED) |
 | HC-10 | Canonical identities | I7, I8, I9, I22, I28; I23 | F-07, F-08, F-13, F-15, F-17 | Identity change pattern equals the SPEC §8.1 table cell for cell; permanent vectors match | UNRESOLVED (28 weak rows) |
-| HC-11 | No runtime-dependent decoder interpretation | I30, I15; I31 | F-03, F-05, F-12, F-24 | Decoded output and outcome are invariant under verified thread, core, CPU-feature, locale, OS, memory and architecture variation | UNRESOLVED (instrument not built) |
-| HC-12 | Independently implementable native specification | I30, I15, I12; I21 | F-12, F-18 | A clean-room reader passes the baseline conformance corpus at 100% with matching codes; every normative rule has a case | UNRESOLVED (REQ-ECO-0030, REQ-ECO-0021 MISSING); EXPERT_REVIEW_REQUIRED |
+| HC-11 | No runtime-dependent decoder interpretation | I30, I15; I31 | F-03, F-05, F-12, F-24, F-30 | Decoded output and outcome are invariant under verified thread, core, CPU-feature, locale, OS, memory and architecture variation | UNRESOLVED (instrument not built) |
+| HC-12 | Independently implementable native specification | I30, I15, I12; I21 | F-12, F-18, F-30 | A clean-room reader passes the baseline conformance corpus at 100% with matching codes; every normative rule has a case | UNRESOLVED (REQ-ECO-0030, REQ-ECO-0021 MISSING); EXPERT_REVIEW_REQUIRED |
 | HC-13 | Reproducible deterministic modes | I8, I9, I28; I15, I30 | F-03, F-04, F-06, F-12, F-22 | `--deterministic` unencrypted PCI is identical across threads, hosts, traversal order and memory; encrypted LAI is identical and ciphertext differs | UNRESOLVED (18 weak rows incl. REQ-CON-0055 CONTRADICTED) |
 | HC-14 | Crypto correctness never traded for performance | I9, I24, I25; I12 | F-12, F-13, F-14, F-16, F-23 | Vector gate at 100%; zero plaintext released on any tamper; zero (key, nonce) repeats; keyed boundaries; declared padding mode recorded and public lengths conform to it; frozen-suite edits excluded at L0 | UNRESOLVED (22 weak rows); EXPERT_REVIEW_REQUIRED |
 | HC-15 | Verification honesty and distinguishable failure | I25, I21 | F-08, F-10, F-11, F-18 | Reported verification state never exceeds the oracle state; fault class equals injected class through to CLI exit status | UNRESOLVED (22 weak rows incl. REQ-INT-0025 INSUFFICIENT) |
@@ -1004,6 +1004,7 @@ Freezes are cited as F-nn by the HCs. Line numbers refer to `CONTRIBUTING.md` at
 | F-27 | Exact name bytes stored and never normalized; target-hostile bytes legal in the archive and handled by the extractor | SPEC §3.4 P5/P8, §10.8 |
 | F-28 | Native tooling v1 adds no wire records or feature bits; representation-only repack preserves LAI, AUX and PCR; explicit v6 replanning preserves LAI and AUX; inspection and diff reports are external versioned JSON, not archive authorities | `docs/format-v0.md` L477-481 |
 | F-29 | Verified random access v1 is an access API and verification doctrine, not an ECF wire feature | `docs/random-access-v1.md` L3-4 |
+| F-30 | No in-archive decompressor bytecode or decompressor virtual machine; decode additions follow the frozen baseline and registry with mandatory test vectors | SPEC §20.7, §20.6 |
 
 The register is extended whenever the constraint crosswalk (`decision-method.md` R1) classifies a ledger constraint string as a freeze not listed here; each extension is a revision under `decision-method.md` §0.2 and adds the new F-number to the affected HC rows. [INFERRED]
 
@@ -1015,46 +1016,46 @@ The register is extended whenever the constraint crosswalk (`decision-method.md`
 3. Manual assignments cover rows the screens missed, and manual exclusions remove keyword false positives found on review.
 4. Rows without an HC tag are screened against OD keywords.
 
-The rules live in `research/tools/ledger/objective_screen.py`. Everything below this paragraph is that tool's output, verbatim. **Known limitation (review finding C03):** C.1 counts only ledger constraint strings that are exactly an `I<n>` token, so strings such as "I15 unique deterministic interpretation" are not counted; the "Decisions citing it" column is a lower bound. The screen's pattern is corrected to `I([1-9]|[12][0-9]|3[01])` inside strings when the constraint crosswalk tooling is built (`decision-method.md` §14 item 11), and this appendix is regenerated then. HC membership for decisions comes from the crosswalk and the ledger `hc_ids` field, never from this screen. [FORMALLY_DERIVED counts at the stated hashes; INFERRED keyword membership]
+The rules live in `research/tools/ledger/objective_screen.py`. Everything between the generated markers is that tool's output, verbatim. The C03 correction counts `\bI([1-9]|[12][0-9]|3[01])\b` anywhere within each decision's hard-constraint strings and counts each invariant once per decision. The current input digests are stated in the generated output; the original drafting digests in the front matter remain historical. HC membership for decisions comes from the reviewed crosswalk and the ledger `hc_ids` field, never from this descriptive screen. [FORMALLY_DERIVED counts at the stated hashes; INFERRED keyword membership]
 
 <!-- BEGIN GENERATED: objective_screen.py -->
-Inputs: `research/requirement-ledger.csv` SHA-256 `306bf48bb72a22d3de757005e25f388e237f54e8c0b82950ed85e8c3aa69b833`; `research/decision-ledger.jsonl` SHA-256 `98b5401d79c621fab8db2a72e4825dcef9d74dc60de042fdb3990c46daa4068b`.
+Inputs: `research/requirement-ledger.csv` SHA-256 `14ea66685680d18a58bfda5689be5698013f3f1b03b5df343c2badaf138d3d82`; `research/decision-ledger.jsonl` SHA-256 `7ceb7c8c4d934c3cb5747b1dc6965657b09551cbbd3ceadf7e2f1644c3d77d90`.
 
-C.1 Explicit invariant references (rows whose text names the invariant or its SPEC alias) and decision-ledger rows listing the invariant in `hard_constraints`.
+C.1 Explicit invariant references (rows whose text names the invariant or its SPEC alias) and decision-ledger rows naming the invariant within `hard_constraints` (each invariant counted once per decision).
 
 | Invariant | Ledger rows naming it | Decisions citing it | HCs (Appendix A) |
 |---|---|---|---|
-| I1 | REQ-MOD-0018, REQ-MOD-0099 | 36 | HC-01 |
+| I1 | REQ-MOD-0018, REQ-MOD-0099 | 40 | HC-01 |
 | I2 | REQ-CON-0081 | 2 | HC-01 |
 | I3 | REQ-MOD-0039, REQ-MOD-0111 | 14 | HC-17, HC-03 |
 | I4 | REQ-MOD-0075, REQ-MOD-0077, REQ-MOD-0080, REQ-PLT-0100, REQ-PLT-0132 | 11 | HC-08, HC-17 |
 | I5 | REQ-MOD-0026 | 10 | HC-17, HC-08 |
 | I6 | REQ-MOD-0039, REQ-MOD-0111 | 5 | HC-17, HC-03 |
-| I7 | REQ-MOD-0031 | 8 | HC-10 |
+| I7 | REQ-MOD-0031 | 9 | HC-10 |
 | I8 | REQ-MOD-0013, REQ-MOD-0060 | 17 | HC-10, HC-13 |
-| I9 | REQ-CRY-0077, REQ-MOD-0060 | 20 | HC-10, HC-13, HC-14 |
-| I10 | REQ-CON-0050 | 20 | HC-01 |
-| I11 | REQ-PLT-0068 | 14 | HC-07, HC-04 |
-| I12 | REQ-CON-0096 | 36 | HC-04 |
-| I13 | REQ-CRY-0033, REQ-PLT-0079 | 83 | HC-07 |
-| I14 | REQ-CMP-0077, REQ-LEG-0101 | 19 | HC-02, HC-07 |
-| I15 | REQ-MOD-0110 | 94 | HC-03, HC-11, HC-16 |
-| I16 | REQ-MOD-0001, REQ-PLT-0007 | 70 | HC-05 |
-| I17 | REQ-ACC-0155, REQ-CON-0005 | 60 | HC-06 |
+| I9 | REQ-CRY-0077, REQ-MOD-0060 | 22 | HC-10, HC-13, HC-14 |
+| I10 | REQ-CON-0050 | 21 | HC-01 |
+| I11 | REQ-PLT-0068 | 15 | HC-07, HC-04 |
+| I12 | REQ-CON-0096 | 42 | HC-04 |
+| I13 | REQ-CRY-0033, REQ-PLT-0079 | 87 | HC-07 |
+| I14 | REQ-CMP-0077, REQ-LEG-0101 | 21 | HC-02, HC-07 |
+| I15 | REQ-MOD-0110 | 101 | HC-03, HC-11, HC-16 |
+| I16 | REQ-MOD-0001, REQ-PLT-0007 | 72 | HC-05 |
+| I17 | REQ-ACC-0155, REQ-CON-0005 | 65 | HC-06 |
 | I18 | REQ-LEG-0056 | 75 | HC-07 |
-| I19 | REQ-ACC-0019, REQ-CON-0081, REQ-MOD-0056, REQ-MOD-0076 | 29 | HC-01, HC-06 |
-| I20 | REQ-ACC-0155, REQ-CON-0004, REQ-MOD-0056 | 43 | HC-06 |
-| I21 | REQ-CON-0032, REQ-CON-0091, REQ-INT-0024 | 56 | HC-15, HC-04 |
+| I19 | REQ-ACC-0019, REQ-CON-0081, REQ-MOD-0056, REQ-MOD-0076 | 31 | HC-01, HC-06 |
+| I20 | REQ-ACC-0155, REQ-CON-0004, REQ-MOD-0056 | 45 | HC-06 |
+| I21 | REQ-CON-0032, REQ-CON-0091, REQ-INT-0024 | 58 | HC-15, HC-04 |
 | I22 | REQ-MOD-0047 | 35 | HC-10, HC-16 |
-| I23 | REQ-MOD-0043 | 10 | HC-01, HC-17 |
-| I24 | REQ-CRY-0097 | 20 | HC-14 |
-| I25 | REQ-ECO-0177, REQ-INT-0025, REQ-PLT-0014 | 131 | HC-15 |
+| I23 | REQ-MOD-0043 | 11 | HC-01, HC-17 |
+| I24 | REQ-CRY-0097 | 22 | HC-14 |
+| I25 | REQ-ECO-0177, REQ-INT-0025, REQ-PLT-0014 | 136 | HC-15 |
 | I26 | REQ-MOD-0039, REQ-PLT-0023 | 5 | HC-17, HC-03 |
 | I27 | REQ-MOD-0026, REQ-MOD-0077, REQ-PLT-0150 | 6 | HC-17, HC-08 |
-| I28 | REQ-MOD-0013, REQ-MOD-0060 | 33 | HC-10, HC-02 |
-| I29 | REQ-ACC-0040, REQ-CMP-0078 | 7 | HC-09, HC-06 |
-| I30 | REQ-CMP-0117 | 19 | HC-11, HC-12, HC-16 |
-| I31 | REQ-CMP-0079 | 8 | HC-02 |
+| I28 | REQ-MOD-0013, REQ-MOD-0060 | 36 | HC-10, HC-02 |
+| I29 | REQ-ACC-0040, REQ-CMP-0078 | 8 | HC-09, HC-06 |
+| I30 | REQ-CMP-0117 | 22 | HC-11, HC-12, HC-16 |
+| I31 | REQ-CMP-0079 | 12 | HC-02 |
 
 C.2 HC screen. Weak = evidence_state CONTRADICTED or INSUFFICIENT, or implementation_state MISSING.
 
@@ -1118,6 +1119,8 @@ Totals: 589 rows screened (157 INVARIANT, 432 REQUIREMENT); 406 carry at least o
 
 | Date | Change |
 |---|---|
+| 2026-10-01 | C03 tooling correction counts embedded invariant references once per decision; Appendix C regenerated from the current exact ledger bytes, with regression cases for embedded, repeated and invalid tokens. Historical drafting inputs retained. No HC, MVT oracle, threshold or metric definition changed. |
+| 2026-10-01 | B01 crosswalk source review adds F-30 for the decompressor-bytecode/VM alternative explicitly rejected by SPEC §20.7 and links it to HC-11 and HC-12. This transcribes the existing architecture boundary into the freeze register; it changes no threshold, metric, wire contract or decision status. |
 | 2026-09-16 | Pre-registration draft (Phase A method stage): governing question, 17 hard constraints with mechanical violation tests, 26 optimization dimensions with metrics, procedures, directions and aggregation, HC/OD relationship, invariant coverage, freeze register, and generated ledger screen. Awaits `research/methods/method-review-round1.md` and revision. |
 | 2026-09-16 | Round-1 revision (pre-registered) against `research/methods/method-review-round1.md`. §1.2 replaced by a pointer to the single procedure of `decision-method.md` §2 with the cost entry points and CC coverage as a report; §1.3 specialist baselines, SPEC §23.4 tolerances and corrected OD assignments; precedence clause extended to procedure, parameters and canonical names; §2.0 rules on measured criteria, the nondeterminism artifact rule, L0 counterexample and sign-off, HC_UNVERIFIED for platforms only, applicability via the constraint crosswalk, the triage rule and research-build equivalence; I24 as three mechanical facts; gated library-version decode steps; new MVTs (input consistency, complexity bounds, allocator oracle, independent escape oracle and interleaving, normative grammar and recall, path coverage and mutation, verified variation, determinism input and stress mode, research-build equivalence, frozen-ID differential regression, fault-class precedence, HC-14 (f)-(j), invariant clauses I7, I10, I11, I20, I22, I23); new HC-18 (crash consistency and origin safety); metric roles and canonical names for every M-number, with redefined or new metrics M01.1, M04.3, M05.3, M05.5, M06.4, M06.5, M08.3, M10.2, M10.5, M11.1, M13.1, M14.1, M15.2, M16.1, M16.2, M17.5, M17.6, M19.2, M21.3, M21.6, M22.4, M23.1, M24.2, M24.5, M25.x, M26.1, M26.5; Appendix A regenerated from §2.1 with roles and a check; freezes F-28 and F-29; threats 7 and 8. No decision-relevant result existed. |
 | 2026-09-16 | Round-1 revision completed by a resumed session after the WIP checkpoint `3fda801` (`decision-method.md` §0.1). ebr-family brackets in §3.2 aligned with `decision-method.md` Appendix A.2 (fractions over case lists, heuristic usability metrics and remote access-pattern counts are family `other`; binary checks `correctness`), with the governing rule stated in the §3.2 preamble and checked by `decision-method.md` Appendix A.3; AGG-G states the difference-space aggregation of absolute-only metrics; M08.2 names `scratch_write_bytes`; M15.3 names pack and unpack time; M16.3 is defined in percentage points as T-16; M19.5 units; M21 and M24 definitions in numeric order; §4.2 table in HC order; §4.5 counts three escalation situations; threat 7 records the third identity exposure. No HC, MVT oracle or metric direction changed. No decision-relevant result existed. |
