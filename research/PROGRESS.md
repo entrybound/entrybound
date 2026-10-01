@@ -5,8 +5,30 @@ Product-Decision Research Program. It is updated and committed at every
 atomically meaningful change. If work is interrupted, start at
 [How to resume](#how-to-resume).
 
-Status: **PAUSED by the program owner on 2026-09-17 (~14:10 UTC)** — `COMPREHENSIVE RESEARCH PROGRAM: INCOMPLETE`. Nothing is running. Start with [Pause state and remaining work](#pause-state-and-remaining-work-2026-09-17).
+Status: **ACTIVE by explicit owner continuation** — `COMPREHENSIVE RESEARCH PROGRAM: INCOMPLETE`. Current work is local method integration and qualification; decision-bearing execution remains subject to the public method gates. The September pause record below is preserved as history.
 The program cannot be reported COMPLETE until the program §43 completion gate is audited and met.
+
+## Method integration resume (2026-10-01)
+
+The owner resumed local product development and research. Governing method
+commit `0674ba925c3283c2d18566c15035980c657e842f` freezes the reviewed method
+amendments, all 989 signed distinct constraint classifications, 596 independent
+prospective assignments, schema v2 and fail-closed admission tooling. This is
+a method checkpoint, not the later held-out design freeze or a complete
+experiment preregistration record.
+
+All original decision statuses and evidence remain unresolved. The prospective
+assignments preserve their separate reviewers and identify 80 missing canonical
+instruments across 76 decisions; initial assignment acceptance does not admit
+those decisions' experiments or results. See the
+[round-2 review](methods/method-review-round2.md) and
+[integration gate state](methods/integration-gate-state.md).
+
+Live v2 integration, regenerated objective screening and independently reviewed
+exact-source gate receipts are being qualified. The validation-look registry
+contains no registered or executed looks. Later simulation, calibration, cost,
+HC, corpus custody, experiment and decision gates remain open. No new experiment
+result or DECIDED status is claimed by this checkpoint.
 
 ## Pause state and remaining work (2026-09-17)
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -85,17 +86,52 @@ class CrosswalkTests(unittest.TestCase):
             cc.validate([row])
 
     def test_assignment_proposal_covers_exact_ledger_without_signoff(self) -> None:
-        proposal = [json.loads(line) for line in (
-            REPO / "research/methods/decision-assignments-proposal.jsonl").read_text(
-                encoding="utf-8").splitlines() if line]
-        ledger_raw = [line.rstrip(b"\r\n") for line in (
-            REPO / "research/decision-ledger.jsonl").read_bytes().splitlines() if line.strip()]
+        proposal_raw = [line.rstrip(b"\r\n") for line in (
+            REPO / "research/methods/decision-assignments-proposal.jsonl").read_bytes().splitlines()
+            if line.strip()]
+        proposal = [json.loads(line) for line in proposal_raw]
+        current_bytes = (REPO / "research/decision-ledger.jsonl").read_bytes()
+        current = [json.loads(line) for line in current_bytes.splitlines() if line.strip()]
+        source_digests = {row["source_ledger_sha256"] for row in proposal}
+        self.assertEqual(len(source_digests), 1)
+        # The proposal pins the governing v1 rows. The live ledger is now v2,
+        # so compare with the recorded method commit when live bytes differ.
+        # Before migration, those original v1 bytes are the live ledger.
+        if hashlib.sha256(current_bytes).hexdigest() in source_digests:
+            governing_bytes = current_bytes
+        else:
+            governing_commits = {row["method_commit_sha"] for row in current}
+            self.assertEqual(len(governing_commits), 1)
+            governing_commit = governing_commits.pop()
+            self.assertRegex(governing_commit, r"^[0-9a-f]{40}$")
+            governing_bytes = subprocess.run(
+                ["git", "show", f"{governing_commit}:research/decision-ledger.jsonl"],
+                cwd=REPO, check=True, capture_output=True,
+            ).stdout
+        self.assertEqual(source_digests, {hashlib.sha256(governing_bytes).hexdigest()})
+        ledger_raw = [line.rstrip(b"\r\n") for line in governing_bytes.splitlines() if line.strip()]
         self.assertEqual(len(proposal), len(ledger_raw))
+        self.assertEqual(len(current), len(ledger_raw))
         self.assertEqual(len(proposal), 596)
-        for assignment, raw in zip(proposal, ledger_raw):
+        review = [json.loads(line) for line in (
+            REPO / "research/methods/decision-assignments-independent-review.jsonl").read_text(
+                encoding="utf-8").splitlines() if line]
+        self.assertEqual(len(review), len(proposal))
+        for assignment, assignment_raw, reviewed, raw, migrated in zip(
+                proposal, proposal_raw, review, ledger_raw, current):
             source = json.loads(raw)
             self.assertEqual(assignment["decision_id"], source["decision_id"])
+            self.assertEqual(migrated["decision_id"], source["decision_id"])
             self.assertEqual(assignment["source_row_sha256"], hashlib.sha256(raw).hexdigest())
+            self.assertEqual(reviewed["decision_id"], assignment["decision_id"])
+            self.assertEqual(reviewed["source_proposal_row_sha256"],
+                             hashlib.sha256(assignment_raw).hexdigest())
+            for field, value in source.items():
+                with self.subTest(decision=source["decision_id"], field=field):
+                    if field == "history":
+                        self.assertEqual(migrated[field][:len(value)], value)
+                    else:
+                        self.assertEqual(migrated[field], value)
             self.assertEqual(assignment["assignment_status"], "PROPOSED_UNAPPROVED")
             self.assertEqual(assignment["assignment_review_ref"], "")
             if source["decision_id"] in {"DEC-ECO-077", "DEC-ECO-080", "DEC-ECO-081", "DEC-ECO-082"}:

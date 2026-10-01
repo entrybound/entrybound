@@ -1019,7 +1019,7 @@ The register is extended whenever the constraint crosswalk (`decision-method.md`
 The rules live in `research/tools/ledger/objective_screen.py`. Everything between the generated markers is that tool's output, verbatim. The C03 correction counts `\bI([1-9]|[12][0-9]|3[01])\b` anywhere within each decision's hard-constraint strings and counts each invariant once per decision. The current input digests are stated in the generated output; the original drafting digests in the front matter remain historical. HC membership for decisions comes from the reviewed crosswalk and the ledger `hc_ids` field, never from this descriptive screen. [FORMALLY_DERIVED counts at the stated hashes; INFERRED keyword membership]
 
 <!-- BEGIN GENERATED: objective_screen.py -->
-Inputs: `research/requirement-ledger.csv` SHA-256 `14ea66685680d18a58bfda5689be5698013f3f1b03b5df343c2badaf138d3d82`; `research/decision-ledger.jsonl` SHA-256 `7ceb7c8c4d934c3cb5747b1dc6965657b09551cbbd3ceadf7e2f1644c3d77d90`.
+Inputs: `research/requirement-ledger.csv` SHA-256 `14ea66685680d18a58bfda5689be5698013f3f1b03b5df343c2badaf138d3d82`; `research/decision-ledger.jsonl` SHA-256 `ea6a7e4f5810e399cfd10ed86d3393ae054248e5cafaf770f245ee0cb6fae727`.
 
 C.1 Explicit invariant references (rows whose text names the invariant or its SPEC alias) and decision-ledger rows naming the invariant within `hard_constraints` (each invariant counted once per decision).
 
