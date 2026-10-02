@@ -14,13 +14,13 @@ use std::path::Path;
 
 use aes_gcm_siv::{
     Aes256GcmSiv, Nonce,
-    aead::{Aead, KeyInit, Payload},
+    aead::{Aead, AeadInOut, KeyInit, Payload},
 };
 use argon2::{Algorithm, Argon2, Params, Version};
 use hkdf::Hkdf;
 use hmac::{Hmac, KeyInit as HmacKeyInit, Mac};
 use sha2::{Digest as _, Sha256};
-use working::{CryptoWorkContext, WorkBlocks};
+use working::{CryptoWorkContext, WorkBlocks, WorkBytes};
 use x_wing::{
     DecapsulationKey, EncapsulationKey, XWingKem,
     kem::{Decapsulator as _, Kem as _, KeyExport as _},
@@ -480,6 +480,18 @@ fn public_crypto_context(
     padding: PaddingMode,
     boundary: BoundaryMode,
 ) -> Result<Vec<u8>> {
+    with_public_crypto_fields(archive_id, features, padding, boundary, |fields| {
+        wire::t1("entrybound/public-crypto-context/v1", fields)
+    })
+}
+
+fn with_public_crypto_fields<T>(
+    archive_id: &[u8; 32],
+    features: u64,
+    padding: PaddingMode,
+    boundary: BoundaryMode,
+    encode: impl FnOnce(&[&[u8]]) -> Result<T>,
+) -> Result<T> {
     let major = 0_u16.to_be_bytes();
     let minor = 1_u16.to_be_bytes();
     let crypto = wire::CRYPTO_VERSION.to_be_bytes();
@@ -489,22 +501,129 @@ fn public_crypto_context(
     let features = features.to_be_bytes();
     let padding = [padding as u8];
     let boundary = [boundary as u8];
-    wire::t1(
-        "entrybound/public-crypto-context/v1",
-        &[
-            wire::FORMAT_NAMESPACE,
-            &major,
-            &minor,
-            &crypto,
-            &suite,
-            archive_id,
-            &layout,
-            &role,
-            &features,
-            &padding,
-            &boundary,
-        ],
-    )
+    encode(&[
+        wire::FORMAT_NAMESPACE,
+        &major,
+        &minor,
+        &crypto,
+        &suite,
+        archive_id,
+        &layout,
+        &role,
+        &features,
+        &padding,
+        &boundary,
+    ])
+}
+
+fn public_crypto_context_digest(
+    archive_id: &[u8; 32],
+    features: u64,
+    padding: PaddingMode,
+    boundary: BoundaryMode,
+) -> Result<[u8; 32]> {
+    with_public_crypto_fields(archive_id, features, padding, boundary, |fields| {
+        t1_digest("entrybound/public-crypto-context/v1", fields)
+    })
+}
+
+fn public_crypto_context_work(
+    archive_id: &[u8; 32],
+    features: u64,
+    padding: PaddingMode,
+    boundary: BoundaryMode,
+    work: &CryptoWorkContext,
+) -> Result<WorkBytes> {
+    with_public_crypto_fields(archive_id, features, padding, boundary, |fields| {
+        t1_work("entrybound/public-crypto-context/v1", fields, work)
+    })
+}
+
+/// Checked T1 framing shared by streaming read authentication and charged
+/// contiguous control transcripts. Writer serialization remains its own owner.
+fn t1_encoded_len(label: &str, fields: &[&[u8]]) -> Result<usize> {
+    if !label.is_ascii() || label.is_empty() || label.len() > usize::from(u16::MAX) {
+        return Err(wire::private_invalid("T1 label is not canonical ASCII"));
+    }
+    if fields.len() > usize::from(u16::MAX) {
+        return Err(wire::private_invalid("T1 field count exceeds u16"));
+    }
+    let mut length = 4 + label.len();
+    for field in fields {
+        u64::try_from(field.len()).map_err(|_| wire::private_invalid("T1 field exceeds u64"))?;
+        length = length
+            .checked_add(10)
+            .and_then(|n| n.checked_add(field.len()))
+            .ok_or_else(|| wire::private_invalid("T1 encoded length overflows"))?;
+    }
+    Ok(length)
+}
+
+fn t1_header(label: &str, count: u16, feed: &mut impl FnMut(&[u8])) {
+    feed(&(label.len() as u16).to_be_bytes());
+    feed(label.as_bytes());
+    feed(&count.to_be_bytes());
+}
+
+fn t1_field_header(tag: u16, length: u64, feed: &mut impl FnMut(&[u8])) {
+    feed(&tag.to_be_bytes());
+    feed(&length.to_be_bytes());
+}
+
+fn t1_feed(label: &str, fields: &[&[u8]], mut feed: impl FnMut(&[u8])) -> Result<()> {
+    t1_encoded_len(label, fields)?;
+    t1_header(label, fields.len() as u16, &mut feed);
+    for (index, field) in fields.iter().enumerate() {
+        t1_field_header((index + 1) as u16, field.len() as u64, &mut feed);
+        feed(field);
+    }
+    Ok(())
+}
+
+fn t1_digest(label: &str, fields: &[&[u8]]) -> Result<[u8; 32]> {
+    let mut digest = Sha256::new();
+    t1_feed(label, fields, |part| digest.update(part))?;
+    Ok(digest.finalize().into())
+}
+
+fn t1_work(label: &str, fields: &[&[u8]], work: &CryptoWorkContext) -> Result<WorkBytes> {
+    let length = t1_encoded_len(label, fields)?;
+    let mut bytes = WorkBytes::zeroed(work.budget(), length)?;
+    let mut offset = 0;
+    t1_feed(label, fields, |part| {
+        bytes[offset..offset + part.len()].copy_from_slice(part);
+        offset += part.len();
+    })?;
+    debug_assert_eq!(offset, length);
+    Ok(bytes)
+}
+
+fn envelope_mac_ref(
+    keys: &KeyHierarchy,
+    public_context: &[u8],
+    commitment: &[u8; 32],
+    policy: ProtectionPolicy,
+    stanzas: wire::StanzaSequenceRef<'_>,
+) -> Result<[u8; 32]> {
+    let policy_byte = [policy as u8];
+    let fields = [
+        public_context,
+        commitment,
+        &policy_byte,
+        stanzas.exact_bytes(),
+    ];
+    let core_len = t1_encoded_len("entrybound/envelope-core/v1", &fields)?;
+    let core_len =
+        u64::try_from(core_len).map_err(|_| wire::private_invalid("T1 field exceeds u64"))?;
+    let mut mac = <HmacSha256 as HmacKeyInit>::new_from_slice(&keys.envelope_mac)
+        .map_err(|_| crypto_integrity(ReasonCode::CryptoSuiteUnsupported, "invalid HMAC key"))?;
+    let mut feed = |part: &[u8]| mac.update(part);
+    t1_header("entrybound/envelope-mac/v1", 2, &mut feed);
+    t1_field_header(1, public_context.len() as u64, &mut feed);
+    feed(public_context);
+    t1_field_header(2, core_len, &mut feed);
+    t1_feed("entrybound/envelope-core/v1", &fields, feed)?;
+    Ok(mac.finalize().into_bytes().into())
 }
 
 fn envelope_mac(
@@ -631,14 +750,84 @@ fn seal_afk(
 fn open_afk(
     archive_id: &[u8; 32],
     method_secret: &[u8; 32],
-    stanza: &wire::RecipientStanza,
+    stanza: wire::StanzaFields<'_>,
+    work: &CryptoWorkContext,
 ) -> Result<Secret32> {
-    let key = wrap_key(archive_id, method_secret, stanza)?;
-    let ad = wrap_ad(archive_id, stanza)?;
-    let plaintext = aead_open(&key.0, &stanza.wrap_nonce, &ad, &stanza.wrapped_afk)
+    let version = 1_u16.to_be_bytes();
+    let kind = stanza.stanza_type.to_be_bytes();
+    let class = [stanza.protection_class];
+    let context_digest = t1_digest(
+        "entrybound/recipient-method-context/v1",
+        &[
+            &version,
+            &kind,
+            &class,
+            &stanza.stanza_id,
+            &stanza.recipient_hint,
+            stanza.method_parameters,
+            stanza.encapsulation,
+        ],
+    )?;
+    let suite = wire::PAYLOAD_SUITE_V1.to_be_bytes();
+    let info = t1_work(
+        "entrybound/recipient-wrap-key/v1",
+        &[&suite, &kind, &class, &stanza.stanza_id, &context_digest],
+        work,
+    )?;
+    let (mut prk, _) = Hkdf::<Sha256>::extract(Some(archive_id), method_secret);
+    let hkdf = Hkdf::<Sha256>::from_prk(prk.as_ref()).map_err(|_| {
+        crypto_integrity(
+            ReasonCode::CryptoRecipientStanzaInvalid,
+            "invalid recipient wrap PRK",
+        )
+    })?;
+    prk.zeroize();
+    let mut key = Secret32([0; 32]);
+    hkdf.expand(&info, &mut key.0).map_err(|_| {
+        crypto_integrity(
+            ReasonCode::CryptoRecipientStanzaInvalid,
+            "recipient wrap key failed",
+        )
+    })?;
+    drop(info);
+    let major = 0_u16.to_be_bytes();
+    let minor = 1_u16.to_be_bytes();
+    let crypto = wire::CRYPTO_VERSION.to_be_bytes();
+    let ad = t1_work(
+        "entrybound/recipient-wrap-ad/v1",
+        &[
+            wire::FORMAT_NAMESPACE,
+            &major,
+            &minor,
+            &crypto,
+            &suite,
+            archive_id,
+            &version,
+            &kind,
+            &class,
+            &stanza.stanza_id,
+            &stanza.recipient_hint,
+            stanza.method_parameters,
+            stanza.encapsulation,
+            &stanza.wrap_nonce,
+        ],
+        work,
+    )?;
+    let mut plaintext = Secret32([0; 32]);
+    plaintext.0.copy_from_slice(&stanza.wrapped_afk[..32]);
+    let tag = aes_gcm_siv::Tag::from(
+        <[u8; 16]>::try_from(&stanza.wrapped_afk[32..]).expect("fixed wrapped AFK tag"),
+    );
+    Aes256GcmSiv::new_from_slice(&key.0)
+        .map_err(|_| crypto_integrity(ReasonCode::CryptoSuiteUnsupported, "invalid AEAD key"))?
+        .decrypt_inout_detached(
+            &Nonce::from(stanza.wrap_nonce),
+            &ad,
+            plaintext.0.as_mut_slice().into(),
+            &tag,
+        )
         .map_err(|_| no_recipient())?;
-    let bytes: [u8; 32] = plaintext.try_into().map_err(|_| no_recipient())?;
-    Ok(Secret32(bytes))
+    Ok(plaintext)
 }
 
 fn aead_seal(key: &[u8; 32], nonce: &[u8; 12], ad: &[u8], bytes: &[u8]) -> Result<Vec<u8>> {
@@ -916,6 +1105,14 @@ mod tests {
         );
         hybrid.wrapped_afk = seal_afk(&archive_id, &secret, &hybrid, &afk).unwrap();
         assert_eq!(hex(&hybrid.wrapped_afk), vector("V5_WRAPPED_AFK"));
+        let work = CryptoWorkContext::new(CryptoPolicy::default());
+        assert_eq!(
+            open_afk(&archive_id, &secret, hybrid.fields(), &work)
+                .unwrap()
+                .0,
+            afk
+        );
+        assert_eq!(work.budget().live_bytes(), 0);
 
         let parameters =
             decode_hex("4132494400000013000400000000000300000004606162636465666768696a6b6c6d6e6f");
@@ -958,6 +1155,94 @@ mod tests {
         );
         password.wrapped_afk = seal_afk(&archive_id, &secret.0, &password, &afk).unwrap();
         assert_eq!(hex(&password.wrapped_afk), vector("V6_WRAPPED_AFK"));
+        assert_eq!(
+            open_afk(&archive_id, &secret.0, password.fields(), &work)
+                .unwrap()
+                .0,
+            afk
+        );
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn read_control_transcripts_match_owned_bytes_and_keep_live_charges() {
+        let work = CryptoWorkContext::new(CryptoPolicy::default());
+        for fields in [
+            &[][..],
+            &[&[][..]][..],
+            &[&b"a\0b"[..], &[][..], &b"tail"[..]][..],
+        ] {
+            let owned = wire::t1("entrybound/test-read-control/v1", fields).unwrap();
+            let charged = t1_work("entrybound/test-read-control/v1", fields, &work).unwrap();
+            assert_eq!(charged.as_slice(), owned);
+            assert_eq!(work.budget().live_bytes(), owned.len() as u64);
+            assert_eq!(
+                t1_digest("entrybound/test-read-control/v1", fields).unwrap(),
+                <[u8; 32]>::from(Sha256::digest(&owned))
+            );
+            drop(charged);
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
+        let archive_id = [0x31; 32];
+        let afk = [0x42; 32];
+        let keys = KeyHierarchy::derive(&afk, &archive_id).unwrap();
+        let context = public_crypto_context(
+            &archive_id,
+            0x04ef,
+            PaddingMode::None,
+            BoundaryMode::SecretGearTable,
+        )
+        .unwrap();
+        assert_eq!(
+            public_crypto_context_digest(
+                &archive_id,
+                0x04ef,
+                PaddingMode::None,
+                BoundaryMode::SecretGearTable
+            )
+            .unwrap(),
+            <[u8; 32]>::from(Sha256::digest(&context))
+        );
+        let mut envelope = wire::CryptoEnvelope {
+            archive_id,
+            commitment: [0x53; 32],
+            protection_policy: 1,
+            padding_mode: 0,
+            boundary_mode: 1,
+            stanzas: vec![wire::RecipientStanza {
+                stanza_type: 99,
+                protection_class: 1,
+                stanza_id: [0x64; 16],
+                recipient_hint: [0; 16],
+                method_parameters: b"unknown\0parameters".to_vec(),
+                encapsulation: b"unknown encapsulation".to_vec(),
+                wrap_nonce: [0x75; 12],
+                wrapped_afk: [0x86; 48],
+            }],
+            envelope_mac: [0; 32],
+        };
+        envelope.envelope_mac = envelope_mac(
+            &keys,
+            &context,
+            &envelope.commitment,
+            ProtectionPolicy::HybridOnly,
+            &envelope.stanzas,
+        )
+        .unwrap();
+        let encoded = envelope.encode().unwrap();
+        let borrowed = wire::EnvelopeRef::decode_with_policy(&encoded, work.policy()).unwrap();
+        assert_eq!(
+            envelope_mac_ref(
+                &keys,
+                &context,
+                &borrowed.commitment,
+                ProtectionPolicy::HybridOnly,
+                borrowed.stanzas
+            )
+            .unwrap(),
+            envelope.envelope_mac
+        );
+        assert_eq!(work.budget().live_bytes(), 0);
     }
 
     #[test]

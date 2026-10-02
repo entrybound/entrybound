@@ -198,6 +198,11 @@ pub(crate) struct WorkBytes {
 }
 
 impl WorkBytes {
+    /// Even an empty backing retains the identity of its original counter.
+    pub(crate) fn belongs_to(&self, budget: &WorkBudget) -> bool {
+        Arc::ptr_eq(&self._lease.budget.state, &budget.state)
+    }
+
     pub(crate) fn zeroed(budget: &WorkBudget, length: usize) -> Result<Self> {
         let (mut storage, lease) = allocate(budget, length)?;
         storage.resize(length, 0);
@@ -346,6 +351,22 @@ impl<T: Copy> Drop for WorkVec<T> {
 mod tests {
     use super::{CryptoWorkContext, WorkBlocks, WorkBudget, WorkBytes, WorkVec, requested_bytes};
     use crate::crypto::CryptoPolicy;
+
+    #[test]
+    fn byte_owners_keep_shared_counter_identity_even_when_empty() {
+        let original = WorkBudget::new(8);
+        let shared = original.clone();
+        let foreign = WorkBudget::new(8);
+        for length in [0, 8] {
+            let bytes = WorkBytes::zeroed(&original, length).unwrap();
+            assert!(bytes.belongs_to(&original));
+            assert!(bytes.belongs_to(&shared));
+            assert!(!bytes.belongs_to(&foreign));
+            assert_eq!(original.live_bytes(), length as u64);
+            drop(bytes);
+            assert_eq!(original.live_bytes(), 0);
+        }
+    }
 
     #[test]
     fn argon2_blocks_share_the_original_context_and_charge_complete_layout() {

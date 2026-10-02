@@ -14,8 +14,9 @@ use zeroize::Zeroize;
 use super::{
     AddressingBinding, BoundaryMode, CryptoPolicy, KeyHierarchy, PaddingMode, ProtectionPolicy,
     SignatureRecord, Unlock, XWingRecipient, a2id, aead_open, aead_seal, commitment,
-    crypto_integrity, envelope_mac, no_recipient, open_afk, password_secret, public_crypto_context,
-    random, resource_refused, seal_afk, stanza_invalid, wire,
+    crypto_integrity, envelope_mac, envelope_mac_ref, no_recipient, open_afk, password_secret,
+    public_crypto_context, public_crypto_context_digest, public_crypto_context_work, random,
+    resource_refused, seal_afk, stanza_invalid, wire,
 };
 use crate::archive::{ArchiveInspection, inspect};
 use crate::canonical::{RecordBuilder, decode_record_view as decode_record};
@@ -525,7 +526,8 @@ fn encrypt_with_material(
     let pci = physical_container_identity(&bytes);
     let identities = parts.roots.with_pci(pci);
     parts.archive.descriptor.pci = Some(pci.0);
-    let public = public_inspection(&envelope, bytes.len() as u64, Some(terminal_ordinal + 1))?;
+    let public =
+        public_inspection_owned(&envelope, bytes.len() as u64, Some(terminal_ordinal + 1))?;
     Ok(EncryptedArchive {
         bytes,
         archive: parts.archive,
@@ -693,7 +695,7 @@ fn open_encrypted_authenticated_with_context(
     drop(afk);
     let addressing = AddressingBinding {
         payload_suite_id: wire::PAYLOAD_SUITE_V1,
-        recipient_set_digest: recipient_set_digest(&parsed.envelope.stanzas)?,
+        recipient_set_digest: recipient_set_digest(parsed.envelope.stanzas)?,
         commitment: parsed.envelope.commitment,
         archive_id: parsed.envelope.archive_id,
     };
@@ -723,13 +725,13 @@ pub fn verify_encrypted(
 pub(super) fn open_encrypted_with_unlocked_keys(
     bytes: &[u8],
     mut options: EncryptedOpenOptions<'_>,
-    expected_envelope: &wire::CryptoEnvelope,
+    expected_envelope: &wire::EnvelopeRef<'_>,
     keys: &KeyHierarchy,
     work: &CryptoWorkContext,
 ) -> Result<OpenedArchive> {
     options.crypto_policy = work.policy();
     let parsed = parse_public(bytes, options.crypto_policy)?;
-    if parsed.envelope.encode()? != expected_envelope.encode()? {
+    if parsed.envelope.exact_bytes() != expected_envelope.exact_bytes() {
         return Err(segment_invalid(
             "legacy fallback envelope changed after unlock",
         ));
@@ -759,19 +761,22 @@ pub(super) fn open_encrypted_with_unlocked_keys(
     )
 }
 
-struct MutationState {
+struct MutationState<'a> {
     work: CryptoWorkContext,
     opened: OpenedArchive,
     afk: super::Secret32,
     archive_id: [u8; 32],
-    envelope: wire::CryptoEnvelope,
+    envelope: wire::EnvelopeRef<'a>,
     signatures: Vec<SignatureRecord>,
     recipient_directory: Vec<RecipientDirectoryEntry>,
     payload_segments: std::collections::BTreeMap<u64, ReusableSegment>,
     include_index: bool,
 }
 
-fn open_for_mutation(bytes: &[u8], options: EncryptedOpenOptions<'_>) -> Result<MutationState> {
+fn open_for_mutation<'a>(
+    bytes: &'a [u8],
+    options: EncryptedOpenOptions<'_>,
+) -> Result<MutationState<'a>> {
     let work = CryptoWorkContext::new(options.crypto_policy);
     let parsed = parse_public(bytes, options.crypto_policy)?;
     let unlock = options.unlock.ok_or_else(no_recipient)?;
@@ -850,7 +855,7 @@ pub fn embed_signature(
         state.archive_id,
         write,
         policy,
-        state.envelope.stanzas,
+        stanzas_for_owned_writer(state.envelope.stanzas)?,
         directory,
         Some(&state.payload_segments),
     )?;
@@ -865,7 +870,7 @@ pub fn add_recipient(
     options: EncryptedOpenOptions<'_>,
     recipient: &XWingRecipient,
 ) -> Result<EncryptedArchive> {
-    let mut state = open_for_mutation(bytes, options)?;
+    let state = open_for_mutation(bytes, options)?;
     if state.envelope.protection_policy != ProtectionPolicy::HybridOnly as u8 {
         return Err(Diagnostic::new(
             OutcomeClass::PolicyRefused,
@@ -904,7 +909,8 @@ pub fn add_recipient(
     };
     let (_, new_stanzas, new_directory) =
         build_recipients(&state.afk.0, &state.archive_id, &temporary, &state.work)?;
-    state.envelope.stanzas.extend(new_stanzas);
+    let mut stanzas = stanzas_for_owned_writer(state.envelope.stanzas)?;
+    stanzas.extend(new_stanzas);
     let mut directory = state
         .recipient_directory
         .iter()
@@ -927,7 +933,7 @@ pub fn add_recipient(
         state.archive_id,
         write,
         ProtectionPolicy::HybridOnly,
-        state.envelope.stanzas,
+        stanzas,
         directory,
         Some(&state.payload_segments),
     )?;
@@ -993,7 +999,7 @@ pub fn change_password(
 }
 
 fn rotate_encryption_epoch(
-    state: MutationState,
+    state: MutationState<'_>,
     recipients: &[XWingRecipient],
     password: Option<&[u8]>,
     options: EncryptedOpenOptions<'_>,
@@ -1059,18 +1065,19 @@ fn verify_mutation_output(
             "replacement archive key commitment did not self-verify",
         ));
     }
-    let public_context = public_crypto_context(
+    let public_context = public_crypto_context_work(
         &parsed.envelope.archive_id,
         parsed.features,
         padding,
         boundary,
+        work,
     )?;
-    let expected_mac = envelope_mac(
+    let expected_mac = envelope_mac_ref(
         &keys,
         &public_context,
         &parsed.envelope.commitment,
         protection_policy(parsed.envelope.protection_policy)?,
-        &parsed.envelope.stanzas,
+        parsed.envelope.stanzas,
     )?;
     if !bool::from(expected_mac.ct_eq(&parsed.envelope.envelope_mac)) {
         return Err(crypto_integrity(
@@ -1154,7 +1161,7 @@ pub fn inspect_encrypted(
 
 struct PublicParsed<'a> {
     features: u64,
-    envelope: wire::CryptoEnvelope,
+    envelope: wire::EnvelopeRef<'a>,
     segments: &'a [u8],
     segment_count: u64,
     footer: ParsedFooter,
@@ -1252,7 +1259,7 @@ fn parse_public(bytes: &[u8], policy: CryptoPolicy) -> Result<PublicParsed<'_>> 
             "CryptoEnvelope extent exceeds policy or footer",
         ));
     }
-    let envelope = wire::CryptoEnvelope::decode_with_policy(envelope_payload, policy)?;
+    let envelope = wire::EnvelopeRef::decode_with_policy(envelope_payload, policy)?;
     let (segments, segments_complete) =
         parse_section(bytes, footer.segments_offset, SECTION_SEGMENTS)?;
     if segments_complete != footer.segments_len
@@ -1266,8 +1273,8 @@ fn parse_public(bytes: &[u8], policy: CryptoPolicy) -> Result<PublicParsed<'_>> 
     let segment_count = scan_public_segments(segments, policy)?;
     let padding = PaddingMode::try_from(envelope.padding_mode)?;
     let boundary = BoundaryMode::try_from(envelope.boundary_mode)?;
-    let context = public_crypto_context(&envelope.archive_id, features, padding, boundary)?;
-    if !constant_time_eq(&Sha256::digest(&context), &footer.public_context_digest) {
+    let context = public_crypto_context_digest(&envelope.archive_id, features, padding, boundary)?;
+    if !constant_time_eq(&context, &footer.public_context_digest) {
         return Err(crypto_integrity(
             ReasonCode::FooterBindingMismatch,
             "public crypto context digest mismatch",
@@ -1311,7 +1318,7 @@ fn scan_public_segments(bytes: &[u8], policy: CryptoPolicy) -> Result<u64> {
 }
 
 pub(super) fn unlock_envelope(
-    envelope: &wire::CryptoEnvelope,
+    envelope: &wire::EnvelopeRef<'_>,
     features: u64,
     unlock: Unlock<'_>,
     work: &CryptoWorkContext,
@@ -1319,7 +1326,8 @@ pub(super) fn unlock_envelope(
     let policy = work.policy();
     let padding = PaddingMode::try_from(envelope.padding_mode)?;
     let boundary = BoundaryMode::try_from(envelope.boundary_mode)?;
-    let context = public_crypto_context(&envelope.archive_id, features, padding, boundary)?;
+    let context =
+        public_crypto_context_work(&envelope.archive_id, features, padding, boundary, work)?;
     let protection = match envelope.protection_policy {
         1 => ProtectionPolicy::HybridOnly,
         2 => ProtectionPolicy::PasswordOnly,
@@ -1332,7 +1340,7 @@ pub(super) fn unlock_envelope(
         }
     };
     let mut attempts = 0u32;
-    for stanza in &envelope.stanzas {
+    for stanza in envelope.stanzas.iter().map(|stanza| stanza.fields()) {
         if matches!(
             (&unlock, stanza.stanza_type),
             (Unlock::Identity(_), 1) | (Unlock::Password(_), 2)
@@ -1352,7 +1360,7 @@ pub(super) fn unlock_envelope(
                 if stanza.encapsulation.len() != ciphertext.len() {
                     return Err(stanza_invalid("X-Wing encapsulation must be 1120 bytes"));
                 }
-                ciphertext.copy_from_slice(&stanza.encapsulation);
+                ciphertext.copy_from_slice(stanza.encapsulation);
                 let shared = identity.secret.decapsulate(&ciphertext);
                 Some(super::Secret32(
                     shared
@@ -1362,16 +1370,17 @@ pub(super) fn unlock_envelope(
                 ))
             }
             (Unlock::Password(password), 2) => {
-                Some(password_secret(password, &stanza.method_parameters, work)?)
+                Some(password_secret(password, stanza.method_parameters, work)?)
             }
             _ => None,
         };
         let Some(method_secret) = method_secret else {
             continue;
         };
-        let candidate = match open_afk(&envelope.archive_id, &method_secret.0, stanza) {
+        let candidate = match open_afk(&envelope.archive_id, &method_secret.0, stanza, work) {
             Ok(value) => value,
-            Err(_) => continue,
+            Err(error) if error.code() == ReasonCode::CryptoNoMatchingRecipient => continue,
+            Err(error) => return Err(error),
         };
         let keys = KeyHierarchy::derive(&candidate.0, &envelope.archive_id)?;
         let expected_commitment = commitment(&keys, &envelope.archive_id, padding, boundary)?;
@@ -1381,12 +1390,12 @@ pub(super) fn unlock_envelope(
                 "candidate file-key commitment failed",
             ));
         }
-        let expected_mac = envelope_mac(
+        let expected_mac = envelope_mac_ref(
             &keys,
             &context,
             &envelope.commitment,
             protection,
-            &envelope.stanzas,
+            envelope.stanzas,
         )?;
         if !constant_time_eq(&expected_mac, &envelope.envelope_mac) {
             return Err(crypto_integrity(
@@ -1409,7 +1418,7 @@ struct DecryptedPrivate {
 
 fn decrypt_segments(
     bytes: &[u8],
-    envelope: &wire::CryptoEnvelope,
+    envelope: &wire::EnvelopeRef<'_>,
     keys: &KeyHierarchy,
     footer: &ParsedFooter,
     features: u64,
@@ -1601,12 +1610,8 @@ fn decrypt_segments(
             "authenticated footer-core mismatch",
         ));
     }
-    let stanza_sequence = wire::encode_stanza_sequence(&envelope.stanzas)?;
-    let set_digest: [u8; 32] = Sha256::digest(wire::t1(
-        "entrybound/recipient-set/v1",
-        &[&stanza_sequence],
-    )?)
-    .into();
+    let stanza_sequence = envelope.stanzas.exact_bytes();
+    let set_digest = super::t1_digest("entrybound/recipient-set/v1", &[stanza_sequence])?;
     if !constant_time_eq(&set_digest, &final_value.recipient_set)
         || collector.descriptor_id != Some(final_value.descriptor_id)
         || collector.manifest_id != Some(final_value.manifest_id)
@@ -1616,7 +1621,7 @@ fn decrypt_segments(
             "ArchiveFinal recipient/object binding mismatch",
         ));
     }
-    collector.validate_recipient_directory(&envelope.stanzas)?;
+    collector.validate_recipient_directory(envelope.stanzas)?;
     let signature_present = collector.signatures.is_some();
     if signature_present != (features & super::FEATURE_SIGNATURE_ED25519_V1 != 0) {
         return Err(wire::private_invalid(
@@ -1872,8 +1877,10 @@ impl ObjectCollector {
         Ok(None)
     }
 
-    fn validate_recipient_directory(&self, stanzas: &[wire::RecipientStanza]) -> Result<()> {
-        let hybrid = stanzas.iter().all(|stanza| stanza.protection_class == 1);
+    fn validate_recipient_directory(&self, stanzas: wire::StanzaSequenceRef<'_>) -> Result<()> {
+        let hybrid = stanzas
+            .iter()
+            .all(|stanza| stanza.fields().protection_class == 1);
         if !hybrid {
             if self.recipient_directory.is_some() {
                 return Err(stanza_invalid(
@@ -1884,6 +1891,7 @@ impl ObjectCollector {
         }
         let expected = stanzas
             .iter()
+            .map(|stanza| stanza.fields())
             .filter(|stanza| stanza.stanza_type == 1)
             .map(|stanza| stanza.stanza_id)
             .collect::<BTreeSet<_>>();
@@ -2808,20 +2816,33 @@ fn parse_footer(bytes: &[u8]) -> Result<ParsedFooter> {
 }
 
 pub(super) fn validate_envelope_policy(
-    envelope: &wire::CryptoEnvelope,
+    envelope: &wire::EnvelopeRef<'_>,
     features: u64,
 ) -> Result<()> {
     match envelope.protection_policy {
         1 if !envelope.stanzas.is_empty()
-            && envelope
-                .stanzas
-                .iter()
-                .all(|value| value.stanza_type != 2 && value.protection_class == 1)
+            && envelope.stanzas.iter().all(|value| {
+                value.fields().stanza_type != 2 && value.fields().protection_class == 1
+            })
             && features & super::FEATURE_XWING_RECIPIENT != 0
             && features & super::FEATURE_PASSWORD_RECIPIENT == 0 => {}
         2 if envelope.stanzas.len() == 1
-            && envelope.stanzas[0].stanza_type == 2
-            && envelope.stanzas[0].protection_class == 2
+            && envelope
+                .stanzas
+                .iter()
+                .next()
+                .expect("validated singleton")
+                .fields()
+                .stanza_type
+                == 2
+            && envelope
+                .stanzas
+                .iter()
+                .next()
+                .expect("validated singleton")
+                .fields()
+                .protection_class
+                == 2
             && features & super::FEATURE_PASSWORD_RECIPIENT != 0
             && features & super::FEATURE_XWING_RECIPIENT == 0 => {}
         _ => {
@@ -2832,7 +2853,7 @@ pub(super) fn validate_envelope_policy(
             ));
         }
     }
-    for stanza in &envelope.stanzas {
+    for stanza in envelope.stanzas.iter().map(|stanza| stanza.fields()) {
         match stanza.stanza_type {
             1 if stanza.method_parameters == wire::XWING_METHOD
                 && stanza.encapsulation.len() == 1120
@@ -2852,33 +2873,87 @@ pub(super) fn validate_envelope_policy(
 }
 
 pub(super) fn public_inspection(
+    envelope: &wire::EnvelopeRef<'_>,
+    total: u64,
+    segments: Option<u64>,
+) -> Result<PublicCryptoInspection> {
+    public_inspection_fields(
+        envelope.padding_mode,
+        envelope.boundary_mode,
+        envelope.stanzas.len(),
+        envelope.stanzas.iter().map(|stanza| stanza.fields()),
+        total,
+        segments,
+    )
+}
+
+fn public_inspection_owned(
     envelope: &wire::CryptoEnvelope,
+    total: u64,
+    segments: Option<u64>,
+) -> Result<PublicCryptoInspection> {
+    public_inspection_fields(
+        envelope.padding_mode,
+        envelope.boundary_mode,
+        envelope.stanzas.len(),
+        envelope.stanzas.iter().map(wire::RecipientStanza::fields),
+        total,
+        segments,
+    )
+}
+
+fn public_inspection_fields<'a>(
+    padding: u8,
+    boundary: u8,
+    count: usize,
+    stanzas: impl Iterator<Item = wire::StanzaFields<'a>>,
     total: u64,
     segments: Option<u64>,
 ) -> Result<PublicCryptoInspection> {
     Ok(PublicCryptoInspection {
         encrypted: true,
         payload_suite: "entrybound-payload-suite-v1",
-        recipient_count: envelope.stanzas.len() as u64,
-        recipient_types: envelope
-            .stanzas
-            .iter()
+        recipient_count: count as u64,
+        recipient_types: stanzas
             .map(|value| match value.stanza_type {
                 1 => "xwing-draft-10",
                 2 => "password-argon2id",
                 _ => "unknown",
             })
             .collect(),
-        padding: PaddingMode::try_from(envelope.padding_mode)?,
-        boundary: BoundaryMode::try_from(envelope.boundary_mode)?,
+        padding: PaddingMode::try_from(padding)?,
+        boundary: BoundaryMode::try_from(boundary)?,
         segment_count: segments,
         total_container_bytes: total,
     })
 }
 
-fn recipient_set_digest(stanzas: &[wire::RecipientStanza]) -> Result<[u8; 32]> {
-    let sequence = wire::encode_stanza_sequence(stanzas)?;
-    Ok(Sha256::digest(wire::t1("entrybound/recipient-set/v1", &[&sequence])?).into())
+/// Existing owned output staging. These copies remain in the P9 inventory.
+fn stanzas_for_owned_writer(
+    stanzas: wire::StanzaSequenceRef<'_>,
+) -> Result<Vec<wire::RecipientStanza>> {
+    let mut owned = Vec::new();
+    owned
+        .try_reserve_exact(stanzas.len())
+        .map_err(|_| resource_refused("cannot reserve writer stanza list"))?;
+    for stanza in stanzas.iter() {
+        let fields = stanza.fields();
+        owned.push(wire::RecipientStanza {
+            stanza_type: fields.stanza_type,
+            protection_class: fields.protection_class,
+            stanza_id: fields.stanza_id,
+            recipient_hint: fields.recipient_hint,
+            method_parameters: fields.method_parameters.to_vec(),
+            encapsulation: fields.encapsulation.to_vec(),
+            wrap_nonce: fields.wrap_nonce,
+            wrapped_afk: fields.wrapped_afk,
+        });
+    }
+    Ok(owned)
+}
+
+fn recipient_set_digest(stanzas: wire::StanzaSequenceRef<'_>) -> Result<[u8; 32]> {
+    super::t1_digest("entrybound/recipient-set/v1", &[stanzas.exact_bytes()])
 }
 
 fn protection_policy(value: u8) -> Result<ProtectionPolicy> {
@@ -3124,6 +3199,10 @@ mod tests {
             stanzas: vec![stanza],
             envelope_mac: [0; 32],
         };
+        let envelope_bytes = envelope.encode().unwrap();
+        let envelope =
+            wire::EnvelopeRef::decode_with_policy(&envelope_bytes, CryptoPolicy::default())
+                .unwrap();
         let policy = CryptoPolicy {
             max_identity_attempts: 0,
             ..CryptoPolicy::default()
@@ -3153,6 +3232,110 @@ mod tests {
             Ok(_) => panic!("malformed password parameters unlocked an envelope"),
         };
         assert_eq!(error.code(), ReasonCode::CryptoRecipientStanzaInvalid);
+    }
+
+    #[test]
+    fn managed_wrap_ad_refusal_propagates_through_real_unlock() {
+        let (identity, recipient) = super::super::XWingIdentity::generate().unwrap();
+        let archive_id = [0x13; 32];
+        let afk = [0x24; 32];
+        let features = super::super::FEATURE_XWING_RECIPIENT;
+        let padding = PaddingMode::None;
+        let boundary = BoundaryMode::SecretGearTable;
+        let creation = CryptoWorkContext::new(CryptoPolicy::default());
+        let options = EncryptedWriteOptions {
+            recipients: std::slice::from_ref(&recipient),
+            padding,
+            boundary,
+            ..EncryptedWriteOptions::default()
+        };
+        let (protection, stanzas, _) =
+            build_recipients(&afk, &archive_id, &options, &creation).unwrap();
+        let keys = KeyHierarchy::derive(&afk, &archive_id).unwrap();
+        let commitment = commitment(&keys, &archive_id, padding, boundary).unwrap();
+        let context = public_crypto_context(&archive_id, features, padding, boundary).unwrap();
+        let ad_len = super::super::wrap_ad(&archive_id, &stanzas[0])
+            .unwrap()
+            .len();
+        let envelope = wire::CryptoEnvelope {
+            archive_id,
+            commitment,
+            protection_policy: protection as u8,
+            padding_mode: padding as u8,
+            boundary_mode: boundary as u8,
+            envelope_mac: envelope_mac(&keys, &context, &commitment, protection, &stanzas).unwrap(),
+            stanzas,
+        };
+        let encoded = envelope.encode().unwrap();
+        let borrowed = wire::EnvelopeRef::decode_with_policy(&encoded, creation.policy()).unwrap();
+        let baseline = 17;
+        for (extra, succeeds) in [(0, false), (1, true)] {
+            let work = CryptoWorkContext::new(CryptoPolicy {
+                max_working_memory_bytes: (baseline + context.len() + ad_len - 1 + extra) as u64,
+                ..CryptoPolicy::default()
+            });
+            let retained =
+                super::super::working::WorkBytes::zeroed(work.budget(), baseline).unwrap();
+            let result = unlock_envelope(&borrowed, features, Unlock::Identity(&identity), &work);
+            if succeeds {
+                assert_eq!(result.unwrap().0.0, afk);
+            } else {
+                let error = match result {
+                    Err(error) => error,
+                    Ok(_) => panic!("AD should exceed original live budget"),
+                };
+                assert_eq!(error.code(), ReasonCode::CryptoResourcePolicyRefused);
+            }
+            assert_eq!(work.budget().live_bytes(), baseline as u64);
+            drop(retained);
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
+        let (wrong_identity, _) = super::super::XWingIdentity::generate().unwrap();
+        let error = match unlock_envelope(
+            &borrowed,
+            features,
+            Unlock::Identity(&wrong_identity),
+            &creation,
+        ) {
+            Err(error) => error,
+            Ok(_) => panic!("wrong identity must not unlock"),
+        };
+        assert_eq!(error.code(), ReasonCode::CryptoNoMatchingRecipient);
+        assert_eq!(creation.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn borrowed_unknown_stanzas_survive_the_owned_writer_boundary() {
+        let envelope = wire::CryptoEnvelope {
+            archive_id: [1; 32],
+            commitment: [2; 32],
+            protection_policy: 1,
+            padding_mode: 0,
+            boundary_mode: 1,
+            envelope_mac: [3; 32],
+            stanzas: vec![wire::RecipientStanza {
+                stanza_type: 99,
+                protection_class: 1,
+                stanza_id: [4; 16],
+                recipient_hint: [0; 16],
+                method_parameters: b"future\0method".to_vec(),
+                encapsulation: b"future encapsulation".to_vec(),
+                wrap_nonce: [5; 12],
+                wrapped_afk: [6; 48],
+            }],
+        };
+        let encoded = envelope.encode().unwrap();
+        let borrowed =
+            wire::EnvelopeRef::decode_with_policy(&encoded, CryptoPolicy::default()).unwrap();
+        let owned = stanzas_for_owned_writer(borrowed.stanzas).unwrap();
+        assert_eq!(
+            wire::encode_stanza_sequence(&owned).unwrap(),
+            borrowed.stanzas.exact_bytes()
+        );
+        assert_eq!(
+            public_inspection_owned(&envelope, 123, Some(4)).unwrap(),
+            public_inspection(&borrowed, 123, Some(4)).unwrap()
+        );
     }
 
     #[test]

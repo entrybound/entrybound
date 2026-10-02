@@ -8,7 +8,7 @@ use subtle::ConstantTimeEq as _;
 use super::working::CryptoWorkContext;
 use super::{
     BoundaryMode, EncryptedOpenOptions, KeyHierarchy, PaddingMode, aead_open,
-    public_crypto_context, wire,
+    public_crypto_context_digest, public_crypto_context_work, wire,
 };
 use crate::canonical::decode_record_view as decode_record;
 use crate::codec::{PlanMode, aggregate_archive_decode_requirements, plan_mode, validate_plans};
@@ -158,7 +158,7 @@ pub struct EncryptedRandomPublicInspection {
 pub struct EncryptedRandomAccessArchive {
     session: RangeSession,
     metadata: RandomAccessMetadata,
-    envelope: wire::CryptoEnvelope,
+    envelope: wire::WorkEnvelope,
     keys: KeyHierarchy,
     padding: PaddingMode,
     work: CryptoWorkContext,
@@ -234,25 +234,26 @@ pub fn inspect_indexed_random_encrypted_public(
     if footer.envelope_len > crypto_limits.max_envelope_bytes {
         return Err(crypto_policy("public CryptoEnvelope exceeds caller policy"));
     }
-    let envelope = read_envelope(
+    let envelope_owner = read_envelope(
         &mut session,
         footer.envelope_offset,
         footer.envelope_len,
-        crypto_limits,
+        &work,
     )?;
+    let envelope = envelope_owner.view();
     if envelope.stanzas.len() as u32 > crypto_limits.max_stanzas {
         return Err(crypto_policy("public CryptoEnvelope exceeds caller policy"));
     }
     super::container::validate_envelope_policy(&envelope, preamble.features.incompat)?;
     let padding = PaddingMode::try_from(envelope.padding_mode)?;
     let boundary = BoundaryMode::try_from(envelope.boundary_mode)?;
-    let context = public_crypto_context(
+    let context = public_crypto_context_digest(
         &envelope.archive_id,
         preamble.features.incompat,
         padding,
         boundary,
     )?;
-    if !constant_time_eq(&Sha256::digest(&context), &footer.public_context_digest) {
+    if !constant_time_eq(&context, &footer.public_context_digest) {
         return Err(crypto_integrity(
             ReasonCode::FooterBindingMismatch,
             "encrypted public-context/footer binding mismatch",
@@ -351,19 +352,20 @@ impl EncryptedRandomAccessArchive {
         if footer.envelope_len > options.crypto_policy.max_envelope_bytes {
             return Err(crypto_policy("CryptoEnvelope exceeds caller policy"));
         }
-        let envelope = read_envelope(
+        let envelope_owner = read_envelope(
             &mut session,
             footer.envelope_offset,
             footer.envelope_len,
-            options.crypto_policy,
+            &work,
         )?;
+        let envelope = envelope_owner.view();
         if envelope.stanzas.len() as u32 > options.crypto_policy.max_stanzas {
             return Err(crypto_policy(
                 "recipient stanza count exceeds caller policy",
             ));
         }
-        for stanza in &envelope.stanzas {
-            if u64::try_from(stanza.encode()?.len()).unwrap_or(u64::MAX)
+        for stanza in envelope.stanzas.iter() {
+            if u64::try_from(stanza.exact_bytes().len()).unwrap_or(u64::MAX)
                 > options.crypto_policy.max_stanza_bytes
             {
                 return Err(crypto_policy("recipient stanza exceeds caller policy"));
@@ -372,13 +374,17 @@ impl EncryptedRandomAccessArchive {
         super::container::validate_envelope_policy(&envelope, preamble.features.incompat)?;
         let padding = PaddingMode::try_from(envelope.padding_mode)?;
         let boundary = BoundaryMode::try_from(envelope.boundary_mode)?;
-        let context = public_crypto_context(
+        let context = public_crypto_context_work(
             &envelope.archive_id,
             preamble.features.incompat,
             padding,
             boundary,
+            &work,
         )?;
-        if !constant_time_eq(&Sha256::digest(&context), &footer.public_context_digest) {
+        if !constant_time_eq(
+            &Sha256::digest(context.as_slice()),
+            &footer.public_context_digest,
+        ) {
             return Err(crypto_integrity(
                 ReasonCode::FooterBindingMismatch,
                 "public crypto context digest mismatch",
@@ -566,6 +572,7 @@ impl EncryptedRandomAccessArchive {
         } else if let Some(items) = controls.index {
             match decode_encrypted_index(&items, &segments, final_value.chunk_count) {
                 Ok(value) => (value, RandomAccessIndexStatus::PresentValid),
+                Err(error) if error.class() == OutcomeClass::PolicyRefused => return Err(error),
                 Err(_) => (BTreeMap::new(), RandomAccessIndexStatus::RebuiltInvalid),
             }
         } else {
@@ -598,7 +605,7 @@ impl EncryptedRandomAccessArchive {
         Ok(Self {
             session,
             metadata,
-            envelope,
+            envelope: envelope_owner,
             keys,
             padding,
             work,
@@ -862,11 +869,12 @@ impl EncryptedRandomAccessArchive {
             let locator = self.segments[ordinal].clone();
             let resource_policy = self.session.policy().resource_policy;
             let decode_policy = self.session.policy().decode_policy;
+            let envelope = self.envelope.view();
             let object = decrypt_segment(
                 &mut self.session,
                 &locator,
                 ordinal_u64,
-                &self.envelope,
+                &envelope,
                 &self.keys,
                 self.padding,
                 EncryptedOpenOptions {
@@ -1012,11 +1020,12 @@ impl EncryptedRandomAccessArchive {
         }
         let resource_policy = self.session.policy().resource_policy;
         let decode_policy = self.session.policy().decode_policy;
+        let envelope = self.envelope.view();
         let object = decrypt_segment(
             &mut self.session,
             &segment,
             locator.segment_ordinal,
-            &self.envelope,
+            &envelope,
             &self.keys,
             self.padding,
             EncryptedOpenOptions {
@@ -1253,8 +1262,9 @@ fn read_envelope(
     session: &mut RangeSession,
     offset: u64,
     extent: u64,
-    crypto_limits: super::CryptoPolicy,
-) -> Result<wire::CryptoEnvelope> {
+    work: &CryptoWorkContext,
+) -> Result<wire::WorkEnvelope> {
+    let crypto_limits = work.policy();
     if extent < SECTION_HEADER_LEN
         || extent > session.policy().max_metadata_bytes
         || extent > crypto_limits.max_envelope_bytes
@@ -1280,7 +1290,7 @@ fn read_envelope(
             "CryptoEnvelope section digest mismatch",
         ));
     }
-    wire::CryptoEnvelope::decode_with_policy(&payload, crypto_limits)
+    wire::WorkEnvelope::decode_with_context(payload, work)
 }
 
 fn walk_segments(
@@ -1394,7 +1404,7 @@ fn decrypt_segment(
     session: &mut RangeSession,
     locator: &SegmentLocator,
     ordinal: u64,
-    envelope: &wire::CryptoEnvelope,
+    envelope: &wire::EnvelopeRef<'_>,
     keys: &KeyHierarchy,
     padding: PaddingMode,
     options: EncryptedOpenOptions<'_>,
@@ -1578,6 +1588,7 @@ fn dispatch_control(
             let decoded = wire::decode_sequence_container(payload);
             let (collection, items) = match decoded {
                 Ok(value) => value,
+                Err(error) if error.class() == OutcomeClass::PolicyRefused => return Err(error),
                 Err(_) if peek_index => {
                     controls.index_invalid = true;
                     return Ok(());
@@ -1617,7 +1628,7 @@ fn validate_terminal_bindings(
     controls: &ControlObjects,
     final_value: &ArchiveFinal,
     footer: &Footer,
-    envelope: &wire::CryptoEnvelope,
+    envelope: &wire::EnvelopeRef<'_>,
     features: u64,
     public_context: &[u8],
     segments: &[SegmentLocator],
@@ -1630,12 +1641,10 @@ fn validate_terminal_bindings(
             "ArchiveFinal object/count binding mismatch",
         ));
     }
-    let recipient_sequence = wire::encode_stanza_sequence(&envelope.stanzas)?;
-    let recipient_set: [u8; 32] = Sha256::digest(wire::t1(
+    let recipient_set = super::t1_digest(
         "entrybound/recipient-set/v1",
-        &[&recipient_sequence],
-    )?)
-    .into();
+        &[envelope.stanzas.exact_bytes()],
+    )?;
     if !constant_time_eq(&recipient_set, &final_value.recipient_set) {
         return Err(crypto_integrity(
             ReasonCode::CryptoEnvelopeAuthFailed,
