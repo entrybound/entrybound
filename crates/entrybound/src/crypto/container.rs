@@ -18,7 +18,7 @@ use super::{
     random, resource_refused, seal_afk, stanza_invalid, wire,
 };
 use crate::archive::{ArchiveInspection, inspect};
-use crate::canonical::{RecordBuilder, decode_record};
+use crate::canonical::{RecordBuilder, decode_record_view as decode_record};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{Archive, DecodeRequirements, FeatureSet, ResourceBudget};
 use crate::ecf::{
@@ -1486,7 +1486,7 @@ fn decrypt_segments(
             exact_data.extend_from_slice(protected);
             exact_data.extend_from_slice(ciphertext);
             if let Some(object) = collector.push(
-                wire::decode_private_fragment(&private)?,
+                wire::decode_private_fragment_ref(&private)?,
                 policy
                     .max_working_memory_bytes
                     .min(u64::try_from(bytes.len()).unwrap_or(u64::MAX)),
@@ -1695,7 +1695,7 @@ struct PartialObject {
 impl ObjectCollector {
     fn push(
         &mut self,
-        fragment: wire::PrivateFragment,
+        fragment: wire::PrivateFragmentRef<'_>,
         max_private_bytes: u64,
     ) -> Result<Option<Vec<u8>>> {
         if fragment.index == 0 {
@@ -1749,7 +1749,7 @@ impl ObjectCollector {
                 "fragment sequence is not contiguous and exact",
             ));
         }
-        partial.bytes.extend_from_slice(&fragment.bytes);
+        partial.bytes.extend_from_slice(fragment.bytes);
         partial.next_index += 1;
         if partial.next_index == partial.count {
             let complete = self.partial.take().expect("present partial object");
@@ -3068,35 +3068,35 @@ mod tests {
     #[test]
     fn private_object_reservations_refuse_before_allocation() {
         let mut collector = ObjectCollector::default();
-        let huge = wire::PrivateFragment {
+        let huge = wire::PrivateFragmentRef {
             object_id: [0; 32],
             total_len: u64::MAX,
             index: 0,
             count: 1,
             offset: 0,
-            bytes: vec![1],
+            bytes: &[1],
         };
         let error = collector.push(huge, 1024).unwrap_err();
         assert_eq!(error.code(), ReasonCode::CryptoResourcePolicyRefused);
         assert_eq!(collector.reserved_private_bytes, 0);
 
         let first = vec![0x41; 8];
-        let fragment = wire::PrivateFragment {
+        let fragment = wire::PrivateFragmentRef {
             object_id: wire::encrypted_object_id(&first).unwrap(),
             total_len: first.len() as u64,
             index: 0,
             count: 1,
             offset: 0,
-            bytes: first.clone(),
+            bytes: &first,
         };
         assert_eq!(collector.push(fragment, 15).unwrap(), Some(first));
-        let second = wire::PrivateFragment {
+        let second = wire::PrivateFragmentRef {
             object_id: [0; 32],
             total_len: 8,
             index: 0,
             count: 1,
             offset: 0,
-            bytes: vec![2; 8],
+            bytes: &[2; 8],
         };
         let error = collector.push(second, 15).unwrap_err();
         assert_eq!(error.code(), ReasonCode::CryptoResourcePolicyRefused);

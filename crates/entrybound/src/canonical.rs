@@ -231,6 +231,254 @@ impl<'a> Field<'a> {
     pub(crate) fn as_sequence(self) -> Result<Vec<&'a [u8]>> {
         decode_sequence(self.require(FieldType::Sequence)?)
     }
+
+    pub(crate) fn as_sequence_view(self) -> Result<SequenceView<'a>> {
+        decode_sequence_view(self.require(FieldType::Sequence)?)
+    }
+}
+
+/// One completely validated top-level record, borrowing its exact extent.
+/// Nested Sequence values retain their field-accessor validation boundary.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RecordView<'a> {
+    pub(crate) kind: u16,
+    pub(crate) version: u16,
+    exact: &'a [u8],
+}
+
+impl<'a> RecordView<'a> {
+    fn fields(self) -> FieldIter<'a> {
+        FieldIter {
+            exact: self.exact,
+            cursor: RECORD_HEADER_LEN,
+        }
+    }
+
+    pub(crate) fn expect_tags(self, required: &[u16], optional: &[u16]) -> Result<()> {
+        self.expect_versioned_tags(RECORD_VERSION_V1, required, optional)
+    }
+
+    pub(crate) fn expect_versioned_tags(
+        self,
+        version: u16,
+        required: &[u16],
+        optional: &[u16],
+    ) -> Result<()> {
+        if self.version != version {
+            return Err(noncanonical("unsupported canonical record version"));
+        }
+        for tag in required {
+            if !self.fields().any(|field| field.tag == *tag) {
+                return Err(noncanonical("canonical record is missing a required field"));
+            }
+        }
+        if let Some(field) = self
+            .fields()
+            .find(|field| !required.contains(&field.tag) && !optional.contains(&field.tag))
+        {
+            return Err(noncanonical(format!(
+                "unknown bootstrap field tag {}",
+                field.tag
+            )));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn field(self, tag: u16) -> Result<Field<'a>> {
+        self.optional_field(tag)
+            .ok_or_else(|| noncanonical(format!("canonical record is missing field tag {tag}")))
+    }
+
+    fn optional_field(self, tag: u16) -> Option<Field<'a>> {
+        self.fields().find(|field| field.tag == tag)
+    }
+}
+
+struct FieldIter<'a> {
+    exact: &'a [u8],
+    cursor: usize,
+}
+
+impl<'a> Iterator for FieldIter<'a> {
+    type Item = Field<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.cursor == self.exact.len() {
+            return None;
+        }
+        // Only decode_record_view constructs this iterator. Its full scan
+        // proved every header, type, platform length and value extent below;
+        // the shared immutable borrow prevents those bytes from changing.
+        let header = &self.exact[self.cursor..self.cursor + FIELD_HEADER_LEN];
+        let tag = u16::from_be_bytes(header[..2].try_into().expect("validated field tag"));
+        let field_type = FieldType::from_byte(header[2]).expect("validated field type");
+        let value_len = usize::try_from(u64::from_be_bytes(
+            header[4..].try_into().expect("validated field length"),
+        ))
+        .expect("validated platform length");
+        let start = self.cursor + FIELD_HEADER_LEN;
+        self.cursor = start + value_len;
+        Some(Field {
+            tag,
+            field_type,
+            value: &self.exact[start..self.cursor],
+        })
+    }
+}
+
+/// Validates all sequence framing before any item can be exposed.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct SequenceView<'a> {
+    exact: &'a [u8],
+    count: usize,
+}
+
+impl<'a> SequenceView<'a> {
+    pub(crate) fn iter(self) -> SequenceIter<'a> {
+        SequenceIter {
+            exact: self.exact,
+            cursor: 8,
+            remaining: self.count,
+        }
+    }
+}
+
+pub(crate) struct SequenceIter<'a> {
+    exact: &'a [u8],
+    cursor: usize,
+    remaining: usize,
+}
+
+impl<'a> Iterator for SequenceIter<'a> {
+    type Item = &'a [u8];
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.remaining == 0 {
+            return None;
+        }
+        // SequenceView construction validated the entire immutable extent,
+        // including items a consumer may elect not to visit.
+        let length = usize::try_from(u64::from_be_bytes(
+            self.exact[self.cursor..self.cursor + 8]
+                .try_into()
+                .expect("validated sequence item length"),
+        ))
+        .expect("validated platform length");
+        let start = self.cursor + 8;
+        self.cursor = start + length;
+        self.remaining -= 1;
+        Some(&self.exact[start..self.cursor])
+    }
+}
+
+pub(crate) fn decode_record_view(input: &[u8]) -> Result<(RecordView<'_>, usize)> {
+    if input.len() < RECORD_HEADER_LEN {
+        return Err(structure("record header is truncated"));
+    }
+    let kind = u16::from_be_bytes(exact(&input[0..2])?);
+    let version = u16::from_be_bytes(exact(&input[2..4])?);
+    if version == 0
+        || version > RECORD_VERSION_V3
+        || (version == RECORD_VERSION_V2 && !matches!(kind, 1 | 3 | 8))
+        || (version == RECORD_VERSION_V3 && !matches!(kind, 3 | 8))
+    {
+        return Err(noncanonical("unsupported canonical record version"));
+    }
+    if input[4..8] != [0; 4] {
+        return Err(noncanonical("record flags must be zero"));
+    }
+    let payload_len = to_usize(u64::from_be_bytes(exact(&input[8..16])?))?;
+    let total_len = RECORD_HEADER_LEN
+        .checked_add(payload_len)
+        .ok_or_else(|| structure("record length overflow"))?;
+    if total_len > input.len() {
+        return Err(structure("record payload length exceeds enclosing bytes"));
+    }
+    let mut cursor = RECORD_HEADER_LEN;
+    let mut previous = None;
+    while cursor < total_len {
+        if total_len - cursor < FIELD_HEADER_LEN {
+            return Err(structure("canonical field header is truncated"));
+        }
+        let tag = u16::from_be_bytes(exact(&input[cursor..cursor + 2])?);
+        let field_type = FieldType::from_byte(input[cursor + 2])?;
+        if input[cursor + 3] != 0 {
+            return Err(noncanonical("field flags must be zero"));
+        }
+        if let Some(last) = previous {
+            if tag == last {
+                return Err(Diagnostic::new(
+                    OutcomeClass::Nonconforming,
+                    ReasonCode::DuplicateSemanticDeclaration,
+                    format!("duplicate canonical field tag {tag}"),
+                ));
+            }
+            if tag < last {
+                return Err(noncanonical("canonical field tags are out of order"));
+            }
+        }
+        previous = Some(tag);
+        let value_len = to_usize(u64::from_be_bytes(exact(
+            &input[cursor + 4..cursor + FIELD_HEADER_LEN],
+        )?))?;
+        let value_start = cursor + FIELD_HEADER_LEN;
+        let value_end = value_start
+            .checked_add(value_len)
+            .ok_or_else(|| structure("field length overflow"))?;
+        if value_end > total_len {
+            return Err(structure("field length exceeds its record payload"));
+        }
+        validate_minimal_value(field_type, &input[value_start..value_end])?;
+        cursor = value_end;
+    }
+    Ok((
+        RecordView {
+            kind,
+            version,
+            exact: &input[..total_len],
+        },
+        total_len,
+    ))
+}
+
+fn decode_sequence_view(value: &[u8]) -> Result<SequenceView<'_>> {
+    if value.len() < 8 {
+        return Err(structure("sequence count is truncated"));
+    }
+    let count = u64::from_be_bytes(exact(&value[..8])?);
+    if count > MAX_SEQUENCE_ITEMS {
+        return Err(resource_limit(
+            "sequence item count exceeds bootstrap policy",
+        ));
+    }
+    if count > u64::try_from((value.len() - 8) / 8).unwrap_or(u64::MAX) {
+        return Err(structure(
+            "sequence count cannot fit its enclosing field framing",
+        ));
+    }
+    let count = to_usize(count)?;
+    let mut cursor = 8;
+    for _ in 0..count {
+        if value.len() - cursor < 8 {
+            return Err(structure("sequence item length is truncated"));
+        }
+        let item_len = to_usize(u64::from_be_bytes(exact(&value[cursor..cursor + 8])?))?;
+        cursor += 8;
+        let end = cursor
+            .checked_add(item_len)
+            .ok_or_else(|| structure("sequence item length overflow"))?;
+        if end > value.len() {
+            return Err(structure("sequence item exceeds its enclosing field"));
+        }
+        cursor = end;
+    }
+    if cursor != value.len() {
+        return Err(noncanonical("sequence contains trailing bytes"));
+    }
+    Ok(SequenceView {
+        exact: value,
+        count,
+    })
 }
 
 #[derive(Clone, Debug)]
@@ -471,9 +719,206 @@ fn resource_limit(detail: impl Into<String>) -> Diagnostic {
 mod tests {
     use super::{
         FieldType, MAX_SEQUENCE_ITEMS, RECORD_HEADER_LEN, RecordBuilder, decode_record,
-        decode_sequence,
+        decode_record_view, decode_sequence, decode_sequence_view,
     };
     use crate::diagnostics::ReasonCode;
+
+    fn assert_record_equivalent(bytes: &[u8]) {
+        match (decode_record(bytes), decode_record_view(bytes)) {
+            (Ok((owned, owned_len)), Ok((view, view_len))) => {
+                assert_eq!(
+                    (owned.kind, owned.version, owned_len),
+                    (view.kind, view.version, view_len)
+                );
+                for (left, right) in owned.fields.iter().zip(view.fields()) {
+                    assert_eq!(
+                        (left.tag, left.field_type, left.value),
+                        (right.tag, right.field_type, right.value)
+                    );
+                    assert!(std::ptr::eq(left.value.as_ptr(), right.value.as_ptr()));
+                }
+                assert_eq!(owned.fields.len(), view.fields().count());
+            }
+            (Err(owned), Err(view)) => assert_eq!(owned, view),
+            _ => panic!("owned and borrowed record acceptance disagrees"),
+        }
+    }
+
+    #[test]
+    fn borrowed_record_matches_owning_fields_schema_and_enclosing_tail() {
+        let mut builder = RecordBuilder::new(1);
+        builder
+            .u8(1, 9)
+            .unwrap()
+            .u16(2, 300)
+            .unwrap()
+            .u32(3, 80_000)
+            .unwrap()
+            .u64(4, u64::MAX)
+            .unwrap()
+            .i64(5, i64::MIN)
+            .unwrap()
+            .bool(6, true)
+            .unwrap()
+            .bytes(7, &[0, 1, 255])
+            .unwrap()
+            .utf8(8, "\u{03bb}")
+            .unwrap()
+            .sequence(9, &[vec![], vec![2, 3]])
+            .unwrap();
+        let mut bytes = builder.finish().unwrap();
+        let extent = bytes.len();
+        bytes.extend_from_slice(b"unrelated enclosing tail");
+        assert_record_equivalent(&bytes);
+        let (owned, _) = decode_record(&bytes).unwrap();
+        let (view, consumed) = decode_record_view(&bytes).unwrap();
+        assert_eq!(consumed, extent);
+        assert_eq!(
+            owned.field(7).unwrap().as_bytes(),
+            view.field(7).unwrap().as_bytes()
+        );
+        assert_eq!(
+            owned.field(8).unwrap().as_utf8(),
+            view.field(8).unwrap().as_utf8()
+        );
+        for (required, optional) in [
+            (&[1, 2, 3, 4, 5, 6, 7, 8, 9][..], &[][..]),
+            (&[1, 10][..], &[2][..]),
+            (&[1][..], &[][..]),
+        ] {
+            assert_eq!(
+                owned.expect_tags(required, optional),
+                view.expect_tags(required, optional)
+            );
+        }
+        assert_eq!(owned.field(10).unwrap_err(), view.field(10).unwrap_err());
+        assert_eq!(
+            owned.expect_versioned_tags(2, &[], &[]),
+            view.expect_versioned_tags(2, &[], &[])
+        );
+    }
+
+    #[test]
+    fn borrowed_record_preserves_version_assignments_and_error_precedence() {
+        let mut builder = RecordBuilder::new(1);
+        builder.u8(1, 7).unwrap().u8(2, 8).unwrap();
+        let bytes = builder.finish().unwrap();
+        for kind in [1_u16, 2, 3, 8, 21, 500] {
+            for version in [0_u16, 1, 2, 3, 4] {
+                let mut candidate = bytes.clone();
+                candidate[..2].copy_from_slice(&kind.to_be_bytes());
+                candidate[2..4].copy_from_slice(&version.to_be_bytes());
+                assert_record_equivalent(&candidate);
+            }
+        }
+        for cut in 0..bytes.len() {
+            assert_record_equivalent(&bytes[..cut]);
+        }
+        let second = RECORD_HEADER_LEN + 13;
+        for (index, value) in [
+            (second + 1, 1),
+            (second + 1, 0),
+            (second + 2, 255),
+            (second + 3, 1),
+            (4, 1),
+        ] {
+            let mut malformed = bytes.clone();
+            malformed[index] = value;
+            assert_record_equivalent(&malformed);
+        }
+        // Unknown type and flags precede duplicate-tag detection.
+        for (index, value) in [(second + 2, 255), (second + 3, 1)] {
+            let mut malformed = bytes.clone();
+            malformed[second + 1] = 1;
+            malformed[index] = value;
+            assert_record_equivalent(&malformed);
+            assert_eq!(
+                decode_record_view(&malformed).unwrap_err().code(),
+                ReasonCode::NoncanonicalEncoding
+            );
+        }
+        let mut overflow = bytes.clone();
+        overflow[8..16].copy_from_slice(&u64::MAX.to_be_bytes());
+        assert_record_equivalent(&overflow);
+        let mut field_overflow = bytes;
+        field_overflow[RECORD_HEADER_LEN + 4..RECORD_HEADER_LEN + 12]
+            .copy_from_slice(&u64::MAX.to_be_bytes());
+        assert_record_equivalent(&field_overflow);
+        for (kind, value) in [
+            (FieldType::U8, &[1, 2][..]),
+            (FieldType::Bool, &[2][..]),
+            (FieldType::Utf8, &[255][..]),
+        ] {
+            let mut malformed = RecordBuilder::new(1);
+            malformed.field(1, kind, value).unwrap();
+            assert_record_equivalent(&malformed.finish().unwrap());
+        }
+    }
+
+    #[test]
+    fn borrowed_sequence_keeps_lazy_field_boundary_and_validates_unvisited_tail() {
+        let mut late_invalid = 2_u64.to_be_bytes().to_vec();
+        late_invalid.extend_from_slice(&0_u64.to_be_bytes());
+        late_invalid.extend_from_slice(&5_u64.to_be_bytes());
+        let mut builder = RecordBuilder::new(1);
+        builder
+            .field(1, FieldType::Sequence, &late_invalid)
+            .unwrap();
+        let bytes = builder.finish().unwrap();
+        let (owned, _) = decode_record(&bytes).unwrap();
+        let (view, _) = decode_record_view(&bytes).unwrap();
+        assert_eq!(
+            owned.field(1).unwrap().as_sequence().unwrap_err(),
+            view.field(1).unwrap().as_sequence_view().unwrap_err()
+        );
+        // The initial record parse succeeded; a sequence view cannot expose
+        // the valid first item while deferring the malformed second one.
+        let cases = [
+            late_invalid,
+            vec![],
+            (MAX_SEQUENCE_ITEMS + 1).to_be_bytes().to_vec(),
+            MAX_SEQUENCE_ITEMS.to_be_bytes().to_vec(),
+            {
+                let mut trailing = 0_u64.to_be_bytes().to_vec();
+                trailing.push(0);
+                trailing
+            },
+        ];
+        for malformed in cases {
+            assert_eq!(
+                decode_sequence(&malformed).unwrap_err(),
+                decode_sequence_view(&malformed).unwrap_err()
+            );
+        }
+        let valid = super::encode_sequence(&[vec![], vec![7], vec![]]).unwrap();
+        let owned = decode_sequence(&valid).unwrap();
+        let view = decode_sequence_view(&valid).unwrap();
+        assert_eq!(owned, view.iter().collect::<Vec<_>>());
+        assert!(std::ptr::eq(
+            owned[1].as_ptr(),
+            view.iter().nth(1).unwrap().as_ptr()
+        ));
+    }
+
+    #[test]
+    fn borrowed_views_scan_large_valid_input_without_retaining_field_or_item_lists() {
+        let mut builder = RecordBuilder::new(1);
+        for tag in 1..=4096 {
+            builder.u8(tag, (tag % 251) as u8).unwrap();
+        }
+        let bytes = builder.finish().unwrap();
+        assert_record_equivalent(&bytes);
+        let (view, _) = decode_record_view(&bytes).unwrap();
+        assert_eq!(
+            view.field(4096).unwrap().as_u8().unwrap(),
+            (4096 % 251) as u8
+        );
+        let items = vec![vec![9]; 2048];
+        let encoded = super::encode_sequence(&items).unwrap();
+        let sequence = decode_sequence_view(&encoded).unwrap();
+        assert_eq!(sequence.iter().count(), items.len());
+        assert!(sequence.iter().all(|item| item == [9]));
+    }
 
     #[test]
     fn record_round_trip_is_deterministic() {

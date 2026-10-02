@@ -10,7 +10,7 @@ use super::{
     BoundaryMode, EncryptedOpenOptions, KeyHierarchy, PaddingMode, aead_open,
     public_crypto_context, wire,
 };
-use crate::canonical::decode_record;
+use crate::canonical::decode_record_view as decode_record;
 use crate::codec::{PlanMode, aggregate_archive_decode_requirements, plan_mode, validate_plans};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 use crate::eam::{
@@ -1365,7 +1365,7 @@ fn walk_segments(
 
 fn reserve_segment_object(
     object: &mut Vec<u8>,
-    fragment: &wire::PrivateFragment,
+    fragment: &wire::PrivateFragmentRef<'_>,
     segment_extent: u64,
     max_working_memory_bytes: u64,
 ) -> Result<()> {
@@ -1460,7 +1460,7 @@ fn decrypt_segment(
             .ok_or_else(|| segment_invalid("ciphertext byte total overflow"))?;
         exact_data.extend_from_slice(protected);
         exact_data.extend_from_slice(ciphertext);
-        let fragment = wire::decode_private_fragment(&private)?;
+        let fragment = wire::decode_private_fragment_ref(&private)?;
         if counter == 0 {
             if fragment.index != 0 || fragment.offset != 0 {
                 return Err(private_invalid("first object fragment is not initial"));
@@ -1485,7 +1485,7 @@ fn decrypt_segment(
                 "private fragments are not contiguous and exact",
             ));
         }
-        object.extend_from_slice(&fragment.bytes);
+        object.extend_from_slice(fragment.bytes);
         partial_next += 1;
         cursor = next;
     }
@@ -2389,13 +2389,13 @@ mod tests {
     #[test]
     fn forged_segment_object_total_is_refused_before_reserve() {
         let mut object = Vec::new();
-        let fragment = super::wire::PrivateFragment {
+        let fragment = super::wire::PrivateFragmentRef {
             object_id: [0; 32],
             total_len: u64::MAX,
             index: 0,
             count: 1,
             offset: 0,
-            bytes: vec![1],
+            bytes: &[1],
         };
         let error =
             super::reserve_segment_object(&mut object, &fragment, 256, 1 << 30).unwrap_err();

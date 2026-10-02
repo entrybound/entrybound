@@ -2,7 +2,7 @@
 
 use std::cmp::Ordering;
 
-use crate::canonical::{RecordBuilder, decode_record};
+use crate::canonical::{RecordBuilder, decode_record_view as decode_record};
 use crate::diagnostics::{Diagnostic, OutcomeClass, ReasonCode, Result};
 
 pub(crate) const FORMAT_NAMESPACE: &[u8] = b"ecf/bootstrap-v1";
@@ -493,13 +493,13 @@ fn validate_sequence_semantics(kind: u16, items: &[Vec<u8>]) -> Result<()> {
 
 fn collection_sort_key(
     kind: u16,
-    record: &crate::canonical::Record<'_>,
+    record: &crate::canonical::RecordView<'_>,
     exact: &[u8],
 ) -> Result<Vec<u8>> {
     let mut key = record.kind.to_be_bytes().to_vec();
     match kind {
         COLLECTION_MANIFEST if record.kind == 3 => {
-            for component_bytes in record.field(1)?.as_sequence()? {
+            for component_bytes in record.field(1)?.as_sequence_view()?.iter() {
                 let (component, consumed) = decode_record(component_bytes)?;
                 if consumed != component_bytes.len() || component.kind != 7 {
                     return Err(private_invalid("manifest path component is not canonical"));
@@ -563,16 +563,16 @@ pub(crate) fn encode_private_fragment(
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct PrivateFragment {
+pub(crate) struct PrivateFragmentRef<'a> {
     pub object_id: [u8; 32],
     pub total_len: u64,
     pub index: u32,
     pub count: u32,
     pub offset: u64,
-    pub bytes: Vec<u8>,
+    pub bytes: &'a [u8],
 }
 
-pub(crate) fn decode_private_fragment(input: &[u8]) -> Result<PrivateFragment> {
+pub(crate) fn decode_private_fragment_ref(input: &[u8]) -> Result<PrivateFragmentRef<'_>> {
     let (record, consumed) = decode_record(input)?;
     if consumed != input.len() || record.kind != RECORD_PRIVATE_FRAGMENT {
         return Err(private_invalid(
@@ -580,13 +580,13 @@ pub(crate) fn decode_private_fragment(input: &[u8]) -> Result<PrivateFragment> {
         ));
     }
     record.expect_tags(&[1, 2, 3, 4, 5, 6], &[])?;
-    let value = PrivateFragment {
+    let value = PrivateFragmentRef {
         object_id: exact(record.field(1)?.as_bytes()?)?,
         total_len: record.field(2)?.as_u64()?,
         index: record.field(3)?.as_u32()?,
         count: record.field(4)?.as_u32()?,
         offset: record.field(5)?.as_u64()?,
-        bytes: record.field(6)?.as_bytes()?.to_vec(),
+        bytes: record.field(6)?.as_bytes()?,
     };
     if value.count == 0 || value.index >= value.count || value.bytes.is_empty() {
         return Err(private_invalid("PrivateFragment cardinality is invalid"));
@@ -595,8 +595,24 @@ pub(crate) fn decode_private_fragment(input: &[u8]) -> Result<PrivateFragment> {
 }
 
 pub(crate) fn encrypted_object_id(bytes: &[u8]) -> Result<[u8; 32]> {
+    hash_t1_single("entrybound/encrypted-object/v1", bytes)
+}
+
+/// Hashes the exact one-field T1 grammar without a transcript allocation.
+fn hash_t1_single(label: &str, value: &[u8]) -> Result<[u8; 32]> {
     use sha2::{Digest as _, Sha256};
-    Ok(Sha256::digest(t1("entrybound/encrypted-object/v1", &[bytes])?).into())
+    if !label.is_ascii() || label.is_empty() || label.len() > usize::from(u16::MAX) {
+        return Err(private_invalid("T1 label is not canonical ASCII"));
+    }
+    let length = u64::try_from(value.len()).map_err(|_| private_invalid("T1 field exceeds u64"))?;
+    let mut hash = Sha256::new();
+    hash.update((label.len() as u16).to_be_bytes());
+    hash.update(label.as_bytes());
+    hash.update(1_u16.to_be_bytes());
+    hash.update(1_u16.to_be_bytes());
+    hash.update(length.to_be_bytes());
+    hash.update(value);
+    Ok(hash.finalize().into())
 }
 
 pub(crate) fn record_kind(input: &[u8]) -> Result<u16> {
@@ -655,6 +671,70 @@ fn stanza_invalid(detail: impl Into<String>) -> Diagnostic {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn object_hash_streams_the_exact_existing_t1_bytes() {
+        use sha2::{Digest as _, Sha256};
+        for length in [0, 1, 17, 64, 1024, 65_536] {
+            let bytes: Vec<u8> = (0..length).map(|i| (i % 251) as u8).collect();
+            let expected: [u8; 32] =
+                Sha256::digest(t1("entrybound/encrypted-object/v1", &[&bytes]).unwrap()).into();
+            assert_eq!(encrypted_object_id(&bytes).unwrap(), expected);
+        }
+        for label in ["", "\u{03bb}"] {
+            assert_eq!(
+                hash_t1_single(label, &[]).unwrap_err(),
+                t1(label, &[&[]]).unwrap_err()
+            );
+        }
+    }
+
+    #[test]
+    fn private_fragment_borrows_its_exact_record_payload() {
+        let bytes = encode_private_fragment(&[3; 32], 100, 1, 3, 12, &[5, 6, 7]).unwrap();
+        let fragment = decode_private_fragment_ref(&bytes).unwrap();
+        let (ordinary, consumed) = crate::canonical::decode_record(&bytes).unwrap();
+        assert_eq!(consumed, bytes.len());
+        let payload = ordinary.field(6).unwrap().as_bytes().unwrap();
+        assert_eq!(fragment.bytes, payload);
+        assert!(std::ptr::eq(fragment.bytes.as_ptr(), payload.as_ptr()));
+        assert_eq!(
+            (
+                fragment.object_id,
+                fragment.total_len,
+                fragment.index,
+                fragment.count,
+                fragment.offset
+            ),
+            ([3; 32], 100, 1, 3, 12)
+        );
+        let mut tail = bytes;
+        tail.push(0);
+        assert_eq!(
+            decode_private_fragment_ref(&tail).unwrap_err().code(),
+            ReasonCode::CryptoPrivateObjectInvalid
+        );
+        let mut zero_count = RecordBuilder::new(RECORD_PRIVATE_FRAGMENT);
+        zero_count
+            .bytes(1, &[3; 32])
+            .unwrap()
+            .u64(2, 100)
+            .unwrap()
+            .u32(3, 0)
+            .unwrap()
+            .u32(4, 0)
+            .unwrap()
+            .u64(5, 0)
+            .unwrap()
+            .bytes(6, &[5])
+            .unwrap();
+        assert_eq!(
+            decode_private_fragment_ref(&zero_count.finish().unwrap())
+                .unwrap_err()
+                .code(),
+            ReasonCode::CryptoPrivateObjectInvalid
+        );
+    }
 
     #[test]
     fn t1_and_sequence_are_closed_and_canonical() {
