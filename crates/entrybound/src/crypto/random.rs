@@ -627,6 +627,155 @@ impl Drop for ChunkDirectory {
     }
 }
 
+// The initialized length remains K after compaction: duplicate tail ordinals
+// still belong to this secret owner and are wiped before its lease is released.
+struct KnownChunkSegments {
+    slots: WorkVec<u64>,
+    bound: usize,
+    unique_len: usize,
+    #[cfg(test)]
+    budget: WorkBudget,
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum KnownChunkPhase {
+    BeforeReserve,
+    Ready,
+    BeforeFree,
+}
+
+#[cfg(test)]
+type KnownChunkObserver = fn(KnownChunkPhase, &WorkBudget, &[u64], usize);
+
+#[cfg(test)]
+std::thread_local! {
+    static KNOWN_CHUNK_OBSERVER: std::cell::Cell<Option<KnownChunkObserver>> =
+        const { std::cell::Cell::new(None) };
+}
+
+impl KnownChunkSegments {
+    fn reservation_bytes(bound: usize) -> Result<u64> {
+        let layout = std::alloc::Layout::array::<u64>(bound)
+            .map_err(|_| crypto_policy("known Chunk ordinal allocation layout overflows"))?;
+        u64::try_from(layout.size())
+            .map_err(|_| crypto_policy("known Chunk ordinal allocation exceeds u64"))
+    }
+
+    fn reserve_empty(budget: &WorkBudget, bound: usize) -> Result<Self> {
+        // Construct the wiping wrapper before either allocation or initialization.
+        let mut owner = Self {
+            slots: WorkVec::new(budget),
+            bound,
+            unique_len: 0,
+            #[cfg(test)]
+            budget: budget.clone(),
+        };
+        Self::reservation_bytes(bound)?;
+        #[cfg(test)]
+        owner.observe(KnownChunkPhase::BeforeReserve);
+        if bound != 0 {
+            // The only reserve is while empty, for the complete physical K.
+            owner.slots.reserve(bound)?;
+        }
+        Ok(owner)
+    }
+
+    fn new(budget: &WorkBudget, index: &ChunkDirectory) -> Result<Self> {
+        let mut owner = Self::reserve_empty(budget, index.len())?;
+        for locator in index.values() {
+            owner.push(locator.segment_ordinal)?;
+        }
+        owner.finish();
+        #[cfg(test)]
+        owner.observe(KnownChunkPhase::Ready);
+        Ok(owner)
+    }
+
+    fn push(&mut self, ordinal: u64) -> Result<()> {
+        if self.slots.as_slice().len() >= self.bound {
+            return Err(crypto_policy(
+                "known Chunk ordinal fixed bound is exhausted",
+            ));
+        }
+        // WorkVec's exact capacity adoption check established K spare slots.
+        // This bounded push cannot grow or copy an initialized secret owner.
+        self.slots.push(ordinal)
+    }
+
+    fn sift(slots: &mut [u64], mut root: usize, end: usize) {
+        // root < end/2 proves 2*root+1 < end; right <= end cannot overflow.
+        while root < end / 2 {
+            let left = root * 2 + 1;
+            let right = left + 1;
+            let child = if right < end && slots[right] > slots[left] {
+                right
+            } else {
+                left
+            };
+            if slots[root] >= slots[child] {
+                break;
+            }
+            slots.swap(root, child);
+            root = child;
+        }
+    }
+
+    fn finish(&mut self) {
+        let slots = self.slots.as_mut_slice();
+        let len = slots.len();
+        for root in (0..len / 2).rev() {
+            Self::sift(slots, root, len);
+        }
+        for end in (1..len).rev() {
+            slots.swap(0, end);
+            Self::sift(slots, 0, end);
+        }
+        let mut unique_len = 0;
+        for read in 0..len {
+            if unique_len == 0 || slots[read] != slots[unique_len - 1] {
+                slots[unique_len] = slots[read];
+                unique_len += 1;
+            }
+        }
+        self.unique_len = unique_len;
+    }
+
+    fn contains(&self, ordinal: &u64) -> bool {
+        let slots = self.slots.as_slice();
+        let (mut low, mut high) = (0, self.unique_len);
+        while low < high {
+            let middle = low + (high - low) / 2;
+            match slots[middle].cmp(ordinal) {
+                std::cmp::Ordering::Less => low = middle + 1,
+                std::cmp::Ordering::Greater => high = middle,
+                std::cmp::Ordering::Equal => return true,
+            }
+        }
+        false
+    }
+
+    #[cfg(test)]
+    fn observe(&self, phase: KnownChunkPhase) {
+        KNOWN_CHUNK_OBSERVER.with(|cell| {
+            if let Some(observer) = cell.get() {
+                observer(phase, &self.budget, self.slots.as_slice(), self.bound);
+            }
+        });
+    }
+}
+
+impl Drop for KnownChunkSegments {
+    fn drop(&mut self) {
+        for ordinal in self.slots.as_mut_slice() {
+            ordinal.zeroize();
+        }
+        #[cfg(test)]
+        self.observe(KnownChunkPhase::BeforeFree);
+        // WorkVec then frees backing before releasing the original budget lease.
+    }
+}
+
 fn fallback_slot_bound(segments: &[SegmentLocator], cap: u64) -> Result<usize> {
     // Only the current traversal is bounded here: each PAYLOAD segment is
     // considered once and its one returned WorkObject can insert at most once.
@@ -1420,11 +1569,7 @@ impl EncryptedRandomAccessArchive {
         if self.support.is_some() {
             return Ok(());
         }
-        let known_chunk_segments = self
-            .index
-            .values()
-            .map(|value| value.segment_ordinal)
-            .collect::<BTreeSet<_>>();
+        let known_chunk_segments = KnownChunkSegments::new(self.work.budget(), &self.index)?;
         let mut dictionary_items = None;
         let mut reconstruction_items = None;
         let mut region_items = None;
@@ -2779,6 +2924,1103 @@ mod tests {
         slot.salt[8..].copy_from_slice(&value.to_be_bytes());
         slot.header[..8].copy_from_slice(&value.to_be_bytes());
         slot
+    }
+
+    #[derive(Default)]
+    struct KnownState {
+        budget: Option<super::WorkBudget>,
+        reserve_leave: Option<u64>,
+        release_ready: bool,
+        held: Option<super::WorkBytes>,
+        ready_live: u64,
+        ready_available: u64,
+        events: Vec<(super::KnownChunkPhase, usize, usize, u64)>,
+        target: Option<(u64, u64)>,
+        fill_leave: Option<u64>,
+        fill_live: u64,
+        fill_available: u64,
+        hits: usize,
+        reads: Vec<(u64, u64)>,
+    }
+
+    std::thread_local! {
+        static KNOWN_STATE: std::cell::RefCell<Option<Arc<Mutex<KnownState>>>> =
+            const { std::cell::RefCell::new(None) };
+    }
+
+    fn observe_known(
+        phase: super::KnownChunkPhase,
+        budget: &super::WorkBudget,
+        slots: &[u64],
+        bound: usize,
+    ) {
+        KNOWN_STATE.with(|cell| {
+            let shared = cell.borrow().as_ref().unwrap().clone();
+            let mut state = shared.lock().unwrap_or_else(|e| e.into_inner());
+            match phase {
+                super::KnownChunkPhase::BeforeReserve => {
+                    assert!(slots.is_empty());
+                    state.budget = Some(budget.clone());
+                    if let Some(leave) = state.reserve_leave {
+                        let held = budget.available_bytes().checked_sub(leave).unwrap();
+                        let pressure = super::WorkBytes::zeroed(budget, held as usize).unwrap();
+                        assert!(pressure.belongs_to(budget));
+                        state.held = Some(pressure);
+                        assert_eq!(budget.available_bytes(), leave);
+                    }
+                }
+                super::KnownChunkPhase::Ready => {
+                    assert_eq!(slots.len(), bound);
+                    state.ready_live = budget.live_bytes();
+                    state.ready_available = budget.available_bytes();
+                    if state.release_ready {
+                        drop(state.held.take());
+                    }
+                }
+                super::KnownChunkPhase::BeforeFree => {
+                    assert!(slots.iter().all(|value| *value == 0));
+                    if !slots.is_empty() {
+                        assert!(
+                            budget.live_bytes()
+                                >= super::KnownChunkSegments::reservation_bytes(bound).unwrap()
+                        );
+                    }
+                }
+            }
+            state
+                .events
+                .push((phase, bound, slots.len(), budget.live_bytes()));
+        });
+    }
+
+    struct KnownObserverGuard {
+        previous: Option<super::KnownChunkObserver>,
+        previous_state: Option<Arc<Mutex<KnownState>>>,
+    }
+
+    impl KnownObserverGuard {
+        fn install(state: &Arc<Mutex<KnownState>>) -> Self {
+            Self {
+                previous: super::KNOWN_CHUNK_OBSERVER
+                    .with(|cell| cell.replace(Some(observe_known))),
+                previous_state: KNOWN_STATE.with(|cell| cell.replace(Some(Arc::clone(state)))),
+            }
+        }
+    }
+
+    impl Drop for KnownObserverGuard {
+        fn drop(&mut self) {
+            super::KNOWN_CHUNK_OBSERVER.with(|cell| cell.set(self.previous));
+            KNOWN_STATE.with(|cell| *cell.borrow_mut() = self.previous_state.take());
+        }
+    }
+
+    struct KnownSource {
+        source: MemoryRandomReadSource,
+        state: Arc<Mutex<KnownState>>,
+    }
+
+    impl RandomReadSource for KnownSource {
+        fn len(&self) -> crate::diagnostics::Result<u64> {
+            self.source.len()
+        }
+        fn revision(&self) -> crate::diagnostics::Result<SourceRevision> {
+            self.source.revision()
+        }
+        fn read_exact_at(&self, _: u64, _: u64) -> crate::diagnostics::Result<Vec<u8>> {
+            panic!("known ordinal scan must use bounded source fill")
+        }
+        fn read_exact_at_into(
+            &self,
+            offset: u64,
+            dst: &mut [u8],
+        ) -> crate::diagnostics::Result<()> {
+            let mut state = self.state.lock().unwrap();
+            state.reads.push((offset, dst.len() as u64));
+            if state.target == Some((offset, dst.len() as u64)) {
+                state.hits += 1;
+                if state.hits == 1 {
+                    let budget = state.budget.as_ref().unwrap().clone();
+                    if let Some(leave) = state.fill_leave {
+                        let held = budget.available_bytes().checked_sub(leave).unwrap();
+                        let pressure = super::WorkBytes::zeroed(&budget, held as usize)?;
+                        assert!(pressure.belongs_to(&budget));
+                        state.held = Some(pressure);
+                    }
+                    state.fill_live = budget.live_bytes();
+                    state.fill_available = budget.available_bytes();
+                }
+            }
+            drop(state);
+            self.source.read_exact_at_into(offset, dst)
+        }
+    }
+
+    fn known_source(bytes: Vec<u8>, state: &Arc<Mutex<KnownState>>) -> KnownSource {
+        KnownSource {
+            source: MemoryRandomReadSource::new(bytes),
+            state: Arc::clone(state),
+        }
+    }
+
+    fn known_fixture(include_index: bool) -> SegmentFixture {
+        let directory = TestDir::new();
+        let expected = (0_u64..12)
+            .map(|i| {
+                let name = format!("known{i:02}");
+                let bytes = (i + 1).to_be_bytes();
+                std::fs::write(directory.path().join(&name), bytes).unwrap();
+                (name, bytes)
+            })
+            .collect::<Vec<_>>();
+        let mut archive = plan_directory(directory.path(), PackOptions::default()).unwrap();
+        archive.descriptor.features.incompat |= crate::ecf::FEATURE_CROSS_FILE_COMPRESSION_V1
+            | crate::ecf::FEATURE_CODEC_TRANSFORM_V1
+            | crate::ecf::FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
+            | crate::ecf::FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1;
+        let (identity, recipient) = XWingIdentity::generate().unwrap();
+        let encrypted = encrypt_archive(
+            &archive,
+            EncryptedWriteOptions {
+                recipients: &[recipient],
+                padding: PaddingMode::None,
+                include_index,
+                ..EncryptedWriteOptions::default()
+            },
+        )
+        .unwrap();
+        let mut options = EncryptedOpenOptions::new(Some(Unlock::Identity(&identity)));
+        options.crypto_policy.max_working_memory_bytes = SEGMENT_FINITE_LIMIT;
+        let opened = open_indexed_random_encrypted(
+            MemoryRandomReadSource::new(encrypted.bytes.clone()),
+            segment_access_policy(),
+            options,
+        )
+        .unwrap();
+        let segments = opened.segments.as_slice().to_vec();
+        let footer = super::parse_footer(
+            &encrypted.bytes[encrypted.bytes.len() - 192..],
+            encrypted.bytes.len() as u64,
+        )
+        .unwrap();
+        SegmentFixture {
+            bytes: encrypted.bytes,
+            identity,
+            expected,
+            footer,
+            segments,
+        }
+    }
+
+    fn known_open(
+        fixture: &SegmentFixture,
+        state: &Arc<Mutex<KnownState>>,
+        policy: RandomAccessPolicy,
+    ) -> super::EncryptedRandomAccessArchive {
+        let mut options = EncryptedOpenOptions::new(Some(Unlock::Identity(&fixture.identity)));
+        options.crypto_policy.max_working_memory_bytes = SEGMENT_FINITE_LIMIT;
+        open_indexed_random_encrypted(known_source(fixture.bytes.clone(), state), policy, options)
+            .unwrap()
+    }
+
+    // Derive the complete expected fetches directly from immutable fixture bytes.
+    // This oracle does not call protected-record preflight or decrypt_segment.
+    fn known_read_oracle(
+        fixture: &SegmentFixture,
+        ordinals: impl IntoIterator<Item = usize>,
+    ) -> Vec<(u64, u64)> {
+        let mut reads = Vec::new();
+        for ordinal in ordinals {
+            let segment = fixture.segments[ordinal];
+            let end = segment.offset.checked_add(segment.extent).unwrap();
+            assert!(end <= u64::try_from(fixture.bytes.len()).unwrap());
+            let mut cursor = segment.offset.checked_add(64).unwrap();
+            assert!(cursor <= end);
+            for counter in 0..=u64::from(segment.count) {
+                let header_end = cursor.checked_add(32).unwrap();
+                assert!(header_end <= end);
+                let header = fixture
+                    .bytes
+                    .get(usize::try_from(cursor).unwrap()..usize::try_from(header_end).unwrap())
+                    .unwrap();
+                assert_eq!(&header[..4], b"EBC1");
+                assert_eq!(u16::from_be_bytes(header[4..6].try_into().unwrap()), 1);
+                let class = if counter == u64::from(segment.count) {
+                    2
+                } else {
+                    1
+                };
+                assert_eq!(header[6], class);
+                assert_eq!(header[7], 0);
+                assert_eq!(
+                    u64::from_be_bytes(header[8..16].try_into().unwrap()),
+                    u64::try_from(ordinal).unwrap()
+                );
+                assert_eq!(
+                    u64::from_be_bytes(header[16..24].try_into().unwrap()),
+                    counter
+                );
+                let ciphertext_len = u64::from_be_bytes(header[24..32].try_into().unwrap());
+                assert!(ciphertext_len >= 16);
+                reads.push((cursor, 32));
+                cursor = header_end.checked_add(ciphertext_len).unwrap();
+                assert!(cursor <= end);
+            }
+            assert_eq!(cursor, end);
+            reads.push((segment.offset, segment.extent));
+        }
+        reads
+    }
+
+    fn known_index(work: &super::CryptoWorkContext, ordinals: &[u64]) -> super::ChunkDirectory {
+        let mut index = super::ChunkDirectory::new(work.budget(), ordinals.len(), true);
+        for (i, ordinal) in ordinals.iter().enumerate() {
+            index
+                .append_index(slot_digest(i as u64), slot_locator(*ordinal))
+                .unwrap();
+        }
+        index
+    }
+
+    #[test]
+    fn known_ordinals_heap_compaction_and_lookup_match_independent_set() {
+        let cases = [
+            vec![],
+            vec![u64::MAX],
+            (0..129).collect(),
+            (0..129).rev().collect(),
+            (0..65).flat_map(|i| [i, 128 - i]).collect(),
+            vec![5, 2, 5, 0, u64::MAX, 2, u64::MAX - 1, 0, u64::MAX],
+            vec![17; 129],
+        ];
+        for ordinals in cases {
+            let work = test_work(128 * 1024);
+            let index = known_index(&work, &ordinals);
+            let oracle = ordinals
+                .iter()
+                .copied()
+                .collect::<std::collections::BTreeSet<_>>();
+            let baseline = work.budget().live_bytes();
+            let owner = super::KnownChunkSegments::new(work.budget(), &index).unwrap();
+            assert_eq!(owner.slots.as_slice().len(), ordinals.len());
+            assert_eq!(owner.unique_len, oracle.len());
+            assert_eq!(
+                &owner.slots.as_slice()[..owner.unique_len],
+                oracle.iter().copied().collect::<Vec<_>>()
+            );
+            assert_eq!(
+                work.budget().live_bytes(),
+                baseline + ordinals.len() as u64 * 8
+            );
+            for value in (0..135).chain([u64::MAX - 1, u64::MAX]) {
+                assert_eq!(owner.contains(&value), oracle.contains(&value));
+            }
+            drop(owner);
+            assert_eq!(work.budget().live_bytes(), baseline);
+        }
+    }
+
+    #[test]
+    fn known_ordinals_checked_layout_fixed_fill_and_no_growth_at_zero_headroom() {
+        assert_eq!(super::KnownChunkSegments::reservation_bytes(0).unwrap(), 0);
+        for count in [usize::MAX, isize::MAX as usize / 8 + 1] {
+            let error = super::KnownChunkSegments::reservation_bytes(count).unwrap_err();
+            assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+            assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        }
+        let zero = test_work(0);
+        let owner = super::KnownChunkSegments::reserve_empty(zero.budget(), 0).unwrap();
+        assert_eq!(zero.budget().live_bytes(), 0);
+        drop(owner);
+        let k = 17;
+        let charge = super::KnownChunkSegments::reservation_bytes(k).unwrap();
+        assert_eq!(
+            charge,
+            std::alloc::Layout::array::<u64>(k).unwrap().size() as u64
+        );
+        let work = test_work(charge + 19);
+        let caller = super::WorkBytes::zeroed(work.budget(), 19).unwrap();
+        let mut owner = super::KnownChunkSegments::reserve_empty(work.budget(), k).unwrap();
+        let pointer = owner.slots.as_slice().as_ptr();
+        assert_eq!(owner.slots.minimum_reservation_bytes(k).unwrap(), 0);
+        assert_eq!(
+            owner.slots.minimum_reservation_bytes(k + 1).unwrap(),
+            (k + 1) as u64 * 8
+        );
+        assert_eq!(work.budget().available_bytes(), 0);
+        for i in (0..k).rev() {
+            owner.push(i as u64).unwrap();
+            assert_eq!(owner.slots.as_slice().as_ptr(), pointer);
+            assert_eq!(work.budget().live_bytes(), charge + 19);
+        }
+        let error = owner.push(99).unwrap_err();
+        assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        owner.finish();
+        for value in [0, 8, 16, 17, u64::MAX] {
+            assert_eq!(owner.contains(&value), value < k as u64);
+        }
+        assert_eq!(owner.slots.as_slice().as_ptr(), pointer);
+        assert_eq!(owner.slots.as_slice().len(), k);
+        assert_eq!(work.budget().available_bytes(), 0);
+        drop(owner);
+        assert_eq!(work.budget().live_bytes(), 19);
+        drop(caller);
+        assert_eq!(work.budget().live_bytes(), 0);
+        let short = test_work(charge - 1);
+        assert!(super::KnownChunkSegments::reserve_empty(short.budget(), k).is_err());
+        assert_eq!(short.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn known_ordinals_wipe_full_duplicate_tail_and_partial_prefix_on_every_exit() {
+        let state = Arc::new(Mutex::new(KnownState::default()));
+        let work = test_work(7 * 8 + 13);
+        let caller = super::WorkBytes::zeroed(work.budget(), 13).unwrap();
+        for (mode, initialized) in [(0, 7), (1, 3), (2, 7), (3, 3)] {
+            let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                let _observer = KnownObserverGuard::install(&state);
+                let mut owner = super::KnownChunkSegments::reserve_empty(work.budget(), 7).unwrap();
+                for _ in 0..initialized {
+                    owner.push(u64::MAX).unwrap();
+                }
+                owner.finish();
+                assert_eq!(owner.unique_len, 1);
+                assert_eq!(owner.slots.as_slice().len(), initialized);
+                assert!(owner.slots.as_slice()[1..].iter().all(|v| *v == u64::MAX));
+                if mode == 2 || mode == 3 {
+                    panic!("generated owner unwind");
+                }
+                if mode == 1 {
+                    return Err(super::crypto_policy("generated partial error"));
+                }
+                Ok(())
+            }));
+            assert_eq!(outcome.is_err(), mode >= 2);
+            if mode == 1 {
+                assert!(outcome.unwrap().is_err());
+            }
+            assert_eq!(work.budget().live_bytes(), 13);
+            assert!(super::KNOWN_CHUNK_OBSERVER.with(|cell| cell.get().is_none()));
+            assert!(KNOWN_STATE.with(|cell| cell.borrow().is_none()));
+        }
+        let state = state.lock().unwrap();
+        let wipes = state
+            .events
+            .iter()
+            .filter(|e| e.0 == super::KnownChunkPhase::BeforeFree)
+            .map(|e| (e.1, e.2, e.3))
+            .collect::<Vec<_>>();
+        assert_eq!(wipes, vec![(7, 7, 69), (7, 3, 69), (7, 7, 69), (7, 3, 69)]);
+        drop(state);
+        drop(caller);
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn known_ordinals_authenticated_exact_fit_and_one_byte_refusal_precede_payload() {
+        let fixture = known_fixture(true);
+        for short in [false, true] {
+            let state = Arc::new(Mutex::new(KnownState::default()));
+            let mut reader = known_open(&fixture, &state, segment_access_policy());
+            assert_eq!(
+                reader.index_status,
+                super::RandomAccessIndexStatus::PresentValid
+            );
+            let k = reader.index.len();
+            assert_eq!(k, fixture.expected.len());
+            let charge = super::KnownChunkSegments::reservation_bytes(k).unwrap();
+            let baseline = reader.work.budget().live_bytes();
+            let reads_before = state.lock().unwrap().reads.len();
+            {
+                let mut state = state.lock().unwrap();
+                state.reserve_leave = Some(charge - u64::from(short));
+                state.release_ready = true;
+            }
+            {
+                let _observer = KnownObserverGuard::install(&state);
+                let result = reader.load_support_and_index_fallback();
+                if short {
+                    let error = result.unwrap_err();
+                    assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+                    assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+                    assert_eq!(state.lock().unwrap().reads.len(), reads_before);
+                    assert_eq!(
+                        reader.index_status,
+                        super::RandomAccessIndexStatus::PresentValid
+                    );
+                    assert_eq!(reader.index.len(), k);
+                    assert!(reader.support.is_none());
+                } else {
+                    result.unwrap();
+                    assert!(reader.support.is_some());
+                    assert_eq!(reader.index.len(), k);
+                    assert_eq!(
+                        reader.index_status,
+                        super::RandomAccessIndexStatus::PresentValid
+                    );
+                    let count = state.lock().unwrap().events.len();
+                    reader.load_support_and_index_fallback().unwrap();
+                    assert_eq!(state.lock().unwrap().events.len(), count);
+                    for (name, bytes) in &fixture.expected {
+                        let entry = reader
+                            .read_entry(&LogicalPath::from_utf8([name.as_str()]).unwrap())
+                            .unwrap();
+                        assert_eq!(&*entry.bytes, bytes);
+                    }
+                }
+            }
+            {
+                let mut state = state.lock().unwrap();
+                let ready = state
+                    .events
+                    .iter()
+                    .filter(|e| e.0 == super::KnownChunkPhase::Ready)
+                    .count();
+                assert_eq!(ready, usize::from(!short));
+                if !short {
+                    assert_eq!(state.ready_available, 0);
+                    assert_eq!(state.ready_live, SEGMENT_FINITE_LIMIT);
+                }
+                assert!(
+                    state
+                        .events
+                        .iter()
+                        .any(|e| e.0 == super::KnownChunkPhase::BeforeFree
+                            && e.2 == if short { 0 } else { k })
+                );
+                drop(state.held.take());
+            }
+            if short {
+                assert_eq!(reader.work.budget().live_bytes(), baseline);
+                reader.load_support_and_index_fallback().unwrap();
+                assert!(reader.support.is_some());
+            }
+            let budget = reader.work.budget().clone();
+            drop(reader);
+            assert_eq!(budget.live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn known_ordinals_authenticated_scan_skips_known_chunks_but_reads_real_support() {
+        let fixture = known_fixture(true);
+        let state = Arc::new(Mutex::new(KnownState::default()));
+        let mut reader = known_open(&fixture, &state, segment_access_policy());
+        let revision = reader.session.initial_revision().clone();
+        let known = reader
+            .index
+            .values()
+            .map(|l| l.segment_ordinal)
+            .collect::<std::collections::BTreeSet<_>>();
+        let before = state.lock().unwrap().reads.len();
+        let trace_before = reader.session.trace().len();
+        let requests_before = reader.session.range_requests();
+        let fetched_before = reader.session.bytes_fetched();
+        {
+            let _observer = KnownObserverGuard::install(&state);
+            reader.load_support_and_index_fallback().unwrap();
+        }
+        let reads = state.lock().unwrap().reads[before..].to_vec();
+        let support_ordinals = fixture
+            .segments
+            .iter()
+            .enumerate()
+            .filter(|(i, s)| s.class == super::SEGMENT_PAYLOAD && !known.contains(&(*i as u64)))
+            .map(|(i, _)| i)
+            .collect::<Vec<_>>();
+        assert_eq!(support_ordinals.len(), 3);
+        let expected = known_read_oracle(&fixture, support_ordinals);
+        assert_eq!(expected.len(), 9);
+        assert_eq!(reads, expected);
+        assert_eq!(reader.session.trace().len() - trace_before, expected.len());
+        assert_eq!(
+            reader.session.range_requests() - requests_before,
+            expected.len() as u64
+        );
+        assert_eq!(
+            reader.session.bytes_fetched() - fetched_before,
+            expected.iter().map(|r| r.1).sum::<u64>()
+        );
+        assert_eq!(
+            reader.index_status,
+            super::RandomAccessIndexStatus::PresentValid
+        );
+        assert!(reader.support.is_some());
+        assert_eq!(reader.session.initial_revision(), &revision);
+        assert_eq!(
+            state.lock().unwrap().events.last().unwrap().0,
+            super::KnownChunkPhase::BeforeFree
+        );
+        for (name, bytes) in &fixture.expected {
+            let entry = reader
+                .read_entry(&LogicalPath::from_utf8([name.as_str()]).unwrap())
+                .unwrap();
+            assert_eq!(&*entry.bytes, bytes);
+        }
+    }
+
+    #[test]
+    fn known_ordinals_physical_membership_and_missing_invalid_index_rebuild() {
+        for include_index in [true, false] {
+            let fixture = known_fixture(include_index);
+            for invalid in [false, true] {
+                let state = Arc::new(Mutex::new(KnownState::default()));
+                let mut reader = known_open(&fixture, &state, segment_access_policy());
+                if invalid {
+                    // Authenticate a deliberately invalid canonical Index body
+                    // with the archive's real keys, then feed its rejected state
+                    // into the unchanged archive's live PAYLOAD fallback.
+                    let records = [index_record(slot_digest(0).as_bytes(), u64::MAX, 0, 1)];
+                    let bytes =
+                        super::wire::sequence_container(super::wire::COLLECTION_INDEX, &records)
+                            .unwrap();
+                    let exact =
+                        super::wire::private_object(super::wire::PRIVATE_OBJECT_SEQUENCE, &bytes)
+                            .unwrap();
+                    let fragment = super::wire::PrivateFragmentRef {
+                        object_id: super::wire::encrypted_object_id(&exact).unwrap(),
+                        total_len: exact.len() as u64,
+                        index: 0,
+                        count: 1,
+                        offset: 0,
+                        bytes: &exact,
+                    };
+                    let (source, locator) = authenticated_test_segment(
+                        &[fragment],
+                        &reader.envelope.view().archive_id,
+                        &reader.keys,
+                        false,
+                    );
+                    let mut session = super::RangeSession::new_crypto(
+                        Box::new(MemoryRandomReadSource::new(source)),
+                        segment_access_policy(),
+                        reader.work.budget().clone(),
+                    )
+                    .unwrap();
+                    let mut options = EncryptedOpenOptions::new(None);
+                    options.crypto_policy = reader.work.policy();
+                    let object = super::decrypt_segment(
+                        &mut session,
+                        &locator,
+                        0,
+                        &reader.envelope.view(),
+                        &reader.keys,
+                        reader.padding,
+                        options,
+                        super::AccessPurpose::EncryptedPayload,
+                        &reader.work,
+                    )
+                    .unwrap();
+                    let sequence =
+                        super::wire::WorkSequence::decode_with_context(object, &reader.work)
+                            .unwrap();
+                    let (index, status) = super::decode_index_or_rebuild(
+                        &sequence,
+                        reader.segments.as_slice(),
+                        reader.metadata.descriptor.budget.chunk_count,
+                        &reader.work,
+                    )
+                    .unwrap();
+                    assert_eq!(status, super::RandomAccessIndexStatus::RebuiltInvalid);
+                    reader.index = index;
+                    reader.index_status = status;
+                } else if include_index {
+                    // Exercise physical ordinals independently of digest order:
+                    // repeated known PAYLOAD, a known CONTROL and a nonexistent
+                    // ordinal cannot suppress other real PAYLOAD reads.
+                    let ordinal = reader
+                        .index
+                        .values()
+                        .map(|l| l.segment_ordinal)
+                        .min()
+                        .unwrap();
+                    let control = reader
+                        .segments
+                        .as_slice()
+                        .iter()
+                        .position(|s| s.class == super::SEGMENT_CONTROL)
+                        .unwrap() as u64;
+                    reader.index =
+                        known_index(&reader.work, &[ordinal, control, ordinal, u64::MAX]);
+                }
+                let expected_skip = if include_index && !invalid {
+                    reader.index.values().next().unwrap().segment_ordinal
+                } else {
+                    u64::MAX
+                };
+                let before = state.lock().unwrap().reads.len();
+                {
+                    let _observer = KnownObserverGuard::install(&state);
+                    let result = reader.load_support_and_index_fallback();
+                    if include_index && !invalid {
+                        let error = result.unwrap_err();
+                        assert_eq!(error.class(), super::OutcomeClass::Nonconforming);
+                        assert_eq!(error.detail(), "rebuilt encrypted Chunk count mismatch");
+                    } else {
+                        result.unwrap();
+                    }
+                }
+                let reads = state.lock().unwrap().reads[before..].to_vec();
+                let expected_reads = known_read_oracle(
+                    &fixture,
+                    fixture
+                        .segments
+                        .iter()
+                        .enumerate()
+                        .filter(|(i, s)| {
+                            s.class == super::SEGMENT_PAYLOAD && (*i as u64 != expected_skip)
+                        })
+                        .map(|(i, _)| i),
+                );
+                assert_eq!(reads, expected_reads);
+                assert_eq!(
+                    reader.index.len(),
+                    fixture.expected.len() - usize::from(include_index && !invalid)
+                );
+                if include_index || invalid {
+                    assert_eq!(
+                        reader.index_status,
+                        super::RandomAccessIndexStatus::RebuiltInvalid
+                    );
+                } else {
+                    assert_eq!(
+                        reader.index_status,
+                        super::RandomAccessIndexStatus::RebuiltAbsent
+                    );
+                }
+                assert_eq!(reader.support.is_some(), invalid || !include_index);
+                // Do not claim the deliberately suppressed Chunk is usable;
+                // genuine absent/invalid rebuilds recover every entry.
+                if invalid || !include_index {
+                    for (name, bytes) in &fixture.expected {
+                        assert_eq!(
+                            &*reader
+                                .read_entry(&LogicalPath::from_utf8([name.as_str()]).unwrap())
+                                .unwrap()
+                                .bytes,
+                            bytes
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    fn known_object(
+        reader: &mut super::EncryptedRandomAccessArchive,
+        ordinal: usize,
+    ) -> super::wire::WorkObject {
+        let locator = reader.segments.as_slice()[ordinal];
+        let mut options = EncryptedOpenOptions::new(None);
+        options.crypto_policy = reader.work.policy();
+        options.resource_policy = reader.session.policy().resource_policy;
+        options.decode_policy = reader.session.policy().decode_policy;
+        super::decrypt_segment(
+            &mut reader.session,
+            &locator,
+            ordinal as u64,
+            &reader.envelope.view(),
+            &reader.keys,
+            reader.padding,
+            options,
+            super::AccessPurpose::EncryptedPayload,
+            &reader.work,
+        )
+        .unwrap()
+    }
+
+    fn miss_first_known_ordinal(reader: &mut super::EncryptedRandomAccessArchive) {
+        let first = reader
+            .index
+            .values()
+            .map(|l| l.segment_ordinal)
+            .min()
+            .unwrap();
+        let mut index = super::ChunkDirectory::new(reader.work.budget(), reader.index.len(), true);
+        for (digest, locator) in reader.index.iter() {
+            let mut locator = *locator;
+            if locator.segment_ordinal == first {
+                locator.segment_ordinal = u64::MAX;
+            }
+            index
+                .append_index(super::Digest::from_bytes(*digest), locator)
+                .unwrap();
+        }
+        reader.index = index;
+    }
+
+    #[test]
+    fn known_ordinals_remain_live_through_raw_discovered_and_retained_support_overlap() {
+        let fixture = known_fixture(true);
+        let calibration = Arc::new(Mutex::new(KnownState::default()));
+        let mut probe = known_open(&fixture, &calibration, segment_access_policy());
+        let payloads = probe
+            .segments
+            .as_slice()
+            .iter()
+            .enumerate()
+            .filter(|(_, s)| s.class == super::SEGMENT_PAYLOAD)
+            .map(|(i, _)| i)
+            .collect::<Vec<_>>();
+        assert_eq!(payloads.len(), fixture.expected.len() + 3);
+        let mut support_kinds = std::collections::BTreeSet::new();
+        let mut support_collections = Vec::new();
+        let mut support_owned = 0_u64;
+        for i in &payloads[..3] {
+            let object = known_object(&mut probe, *i);
+            assert_eq!(
+                object.view().unwrap().0,
+                super::wire::PRIVATE_OBJECT_SEQUENCE
+            );
+            let raw_len = u64::try_from(object.exact_bytes().len()).unwrap();
+            // The raw object and any source trace capacity are already charged.
+            // Only this decode adds the full WorkSequence span-table backing.
+            let before_decode = probe.work.budget().live_bytes();
+            let without_object = before_decode.checked_sub(raw_len).unwrap();
+            let sequence =
+                super::wire::WorkSequence::decode_with_context(object, &probe.work).unwrap();
+            let span_bytes = probe
+                .work
+                .budget()
+                .live_bytes()
+                .checked_sub(before_decode)
+                .unwrap();
+            assert_eq!(span_bytes > 0, sequence.len() != 0);
+            assert!(support_kinds.insert(sequence.kind()));
+            support_collections.push((sequence.kind(), sequence.len()));
+            let owned_bytes = raw_len.checked_add(span_bytes).unwrap();
+            support_owned = support_owned.checked_add(owned_bytes).unwrap();
+            drop(sequence);
+            // Trace capacity stays in without_object; release only raw+spans.
+            assert_eq!(probe.work.budget().live_bytes(), without_object);
+        }
+        assert_eq!(
+            support_kinds,
+            std::collections::BTreeSet::from([
+                super::wire::COLLECTION_DICTIONARIES,
+                super::wire::COLLECTION_RECONSTRUCTION_DATA,
+                super::wire::COLLECTION_RECONSTRUCTION_REGIONS,
+            ])
+        );
+        assert_eq!(support_collections.len(), 3);
+        let first_chunk = probe.segments.as_slice()[payloads[3]];
+        let raw_len = known_object(&mut probe, payloads[3]).exact_bytes().len() as u64;
+        let bound = super::fallback_slot_bound(probe.segments.as_slice(), u64::MAX).unwrap();
+        let directory_bytes = super::ChunkDirectory::reservation_bytes(bound).unwrap();
+        assert!(directory_bytes > first_chunk.extent + 64);
+        drop(probe);
+        for pressure in [true, false] {
+            let state = Arc::new(Mutex::new(KnownState::default()));
+            let mut reader = known_open(&fixture, &state, segment_access_policy());
+            miss_first_known_ordinal(&mut reader);
+            let k = reader.index.len();
+            let known_bytes = super::KnownChunkSegments::reservation_bytes(k).unwrap();
+            let baseline = reader.work.budget().live_bytes();
+            {
+                let mut state = state.lock().unwrap();
+                state.target = Some((first_chunk.offset, first_chunk.extent));
+                if pressure {
+                    state.fill_leave = Some(directory_bytes - 1 - first_chunk.extent + raw_len);
+                }
+            }
+            {
+                let _observer = KnownObserverGuard::install(&state);
+                let result = reader.load_support_and_index_fallback();
+                let state_guard = state.lock().unwrap();
+                assert_eq!(state_guard.hits, 1);
+                assert!(
+                    state_guard.fill_live
+                        >= baseline + known_bytes + support_owned + first_chunk.extent
+                );
+                drop(state_guard);
+                if pressure {
+                    let error = result.unwrap_err();
+                    assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+                    assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+                    assert_eq!(
+                        error.detail(),
+                        "managed crypto replacement and required headroom exceed caller policy"
+                    );
+                    assert_eq!(
+                        reader.index_status,
+                        super::RandomAccessIndexStatus::PresentValid
+                    );
+                    assert_eq!(reader.index.len(), k);
+                    assert!(reader.support.is_none());
+                    let state_guard = state.lock().unwrap();
+                    assert_eq!(
+                        state_guard.fill_available + first_chunk.extent - raw_len,
+                        directory_bytes - 1
+                    );
+                    assert_eq!(
+                        state_guard.reads.last(),
+                        Some(&(first_chunk.offset, first_chunk.extent))
+                    );
+                    assert_eq!(
+                        reader.work.budget().live_bytes(),
+                        baseline + state_guard.held.as_ref().unwrap().len() as u64
+                    );
+                } else {
+                    result.unwrap();
+                    assert_eq!(
+                        reader.index_status,
+                        super::RandomAccessIndexStatus::RebuiltInvalid
+                    );
+                    assert_eq!(reader.index.len(), fixture.expected.len());
+                    assert!(reader.support.is_some());
+                }
+            }
+            {
+                let mut state = state.lock().unwrap();
+                assert_eq!(
+                    state.events.last().unwrap().0,
+                    super::KnownChunkPhase::BeforeFree
+                );
+                assert_eq!(state.events.last().unwrap().2, k);
+                drop(state.held.take());
+                state.target = None;
+            }
+            if pressure {
+                reader.load_support_and_index_fallback().unwrap();
+                assert!(reader.support.is_some());
+                assert_eq!(
+                    reader.index_status,
+                    super::RandomAccessIndexStatus::RebuiltInvalid
+                );
+            }
+            for (name, bytes) in &fixture.expected {
+                assert_eq!(
+                    &*reader
+                        .read_entry(&LogicalPath::from_utf8([name.as_str()]).unwrap())
+                        .unwrap()
+                        .bytes,
+                    bytes
+                );
+            }
+            let budget = reader.work.budget().clone();
+            drop(reader);
+            assert_eq!(budget.live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn known_ordinals_scan_cap_authentication_and_late_count_keep_read_stops() {
+        // Membership ownership does not change cap-before-header or
+        // duplicate-at-cap precedence in the existing Chunk producer.
+        let work = test_work(4096);
+        let index = known_index(&work, &[7, 7, u64::MAX]);
+        let owner = super::KnownChunkSegments::new(work.budget(), &index).unwrap();
+        let held_charge = work.budget().live_bytes();
+        let mut discovered = super::ChunkDirectory::new(work.budget(), 2, false);
+        let bad_header = [0_u8; 96];
+        let error =
+            super::discover_chunk(&mut discovered, &bad_header, 0, true, true, slot_locator(0))
+                .unwrap_err();
+        assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+        assert_eq!(error.code(), super::ReasonCode::RandomAccessPolicyRefused);
+        let error = super::discover_chunk(
+            &mut discovered,
+            &bad_header,
+            u64::MAX,
+            true,
+            true,
+            slot_locator(0),
+        )
+        .unwrap_err();
+        assert_eq!(error.class(), super::OutcomeClass::Corrupt);
+        assert_eq!(error.code(), super::ReasonCode::SectionStructure);
+        assert_eq!(work.budget().live_bytes(), held_charge);
+        discovered
+            .insert_fallback(slot_digest(7), slot_locator(7))
+            .unwrap();
+        let error =
+            super::discover_chunk(&mut discovered, &bad_header, 1, true, true, slot_locator(7))
+                .unwrap_err();
+        assert_eq!(error.code(), super::ReasonCode::RandomAccessPolicyRefused);
+        assert!(owner.contains(&7));
+        assert_eq!(owner.slots.as_slice().len(), 3);
+        let fixture = known_fixture(false);
+        for cap in [0, 1] {
+            let state = Arc::new(Mutex::new(KnownState::default()));
+            let mut reader = known_open(
+                &fixture,
+                &state,
+                RandomAccessPolicy {
+                    max_chunk_frames_scanned: cap,
+                    ..segment_access_policy()
+                },
+            );
+            let payloads = fixture
+                .segments
+                .iter()
+                .enumerate()
+                .filter(|(_, s)| s.class == super::SEGMENT_PAYLOAD)
+                .map(|(i, _)| i)
+                .collect::<Vec<_>>();
+            let before = state.lock().unwrap().reads.len();
+            {
+                let _observer = KnownObserverGuard::install(&state);
+                let error = reader.load_support_and_index_fallback().unwrap_err();
+                assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+                assert_eq!(error.code(), super::ReasonCode::RandomAccessPolicyRefused);
+                assert_eq!(
+                    error.detail(),
+                    "encrypted Chunk-object scan exceeds caller policy"
+                );
+            }
+            let reads = state.lock().unwrap().reads[before..].to_vec();
+            assert_eq!(
+                reads,
+                known_read_oracle(&fixture, payloads[..4 + cap as usize].iter().copied())
+            );
+            assert!(reader.support.is_none());
+            assert_eq!(reader.index.len(), 0);
+            assert_eq!(
+                reader.index_status,
+                super::RandomAccessIndexStatus::RebuiltAbsent
+            );
+        }
+        let state = Arc::new(Mutex::new(KnownState::default()));
+        let mut reader = known_open(&fixture, &state, segment_access_policy());
+        reader.metadata.descriptor.budget.chunk_count += 1;
+        let before = state.lock().unwrap().reads.len();
+        {
+            let _observer = KnownObserverGuard::install(&state);
+            let error = reader.load_support_and_index_fallback().unwrap_err();
+            assert_eq!(error.class(), super::OutcomeClass::Nonconforming);
+            assert_eq!(error.detail(), "rebuilt encrypted Chunk count mismatch");
+        }
+        assert_eq!(reader.index.len(), fixture.expected.len());
+        assert!(reader.support.is_none());
+        assert_eq!(
+            state.lock().unwrap().reads[before..],
+            known_read_oracle(
+                &fixture,
+                fixture
+                    .segments
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, s)| s.class == super::SEGMENT_PAYLOAD)
+                    .map(|(i, _)| i)
+            )
+        );
+        let mut corrupted = fixture.bytes.clone();
+        let support_ordinal = fixture
+            .segments
+            .iter()
+            .position(|s| s.class == super::SEGMENT_PAYLOAD)
+            .unwrap();
+        let support = fixture.segments[support_ordinal];
+        corrupted[(support.offset + super::SEGMENT_HEADER_LEN + super::PROTECTED_HEADER_LEN)
+            as usize] ^= 1;
+        // CONTROL and terminal authentication are untouched; the support failure
+        // is encountered at its original authenticated PAYLOAD read position.
+        let corrupted_fixture = SegmentFixture {
+            bytes: corrupted,
+            ..fixture
+        };
+        let state = Arc::new(Mutex::new(KnownState::default()));
+        let mut reader = known_open(&corrupted_fixture, &state, segment_access_policy());
+        let before = state.lock().unwrap().reads.len();
+        {
+            let _observer = KnownObserverGuard::install(&state);
+            let error = reader.load_support_and_index_fallback().unwrap_err();
+            assert_eq!(error.class(), super::OutcomeClass::Corrupt);
+            assert_eq!(error.code(), super::ReasonCode::CryptoAeadAuthFailed);
+        }
+        assert_eq!(
+            state.lock().unwrap().reads[before..],
+            known_read_oracle(&corrupted_fixture, [support_ordinal])
+        );
+        assert!(reader.support.is_none());
+    }
+
+    #[test]
+    fn known_ordinals_authenticated_sequence_concat_keeps_original_owner_charge() {
+        // This component proof uses a nonempty authenticated EBCS owner to
+        // exercise concatenation allocation; the live archive scan/assignment
+        // and its retained support owners are covered by the overlap test.
+        let fixture = known_fixture(true);
+        let state = Arc::new(Mutex::new(KnownState::default()));
+        let reader = known_open(&fixture, &state, segment_access_policy());
+        let budget = reader.work.budget().clone();
+        let baseline = budget.live_bytes();
+        let _observer = KnownObserverGuard::install(&state);
+        let owner = super::KnownChunkSegments::new(&budget, &reader.index).unwrap();
+        let known_bytes = super::KnownChunkSegments::reservation_bytes(reader.index.len()).unwrap();
+        assert_eq!(budget.live_bytes(), baseline + known_bytes);
+        let locator = reader.index.values().next().unwrap();
+        let records = [index_record(
+            slot_digest(0).as_bytes(),
+            locator.segment_ordinal,
+            0,
+            locator.fragment_count,
+        )];
+        let sequence =
+            super::wire::sequence_container(super::wire::COLLECTION_INDEX, &records).unwrap();
+        let exact =
+            super::wire::private_object(super::wire::PRIVATE_OBJECT_SEQUENCE, &sequence).unwrap();
+        let fragment = super::wire::PrivateFragmentRef {
+            object_id: super::wire::encrypted_object_id(&exact).unwrap(),
+            total_len: exact.len() as u64,
+            index: 0,
+            count: 1,
+            offset: 0,
+            bytes: &exact,
+        };
+        let (bytes, segment) = authenticated_test_segment(
+            &[fragment],
+            &reader.envelope.view().archive_id,
+            &reader.keys,
+            false,
+        );
+        let mut session = super::RangeSession::new_crypto(
+            Box::new(MemoryRandomReadSource::new(bytes)),
+            segment_access_policy(),
+            budget.clone(),
+        )
+        .unwrap();
+        let mut options = EncryptedOpenOptions::new(None);
+        options.crypto_policy = reader.work.policy();
+        let object = super::decrypt_segment(
+            &mut session,
+            &segment,
+            0,
+            &reader.envelope.view(),
+            &reader.keys,
+            reader.padding,
+            options,
+            super::AccessPurpose::EncryptedPayload,
+            &reader.work,
+        )
+        .unwrap();
+        let items = super::wire::WorkSequence::decode_with_context(object, &reader.work).unwrap();
+        let retained = budget.live_bytes();
+        assert!(retained >= baseline + known_bytes + exact.len() as u64);
+        let length = records[0].len() as u64;
+        let pressure =
+            super::WorkBytes::zeroed(&budget, (budget.available_bytes() - length + 1) as usize)
+                .unwrap();
+        assert!(pressure.belongs_to(&budget));
+        let before = budget.live_bytes();
+        let error = items.concatenate_work(&reader.work).unwrap_err();
+        assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+        assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        assert_eq!(budget.live_bytes(), before);
+        assert!(owner.contains(&locator.segment_ordinal));
+        assert_eq!(owner.slots.as_slice().len(), reader.index.len());
+        drop(pressure);
+        let concatenated = items.concatenate_work(&reader.work).unwrap();
+        assert_eq!(&*concatenated, records[0]);
+        assert_eq!(budget.live_bytes(), retained + length);
+        drop(concatenated);
+        drop(items);
+        drop(session);
+        assert_eq!(budget.live_bytes(), baseline + known_bytes);
+        drop(owner);
+        assert_eq!(budget.live_bytes(), baseline);
+        drop(reader);
+        assert_eq!(budget.live_bytes(), 0);
     }
 
     fn append_segment(table: &mut super::SegmentTable, slot: super::SegmentLocator) {
