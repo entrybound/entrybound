@@ -5,7 +5,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use sha2::{Digest as _, Sha256};
 use subtle::ConstantTimeEq as _;
 
-use super::working::{CryptoWorkContext, WorkBytes};
+use super::working::{CryptoWorkContext, WorkBudget, WorkBytes, WorkVec};
 use super::{
     BoundaryMode, EncryptedOpenOptions, KeyHierarchy, PaddingMode, aead_open,
     public_crypto_context_digest, public_crypto_context_work, wire,
@@ -40,6 +40,7 @@ use crate::random_access::{
     AccessPurpose, AccessTraceEntry, RandomAccessPolicy, RandomReadSource, RangeSession,
     SourceRevision,
 };
+use zeroize::Zeroize as _;
 
 /// A conservative source-size screen for the slice-based legacy full verifier.
 /// This is not a proved aggregate live-allocation reservation: container growth,
@@ -98,6 +99,347 @@ struct SegmentLocator {
 struct EncryptedChunkLocator {
     segment_ordinal: u64,
     fragment_count: u32,
+}
+
+// This fixed owner never grows after initializing a secret Slot. Generic
+// WorkVec growth is only used once, while empty; this wrapper owns wiping.
+const NO_CHUNK_SLOT: usize = usize::MAX;
+
+#[derive(Clone, Copy)]
+struct ChunkSlot {
+    digest: [u8; 32],
+    locator: EncryptedChunkLocator,
+    left: usize,
+    right: usize,
+    parent: usize,
+    height: u32,
+}
+
+struct ChunkDirectory {
+    slots: WorkVec<ChunkSlot>,
+    bound: usize,
+    reserved: bool,
+    root: usize,
+    sorted: bool,
+    #[cfg(test)]
+    budget: WorkBudget,
+    #[cfg(test)]
+    before_free: Option<fn(&[ChunkSlot], &WorkBudget)>,
+}
+
+impl ChunkDirectory {
+    fn new(budget: &WorkBudget, bound: usize, sorted: bool) -> Self {
+        Self {
+            slots: WorkVec::new(budget),
+            bound,
+            reserved: false,
+            root: NO_CHUNK_SLOT,
+            sorted,
+            #[cfg(test)]
+            budget: budget.clone(),
+            #[cfg(test)]
+            before_free: None,
+        }
+    }
+
+    fn reservation_bytes(bound: usize) -> Result<u64> {
+        if bound == NO_CHUNK_SLOT {
+            return Err(crypto_policy(
+                "Chunk directory bound reaches its index sentinel",
+            ));
+        }
+        let layout = std::alloc::Layout::array::<ChunkSlot>(bound)
+            .map_err(|_| crypto_policy("Chunk directory allocation layout overflows"))?;
+        u64::try_from(layout.size())
+            .map_err(|_| crypto_policy("Chunk directory allocation exceeds u64"))
+    }
+
+    fn reserve_once(&mut self) -> Result<()> {
+        if !self.reserved {
+            debug_assert_eq!(self.len(), 0);
+            Self::reservation_bytes(self.bound)?;
+            self.slots.reserve(self.bound)?;
+            self.reserved = true;
+        }
+        Ok(())
+    }
+
+    fn len(&self) -> usize {
+        self.slots.as_slice().len()
+    }
+
+    fn append(
+        &mut self,
+        digest: Digest,
+        locator: EncryptedChunkLocator,
+        parent: usize,
+    ) -> Result<usize> {
+        if self.len() >= self.bound {
+            return Err(crypto_policy(
+                "Chunk directory fixed slot bound is exhausted",
+            ));
+        }
+        self.reserve_once()?;
+        let index = self.len();
+        // The sole reserve was for bound slots; push cannot grow this owner.
+        self.slots.push(ChunkSlot {
+            digest: *digest.as_bytes(),
+            locator,
+            left: NO_CHUNK_SLOT,
+            right: NO_CHUNK_SLOT,
+            parent,
+            height: 1,
+        })?;
+        Ok(index)
+    }
+
+    fn append_index(&mut self, digest: Digest, locator: EncryptedChunkLocator) -> Result<bool> {
+        debug_assert!(self.sorted);
+        if self.get(&digest).is_some() {
+            return Ok(true);
+        }
+        self.append(digest, locator, NO_CHUNK_SLOT)?;
+        Ok(false)
+    }
+
+    fn height(&self, index: usize) -> u32 {
+        if index == NO_CHUNK_SLOT {
+            0
+        } else {
+            self.slots.as_slice()[index].height
+        }
+    }
+
+    fn refresh_height(&mut self, index: usize) {
+        let slot = self.slots.as_slice()[index];
+        self.slots.as_mut_slice()[index].height =
+            1 + self.height(slot.left).max(self.height(slot.right));
+    }
+
+    fn replace_parent_child(&mut self, parent: usize, old: usize, new: usize) {
+        if parent == NO_CHUNK_SLOT {
+            self.root = new;
+        } else if self.slots.as_slice()[parent].left == old {
+            self.slots.as_mut_slice()[parent].left = new;
+        } else {
+            debug_assert_eq!(self.slots.as_slice()[parent].right, old);
+            self.slots.as_mut_slice()[parent].right = new;
+        }
+    }
+
+    fn rotate_left(&mut self, x: usize) -> usize {
+        let y = self.slots.as_slice()[x].right;
+        let beta = self.slots.as_slice()[y].left;
+        let parent = self.slots.as_slice()[x].parent;
+        self.replace_parent_child(parent, x, y);
+        let slots = self.slots.as_mut_slice();
+        slots[y].parent = parent;
+        slots[y].left = x;
+        slots[x].parent = y;
+        slots[x].right = beta;
+        if beta != NO_CHUNK_SLOT {
+            slots[beta].parent = x;
+        }
+        self.refresh_height(x);
+        self.refresh_height(y);
+        y
+    }
+
+    fn rotate_right(&mut self, x: usize) -> usize {
+        let y = self.slots.as_slice()[x].left;
+        let beta = self.slots.as_slice()[y].right;
+        let parent = self.slots.as_slice()[x].parent;
+        self.replace_parent_child(parent, x, y);
+        let slots = self.slots.as_mut_slice();
+        slots[y].parent = parent;
+        slots[y].right = x;
+        slots[x].parent = y;
+        slots[x].left = beta;
+        if beta != NO_CHUNK_SLOT {
+            slots[beta].parent = x;
+        }
+        self.refresh_height(x);
+        self.refresh_height(y);
+        y
+    }
+
+    fn insert_fallback(&mut self, digest: Digest, locator: EncryptedChunkLocator) -> Result<()> {
+        debug_assert!(!self.sorted);
+        let mut index = self.root;
+        let mut parent = NO_CHUNK_SLOT;
+        while index != NO_CHUNK_SLOT {
+            parent = index;
+            let slot = &self.slots.as_slice()[index];
+            match digest.as_bytes().cmp(&slot.digest) {
+                std::cmp::Ordering::Equal => {
+                    self.slots.as_mut_slice()[index].locator = locator;
+                    return Ok(());
+                }
+                std::cmp::Ordering::Less => index = slot.left,
+                std::cmp::Ordering::Greater => index = slot.right,
+            }
+        }
+        let inserted = self.append(digest, locator, parent)?;
+        if parent == NO_CHUNK_SLOT {
+            self.root = inserted;
+        } else if digest.as_bytes() < &self.slots.as_slice()[parent].digest {
+            self.slots.as_mut_slice()[parent].left = inserted;
+        } else {
+            self.slots.as_mut_slice()[parent].right = inserted;
+        }
+        let mut ancestor = parent;
+        while ancestor != NO_CHUNK_SLOT {
+            self.refresh_height(ancestor);
+            let slot = self.slots.as_slice()[ancestor];
+            let left_height = self.height(slot.left);
+            let right_height = self.height(slot.right);
+            let balanced_root = if left_height > right_height + 1 {
+                let left = self.slots.as_slice()[slot.left];
+                if self.height(left.right) > self.height(left.left) {
+                    self.rotate_left(slot.left);
+                }
+                self.rotate_right(ancestor)
+            } else if right_height > left_height + 1 {
+                let right = self.slots.as_slice()[slot.right];
+                if self.height(right.left) > self.height(right.right) {
+                    self.rotate_right(slot.right);
+                }
+                self.rotate_left(ancestor)
+            } else {
+                ancestor
+            };
+            ancestor = self.slots.as_slice()[balanced_root].parent;
+        }
+        Ok(())
+    }
+
+    fn sift_slots(slots: &mut [ChunkSlot], mut root: usize, end: usize) {
+        // end <= admitted bound < usize::MAX. An internal node satisfies
+        // root < end/2, so 2*root+1 < end and left+1 <= end cannot overflow.
+        while root < end / 2 {
+            let left = root * 2 + 1;
+            let right = left + 1;
+            let child = if right < end && slots[left].digest < slots[right].digest {
+                right
+            } else {
+                left
+            };
+            if slots[root].digest >= slots[child].digest {
+                break;
+            }
+            slots.swap(root, child);
+            root = child;
+        }
+    }
+
+    fn sort_slots(slots: &mut [ChunkSlot]) {
+        // Bottom-up max heap, then a shrinking heap and ascending suffix.
+        // Only fixed scalar indices and same-slice swaps are used: no second
+        // backing, allocator call, recursion or heap path stack is reachable.
+        for root in (0..slots.len() / 2).rev() {
+            Self::sift_slots(slots, root, slots.len());
+        }
+        for end in (1..slots.len()).rev() {
+            slots.swap(0, end);
+            Self::sift_slots(slots, 0, end);
+        }
+    }
+
+    fn finish(&mut self) {
+        Self::sort_slots(self.slots.as_mut_slice());
+        for slot in self.slots.as_mut_slice() {
+            slot.left = NO_CHUNK_SLOT;
+            slot.right = NO_CHUNK_SLOT;
+            slot.parent = NO_CHUNK_SLOT;
+            slot.height = 0;
+        }
+        self.root = NO_CHUNK_SLOT;
+        self.sorted = true;
+    }
+
+    fn get(&self, digest: &Digest) -> Option<&EncryptedChunkLocator> {
+        debug_assert!(self.sorted);
+        self.slots
+            .as_slice()
+            .binary_search_by(|slot| slot.digest.cmp(digest.as_bytes()))
+            .ok()
+            .map(|index| &self.slots.as_slice()[index].locator)
+    }
+
+    fn iter(&self) -> impl Iterator<Item = (&[u8; 32], &EncryptedChunkLocator)> {
+        self.slots
+            .as_slice()
+            .iter()
+            .map(|slot| (&slot.digest, &slot.locator))
+    }
+
+    fn values(&self) -> impl Iterator<Item = &EncryptedChunkLocator> {
+        self.slots.as_slice().iter().map(|slot| &slot.locator)
+    }
+}
+
+impl Drop for ChunkDirectory {
+    fn drop(&mut self) {
+        for slot in self.slots.as_mut_slice() {
+            slot.digest.zeroize();
+            slot.locator.segment_ordinal.zeroize();
+            slot.locator.fragment_count.zeroize();
+            slot.left.zeroize();
+            slot.right.zeroize();
+            slot.parent.zeroize();
+            slot.height.zeroize();
+        }
+        #[cfg(test)]
+        if let Some(probe) = self.before_free {
+            probe(self.slots.as_slice(), &self.budget);
+        }
+        // WorkVec subsequently frees backing before releasing its original lease.
+    }
+}
+
+fn fallback_slot_bound(segments: &[SegmentLocator], cap: u64) -> Result<usize> {
+    // Only the current traversal is bounded here: each PAYLOAD segment is
+    // considered once and its one returned WorkObject can insert at most once.
+    // This is not a general object-per-segment wire packing requirement.
+    let payloads = segments
+        .iter()
+        .filter(|segment| segment.class == SEGMENT_PAYLOAD)
+        .count();
+    let physical =
+        u64::try_from(payloads).map_err(|_| crypto_policy("PAYLOAD segment count exceeds u64"))?;
+    if cap < physical {
+        usize::try_from(cap).map_err(|_| crypto_policy("Chunk scan cap exceeds usize"))
+    } else {
+        Ok(payloads)
+    }
+}
+
+fn discover_chunk(
+    directory: &mut ChunkDirectory,
+    payload: &[u8],
+    cap: u64,
+    extended: bool,
+    whole_object: bool,
+    locator: EncryptedChunkLocator,
+) -> Result<()> {
+    if u64::try_from(directory.len()).unwrap_or(u64::MAX) >= cap {
+        return Err(access_policy(
+            "encrypted Chunk-object scan exceeds caller policy",
+        ));
+    }
+    let header_len = usize::try_from(chunk_frame_header_len(extended))
+        .map_err(|_| access_policy("Chunk header length exceeds usize"))?;
+    let header = parse_chunk_frame_header(
+        payload
+            .get(..header_len)
+            .ok_or_else(|| truncated("encrypted Chunk frame is truncated"))?,
+        extended,
+        whole_object,
+    )?;
+    // A conservative physical upper capacity can refuse a support-heavy scan
+    // that incremental storage could admit. This truthful policy refusal is
+    // fatal; it neither retries with a new budget nor rebuilds an invalid cache.
+    directory.insert_fallback(header.chunk_id, locator)
 }
 
 #[derive(Default)]
@@ -159,7 +501,7 @@ pub struct EncryptedRandomAccessArchive {
     work: CryptoWorkContext,
     legacy_whole_archive_verified: bool,
     segments: Vec<SegmentLocator>,
-    index: BTreeMap<Digest, EncryptedChunkLocator>,
+    index: ChunkDirectory,
     index_status: RandomAccessIndexStatus,
     plans: Box<[TransformPlan]>,
     groups: BTreeMap<Digest, ChunkGroup>,
@@ -568,15 +910,17 @@ impl EncryptedRandomAccessArchive {
             pci: None,
         };
         let (index, index_status) = if controls.index_invalid {
-            (BTreeMap::new(), RandomAccessIndexStatus::RebuiltInvalid)
+            (
+                ChunkDirectory::new(work.budget(), 0, true),
+                RandomAccessIndexStatus::RebuiltInvalid,
+            )
         } else if let Some(items) = controls.index {
-            match decode_encrypted_index(&items, &segments, final_value.chunk_count) {
-                Ok(value) => (value, RandomAccessIndexStatus::PresentValid),
-                Err(error) if error.class() == OutcomeClass::PolicyRefused => return Err(error),
-                Err(_) => (BTreeMap::new(), RandomAccessIndexStatus::RebuiltInvalid),
-            }
+            decode_index_or_rebuild(&items, &segments, final_value.chunk_count, &work)?
         } else {
-            (BTreeMap::new(), RandomAccessIndexStatus::RebuiltAbsent)
+            (
+                ChunkDirectory::new(work.budget(), 0, true),
+                RandomAccessIndexStatus::RebuiltAbsent,
+            )
         };
         let metadata = RandomAccessMetadata {
             descriptor,
@@ -854,7 +1198,11 @@ impl EncryptedRandomAccessArchive {
         let mut dictionary_items = None;
         let mut reconstruction_items = None;
         let mut region_items = None;
-        let mut discovered = BTreeMap::new();
+        let bound = fallback_slot_bound(
+            &self.segments,
+            self.session.policy().max_chunk_frames_scanned,
+        )?;
+        let mut discovered = ChunkDirectory::new(self.work.budget(), bound, false);
         let mut retained_private_bytes = 0_u64;
         for ordinal in 0..self.segments.len() {
             let ordinal_u64 = u64::try_from(ordinal).unwrap_or(u64::MAX);
@@ -889,29 +1237,17 @@ impl EncryptedRandomAccessArchive {
             let (kind, payload) = object.view()?;
             match kind {
                 wire::PRIVATE_OBJECT_CHUNK => {
-                    if u64::try_from(discovered.len()).unwrap_or(u64::MAX)
-                        >= self.session.policy().max_chunk_frames_scanned
-                    {
-                        return Err(access_policy(
-                            "encrypted Chunk-object scan exceeds caller policy",
-                        ));
-                    }
-                    let header_len = usize::try_from(chunk_frame_header_len(self.extended))
-                        .map_err(|_| access_policy("Chunk header length exceeds usize"))?;
-                    let header = parse_chunk_frame_header(
-                        payload
-                            .get(..header_len)
-                            .ok_or_else(|| truncated("encrypted Chunk frame is truncated"))?,
+                    discover_chunk(
+                        &mut discovered,
+                        payload,
+                        self.session.policy().max_chunk_frames_scanned,
                         self.extended,
                         self.whole_object,
-                    )?;
-                    discovered.insert(
-                        header.chunk_id,
                         EncryptedChunkLocator {
                             segment_ordinal: ordinal_u64,
                             fragment_count: locator.count,
                         },
-                    );
+                    )?;
                     // Retain the authenticated locator, not decrypted Chunk
                     // bytes. A fallback scan must not create a plaintext cache
                     // that grows across otherwise bounded range reads.
@@ -946,6 +1282,7 @@ impl EncryptedRandomAccessArchive {
             }
         }
         if self.index_status != RandomAccessIndexStatus::PresentValid {
+            discovered.finish();
             self.index = discovered;
             if u64::try_from(self.index.len()).unwrap_or(u64::MAX)
                 != self.metadata.descriptor.budget.chunk_count
@@ -1116,7 +1453,7 @@ impl EncryptedRandomAccessArchive {
         let mut physical = self
             .index
             .iter()
-            .map(|(digest, locator)| (locator.segment_ordinal, *digest))
+            .map(|(digest, locator)| (locator.segment_ordinal, Digest::from_bytes(*digest)))
             .collect::<Vec<_>>();
         physical.sort();
         let position = physical
@@ -1694,57 +2031,79 @@ fn validate_terminal_bindings(
     Ok(())
 }
 
+fn decode_index_or_rebuild(
+    items: &wire::WorkSequence,
+    segments: &[SegmentLocator],
+    expected_count: u64,
+    work: &CryptoWorkContext,
+) -> Result<(ChunkDirectory, RandomAccessIndexStatus)> {
+    match decode_encrypted_index(items, segments, expected_count, work) {
+        Ok(value) => Ok((value, RandomAccessIndexStatus::PresentValid)),
+        Err(error) if error.class() == OutcomeClass::PolicyRefused => Err(error),
+        Err(_) => Ok((
+            ChunkDirectory::new(work.budget(), 0, true),
+            RandomAccessIndexStatus::RebuiltInvalid,
+        )),
+    }
+}
+
 fn decode_encrypted_index(
     items: &wire::WorkSequence,
     segments: &[SegmentLocator],
     expected_count: u64,
-) -> Result<BTreeMap<Digest, EncryptedChunkLocator>> {
-    let mut output = BTreeMap::new();
+    work: &CryptoWorkContext,
+) -> Result<ChunkDirectory> {
+    let mut output = ChunkDirectory::new(work.budget(), items.len(), true);
+    output.reserve_once()?;
     for item in items.items() {
-        let (record, consumed) = decode_record(item)?;
-        if consumed != item.len() || record.kind != wire::RECORD_ENCRYPTED_INDEX {
-            return Err(private_invalid("encrypted Index contains a wrong record"));
-        }
-        record.expect_tags(&[1, 2, 3, 4], &[])?;
-        let digest = Digest::from_bytes(
-            record
-                .field(1)?
-                .as_bytes()?
-                .try_into()
-                .map_err(|_| private_invalid("encrypted Index digest length"))?,
-        );
-        let ordinal = record.field(2)?.as_u64()?;
-        let first_counter = record.field(3)?.as_u64()?;
-        let fragments = record.field(4)?.as_u32()?;
-        let segment = segments
-            .get(
-                usize::try_from(ordinal)
-                    .map_err(|_| private_invalid("Index ordinal exceeds usize"))?,
-            )
-            .ok_or_else(|| private_invalid("Index references absent segment"))?;
-        if first_counter != 0
-            || fragments == 0
-            || segment.class != SEGMENT_PAYLOAD
-            || segment.count != fragments
-            || output
-                .insert(
-                    digest,
-                    EncryptedChunkLocator {
-                        segment_ordinal: ordinal,
-                        fragment_count: fragments,
-                    },
-                )
-                .is_some()
-        {
-            return Err(private_invalid(
-                "encrypted Index locator is invalid or duplicate",
-            ));
-        }
+        decode_encrypted_index_item(item, segments, &mut output)?;
     }
     if u64::try_from(output.len()).unwrap_or(u64::MAX) != expected_count {
         return Err(private_invalid("encrypted Index Chunk count mismatch"));
     }
     Ok(output)
+}
+
+fn decode_encrypted_index_item(
+    item: &[u8],
+    segments: &[SegmentLocator],
+    output: &mut ChunkDirectory,
+) -> Result<()> {
+    let (record, consumed) = decode_record(item)?;
+    if consumed != item.len() || record.kind != wire::RECORD_ENCRYPTED_INDEX {
+        return Err(private_invalid("encrypted Index contains a wrong record"));
+    }
+    record.expect_tags(&[1, 2, 3, 4], &[])?;
+    let digest = Digest::from_bytes(
+        record
+            .field(1)?
+            .as_bytes()?
+            .try_into()
+            .map_err(|_| private_invalid("encrypted Index digest length"))?,
+    );
+    let ordinal = record.field(2)?.as_u64()?;
+    let first_counter = record.field(3)?.as_u64()?;
+    let fragments = record.field(4)?.as_u32()?;
+    let segment = segments
+        .get(usize::try_from(ordinal).map_err(|_| private_invalid("Index ordinal exceeds usize"))?)
+        .ok_or_else(|| private_invalid("Index references absent segment"))?;
+    if first_counter != 0
+        || fragments == 0
+        || segment.class != SEGMENT_PAYLOAD
+        || segment.count != fragments
+        || output.append_index(
+            digest,
+            EncryptedChunkLocator {
+                segment_ordinal: ordinal,
+                fragment_count: fragments,
+            },
+        )?
+    {
+        return Err(private_invalid(
+            "encrypted Index locator is invalid or duplicate",
+        ));
+    }
+    Ok(())
 }
 
 fn parse_footer(bytes: &[u8], source_len: u64) -> Result<Footer> {
@@ -2175,6 +2534,846 @@ mod tests {
         MemoryRandomReadSource, RandomAccessPolicy, RandomReadSource, SourceRevision,
     };
 
+    fn slot_digest(value: u64) -> super::Digest {
+        let mut digest = [0; 32];
+        digest[24..].copy_from_slice(&value.to_be_bytes());
+        super::Digest::from_bytes(digest)
+    }
+
+    fn slot_locator(value: u64) -> super::EncryptedChunkLocator {
+        super::EncryptedChunkLocator {
+            segment_ordinal: value,
+            fragment_count: 1,
+        }
+    }
+
+    fn test_segment(class: u8, count: u32) -> super::SegmentLocator {
+        super::SegmentLocator {
+            offset: 0,
+            extent: 0,
+            class,
+            salt: [0; 16],
+            count,
+            header: [0; 64],
+        }
+    }
+
+    fn test_work(limit: u64) -> super::CryptoWorkContext {
+        super::CryptoWorkContext::new(crate::crypto::CryptoPolicy {
+            max_working_memory_bytes: limit,
+            ..crate::crypto::CryptoPolicy::default()
+        })
+    }
+
+    fn chunk_header(digest: super::Digest) -> [u8; 64] {
+        let mut header = [0; 64];
+        header[..4].copy_from_slice(b"EBCH");
+        header[4..6].copy_from_slice(&1_u16.to_be_bytes());
+        header[16..48].copy_from_slice(digest.as_bytes());
+        header
+    }
+
+    fn index_record(digest: &[u8], ordinal: u64, counter: u64, fragments: u32) -> Vec<u8> {
+        let mut record = crate::canonical::RecordBuilder::new(super::wire::RECORD_ENCRYPTED_INDEX);
+        record
+            .bytes(1, digest)
+            .unwrap()
+            .u64(2, ordinal)
+            .unwrap()
+            .u64(3, counter)
+            .unwrap()
+            .u32(4, fragments)
+            .unwrap();
+        record.finish().unwrap()
+    }
+
+    fn index_sequence(
+        records: &[Vec<u8>],
+        work: &super::CryptoWorkContext,
+    ) -> super::wire::WorkSequence {
+        let sequence =
+            super::wire::sequence_container(super::wire::COLLECTION_INDEX, records).unwrap();
+        let exact =
+            super::wire::private_object(super::wire::PRIVATE_OBJECT_SEQUENCE, &sequence).unwrap();
+        let mut raw = super::WorkBytes::zeroed(work.budget(), exact.len()).unwrap();
+        raw.copy_from_slice(&exact);
+        let object = super::wire::WorkObject::verified(
+            raw,
+            super::wire::encrypted_object_id(&exact).unwrap(),
+            work,
+        )
+        .unwrap();
+        super::wire::WorkSequence::decode_with_context(object, work).unwrap()
+    }
+
+    #[test]
+    fn chunk_slot_layout_bounds_and_lazy_empty_owners() {
+        assert_eq!(super::ChunkDirectory::reservation_bytes(0).unwrap(), 0);
+        for bound in [
+            usize::MAX,
+            usize::MAX / std::mem::size_of::<super::ChunkSlot>(),
+        ] {
+            let error = super::ChunkDirectory::reservation_bytes(bound).unwrap_err();
+            assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        }
+        let work = test_work(0);
+        let segments = [
+            test_segment(super::SEGMENT_CONTROL, 1),
+            test_segment(super::SEGMENT_PAYLOAD, 1),
+            test_segment(super::SEGMENT_PAYLOAD, 1),
+            test_segment(super::SEGMENT_PAYLOAD, 1),
+        ];
+        for (cap, expected) in [(0, 0), (1, 1), (2, 2), (3, 3), (u64::MAX, 3)] {
+            assert_eq!(
+                super::fallback_slot_bound(&segments, cap).unwrap(),
+                expected
+            );
+        }
+        assert_eq!(super::fallback_slot_bound(&[], u64::MAX).unwrap(), 0);
+        // Support-only/PresentValid skipped segments never call insertion. Even
+        // an unaffordable conservative bound holds no lease before that point.
+        let empty = super::ChunkDirectory::new(work.budget(), 3, false);
+        assert!(!empty.reserved);
+        assert_eq!(work.budget().live_bytes(), 0);
+        drop(empty);
+        let mut zero = super::ChunkDirectory::new(work.budget(), 0, true);
+        zero.reserve_once().unwrap();
+        assert_eq!(zero.len(), 0);
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn fixed_chunk_slots_charge_padding_unused_capacity_and_original_counter() {
+        let bytes = super::ChunkDirectory::reservation_bytes(7).unwrap();
+        assert_eq!(
+            bytes,
+            std::alloc::Layout::array::<super::ChunkSlot>(7)
+                .unwrap()
+                .size() as u64
+        );
+        assert!(std::mem::size_of::<super::ChunkSlot>() > 32 + 8 + 4);
+        let work = test_work(bytes + 19);
+        let other = super::WorkBytes::zeroed(work.budget(), 19).unwrap();
+        let shared = work.clone();
+        let mut table = super::ChunkDirectory::new(shared.budget(), 7, false);
+        table
+            .insert_fallback(slot_digest(2), slot_locator(2))
+            .unwrap();
+        assert_eq!(table.slots.as_slice().len(), 1);
+        assert_eq!(work.budget().live_bytes(), bytes + 19);
+        let backing = table.slots.as_slice().as_ptr();
+        for i in 3..9 {
+            table
+                .insert_fallback(slot_digest(i), slot_locator(i))
+                .unwrap();
+        }
+        assert_eq!(table.len(), 7);
+        assert_eq!(table.slots.as_slice().as_ptr(), backing);
+        let error = table
+            .insert_fallback(slot_digest(9), slot_locator(9))
+            .unwrap_err();
+        assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        assert_eq!(table.slots.as_slice().as_ptr(), backing);
+        assert_eq!(work.budget().live_bytes(), bytes + 19);
+        // Move, duplicate replacement and finishing retain one backing/lease.
+        let mut moved = table;
+        moved
+            .insert_fallback(slot_digest(2), slot_locator(99))
+            .unwrap();
+        moved.finish();
+        assert_eq!(moved.slots.as_slice().as_ptr(), backing);
+        assert_eq!(moved.get(&slot_digest(2)).unwrap().segment_ordinal, 99);
+        assert_eq!(work.budget().live_bytes(), bytes + 19);
+        drop(moved);
+        assert_eq!(work.budget().live_bytes(), 19);
+        drop(other);
+        assert_eq!(work.budget().live_bytes(), 0);
+        let short = test_work(bytes - 1);
+        let mut refused = super::ChunkDirectory::new(short.budget(), 7, false);
+        let error = refused
+            .insert_fallback(slot_digest(0), slot_locator(0))
+            .unwrap_err();
+        assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+        assert_eq!(refused.len(), 0);
+        assert!(!refused.reserved);
+        assert_eq!(short.budget().live_bytes(), 0);
+    }
+
+    fn assert_avl(table: &super::ChunkDirectory) {
+        fn walk(
+            table: &super::ChunkDirectory,
+            index: usize,
+            parent: usize,
+            low: Option<[u8; 32]>,
+            high: Option<[u8; 32]>,
+        ) -> (u32, usize) {
+            if index == super::NO_CHUNK_SLOT {
+                return (0, 0);
+            }
+            let slot = table.slots.as_slice()[index];
+            assert_eq!(slot.parent, parent);
+            assert!(low.is_none_or(|bound| bound < slot.digest));
+            assert!(high.is_none_or(|bound| slot.digest < bound));
+            let (left_height, left_count) = walk(table, slot.left, index, low, Some(slot.digest));
+            let (right_height, right_count) =
+                walk(table, slot.right, index, Some(slot.digest), high);
+            assert!(left_height.abs_diff(right_height) <= 1);
+            assert_eq!(slot.height, 1 + left_height.max(right_height));
+            (slot.height, left_count + right_count + 1)
+        }
+        let (_, reachable) = walk(table, table.root, super::NO_CHUNK_SLOT, None, None);
+        assert_eq!(reachable, table.len());
+    }
+
+    #[test]
+    fn chunk_avl_rotations_sort_and_last_locator_match_independent_map() {
+        // Empty and singleton finishing exercise both zero-iteration bounds.
+        let work = test_work(4096);
+        for count in [0, 1] {
+            let mut table = super::ChunkDirectory::new(work.budget(), count, false);
+            if count == 1 {
+                table
+                    .insert_fallback(slot_digest(1), slot_locator(1))
+                    .unwrap();
+            }
+            let pointer = table.slots.as_slice().as_ptr();
+            let live = work.budget().live_bytes();
+            table.finish();
+            assert_eq!(table.len(), count);
+            assert_eq!(table.slots.as_slice().as_ptr(), pointer);
+            assert_eq!(work.budget().live_bytes(), live);
+        }
+        const COUNT: u64 = 257;
+        for order in [
+            (0..COUNT).collect::<Vec<_>>(),
+            (0..COUNT).rev().collect(),
+            (0..COUNT).map(|i| (i * 131) % COUNT).collect(),
+        ] {
+            let work = test_work(super::ChunkDirectory::reservation_bytes(COUNT as usize).unwrap());
+            let mut table = super::ChunkDirectory::new(work.budget(), COUNT as usize, false);
+            let mut oracle = std::collections::BTreeMap::new();
+            for i in order {
+                table
+                    .insert_fallback(slot_digest(i), slot_locator(i))
+                    .unwrap();
+                oracle.insert(slot_digest(i), i);
+                assert_avl(&table);
+            }
+            for i in (0..COUNT).step_by(3) {
+                table
+                    .insert_fallback(slot_digest(i), slot_locator(COUNT + i))
+                    .unwrap();
+                oracle.insert(slot_digest(i), COUNT + i);
+                assert_avl(&table);
+            }
+            let pointer = table.slots.as_slice().as_ptr();
+            let charge = work.budget().live_bytes();
+            table.finish();
+            assert_eq!(table.slots.as_slice().as_ptr(), pointer);
+            assert_eq!(work.budget().live_bytes(), charge);
+            assert!(
+                table
+                    .slots
+                    .as_slice()
+                    .iter()
+                    .all(|slot| slot.left == super::NO_CHUNK_SLOT
+                        && slot.right == super::NO_CHUNK_SLOT
+                        && slot.parent == super::NO_CHUNK_SLOT
+                        && slot.height == 0)
+            );
+            let actual = table
+                .iter()
+                .map(|(digest, locator)| {
+                    (super::Digest::from_bytes(*digest), locator.segment_ordinal)
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(actual, oracle.into_iter().collect::<Vec<_>>());
+            for (digest, ordinal) in actual {
+                assert_eq!(table.get(&digest).unwrap().segment_ordinal, ordinal);
+            }
+            assert!(table.get(&slot_digest(COUNT)).is_none());
+        }
+    }
+
+    thread_local! { static WIPED_SLOT_COUNT: std::cell::Cell<usize> = const { std::cell::Cell::new(0) }; }
+
+    fn observe_wiped_slots(slots: &[super::ChunkSlot], budget: &super::WorkBudget) {
+        assert!(slots.iter().all(|slot| slot.digest == [0; 32]
+            && slot.locator.segment_ordinal == 0
+            && slot.locator.fragment_count == 0
+            && slot.left == 0
+            && slot.right == 0
+            && slot.parent == 0
+            && slot.height == 0));
+        assert_eq!(
+            budget.live_bytes(),
+            super::ChunkDirectory::reservation_bytes(5).unwrap() + 13
+        );
+        WIPED_SLOT_COUNT.with(|count| count.set(count.get() + slots.len()));
+    }
+
+    #[test]
+    fn chunk_directory_wipes_fields_before_free_and_original_lease_release() {
+        WIPED_SLOT_COUNT.with(|count| count.set(0));
+        let bytes = super::ChunkDirectory::reservation_bytes(5).unwrap();
+        let work = test_work(bytes + 13);
+        let retained = super::WorkBytes::zeroed(work.budget(), 13).unwrap();
+        for mode in 0..3 {
+            let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(
+                || -> crate::diagnostics::Result<()> {
+                    let mut table = super::ChunkDirectory::new(work.budget(), 5, false);
+                    table.before_free = Some(observe_wiped_slots);
+                    for i in 1..4 {
+                        table
+                            .insert_fallback(slot_digest(i), slot_locator(i))
+                            .unwrap();
+                    }
+                    if mode == 1 {
+                        return Err(super::private_invalid("post-initialization decode failure"));
+                    }
+                    if mode == 2 {
+                        panic!("owned directory unwind");
+                    }
+                    table.finish();
+                    Ok(())
+                },
+            ));
+            assert_eq!(work.budget().live_bytes(), 13);
+            match mode {
+                0 => assert!(result.unwrap().is_ok()),
+                1 => assert!(result.unwrap().is_err()),
+                _ => assert!(result.is_err()),
+            }
+        }
+        WIPED_SLOT_COUNT.with(|count| assert_eq!(count.get(), 9));
+        drop(retained);
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn fallback_cap_and_header_errors_precede_lazy_table_reservation() {
+        let work = test_work(super::ChunkDirectory::reservation_bytes(3).unwrap());
+        let mut zero = super::ChunkDirectory::new(work.budget(), 0, false);
+        let error =
+            super::discover_chunk(&mut zero, &[], 0, false, false, slot_locator(0)).unwrap_err();
+        assert_eq!(error.code(), super::ReasonCode::RandomAccessPolicyRefused);
+        assert_eq!(work.budget().live_bytes(), 0);
+        let mut table = super::ChunkDirectory::new(work.budget(), 3, false);
+        assert_eq!(
+            super::discover_chunk(&mut table, &[], 3, false, false, slot_locator(0))
+                .unwrap_err()
+                .class(),
+            super::OutcomeClass::Truncated
+        );
+        let mut malformed = chunk_header(slot_digest(1));
+        malformed[0] = 0;
+        assert_eq!(
+            super::discover_chunk(&mut table, &malformed, 3, false, false, slot_locator(0))
+                .unwrap_err()
+                .class(),
+            super::OutcomeClass::Corrupt
+        );
+        assert!(!table.reserved);
+        assert_eq!(work.budget().live_bytes(), 0);
+        for ordinal in [1, 9] {
+            super::discover_chunk(
+                &mut table,
+                &chunk_header(slot_digest(1)),
+                3,
+                false,
+                false,
+                slot_locator(ordinal),
+            )
+            .unwrap();
+        }
+        assert_eq!(table.len(), 1); // Duplicate below cap keeps its last locator.
+        // At cap, even a duplicate or malformed/truncated header is refused
+        // at the original guard. Later data does not change that position.
+        for payload in [&chunk_header(slot_digest(1))[..], &malformed[..], &[][..]] {
+            assert_eq!(
+                super::discover_chunk(&mut table, payload, 1, false, false, slot_locator(77))
+                    .unwrap_err()
+                    .code(),
+                super::ReasonCode::RandomAccessPolicyRefused
+            );
+        }
+        table.finish();
+        assert_eq!(table.get(&slot_digest(1)).unwrap().segment_ordinal, 9);
+    }
+
+    #[test]
+    fn support_heavy_upper_capacity_refusal_keeps_all_shared_owners_live() {
+        let slot_bytes = super::ChunkDirectory::reservation_bytes(1).unwrap();
+        let upper_bytes = super::ChunkDirectory::reservation_bytes(6).unwrap();
+        let work = test_work(upper_bytes + 32 + 47 + 59 + 71 - 1);
+        let mut old_index = super::ChunkDirectory::new(work.budget(), 1, true);
+        old_index.reserve_once().unwrap();
+        old_index
+            .append_index(slot_digest(7), slot_locator(7))
+            .unwrap();
+        let fetched_cipher = super::WorkBytes::zeroed(work.budget(), 32).unwrap();
+        let raw_object = super::WorkBytes::zeroed(work.budget(), 47).unwrap();
+        let raw_support = super::WorkBytes::zeroed(work.budget(), 59).unwrap();
+        let other_support = super::WorkBytes::zeroed(work.budget(), 71).unwrap();
+        let live = work.budget().live_bytes();
+        assert!(work.budget().available_bytes() >= slot_bytes);
+        assert!(work.budget().available_bytes() < upper_bytes);
+        let segments = (0..6)
+            .map(|_| test_segment(super::SEGMENT_PAYLOAD, 1))
+            .collect::<Vec<_>>();
+        let bound = super::fallback_slot_bound(&segments, u64::MAX).unwrap();
+        let mut builder = super::ChunkDirectory::new(work.budget(), bound, false);
+        let error = super::discover_chunk(
+            &mut builder,
+            &chunk_header(slot_digest(2)),
+            u64::MAX,
+            false,
+            false,
+            slot_locator(2),
+        )
+        .unwrap_err();
+        assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        assert_eq!(work.budget().live_bytes(), live);
+        assert_eq!(old_index.get(&slot_digest(7)).unwrap().segment_ordinal, 7);
+        assert_eq!(builder.len(), 0);
+        assert!(!builder.reserved);
+        drop((
+            builder,
+            old_index,
+            fetched_cipher,
+            raw_object,
+            raw_support,
+            other_support,
+        ));
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn authenticated_support_scan_refuses_upper_slots_after_first_valid_chunk() {
+        #[derive(Default)]
+        struct Pressure {
+            budget: Option<super::WorkBudget>,
+            target: Option<(u64, u64)>,
+            raw_len: u64,
+            upper_bytes: u64,
+            available_during_fill: u64,
+            held: Option<super::WorkBytes>,
+            hits: usize,
+        }
+        struct PressureSource {
+            source: MemoryRandomReadSource,
+            pressure: Arc<Mutex<Pressure>>,
+        }
+        impl RandomReadSource for PressureSource {
+            fn len(&self) -> crate::diagnostics::Result<u64> {
+                self.source.len()
+            }
+            fn revision(&self) -> crate::diagnostics::Result<SourceRevision> {
+                self.source.revision()
+            }
+            fn read_exact_at(&self, _: u64, _: u64) -> crate::diagnostics::Result<Vec<u8>> {
+                panic!("encrypted range producer requires a bounded source fill")
+            }
+            fn read_exact_at_into(
+                &self,
+                offset: u64,
+                dst: &mut [u8],
+            ) -> crate::diagnostics::Result<()> {
+                let mut pressure = self.pressure.lock().unwrap();
+                if pressure.target == Some((offset, dst.len() as u64)) {
+                    pressure.hits += 1;
+                    if pressure.hits == 1 {
+                        let budget = pressure.budget.as_ref().unwrap().clone();
+                        // The actual cipher and trace slot are already reserved.
+                        // Leave room for the complete raw object and revision
+                        // checks. After cipher free, B Slots are one byte short.
+                        let leave = pressure.upper_bytes - 1 - dst.len() as u64 + pressure.raw_len;
+                        assert!(leave > pressure.raw_len + 64);
+                        pressure.held = Some(super::WorkBytes::zeroed(
+                            &budget,
+                            (budget.available_bytes() - leave) as usize,
+                        )?);
+                        pressure.available_during_fill = budget.available_bytes();
+                    }
+                }
+                drop(pressure);
+                self.source.read_exact_at_into(offset, dst)
+            }
+        }
+        let directory = TestDir::new();
+        let mut expected = Vec::new();
+        for i in 0_u64..12 {
+            let bytes = (i + 1).to_be_bytes();
+            let name = format!("item{i:02}");
+            std::fs::write(directory.path().join(&name), bytes).unwrap();
+            expected.push((name, bytes));
+        }
+        let mut archive = plan_directory(directory.path(), PackOptions::default()).unwrap();
+        // These supported declarations deliberately exercise all three empty
+        // support collections. The writer validates/recomputes identities and
+        // the positive read below establishes a readable generated archive.
+        archive.descriptor.features.incompat |= crate::ecf::FEATURE_CROSS_FILE_COMPRESSION_V1
+            | crate::ecf::FEATURE_CODEC_TRANSFORM_V1
+            | crate::ecf::FEATURE_RECONSTRUCTIVE_TRANSFORM_V1
+            | crate::ecf::FEATURE_WHOLE_OBJECT_RECONSTRUCTION_V1;
+        let (identity, recipient) = XWingIdentity::generate().unwrap();
+        let encrypted = encrypt_archive(
+            &archive,
+            EncryptedWriteOptions {
+                recipients: &[recipient],
+                padding: PaddingMode::None,
+                include_index: false,
+                ..EncryptedWriteOptions::default()
+            },
+        )
+        .unwrap();
+        let mut opened = open_indexed_random_encrypted(
+            MemoryRandomReadSource::new(encrypted.bytes.clone()),
+            RandomAccessPolicy {
+                max_cached_bytes: 0,
+                ..RandomAccessPolicy::default()
+            },
+            EncryptedOpenOptions::new(Some(Unlock::Identity(&identity))),
+        )
+        .unwrap();
+        let count = archive.content_store.chunks.len();
+        assert_eq!(count, 12);
+        let bound = super::fallback_slot_bound(&opened.segments, u64::MAX).unwrap();
+        assert_eq!(bound, count + 3);
+        let first_chunk = opened
+            .segments
+            .iter()
+            .filter(|segment| segment.class == super::SEGMENT_PAYLOAD)
+            .nth(3)
+            .unwrap()
+            .clone();
+        let (_, first_raw) = {
+            let object = super::decrypt_segment(
+                &mut opened.session,
+                &first_chunk,
+                opened
+                    .segments
+                    .iter()
+                    .position(|segment| segment.offset == first_chunk.offset)
+                    .unwrap() as u64,
+                &opened.envelope.view(),
+                &opened.keys,
+                opened.padding,
+                EncryptedOpenOptions::new(None),
+                super::AccessPurpose::EncryptedPayload,
+                &opened.work,
+            )
+            .unwrap();
+            let (kind, payload) = object.view().unwrap();
+            assert_eq!(kind, super::wire::PRIVATE_OBJECT_CHUNK);
+            super::parse_chunk_frame_header(&payload[..96], true, true).unwrap();
+            (kind, object.exact_bytes().len() as u64)
+        };
+        let upper_bytes = super::ChunkDirectory::reservation_bytes(bound).unwrap();
+        assert!(upper_bytes > first_chunk.extent + 64);
+        opened.load_support_and_index_fallback().unwrap();
+        assert_eq!(opened.index.len(), count);
+        assert_eq!(
+            opened.index_status,
+            super::RandomAccessIndexStatus::RebuiltAbsent
+        );
+        // Probe session is separate; the tested session gets one finite cap
+        // before open, then pressure uses that original shared counter.
+        drop(opened);
+        for cap in [0, u64::MAX] {
+            let pressure = Arc::new(Mutex::new(Pressure::default()));
+            let mut options = EncryptedOpenOptions::new(Some(Unlock::Identity(&identity)));
+            options.crypto_policy.max_working_memory_bytes = 64 * 1024;
+            let mut reader = open_indexed_random_encrypted(
+                PressureSource {
+                    source: MemoryRandomReadSource::new(encrypted.bytes.clone()),
+                    pressure: Arc::clone(&pressure),
+                },
+                RandomAccessPolicy {
+                    max_cached_bytes: 0,
+                    max_chunk_frames_scanned: cap,
+                    ..RandomAccessPolicy::default()
+                },
+                options,
+            )
+            .unwrap();
+            {
+                let mut state = pressure.lock().unwrap();
+                state.budget = Some(reader.work.budget().clone());
+                state.target = Some((first_chunk.offset, first_chunk.extent));
+                state.raw_len = first_raw;
+                state.upper_bytes = upper_bytes;
+            }
+            let error = reader.load_support_and_index_fallback().unwrap_err();
+            if cap == 0 {
+                assert_eq!(error.code(), super::ReasonCode::RandomAccessPolicyRefused);
+                assert_eq!(
+                    error.detail(),
+                    "encrypted Chunk-object scan exceeds caller policy"
+                );
+            } else {
+                assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+                assert_eq!(
+                    error.detail(),
+                    "managed crypto replacement and required headroom exceed caller policy"
+                );
+            }
+            assert_eq!(
+                reader.index_status,
+                super::RandomAccessIndexStatus::RebuiltAbsent
+            );
+            assert_eq!(reader.index.len(), 0);
+            assert!(reader.support.is_none());
+            {
+                let mut state = pressure.lock().unwrap();
+                assert_eq!(state.hits, 1);
+                // No charged allocation occurs between the fill's reserved
+                // trace and the first Slot admission except this raw object.
+                assert_eq!(
+                    state.available_during_fill + first_chunk.extent - first_raw,
+                    upper_bytes - 1
+                );
+                assert!(upper_bytes > super::ChunkDirectory::reservation_bytes(count).unwrap());
+                println!(
+                    "authenticated fallback cap={cap}: physical={bound} unique={count} cipher={} raw={first_raw} upper={upper_bytes} first_slot_available={}",
+                    first_chunk.extent,
+                    upper_bytes - 1
+                );
+                state.target = None;
+                state.held = None;
+            }
+            if cap == u64::MAX {
+                for (name, bytes) in &expected {
+                    let read = reader
+                        .read_entry(&LogicalPath::from_utf8([name.as_str()]).unwrap())
+                        .unwrap();
+                    assert_eq!(&*read.bytes, bytes);
+                }
+                assert_eq!(reader.index.len(), count);
+            }
+        }
+    }
+
+    #[test]
+    fn validated_index_count_drives_admission_with_raw_and_spans_live() {
+        let work = test_work(4096);
+        let records = vec![
+            index_record(slot_digest(1).as_bytes(), 0, 0, 1),
+            index_record(slot_digest(2).as_bytes(), 1, 0, 1),
+        ];
+        let items = index_sequence(&records, &work);
+        assert_eq!(items.len(), 2);
+        let raw_and_spans = work.budget().live_bytes();
+        let table_bytes = super::ChunkDirectory::reservation_bytes(2).unwrap();
+        let segments = [
+            test_segment(super::SEGMENT_PAYLOAD, 1),
+            test_segment(super::SEGMENT_PAYLOAD, 1),
+        ];
+        let table = super::decode_encrypted_index(&items, &segments, 2, &work).unwrap();
+        assert_eq!(work.budget().live_bytes(), raw_and_spans + table_bytes);
+        drop(table);
+        // Expected semantic count is never allocation authority: with enough
+        // space for physical N, an enormous expected count is a late mismatch.
+        let error = super::decode_encrypted_index(&items, &segments, u64::MAX, &work)
+            .err()
+            .unwrap();
+        assert_eq!(error.code(), super::ReasonCode::CryptoPrivateObjectInvalid);
+        assert!(error.to_string().contains("Chunk count mismatch"));
+        assert_eq!(work.budget().live_bytes(), raw_and_spans);
+        let (rebuilt, status) =
+            super::decode_index_or_rebuild(&items, &segments, u64::MAX, &work).unwrap();
+        assert_eq!(status, super::RandomAccessIndexStatus::RebuiltInvalid);
+        assert_eq!(rebuilt.len(), 0);
+        drop(rebuilt);
+        let held = super::WorkBytes::zeroed(
+            work.budget(),
+            (work.budget().available_bytes() - table_bytes + 1) as usize,
+        )
+        .unwrap();
+        let before = work.budget().live_bytes();
+        let error = super::decode_index_or_rebuild(&items, &segments, 2, &work)
+            .err()
+            .unwrap();
+        assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+        assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        assert_eq!(work.budget().live_bytes(), before);
+        drop((held, items));
+        assert_eq!(work.budget().live_bytes(), 0);
+        let empty = index_sequence(&[], &work);
+        let live = work.budget().live_bytes();
+        let table = super::decode_encrypted_index(&empty, &[], 0, &work).unwrap();
+        assert_eq!(table.len(), 0);
+        assert_eq!(work.budget().live_bytes(), live);
+    }
+
+    #[test]
+    fn encrypted_index_item_defenses_keep_field_and_late_duplicate_positions() {
+        let good = index_record(slot_digest(1).as_bytes(), 0, 0, 1);
+        let mut wrong_kind = good.clone();
+        wrong_kind[..2].copy_from_slice(&1_u16.to_be_bytes());
+        let mut trailing = good.clone();
+        trailing.push(0);
+        let mut missing = crate::canonical::RecordBuilder::new(super::wire::RECORD_ENCRYPTED_INDEX);
+        missing
+            .bytes(1, slot_digest(1).as_bytes())
+            .unwrap()
+            .u64(2, 0)
+            .unwrap()
+            .u64(3, 0)
+            .unwrap();
+        let mut extra = crate::canonical::RecordBuilder::new(super::wire::RECORD_ENCRYPTED_INDEX);
+        extra
+            .bytes(1, slot_digest(1).as_bytes())
+            .unwrap()
+            .u64(2, 0)
+            .unwrap()
+            .u64(3, 0)
+            .unwrap()
+            .u32(4, 1)
+            .unwrap()
+            .u8(5, 1)
+            .unwrap();
+        let mut wrong_digest_type =
+            crate::canonical::RecordBuilder::new(super::wire::RECORD_ENCRYPTED_INDEX);
+        wrong_digest_type
+            .u64(1, 0)
+            .unwrap()
+            .u64(2, 0)
+            .unwrap()
+            .u64(3, 0)
+            .unwrap()
+            .u32(4, 1)
+            .unwrap();
+        let mut cases = vec![
+            ("kind", wrong_kind),
+            ("trailing", trailing),
+            ("missing", missing.finish().unwrap()),
+            ("extra", extra.finish().unwrap()),
+            ("digest_type", wrong_digest_type.finish().unwrap()),
+            ("digest_width", index_record(&[1; 31], 0, 0, 1)),
+            (
+                "absent_ordinal",
+                index_record(slot_digest(1).as_bytes(), 99, 0, 1),
+            ),
+            (
+                "ordinal_conversion_or_absence",
+                index_record(slot_digest(1).as_bytes(), u64::MAX, 0, 1),
+            ),
+            (
+                "first_counter",
+                index_record(slot_digest(1).as_bytes(), 0, 1, 1),
+            ),
+            (
+                "zero_fragments",
+                index_record(slot_digest(1).as_bytes(), 0, 0, 0),
+            ),
+            (
+                "segment_count",
+                index_record(slot_digest(1).as_bytes(), 0, 0, 2),
+            ),
+        ];
+        for tag in 2..=4 {
+            let mut wrong_type =
+                crate::canonical::RecordBuilder::new(super::wire::RECORD_ENCRYPTED_INDEX);
+            wrong_type.bytes(1, slot_digest(1).as_bytes()).unwrap();
+            for field in 2..=4 {
+                if field == tag {
+                    wrong_type.bytes(field, &[0]).unwrap();
+                } else if field == 4 {
+                    wrong_type.u32(field, 1).unwrap();
+                } else {
+                    wrong_type.u64(field, 0).unwrap();
+                }
+            }
+            cases.push(("integer_type", wrong_type.finish().unwrap()));
+        }
+        let work = test_work(4096);
+        for (name, record) in cases {
+            let mut table = super::ChunkDirectory::new(work.budget(), 2, true);
+            table.reserve_once().unwrap();
+            let error = super::decode_encrypted_index_item(
+                &record,
+                &[test_segment(super::SEGMENT_PAYLOAD, 1)],
+                &mut table,
+            )
+            .unwrap_err();
+            assert_eq!(
+                error.class(),
+                super::OutcomeClass::Nonconforming,
+                "{name}: {error}"
+            );
+            assert_eq!(table.len(), 0, "{name}");
+        }
+        let mut table = super::ChunkDirectory::new(work.budget(), 2, true);
+        table.reserve_once().unwrap();
+        assert!(
+            super::decode_encrypted_index_item(
+                &good,
+                &[test_segment(super::SEGMENT_CONTROL, 1)],
+                &mut table
+            )
+            .is_err()
+        );
+        super::decode_encrypted_index_item(
+            &good,
+            &[test_segment(super::SEGMENT_PAYLOAD, 1)],
+            &mut table,
+        )
+        .unwrap();
+        // Locator validation still wins before late duplicate detection.
+        let invalid_duplicate = index_record(slot_digest(1).as_bytes(), 99, 0, 1);
+        let error = super::decode_encrypted_index_item(
+            &invalid_duplicate,
+            &[test_segment(super::SEGMENT_PAYLOAD, 1)],
+            &mut table,
+        )
+        .unwrap_err();
+        assert!(error.to_string().contains("absent segment"));
+        let error = super::decode_encrypted_index_item(
+            &good,
+            &[test_segment(super::SEGMENT_PAYLOAD, 1)],
+            &mut table,
+        )
+        .unwrap_err();
+        assert!(error.to_string().contains("invalid or duplicate"));
+        assert_eq!(table.len(), 1);
+    }
+
+    #[test]
+    fn borrowed_slot_consumers_preserve_digest_lookup_and_physical_order() {
+        let work = test_work(4096);
+        let mut table = super::ChunkDirectory::new(work.budget(), 3, false);
+        for (digest, ordinal) in [(3, 1), (1, 8), (2, 1)] {
+            table
+                .insert_fallback(slot_digest(digest), slot_locator(ordinal))
+                .unwrap();
+        }
+        table.finish();
+        let borrowed = table.get(&slot_digest(2)).unwrap();
+        assert_eq!(borrowed.segment_ordinal, 1);
+        let mut physical = table
+            .iter()
+            .map(|(digest, locator)| (locator.segment_ordinal, super::Digest::from_bytes(*digest)))
+            .collect::<Vec<_>>();
+        physical.sort();
+        assert_eq!(
+            physical,
+            [
+                (1, slot_digest(2)),
+                (1, slot_digest(3)),
+                (8, slot_digest(1))
+            ]
+        );
+        assert_eq!(
+            table
+                .values()
+                .map(|locator| locator.segment_ordinal)
+                .collect::<Vec<_>>(),
+            [8, 1, 1]
+        );
+        assert_eq!(borrowed.segment_ordinal, 1);
+    }
+
     struct CountingSource {
         source: MemoryRandomReadSource,
         reads: Arc<Mutex<Vec<(u64, u64)>>>,
@@ -2362,7 +3561,11 @@ mod tests {
             )
             .unwrap();
             probe.load_support_and_index_fallback().unwrap();
-            let ids = probe.index.keys().copied().collect::<Vec<_>>();
+            let ids = probe
+                .index
+                .iter()
+                .map(|(digest, _)| super::Digest::from_bytes(*digest))
+                .collect::<Vec<_>>();
             assert_eq!(ids.len(), 2);
             for name in ["first", "second", "first", "second", "first"] {
                 probe
@@ -2595,7 +3798,11 @@ mod tests {
             EncryptedOpenOptions::new(Some(Unlock::Identity(&identity))),
         )
         .unwrap();
-        let ids = opened.index.keys().copied().collect::<Vec<_>>();
+        let ids = opened
+            .index
+            .iter()
+            .map(|(digest, _)| super::Digest::from_bytes(*digest))
+            .collect::<Vec<_>>();
         assert_eq!(ids.len(), 2);
         let first = opened.chunk_frame(ids[0]).unwrap();
         let (_, borrowed) = first.view().unwrap();
@@ -3016,7 +4223,7 @@ mod tests {
         let header = opened.chunk_header(target).unwrap();
         let predecessors = opened.group_prerequisites(target, &header).unwrap();
         assert!(!predecessors.is_empty());
-        let ordinal = opened.index[&predecessors[0]].segment_ordinal as usize;
+        let ordinal = opened.index.get(&predecessors[0]).unwrap().segment_ordinal as usize;
         let predecessor = &opened.segments[ordinal];
         {
             let mut pressure = pressure.lock().unwrap();
@@ -3229,7 +4436,7 @@ mod tests {
             EncryptedOpenOptions::new(Some(Unlock::Identity(&identity))),
         )
         .unwrap();
-        let ordinal = probe.index[&unread].segment_ordinal;
+        let ordinal = probe.index.get(&unread).unwrap().segment_ordinal;
         let segment = &probe.segments[usize::try_from(ordinal).unwrap()];
         let mutation =
             usize::try_from(segment.offset + SEGMENT_HEADER_LEN + PROTECTED_HEADER_LEN).unwrap();
