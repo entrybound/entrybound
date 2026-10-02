@@ -714,6 +714,157 @@ pub(crate) fn decode_private_object(input: &[u8]) -> Result<(u16, &[u8])> {
     Ok((kind, &input[12..]))
 }
 
+/// One complete authenticated object on its original working budget.
+#[derive(Debug)]
+pub(crate) struct WorkObject {
+    raw: WorkBytes,
+    object_id: [u8; 32],
+}
+
+impl WorkObject {
+    pub(crate) fn verified(
+        raw: WorkBytes,
+        expected_id: [u8; 32],
+        work: &CryptoWorkContext,
+    ) -> Result<Self> {
+        if !raw.belongs_to(work.budget()) {
+            return Err(super::resource_refused(
+                "private object backing belongs to another working budget",
+            ));
+        }
+        if encrypted_object_id(raw.as_slice())? != expected_id {
+            return Err(Diagnostic::new(
+                OutcomeClass::Corrupt,
+                ReasonCode::CryptoPrivateObjectInvalid,
+                "encrypted object identity mismatch",
+            ));
+        }
+        // EBPO semantics remain at the caller's existing dispatch position.
+        Ok(Self {
+            raw,
+            object_id: expected_id,
+        })
+    }
+
+    pub(crate) fn exact_bytes(&self) -> &[u8] {
+        self.raw.as_slice()
+    }
+
+    pub(crate) fn object_id(&self) -> [u8; 32] {
+        self.object_id
+    }
+
+    pub(crate) fn view(&self) -> Result<(u16, &[u8])> {
+        decode_private_object(self.exact_bytes())
+    }
+}
+
+#[derive(Clone, Copy)]
+struct CollectionSpan {
+    start: usize,
+    end: usize,
+}
+
+/// A complete charged object and its charged, nonsecret EBCS item spans.
+pub(crate) struct WorkSequence {
+    object: WorkObject,
+    payload_start: usize,
+    payload_end: usize,
+    spans: WorkVec<CollectionSpan>,
+    kind: u16,
+}
+
+impl WorkSequence {
+    pub(crate) fn decode_with_context(
+        object: WorkObject,
+        work: &CryptoWorkContext,
+    ) -> Result<Self> {
+        if !object.raw.belongs_to(work.budget()) {
+            return Err(super::resource_refused(
+                "EBCS object belongs to another working budget",
+            ));
+        }
+        let (object_kind, payload) = object.view()?;
+        if object_kind != PRIVATE_OBJECT_SEQUENCE {
+            return Err(private_invalid("EBCS requires a sequence private object"));
+        }
+        let payload_start = object
+            .exact_bytes()
+            .len()
+            .checked_sub(payload.len())
+            .expect("payload is within the complete private object");
+        let payload_end = payload_start
+            .checked_add(payload.len())
+            .expect("validated private object extent");
+        let mut spans = WorkVec::new(work.budget());
+        let view =
+            SequenceContainerRef::decode_with_admission(payload, |admission| match admission {
+                CollectionAdmission::Count(count) => spans.reserve(count),
+                CollectionAdmission::Item { span, .. } => spans.push(span),
+            })?;
+        let kind = view.kind();
+        debug_assert_eq!(spans.as_slice().len(), view.len());
+        Ok(Self {
+            object,
+            payload_start,
+            payload_end,
+            spans,
+            kind,
+        })
+    }
+
+    pub(crate) fn kind(&self) -> u16 {
+        self.kind
+    }
+
+    pub(crate) fn len(&self) -> usize {
+        self.spans.as_slice().len()
+    }
+
+    pub(crate) fn items(&self) -> impl ExactSizeIterator<Item = &[u8]> {
+        let payload = &self.object.exact_bytes()[self.payload_start..self.payload_end];
+        let spans = self.spans.as_slice();
+        (0..self.len()).map(move |index| {
+            let span = spans[index];
+            &payload[span.start..span.end]
+        })
+    }
+
+    pub(crate) fn concatenate_work(&self, work: &CryptoWorkContext) -> Result<WorkBytes> {
+        if !self.object.raw.belongs_to(work.budget()) {
+            return Err(super::resource_refused(
+                "EBCS concatenation belongs to another working budget",
+            ));
+        }
+        let length = self.items().try_fold(0usize, |total, item| {
+            total
+                .checked_add(item.len())
+                .ok_or_else(|| super::resource_refused("EBCS concatenated length overflows"))
+        })?;
+        let mut concatenated = WorkBytes::zeroed(work.budget(), length)?;
+        let mut written = 0usize;
+        for item in self.items() {
+            let end = written
+                .checked_add(item.len())
+                .expect("checked concatenated item total");
+            concatenated[written..end].copy_from_slice(item);
+            written = end;
+        }
+        Ok(concatenated)
+    }
+}
+
+impl std::fmt::Debug for WorkSequence {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("WorkSequence")
+            .field("raw_length", &self.object.exact_bytes().len())
+            .field("kind", &self.kind)
+            .field("item_count", &self.len())
+            .finish_non_exhaustive()
+    }
+}
+
 pub(crate) fn sequence_container(kind: u16, items: &[Vec<u8>]) -> Result<Vec<u8>> {
     validate_collection_kind(kind)?;
     if items.len() > MAX_SEQUENCE_ITEMS {
@@ -750,8 +901,8 @@ pub(crate) fn decode_sequence_container(input: &[u8]) -> Result<(u16, Vec<Vec<u8
         CollectionAdmission::Count(count) => items
             .try_reserve_exact(count)
             .map_err(|_| super::resource_refused("cannot reserve EBCS item list")),
-        CollectionAdmission::Item(item) => {
-            items.push(item.to_vec());
+        CollectionAdmission::Item { exact, .. } => {
+            items.push(exact.to_vec());
             Ok(())
         }
     })?;
@@ -760,7 +911,7 @@ pub(crate) fn decode_sequence_container(input: &[u8]) -> Result<(u16, Vec<Vec<u8
 }
 
 /// Complete framing and semantics are validated before exposing infallible iteration.
-/// This is a borrowed view, not the deferred managed retained EBCS owner.
+/// A borrowed view; WorkSequence retains the separately charged raw owner/table.
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct SequenceContainerRef<'a> {
     exact: &'a [u8],
@@ -799,10 +950,14 @@ impl<'a> SequenceContainerRef<'a> {
             if length == 0 || length > MAX_SEQUENCE_ITEM_BYTES {
                 return Err(private_invalid("EBCS item length is outside v1 bounds"));
             }
+            let start = cursor;
             let item = take(input, &mut cursor, length)?;
             // Preserve the compatibility owner's old copy-before-record-decode
             // boundary. Pure borrowed decoding has a no-op admission callback.
-            admit(CollectionAdmission::Item(item))?;
+            admit(CollectionAdmission::Item {
+                exact: item,
+                span: CollectionSpan { start, end: cursor },
+            })?;
             let (_, consumed) = decode_record(item)?;
             if consumed != item.len() {
                 return Err(private_invalid("EBCS item has trailing bytes"));
@@ -823,7 +978,10 @@ impl<'a> SequenceContainerRef<'a> {
 
 enum CollectionAdmission<'a> {
     Count(usize),
-    Item(&'a [u8]),
+    Item {
+        exact: &'a [u8],
+        span: CollectionSpan,
+    },
 }
 
 pub(crate) struct CollectionIter<'a> {
@@ -1317,6 +1475,315 @@ mod tests {
         out
     }
 
+    fn managed_object(bytes: &[u8], work: &CryptoWorkContext) -> WorkObject {
+        let mut raw = WorkBytes::zeroed(work.budget(), bytes.len()).unwrap();
+        raw.copy_from_slice(bytes);
+        WorkObject::verified(raw, encrypted_object_id(bytes).unwrap(), work).unwrap()
+    }
+
+    fn collection_item(kind: u16, record_type: u16, key: &[u8]) -> Vec<u8> {
+        let mut record = RecordBuilder::new(record_type);
+        match (kind, record_type) {
+            (COLLECTION_MANIFEST, 3) => {
+                let mut first = RecordBuilder::new(7);
+                first.u8(1, 2).unwrap().bytes(2, b"prefix\0").unwrap();
+                let mut last = RecordBuilder::new(7);
+                last.u8(1, 2).unwrap().bytes(2, key).unwrap();
+                record
+                    .sequence(1, &[first.finish().unwrap(), last.finish().unwrap()])
+                    .unwrap();
+            }
+            (COLLECTION_TRANSFORM_PLANS, _) => {
+                record.u64(1, u64::from(key[0])).unwrap();
+            }
+            (COLLECTION_RECONSTRUCTION_REGIONS, 19) => {
+                record
+                    .u8(1, 2)
+                    .unwrap()
+                    .bytes(2, key)
+                    .unwrap()
+                    .utf8(3, "a\u{03bb}")
+                    .unwrap();
+            }
+            _ => {
+                record.bytes(1, key).unwrap();
+            }
+        }
+        record.finish().unwrap()
+    }
+
+    #[test]
+    fn managed_object_preserves_exact_identity_and_defers_private_semantics() {
+        let work = CryptoWorkContext::new(super::super::CryptoPolicy::default());
+        for kind in [
+            PRIVATE_OBJECT_RECORD,
+            PRIVATE_OBJECT_CHUNK,
+            PRIVATE_OBJECT_SEQUENCE,
+        ] {
+            let bytes = private_object(kind, b"exact payload\0").unwrap();
+            let mut raw = WorkBytes::zeroed(work.budget(), bytes.len()).unwrap();
+            raw.copy_from_slice(&bytes);
+            let pointer = raw.as_ptr();
+            let id = encrypted_object_id(&bytes).unwrap();
+            let object = WorkObject::verified(raw, id, &work).unwrap();
+            assert_eq!(object.exact_bytes(), bytes);
+            assert_eq!(object.exact_bytes().as_ptr(), pointer);
+            assert_eq!(object.object_id(), id);
+            assert_eq!(
+                object.view().unwrap(),
+                decode_private_object(&bytes).unwrap()
+            );
+            assert_eq!(work.budget().live_bytes(), bytes.len() as u64);
+            drop(object);
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
+
+        let bytes = b"malformed EBPO semantics";
+        let object = managed_object(bytes, &work);
+        assert_eq!(
+            object.view().unwrap_err(),
+            decode_private_object(bytes).unwrap_err()
+        );
+        drop(object);
+        let mut raw = WorkBytes::zeroed(work.budget(), bytes.len()).unwrap();
+        raw.copy_from_slice(bytes);
+        let mut wrong_id = encrypted_object_id(bytes).unwrap();
+        wrong_id[0] ^= 1;
+        let error = WorkObject::verified(raw, wrong_id, &work).unwrap_err();
+        assert_eq!(error.class(), OutcomeClass::Corrupt);
+        assert_eq!(error.code(), ReasonCode::CryptoPrivateObjectInvalid);
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn managed_sequence_matches_all_nine_collection_oracles() {
+        for (kind, record_type) in [
+            (1, 3),
+            (1, 4),
+            (2, 2),
+            (3, 11),
+            (4, 12),
+            (5, 14),
+            (5, 16),
+            (6, 18),
+            (6, 19),
+            (7, 26),
+            (8, 22),
+            (9, 27),
+        ] {
+            let items = [
+                collection_item(kind, record_type, b"a"),
+                collection_item(kind, record_type, b"aa"),
+            ];
+            // Numeric keys need distinct values, rather than a byte prefix pair.
+            let items = if kind == COLLECTION_TRANSFORM_PLANS {
+                [
+                    collection_item(kind, record_type, b"a"),
+                    collection_item(kind, record_type, b"b"),
+                ]
+            } else {
+                items
+            };
+            let sequence = sequence_container(kind, &items).unwrap();
+            let oracle = decode_sequence_container(&sequence).unwrap();
+            let bytes = private_object(PRIVATE_OBJECT_SEQUENCE, &sequence).unwrap();
+            let work = CryptoWorkContext::new(super::super::CryptoPolicy::default());
+            let object = managed_object(&bytes, &work);
+            let pointer = object.exact_bytes().as_ptr();
+            let owner = WorkSequence::decode_with_context(object, &work).unwrap();
+            assert_eq!(owner.kind(), oracle.0);
+            assert_eq!(owner.len(), oracle.1.len());
+            {
+                let mut borrowed = owner.items();
+                assert_eq!(borrowed.len(), items.len());
+                for expected in &oracle.1 {
+                    let actual = borrowed.next().unwrap();
+                    assert_eq!(actual, expected);
+                    assert!(actual.as_ptr() >= pointer);
+                    assert!(actual.as_ptr() < pointer.wrapping_add(bytes.len()));
+                }
+                assert_eq!(borrowed.len(), 0);
+                assert!(borrowed.next().is_none());
+            }
+            let concatenated = owner.concatenate_work(&work).unwrap();
+            assert_eq!(concatenated.as_slice(), oracle.1.concat());
+            assert_eq!(
+                work.budget().live_bytes(),
+                (bytes.len()
+                    + items.len() * std::mem::size_of::<CollectionSpan>()
+                    + concatenated.len()) as u64
+            );
+            drop(concatenated);
+            drop(owner);
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn managed_sequence_preserves_framing_and_semantic_error_precedence() {
+        let first = collection_item(COLLECTION_INDEX, 27, b"a");
+        let second = collection_item(COLLECTION_INDEX, 27, b"b");
+        let mut bad_key = RecordBuilder::new(27);
+        bad_key.u8(1, 1).unwrap();
+        let bad_key = bad_key.finish().unwrap();
+        let mut bad_component = RecordBuilder::new(7);
+        bad_component.u8(1, 2).unwrap().u8(2, 1).unwrap();
+        let mut bad_path = RecordBuilder::new(3);
+        bad_path
+            .sequence(1, &[bad_component.finish().unwrap()])
+            .unwrap();
+        let mut cases = vec![
+            raw_collection(COLLECTION_INDEX, &[first.clone(), first.clone()]),
+            raw_collection(COLLECTION_INDEX, &[second, first.clone()]),
+            raw_collection(COLLECTION_INDEX, &[first.clone(), first.clone(), vec![0]]),
+            raw_collection(COLLECTION_INDEX, &[first.clone(), first, bad_key]),
+            raw_collection(COLLECTION_MANIFEST, &[bad_path.finish().unwrap()]),
+            raw_collection(10, &[]),
+            raw_collection(COLLECTION_TRANSFORM_PLANS, &[]),
+        ];
+        let valid = sequence_container(
+            COLLECTION_INDEX,
+            &[collection_item(COLLECTION_INDEX, 27, b"a")],
+        )
+        .unwrap();
+        for length in 0..valid.len() {
+            cases.push(valid[..length].to_vec());
+        }
+        let mut trailing = valid;
+        trailing.push(0);
+        cases.push(trailing);
+        for sequence in cases {
+            let expected = decode_sequence_container(&sequence).unwrap_err();
+            let bytes = private_object(PRIVATE_OBJECT_SEQUENCE, &sequence).unwrap();
+            let work = CryptoWorkContext::new(super::super::CryptoPolicy::default());
+            let object = managed_object(&bytes, &work);
+            let actual = WorkSequence::decode_with_context(object, &work).unwrap_err();
+            assert_eq!(actual, expected);
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn managed_sequence_rejects_foreign_contexts_even_for_empty_items() {
+        let work = CryptoWorkContext::new(super::super::CryptoPolicy::default());
+        let foreign = CryptoWorkContext::new(work.policy());
+        // Empty raw ownership still carries its counter identity before EBPO decode.
+        let raw = WorkBytes::zeroed(foreign.budget(), 0).unwrap();
+        assert_eq!(
+            WorkObject::verified(raw, encrypted_object_id(&[]).unwrap(), &work)
+                .unwrap_err()
+                .class(),
+            OutcomeClass::PolicyRefused
+        );
+        let sequence = sequence_container(COLLECTION_INDEX, &[]).unwrap();
+        let bytes = private_object(PRIVATE_OBJECT_SEQUENCE, &sequence).unwrap();
+        let object = managed_object(&bytes, &foreign);
+        assert_eq!(
+            WorkSequence::decode_with_context(object, &work)
+                .unwrap_err()
+                .class(),
+            OutcomeClass::PolicyRefused
+        );
+        assert_eq!(foreign.budget().live_bytes(), 0);
+        let owner =
+            WorkSequence::decode_with_context(managed_object(&bytes, &work), &work).unwrap();
+        assert_eq!(owner.len(), 0);
+        assert_eq!(owner.items().len(), 0);
+        assert_eq!(
+            owner.concatenate_work(&foreign).unwrap_err().class(),
+            OutcomeClass::PolicyRefused
+        );
+        assert_eq!(foreign.budget().live_bytes(), 0);
+        let empty = owner.concatenate_work(&work).unwrap();
+        assert!(empty.is_empty());
+        assert!(empty.belongs_to(work.budget()));
+        assert_eq!(work.budget().live_bytes(), bytes.len() as u64);
+        drop(empty);
+        drop(owner);
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn managed_sequence_count_budget_precedes_malformed_item_but_not_impossible_count() {
+        let sequence = raw_collection(COLLECTION_INDEX, &[vec![0]]);
+        let bytes = private_object(PRIVATE_OBJECT_SEQUENCE, &sequence).unwrap();
+        let span_bytes = std::mem::size_of::<CollectionSpan>();
+        for extra in [span_bytes - 1, span_bytes] {
+            let work = CryptoWorkContext::new(super::super::CryptoPolicy {
+                max_working_memory_bytes: (bytes.len() + extra) as u64,
+                ..super::super::CryptoPolicy::default()
+            });
+            let object = managed_object(&bytes, &work);
+            let error = WorkSequence::decode_with_context(object, &work).unwrap_err();
+            if extra < span_bytes {
+                assert_eq!(error.class(), OutcomeClass::PolicyRefused);
+            } else {
+                assert_eq!(error, decode_sequence_container(&sequence).unwrap_err());
+            }
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
+        let mut impossible = raw_collection(COLLECTION_INDEX, &[]);
+        impossible[12..20].copy_from_slice(&1_u64.to_be_bytes());
+        let bytes = private_object(PRIVATE_OBJECT_SEQUENCE, &impossible).unwrap();
+        let work = CryptoWorkContext::new(super::super::CryptoPolicy {
+            max_working_memory_bytes: bytes.len() as u64,
+            ..super::super::CryptoPolicy::default()
+        });
+        let object = managed_object(&bytes, &work);
+        let error = WorkSequence::decode_with_context(object, &work).unwrap_err();
+        assert_eq!(error, decode_sequence_container(&impossible).unwrap_err());
+        assert_eq!(error.class(), OutcomeClass::Nonconforming);
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn managed_sequence_charges_live_raw_spans_and_concat_through_error_and_unwind() {
+        let items = [
+            collection_item(COLLECTION_DICTIONARIES, 11, b"a"),
+            collection_item(COLLECTION_DICTIONARIES, 11, b"b"),
+        ];
+        let sequence = sequence_container(COLLECTION_DICTIONARIES, &items).unwrap();
+        let bytes = private_object(PRIVATE_OBJECT_SEQUENCE, &sequence).unwrap();
+        let span_bytes = items.len() * std::mem::size_of::<CollectionSpan>();
+        let concat_bytes: usize = items.iter().map(Vec::len).sum();
+        let peak = (3 + bytes.len() + span_bytes + concat_bytes) as u64;
+        let work = CryptoWorkContext::new(super::super::CryptoPolicy {
+            max_working_memory_bytes: peak,
+            ..super::super::CryptoPolicy::default()
+        });
+        let retained = WorkBytes::zeroed(work.budget(), 3).unwrap();
+        let owner =
+            WorkSequence::decode_with_context(managed_object(&bytes, &work), &work).unwrap();
+        assert_eq!(work.budget().live_bytes(), peak - concat_bytes as u64);
+        let concatenated = owner.concatenate_work(&work).unwrap();
+        assert_eq!(work.budget().live_bytes(), peak);
+        assert!(WorkBytes::zeroed(work.budget(), 1).is_err());
+        drop(concatenated);
+        assert_eq!(work.budget().live_bytes(), peak - concat_bytes as u64);
+        drop(owner);
+        assert_eq!(work.budget().live_bytes(), 3);
+
+        let malformed = private_object(
+            PRIVATE_OBJECT_SEQUENCE,
+            &raw_collection(COLLECTION_DICTIONARIES, &[vec![0]]),
+        )
+        .unwrap();
+        let object = managed_object(&malformed, &work);
+        assert!(WorkSequence::decode_with_context(object, &work).is_err());
+        assert_eq!(work.budget().live_bytes(), 3);
+        let unwind = std::panic::catch_unwind(|| {
+            let owner =
+                WorkSequence::decode_with_context(managed_object(&bytes, &work), &work).unwrap();
+            let _concatenated = owner.concatenate_work(&work).unwrap();
+            assert_eq!(work.budget().live_bytes(), peak);
+            panic!("synthetic managed collection consumer unwind");
+        });
+        assert!(unwind.is_err());
+        assert_eq!(work.budget().live_bytes(), 3);
+        drop(retained);
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
     #[test]
     fn envelope_views_match_owned_oracle_and_borrow_exact_variable_fields() {
         for stanza_type in [1, 2, 500] {
@@ -1583,7 +2050,7 @@ mod tests {
         assert_eq!(result.unwrap_err(), refusal);
         let mut admitted = 0;
         let error = SequenceContainerRef::decode_with_admission(&input, |admission| {
-            if let CollectionAdmission::Item(_) = admission {
+            if let CollectionAdmission::Item { .. } = admission {
                 admitted += 1;
             }
             Ok(())
