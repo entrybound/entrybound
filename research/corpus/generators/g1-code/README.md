@@ -58,9 +58,14 @@ License expressions are limited to the eight reviewed declarations in the pinned
 population. Explicit `AND` clauses require every operand; explicit `OR` permits a
 fully evidenced alternative; legacy slash declarations conservatively require
 both texts. Required text evidence comes from top-level license/notice files.
-Every nested standalone notice is also indexed, and every other embedded notice
-is preserved through original-archive byte equality. The manifest records text
-evidence and makes no redistribution or corpus acceptance claim.
+An ordinary file is indexed when any component of its relative archive path
+starts with `license`, `licence`, `copying`, `copyright`, `notice` or `unlicense`,
+case-insensitively. The package archive root is excluded from this match. This
+includes files beneath notice-named directories; nested text cannot satisfy
+required top-level clauses. Each matching file is indexed once, and all other
+embedded notices are preserved through original-archive byte equality. The
+manifest records text evidence and makes no redistribution or corpus acceptance
+claim.
 
 The 64 MiB ceiling includes all output file bytes: original archives, lock and
 manifest. `--max-bytes` may lower it. Input lock/Cargo.toml reads are bounded at

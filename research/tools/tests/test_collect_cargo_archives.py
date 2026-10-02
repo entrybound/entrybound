@@ -455,3 +455,100 @@ def test_cli_aggregate_success_and_refusal(inputs, capsys):
     assert collector.main(cli) == 2
     assert "missing or duplicate" in capsys.readouterr().err
     assert_no_output(inputs)
+
+
+@pytest.mark.parametrize("component", ["LiCeNsEs", "LICENCE-info", "COPYING.third-party",
+                                     "Copyright-data", "NOTICE-credits", "UnLicense"])
+def test_notice_named_relative_ancestor_is_indexed_with_original_bytes(inputs, component):
+    relative = f"assets/{component}/component/source.rs"
+    content = b"Synthetic embedded attribution in an ordinary source leaf."
+    inputs.files[0][relative] = content
+    inputs.rebuild(0)
+    original = inputs.path(0).read_bytes()
+    manifest = collector.collect(**inputs.args())
+    package = manifest["packages"][0]
+    notice = next(row for row in package["license_notices"] if row["path"] == relative)
+    assert notice == {"path": relative, "bytes": len(content), "sha256": sha(content), "text_markers": []}
+    assert (inputs.out / package["archive_path"]).read_bytes() == original
+    assert package["archive_sha256"] == sha(original)
+    assert package["selected_license_text_clauses"] == ["MIT"]
+
+
+def test_ordinary_and_unanchored_subtrees_are_excluded_even_under_notice_named_package_root(inputs):
+    inputs.packages[0]["name"] = "license-fixture"
+    inputs.files[0]["Cargo.toml"] = inputs.metadata(inputs.packages[0])
+    excluded = ["ordinary/component.rs", "third-license-dir/component.rs", "src/pre-notice.txt"]
+    for relative in excluded:
+        inputs.files[0][relative] = b"Synthetic ordinary file with no matching relative component."
+    inputs.rebuild(0)
+    manifest = collector.collect(**inputs.args())
+    package = next(row for row in manifest["packages"] if row["name"] == "license-fixture")
+    assert [row["path"] for row in package["license_notices"]] == ["LICENSE-MIT", "third-party/NOTICE"]
+    assert package["selected_license_text_clauses"] == ["MIT"]
+
+
+def test_multiple_matching_components_index_one_notice_in_sorted_deterministic_manifest(inputs):
+    for relative in ["notice-z/component.rs", "NOTICE/License/COPYING/data.txt", "COPYING-a/component.rs"]:
+        inputs.files[0][relative] = b"Synthetic nested attribution."
+    inputs.rebuild(0)
+    first = collector.collect(**inputs.args())
+    second = collector.collect(**inputs.args(out=inputs.root / "second"))
+    assert first == second
+    paths = [row["path"] for row in first["packages"][0]["license_notices"]]
+    assert paths == ["COPYING-a/component.rs", "LICENSE-MIT", "NOTICE/License/COPYING/data.txt",
+                     "notice-z/component.rs", "third-party/NOTICE"]
+    assert paths.count("NOTICE/License/COPYING/data.txt") == 1
+    assert (inputs.out / "provenance-notices.json").read_bytes() == (inputs.root / "second/provenance-notices.json").read_bytes()
+
+
+@pytest.mark.parametrize("clause", ["MIT", "Unicode-DFS-2016"])
+def test_nested_notice_text_cannot_supply_missing_top_level_license_clause(inputs, clause, monkeypatch):
+    index = 0 if clause == "MIT" else 1
+    del inputs.files[index]["LICENSE-MIT" if clause == "MIT" else "LICENSE-UNICODE"]
+    inputs.files[index]["assets/licenses/component.rs"] = MIT if clause == "MIT" else UNICODE
+    inputs.rebuild(index)
+    monkeypatch.setattr(collector, "publish", lambda *args: pytest.fail("nested-only clause reached publication"))
+    with pytest.raises(collector.Refusal, match="required package license text evidence is missing"):
+        collector.collect(**inputs.args())
+    assert_no_output(inputs)
+
+
+@pytest.mark.parametrize("boundary", ["notice", "archive-aggregate"])
+def test_ancestor_notice_byte_limits_refuse_before_notice_read_or_output(inputs, boundary, monkeypatch):
+    relative = "assets/licenses/component.rs"
+    content = b"x" * 2048
+    inputs.files[0][relative] = content
+    inputs.rebuild(0)
+    if boundary == "notice":
+        monkeypatch.setattr(collector, "MAX_NOTICE_BYTES", 1024)
+    else:
+        existing = len(inputs.files[0]["LICENSE-MIT"]) + len(inputs.files[0]["third-party/NOTICE"])
+        monkeypatch.setattr(collector, "MAX_ALL_NOTICE_BYTES", existing + len(content) - 1)
+    original = collector.tarfile.TarFile.extractfile
+    reads = []
+
+    def tracked_extract(archive, member):
+        reads.append(member.name)
+        return original(archive, member)
+
+    monkeypatch.setattr(collector.tarfile.TarFile, "extractfile", tracked_extract)
+    monkeypatch.setattr(collector, "publish", lambda *args: pytest.fail("notice byte limit reached publication"))
+    with pytest.raises(collector.Refusal, match="archive license/notice bytes exceed their limit"):
+        collector.collect(**inputs.args())
+    assert "alpha-one-1.0.0/" + relative not in reads
+    assert_no_output(inputs)
+
+
+def test_ancestor_notices_obey_collection_aggregate_limit_before_output(inputs, monkeypatch):
+    for index in range(2):
+        inputs.files[index]["assets/licenses/component.rs"] = b"Synthetic nested attribution." * 8
+        inputs.rebuild(index)
+    totals = [sum(row["bytes"] for row in collector.inspect_archive(inputs.path(i).read_bytes(), inputs.packages[i])["license_notices"])
+              for i in range(2)]
+    limit = sum(totals) - 1
+    assert all(total < limit for total in totals)
+    monkeypatch.setattr(collector, "MAX_ALL_NOTICE_BYTES", limit)
+    monkeypatch.setattr(collector, "publish", lambda *args: pytest.fail("collection notice byte limit reached publication"))
+    with pytest.raises(collector.Refusal, match="collection license/notice bytes exceed their limit"):
+        collector.collect(**inputs.args())
+    assert_no_output(inputs)

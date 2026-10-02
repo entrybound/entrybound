@@ -244,7 +244,7 @@ def inspect_archive(payload, package):
                     if member.size > MAX_LOCK_BYTES:
                         raise Refusal("archive Cargo.toml exceeds its byte limit")
                     metadata = archive.extractfile(member).read()
-                if member.isfile() and NOTICE_RE.match(PurePosixPath(relative).name):
+                if member.isfile() and any(NOTICE_RE.match(part) for part in PurePosixPath(relative).parts):
                     if member.size > MAX_NOTICE_BYTES or notice_bytes + member.size > MAX_ALL_NOTICE_BYTES:
                         raise Refusal("archive license/notice bytes exceed their limit")
                     data = archive.extractfile(member).read()
