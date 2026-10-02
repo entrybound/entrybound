@@ -85,7 +85,7 @@ struct Footer {
     public_context_digest: [u8; 32],
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 struct SegmentLocator {
     offset: u64,
     extent: u64,
@@ -93,6 +93,236 @@ struct SegmentLocator {
     salt: [u8; 16],
     count: u32,
     header: [u8; 64],
+    left: usize,
+    right: usize,
+    parent: usize,
+    height: u32,
+}
+
+const NO_SEGMENT_SLOT: usize = usize::MAX;
+
+#[derive(Clone, Copy)]
+struct SegmentVacant {
+    parent: usize,
+    left: bool,
+}
+
+// Public framing stays in physical ordinal order. Rotations change only links.
+struct SegmentTable {
+    locators: WorkVec<SegmentLocator>,
+    root: usize,
+    capacity: usize,
+}
+
+#[cfg(test)]
+std::thread_local! {
+    static SEGMENT_TABLE_BUDGET_OBSERVER: std::cell::Cell<Option<fn(&WorkBudget)>> =
+        const { std::cell::Cell::new(None) };
+}
+
+impl SegmentTable {
+    fn new(budget: &WorkBudget) -> Self {
+        #[cfg(test)]
+        SEGMENT_TABLE_BUDGET_OBSERVER.with(|observer| {
+            if let Some(probe) = observer.get() {
+                probe(budget);
+            }
+        });
+        Self {
+            locators: WorkVec::new(budget),
+            root: NO_SEGMENT_SLOT,
+            capacity: 0,
+        }
+    }
+
+    fn len(&self) -> usize {
+        self.locators.as_slice().len()
+    }
+
+    fn as_slice(&self) -> &[SegmentLocator] {
+        self.locators.as_slice()
+    }
+
+    fn next_capacity(capacity: usize) -> Result<usize> {
+        let target = if capacity == 0 {
+            1
+        } else {
+            capacity
+                .checked_mul(2)
+                .ok_or_else(|| crypto_policy("Segment table capacity overflows"))?
+        };
+        if target == NO_SEGMENT_SLOT {
+            return Err(crypto_policy(
+                "Segment table capacity reaches its index sentinel",
+            ));
+        }
+        Ok(target)
+    }
+
+    fn reservation_bytes(capacity: usize) -> Result<u64> {
+        if capacity == NO_SEGMENT_SLOT {
+            return Err(crypto_policy(
+                "Segment table capacity reaches its index sentinel",
+            ));
+        }
+        let layout = std::alloc::Layout::array::<SegmentLocator>(capacity)
+            .map_err(|_| crypto_policy("Segment table allocation layout overflows"))?;
+        u64::try_from(layout.size())
+            .map_err(|_| crypto_policy("Segment table allocation exceeds u64"))
+    }
+
+    fn probe(&self, class: u8, salt: &[u8; 16]) -> Option<SegmentVacant> {
+        let mut index = self.root;
+        let mut parent = NO_SEGMENT_SLOT;
+        let mut left = false;
+        while index != NO_SEGMENT_SLOT {
+            parent = index;
+            let slot = &self.locators.as_slice()[index];
+            match class.cmp(&slot.class).then_with(|| salt.cmp(&slot.salt)) {
+                std::cmp::Ordering::Equal => return None,
+                std::cmp::Ordering::Less => {
+                    left = true;
+                    index = slot.left;
+                }
+                std::cmp::Ordering::Greater => {
+                    left = false;
+                    index = slot.right;
+                }
+            }
+        }
+        Some(SegmentVacant { parent, left })
+    }
+
+    fn height(&self, index: usize) -> u32 {
+        if index == NO_SEGMENT_SLOT {
+            0
+        } else {
+            self.locators.as_slice()[index].height
+        }
+    }
+
+    fn next_height(height: u32) -> Result<u32> {
+        height
+            .checked_add(1)
+            .ok_or_else(|| crypto_policy("Segment table height overflows"))
+    }
+
+    fn next_index(index: usize) -> Result<usize> {
+        index
+            .checked_add(1)
+            .filter(|required| *required < NO_SEGMENT_SLOT)
+            .ok_or_else(|| crypto_policy("Segment table index reaches its sentinel"))
+    }
+
+    fn refresh_height(&mut self, index: usize) -> Result<()> {
+        let slot = self.locators.as_slice()[index];
+        let height = Self::next_height(self.height(slot.left).max(self.height(slot.right)))?;
+        self.locators.as_mut_slice()[index].height = height;
+        Ok(())
+    }
+
+    fn replace_parent_child(&mut self, parent: usize, old: usize, new: usize) {
+        if parent == NO_SEGMENT_SLOT {
+            self.root = new;
+        } else if self.locators.as_slice()[parent].left == old {
+            self.locators.as_mut_slice()[parent].left = new;
+        } else {
+            debug_assert_eq!(self.locators.as_slice()[parent].right, old);
+            self.locators.as_mut_slice()[parent].right = new;
+        }
+    }
+
+    fn rotate_left(&mut self, x: usize) -> Result<usize> {
+        let y = self.locators.as_slice()[x].right;
+        let beta = self.locators.as_slice()[y].left;
+        let parent = self.locators.as_slice()[x].parent;
+        self.replace_parent_child(parent, x, y);
+        let slots = self.locators.as_mut_slice();
+        slots[y].parent = parent;
+        slots[y].left = x;
+        slots[x].parent = y;
+        slots[x].right = beta;
+        if beta != NO_SEGMENT_SLOT {
+            slots[beta].parent = x;
+        }
+        self.refresh_height(x)?;
+        self.refresh_height(y)?;
+        Ok(y)
+    }
+
+    fn rotate_right(&mut self, x: usize) -> Result<usize> {
+        let y = self.locators.as_slice()[x].left;
+        let beta = self.locators.as_slice()[y].right;
+        let parent = self.locators.as_slice()[x].parent;
+        self.replace_parent_child(parent, x, y);
+        let slots = self.locators.as_mut_slice();
+        slots[y].parent = parent;
+        slots[y].right = x;
+        slots[x].parent = y;
+        slots[x].left = beta;
+        if beta != NO_SEGMENT_SLOT {
+            slots[beta].parent = x;
+        }
+        self.refresh_height(x)?;
+        self.refresh_height(y)?;
+        Ok(y)
+    }
+
+    fn append_unique(&mut self, mut locator: SegmentLocator, vacant: SegmentVacant) -> Result<()> {
+        let index = self.len();
+        let required = Self::next_index(index)?;
+        // Valid insertion increases root height at most once; guard it before growth.
+        Self::next_height(self.height(self.root))?;
+        debug_assert!(index <= self.capacity);
+        if index == self.capacity {
+            let target = Self::next_capacity(self.capacity)?;
+            Self::reservation_bytes(target)?;
+            let additional = target
+                .checked_sub(index)
+                .ok_or_else(|| crypto_policy("Segment table capacity is below its length"))?;
+            // At a full transition required == preferred == target. No smaller retry.
+            self.locators.reserve(additional)?;
+            self.capacity = target;
+        }
+        debug_assert!(required <= self.capacity);
+        locator.left = NO_SEGMENT_SLOT;
+        locator.right = NO_SEGMENT_SLOT;
+        locator.parent = vacant.parent;
+        locator.height = 1;
+        // The explicit reserve covers this slot; push cannot grow the backing.
+        self.locators.push(locator)?;
+        if vacant.parent == NO_SEGMENT_SLOT {
+            self.root = index;
+        } else if vacant.left {
+            self.locators.as_mut_slice()[vacant.parent].left = index;
+        } else {
+            self.locators.as_mut_slice()[vacant.parent].right = index;
+        }
+        let mut ancestor = vacant.parent;
+        while ancestor != NO_SEGMENT_SLOT {
+            self.refresh_height(ancestor)?;
+            let slot = self.locators.as_slice()[ancestor];
+            let left_height = self.height(slot.left);
+            let right_height = self.height(slot.right);
+            let balanced = if left_height.saturating_sub(right_height) > 1 {
+                let left = self.locators.as_slice()[slot.left];
+                if self.height(left.right) > self.height(left.left) {
+                    self.rotate_left(slot.left)?;
+                }
+                self.rotate_right(ancestor)?
+            } else if right_height.saturating_sub(left_height) > 1 {
+                let right = self.locators.as_slice()[slot.right];
+                if self.height(right.left) > self.height(right.right) {
+                    self.rotate_right(slot.right)?;
+                }
+                self.rotate_left(ancestor)?
+            } else {
+                ancestor
+            };
+            ancestor = self.locators.as_slice()[balanced].parent;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -500,7 +730,7 @@ pub struct EncryptedRandomAccessArchive {
     padding: PaddingMode,
     work: CryptoWorkContext,
     legacy_whole_archive_verified: bool,
-    segments: Vec<SegmentLocator>,
+    segments: SegmentTable,
     index: ChunkDirectory,
     index_status: RandomAccessIndexStatus,
     plans: Box<[TransformPlan]>,
@@ -602,7 +832,7 @@ pub fn inspect_indexed_random_encrypted_public(
         resource_policy: session.policy().resource_policy,
         decode_policy: session.policy().decode_policy,
     };
-    let segments = walk_segments(&mut session, &footer, options)?;
+    let segments = walk_segments(&mut session, &footer, options, &work)?;
     session.check_stable()?;
     Ok(EncryptedRandomPublicInspection {
         public: super::container::public_inspection(
@@ -735,10 +965,10 @@ impl EncryptedRandomAccessArchive {
             &work,
         )?;
         drop(afk);
-        let segments = walk_segments(&mut session, &footer, options)?;
+        let segments = walk_segments(&mut session, &footer, options, &work)?;
         let mut controls = ControlObjects::default();
         let mut control_private_bytes = 0_u64;
-        for (ordinal, locator) in segments.iter().enumerate() {
+        for (ordinal, locator) in segments.as_slice().iter().enumerate() {
             if locator.class != SEGMENT_CONTROL {
                 continue;
             }
@@ -804,7 +1034,7 @@ impl EncryptedRandomAccessArchive {
             &envelope,
             preamble.features.incompat,
             &context,
-            &segments,
+            segments.as_slice(),
         )?;
         let (_, descriptor_bytes) = controls
             .descriptor
@@ -915,7 +1145,7 @@ impl EncryptedRandomAccessArchive {
                 RandomAccessIndexStatus::RebuiltInvalid,
             )
         } else if let Some(items) = controls.index {
-            decode_index_or_rebuild(&items, &segments, final_value.chunk_count, &work)?
+            decode_index_or_rebuild(&items, segments.as_slice(), final_value.chunk_count, &work)?
         } else {
             (
                 ChunkDirectory::new(work.budget(), 0, true),
@@ -1199,14 +1429,14 @@ impl EncryptedRandomAccessArchive {
         let mut reconstruction_items = None;
         let mut region_items = None;
         let bound = fallback_slot_bound(
-            &self.segments,
+            self.segments.as_slice(),
             self.session.policy().max_chunk_frames_scanned,
         )?;
         let mut discovered = ChunkDirectory::new(self.work.budget(), bound, false);
         let mut retained_private_bytes = 0_u64;
         for ordinal in 0..self.segments.len() {
             let ordinal_u64 = u64::try_from(ordinal).unwrap_or(u64::MAX);
-            if self.segments[ordinal].class != SEGMENT_PAYLOAD {
+            if self.segments.as_slice()[ordinal].class != SEGMENT_PAYLOAD {
                 continue;
             }
             if self.index_status == RandomAccessIndexStatus::PresentValid
@@ -1214,7 +1444,7 @@ impl EncryptedRandomAccessArchive {
             {
                 continue;
             }
-            let locator = self.segments[ordinal].clone();
+            let locator = self.segments.as_slice()[ordinal];
             let resource_policy = self.session.policy().resource_policy;
             let decode_policy = self.session.policy().decode_policy;
             let envelope = self.envelope.view();
@@ -1356,8 +1586,9 @@ impl EncryptedRandomAccessArchive {
             .map_err(|_| dependency("segment ordinal exceeds usize"))?;
         let segment = self
             .segments
+            .as_slice()
             .get(segment_index)
-            .cloned()
+            .copied()
             .ok_or_else(|| dependency("encrypted Index references absent segment"))?;
         if segment.class != SEGMENT_PAYLOAD || segment.count != locator.fragment_count {
             return Ok(None);
@@ -1644,7 +1875,8 @@ fn walk_segments(
     session: &mut RangeSession,
     footer: &Footer,
     options: EncryptedOpenOptions<'_>,
-) -> Result<Vec<SegmentLocator>> {
+    work: &CryptoWorkContext,
+) -> Result<SegmentTable> {
     let section = session.read_crypto(
         footer.segments_offset,
         SECTION_HEADER_LEN,
@@ -1660,8 +1892,7 @@ fn walk_segments(
         .checked_add(footer.segments_len)
         .ok_or_else(|| segment_invalid("ENCRYPTED_SEGMENTS extent overflow"))?;
     let mut cursor = footer.segments_offset + SECTION_HEADER_LEN;
-    let mut locators = Vec::new();
-    let mut salts = BTreeSet::new();
+    let mut locators = SegmentTable::new(work.budget());
     while cursor < end {
         let ordinal = u64::try_from(locators.len()).unwrap_or(u64::MAX);
         if ordinal >= options.crypto_policy.max_segments
@@ -1685,29 +1916,36 @@ fn walk_segments(
                 "encrypted segment declaration exceeds caller policy",
             ));
         }
-        if !salts.insert((class, salt)) {
-            return Err(segment_invalid("segment salt is reused in one key domain"));
-        }
+        let vacant = locators
+            .probe(class, &salt)
+            .ok_or_else(|| segment_invalid("segment salt is reused in one key domain"))?;
         let next = cursor
             .checked_add(extent)
             .ok_or_else(|| segment_invalid("segment extent overflow"))?;
         if next > end {
             return Err(truncated("segment extent exceeds ENCRYPTED_SEGMENTS"));
         }
-        locators.push(SegmentLocator {
-            offset: cursor,
-            extent,
-            class,
-            salt,
-            count,
-            header,
-        });
+        locators.append_unique(
+            SegmentLocator {
+                offset: cursor,
+                extent,
+                class,
+                salt,
+                count,
+                header,
+                left: NO_SEGMENT_SLOT,
+                right: NO_SEGMENT_SLOT,
+                parent: NO_SEGMENT_SLOT,
+                height: 1,
+            },
+            vacant,
+        )?;
         cursor = next;
     }
-    if cursor != end || locators.is_empty() {
+    if cursor != end || locators.len() == 0 {
         return Err(truncated("encrypted segment sequence is incomplete"));
     }
-    let terminal = locators.last().expect("not empty");
+    let terminal = locators.as_slice().last().expect("not empty");
     if terminal.offset != footer.terminal_offset
         || footer.archive_final_offset != terminal.offset + SEGMENT_HEADER_LEN
         || terminal.class != SEGMENT_CONTROL
@@ -2534,6 +2772,1141 @@ mod tests {
         MemoryRandomReadSource, RandomAccessPolicy, RandomReadSource, SourceRevision,
     };
 
+    fn segment_slot(value: u64, class: u8) -> super::SegmentLocator {
+        let mut slot = test_segment(class, 1);
+        slot.offset = value * 128;
+        slot.extent = 128;
+        slot.salt[8..].copy_from_slice(&value.to_be_bytes());
+        slot.header[..8].copy_from_slice(&value.to_be_bytes());
+        slot
+    }
+
+    fn append_segment(table: &mut super::SegmentTable, slot: super::SegmentLocator) {
+        let vacant = table.probe(slot.class, &slot.salt).unwrap();
+        table.append_unique(slot, vacant).unwrap();
+    }
+
+    type SegmentSnapshot = (u64, u64, u8, [u8; 16], u32, [u8; 64]);
+
+    fn segment_snapshot(table: &super::SegmentTable) -> Vec<SegmentSnapshot> {
+        table
+            .as_slice()
+            .iter()
+            .map(|s| (s.offset, s.extent, s.class, s.salt, s.count, s.header))
+            .collect()
+    }
+
+    fn assert_segment_capacity(table: &super::SegmentTable) {
+        assert_eq!(
+            table
+                .locators
+                .minimum_reservation_bytes(table.capacity - table.len())
+                .unwrap(),
+            0
+        );
+        assert_eq!(
+            table
+                .locators
+                .minimum_reservation_bytes(table.capacity - table.len() + 1)
+                .unwrap(),
+            super::SegmentTable::reservation_bytes(table.capacity + 1).unwrap()
+        );
+    }
+
+    #[test]
+    fn segment_geometric_capacity_preserves_physical_order_and_charges_spares() {
+        let work = test_work(64 * 1024);
+        let mut table = super::SegmentTable::new(work.budget());
+        assert_eq!(work.budget().live_bytes(), 0);
+        let mut copied = 0;
+        let mut expected = Vec::new();
+        for value in 0..17 {
+            let previous = table.capacity;
+            let pointer = table.as_slice().as_ptr();
+            let slot = segment_slot(value, super::SEGMENT_PAYLOAD);
+            expected.push((
+                slot.offset,
+                slot.extent,
+                slot.class,
+                slot.salt,
+                slot.count,
+                slot.header,
+            ));
+            append_segment(&mut table, slot);
+            if previous != table.capacity {
+                copied += previous;
+                assert_eq!(table.capacity, if previous == 0 { 1 } else { previous * 2 });
+            } else {
+                assert_eq!(table.as_slice().as_ptr(), pointer);
+            }
+            assert_segment_capacity(&table);
+            assert_eq!(
+                work.budget().live_bytes(),
+                super::SegmentTable::reservation_bytes(table.capacity).unwrap()
+            );
+            assert_eq!(segment_snapshot(&table), expected);
+            assert_eq!(
+                table
+                    .as_slice()
+                    .iter()
+                    .map(|s| s.offset / 128)
+                    .collect::<Vec<_>>(),
+                (0..=value).collect::<Vec<_>>()
+            );
+            assert!(copied < 2 * table.len());
+            if table.len() == 3 {
+                assert_eq!(table.capacity, 4);
+                assert_eq!(
+                    work.budget().live_bytes(),
+                    super::SegmentTable::reservation_bytes(4).unwrap()
+                );
+            }
+        }
+        assert_eq!(table.capacity, 32);
+        assert!(std::mem::size_of::<super::SegmentLocator>() > 8 + 8 + 1 + 16 + 4 + 64);
+        drop(table);
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn segment_growth_requires_full_old_plus_new_original_budget_overlap() {
+        let old = super::SegmentTable::reservation_bytes(4).unwrap();
+        let new = super::SegmentTable::reservation_bytes(8).unwrap();
+        for extra in [0, 1] {
+            let work = test_work(37 + old + new - 1 + extra);
+            let caller = super::WorkBytes::zeroed(work.budget(), 37).unwrap();
+            let shared = work.clone();
+            let mut table = super::SegmentTable::new(shared.budget());
+            for i in 0..4 {
+                append_segment(&mut table, segment_slot(i, 2));
+            }
+            let before = segment_snapshot(&table);
+            let links = table
+                .as_slice()
+                .iter()
+                .map(|s| (s.left, s.right, s.parent, s.height))
+                .collect::<Vec<_>>();
+            let root = table.root;
+            let slot = segment_slot(4, 2);
+            let result = table.append_unique(slot, table.probe(slot.class, &slot.salt).unwrap());
+            assert_eq!(result.is_ok(), extra == 1);
+            assert!(caller.belongs_to(shared.budget()));
+            if extra == 0 {
+                let error = result.unwrap_err();
+                assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+                assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+                assert_eq!(segment_snapshot(&table), before);
+                assert_eq!(
+                    table
+                        .as_slice()
+                        .iter()
+                        .map(|s| (s.left, s.right, s.parent, s.height))
+                        .collect::<Vec<_>>(),
+                    links
+                );
+                assert_eq!(table.root, root);
+                assert_eq!(table.capacity, 4);
+            } else {
+                assert_eq!(&segment_snapshot(&table)[..4], before);
+                assert_eq!(table.capacity, 8);
+            }
+            assert_segment_capacity(&table);
+            assert_eq!(
+                work.budget().live_bytes(),
+                37 + if extra == 0 { old } else { new }
+            );
+            drop(table);
+            assert_eq!(work.budget().live_bytes(), 37);
+            drop(caller);
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn segment_growth_never_retries_an_exact_one_capacity() {
+        let old = super::SegmentTable::reservation_bytes(4).unwrap();
+        let exact_one = super::SegmentTable::reservation_bytes(5).unwrap();
+        assert!(exact_one < super::SegmentTable::reservation_bytes(8).unwrap());
+        let work = test_work(old + exact_one);
+        let mut table = super::SegmentTable::new(work.budget());
+        for i in 0..4 {
+            append_segment(&mut table, segment_slot(i, 2));
+        }
+        let before = segment_snapshot(&table);
+        let slot = segment_slot(4, 2);
+        let error = table
+            .append_unique(slot, table.probe(slot.class, &slot.salt).unwrap())
+            .unwrap_err();
+        assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+        assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        assert_eq!(
+            super::SegmentTable::next_capacity(table.capacity).unwrap(),
+            8
+        );
+        assert_eq!(segment_snapshot(&table), before);
+        assert_eq!(table.capacity, 4);
+        assert_eq!(work.budget().live_bytes(), old);
+    }
+
+    fn assert_segment_avl(table: &super::SegmentTable) {
+        fn visit(
+            table: &super::SegmentTable,
+            i: usize,
+            parent: usize,
+            low: Option<(u8, [u8; 16])>,
+            high: Option<(u8, [u8; 16])>,
+        ) -> (u32, usize) {
+            if i == super::NO_SEGMENT_SLOT {
+                return (0, 0);
+            }
+            assert!(i < table.len());
+            let s = table.as_slice()[i];
+            let key = (s.class, s.salt);
+            assert_eq!(s.parent, parent);
+            assert!(low.is_none_or(|v| v < key));
+            assert!(high.is_none_or(|v| key < v));
+            let (lh, ln) = visit(table, s.left, i, low, Some(key));
+            let (rh, rn) = visit(table, s.right, i, Some(key), high);
+            assert!(lh.abs_diff(rh) <= 1);
+            assert_eq!(s.height, 1 + lh.max(rh));
+            (s.height, ln + rn + 1)
+        }
+        let (height, count) = visit(table, table.root, super::NO_SEGMENT_SLOT, None, None);
+        assert_eq!(count, table.len());
+        let (mut previous, mut minimum) = (0_usize, 1_usize);
+        for _ in 1..height {
+            (previous, minimum) = (minimum, 1 + minimum + previous);
+        }
+        if height != 0 {
+            assert!(count >= minimum);
+        }
+    }
+
+    #[test]
+    fn segment_avl_all_rotations_and_probe_match_independent_membership() {
+        let orders = [
+            vec![3, 2, 1],
+            vec![1, 2, 3],
+            vec![3, 1, 2],
+            vec![1, 3, 2],
+            (0..129).collect(),
+            (0..129).rev().collect(),
+            (0..65).flat_map(|i| [i, 128 - i]).collect(),
+        ];
+        for order in orders {
+            let work = test_work(128 * 1024);
+            let mut table = super::SegmentTable::new(work.budget());
+            let mut oracle = std::collections::BTreeSet::new();
+            let mut inserted = Vec::new();
+            for value in order {
+                let slot = segment_slot(value, 2);
+                let key = (slot.class, slot.salt);
+                assert_eq!(
+                    table.probe(slot.class, &slot.salt).is_some(),
+                    !oracle.contains(&key)
+                );
+                if oracle.insert(key) {
+                    append_segment(&mut table, slot);
+                    inserted.push(value);
+                }
+                assert_segment_avl(&table);
+                assert_eq!(
+                    table
+                        .as_slice()
+                        .iter()
+                        .map(|s| s.offset / 128)
+                        .collect::<Vec<_>>(),
+                    inserted
+                );
+            }
+            let held =
+                super::WorkBytes::zeroed(work.budget(), work.budget().available_bytes() as usize)
+                    .unwrap();
+            let pointer = table.as_slice().as_ptr();
+            let before = segment_snapshot(&table);
+            for value in 0..135 {
+                for class in [1, 2] {
+                    let slot = segment_slot(value, class);
+                    assert_eq!(
+                        table.probe(class, &slot.salt).is_none(),
+                        oracle.contains(&(class, slot.salt))
+                    );
+                }
+            }
+            assert_eq!(table.as_slice().as_ptr(), pointer);
+            assert_eq!(segment_snapshot(&table), before);
+            assert_eq!(work.budget().available_bytes(), 0);
+            assert_segment_capacity(&table);
+            drop(held);
+        }
+    }
+
+    struct SegmentFixture {
+        bytes: Vec<u8>,
+        identity: XWingIdentity,
+        expected: Vec<(String, [u8; 8])>,
+        footer: super::Footer,
+        segments: Vec<super::SegmentLocator>,
+    }
+
+    fn segment_fixture(include_index: bool) -> SegmentFixture {
+        let directory = TestDir::new();
+        let expected = (0_u64..64)
+            .map(|i| {
+                let name = format!("slot{i:02}");
+                let bytes = (i + 1).to_be_bytes();
+                std::fs::write(directory.path().join(&name), bytes).unwrap();
+                (name, bytes)
+            })
+            .collect::<Vec<_>>();
+        let archive = plan_directory(directory.path(), PackOptions::default()).unwrap();
+        let (identity, recipient) = XWingIdentity::generate().unwrap();
+        let encrypted = encrypt_archive(
+            &archive,
+            EncryptedWriteOptions {
+                recipients: &[recipient],
+                padding: PaddingMode::None,
+                include_index,
+                ..EncryptedWriteOptions::default()
+            },
+        )
+        .unwrap();
+        let opened = open_indexed_random_encrypted(
+            MemoryRandomReadSource::new(encrypted.bytes.clone()),
+            segment_access_policy(),
+            EncryptedOpenOptions::new(Some(Unlock::Identity(&identity))),
+        )
+        .unwrap();
+        let segments = opened.segments.as_slice().to_vec();
+        let footer = super::parse_footer(
+            &encrypted.bytes[encrypted.bytes.len() - 192..],
+            encrypted.bytes.len() as u64,
+        )
+        .unwrap();
+        assert_eq!(segments.last().unwrap().offset, footer.terminal_offset);
+        SegmentFixture {
+            bytes: encrypted.bytes,
+            identity,
+            expected,
+            footer,
+            segments,
+        }
+    }
+
+    fn segment_access_policy() -> RandomAccessPolicy {
+        RandomAccessPolicy {
+            max_cached_bytes: 0,
+            ..RandomAccessPolicy::default()
+        }
+    }
+
+    const SEGMENT_FINITE_LIMIT: u64 = 8 * 1024 * 1024;
+
+    #[derive(Default)]
+    struct SegmentPressure {
+        budget: Option<super::WorkBudget>,
+        target: Option<(u64, u64)>,
+        leave: Option<u64>,
+        held: Option<super::WorkBytes>,
+        release_at_next_fill: bool,
+        available_before_release: Option<u64>,
+        original_live: u64,
+        live_during_fill: u64,
+        available_during_fill: u64,
+        hits: usize,
+        reads: Vec<(u64, u64)>,
+    }
+
+    std::thread_local! {
+        static SEGMENT_PRESSURE_STATE: std::cell::RefCell<Option<Arc<Mutex<SegmentPressure>>>> =
+            const { std::cell::RefCell::new(None) };
+    }
+
+    fn observe_segment_budget(budget: &super::WorkBudget) {
+        SEGMENT_PRESSURE_STATE.with(|state| {
+            let shared = state.borrow().as_ref().unwrap().clone();
+            let mut state = shared.lock().unwrap();
+            assert!(state.budget.is_none());
+            state.budget = Some(budget.clone());
+        });
+    }
+
+    struct SegmentObserverGuard {
+        previous: Option<fn(&super::WorkBudget)>,
+        previous_state: Option<Arc<Mutex<SegmentPressure>>>,
+    }
+
+    impl SegmentObserverGuard {
+        fn install(state: Arc<Mutex<SegmentPressure>>) -> Self {
+            Self {
+                previous: super::SEGMENT_TABLE_BUDGET_OBSERVER
+                    .with(|cell| cell.replace(Some(observe_segment_budget))),
+                previous_state: SEGMENT_PRESSURE_STATE.with(|cell| cell.replace(Some(state))),
+            }
+        }
+    }
+
+    impl Drop for SegmentObserverGuard {
+        fn drop(&mut self) {
+            super::SEGMENT_TABLE_BUDGET_OBSERVER.with(|cell| cell.set(self.previous));
+            SEGMENT_PRESSURE_STATE.with(|cell| *cell.borrow_mut() = self.previous_state.take());
+        }
+    }
+
+    struct SegmentSource {
+        source: MemoryRandomReadSource,
+        state: Arc<Mutex<SegmentPressure>>,
+    }
+
+    impl RandomReadSource for SegmentSource {
+        fn len(&self) -> crate::diagnostics::Result<u64> {
+            self.source.len()
+        }
+        fn revision(&self) -> crate::diagnostics::Result<SourceRevision> {
+            self.source.revision()
+        }
+        fn read_exact_at(&self, _: u64, _: u64) -> crate::diagnostics::Result<Vec<u8>> {
+            panic!("segment caller must use bounded fill");
+        }
+        fn read_exact_at_into(
+            &self,
+            offset: u64,
+            dst: &mut [u8],
+        ) -> crate::diagnostics::Result<()> {
+            let mut state = self.state.lock().unwrap();
+            state.reads.push((offset, dst.len() as u64));
+            if state.hits == 1
+                && state.release_at_next_fill
+                && state.target != Some((offset, dst.len() as u64))
+            {
+                state.available_before_release =
+                    Some(state.budget.as_ref().unwrap().available_bytes());
+                drop(state.held.take());
+                state.release_at_next_fill = false;
+            }
+            if state.target == Some((offset, dst.len() as u64)) {
+                state.hits += 1;
+                let budget = state.budget.as_ref().unwrap().clone();
+                state.original_live = budget.live_bytes();
+                if let Some(leave) = state.leave {
+                    let held = budget
+                        .available_bytes()
+                        .checked_sub(leave)
+                        .expect("finite cap admits all earlier owners");
+                    state.held = Some(super::WorkBytes::zeroed(&budget, held as usize)?);
+                    assert!(state.held.as_ref().unwrap().belongs_to(&budget));
+                }
+                state.live_during_fill = budget.live_bytes();
+                state.available_during_fill = budget.available_bytes();
+            }
+            drop(state);
+            self.source.read_exact_at_into(offset, dst)
+        }
+    }
+
+    fn segment_source(bytes: Vec<u8>, state: &Arc<Mutex<SegmentPressure>>) -> SegmentSource {
+        SegmentSource {
+            source: MemoryRandomReadSource::new(bytes),
+            state: Arc::clone(state),
+        }
+    }
+
+    fn segment_target(fixture: &SegmentFixture) -> usize {
+        let target = [8_usize, 16, 32]
+            .into_iter()
+            .find(|i| *i + 1 < fixture.segments.len())
+            .unwrap();
+        assert!(target.is_power_of_two());
+        target
+    }
+
+    fn segment_inspect(
+        bytes: Vec<u8>,
+        state: &Arc<Mutex<SegmentPressure>>,
+        policy: RandomAccessPolicy,
+        crypto: crate::crypto::CryptoPolicy,
+    ) -> crate::diagnostics::Result<super::EncryptedRandomPublicInspection> {
+        let _observer = SegmentObserverGuard::install(Arc::clone(state));
+        super::inspect_indexed_random_encrypted_public(segment_source(bytes, state), policy, crypto)
+    }
+
+    fn assert_segment_pressure_teardown(state: &Arc<Mutex<SegmentPressure>>) {
+        let mut state = state.lock().unwrap();
+        let budget = state.budget.as_ref().unwrap().clone();
+        let held = state.held.as_ref().map_or(0, |h| h.len() as u64);
+        assert_eq!(budget.live_bytes(), held);
+        drop(state.held.take());
+        assert_eq!(budget.live_bytes(), 0);
+        assert!(super::SEGMENT_TABLE_BUDGET_OBSERVER.with(|cell| cell.get().is_none()));
+        assert!(SEGMENT_PRESSURE_STATE.with(|cell| cell.borrow().is_none()));
+    }
+
+    #[test]
+    fn segment_class_domains_and_public_walk_duplicate_rules() {
+        let work = test_work(4096);
+        let mut table = super::SegmentTable::new(work.budget());
+        append_segment(&mut table, segment_slot(5, 1));
+        append_segment(&mut table, segment_slot(5, 2));
+        assert!(table.probe(1, &segment_slot(5, 1).salt).is_none());
+        assert!(table.probe(2, &segment_slot(5, 2).salt).is_none());
+        let f = segment_fixture(true);
+        let control = f.segments.iter().find(|s| s.class == 1).unwrap();
+        let payload = f.segments.iter().find(|s| s.class == 2).unwrap();
+        let mut changed = f.bytes.clone();
+        changed[payload.offset as usize + 16..payload.offset as usize + 32]
+            .copy_from_slice(&control.salt);
+        let state = Arc::new(Mutex::new(SegmentPressure::default()));
+        assert!(
+            segment_inspect(
+                changed,
+                &state,
+                segment_access_policy(),
+                crate::crypto::CryptoPolicy::default()
+            )
+            .is_ok()
+        );
+        assert_segment_pressure_teardown(&state);
+        let mut changed = f.bytes;
+        let two = f
+            .segments
+            .iter()
+            .filter(|s| s.class == 2)
+            .take(2)
+            .collect::<Vec<_>>();
+        changed[two[1].offset as usize + 16..two[1].offset as usize + 32]
+            .copy_from_slice(&two[0].salt);
+        let state = Arc::new(Mutex::new(SegmentPressure::default()));
+        let error = segment_inspect(
+            changed,
+            &state,
+            segment_access_policy(),
+            crate::crypto::CryptoPolicy::default(),
+        )
+        .unwrap_err();
+        assert_eq!(error.class(), super::OutcomeClass::Nonconforming);
+        assert_eq!(
+            error.code(),
+            super::ReasonCode::CryptoSegmentStructureInvalid
+        );
+        assert_eq!(error.detail(), "segment salt is reused in one key domain");
+        assert_eq!(
+            state.lock().unwrap().reads.last(),
+            Some(&(two[1].offset, 64))
+        );
+        assert_segment_pressure_teardown(&state);
+    }
+
+    #[test]
+    fn segment_precedence_matrix_keeps_exact_diagnostic_and_read_stop() {
+        let f = segment_fixture(true);
+        let target = segment_target(&f);
+        let slot = f.segments[target];
+        let previous = f.segments[..target]
+            .iter()
+            .find(|s| s.class == slot.class)
+            .unwrap();
+        let crossing = f.footer.segments_offset + f.footer.segments_len - slot.offset + 1;
+        assert!(crossing < SEGMENT_FINITE_LIMIT);
+        let new = super::SegmentTable::reservation_bytes(target * 2).unwrap();
+        for case in 0..7 {
+            let mut bytes = f.bytes.clone();
+            let mut crypto = crate::crypto::CryptoPolicy {
+                max_working_memory_bytes: SEGMENT_FINITE_LIMIT,
+                ..crate::crypto::CryptoPolicy::default()
+            };
+            let header = &mut bytes[slot.offset as usize..slot.offset as usize + 64];
+            if matches!(case, 0..=3 | 5) {
+                header[16..32].copy_from_slice(&previous.salt);
+            }
+            let (code, detail) = match case {
+                0 => {
+                    header[7] = 1;
+                    (
+                        super::ReasonCode::CryptoSegmentStructureInvalid,
+                        "SegmentHeader is noncanonical or reordered",
+                    )
+                }
+                1 => {
+                    let cap = f.segments[..target]
+                        .iter()
+                        .map(|s| s.count)
+                        .max()
+                        .unwrap()
+                        .max(1);
+                    crypto.max_messages_per_segment = cap;
+                    header[32..36].copy_from_slice(&(cap + 1).to_be_bytes());
+                    (
+                        super::ReasonCode::CryptoResourcePolicyRefused,
+                        "encrypted segment declaration exceeds caller policy",
+                    )
+                }
+                2 => {
+                    header[48..56].copy_from_slice(&(SEGMENT_FINITE_LIMIT + 1).to_be_bytes());
+                    (
+                        super::ReasonCode::CryptoResourcePolicyRefused,
+                        "encrypted segment declaration exceeds caller policy",
+                    )
+                }
+                3..=4 => {
+                    header[48..56].copy_from_slice(&crossing.to_be_bytes());
+                    if case == 3 {
+                        (
+                            super::ReasonCode::CryptoSegmentStructureInvalid,
+                            "segment salt is reused in one key domain",
+                        )
+                    } else {
+                        (
+                            super::ReasonCode::TruncatedStream,
+                            "segment extent exceeds ENCRYPTED_SEGMENTS",
+                        )
+                    }
+                }
+                5 => (
+                    super::ReasonCode::CryptoSegmentStructureInvalid,
+                    "segment salt is reused in one key domain",
+                ),
+                _ => (
+                    super::ReasonCode::CryptoResourcePolicyRefused,
+                    "managed crypto replacement and required headroom exceed caller policy",
+                ),
+            };
+            let state = Arc::new(Mutex::new(SegmentPressure {
+                target: Some((slot.offset, 64)),
+                leave: if case >= 5 { Some(new - 1) } else { None },
+                ..SegmentPressure::default()
+            }));
+            let error =
+                segment_inspect(bytes, &state, segment_access_policy(), crypto).unwrap_err();
+            let class = match case {
+                0 | 3 | 5 => super::OutcomeClass::Nonconforming,
+                4 => super::OutcomeClass::Truncated,
+                _ => super::OutcomeClass::PolicyRefused,
+            };
+            assert_eq!(error.class(), class, "case{case}");
+            assert_eq!(error.code(), code, "case{case}");
+            assert_eq!(error.detail(), detail, "case{case}");
+            let state_ref = state.lock().unwrap();
+            assert_eq!(state_ref.hits, 1);
+            assert_eq!(state_ref.reads.last(), Some(&(slot.offset, 64)));
+            drop(state_ref);
+            assert_segment_pressure_teardown(&state);
+        }
+    }
+
+    #[test]
+    fn segment_both_caller_ceilings_refuse_before_first_disallowed_header() {
+        let f = segment_fixture(true);
+        let n = f.segments.len();
+        for crypto_ceiling in [false, true] {
+            for cap in [0, 1, 3, n - 1, n] {
+                let state = Arc::new(Mutex::new(SegmentPressure::default()));
+                let mut policy = segment_access_policy();
+                let mut crypto = crate::crypto::CryptoPolicy::default();
+                if crypto_ceiling {
+                    crypto.max_segments = cap as u64;
+                } else {
+                    policy.max_encrypted_segment_header_walk = cap as u64;
+                }
+                let result = segment_inspect(f.bytes.clone(), &state, policy, crypto);
+                assert_eq!(result.is_ok(), cap == n);
+                if cap != n {
+                    let error = result.unwrap_err();
+                    assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+                    assert_eq!(error.code(), super::ReasonCode::RandomAccessPolicyRefused);
+                    assert_eq!(
+                        error.detail(),
+                        "encrypted SegmentHeader walk exceeds caller policy"
+                    );
+                }
+                let reads = state.lock().unwrap().reads.clone();
+                let headers = reads
+                    .iter()
+                    .filter(|(o, l)| *l == 64 && f.segments.iter().any(|s| s.offset == *o))
+                    .copied()
+                    .collect::<Vec<_>>();
+                assert_eq!(
+                    headers,
+                    f.segments[..cap]
+                        .iter()
+                        .map(|s| (s.offset, 64))
+                        .collect::<Vec<_>>()
+                );
+                assert!(reads.contains(&(f.footer.segments_offset, 64)));
+                assert_segment_pressure_teardown(&state);
+            }
+        }
+    }
+
+    #[test]
+    fn segment_authenticated_finite_memory_inspection_uses_original_counter() {
+        let f = segment_fixture(true);
+        let target = segment_target(&f);
+        let new = super::SegmentTable::reservation_bytes(target * 2).unwrap();
+        let ample = Arc::new(Mutex::new(SegmentPressure {
+            target: Some((f.segments[target].offset, 64)),
+            ..SegmentPressure::default()
+        }));
+        let report = segment_inspect(
+            f.bytes.clone(),
+            &ample,
+            segment_access_policy(),
+            crate::crypto::CryptoPolicy {
+                max_working_memory_bytes: SEGMENT_FINITE_LIMIT,
+                ..crate::crypto::CryptoPolicy::default()
+            },
+        )
+        .unwrap();
+        assert!(!report.whole_archive_verified);
+        assert_eq!(report.public.segment_count, Some(f.segments.len() as u64));
+        assert_eq!(
+            report.source_revision,
+            MemoryRandomReadSource::new(f.bytes.clone())
+                .revision()
+                .unwrap()
+        );
+        let prefix = {
+            let s = ample.lock().unwrap();
+            let position = s
+                .reads
+                .iter()
+                .position(|r| *r == (f.segments[target].offset, 64))
+                .unwrap();
+            s.reads[..=position].to_vec()
+        };
+        assert_segment_pressure_teardown(&ample);
+        let state = Arc::new(Mutex::new(SegmentPressure {
+            target: Some((f.segments[target].offset, 64)),
+            leave: Some(new - 1),
+            ..SegmentPressure::default()
+        }));
+        let crypto = crate::crypto::CryptoPolicy {
+            max_working_memory_bytes: SEGMENT_FINITE_LIMIT,
+            ..crate::crypto::CryptoPolicy::default()
+        };
+        let error =
+            segment_inspect(f.bytes.clone(), &state, segment_access_policy(), crypto).unwrap_err();
+        assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+        assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        assert_eq!(
+            error.detail(),
+            "managed crypto replacement and required headroom exceed caller policy"
+        );
+        let s = state.lock().unwrap();
+        assert_eq!(s.available_during_fill, new - 1);
+        assert_eq!(s.live_during_fill, SEGMENT_FINITE_LIMIT - (new - 1));
+        assert!(s.original_live >= super::SegmentTable::reservation_bytes(target).unwrap() + 128);
+        assert_eq!(s.reads, prefix);
+        println!(
+            "segment inspect immutable_M={SEGMENT_FINITE_LIMIT} ordinal={target} old={} new={new} live_at_fill={} available={} revision_headroom=0",
+            super::SegmentTable::reservation_bytes(target).unwrap(),
+            s.live_during_fill,
+            s.available_during_fill
+        );
+        drop(s);
+        assert_segment_pressure_teardown(&state);
+        // A separate immutable-cap session leaves exactly the full new owner.
+        // Release the caller only at the following read: reaching that callback
+        // proves target growth succeeded while the held lease was still live.
+        let positive = Arc::new(Mutex::new(SegmentPressure {
+            target: Some((f.segments[target].offset, 64)),
+            leave: Some(new),
+            release_at_next_fill: true,
+            ..SegmentPressure::default()
+        }));
+        let exact = segment_inspect(f.bytes, &positive, segment_access_policy(), crypto).unwrap();
+        assert_eq!(exact, report);
+        assert_eq!(
+            positive.lock().unwrap().available_before_release,
+            Some(super::SegmentTable::reservation_bytes(target).unwrap())
+        );
+        assert_segment_pressure_teardown(&positive);
+    }
+
+    #[test]
+    fn segment_authenticated_finite_memory_open_stops_before_control() {
+        for include_index in [true, false] {
+            let f = segment_fixture(include_index);
+            let target = segment_target(&f);
+            let new = super::SegmentTable::reservation_bytes(target * 2).unwrap();
+            let state = Arc::new(Mutex::new(SegmentPressure {
+                target: Some((f.segments[target].offset, 64)),
+                leave: Some(new - 1),
+                ..SegmentPressure::default()
+            }));
+            let error = {
+                let _observer = SegmentObserverGuard::install(Arc::clone(&state));
+                let mut options = EncryptedOpenOptions::new(Some(Unlock::Identity(&f.identity)));
+                options.crypto_policy.max_working_memory_bytes = SEGMENT_FINITE_LIMIT;
+                match open_indexed_random_encrypted(
+                    segment_source(f.bytes.clone(), &state),
+                    segment_access_policy(),
+                    options,
+                ) {
+                    Ok(_) => panic!("original-counter full replacement must refuse"),
+                    Err(e) => e,
+                }
+            };
+            assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+            assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+            assert_eq!(
+                error.detail(),
+                "managed crypto replacement and required headroom exceed caller policy"
+            );
+            {
+                let s = state.lock().unwrap();
+                assert_eq!(s.hits, 1);
+                assert_eq!(s.reads.last(), Some(&(f.segments[target].offset, 64)));
+                assert_eq!(s.available_during_fill, new - 1);
+                assert!(s.reads.iter().all(|(o, l)| {
+                    !f.segments
+                        .iter()
+                        .any(|segment| segment.offset == *o && segment.extent == *l)
+                }));
+                println!(
+                    "segment open index={include_index} immutable_M={SEGMENT_FINITE_LIMIT} ordinal={target} old={} new={new} live_at_fill={} available={} revision_headroom=0",
+                    super::SegmentTable::reservation_bytes(target).unwrap(),
+                    s.live_during_fill,
+                    s.available_during_fill
+                );
+            }
+            assert_segment_pressure_teardown(&state);
+            let positive = Arc::new(Mutex::new(SegmentPressure {
+                target: Some((f.segments[target].offset, 64)),
+                leave: Some(new),
+                release_at_next_fill: true,
+                ..SegmentPressure::default()
+            }));
+            let mut opened = {
+                let _observer = SegmentObserverGuard::install(Arc::clone(&positive));
+                let mut options = EncryptedOpenOptions::new(Some(Unlock::Identity(&f.identity)));
+                options.crypto_policy.max_working_memory_bytes = SEGMENT_FINITE_LIMIT;
+                open_indexed_random_encrypted(
+                    segment_source(f.bytes, &positive),
+                    segment_access_policy(),
+                    options,
+                )
+                .unwrap()
+            };
+            assert_eq!(
+                positive.lock().unwrap().available_before_release,
+                Some(super::SegmentTable::reservation_bytes(target).unwrap())
+            );
+            let pointer = opened.segments.as_slice().as_ptr();
+            for (name, bytes) in f.expected {
+                let read = opened
+                    .read_entry(&LogicalPath::from_utf8([name.as_str()]).unwrap())
+                    .unwrap();
+                assert_eq!(&*read.bytes, bytes.as_slice());
+                assert_eq!(opened.segments.as_slice().as_ptr(), pointer);
+                assert_eq!(
+                    read.report.index_status,
+                    if include_index {
+                        super::RandomAccessIndexStatus::PresentValid
+                    } else {
+                        super::RandomAccessIndexStatus::RebuiltAbsent
+                    }
+                );
+            }
+            drop(opened);
+            assert_segment_pressure_teardown(&positive);
+        }
+    }
+
+    #[test]
+    fn segment_retained_archive_borrowers_keep_one_owner_and_release_to_caller() {
+        let f = segment_fixture(true);
+        let state = Arc::new(Mutex::new(SegmentPressure::default()));
+        let mut opened = {
+            let _observer = SegmentObserverGuard::install(Arc::clone(&state));
+            open_indexed_random_encrypted(
+                segment_source(f.bytes, &state),
+                segment_access_policy(),
+                EncryptedOpenOptions::new(Some(Unlock::Identity(&f.identity))),
+            )
+            .unwrap()
+        };
+        let budget = state.lock().unwrap().budget.as_ref().unwrap().clone();
+        let caller = super::WorkBytes::zeroed(&budget, 29).unwrap();
+        let pointer = opened.segments.as_slice().as_ptr();
+        let metadata = opened
+            .segments
+            .as_slice()
+            .iter()
+            .map(|s| (s.offset, s.extent, s.header))
+            .collect::<Vec<_>>();
+        assert_eq!(
+            metadata,
+            f.segments
+                .iter()
+                .map(|s| (s.offset, s.extent, s.header))
+                .collect::<Vec<_>>()
+        );
+        assert_segment_capacity(&opened.segments);
+        let table_charge =
+            super::SegmentTable::reservation_bytes(opened.segments.capacity).unwrap();
+        assert!(budget.live_bytes() >= table_charge + 29);
+        opened.load_support_and_index_fallback().unwrap();
+        for (name, bytes) in f.expected {
+            let read = opened
+                .read_entry(&LogicalPath::from_utf8([name.as_str()]).unwrap())
+                .unwrap();
+            assert_eq!(&*read.bytes, bytes.as_slice());
+            assert_eq!(opened.segments.as_slice().as_ptr(), pointer);
+            assert!(budget.live_bytes() >= table_charge + 29);
+        }
+        drop(opened);
+        assert_eq!(budget.live_bytes(), 29);
+        drop(caller);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn segment_checked_boundaries_refuse_before_allocation_and_preserve_lifetime() {
+        let work = test_work(31);
+        let caller = super::WorkBytes::zeroed(work.budget(), 31).unwrap();
+        for capacity in [usize::MAX, usize::MAX / 2 + 1] {
+            let error = super::SegmentTable::next_capacity(capacity).unwrap_err();
+            assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+            assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        }
+        for capacity in [
+            usize::MAX,
+            usize::MAX / std::mem::size_of::<super::SegmentLocator>(),
+        ] {
+            let error = super::SegmentTable::reservation_bytes(capacity).unwrap_err();
+            assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+            assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        }
+        for error in [
+            super::SegmentTable::next_height(u32::MAX).unwrap_err(),
+            super::SegmentTable::next_index(usize::MAX).unwrap_err(),
+            super::SegmentTable::next_index(usize::MAX - 1).unwrap_err(),
+        ] {
+            assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+            assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        }
+        assert_eq!(super::SegmentTable::next_index(0).unwrap(), 1);
+        assert_eq!(work.budget().live_bytes(), 31);
+        drop(caller);
+        let work = test_work(4096);
+        let caller = super::WorkBytes::zeroed(work.budget(), 31).unwrap();
+        let unwind = std::panic::catch_unwind(|| {
+            let mut table = super::SegmentTable::new(work.budget());
+            for i in 0..5 {
+                append_segment(&mut table, segment_slot(i, 2));
+            }
+            panic!("segment table owned unwind");
+        });
+        assert!(unwind.is_err());
+        assert_eq!(work.budget().live_bytes(), 31);
+        drop(caller);
+        assert_eq!(work.budget().live_bytes(), 0);
+        assert!(super::SEGMENT_TABLE_BUDGET_OBSERVER.with(|cell| cell.get().is_none()));
+        let state = Arc::new(Mutex::new(SegmentPressure::default()));
+        let unwind = std::panic::catch_unwind(|| {
+            let _guard = SegmentObserverGuard::install(Arc::clone(&state));
+            let work = test_work(0);
+            let _table = super::SegmentTable::new(work.budget());
+            panic!("observer owned unwind");
+        });
+        assert!(unwind.is_err());
+        assert!(super::SEGMENT_TABLE_BUDGET_OBSERVER.with(|cell| cell.get().is_none()));
+        assert!(SEGMENT_PRESSURE_STATE.with(|cell| cell.borrow().is_none()));
+        assert_segment_pressure_teardown(&state);
+    }
+
+    #[test]
+    fn segment_framing_errors_keep_terminal_and_section_validation_order() {
+        let f = segment_fixture(true);
+        for case in 0..8 {
+            let mut footer = f.footer;
+            let mut bytes = f.bytes.clone();
+            let expected = match case {
+                0 => {
+                    footer.segments_len += 1;
+                    "ENCRYPTED_SEGMENTS extent mismatch"
+                }
+                1 => {
+                    footer.segments_len = 64;
+                    bytes[footer.segments_offset as usize + 16
+                        ..footer.segments_offset as usize + 24]
+                        .copy_from_slice(&0_u64.to_be_bytes());
+                    "encrypted segment sequence is incomplete"
+                }
+                2 => {
+                    bytes[f.segments[0].offset as usize + 48..f.segments[0].offset as usize + 56]
+                        .copy_from_slice(&111_u64.to_be_bytes());
+                    "SegmentHeader count/extent is invalid"
+                }
+                3 => {
+                    footer.terminal_offset += 1;
+                    "terminal segment/footer locators are invalid"
+                }
+                4 => {
+                    footer.archive_final_offset += 1;
+                    "terminal segment/footer locators are invalid"
+                }
+                5 => {
+                    bytes[f.footer.terminal_offset as usize + 32
+                        ..f.footer.terminal_offset as usize + 36]
+                        .copy_from_slice(&2_u32.to_be_bytes());
+                    "terminal segment/footer locators are invalid"
+                }
+                6 => {
+                    bytes[f.segments[0].offset as usize + 32..f.segments[0].offset as usize + 36]
+                        .copy_from_slice(&(1_u32 << 20).to_be_bytes());
+                    "SegmentHeader count/extent is invalid"
+                }
+                _ => {
+                    bytes[f.footer.terminal_offset as usize + 6] = super::SEGMENT_PAYLOAD;
+                    "terminal segment/footer locators are invalid"
+                }
+            };
+            let work = test_work(SEGMENT_FINITE_LIMIT);
+            let state = Arc::new(Mutex::new(SegmentPressure::default()));
+            let mut session = super::RangeSession::new_crypto(
+                Box::new(segment_source(bytes, &state)),
+                segment_access_policy(),
+                work.budget().clone(),
+            )
+            .unwrap();
+            let error = match super::walk_segments(
+                &mut session,
+                &footer,
+                EncryptedOpenOptions::new(None),
+                &work,
+            ) {
+                Ok(_) => panic!("damaged framing must refuse"),
+                Err(e) => e,
+            };
+            let (class, code) = if case == 1 {
+                (
+                    super::OutcomeClass::Truncated,
+                    super::ReasonCode::TruncatedStream,
+                )
+            } else {
+                (
+                    super::OutcomeClass::Nonconforming,
+                    super::ReasonCode::CryptoSegmentStructureInvalid,
+                )
+            };
+            assert_eq!(error.class(), class, "case{case}");
+            assert_eq!(error.code(), code, "case{case}");
+            assert_eq!(error.detail(), expected, "case{case}");
+            let reads = state.lock().unwrap().reads.clone();
+            if case <= 1 {
+                assert_eq!(reads, [(f.footer.segments_offset, 64)]);
+            }
+            if matches!(case, 2 | 6) {
+                assert_eq!(
+                    reads,
+                    [(f.footer.segments_offset, 64), (f.segments[0].offset, 64)]
+                );
+            }
+            drop(session);
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn segment_sparse_address_overflow_refuses_at_original_checked_positions() {
+        struct SparseSource {
+            offset: u64,
+            section: [u8; 64],
+            segment: [u8; 64],
+            reads: Arc<Mutex<Vec<(u64, u64)>>>,
+        }
+        impl RandomReadSource for SparseSource {
+            fn len(&self) -> crate::diagnostics::Result<u64> {
+                Ok(u64::MAX)
+            }
+            fn revision(&self) -> crate::diagnostics::Result<SourceRevision> {
+                Ok(SourceRevision::Memory {
+                    length: u64::MAX,
+                    sha256: [0; 32],
+                })
+            }
+            fn read_exact_at(&self, _: u64, _: u64) -> crate::diagnostics::Result<Vec<u8>> {
+                panic!("sparse framing fixture requires bounded fill");
+            }
+            fn read_exact_at_into(
+                &self,
+                offset: u64,
+                dst: &mut [u8],
+            ) -> crate::diagnostics::Result<()> {
+                self.reads.lock().unwrap().push((offset, dst.len() as u64));
+                assert_eq!(dst.len(), 64);
+                if offset == self.offset {
+                    dst.copy_from_slice(&self.section);
+                } else {
+                    assert_eq!(offset, self.offset + 64);
+                    dst.copy_from_slice(&self.segment);
+                }
+                Ok(())
+            }
+        }
+        let f = segment_fixture(true);
+        for section_overflow in [true, false] {
+            let mut section: [u8; 64] = f.bytes
+                [f.footer.segments_offset as usize..f.footer.segments_offset as usize + 64]
+                .try_into()
+                .unwrap();
+            section[16..24].copy_from_slice(&128_u64.to_be_bytes());
+            let mut segment = f.segments[0].header;
+            segment[48..56].copy_from_slice(&256_u64.to_be_bytes());
+            let offset = if section_overflow {
+                u64::MAX - 128
+            } else {
+                u64::MAX - 256
+            };
+            let mut footer = f.footer;
+            footer.segments_offset = offset;
+            footer.segments_len = 192;
+            let reads = Arc::new(Mutex::new(Vec::new()));
+            let work = test_work(SEGMENT_FINITE_LIMIT);
+            let source = SparseSource {
+                offset,
+                section,
+                segment,
+                reads: Arc::clone(&reads),
+            };
+            let mut session = super::RangeSession::new_crypto(
+                Box::new(source),
+                segment_access_policy(),
+                work.budget().clone(),
+            )
+            .unwrap();
+            let error = match super::walk_segments(
+                &mut session,
+                &footer,
+                EncryptedOpenOptions::new(None),
+                &work,
+            ) {
+                Ok(_) => panic!("sparse extent must overflow"),
+                Err(e) => e,
+            };
+            assert_eq!(error.class(), super::OutcomeClass::Nonconforming);
+            assert_eq!(
+                error.code(),
+                super::ReasonCode::CryptoSegmentStructureInvalid
+            );
+            assert_eq!(
+                error.detail(),
+                if section_overflow {
+                    "ENCRYPTED_SEGMENTS extent overflow"
+                } else {
+                    "segment extent overflow"
+                }
+            );
+            assert_eq!(
+                reads.lock().unwrap().len(),
+                if section_overflow { 1 } else { 2 }
+            );
+            drop(session);
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
+    }
+
     fn slot_digest(value: u64) -> super::Digest {
         let mut digest = [0; 32];
         digest[24..].copy_from_slice(&value.to_be_bytes());
@@ -2555,6 +3928,10 @@ mod tests {
             salt: [0; 16],
             count,
             header: [0; 64],
+            left: super::NO_SEGMENT_SLOT,
+            right: super::NO_SEGMENT_SLOT,
+            parent: super::NO_SEGMENT_SLOT,
+            height: 1,
         }
     }
 
@@ -3038,21 +4415,22 @@ mod tests {
         .unwrap();
         let count = archive.content_store.chunks.len();
         assert_eq!(count, 12);
-        let bound = super::fallback_slot_bound(&opened.segments, u64::MAX).unwrap();
+        let bound = super::fallback_slot_bound(opened.segments.as_slice(), u64::MAX).unwrap();
         assert_eq!(bound, count + 3);
-        let first_chunk = opened
+        let first_chunk = *opened
             .segments
+            .as_slice()
             .iter()
             .filter(|segment| segment.class == super::SEGMENT_PAYLOAD)
             .nth(3)
-            .unwrap()
-            .clone();
+            .unwrap();
         let (_, first_raw) = {
             let object = super::decrypt_segment(
                 &mut opened.session,
                 &first_chunk,
                 opened
                     .segments
+                    .as_slice()
                     .iter()
                     .position(|segment| segment.offset == first_chunk.offset)
                     .unwrap() as u64,
@@ -3492,13 +4870,13 @@ mod tests {
                 options,
             )
             .unwrap();
-            let refused = opened
+            let refused = *opened
                 .segments
+                .as_slice()
                 .iter()
                 .filter(|segment| segment.class == super::SEGMENT_PAYLOAD)
                 .max_by_key(|segment| segment.extent)
-                .expect("fixture has a PAYLOAD segment")
-                .clone();
+                .expect("fixture has a PAYLOAD segment");
             assert!(refused.extent > 4096 + SEGMENT_HEADER_LEN + PROTECTED_HEADER_LEN);
             reads.lock().unwrap().clear();
             let error = opened
@@ -3583,6 +4961,7 @@ mod tests {
             assert_eq!(two_owners_live, retained + first_length + second_length);
             let largest_payload = probe
                 .segments
+                .as_slice()
                 .iter()
                 .filter(|value| value.class == super::SEGMENT_PAYLOAD)
                 .map(|value| value.extent)
@@ -3621,6 +5000,7 @@ mod tests {
             .unwrap();
             let largest_payload = opened
                 .segments
+                .as_slice()
                 .iter()
                 .filter(|value| value.class == super::SEGMENT_PAYLOAD)
                 .map(|value| value.extent)
@@ -3640,17 +5020,13 @@ mod tests {
             let _ = opened
                 .read_entry(&LogicalPath::from_utf8(["first"]).unwrap())
                 .unwrap();
-            assert!(
-                reads
-                    .lock()
-                    .unwrap()
-                    .iter()
-                    .any(|(offset, len)| opened.segments.iter().any(|segment| {
-                        segment.class == super::SEGMENT_PAYLOAD
-                            && segment.offset == *offset
-                            && segment.extent == *len
-                    }))
-            );
+            assert!(reads.lock().unwrap().iter().any(|(offset, len)| {
+                opened.segments.as_slice().iter().any(|segment| {
+                    segment.class == super::SEGMENT_PAYLOAD
+                        && segment.offset == *offset
+                        && segment.extent == *len
+                })
+            }));
             // An extra real complete Chunk owner prevents the next assembly
             // from fitting. Releasing it admits the same authorized read.
             let owner = opened.chunk_frame(ids[0]).unwrap();
@@ -3950,6 +5326,10 @@ mod tests {
                 salt,
                 count,
                 header,
+                left: super::NO_SEGMENT_SLOT,
+                right: super::NO_SEGMENT_SLOT,
+                parent: super::NO_SEGMENT_SLOT,
+                height: 1,
             },
         )
     }
@@ -4224,7 +5604,7 @@ mod tests {
         let predecessors = opened.group_prerequisites(target, &header).unwrap();
         assert!(!predecessors.is_empty());
         let ordinal = opened.index.get(&predecessors[0]).unwrap().segment_ordinal as usize;
-        let predecessor = &opened.segments[ordinal];
+        let predecessor = &opened.segments.as_slice()[ordinal];
         {
             let mut pressure = pressure.lock().unwrap();
             pressure.budget = Some(opened.work.budget().clone());
@@ -4437,7 +5817,7 @@ mod tests {
         )
         .unwrap();
         let ordinal = probe.index.get(&unread).unwrap().segment_ordinal;
-        let segment = &probe.segments[usize::try_from(ordinal).unwrap()];
+        let segment = &probe.segments.as_slice()[usize::try_from(ordinal).unwrap()];
         let mutation =
             usize::try_from(segment.offset + SEGMENT_HEADER_LEN + PROTECTED_HEADER_LEN).unwrap();
         let mut corrupted = encrypted.bytes;
