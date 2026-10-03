@@ -776,6 +776,339 @@ impl Drop for KnownChunkSegments {
     }
 }
 
+#[derive(Clone, Copy)]
+struct PhysicalPrerequisiteSlot {
+    ordinal: u64,
+    digest: [u8; 32],
+}
+
+// Each owner reserves its entire physical bound once, before filling. The
+// initialized fields are secret; generic WorkVec growth must not copy them.
+struct PhysicalPrerequisites {
+    slots: WorkVec<PhysicalPrerequisiteSlot>,
+    bound: usize,
+    #[cfg(test)]
+    budget: WorkBudget,
+}
+
+struct PredecessorDigests {
+    slots: WorkVec<[u8; 32]>,
+    bound: usize,
+    #[cfg(test)]
+    budget: WorkBudget,
+}
+
+struct PrefixSliceSlots<'a> {
+    slots: WorkVec<&'a [u8]>,
+    bound: usize,
+    #[cfg(test)]
+    budget: WorkBudget,
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum PrerequisiteKind {
+    Physical,
+    Predecessors,
+    Slices,
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum PrerequisitePhase {
+    BeforeReserve,
+    Reserved,
+    Ready,
+    BeforeFree,
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy)]
+enum PrerequisiteSlots<'a> {
+    Physical(&'a [PhysicalPrerequisiteSlot]),
+    Predecessors(&'a [[u8; 32]]),
+    Slices(&'a [&'a [u8]]),
+}
+
+#[cfg(test)]
+type PrerequisiteObserver =
+    fn(PrerequisiteKind, PrerequisitePhase, &WorkBudget, usize, PrerequisiteSlots<'_>);
+
+#[cfg(test)]
+std::thread_local! {
+    static PREREQUISITE_OBSERVER: std::cell::Cell<Option<PrerequisiteObserver>> =
+        const { std::cell::Cell::new(None) };
+}
+
+fn prerequisite_reservation_bytes<T>(bound: usize) -> Result<u64> {
+    let layout = std::alloc::Layout::array::<T>(bound)
+        .map_err(|_| crypto_policy("physical prerequisite allocation layout overflows"))?;
+    u64::try_from(layout.size())
+        .map_err(|_| crypto_policy("physical prerequisite allocation exceeds u64"))
+}
+
+fn physical_prerequisite_first(position: usize, lookback: u32) -> usize {
+    position.saturating_sub(usize::try_from(lookback).unwrap_or(usize::MAX))
+}
+
+fn prerequisite_logical_total(total: u64, logical_len: u64) -> Result<u64> {
+    total
+        .checked_add(logical_len)
+        .ok_or_else(|| dependency("lookback byte count overflow"))
+}
+
+impl PhysicalPrerequisites {
+    fn reservation_bytes(bound: usize) -> Result<u64> {
+        prerequisite_reservation_bytes::<PhysicalPrerequisiteSlot>(bound)
+    }
+
+    fn reserve_empty(budget: &WorkBudget, bound: usize) -> Result<Self> {
+        let mut owner = Self {
+            slots: WorkVec::new(budget),
+            bound,
+            #[cfg(test)]
+            budget: budget.clone(),
+        };
+        Self::reservation_bytes(bound)?;
+        #[cfg(test)]
+        owner.observe(PrerequisitePhase::BeforeReserve);
+        if bound != 0 {
+            owner.slots.reserve(bound)?;
+        }
+        #[cfg(test)]
+        owner.observe(PrerequisitePhase::Reserved);
+        Ok(owner)
+    }
+
+    fn new(budget: &WorkBudget, index: &ChunkDirectory) -> Result<Self> {
+        let mut owner = Self::reserve_empty(budget, index.len())?;
+        for (digest, locator) in index.iter() {
+            owner.push(locator.segment_ordinal, *digest)?;
+        }
+        owner.sort();
+        #[cfg(test)]
+        owner.observe(PrerequisitePhase::Ready);
+        Ok(owner)
+    }
+
+    fn push(&mut self, ordinal: u64, digest: [u8; 32]) -> Result<()> {
+        if self.slots.as_slice().len() >= self.bound {
+            return Err(crypto_policy(
+                "physical prerequisite fixed bound is exhausted",
+            ));
+        }
+        // The empty reserve established the full capacity. No growth is possible.
+        self.slots
+            .push(PhysicalPrerequisiteSlot { ordinal, digest })
+    }
+
+    fn compare(a: &PhysicalPrerequisiteSlot, b: &PhysicalPrerequisiteSlot) -> std::cmp::Ordering {
+        a.ordinal
+            .cmp(&b.ordinal)
+            .then_with(|| a.digest.cmp(&b.digest))
+    }
+
+    fn sift(slots: &mut [PhysicalPrerequisiteSlot], mut root: usize, end: usize) {
+        // root < end/2 proves left < end and right <= end without overflow.
+        while root < end / 2 {
+            let left = root * 2 + 1;
+            let right = left + 1;
+            let child = if right < end && Self::compare(&slots[right], &slots[left]).is_gt() {
+                right
+            } else {
+                left
+            };
+            if !Self::compare(&slots[root], &slots[child]).is_lt() {
+                break;
+            }
+            slots.swap(root, child);
+            root = child;
+        }
+    }
+
+    fn sort(&mut self) {
+        let slots = self.slots.as_mut_slice();
+        let len = slots.len();
+        for root in (0..len / 2).rev() {
+            Self::sift(slots, root, len);
+        }
+        for end in (1..len).rev() {
+            slots.swap(0, end);
+            Self::sift(slots, 0, end);
+        }
+        // No deduplication: physical positions include every initialized slot.
+    }
+
+    fn as_slice(&self) -> &[PhysicalPrerequisiteSlot] {
+        self.slots.as_slice()
+    }
+
+    #[cfg(test)]
+    fn observe(&self, phase: PrerequisitePhase) {
+        PREREQUISITE_OBSERVER.with(|cell| {
+            if let Some(observer) = cell.get() {
+                observer(
+                    PrerequisiteKind::Physical,
+                    phase,
+                    &self.budget,
+                    self.bound,
+                    PrerequisiteSlots::Physical(self.as_slice()),
+                );
+            }
+        });
+    }
+}
+
+impl Drop for PhysicalPrerequisites {
+    fn drop(&mut self) {
+        for slot in self.slots.as_mut_slice() {
+            slot.ordinal.zeroize();
+            slot.digest.zeroize();
+        }
+        #[cfg(test)]
+        self.observe(PrerequisitePhase::BeforeFree);
+        // WorkVec frees backing before releasing its field-owned original lease.
+    }
+}
+
+impl PredecessorDigests {
+    fn empty(budget: &WorkBudget) -> Self {
+        Self {
+            slots: WorkVec::new(budget),
+            bound: 0,
+            #[cfg(test)]
+            budget: budget.clone(),
+        }
+    }
+
+    fn reservation_bytes(bound: usize) -> Result<u64> {
+        prerequisite_reservation_bytes::<[u8; 32]>(bound)
+    }
+
+    fn reserve_empty(budget: &WorkBudget, bound: usize) -> Result<Self> {
+        let mut owner = Self::empty(budget);
+        owner.bound = bound;
+        Self::reservation_bytes(bound)?;
+        #[cfg(test)]
+        owner.observe(PrerequisitePhase::BeforeReserve);
+        if bound != 0 {
+            owner.slots.reserve(bound)?;
+        }
+        #[cfg(test)]
+        owner.observe(PrerequisitePhase::Reserved);
+        Ok(owner)
+    }
+
+    fn push(&mut self, digest: Digest) -> Result<()> {
+        if self.len() >= self.bound {
+            return Err(crypto_policy("predecessor digest fixed bound is exhausted"));
+        }
+        self.slots.push(*digest.as_bytes())
+    }
+
+    fn len(&self) -> usize {
+        self.slots.as_slice().len()
+    }
+
+    #[cfg(test)]
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    fn iter(&self) -> impl Iterator<Item = Digest> + '_ {
+        self.slots
+            .as_slice()
+            .iter()
+            .map(|bytes| Digest::from_bytes(*bytes))
+    }
+
+    #[cfg(test)]
+    fn observe(&self, phase: PrerequisitePhase) {
+        PREREQUISITE_OBSERVER.with(|cell| {
+            if let Some(observer) = cell.get() {
+                observer(
+                    PrerequisiteKind::Predecessors,
+                    phase,
+                    &self.budget,
+                    self.bound,
+                    PrerequisiteSlots::Predecessors(self.slots.as_slice()),
+                );
+            }
+        });
+    }
+}
+
+impl Drop for PredecessorDigests {
+    fn drop(&mut self) {
+        for digest in self.slots.as_mut_slice() {
+            digest.zeroize();
+        }
+        #[cfg(test)]
+        self.observe(PrerequisitePhase::BeforeFree);
+    }
+}
+
+impl<'a> PrefixSliceSlots<'a> {
+    fn reservation_bytes(bound: usize) -> Result<u64> {
+        prerequisite_reservation_bytes::<&[u8]>(bound)
+    }
+
+    fn reserve_empty(budget: &WorkBudget, bound: usize) -> Result<Self> {
+        let mut owner = Self {
+            slots: WorkVec::new(budget),
+            bound,
+            #[cfg(test)]
+            budget: budget.clone(),
+        };
+        Self::reservation_bytes(bound)?;
+        #[cfg(test)]
+        owner.observe(PrerequisitePhase::BeforeReserve);
+        if bound != 0 {
+            owner.slots.reserve(bound)?;
+        }
+        #[cfg(test)]
+        owner.observe(PrerequisitePhase::Reserved);
+        Ok(owner)
+    }
+
+    fn push(&mut self, bytes: &'a [u8]) -> Result<()> {
+        if self.slots.as_slice().len() >= self.bound {
+            return Err(crypto_policy("prefix reference fixed bound is exhausted"));
+        }
+        self.slots.push(bytes)
+    }
+
+    fn as_slice(&self) -> &[&'a [u8]] {
+        self.slots.as_slice()
+    }
+
+    #[cfg(test)]
+    fn observe(&self, phase: PrerequisitePhase) {
+        PREREQUISITE_OBSERVER.with(|cell| {
+            if let Some(observer) = cell.get() {
+                observer(
+                    PrerequisiteKind::Slices,
+                    phase,
+                    &self.budget,
+                    self.bound,
+                    PrerequisiteSlots::Slices(self.as_slice()),
+                );
+            }
+        });
+    }
+}
+
+impl Drop for PrefixSliceSlots<'_> {
+    fn drop(&mut self) {
+        for slot in self.slots.as_mut_slice() {
+            // Empty the reference metadata; ordinary pointed plaintext is unchanged.
+            *slot = &[];
+        }
+        #[cfg(test)]
+        self.observe(PrerequisitePhase::BeforeFree);
+    }
+}
+
 fn fallback_slot_bound(segments: &[SegmentLocator], cap: u64) -> Result<usize> {
     // Only the current traversal is bounded here: each PAYLOAD segment is
     // considered once and its one returned WorkObject can insert at most once.
@@ -1434,9 +1767,11 @@ impl EncryptedRandomAccessArchive {
             if dependencies > self.session.policy().max_dependency_chunks {
                 return Err(access_policy("lookback closure exceeds caller policy"));
             }
-            for predecessor in predecessors {
+            for predecessor in predecessors.iter() {
                 self.decode_chunk(predecessor, &mut decoded)?;
             }
+            // The former consumed Vec released its backing at the loop end.
+            drop(predecessors);
             self.decode_chunk(chunk_id, &mut decoded)?;
         }
         if self.whole_object {
@@ -1806,14 +2141,14 @@ impl EncryptedRandomAccessArchive {
         &mut self,
         chunk_id: Digest,
         header: &ChunkFrameHeader,
-    ) -> Result<Vec<Digest>> {
+    ) -> Result<PredecessorDigests> {
         let plan = self
             .plans
             .iter()
             .find(|plan| plan.plan_id == header.plan_ref)
             .ok_or_else(|| dependency("Chunk references unknown TransformPlan"))?;
         let PlanMode::Prefix { lookback } = plan_mode(plan)? else {
-            return Ok(Vec::new());
+            return Ok(PredecessorDigests::empty(self.work.budget()));
         };
         let group_id = header
             .group_ref
@@ -1826,26 +2161,24 @@ impl EncryptedRandomAccessArchive {
         if group.max_lookback != lookback {
             return Err(dependency("group lookback and plan disagree"));
         }
-        let mut physical = self
-            .index
-            .iter()
-            .map(|(digest, locator)| (locator.segment_ordinal, Digest::from_bytes(*digest)))
-            .collect::<Vec<_>>();
-        physical.sort();
+        let physical = PhysicalPrerequisites::new(self.work.budget(), &self.index)?;
         let position = physical
+            .as_slice()
             .iter()
-            .position(|(_, digest)| *digest == chunk_id)
+            .position(|slot| slot.digest == *chunk_id.as_bytes())
             .ok_or_else(|| dependency("Chunk has no encrypted physical position"))?;
-        let first = position.saturating_sub(usize::try_from(lookback).unwrap_or(usize::MAX));
-        let mut predecessors = Vec::new();
+        let first = physical_prerequisite_first(position, lookback);
+        // The whole physical window is charged before filtering or header reads.
+        let mut predecessors =
+            PredecessorDigests::reserve_empty(self.work.budget(), position - first)?;
         let mut logical_bytes = 0_u64;
-        for (_, predecessor) in &physical[first..position] {
-            let predecessor_header = self.chunk_header(*predecessor)?;
+        for slot in &physical.as_slice()[first..position] {
+            let predecessor = Digest::from_bytes(slot.digest);
+            let predecessor_header = self.chunk_header(predecessor)?;
             if predecessor_header.group_ref == Some(group_id) {
-                logical_bytes = logical_bytes
-                    .checked_add(predecessor_header.logical_len)
-                    .ok_or_else(|| dependency("lookback byte count overflow"))?;
-                predecessors.push(*predecessor);
+                logical_bytes =
+                    prerequisite_logical_total(logical_bytes, predecessor_header.logical_len)?;
+                predecessors.push(predecessor)?;
             }
         }
         if logical_bytes > group.max_preceding_bytes {
@@ -1854,6 +2187,8 @@ impl EncryptedRandomAccessArchive {
                 group_id.to_string(),
             ));
         }
+        #[cfg(test)]
+        predecessors.observe(PrerequisitePhase::Ready);
         Ok(predecessors)
     }
 
@@ -1884,16 +2219,19 @@ impl EncryptedRandomAccessArchive {
             .clone();
         let prefix = if let PlanMode::Prefix { lookback } = plan_mode(&plan)? {
             let predecessors = self.group_prerequisites(chunk_id, &header)?;
-            for predecessor in &predecessors {
-                if !decoded.contains_key(predecessor) {
-                    self.decode_chunk(*predecessor, decoded)?;
+            for predecessor in predecessors.iter() {
+                if !decoded.contains_key(&predecessor) {
+                    self.decode_chunk(predecessor, decoded)?;
                 }
             }
-            let slices = predecessors
-                .iter()
-                .map(|digest| decoded[digest].plaintext.as_ref())
-                .collect::<Vec<_>>();
-            Some(physical_prefix_from_slices(&slices, lookback)?)
+            let mut slices =
+                PrefixSliceSlots::reserve_empty(self.work.budget(), predecessors.len())?;
+            for digest in predecessors.iter() {
+                slices.push(decoded[&digest].plaintext.as_ref())?;
+            }
+            #[cfg(test)]
+            slices.observe(PrerequisitePhase::Ready);
+            Some(physical_prefix_from_slices(slices.as_slice(), lookback)?)
         } else {
             None
         };
@@ -2916,6 +3254,1606 @@ mod tests {
     use crate::random_access::{
         MemoryRandomReadSource, RandomAccessPolicy, RandomReadSource, SourceRevision,
     };
+
+    type PrerequisiteEvent = (
+        super::PrerequisiteKind,
+        super::PrerequisitePhase,
+        usize,
+        usize,
+        u64,
+    );
+
+    #[derive(Default)]
+    struct PrerequisiteState {
+        events: Vec<PrerequisiteEvent>,
+        active: std::collections::BTreeMap<(u8, usize), u64>,
+        pressure_kind: Option<super::PrerequisiteKind>,
+        pressure_occurrence: usize,
+        matching_reserves: usize,
+        short: bool,
+        held: Option<super::WorkBytes>,
+        budget: Option<super::WorkBudget>,
+        hit: bool,
+        release_reserved: bool,
+        nested_predecessor_charge: u64,
+        reads: Vec<(u64, u64)>,
+        corrupt_at: Option<u64>,
+        requested_read: Option<(u64, u64)>,
+        requested_hits: usize,
+        outer_drop_observed: bool,
+    }
+
+    std::thread_local! {
+        static PREREQUISITE_STATE: std::cell::RefCell<Option<Arc<Mutex<PrerequisiteState>>>> =
+            const { std::cell::RefCell::new(None) };
+    }
+
+    fn prerequisite_charge(kind: super::PrerequisiteKind, bound: usize) -> u64 {
+        match kind {
+            super::PrerequisiteKind::Physical => {
+                super::PhysicalPrerequisites::reservation_bytes(bound).unwrap()
+            }
+            super::PrerequisiteKind::Predecessors => {
+                super::PredecessorDigests::reservation_bytes(bound).unwrap()
+            }
+            super::PrerequisiteKind::Slices => {
+                super::PrefixSliceSlots::reservation_bytes(bound).unwrap()
+            }
+        }
+    }
+
+    fn observe_prerequisites(
+        kind: super::PrerequisiteKind,
+        phase: super::PrerequisitePhase,
+        budget: &super::WorkBudget,
+        bound: usize,
+        slots: super::PrerequisiteSlots<'_>,
+    ) {
+        use super::{PrerequisiteKind as K, PrerequisitePhase as P, PrerequisiteSlots as S};
+        let (id, len, pointer, cleared) = match slots {
+            S::Physical(v) => (
+                0,
+                v.len(),
+                v.as_ptr() as usize,
+                v.iter().all(|s| s.ordinal == 0 && s.digest == [0; 32]),
+            ),
+            S::Predecessors(v) => (
+                1,
+                v.len(),
+                v.as_ptr() as usize,
+                v.iter().all(|s| *s == [0; 32]),
+            ),
+            S::Slices(v) => (
+                2,
+                v.len(),
+                v.as_ptr() as usize,
+                v.iter().all(|s| s.is_empty()),
+            ),
+        };
+        PREREQUISITE_STATE.with(|cell| {
+            let shared = cell.borrow().as_ref().unwrap().clone();
+            let mut state = shared.lock().unwrap_or_else(|e| e.into_inner());
+            state.budget = Some(budget.clone());
+            assert!(len <= bound);
+            if phase == P::BeforeReserve {
+                assert_eq!(len, 0);
+                if kind == K::Physical {
+                    state.nested_predecessor_charge = state.nested_predecessor_charge.max(
+                        state
+                            .active
+                            .iter()
+                            .filter(|((k, _), _)| *k == 1)
+                            .map(|(_, bytes)| bytes)
+                            .sum(),
+                    );
+                }
+                if state.pressure_kind == Some(kind) && bound != 0 {
+                    state.matching_reserves += 1;
+                    if state.matching_reserves == state.pressure_occurrence {
+                        let leave = prerequisite_charge(kind, bound) - u64::from(state.short);
+                        let hold = budget.available_bytes().checked_sub(leave).unwrap();
+                        let pressure = super::WorkBytes::zeroed(budget, hold as usize).unwrap();
+                        assert!(pressure.belongs_to(budget));
+                        state.held = Some(pressure);
+                        state.hit = true;
+                        assert_eq!(budget.available_bytes(), leave);
+                    }
+                }
+            }
+            if phase == P::Reserved && bound != 0 {
+                assert!(
+                    state
+                        .active
+                        .insert((id, pointer), prerequisite_charge(kind, bound))
+                        .is_none()
+                );
+                if state.pressure_kind == Some(kind)
+                    && state.hit
+                    && state.release_reserved
+                    && state.held.is_some()
+                {
+                    assert_eq!(budget.available_bytes(), 0);
+                    drop(state.held.take());
+                }
+            }
+            if phase == P::Ready && kind != K::Predecessors {
+                assert_eq!(len, bound);
+            }
+            if phase == P::BeforeFree {
+                assert!(
+                    cleared,
+                    "only initialized fields/reference slots are inspected"
+                );
+                // The observer runs before WorkVec backing free and lease release.
+                let owners_live: u64 = state.active.values().sum();
+                assert!(budget.live_bytes() >= owners_live);
+                state.active.remove(&(id, pointer));
+            }
+            state
+                .events
+                .push((kind, phase, bound, len, budget.live_bytes()));
+        });
+    }
+
+    struct PrerequisiteObserverGuard {
+        previous: Option<super::PrerequisiteObserver>,
+        previous_state: Option<Arc<Mutex<PrerequisiteState>>>,
+    }
+
+    impl PrerequisiteObserverGuard {
+        fn install(state: &Arc<Mutex<PrerequisiteState>>) -> Self {
+            Self {
+                previous: super::PREREQUISITE_OBSERVER
+                    .with(|c| c.replace(Some(observe_prerequisites))),
+                previous_state: PREREQUISITE_STATE.with(|c| c.replace(Some(Arc::clone(state)))),
+            }
+        }
+    }
+
+    impl Drop for PrerequisiteObserverGuard {
+        fn drop(&mut self) {
+            super::PREREQUISITE_OBSERVER.with(|c| c.set(self.previous));
+            PREREQUISITE_STATE.with(|c| {
+                c.replace(self.previous_state.take());
+            });
+        }
+    }
+
+    struct PrerequisiteSource {
+        source: MemoryRandomReadSource,
+        state: Arc<Mutex<PrerequisiteState>>,
+    }
+
+    impl RandomReadSource for PrerequisiteSource {
+        fn len(&self) -> crate::diagnostics::Result<u64> {
+            self.source.len()
+        }
+        fn revision(&self) -> crate::diagnostics::Result<SourceRevision> {
+            self.source.revision()
+        }
+        fn read_exact_at(&self, _: u64, _: u64) -> crate::diagnostics::Result<Vec<u8>> {
+            panic!("prerequisite fixtures require bounded source fills")
+        }
+        fn read_exact_at_into(
+            &self,
+            offset: u64,
+            dst: &mut [u8],
+        ) -> crate::diagnostics::Result<()> {
+            self.source.read_exact_at_into(offset, dst)?;
+            let mut state = self.state.lock().unwrap();
+            state.reads.push((offset, dst.len() as u64));
+            if state.requested_read == Some((offset, dst.len() as u64)) {
+                state.requested_hits += 1;
+                if state.requested_hits == 2 {
+                    assert!(
+                        state.active.keys().all(|(kind, _)| *kind != 1),
+                        "outer predecessor backing must be freed before requested frame decode"
+                    );
+                    state.outer_drop_observed = true;
+                }
+            }
+            if let Some(byte) = state.corrupt_at
+                && let Some(relative) = byte.checked_sub(offset)
+                && relative < dst.len() as u64
+            {
+                dst[relative as usize] ^= 1;
+            }
+            Ok(())
+        }
+    }
+
+    struct PrerequisiteFixture {
+        bytes: Vec<u8>,
+        identity: XWingIdentity,
+        target: super::Digest,
+        plaintexts: std::collections::BTreeMap<super::Digest, Vec<u8>>,
+        physical_order: Vec<super::Digest>,
+        target_path: LogicalPath,
+        target_entry_bytes: Vec<u8>,
+    }
+
+    fn prerequisite_fixture(include_index: bool) -> PrerequisiteFixture {
+        // Same proven Dense lookback input shape as the retained recursive test.
+        let directory = TestDir::new();
+        let mut state = 0xbb67_ae85_84ca_a73b_u64;
+        let base = (0..64 * 1024)
+            .map(|_| {
+                state ^= state << 13;
+                state ^= state >> 7;
+                state ^= state << 17;
+                state as u8
+            })
+            .collect::<Vec<_>>();
+        for index in 0..12 {
+            let mut bytes = base.clone();
+            let first = 128 + (index * 977) % (bytes.len() - 512);
+            for (offset, byte) in bytes[first..first + 256].iter_mut().enumerate() {
+                *byte = (index as u8).wrapping_mul(31).wrapping_add(offset as u8);
+            }
+            std::fs::write(
+                directory.path().join(format!("prefix-{index:03}.bin")),
+                bytes,
+            )
+            .unwrap();
+        }
+        let archive = plan_directory(
+            directory.path(),
+            PackOptions {
+                profile: crate::planner::CompressionProfile::Dense,
+                ..PackOptions::default()
+            },
+        )
+        .unwrap();
+        let target = archive
+            .content_store
+            .physical_order
+            .iter()
+            .rev()
+            .find(|id| archive.content_store.chunks[id].group_ref.is_some())
+            .copied()
+            .expect("Dense fixture must select real prefix-coded chunks");
+        let plaintexts = archive
+            .content_store
+            .chunks
+            .iter()
+            .map(|(id, chunk)| (*id, chunk.plaintext.to_vec()))
+            .collect();
+        let physical_order = archive.content_store.physical_order.to_vec();
+        let entry = archive
+            .entry_set
+            .entries()
+            .iter()
+            .find(|entry| {
+                if let EntryData::File {
+                    content: ContentRef::Internal(id),
+                    ..
+                } = entry.data()
+                {
+                    archive.content_store.objects[id]
+                        .chunks
+                        .iter()
+                        .any(|part| part.chunk_id == target)
+                } else {
+                    false
+                }
+            })
+            .unwrap();
+        let target_path = entry.path().clone();
+        let EntryData::File {
+            content: ContentRef::Internal(content_id),
+            ..
+        } = entry.data()
+        else {
+            unreachable!()
+        };
+        let target_entry_bytes = archive.content_store.objects[content_id]
+            .chunks
+            .iter()
+            .flat_map(|part| {
+                archive.content_store.chunks[&part.chunk_id]
+                    .plaintext
+                    .iter()
+                    .copied()
+            })
+            .collect();
+        let (identity, recipient) = XWingIdentity::generate().unwrap();
+        let encrypted = encrypt_archive(
+            &archive,
+            EncryptedWriteOptions {
+                recipients: &[recipient],
+                padding: PaddingMode::None,
+                include_index,
+                ..EncryptedWriteOptions::default()
+            },
+        )
+        .unwrap();
+        PrerequisiteFixture {
+            bytes: encrypted.bytes,
+            identity,
+            target,
+            plaintexts,
+            physical_order,
+            target_path,
+            target_entry_bytes,
+        }
+    }
+
+    fn prerequisite_open(
+        fixture: &PrerequisiteFixture,
+        state: &Arc<Mutex<PrerequisiteState>>,
+    ) -> super::EncryptedRandomAccessArchive {
+        let mut options = EncryptedOpenOptions::new(Some(Unlock::Identity(&fixture.identity)));
+        options.crypto_policy.max_working_memory_bytes = SEGMENT_FINITE_LIMIT;
+        let mut reader = open_indexed_random_encrypted(
+            PrerequisiteSource {
+                source: MemoryRandomReadSource::new(fixture.bytes.clone()),
+                state: Arc::clone(state),
+            },
+            segment_access_policy(),
+            options,
+        )
+        .unwrap();
+        reader.load_support_and_index_fallback().unwrap();
+        reader
+    }
+
+    fn prerequisite_original_order(
+        reader: &super::EncryptedRandomAccessArchive,
+    ) -> Vec<(u64, super::Digest)> {
+        let mut physical = reader
+            .index
+            .iter()
+            .map(|(digest, locator)| (locator.segment_ordinal, super::Digest::from_bytes(*digest)))
+            .collect::<Vec<_>>();
+        physical.sort();
+        physical
+    }
+
+    // Test-only original tuple/window/Vec algorithm. Its source fetches and
+    // ordinary decode calls are an independent oracle for the replacement.
+    fn original_prerequisite_decode(
+        reader: &mut super::EncryptedRandomAccessArchive,
+        id: super::Digest,
+        decoded: &mut super::BTreeMap<super::Digest, super::Chunk>,
+    ) {
+        if decoded.contains_key(&id) {
+            return;
+        }
+        let object = reader.chunk_frame(id).unwrap();
+        let (_, frame) = object.view().unwrap();
+        let header_len = super::chunk_frame_header_len(reader.extended) as usize;
+        let header = super::parse_chunk_frame_header(
+            &frame[..header_len],
+            reader.extended,
+            reader.whole_object,
+        )
+        .unwrap();
+        assert!(!header.region_owned);
+        let plan = reader
+            .plans
+            .iter()
+            .find(|p| p.plan_id == header.plan_ref)
+            .unwrap()
+            .clone();
+        let prefix = if let super::PlanMode::Prefix { lookback } = super::plan_mode(&plan).unwrap()
+        {
+            let group_id = header.group_ref.unwrap();
+            let group = reader.groups[&group_id].clone();
+            assert_eq!(group.max_lookback, lookback);
+            let physical = prerequisite_original_order(reader);
+            let position = physical.iter().position(|(_, d)| *d == id).unwrap();
+            // Original saturating conversion, before filtering any group.
+            let first = position.saturating_sub(usize::try_from(lookback).unwrap_or(usize::MAX));
+            let mut predecessors = Vec::new();
+            let mut logical = 0_u64;
+            for (_, predecessor) in &physical[first..position] {
+                let h = reader.chunk_header(*predecessor).unwrap();
+                if h.group_ref == Some(group_id) {
+                    logical = logical.checked_add(h.logical_len).unwrap();
+                    predecessors.push(*predecessor);
+                }
+            }
+            assert!(logical <= group.max_preceding_bytes);
+            for predecessor in &predecessors {
+                if !decoded.contains_key(predecessor) {
+                    original_prerequisite_decode(reader, *predecessor, decoded);
+                }
+            }
+            let slices = predecessors
+                .iter()
+                .map(|d| decoded[d].plaintext.as_ref())
+                .collect::<Vec<_>>();
+            Some(super::physical_prefix_from_slices(&slices, lookback).unwrap())
+        } else {
+            None
+        };
+        let support = reader.support.as_ref().unwrap();
+        let plaintext = super::decode_frame_payload(
+            &plan,
+            &frame[header_len..],
+            header.logical_len,
+            &support.dictionaries,
+            &support.reconstruction_data,
+            prefix.as_deref(),
+        )
+        .unwrap();
+        assert_eq!(super::sha256_exact(&plaintext), id);
+        decoded.insert(
+            id,
+            super::Chunk {
+                chunk_id: id,
+                logical_len: header.logical_len,
+                plan_ref: header.plan_ref,
+                group_ref: header.group_ref,
+                plaintext: plaintext.into_boxed_slice(),
+            },
+        );
+    }
+
+    fn prerequisite_teardown(
+        reader: super::EncryptedRandomAccessArchive,
+        state: &Arc<Mutex<PrerequisiteState>>,
+    ) {
+        let budget = reader.work.budget().clone();
+        let mut state = state.lock().unwrap_or_else(|e| e.into_inner());
+        assert!(state.active.is_empty());
+        drop(state.held.take());
+        drop(state);
+        drop(reader);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    fn authenticated_prerequisite_test_segment(
+        ordinal: u64,
+        fragments: &[super::wire::PrivateFragmentRef<'_>],
+        archive_id: &[u8; 32],
+        keys: &super::KeyHierarchy,
+        wrong_end: bool,
+    ) -> (Vec<u8>, super::SegmentLocator) {
+        use crate::canonical::RecordBuilder;
+        use sha2::Digest as _;
+
+        let count = u32::try_from(fragments.len()).unwrap();
+        let class = super::SEGMENT_PAYLOAD;
+        let mut salt = [9; 16];
+        salt[8..].copy_from_slice(&ordinal.to_be_bytes());
+        let private = fragments
+            .iter()
+            .map(|fragment| {
+                super::wire::encode_private_fragment(
+                    &fragment.object_id,
+                    fragment.total_len,
+                    fragment.index,
+                    fragment.count,
+                    fragment.offset,
+                    fragment.bytes,
+                )
+                .unwrap()
+            })
+            .collect::<Vec<_>>();
+        let private_total = private.iter().map(|value| value.len() as u64).sum::<u64>();
+        let ciphertext_total = private
+            .iter()
+            .map(|value| (8 + value.len() + 16) as u64)
+            .sum::<u64>();
+        let end_record = |digest: &[u8; 32]| {
+            let mut record = RecordBuilder::new(super::wire::RECORD_SEGMENT_END);
+            record
+                .u64(1, ordinal)
+                .unwrap()
+                .u8(2, class)
+                .unwrap()
+                .u32(3, count)
+                .unwrap()
+                .u64(4, private_total)
+                .unwrap()
+                .u64(5, ciphertext_total)
+                .unwrap()
+                .bytes(6, digest)
+                .unwrap();
+            record.finish().unwrap()
+        };
+        let extent = 64
+            + u64::from(count) * 32
+            + ciphertext_total
+            + 32
+            + 8
+            + end_record(&[0; 32]).len() as u64
+            + 16;
+        let mut header = [0; 64];
+        header[..4].copy_from_slice(b"EBSG");
+        header[4..6].copy_from_slice(&1_u16.to_be_bytes());
+        header[6] = class;
+        header[8..16].copy_from_slice(&ordinal.to_be_bytes());
+        header[16..32].copy_from_slice(&salt);
+        header[32..36].copy_from_slice(&count.to_be_bytes());
+        header[48..56].copy_from_slice(&extent.to_be_bytes());
+        assert_eq!(
+            super::parse_segment_header(&header, ordinal).unwrap(),
+            (class, salt, count, extent)
+        );
+        let key =
+            super::super::container::segment_key(keys, archive_id, class, ordinal, &salt).unwrap();
+        let seal = |class: u8, counter: u64, value: &[u8], nonce: &[u8; 12]| {
+            let mut protected = [0; 32];
+            protected[..4].copy_from_slice(b"EBC1");
+            protected[4..6].copy_from_slice(&1_u16.to_be_bytes());
+            protected[6] = class;
+            protected[8..16].copy_from_slice(&ordinal.to_be_bytes());
+            protected[16..24].copy_from_slice(&counter.to_be_bytes());
+            protected[24..32].copy_from_slice(&((8 + value.len() + 16) as u64).to_be_bytes());
+            let mut padded = (value.len() as u64).to_be_bytes().to_vec();
+            padded.extend_from_slice(value);
+            let ciphertext = super::super::aead_seal(
+                &key.0,
+                nonce,
+                &super::super::container::record_ad(archive_id, &header, &protected).unwrap(),
+                &padded,
+            )
+            .unwrap();
+            let mut record = protected.to_vec();
+            record.extend_from_slice(&ciphertext);
+            record
+        };
+        let mut data = Vec::new();
+        for (index, value) in private.iter().enumerate() {
+            let counter = index as u64;
+            data.extend_from_slice(&seal(
+                super::RECORD_DATA,
+                counter,
+                value,
+                &super::super::container::data_nonce(counter),
+            ));
+        }
+        let mut digest: [u8; 32] = super::Sha256::digest(
+            super::wire::t1(
+                "entrybound/segment-data/v1",
+                &[&header, &super::data_sequence(count, &data).unwrap()],
+            )
+            .unwrap(),
+        )
+        .into();
+        if wrong_end {
+            digest[0] ^= 1;
+        }
+        let mut segment = header.to_vec();
+        segment.extend_from_slice(&data);
+        segment.extend_from_slice(&seal(
+            super::RECORD_END,
+            u64::from(count),
+            &end_record(&digest),
+            &super::super::container::end_nonce(u64::from(count)),
+        ));
+        assert_eq!(segment.len() as u64, extent);
+        (
+            segment,
+            super::SegmentLocator {
+                offset: 0,
+                extent,
+                class,
+                salt,
+                count,
+                header,
+                left: super::NO_SEGMENT_SLOT,
+                right: super::NO_SEGMENT_SLOT,
+                parent: super::NO_SEGMENT_SLOT,
+                height: 1,
+            },
+        )
+    }
+
+    #[test]
+    fn physical_prerequisite_heap_matches_original_tuple_positions_without_dedup() {
+        let inputs = [
+            vec![],
+            vec![(0, [0; 32])],
+            vec![(u64::MAX, [255; 32]), (0, [0; 32]), (u64::MAX, [0; 32])],
+            (0..257)
+                .map(|i| (i % 7, *slot_digest(i).as_bytes()))
+                .collect(),
+            (0..257)
+                .rev()
+                .map(|i| (i % 7, *slot_digest(i).as_bytes()))
+                .collect(),
+            vec![(4, [8; 32]), (4, [7; 32]), (4, [8; 32]), (0, [255; 32])],
+        ];
+        for input in inputs {
+            let charge = super::PhysicalPrerequisites::reservation_bytes(input.len()).unwrap();
+            let work = test_work(charge);
+            let mut owner =
+                super::PhysicalPrerequisites::reserve_empty(work.budget(), input.len()).unwrap();
+            let pointer = owner.as_slice().as_ptr();
+            for &(ordinal, digest) in &input {
+                owner.push(ordinal, digest).unwrap();
+            }
+            let mut oracle = input
+                .iter()
+                .map(|(o, d)| (*o, super::Digest::from_bytes(*d)))
+                .collect::<Vec<_>>();
+            oracle.sort();
+            owner.sort();
+            assert_eq!(owner.as_slice().as_ptr(), pointer);
+            assert_eq!(
+                owner
+                    .as_slice()
+                    .iter()
+                    .map(|s| (s.ordinal, super::Digest::from_bytes(s.digest)))
+                    .collect::<Vec<_>>(),
+                oracle
+            );
+            assert_eq!(owner.as_slice().len(), input.len());
+            for (_, id) in &oracle {
+                assert_eq!(
+                    owner
+                        .as_slice()
+                        .iter()
+                        .position(|s| s.digest == *id.as_bytes()),
+                    oracle.iter().position(|(_, d)| d == id)
+                );
+            }
+            let absent = [0x51; 32];
+            assert_eq!(
+                owner.as_slice().iter().position(|s| s.digest == absent),
+                oracle.iter().position(|(_, d)| *d.as_bytes() == absent)
+            );
+            assert_eq!(work.budget().live_bytes(), charge);
+            assert_eq!(work.budget().available_bytes(), 0);
+            drop(owner);
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn prerequisite_fixed_layout_capacity_spares_and_original_counter_are_exact() {
+        use super::PrerequisiteKind as K;
+        for bound in [0, 1, 4, 17] {
+            for kind in [K::Physical, K::Predecessors, K::Slices] {
+                let expected = match kind {
+                    K::Physical => {
+                        std::alloc::Layout::array::<super::PhysicalPrerequisiteSlot>(bound)
+                            .unwrap()
+                            .size()
+                    }
+                    K::Predecessors => std::alloc::Layout::array::<[u8; 32]>(bound).unwrap().size(),
+                    K::Slices => std::alloc::Layout::array::<&[u8]>(bound).unwrap().size(),
+                } as u64;
+                assert_eq!(prerequisite_charge(kind, bound), expected);
+            }
+            let charge = prerequisite_charge(K::Physical, bound)
+                + prerequisite_charge(K::Predecessors, bound)
+                + prerequisite_charge(K::Slices, bound);
+            let work = test_work(charge + 13);
+            let caller = super::WorkBytes::zeroed(work.budget(), 13).unwrap();
+            let mut physical =
+                super::PhysicalPrerequisites::reserve_empty(work.budget(), bound).unwrap();
+            let mut predecessors =
+                super::PredecessorDigests::reserve_empty(work.budget(), bound).unwrap();
+            let mut slices = super::PrefixSliceSlots::reserve_empty(work.budget(), bound).unwrap();
+            let pointers = (
+                physical.as_slice().as_ptr(),
+                predecessors.slots.as_slice().as_ptr(),
+                slices.as_slice().as_ptr(),
+            );
+            for i in 0..bound {
+                physical.push(i as u64, [7; 32]).unwrap();
+                // Fill only one matching digest: every unused physical B slot stays charged.
+                if i == 0 {
+                    predecessors.push(slot_digest(7)).unwrap();
+                }
+                slices.push(b"ordinary plaintext").unwrap();
+            }
+            assert_eq!(work.budget().live_bytes(), charge + 13);
+            assert_eq!(work.budget().available_bytes(), 0);
+            assert_eq!(
+                pointers,
+                (
+                    physical.as_slice().as_ptr(),
+                    predecessors.slots.as_slice().as_ptr(),
+                    slices.as_slice().as_ptr()
+                )
+            );
+            assert!(physical.push(0, [1; 32]).is_err());
+            assert!(slices.push(b"overflow").is_err());
+            while predecessors.len() < bound {
+                predecessors.push(slot_digest(8)).unwrap();
+            }
+            assert!(predecessors.push(slot_digest(9)).is_err());
+            drop(slices);
+            drop(predecessors);
+            drop(physical);
+            assert_eq!(work.budget().live_bytes(), 13);
+            drop(caller);
+            assert_eq!(work.budget().live_bytes(), 0);
+        }
+        for bytes in [
+            super::PhysicalPrerequisites::reservation_bytes(usize::MAX),
+            super::PredecessorDigests::reservation_bytes(usize::MAX),
+            super::PrefixSliceSlots::reservation_bytes(usize::MAX),
+        ] {
+            let e = bytes.unwrap_err();
+            assert_eq!(e.class(), super::OutcomeClass::PolicyRefused);
+            assert_eq!(e.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+        }
+        let work = test_work(31);
+        assert!(super::PredecessorDigests::reserve_empty(work.budget(), 1).is_err());
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn prerequisite_window_before_group_filter_preserves_order_and_full_physical_bound() {
+        for position in [0, 1, 2, 17, usize::MAX] {
+            for lookback in [0, 1, 8, u32::MAX] {
+                let expected =
+                    position.saturating_sub(usize::try_from(lookback).unwrap_or(usize::MAX));
+                assert_eq!(
+                    super::physical_prerequisite_first(position, lookback),
+                    expected
+                );
+            }
+        }
+        let fixture = prerequisite_fixture(true);
+        let state = Arc::new(Mutex::new(PrerequisiteState::default()));
+        let mut reader = prerequisite_open(&fixture, &state);
+        let physical = prerequisite_original_order(&reader);
+        assert_eq!(
+            physical.iter().map(|(_, id)| *id).collect::<Vec<_>>(),
+            fixture.physical_order
+        );
+        let header = reader.chunk_header(fixture.target).unwrap();
+        let plan = reader
+            .plans
+            .iter()
+            .find(|p| p.plan_id == header.plan_ref)
+            .unwrap();
+        let super::PlanMode::Prefix { lookback } = super::plan_mode(plan).unwrap() else {
+            panic!("real prefix plan")
+        };
+        let position = physical
+            .iter()
+            .position(|(_, d)| *d == fixture.target)
+            .unwrap();
+        let first = super::physical_prerequisite_first(position, lookback);
+        let mut oracle = Vec::new();
+        let mut expected_reads = Vec::new();
+        for (_, id) in &physical[first..position] {
+            state.lock().unwrap().reads.clear();
+            let h = reader.chunk_header(*id).unwrap();
+            expected_reads.extend_from_slice(&state.lock().unwrap().reads);
+            if h.group_ref == header.group_ref {
+                oracle.push(*id);
+            }
+        }
+        state.lock().unwrap().reads.clear();
+        {
+            let _observer = PrerequisiteObserverGuard::install(&state);
+            let predecessors = reader.group_prerequisites(fixture.target, &header).unwrap();
+            assert_eq!(predecessors.bound, position - first);
+            assert_eq!(predecessors.iter().collect::<Vec<_>>(), oracle);
+            assert_eq!(state.lock().unwrap().reads, expected_reads);
+            drop(predecessors);
+            // A declared group with no matching authenticated candidate headers
+            // exercises N=0/B>0 without changing the physical window first.
+            let group_id = slot_digest(u64::MAX);
+            let mut other_header = header;
+            other_header.group_ref = Some(group_id);
+            reader.groups.insert(
+                group_id,
+                super::ChunkGroup {
+                    group_id,
+                    max_lookback: lookback,
+                    max_preceding_bytes: u64::MAX,
+                },
+            );
+            let empty = reader
+                .group_prerequisites(fixture.target, &other_header)
+                .unwrap();
+            assert_eq!(empty.len(), 0);
+            assert_eq!(empty.bound, position - first);
+            assert!(empty.bound > 0);
+            assert!(state.lock().unwrap().events.iter().any(|e| e.0
+                == super::PrerequisiteKind::Predecessors
+                && e.1 == super::PrerequisitePhase::Ready
+                && e.2 > 0
+                && e.3 == 0));
+        }
+        prerequisite_teardown(reader, &state);
+        // Finite actual-key authenticated candidate frames deliberately alternate
+        // groups. The requested header/plan is a helper declaration; this proves
+        // physical-window selection, not publication of a changed whole archive.
+        let state = Arc::new(Mutex::new(PrerequisiteState::default()));
+        let mut reader = prerequisite_open(&fixture, &state);
+        assert!(reader.extended);
+        let mut requested = reader.chunk_header(fixture.target).unwrap();
+        let plan = crate::codec::zstd_prefix_plan(5, 4).unwrap();
+        requested.plan_ref = plan.plan_id;
+        reader.plans = vec![plan].into_boxed_slice();
+        let matching_group = requested.group_ref.unwrap();
+        let other_group = slot_digest(u64::MAX);
+        assert_ne!(matching_group, other_group);
+        reader.groups.insert(
+            matching_group,
+            super::ChunkGroup {
+                group_id: matching_group,
+                max_lookback: 4,
+                max_preceding_bytes: u64::MAX,
+            },
+        );
+        let candidate_ids = prerequisite_original_order(&reader)
+            .into_iter()
+            .map(|(_, id)| id)
+            .filter(|id| *id != fixture.target)
+            .take(4)
+            .collect::<Vec<_>>();
+        assert_eq!(candidate_ids.len(), 4);
+        let mut bytes = Vec::new();
+        let mut segments = super::SegmentTable::new(reader.work.budget());
+        for (ordinal, id) in candidate_ids.iter().enumerate() {
+            let mut frame = {
+                let object = reader.chunk_frame(*id).unwrap();
+                object.view().unwrap().1.to_vec()
+            };
+            let group = if ordinal % 2 == 0 {
+                matching_group
+            } else {
+                other_group
+            };
+            frame[64..96].copy_from_slice(group.as_bytes());
+            let raw =
+                super::wire::private_object(super::wire::PRIVATE_OBJECT_CHUNK, &frame).unwrap();
+            let fragment = super::wire::PrivateFragmentRef {
+                object_id: super::wire::encrypted_object_id(&raw).unwrap(),
+                total_len: raw.len() as u64,
+                index: 0,
+                count: 1,
+                offset: 0,
+                bytes: &raw,
+            };
+            let (segment, mut locator) = authenticated_prerequisite_test_segment(
+                ordinal as u64,
+                &[fragment],
+                &reader.envelope.view().archive_id,
+                &reader.keys,
+                false,
+            );
+            locator.offset = bytes.len() as u64;
+            append_segment(&mut segments, locator);
+            bytes.extend_from_slice(&segment);
+        }
+        reader.session = super::RangeSession::new_crypto(
+            Box::new(PrerequisiteSource {
+                source: MemoryRandomReadSource::new(bytes),
+                state: Arc::clone(&state),
+            }),
+            segment_access_policy(),
+            reader.work.budget().clone(),
+        )
+        .unwrap();
+        reader.segments = segments;
+        let mut entries = candidate_ids
+            .iter()
+            .enumerate()
+            .map(|(ordinal, id)| (*id, ordinal as u64))
+            .collect::<Vec<_>>();
+        entries.push((fixture.target, 4)); // Requested position is never fetched here.
+        entries.sort_by_key(|(id, _)| *id);
+        let mut index = super::ChunkDirectory::new(reader.work.budget(), entries.len(), true);
+        for (id, ordinal) in entries {
+            index
+                .append_index(
+                    id,
+                    super::EncryptedChunkLocator {
+                        segment_ordinal: ordinal,
+                        fragment_count: 1,
+                    },
+                )
+                .unwrap();
+        }
+        reader.index = index;
+        let physical = prerequisite_original_order(&reader);
+        let position = physical
+            .iter()
+            .position(|(_, id)| *id == fixture.target)
+            .unwrap();
+        let first = position.saturating_sub(4);
+        assert_eq!(position - first, 4);
+        let mut expected = Vec::new();
+        let mut candidate_groups = Vec::new();
+        let mut expected_reads = Vec::new();
+        for (_, id) in &physical[first..position] {
+            state.lock().unwrap().reads.clear();
+            let header = reader.chunk_header(*id).unwrap();
+            expected_reads.extend_from_slice(&state.lock().unwrap().reads);
+            candidate_groups.push(header.group_ref);
+            if header.group_ref == requested.group_ref {
+                expected.push(*id);
+            }
+        }
+        assert_eq!(
+            candidate_groups,
+            vec![
+                Some(matching_group),
+                Some(other_group),
+                Some(matching_group),
+                Some(other_group)
+            ]
+        );
+        assert_eq!(expected, vec![candidate_ids[0], candidate_ids[2]]);
+        assert!(!expected.is_empty() && expected.len() < position - first);
+        state.lock().unwrap().reads.clear();
+        {
+            let _observer = PrerequisiteObserverGuard::install(&state);
+            let predecessors = reader
+                .group_prerequisites(fixture.target, &requested)
+                .unwrap();
+            assert_eq!(predecessors.iter().collect::<Vec<_>>(), expected);
+            assert_eq!(predecessors.len(), 2);
+            assert_eq!(predecessors.bound, 4);
+            let state = state.lock().unwrap();
+            assert_eq!(state.reads, expected_reads);
+            let full_charge = super::PredecessorDigests::reservation_bytes(4).unwrap();
+            assert_eq!(state.active.values().copied().sum::<u64>(), full_charge);
+            assert!(state.events.iter().any(|event| {
+                event.0 == super::PrerequisiteKind::Predecessors
+                    && event.1 == super::PrerequisitePhase::Ready
+                    && event.2 == 4
+                    && event.3 == 2
+                    && event.4 >= full_charge
+            }));
+            drop(state);
+            drop(predecessors);
+        }
+        prerequisite_teardown(reader, &state);
+    }
+
+    #[test]
+    fn prerequisite_initialized_fields_and_reference_slots_clear_before_free_on_all_exits() {
+        let work = test_work(8192);
+        let baseline_owner = super::WorkBytes::zeroed(work.budget(), 19).unwrap();
+        let ordinary = b"ordinary plaintext must survive metadata drop".to_vec();
+        let state = Arc::new(Mutex::new(PrerequisiteState::default()));
+        {
+            let _observer = PrerequisiteObserverGuard::install(&state);
+            for fill in [0, 1, 4] {
+                for panic_after_fill in [false, true] {
+                    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                        let mut k =
+                            super::PhysicalPrerequisites::reserve_empty(work.budget(), 4).unwrap();
+                        let mut b =
+                            super::PredecessorDigests::reserve_empty(work.budget(), 4).unwrap();
+                        let mut s =
+                            super::PrefixSliceSlots::reserve_empty(work.budget(), 4).unwrap();
+                        for i in 0..fill {
+                            k.push(i as u64 + 1, [255; 32]).unwrap();
+                            b.push(slot_digest(i as u64 + 1)).unwrap();
+                            s.push(&ordinary).unwrap();
+                        }
+                        if panic_after_fill {
+                            panic!("generated partial-owner unwind");
+                        }
+                    }));
+                    assert_eq!(result.is_err(), panic_after_fill);
+                    assert_eq!(work.budget().live_bytes(), 19);
+                    assert_eq!(
+                        ordinary.as_slice(),
+                        b"ordinary plaintext must survive metadata drop"
+                    );
+                    assert!(state.lock().unwrap().active.is_empty());
+                }
+            }
+        }
+        let state = state.lock().unwrap();
+        assert_eq!(
+            state
+                .events
+                .iter()
+                .filter(|e| e.1 == super::PrerequisitePhase::BeforeFree)
+                .count(),
+            18
+        );
+        assert!(
+            state
+                .events
+                .iter()
+                .any(|e| e.1 == super::PrerequisitePhase::BeforeFree && e.3 == 1)
+        );
+        drop(state);
+        drop(baseline_owner);
+        assert_eq!(work.budget().live_bytes(), 0);
+    }
+
+    #[test]
+    fn authenticated_prerequisite_exact_fit_and_short_refusals_keep_original_read_stops() {
+        use super::{PrerequisiteKind as K, PrerequisitePhase as P};
+        let fixture = prerequisite_fixture(true);
+        for kind in [K::Physical, K::Predecessors, K::Slices] {
+            for short in [false, true] {
+                let state = Arc::new(Mutex::new(PrerequisiteState::default()));
+                let mut reader = prerequisite_open(&fixture, &state);
+                assert_eq!(
+                    reader.index_status,
+                    super::RandomAccessIndexStatus::PresentValid
+                );
+                let header = reader.chunk_header(fixture.target).unwrap();
+                state.lock().unwrap().reads.clear();
+                {
+                    let mut state = state.lock().unwrap();
+                    state.pressure_kind = Some(kind);
+                    state.pressure_occurrence = 1;
+                    state.short = short;
+                    state.release_reserved = !short;
+                }
+                let mut decoded = super::BTreeMap::new();
+                {
+                    let _observer = PrerequisiteObserverGuard::install(&state);
+                    let result = if kind == K::Slices {
+                        reader.decode_chunk(fixture.target, &mut decoded)
+                    } else {
+                        reader
+                            .group_prerequisites(fixture.target, &header)
+                            .map(drop)
+                    };
+                    if short {
+                        let error = result.unwrap_err();
+                        assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+                        assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+                        assert_eq!(
+                            reader.index_status,
+                            super::RandomAccessIndexStatus::PresentValid
+                        );
+                        assert!(!decoded.contains_key(&fixture.target));
+                        if kind == K::Slices {
+                            assert!(
+                                !decoded.is_empty(),
+                                "actual recursive plaintext fills precede S refusal"
+                            );
+                        } else {
+                            assert!(
+                                state.lock().unwrap().reads.is_empty(),
+                                "K/B refusal precedes every candidate header read"
+                            );
+                        }
+                    } else {
+                        result.unwrap();
+                        if kind == K::Slices {
+                            assert_eq!(
+                                decoded[&fixture.target].plaintext.as_ref(),
+                                fixture.plaintexts[&fixture.target]
+                            );
+                        }
+                    }
+                }
+                {
+                    let mut state = state.lock().unwrap();
+                    assert!(state.hit);
+                    assert!(state.active.is_empty());
+                    assert!(
+                        state
+                            .events
+                            .iter()
+                            .any(|e| e.0 == kind && e.1 == P::BeforeReserve && e.2 > 0)
+                    );
+                    assert_eq!(
+                        state
+                            .events
+                            .iter()
+                            .filter(|e| e.0 == kind && e.1 == P::Reserved && e.2 > 0)
+                            .count()
+                            > 0,
+                        !short
+                    );
+                    state.pressure_kind = None;
+                    drop(state.held.take());
+                }
+                reader.decode_chunk(fixture.target, &mut decoded).unwrap();
+                assert_eq!(
+                    decoded[&fixture.target].plaintext.as_ref(),
+                    fixture.plaintexts[&fixture.target]
+                );
+                prerequisite_teardown(reader, &state);
+            }
+        }
+    }
+
+    #[test]
+    fn authenticated_prerequisite_selection_refetch_and_decoded_skip_match_old_behavior() {
+        let fixture = prerequisite_fixture(true);
+        let oracle_state = Arc::new(Mutex::new(PrerequisiteState::default()));
+        let mut oracle_reader = prerequisite_open(&fixture, &oracle_state);
+        oracle_state.lock().unwrap().reads.clear();
+        let mut oracle_decoded = super::BTreeMap::new();
+        original_prerequisite_decode(&mut oracle_reader, fixture.target, &mut oracle_decoded);
+        let oracle_reads = oracle_state.lock().unwrap().reads.clone();
+        let oracle_values = oracle_decoded
+            .iter()
+            .map(|(id, c)| (*id, c.plaintext.to_vec()))
+            .collect::<Vec<_>>();
+        prerequisite_teardown(oracle_reader, &oracle_state);
+        let state = Arc::new(Mutex::new(PrerequisiteState::default()));
+        let mut reader = prerequisite_open(&fixture, &state);
+        state.lock().unwrap().reads.clear();
+        let mut decoded = super::BTreeMap::new();
+        let expected;
+        {
+            let _observer = PrerequisiteObserverGuard::install(&state);
+            reader.decode_chunk(fixture.target, &mut decoded).unwrap();
+            assert!(decoded.len() > 1);
+            for (id, chunk) in &decoded {
+                assert_eq!(chunk.plaintext.as_ref(), fixture.plaintexts[id]);
+            }
+            expected = decoded
+                .iter()
+                .map(|(id, c)| (*id, c.plaintext.to_vec()))
+                .collect::<Vec<_>>();
+            assert_eq!(expected, oracle_values);
+            assert_eq!(state.lock().unwrap().reads, oracle_reads);
+            let old_events = state.lock().unwrap().events.len();
+            let old_reads = state.lock().unwrap().reads.len();
+            reader.decode_chunk(fixture.target, &mut decoded).unwrap();
+            assert_eq!(state.lock().unwrap().events.len(), old_events);
+            assert_eq!(state.lock().unwrap().reads.len(), old_reads);
+            decoded.clear();
+            state.lock().unwrap().reads.clear();
+            reader.decode_chunk(fixture.target, &mut decoded).unwrap();
+            let first_reads = state.lock().unwrap().reads.clone();
+            decoded.clear();
+            state.lock().unwrap().reads.clear();
+            reader.decode_chunk(fixture.target, &mut decoded).unwrap();
+            assert_eq!(state.lock().unwrap().reads, first_reads);
+            assert_eq!(
+                decoded
+                    .iter()
+                    .map(|(id, c)| (*id, c.plaintext.to_vec()))
+                    .collect::<Vec<_>>(),
+                expected
+            );
+            assert_eq!(reader.session.policy().max_cached_bytes, 0);
+            let header = reader.chunk_header(fixture.target).unwrap();
+            let mut plain_header = header;
+            let store = crate::codec::store_plan();
+            plain_header.plan_ref = store.plan_id;
+            if !reader.plans.iter().any(|p| p.plan_id == store.plan_id) {
+                let mut plans = reader.plans.to_vec();
+                plans.push(store);
+                reader.plans = plans.into_boxed_slice();
+            }
+            let before = state.lock().unwrap().events.len();
+            let empty = reader
+                .group_prerequisites(fixture.target, &plain_header)
+                .unwrap();
+            assert!(empty.is_empty());
+            assert_eq!(state.lock().unwrap().events.len(), before);
+            drop(empty);
+        }
+        prerequisite_teardown(reader, &state);
+    }
+
+    #[test]
+    fn prerequisite_diagnostic_precedence_and_authenticated_header_failures_are_preserved() {
+        let fixture = prerequisite_fixture(true);
+        let state = Arc::new(Mutex::new(PrerequisiteState::default()));
+        let mut reader = prerequisite_open(&fixture, &state);
+        let header = reader.chunk_header(fixture.target).unwrap();
+        let group = reader.groups[&header.group_ref.unwrap()].clone();
+        {
+            let _observer = PrerequisiteObserverGuard::install(&state);
+            for (case, detail) in [
+                (0, "Chunk references unknown TransformPlan"),
+                (1, "prefix-coded Chunk lacks group_ref"),
+                (2, "prefix-coded Chunk references unknown group"),
+                (3, "group lookback and plan disagree"),
+                (4, "Chunk has no encrypted physical position"),
+            ] {
+                let mut h = header;
+                let id = if case == 4 {
+                    slot_digest(u64::MAX)
+                } else {
+                    fixture.target
+                };
+                match case {
+                    0 => h.plan_ref = u64::MAX,
+                    1 => h.group_ref = None,
+                    2 => h.group_ref = Some(slot_digest(u64::MAX)),
+                    3 => {
+                        reader.groups.get_mut(&group.group_id).unwrap().max_lookback =
+                            group.max_lookback + 1
+                    }
+                    _ => {}
+                }
+                state.lock().unwrap().reads.clear();
+                let error = reader.group_prerequisites(id, &h).err().unwrap();
+                assert_eq!(error.class(), super::OutcomeClass::Corrupt);
+                assert_eq!(
+                    error.code(),
+                    super::ReasonCode::RandomAccessDependencyInvalid
+                );
+                assert_eq!(error.detail(), detail);
+                assert!(state.lock().unwrap().reads.is_empty());
+                reader.groups.insert(group.group_id, group.clone());
+                assert!(state.lock().unwrap().active.is_empty());
+            }
+            reader
+                .groups
+                .get_mut(&group.group_id)
+                .unwrap()
+                .max_preceding_bytes = 0;
+            let error = reader
+                .group_prerequisites(fixture.target, &header)
+                .err()
+                .unwrap();
+            assert_eq!(error.code(), super::ReasonCode::AccessCostMismatch);
+            assert!(!state.lock().unwrap().reads.is_empty());
+            reader.groups.insert(group.group_id, group);
+            let overflow = super::prerequisite_logical_total(u64::MAX, 1).unwrap_err();
+            assert_eq!(overflow.detail(), "lookback byte count overflow");
+            assert_eq!(
+                overflow.code(),
+                super::ReasonCode::RandomAccessDependencyInvalid
+            );
+            let physical = prerequisite_original_order(&reader);
+            let target_position = physical
+                .iter()
+                .position(|(_, id)| *id == fixture.target)
+                .unwrap();
+            let predecessor = physical[target_position - 1].1;
+            let locator = reader.index.get(&predecessor).unwrap();
+            let segment = reader.segments.as_slice()[locator.segment_ordinal as usize];
+            state.lock().unwrap().corrupt_at = Some(segment.offset + 96);
+            let error = reader
+                .group_prerequisites(fixture.target, &header)
+                .err()
+                .unwrap();
+            assert_eq!(error.code(), super::ReasonCode::CryptoAeadAuthFailed);
+            assert!(state.lock().unwrap().active.is_empty());
+            state.lock().unwrap().corrupt_at = None;
+            reader.group_prerequisites(fixture.target, &header).unwrap();
+        }
+        prerequisite_teardown(reader, &state);
+        // Authenticate malformed private headers with the actual retained key
+        // hierarchy. This finite two-position helper fixture has one real
+        // candidate PAYLOAD; the requested position is not fetched on error.
+        for case in 0..4 {
+            let state = Arc::new(Mutex::new(PrerequisiteState::default()));
+            let mut reader = prerequisite_open(&fixture, &state);
+            let requested = reader.chunk_header(fixture.target).unwrap();
+            let physical = prerequisite_original_order(&reader);
+            let position = physical
+                .iter()
+                .position(|(_, d)| *d == fixture.target)
+                .unwrap();
+            let candidate = physical[position - 1].1;
+            let mut frame = {
+                let object = reader.chunk_frame(candidate).unwrap();
+                object.view().unwrap().1.to_vec()
+            };
+            let expected = match case {
+                0 => {
+                    frame[0] ^= 1;
+                    (
+                        super::OutcomeClass::Corrupt,
+                        super::ReasonCode::SectionStructure,
+                        "Chunk frame magic mismatch",
+                    )
+                }
+                1 => {
+                    frame[6..8].copy_from_slice(&9_u16.to_be_bytes());
+                    (
+                        super::OutcomeClass::Nonconforming,
+                        super::ReasonCode::NoncanonicalEncoding,
+                        "Chunk frame version or flags are not canonical",
+                    )
+                }
+                2 => {
+                    frame[48..56].copy_from_slice(&u64::MAX.to_be_bytes());
+                    (
+                        super::OutcomeClass::Corrupt,
+                        super::ReasonCode::ResourceLimit,
+                        "declared logical bound",
+                    )
+                }
+                _ => {
+                    let old = u64::from_be_bytes(frame[8..16].try_into().unwrap());
+                    frame[8..16].copy_from_slice(&(old + 1).to_be_bytes());
+                    (
+                        super::OutcomeClass::Corrupt,
+                        super::ReasonCode::RandomAccessDependencyInvalid,
+                        "encrypted Chunk frame stored length mismatch",
+                    )
+                }
+            };
+            let raw =
+                super::wire::private_object(super::wire::PRIVATE_OBJECT_CHUNK, &frame).unwrap();
+            let fragment = super::wire::PrivateFragmentRef {
+                object_id: super::wire::encrypted_object_id(&raw).unwrap(),
+                total_len: raw.len() as u64,
+                index: 0,
+                count: 1,
+                offset: 0,
+                bytes: &raw,
+            };
+            let (bytes, locator) = authenticated_test_segment(
+                &[fragment],
+                &reader.envelope.view().archive_id,
+                &reader.keys,
+                false,
+            );
+            let end_header = 96 + u64::from_be_bytes(bytes[88..96].try_into().unwrap());
+            let expected_reads = vec![(64, 32), (end_header, 32), (0, locator.extent)];
+            reader.session = super::RangeSession::new_crypto(
+                Box::new(PrerequisiteSource {
+                    source: MemoryRandomReadSource::new(bytes),
+                    state: Arc::clone(&state),
+                }),
+                segment_access_policy(),
+                reader.work.budget().clone(),
+            )
+            .unwrap();
+            let mut segments = super::SegmentTable::new(reader.work.budget());
+            append_segment(&mut segments, locator);
+            reader.segments = segments;
+            let mut index = super::ChunkDirectory::new(reader.work.budget(), 2, true);
+            let mut slots = vec![(candidate, 0), (fixture.target, 1)];
+            slots.sort_by_key(|(id, _)| *id);
+            for (id, ordinal) in slots {
+                index
+                    .append_index(
+                        id,
+                        super::EncryptedChunkLocator {
+                            segment_ordinal: ordinal,
+                            fragment_count: 1,
+                        },
+                    )
+                    .unwrap();
+            }
+            reader.index = index;
+            state.lock().unwrap().reads.clear();
+            {
+                let _observer = PrerequisiteObserverGuard::install(&state);
+                let error = reader
+                    .group_prerequisites(fixture.target, &requested)
+                    .err()
+                    .unwrap();
+                assert_eq!(error.class(), expected.0);
+                assert_eq!(error.code(), expected.1);
+                assert!(error.detail().contains(expected.2));
+                assert_eq!(state.lock().unwrap().reads, expected_reads);
+            }
+            prerequisite_teardown(reader, &state);
+        }
+    }
+
+    #[test]
+    fn prerequisite_copied_physical_owner_allows_authenticated_index_replacement() {
+        for include_index in [false, true] {
+            let fixture = prerequisite_fixture(include_index);
+            let state = Arc::new(Mutex::new(PrerequisiteState::default()));
+            let mut reader = prerequisite_open(&fixture, &state);
+            assert_eq!(
+                reader.index_status,
+                if include_index {
+                    super::RandomAccessIndexStatus::PresentValid
+                } else {
+                    super::RandomAccessIndexStatus::RebuiltAbsent
+                }
+            );
+            let header = reader.chunk_header(fixture.target).unwrap();
+            let physical = prerequisite_original_order(&reader);
+            let position = physical
+                .iter()
+                .position(|(_, id)| *id == fixture.target)
+                .unwrap();
+            let lookback = reader.groups[&header.group_ref.unwrap()].max_lookback;
+            let first = super::physical_prerequisite_first(position, lookback);
+            let predecessor = physical[first].1;
+            let mut expected_predecessors = Vec::new();
+            for (_, id) in &physical[first..position] {
+                if reader.chunk_header(*id).unwrap().group_ref == header.group_ref {
+                    expected_predecessors.push(*id);
+                }
+            }
+            let original = reader
+                .index
+                .iter()
+                .map(|(d, l)| (super::Digest::from_bytes(*d), *l))
+                .collect::<Vec<_>>();
+            let mut changed =
+                super::ChunkDirectory::new(reader.work.budget(), original.len(), true);
+            for (digest, mut locator) in original {
+                if digest == predecessor {
+                    locator.fragment_count += 1;
+                }
+                changed.append_index(digest, locator).unwrap();
+            }
+            reader.index = changed;
+            let before = reader.index.slots.as_slice().as_ptr();
+            state.lock().unwrap().reads.clear();
+            {
+                let _observer = PrerequisiteObserverGuard::install(&state);
+                let known = Arc::new(Mutex::new(KnownState::default()));
+                known.lock().unwrap().reserve_leave = Some(
+                    super::KnownChunkSegments::reservation_bytes(reader.index.len()).unwrap() - 1,
+                );
+                {
+                    let _known_observer = KnownObserverGuard::install(&known);
+                    let error = reader
+                        .group_prerequisites(fixture.target, &header)
+                        .err()
+                        .unwrap();
+                    assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+                    assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+                    // Genuine fragment-count invalidity was observed first;
+                    // the fallback's PolicyRefused propagates without a retry.
+                    assert_eq!(
+                        reader.index_status,
+                        super::RandomAccessIndexStatus::RebuiltInvalid
+                    );
+                    assert_eq!(reader.index.slots.as_slice().as_ptr(), before);
+                    assert!(reader.support.is_none());
+                    assert!(state.lock().unwrap().reads.is_empty());
+                    assert!(state.lock().unwrap().active.is_empty());
+                    let mut known = known.lock().unwrap();
+                    assert!(
+                        known
+                            .held
+                            .as_ref()
+                            .unwrap()
+                            .belongs_to(reader.work.budget())
+                    );
+                    drop(known.held.take());
+                }
+                let predecessors = reader.group_prerequisites(fixture.target, &header).unwrap();
+                assert_eq!(
+                    predecessors.iter().collect::<Vec<_>>(),
+                    expected_predecessors
+                );
+                assert_eq!(
+                    reader.index_status,
+                    super::RandomAccessIndexStatus::RebuiltInvalid
+                );
+                assert_ne!(reader.index.slots.as_slice().as_ptr(), before);
+                assert!(
+                    state
+                        .lock()
+                        .unwrap()
+                        .events
+                        .iter()
+                        .any(|e| e.0 == super::PrerequisiteKind::Physical
+                            && e.1 == super::PrerequisitePhase::Ready)
+                );
+                assert!(!state.lock().unwrap().reads.is_empty());
+                drop(predecessors);
+                let mut decoded = super::BTreeMap::new();
+                reader.decode_chunk(fixture.target, &mut decoded).unwrap();
+                assert_eq!(
+                    decoded[&fixture.target].plaintext.as_ref(),
+                    fixture.plaintexts[&fixture.target]
+                );
+            }
+            prerequisite_teardown(reader, &state);
+        }
+    }
+
+    #[test]
+    fn recursive_prerequisite_owners_overlap_on_original_budget_and_unwind_without_detaching() {
+        use super::PrerequisiteKind as K;
+        let fixture = prerequisite_fixture(true);
+        let state = Arc::new(Mutex::new(PrerequisiteState::default()));
+        let mut reader = prerequisite_open(&fixture, &state);
+        {
+            let mut state = state.lock().unwrap();
+            state.pressure_kind = Some(K::Physical);
+            state.pressure_occurrence = 2; // First K is outer; second is actual recursive decode.
+            state.short = true;
+        }
+        let mut decoded = super::BTreeMap::new();
+        {
+            let _observer = PrerequisiteObserverGuard::install(&state);
+            let error = reader
+                .decode_chunk(fixture.target, &mut decoded)
+                .unwrap_err();
+            assert_eq!(error.class(), super::OutcomeClass::PolicyRefused);
+            assert_eq!(error.code(), super::ReasonCode::CryptoResourcePolicyRefused);
+            assert!(!decoded.contains_key(&fixture.target));
+            let mut state = state.lock().unwrap();
+            assert!(state.hit);
+            assert!(
+                state.nested_predecessor_charge > 0,
+                "real outer B is charged during recursive K"
+            );
+            assert!(state.active.is_empty());
+            assert!(
+                state.reads.len() > 2,
+                "real outer/candidate/nested encrypted frames were fetched"
+            );
+            state.pressure_kind = None;
+            drop(state.held.take());
+            drop(state);
+            reader.decode_chunk(fixture.target, &mut decoded).unwrap();
+            assert!(decoded.len() > 1);
+            assert_eq!(
+                decoded[&fixture.target].plaintext.as_ref(),
+                fixture.plaintexts[&fixture.target]
+            );
+        }
+        prerequisite_teardown(reader, &state);
+    }
+
+    #[test]
+    fn prefix_reference_slots_remain_charged_through_builder_then_preserve_plaintext() {
+        use super::{PrerequisiteKind as K, PrerequisitePhase as P};
+        let work = test_work(4096);
+        let a = b"first ordinary chunk".to_vec();
+        let b = b"second ordinary chunk".to_vec();
+        let state = Arc::new(Mutex::new(PrerequisiteState::default()));
+        {
+            let _observer = PrerequisiteObserverGuard::install(&state);
+            let mut predecessors =
+                super::PredecessorDigests::reserve_empty(work.budget(), 4).unwrap();
+            predecessors.push(slot_digest(1)).unwrap();
+            predecessors.push(slot_digest(2)).unwrap();
+            let mut slices =
+                super::PrefixSliceSlots::reserve_empty(work.budget(), predecessors.len()).unwrap();
+            slices.push(&a).unwrap();
+            slices.push(&b).unwrap();
+            let charge = super::PredecessorDigests::reservation_bytes(4).unwrap()
+                + super::PrefixSliceSlots::reservation_bytes(2).unwrap();
+            let prefix = super::physical_prefix_from_slices(slices.as_slice(), 2).unwrap();
+            assert_eq!(prefix, [a.as_slice(), b.as_slice()].concat());
+            assert_eq!(work.budget().live_bytes(), charge);
+            drop(slices);
+            assert_eq!(
+                work.budget().live_bytes(),
+                super::PredecessorDigests::reservation_bytes(4).unwrap()
+            );
+            assert_eq!(a, b"first ordinary chunk");
+            assert_eq!(b, b"second ordinary chunk");
+            drop(predecessors);
+            assert_eq!(prefix, b"first ordinary chunksecond ordinary chunk");
+        }
+        assert_eq!(work.budget().live_bytes(), 0);
+        let fixture = prerequisite_fixture(true);
+        let state = Arc::new(Mutex::new(PrerequisiteState::default()));
+        let mut reader = prerequisite_open(&fixture, &state);
+        {
+            let _observer = PrerequisiteObserverGuard::install(&state);
+            let mut decoded = super::BTreeMap::new();
+            reader.decode_chunk(fixture.target, &mut decoded).unwrap();
+            assert_eq!(
+                decoded[&fixture.target].plaintext.as_ref(),
+                fixture.plaintexts[&fixture.target]
+            );
+            let state = state.lock().unwrap();
+            for (index, event) in state.events.iter().enumerate() {
+                if event.0 == K::Slices && event.1 == P::Ready && event.2 > 0 {
+                    assert_eq!(state.events[index + 1].0, K::Slices);
+                    assert_eq!(state.events[index + 1].1, P::BeforeFree);
+                    assert_eq!(state.events[index + 2].0, K::Predecessors);
+                    assert_eq!(state.events[index + 2].1, P::BeforeFree);
+                }
+            }
+            assert!(
+                state
+                    .events
+                    .iter()
+                    .any(|e| e.0 == K::Slices && e.1 == P::Ready && e.2 > 0)
+            );
+        }
+        {
+            let locator = reader.index.get(&fixture.target).unwrap();
+            let segment = reader.segments.as_slice()[locator.segment_ordinal as usize];
+            let mut state = state.lock().unwrap();
+            state.requested_read = Some((segment.offset, segment.extent));
+            state.requested_hits = 0;
+            state.outer_drop_observed = false;
+        }
+        {
+            let _observer = PrerequisiteObserverGuard::install(&state);
+            let entry = reader.read_entry(&fixture.target_path).unwrap();
+            assert_eq!(&*entry.bytes, fixture.target_entry_bytes);
+            assert!(entry.report.content_object_digest_verified);
+            assert!(state.lock().unwrap().outer_drop_observed);
+        }
+        prerequisite_teardown(reader, &state);
+    }
 
     fn segment_slot(value: u64, class: u8) -> super::SegmentLocator {
         let mut slot = test_segment(class, 1);
@@ -6845,7 +8783,11 @@ mod tests {
         let header = opened.chunk_header(target).unwrap();
         let predecessors = opened.group_prerequisites(target, &header).unwrap();
         assert!(!predecessors.is_empty());
-        let ordinal = opened.index.get(&predecessors[0]).unwrap().segment_ordinal as usize;
+        let ordinal = opened
+            .index
+            .get(&predecessors.iter().next().unwrap())
+            .unwrap()
+            .segment_ordinal as usize;
         let predecessor = &opened.segments.as_slice()[ordinal];
         {
             let mut pressure = pressure.lock().unwrap();
