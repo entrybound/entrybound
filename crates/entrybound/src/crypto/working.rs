@@ -123,12 +123,17 @@ fn requested_bytes<T>(capacity: usize) -> Result<u64> {
         .map_err(|_| resource_refused("managed crypto capacity exceeds u64"))
 }
 
-fn allocate<T>(budget: &WorkBudget, capacity: usize) -> Result<(Vec<T>, WorkLease)> {
+fn allocate_with_reserver<T, F>(
+    budget: &WorkBudget,
+    capacity: usize,
+    reserver: F,
+) -> Result<(Vec<T>, WorkLease)>
+where
+    F: FnOnce(&mut Vec<T>, usize) -> Result<()>,
+{
     let lease = budget.reserve(requested_bytes::<T>(capacity)?)?;
     let mut storage = Vec::new();
-    storage
-        .try_reserve_exact(capacity)
-        .map_err(|_| resource_refused("cannot allocate managed crypto backing"))?;
+    reserver(&mut storage, capacity)?;
     // This is an adoption check, not a proof that an oversized allocator
     // allocation could never have happened. Runtime qualification is separate.
     if std::mem::size_of::<T>() != 0 && storage.capacity() != capacity {
@@ -137,6 +142,14 @@ fn allocate<T>(budget: &WorkBudget, capacity: usize) -> Result<(Vec<T>, WorkLeas
         ));
     }
     Ok((storage, lease))
+}
+
+fn allocate<T>(budget: &WorkBudget, capacity: usize) -> Result<(Vec<T>, WorkLease)> {
+    allocate_with_reserver(budget, capacity, |storage, capacity| {
+        storage
+            .try_reserve_exact(capacity)
+            .map_err(|_| resource_refused("cannot allocate managed crypto backing"))
+    })
 }
 
 /// A fixed-capacity, fully initialized secret Argon2 matrix.
@@ -190,11 +203,36 @@ impl Drop for WorkBlocks {
     }
 }
 
+// Test-only fixed counters observe initialized-byte wiping before backing free.
+#[cfg(test)]
+#[derive(Default)]
+struct WorkBytesBeforeFreeProbe {
+    calls: std::sync::atomic::AtomicUsize,
+    initialized_length: std::sync::atomic::AtomicUsize,
+    live_bytes: AtomicU64,
+    all_initialized_bytes_zero: std::sync::atomic::AtomicBool,
+}
+
+#[cfg(test)]
+impl WorkBytesBeforeFreeProbe {
+    fn observe(&self, bytes: &[u8], budget: &WorkBudget) {
+        self.initialized_length
+            .store(bytes.len(), Ordering::Relaxed);
+        self.live_bytes
+            .store(budget.live_bytes(), Ordering::Relaxed);
+        self.all_initialized_bytes_zero
+            .store(bytes.iter().all(|byte| *byte == 0), Ordering::Relaxed);
+        self.calls.fetch_add(1, Ordering::Relaxed);
+    }
+}
+
 /// A fixed-capacity, fully initialized secret-capable byte allocation.
 /// No growable Vec or unmetered ownership conversion is exposed.
 pub(crate) struct WorkBytes {
     storage: Vec<u8>,
     _lease: WorkLease,
+    #[cfg(test)]
+    before_free_probe: Option<Arc<WorkBytesBeforeFreeProbe>>,
 }
 
 impl WorkBytes {
@@ -209,6 +247,8 @@ impl WorkBytes {
         Ok(Self {
             storage,
             _lease: lease,
+            #[cfg(test)]
+            before_free_probe: None,
         })
     }
 
@@ -247,6 +287,10 @@ impl DerefMut for WorkBytes {
 impl Drop for WorkBytes {
     fn drop(&mut self) {
         self.storage.as_mut_slice().zeroize();
+        #[cfg(test)]
+        if let Some(probe) = &self.before_free_probe {
+            probe.observe(&self.storage, &self._lease.budget);
+        }
         // Free backing before the field-owned lease is dropped.
         drop(std::mem::take(&mut self.storage));
     }
@@ -288,6 +332,22 @@ impl<T: Copy> WorkVec<T> {
     }
 
     pub(crate) fn reserve_with_headroom(&mut self, additional: usize, headroom: u64) -> Result<()> {
+        self.reserve_with_headroom_using(additional, headroom, |storage, capacity| {
+            storage
+                .try_reserve_exact(capacity)
+                .map_err(|_| resource_refused("cannot allocate managed crypto backing"))
+        })
+    }
+
+    fn reserve_with_headroom_using<F>(
+        &mut self,
+        additional: usize,
+        headroom: u64,
+        reserver: F,
+    ) -> Result<()>
+    where
+        F: FnOnce(&mut Vec<T>, usize) -> Result<()>,
+    {
         let required = self
             .storage
             .len()
@@ -318,7 +378,8 @@ impl<T: Copy> WorkVec<T> {
             ));
         }
         // The entire new allocation overlaps the still-live old allocation.
-        let (mut replacement, lease) = allocate(&self.lease.budget, capacity)?;
+        let (mut replacement, lease) =
+            allocate_with_reserver(&self.lease.budget, capacity, reserver)?;
         // Copy transfer must not invoke an independently implemented Clone.
         for &value in &self.storage {
             replacement.push(value);
@@ -353,8 +414,15 @@ impl<T: Copy> Drop for WorkVec<T> {
 
 #[cfg(test)]
 mod tests {
-    use super::{CryptoWorkContext, WorkBlocks, WorkBudget, WorkBytes, WorkVec, requested_bytes};
+    use super::{
+        CryptoWorkContext, WorkBlocks, WorkBudget, WorkBytes, WorkBytesBeforeFreeProbe, WorkVec,
+        allocate_with_reserver, requested_bytes,
+    };
     use crate::crypto::CryptoPolicy;
+    use std::cell::Cell;
+    use std::panic::{AssertUnwindSafe, catch_unwind};
+    use std::sync::Arc;
+    use std::sync::atomic::{AtomicU64, Ordering};
 
     #[test]
     fn byte_owners_keep_shared_counter_identity_even_when_empty() {
@@ -505,6 +573,533 @@ mod tests {
             panic!("synthetic failure");
         });
         assert!(result.is_err());
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    fn reserve_for_test<T>(
+        storage: &mut Vec<T>,
+        capacity: usize,
+    ) -> crate::diagnostics::Result<()> {
+        storage
+            .try_reserve_exact(capacity)
+            .map_err(|_| super::resource_refused("cannot allocate managed crypto backing"))
+    }
+
+    fn populated_bytes(budget: &WorkBudget) -> WorkVec<u8> {
+        let mut values = WorkVec::new(budget);
+        values.reserve(16).unwrap();
+        for value in 0..16 {
+            values.push(value).unwrap();
+        }
+        values
+    }
+
+    fn assert_callback_capacity<T>(capacity: usize) {
+        let charge = requested_bytes::<T>(capacity).unwrap();
+        let budget = WorkBudget::new(charge);
+        let calls = Cell::new(0);
+        let (storage, lease) = allocate_with_reserver(&budget, capacity, |storage, requested| {
+            calls.set(calls.get() + 1);
+            assert!(storage.is_empty());
+            assert_eq!(storage.capacity(), 0);
+            assert_eq!(requested, capacity);
+            assert_eq!(budget.live_bytes(), charge);
+            reserve_for_test::<T>(storage, requested)
+        })
+        .unwrap();
+        assert_eq!(storage.capacity(), capacity);
+        assert_eq!(calls.get(), 1);
+        eprintln!(
+            "reservation request: element_bytes={} align={} capacity={} charged={} callbacks={}",
+            std::mem::size_of::<T>(),
+            std::mem::align_of::<T>(),
+            capacity,
+            charge,
+            calls.get()
+        );
+        drop(storage);
+        assert_eq!(budget.live_bytes(), charge);
+        drop(lease);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    struct PendingLeaseDropProbe {
+        budget: WorkBudget,
+        observed_live: Arc<AtomicU64>,
+    }
+
+    impl Drop for PendingLeaseDropProbe {
+        fn drop(&mut self) {
+            self.observed_live
+                .store(self.budget.live_bytes(), Ordering::Relaxed);
+        }
+    }
+
+    #[test]
+    fn callback_rejects_invalid_layout_before_reserver() {
+        let budget = WorkBudget::new(0);
+        let calls = Cell::new(0);
+        let result = allocate_with_reserver::<u8, _>(&budget, usize::MAX, |storage, capacity| {
+            calls.set(calls.get() + 1);
+            reserve_for_test(storage, capacity)
+        });
+        assert!(result.is_err());
+        let result = allocate_with_reserver::<u64, _>(
+            &budget,
+            usize::MAX / std::mem::size_of::<u64>() + 1,
+            |storage, capacity| {
+                calls.set(calls.get() + 1);
+                reserve_for_test(storage, capacity)
+            },
+        );
+        assert!(result.is_err());
+        assert_eq!(calls.get(), 0);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn callback_charges_complete_padded_layout_before_reserver() {
+        #[derive(Clone, Copy)]
+        #[repr(C, align(8))]
+        struct Padded {
+            byte: u8,
+            word: u32,
+        }
+        let charge = requested_bytes::<Padded>(3).unwrap();
+        assert_eq!(charge, (3 * std::mem::size_of::<Padded>()) as u64);
+        assert!(charge > 3 * (std::mem::size_of::<u8>() + std::mem::size_of::<u32>()) as u64);
+        let budget = WorkBudget::new(charge + 1);
+        let retained = WorkBytes::zeroed(&budget, 1).unwrap();
+        let calls = Cell::new(0);
+        let (mut storage, lease) =
+            allocate_with_reserver::<Padded, _>(&budget, 3, |storage, capacity| {
+                calls.set(calls.get() + 1);
+                assert!(storage.is_empty());
+                assert_eq!(storage.capacity(), 0);
+                assert_eq!(capacity, 3);
+                assert_eq!(budget.live_bytes(), charge + 1);
+                reserve_for_test(storage, capacity)
+            })
+            .unwrap();
+        assert_eq!(calls.get(), 1);
+        assert_eq!(storage.capacity(), 3);
+        storage.resize(3, Padded { byte: 1, word: 2 });
+        assert!(
+            storage
+                .iter()
+                .all(|value| value.byte == 1 && value.word == 2)
+        );
+        drop(storage);
+        assert_eq!(budget.live_bytes(), charge + 1);
+        drop(lease);
+        assert_eq!(budget.live_bytes(), 1);
+        drop(retained);
+        assert_eq!(budget.live_bytes(), 0);
+        assert_callback_capacity::<u64>(2);
+        assert_callback_capacity::<argon2::Block>(1);
+    }
+
+    #[test]
+    fn callback_counter_and_item_arithmetic_refuse_before_reserver() {
+        let budget = WorkBudget::new(u64::MAX);
+        let arithmetic_lease = budget.reserve(u64::MAX).unwrap();
+        let calls = Cell::new(0);
+        let result = allocate_with_reserver::<u8, _>(&budget, 1, |storage, capacity| {
+            calls.set(calls.get() + 1);
+            reserve_for_test(storage, capacity)
+        });
+        assert!(result.is_err());
+        assert_eq!(calls.get(), 0);
+        assert_eq!(budget.live_bytes(), u64::MAX);
+        drop(arithmetic_lease);
+        assert_eq!(budget.live_bytes(), 0);
+
+        let budget = WorkBudget::new(48);
+        let mut values = populated_bytes(&budget);
+        let result = values.reserve_with_headroom_using(usize::MAX, 0, |storage, capacity| {
+            calls.set(calls.get() + 1);
+            reserve_for_test(storage, capacity)
+        });
+        assert!(result.is_err());
+        assert_eq!(calls.get(), 0);
+        assert_eq!(values.storage.capacity(), 16);
+        assert_eq!(
+            values.as_slice(),
+            std::array::from_fn::<_, 16, _>(|i| i as u8)
+        );
+        assert_eq!(budget.live_bytes(), 16);
+        drop(values);
+        assert_eq!(budget.live_bytes(), 0);
+
+        if usize::BITS > u64::BITS {
+            let wide_capacity = usize::try_from(u64::MAX).unwrap().checked_add(1).unwrap();
+            assert!(std::alloc::Layout::array::<u8>(wide_capacity).is_ok());
+            assert!(requested_bytes::<u8>(wide_capacity).is_err());
+            eprintln!("u64 Layout-size conversion rejection executed on this target");
+        } else {
+            eprintln!("u64 Layout-size conversion rejection UNREACHABLE_ON_TARGET");
+        }
+        eprintln!(
+            "managed request widths: pointer={} usize={} isize={} u64={}",
+            std::mem::size_of::<*const ()>() * 8,
+            usize::BITS,
+            isize::BITS,
+            u64::BITS
+        );
+    }
+
+    #[test]
+    fn callback_uses_genuine_remaining_budget_and_runs_once() {
+        for limit in [31, 32] {
+            let budget = WorkBudget::new(limit);
+            let retained = WorkBytes::zeroed(&budget, 16).unwrap();
+            let calls = Cell::new(0);
+            let result = allocate_with_reserver::<u8, _>(&budget, 16, |storage, capacity| {
+                calls.set(calls.get() + 1);
+                assert!(storage.is_empty());
+                assert_eq!(storage.capacity(), 0);
+                assert_eq!(capacity, 16);
+                assert_eq!(budget.live_bytes(), 32);
+                reserve_for_test(storage, capacity)
+            });
+            if limit == 31 {
+                assert!(result.is_err());
+                assert_eq!(calls.get(), 0);
+            } else {
+                let (storage, lease) = result.unwrap();
+                assert_eq!(calls.get(), 1);
+                assert_eq!(storage.capacity(), 16);
+                assert_eq!(budget.live_bytes(), 32);
+                drop(storage);
+                assert_eq!(budget.live_bytes(), 32);
+                drop(lease);
+            }
+            assert_eq!(budget.live_bytes(), 16);
+            drop(retained);
+            assert_eq!(budget.live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn callback_error_drops_initialized_elements_before_pending_lease() {
+        let charge = requested_bytes::<PendingLeaseDropProbe>(1).unwrap();
+        let budget = WorkBudget::new(charge + 1);
+        let retained = WorkBytes::zeroed(&budget, 1).unwrap();
+        let observed_live = Arc::new(AtomicU64::new(0));
+        let calls = Cell::new(0);
+        let failure = super::resource_refused("synthetic reservation callback error");
+        let expected = failure.to_string();
+        let result = allocate_with_reserver(&budget, 1, |storage, capacity| {
+            calls.set(calls.get() + 1);
+            assert_eq!(budget.live_bytes(), charge + 1);
+            reserve_for_test(storage, capacity)?;
+            storage.push(PendingLeaseDropProbe {
+                budget: budget.clone(),
+                observed_live: Arc::clone(&observed_live),
+            });
+            Err(failure)
+        });
+        assert_eq!(result.err().unwrap().to_string(), expected);
+        assert_eq!(calls.get(), 1);
+        assert_eq!(observed_live.load(Ordering::Relaxed), charge + 1);
+        assert_eq!(budget.live_bytes(), 1);
+        drop(retained);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn callback_unwind_drops_initialized_elements_before_pending_lease() {
+        if !cfg!(panic = "unwind") {
+            eprintln!("callback unwind NOT_EXECUTED_ON_ABORT_PROFILE");
+            return;
+        }
+        let charge = requested_bytes::<PendingLeaseDropProbe>(1).unwrap();
+        let budget = WorkBudget::new(charge + 1);
+        let retained = WorkBytes::zeroed(&budget, 1).unwrap();
+        let observed_live = Arc::new(AtomicU64::new(0));
+        let calls = Cell::new(0);
+        let result = catch_unwind(AssertUnwindSafe(|| {
+            allocate_with_reserver(&budget, 1, |storage, capacity| {
+                calls.set(calls.get() + 1);
+                assert_eq!(budget.live_bytes(), charge + 1);
+                reserve_for_test(storage, capacity)?;
+                storage.push(PendingLeaseDropProbe {
+                    budget: budget.clone(),
+                    observed_live: Arc::clone(&observed_live),
+                });
+                panic!("synthetic reservation callback unwind");
+            })
+        }));
+        assert!(result.is_err());
+        assert_eq!(calls.get(), 1);
+        assert_eq!(observed_live.load(Ordering::Relaxed), charge + 1);
+        assert_eq!(budget.live_bytes(), 1);
+        drop(retained);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn callback_zero_and_zst_requests_preserve_counter_identity() {
+        let budget = WorkBudget::new(0);
+        let calls = Cell::new(0);
+        let (storage, lease) = allocate_with_reserver::<u8, _>(&budget, 0, |storage, capacity| {
+            calls.set(calls.get() + 1);
+            assert_eq!(capacity, 0);
+            assert_eq!(budget.live_bytes(), 0);
+            reserve_for_test(storage, capacity)
+        })
+        .unwrap();
+        assert!(storage.is_empty());
+        assert_eq!(storage.capacity(), 0);
+        assert!(Arc::ptr_eq(&lease.budget.state, &budget.state));
+        drop(storage);
+        drop(lease);
+        for capacity in [0, usize::MAX] {
+            let (storage, lease) =
+                allocate_with_reserver::<(), _>(&budget, capacity, |storage, requested| {
+                    calls.set(calls.get() + 1);
+                    assert_eq!(requested, capacity);
+                    assert_eq!(budget.live_bytes(), 0);
+                    reserve_for_test(storage, requested)
+                })
+                .unwrap();
+            assert!(storage.is_empty());
+            assert!(Arc::ptr_eq(&lease.budget.state, &budget.state));
+            drop(storage);
+            drop(lease);
+        }
+        assert_eq!(calls.get(), 3);
+        let no_growth_calls = Cell::new(0);
+        let mut values = WorkVec::<()>::new(&budget);
+        values
+            .reserve_with_headroom_using(1, 0, |storage, capacity| {
+                no_growth_calls.set(no_growth_calls.get() + 1);
+                reserve_for_test(storage, capacity)
+            })
+            .unwrap();
+        values.push(()).unwrap();
+        assert_eq!(no_growth_calls.get(), 0);
+        assert_eq!(values.as_slice(), [()]);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn replacement_callback_observes_full_old_and_new_charge() {
+        for limit in [47, 48] {
+            let budget = WorkBudget::new(limit);
+            let mut values = populated_bytes(&budget);
+            let calls = Cell::new(0);
+            let result = values.reserve_with_headroom_using(16, 0, |storage, capacity| {
+                calls.set(calls.get() + 1);
+                assert_eq!(capacity, 32);
+                assert!(storage.is_empty());
+                assert_eq!(budget.live_bytes(), 48);
+                reserve_for_test(storage, capacity)
+            });
+            assert_eq!(result.is_ok(), limit == 48);
+            assert_eq!(calls.get(), usize::from(limit == 48));
+            assert_eq!(values.storage.capacity(), if limit == 48 { 32 } else { 16 });
+            assert_eq!(
+                values.as_slice(),
+                std::array::from_fn::<_, 16, _>(|i| i as u8)
+            );
+            assert_eq!(budget.live_bytes(), if limit == 48 { 32 } else { 16 });
+            drop(values);
+            assert_eq!(budget.live_bytes(), 0);
+        }
+        let budget = WorkBudget::new(48);
+        let mut values = populated_bytes(&budget);
+        let retained = WorkBytes::zeroed(&budget, 1).unwrap();
+        let calls = Cell::new(0);
+        assert!(
+            values
+                .reserve_with_headroom_using(16, 0, |storage, capacity| {
+                    calls.set(calls.get() + 1);
+                    reserve_for_test(storage, capacity)
+                })
+                .is_err()
+        );
+        assert_eq!(calls.get(), 0);
+        assert_eq!(budget.live_bytes(), 17);
+        assert_eq!(values.storage.capacity(), 16);
+        drop(values);
+        assert_eq!(budget.live_bytes(), 1);
+        drop(retained);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn replacement_callback_error_and_unwind_preserve_old_backing() {
+        for unwind in [false, true] {
+            if unwind && !cfg!(panic = "unwind") {
+                eprintln!("replacement unwind NOT_EXECUTED_ON_ABORT_PROFILE");
+                continue;
+            }
+            let budget = WorkBudget::new(48);
+            let mut values = populated_bytes(&budget);
+            let calls = Cell::new(0);
+            let failure = super::resource_refused("synthetic replacement callback error");
+            let expected = failure.to_string();
+            let result = catch_unwind(AssertUnwindSafe(|| {
+                values.reserve_with_headroom_using(16, 0, |storage, capacity| {
+                    calls.set(calls.get() + 1);
+                    assert_eq!(budget.live_bytes(), 48);
+                    assert_eq!(capacity, 32);
+                    reserve_for_test(storage, capacity)?;
+                    storage.push(0xAA);
+                    if unwind {
+                        panic!("synthetic replacement callback unwind");
+                    }
+                    Err(failure)
+                })
+            }));
+            assert_eq!(result.is_err(), unwind);
+            if !unwind {
+                assert_eq!(result.unwrap().err().unwrap().to_string(), expected);
+            }
+            assert_eq!(calls.get(), 1);
+            assert_eq!(values.storage.capacity(), 16);
+            assert_eq!(
+                values.as_slice(),
+                std::array::from_fn::<_, 16, _>(|i| i as u8)
+            );
+            assert_eq!(budget.live_bytes(), 16);
+            drop(values);
+            assert_eq!(budget.live_bytes(), 0);
+        }
+    }
+
+    #[test]
+    fn replacement_callback_preserves_fallback_headroom_and_no_growth() {
+        for (limit, headroom, succeeds) in [(33, 0, true), (33, 1, false), (34, 1, true)] {
+            let budget = WorkBudget::new(limit);
+            let mut values = populated_bytes(&budget);
+            let calls = Cell::new(0);
+            let result = values.reserve_with_headroom_using(1, headroom, |storage, capacity| {
+                calls.set(calls.get() + 1);
+                assert_eq!(capacity, 17);
+                assert_eq!(budget.live_bytes(), 33);
+                reserve_for_test(storage, capacity)
+            });
+            assert_eq!(result.is_ok(), succeeds);
+            assert_eq!(calls.get(), usize::from(succeeds));
+            assert_eq!(values.storage.capacity(), if succeeds { 17 } else { 16 });
+            assert_eq!(budget.live_bytes(), if succeeds { 17 } else { 16 });
+            drop(values);
+            assert_eq!(budget.live_bytes(), 0);
+        }
+        let budget = WorkBudget::new(64);
+        let mut values = populated_bytes(&budget);
+        let calls = Cell::new(0);
+        values
+            .reserve_with_headroom_using(0, u64::MAX, |storage, capacity| {
+                calls.set(calls.get() + 1);
+                reserve_for_test(storage, capacity)
+            })
+            .unwrap();
+        assert!(
+            values
+                .reserve_with_headroom_using(16, u64::MAX, |storage, capacity| {
+                    calls.set(calls.get() + 1);
+                    reserve_for_test(storage, capacity)
+                })
+                .is_err()
+        );
+        assert_eq!(calls.get(), 0);
+        assert_eq!(values.storage.capacity(), 16);
+        assert_eq!(budget.live_bytes(), 16);
+        drop(values);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn callback_capacity_adoption_rejection_keeps_old_owner() {
+        let budget = WorkBudget::new(16);
+        let calls = Cell::new(0);
+        let result = allocate_with_reserver::<u8, _>(&budget, 16, |storage, capacity| {
+            calls.set(calls.get() + 1);
+            // This bounded test callback intentionally violates the reservation contract.
+            reserve_for_test(storage, capacity + 1)
+        });
+        assert!(result.is_err());
+        assert_eq!(calls.get(), 1);
+        assert_eq!(budget.live_bytes(), 0);
+        let budget = WorkBudget::new(48);
+        let mut values = populated_bytes(&budget);
+        let calls = Cell::new(0);
+        assert!(
+            values
+                .reserve_with_headroom_using(16, 0, |storage, capacity| {
+                    calls.set(calls.get() + 1);
+                    reserve_for_test(storage, capacity + 1)
+                })
+                .is_err()
+        );
+        assert_eq!(calls.get(), 1);
+        assert_eq!(values.storage.capacity(), 16);
+        assert_eq!(
+            values.as_slice(),
+            std::array::from_fn::<_, 16, _>(|i| i as u8)
+        );
+        assert_eq!(budget.live_bytes(), 16);
+        drop(values);
+        assert_eq!(budget.live_bytes(), 0);
+    }
+
+    #[test]
+    fn initialized_secret_owners_wipe_on_success_error_and_unwind() {
+        for outcome in [0, 1, 2] {
+            if outcome == 2 && !cfg!(panic = "unwind") {
+                eprintln!("secret owner unwind NOT_EXECUTED_ON_ABORT_PROFILE");
+                continue;
+            }
+            let budget = WorkBudget::new(17);
+            let retained = WorkBytes::zeroed(&budget, 1).unwrap();
+            let probe = Arc::new(WorkBytesBeforeFreeProbe::default());
+            let result = catch_unwind(AssertUnwindSafe(|| -> crate::diagnostics::Result<()> {
+                let mut bytes = WorkBytes::zeroed(&budget, 16)?;
+                bytes.before_free_probe = Some(Arc::clone(&probe));
+                bytes.as_mut_slice().fill(0xAA);
+                if outcome == 2 {
+                    panic!("synthetic secret owner unwind");
+                }
+                if outcome == 1 {
+                    return Err(super::resource_refused("synthetic secret owner error"));
+                }
+                Ok(())
+            }));
+            assert_eq!(result.is_err(), outcome == 2);
+            if outcome != 2 {
+                assert_eq!(result.unwrap().is_err(), outcome == 1);
+            }
+            assert_eq!(probe.calls.load(Ordering::Relaxed), 1);
+            assert_eq!(probe.initialized_length.load(Ordering::Relaxed), 16);
+            assert!(probe.all_initialized_bytes_zero.load(Ordering::Relaxed));
+            assert_eq!(probe.live_bytes.load(Ordering::Relaxed), 17);
+            assert_eq!(budget.live_bytes(), 1);
+            drop(retained);
+            assert_eq!(budget.live_bytes(), 0);
+        }
+        let budget = WorkBudget::new(0);
+        let probe = Arc::new(WorkBytesBeforeFreeProbe::default());
+        let mut bytes = WorkBytes::zeroed(&budget, 0).unwrap();
+        bytes.before_free_probe = Some(Arc::clone(&probe));
+        drop(bytes);
+        assert_eq!(probe.calls.load(Ordering::Relaxed), 1);
+        assert_eq!(probe.initialized_length.load(Ordering::Relaxed), 0);
+        assert!(probe.all_initialized_bytes_zero.load(Ordering::Relaxed));
+        assert_eq!(probe.live_bytes.load(Ordering::Relaxed), 0);
+
+        fn before_blocks_free(blocks: &[argon2::Block], budget: &WorkBudget) {
+            assert_eq!(blocks.len(), 1);
+            assert!(blocks[0].as_ref().iter().all(|word| *word == 0));
+            assert_eq!(budget.live_bytes(), argon2::Block::SIZE as u64);
+        }
+        let budget = WorkBudget::new(argon2::Block::SIZE as u64);
+        let mut blocks = WorkBlocks::zeroed(&budget, 1).unwrap();
+        blocks.before_free = Some(before_blocks_free);
+        blocks.as_mut_slice()[0].as_mut().fill(0xDEAD_BEEF);
+        drop(blocks);
         assert_eq!(budget.live_bytes(), 0);
     }
 }
