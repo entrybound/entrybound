@@ -180,6 +180,25 @@ released after each KDF call, including error and unwind paths. The pinned
 Argon2 `zeroize` feature is enabled; the frozen KDF profile is unchanged.
 Writer-only creation retains its existing public API and default policy.
 
+Range record decryption retains one fixed, fully initialized padded plaintext
+owner against that same original counter. Public protected-header preflight
+checks ciphertext length (including the 16-byte tag), the caller's lowerable
+limit, and the CONTROL/PAYLOAD padded class limit before the whole segment is
+fetched. END always uses the CONTROL padding limit. Detached AEAD decrypts the
+body in place; only authenticated and canonically framed private bytes are
+borrowed from the owner. No second private-byte allocation is returned.
+
+The padded owner remains charged while DATA fragments are decoded and copied
+into the complete object, and while END fields and the streaming ciphertext
+digest are verified. Retained owners, fetched ciphertext, padded plaintext and
+the assembled object therefore overlap on one counter. The full initialized
+prefix, private bytes and padding are wiped before backing is freed and its
+reservation released, including authentication, framing and unwind failures.
+Test-only fixed counters observe that order; they do not expose secret payloads.
+
+This ownership conversion requires fresh focused and canonical qualification;
+its source draft alone is not a completed runtime qualification.
+
 This covers the managed block allocation rather than every heap or stack
 allocation or process RSS. Fixed budget/error controls are outside that
 counter. Complete accounting of other crypto buffers, legacy/mutation state

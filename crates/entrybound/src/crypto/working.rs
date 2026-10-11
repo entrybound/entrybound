@@ -206,7 +206,7 @@ impl Drop for WorkBlocks {
 // Test-only fixed counters observe initialized-byte wiping before backing free.
 #[cfg(test)]
 #[derive(Default)]
-struct WorkBytesBeforeFreeProbe {
+pub(crate) struct WorkBytesBeforeFreeProbe {
     calls: std::sync::atomic::AtomicUsize,
     initialized_length: std::sync::atomic::AtomicUsize,
     live_bytes: AtomicU64,
@@ -215,6 +215,15 @@ struct WorkBytesBeforeFreeProbe {
 
 #[cfg(test)]
 impl WorkBytesBeforeFreeProbe {
+    pub(crate) fn snapshot(&self) -> (usize, usize, u64, bool) {
+        (
+            self.calls.load(Ordering::Relaxed),
+            self.initialized_length.load(Ordering::Relaxed),
+            self.live_bytes.load(Ordering::Relaxed),
+            self.all_initialized_bytes_zero.load(Ordering::Relaxed),
+        )
+    }
+
     fn observe(&self, bytes: &[u8], budget: &WorkBudget) {
         self.initialized_length
             .store(bytes.len(), Ordering::Relaxed);
@@ -236,6 +245,11 @@ pub(crate) struct WorkBytes {
 }
 
 impl WorkBytes {
+    #[cfg(test)]
+    pub(crate) fn install_before_free_probe(&mut self, probe: Arc<WorkBytesBeforeFreeProbe>) {
+        self.before_free_probe = Some(probe);
+    }
+
     /// Even an empty backing retains the identity of its original counter.
     pub(crate) fn belongs_to(&self, budget: &WorkBudget) -> bool {
         Arc::ptr_eq(&self._lease.budget.state, &budget.state)
