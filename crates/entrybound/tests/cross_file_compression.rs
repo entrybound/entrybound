@@ -262,6 +262,15 @@ fn small_cohort_stays_independent_and_v2_v3_remain_readable() {
     assert!(dense.archive.content_store.chunk_groups.is_empty());
     assert!(dense.archive.content_store.dictionaries.is_empty());
 
+    // Security metadata is optional; preserve the features actually captured
+    // on this filesystem, together with every original entry metadata field.
+    let metadata_features = v3.archive.descriptor.features.incompat
+        & (entrybound::ecf::FEATURE_POSIX_METADATA_V1
+            | entrybound::ecf::FEATURE_PLATFORM_SECURITY_METADATA_V1);
+    assert_eq!(
+        metadata_features & entrybound::ecf::FEATURE_POSIX_METADATA_V1,
+        entrybound::ecf::FEATURE_POSIX_METADATA_V1
+    );
     let mut historical_v3 = v3.archive.clone();
     reset_planning(&mut historical_v3);
     plan_archive_v3(&mut historical_v3, CompressionProfile::Balanced).unwrap();
@@ -270,10 +279,9 @@ fn small_cohort_stays_independent_and_v2_v3_remain_readable() {
     assert_eq!(reopened.archive.descriptor.planner_id, "balanced-v3");
     assert_eq!(
         reopened.archive.descriptor.features.incompat,
-        entrybound::ecf::FEATURE_CROSS_FILE_COMPRESSION_V1
-            | entrybound::ecf::FEATURE_POSIX_METADATA_V1
-            | entrybound::ecf::FEATURE_PLATFORM_SECURITY_METADATA_V1
+        entrybound::ecf::FEATURE_CROSS_FILE_COMPRESSION_V1 | metadata_features
     );
+    assert_eq!(reopened.archive.entry_set, v3.archive.entry_set);
     verify(&encoded.bytes).unwrap();
 
     let mut v2 = v3.archive.clone();
@@ -284,9 +292,9 @@ fn small_cohort_stays_independent_and_v2_v3_remain_readable() {
     assert_eq!(reopened.archive.descriptor.planner_id, "balanced-v2");
     assert_eq!(
         reopened.archive.descriptor.features.incompat,
-        entrybound::ecf::FEATURE_POSIX_METADATA_V1
-            | entrybound::ecf::FEATURE_PLATFORM_SECURITY_METADATA_V1
+        metadata_features
     );
+    assert_eq!(reopened.archive.entry_set, v3.archive.entry_set);
     verify(&encoded.bytes).unwrap();
 }
 

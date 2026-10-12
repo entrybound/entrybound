@@ -99,3 +99,10 @@ that cleanup removes only artifacts created by the invocation and preserves
 pre-existing and foreign destinations. Current pathname-based cleanup leaves
 these required v1 transaction and cleanup gates unresolved. Controlled-directory
 operation and recovery guidance do not satisfy those gates.
+
+
+## Generated crypto conformance
+
+See [reproducible crypto conformance](crypto-conformance.md) for the complete
+creation-option matrix, independent identity transcript oracle, exact-byte PCI
+cross-check and the limits of finite automated evidence.
