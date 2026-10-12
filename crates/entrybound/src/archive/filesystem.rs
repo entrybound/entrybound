@@ -1559,7 +1559,7 @@ fn captured_acls(_path: &Path, _directory: bool, scan: &mut Scan) -> Result<Opti
 #[cfg(target_os = "linux")]
 fn decode_linux_posix_acl(bytes: &[u8], scope: AclScope) -> Result<Acl> {
     if bytes.len() < 4
-        || (bytes.len() - 4) % 8 != 0
+        || !(bytes.len() - 4).is_multiple_of(8)
         || u32::from_le_bytes(bytes[0..4].try_into().unwrap_or_default()) != 2
     {
         return Err(Diagnostic::new(
@@ -1569,7 +1569,7 @@ fn decode_linux_posix_acl(bytes: &[u8], scope: AclScope) -> Result<Acl> {
         ));
     }
     let mut entries = Vec::with_capacity((bytes.len() - 4) / 8);
-    for encoded in bytes[4..].chunks_exact(8) {
+    for encoded in bytes[4..].as_chunks::<8>().0 {
         let tag = u16::from_le_bytes(encoded[0..2].try_into().unwrap_or_default());
         let permissions = linux_acl_permissions_to_canonical(u16::from_le_bytes(
             encoded[2..4].try_into().unwrap_or_default(),

@@ -1422,7 +1422,12 @@ fn parse_names(bytes: &[u8], count: usize) -> Result<Vec<String>> {
     if !bytes.len().is_multiple_of(2) {
         return Err(structure("7z Name property is not aligned UTF-16LE"));
     }
-    let units = bytes.chunks_exact(2).map(le_u16).collect::<Vec<_>>();
+    let units = bytes
+        .as_chunks::<2>()
+        .0
+        .iter()
+        .map(|unit| le_u16(unit))
+        .collect::<Vec<_>>();
     let mut names = Vec::new();
     let mut start = 0_usize;
     for (index, unit) in units.iter().enumerate() {

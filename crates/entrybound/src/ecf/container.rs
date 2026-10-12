@@ -2778,7 +2778,7 @@ pub(super) fn encode_budget(bytes: &mut [u8], budget: ResourceBudget) {
         budget.max_metadata_bytes,
         budget.max_key_derivation_cost,
     ];
-    for (slot, value) in bytes.chunks_exact_mut(8).zip(values) {
+    for (slot, value) in bytes.as_chunks_mut::<8>().0.iter_mut().zip(values) {
         slot.copy_from_slice(&value.to_be_bytes());
     }
 }
@@ -2938,8 +2938,8 @@ pub(crate) fn decode_preamble(bytes: &[u8]) -> Result<Preamble> {
 
 pub(super) fn decode_budget(bytes: &[u8]) -> Result<ResourceBudget> {
     let mut values = [0_u64; 8];
-    for (value, slot) in values.iter_mut().zip(bytes.chunks_exact(8)) {
-        *value = u64::from_be_bytes(exact(slot)?);
+    for (value, slot) in values.iter_mut().zip(bytes.as_chunks::<8>().0) {
+        *value = u64::from_be_bytes(*slot);
     }
     Ok(ResourceBudget {
         entry_count: values[0],
